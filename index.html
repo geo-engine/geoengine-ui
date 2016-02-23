@@ -25,6 +25,9 @@
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
 
+      <link rel="stylesheet" href="node_modules/ng2-material/dist/ng2-material.css">
+      <link rel="stylesheet" href="node_modules/ng2-material/dist/font.css">
+
     <!-- 2. Configure SystemJS -->
     <script>
       System.config({
@@ -32,8 +35,14 @@
           app: {
             format: 'register',
             defaultExtension: 'js'
+          },
+            'ng2-material': {
+                defaultExtension: 'js'
+            }
+        },
+          map: {
+              'ng2-material': 'node_modules/ng2-material'
           }
-        }
       });
       System.import('app/main')
             .then(null, console.error.bind(console));
