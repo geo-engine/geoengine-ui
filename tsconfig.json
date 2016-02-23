@@ -12,7 +12,9 @@
     "outDir": "app/"
   },
   "exclude": [
-	"node_modules",
-	"bower_modules"
+    "node_modules",
+    "bower_modules",
+    "typings/main",
+    "typings/main.d.ts"
   ]
 }
