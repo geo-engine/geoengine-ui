@@ -1,0 +1,41 @@
+<div layout="column">
+    <div layout="row">
+        <div flex="20">
+            <md-toolbar>
+                <div>
+                    VAT
+                    <button md-button class="md-icon-button" aria-label="Person" (click)="clicked('Person')">
+                        <i class="green" md-icon>person</i>
+                    </button>
+                    <button md-button class="md-icon-button" aria-label="Help" (click)="clicked('Help')">
+                        <i md-icon>help</i>
+                    </button>
+                </div>
+                <div class="md-toolbar-tools">
+                    <button md-button class="md-icon-button" aria-label="Settings" (click)="clicked('Menu')">
+                        <i md-icon>menu</i>
+                    </button>
+                    Layers
+                    <button md-button class="md-icon-button" aria-label="Settings" (click)="layersClicked()">
+                        <i md-icon>expand_more</i>
+                    </button>
+                </div>
+            </md-toolbar>
+        </div>
+        <div flex="80">
+            <tab-component></tab-component>
+        </div>
+    </div>
+    <div layout="row">
+        <div *ngIf="visible" flex="20">
+            <list-basic-usage></list-basic-usage>
+        </div>
+        <div flex="grow">
+            <dummy-map-component></dummy-map-component>
+        </div>
+    </div>
+    <div layout="row">
+        NO DATA
+    </div>
+</div>
+<br>
