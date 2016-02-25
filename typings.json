@@ -1,5 +1,6 @@
 {
   "ambientDependencies": {
-    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2"
+    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6697d6f7dadbf5773cb40ecda35a76027e0783b2",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#dff6dc82500b69e4a4c0a468bb4de63b5d043e2e"
   }
 }
