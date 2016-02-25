@@ -1,21 +1,33 @@
 import {Component} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 import {MapComponent, LayerComponent} from './openlayers/map';
+import {TabComponent} from './tab.component'
+import {LayerListComponent} from './layer-list.component'
 
 @Component({
     selector: 'wave-app',
-    templateUrl: 'templates/app.component.html',
+    templateUrl: 'templates/app.html',
 	directives: [
         MATERIAL_DIRECTIVES,
         MapComponent,
-        LayerComponent
+        LayerComponent,
+		TabComponent,
+		LayerListComponent
     ]
 })
 export class AppComponent {
-    private windowContext = window;    
+    visible:boolean = false;
+    
+    private mapSpace = {
+        height: window.innerHeight - 200 // TODO
+    };
     
     clicked(message: string) {
         alert(message);
+    }
+
+    layersClicked(){
+        this.visible = !this.visible;
     }
     
     private layers: Array<any> = [

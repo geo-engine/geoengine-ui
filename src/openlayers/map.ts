@@ -85,7 +85,7 @@ export class LayerComponent implements OnChanges {
 @Component({
     selector: 'ol-map',
     template: `<div #mapContainer
-                    style="width: {{width}}px; height: {{height}}px; background: black;">
+                    style="width: {{width}}; height: {{height}}; background: black;">
                </div>
                <ng-content></ng-content>`,
     styleUrls: [
@@ -99,15 +99,23 @@ export class MapComponent implements AfterViewInit {
     @ViewChild('mapContainer')
     private mapContainer: ElementRef;
     
-    @Input()
-    private width: number;
+    @Input('width')
+    private _width: string;
     
-    @Input()
-    private height: number;
+    @Input('height')
+    private _height: string;
     
     @ContentChildren(LayerComponent)
     private layers: QueryList<LayerComponent>;
 
+    private get width(): string {
+        return this._width.indexOf('%') >= 0 ? this._width : `${this._width}px`;
+    }
+    
+    private get height(): string {
+        return this._height.indexOf('%') >= 0 ? this._height : `${this._height}px`;
+    }
+    
     ngAfterViewInit() {
         let backgroundLayer = new layer.Tile({
             source: new source.OSM()
