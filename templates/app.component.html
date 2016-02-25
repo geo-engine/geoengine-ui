@@ -17,5 +17,12 @@
             </button>
         </div>
     </md-toolbar>
+    <div>
+    	<button (click)="addLayer()">Add Layer</button>
+    	<button (click)="swapLayers()">Swap Layers</button>
+    	<ol-map [width]="windowContext.innerWidth" height="600">
+    		<ol-layer *ngFor="#layer of layers" [type]="layer.type" [url]="layer.url" [style]="layer.style"></ol-layer>
+    	</ol-map>
+    </div>
     <br>
 </md-content>
