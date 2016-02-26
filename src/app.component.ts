@@ -1,6 +1,7 @@
-import {Component} from 'angular2/core';
+import {Component, ViewChild} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MapComponent, LayerComponent} from './openlayers/map';
+import {MapComponent} from './openlayers/map';
+import {LayerComponent} from './openlayers/layer';
 import {TabComponent} from './tab.component'
 import {LayerListComponent} from './layer-list.component'
 
@@ -18,9 +19,8 @@ import {LayerListComponent} from './layer-list.component'
 export class AppComponent {
     visible:boolean = false;
     
-    private mapSpace = {
-        height: window.innerHeight - 200 // TODO
-    };
+    @ViewChild(MapComponent)
+    private mapComponent: MapComponent;
     
     clicked(message: string) {
         alert(message);
@@ -28,6 +28,7 @@ export class AppComponent {
 
     layersClicked(){
         this.visible = !this.visible;
+        this.mapComponent.resize();        
     }
     
     private layers: Array<any> = [
@@ -57,7 +58,4 @@ export class AppComponent {
         this.layers.reverse();
     }
     
-    private halveSize() {
-        this.mapSpace.height = this.mapSpace.height / 2;
-    }
 }
