@@ -1,5 +1,5 @@
 <div layout="column">
-    <div layout="row">
+    <div layout="row" #topRow>
         <div flex="20">
             <md-toolbar>
                 <div>
@@ -31,16 +31,15 @@
             <list-basic-usage></list-basic-usage>
         </div>
         <div flex="grow">
-	    	<button (click)="addLayer()">Add Layer</button>
-	    	<button (click)="swapLayers()">Swap Layers</button>
-	    	<button (click)="halveSize()">Halve size</button>
 	    	<ol-map width="100%" [height]="mapSpace.height">
 	    		<ol-layer *ngFor="#layer of layers" [type]="layer.type" [url]="layer.url" [style]="layer.style"></ol-layer>
 	    	</ol-map>
         </div>
     </div>
-    <div layout="row">
+    <div layout="row" #bottomRow>
+    	<button (click)="addLayer()">Add Layer</button>
+	   	<button (click)="swapLayers()">Swap Layers</button>
+	    <button (click)="halveSize()">Halve size</button>
         NO DATA
     </div>
 </div>
-<br>

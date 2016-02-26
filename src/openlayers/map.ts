@@ -159,15 +159,12 @@ export class MapComponent implements AfterViewInit, OnChanges, AfterViewChecked 
     
     ngOnChanges(changes: {[propName: string]: SimpleChange}) {
         if('_width' in changes || '_height' in changes) {
-            console.log('update size');
-            //this.map.updateSize();
             this.isSizeChanged = true;
         }
     }
     
     ngAfterViewChecked() {
         if(this.isSizeChanged) {
-            console.log("after view");
             this.map.updateSize();
             this.isSizeChanged = false;
         }
