@@ -1,5 +1,6 @@
 import {Component, ViewChild, ElementRef, Input,
-        AfterViewInit, OnChanges, SimpleChange, ContentChildren, QueryList} from 'angular2/core';
+        AfterViewInit, OnChanges, SimpleChange,
+        ContentChildren, QueryList, AfterViewChecked} from 'angular2/core';
 import {Map as OlMap, View as OlView,
         layer, source, format, style, loadingstrategy, tilegrid} from 'openlayers';
 
@@ -85,14 +86,14 @@ export class LayerComponent implements OnChanges {
 @Component({
     selector: 'ol-map',
     template: `<div #mapContainer
-                    style="width: {{width}}; height: {{height}}; background: black;">
+                    [style.width]="width" [style.height]="height" style="background: black;">
                </div>
                <ng-content></ng-content>`,
     styleUrls: [
         'node_modules/openlayers/css/ol.css'
     ]
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnChanges, AfterViewChecked  {
     
     private map: OlMap;
     
@@ -100,20 +101,22 @@ export class MapComponent implements AfterViewInit {
     private mapContainer: ElementRef;
     
     @Input('width')
-    private _width: string;
+    private _width: string | number;
     
     @Input('height')
-    private _height: string;
+    private _height: string | number;
     
     @ContentChildren(LayerComponent)
     private layers: QueryList<LayerComponent>;
 
     private get width(): string {
-        return this._width.indexOf('%') >= 0 ? this._width : `${this._width}px`;
+        let width: string = this._width.toString();
+        return width.indexOf('%') >= 0 ? width : `${width}px`;
     }
     
     private get height(): string {
-        return this._height.indexOf('%') >= 0 ? this._height : `${this._height}px`;
+        let height: string = this._height.toString();
+        return height.indexOf('%') >= 0 ? height : `${height}px`;
     }
     
     ngAfterViewInit() {
@@ -150,6 +153,24 @@ export class MapComponent implements AfterViewInit {
                 (layerComponent: LayerComponent) => this.map.getLayers().push(layerComponent.layer)
             );
         });
+    }
+    
+    private isSizeChanged = false;
+    
+    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+        if('_width' in changes || '_height' in changes) {
+            console.log('update size');
+            //this.map.updateSize();
+            this.isSizeChanged = true;
+        }
+    }
+    
+    ngAfterViewChecked() {
+        if(this.isSizeChanged) {
+            console.log("after view");
+            this.map.updateSize();
+            this.isSizeChanged = false;
+        }
     }
     
 }

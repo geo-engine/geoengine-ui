@@ -56,4 +56,8 @@ export class AppComponent {
         console.log("swap!");
         this.layers.reverse();
     }
+    
+    private halveSize() {
+        this.mapSpace.height = this.mapSpace.height / 2;
+    }
 }
