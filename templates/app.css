@@ -7,9 +7,8 @@
     height: 100%;
 }
 .navbar {
-    height: 185px;
+    height: 200px;
     flex: 0 0 auto;
-    border-color: red;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -17,14 +16,14 @@
     flex-direction: row;
 }
 .help {
-    width: 200px;
+    width: 210px;
+    flex: 0 0 auto;
 }
 .tabs {
     flex-grow:80;
 }
 .core {
     flex-grow:66;
-    border-color: limegreen;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -32,28 +31,23 @@
     flex-direction: row;
 }
 .layerList {
-    width: 200px;
+    width: 210px;
+    flex: 0 0 auto;
 }
 .map {
-    flex-grow:80;
-    border-color: yellow;
-    background-image: url(templates/map.jpg);
-    background-size: contain;
+    flex-grow:1;
+    position: relative;
 }
 .tableSelector {
     height: 50px;
     flex: 0 0 auto;
-    border-color: cyan;
+    border-style: solid;
+    border-width: 1px;
 }
 .table {
     flex-grow: 33;
-    border-color: blue;
     position: relative;
 }
-.bordered{
-    border-width : 4px;
-    border-style: solid;
-}
 .selected{
-    background-color: sandybrown;
+    background-color: skyblue;
 }

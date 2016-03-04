@@ -44,17 +44,18 @@
                 'ng2-dragula': {
                     defaultExtension: 'js'
                 },
-                'dragula' :{
+                'dragula': {
                     defaultExtension: 'js'
                 }
             },
             map: {
                 'ng2-material': 'node_modules/ng2-material',
-                'ng2-dragula' : 'node_modules/ng2-dragula'
+                'ng2-dragula': 'node_modules/ng2-dragula',
+                'openlayers': 'node_modules/openlayers/dist/ol.js'
             }
         });
-        System.import('app/main')
-                .then(null, console.error.bind(console));
+      System.import('app/main')
+            .then(null, console.error.bind(console));
     </script>
 
 </head>

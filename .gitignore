@@ -1,4 +1,12 @@
+# Packaged components
 /node_modules
 /bower_components
 
+# Typescript bindings
+/typings
+
+# Compiled typesript sources.
 /app
+
+# Eclipse
+.project
