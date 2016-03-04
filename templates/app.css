@@ -1,0 +1,59 @@
+.myContainer {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+}
+.navbar {
+    height: 185px;
+    flex: 0 0 auto;
+    border-color: red;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+.help {
+    width: 200px;
+}
+.tabs {
+    flex-grow:80;
+}
+.core {
+    flex-grow:66;
+    border-color: limegreen;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+.layerList {
+    width: 200px;
+}
+.map {
+    flex-grow:80;
+    border-color: yellow;
+    background-image: url(templates/map.jpg);
+    background-size: contain;
+}
+.tableSelector {
+    height: 50px;
+    flex: 0 0 auto;
+    border-color: cyan;
+}
+.table {
+    flex-grow: 33;
+    border-color: blue;
+    position: relative;
+}
+.bordered{
+    border-width : 4px;
+    border-style: solid;
+}
+.selected{
+    background-color: sandybrown;
+}

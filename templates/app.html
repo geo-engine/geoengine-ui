@@ -1,6 +1,6 @@
-<div layout="column">
-    <div layout="row">
-        <div flex="20">
+<div class="myContainer">
+    <div class="navbar bordered">
+        <div class="help">
             <md-toolbar>
                 <div>
                     VAT
@@ -17,25 +17,60 @@
                     </button>
                     Layers
                     <button md-button class="md-icon-button" aria-label="Settings" (click)="layersClicked()">
-                        <i md-icon>expand_more</i>
+                        <i *ngIf="!visible" md-icon>expand_more</i>
+                        <i *ngIf="visible" md-icon>expand_less</i>
                     </button>
                 </div>
             </md-toolbar>
         </div>
-        <div flex="80">
-            <tab-component></tab-component>
+        <div class="tabs">
+            <tab-component [disabled]="!hasSelected"></tab-component>
         </div>
     </div>
-    <div layout="row">
-        <div *ngIf="visible" flex="20">
-            <list-basic-usage></list-basic-usage>
+    <div class="core bordered">
+        <div *ngIf="visible" class="layerList">
+            <md-list>
+                <div class='container' [dragula]='"layer-bag"' [dragulaModel]='many'>
+                    <md-list-item class="md-3-line" *ngFor="#item of layers; #index = index"
+                                  style="border-width : 1px; border-style: solid;"
+                                  (click)="clickLayer(item)"
+                                  [class.selected]="item === selected && hasSelected"
+                                  (contextmenu)="replaceContextMenu($event, item)">
+                        <div layout="column">
+                            <div class="md-list-item-text">
+
+                                <button md-button class="md-icon-button" aria-label="Settings" (click)="expandLayer($event, item)">
+                                    <i *ngIf="!item.expanded" md-icon>expand_more</i>
+                                    <i *ngIf="item.expanded" md-icon>expand_less</i>
+                                </button>
+
+                                {{item.name}}
+
+                                <button md-button class="md-icon-button" aria-label="More" (click)="clicked('A menu will appear in future versions')">
+                                    <i md-icon>more_vert</i>
+                                </button>
+                            </div>
+                            <div *ngIf="item.expanded" flex style="border-width : 2px; border-style: solid;">
+                                <hr width=100%>
+                                {{item.payload}}
+                                <br>{{item.payload}}
+                                <br>{{item.payload}}
+                            </div>
+                        </div>
+                    </md-list-item>
+                </div>
+            </md-list>
         </div>
-        <div flex="grow">
-            <dummy-map-component></dummy-map-component>
+        <div class="map bordered">
         </div>
     </div>
-    <div layout="row">
-        NO DATA
+    <div class="tableSelector bordered">
+        Data Table
+        <button md-button class="md-icon-button" aria-label="Settings" (click)="expandData()">
+            <i *ngIf="!dataTableVisible" md-icon>expand_more</i>
+            <i *ngIf="dataTableVisible" md-icon>expand_less</i>
+        </button>
     </div>
+    <angular-grid class="table bordered" *ngIf="dataTableVisible">
+    </angular-grid>
 </div>
-<br>

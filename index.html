@@ -1,58 +1,68 @@
 <html>
-  <head>
+<head>
     <title>Angular 2 QuickStart</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- 1. Load libraries -->
     <!-- IE required polyfills, in this exact order -->
     <script src="node_modules/es6-shim/es6-shim.min.js"></script>
     <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-	
-	<!-- Polymer -->
-	<script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-	<script>
-		var Polymer = Polymer || {};
-		Polymer.dom = 'shadow';
-	</script>
-	<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-	<link rel="import" href="bower_components/iron-list/iron-list.html">
-	<link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
-	<link rel="import" href="bower_components/iron-pages/iron-pages.html">
 
-	<!-- Angular -->
+    <!-- Polymer -->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <!-- Angular -->
     <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
 
-      <link rel="stylesheet" href="node_modules/ng2-material/dist/ng2-material.css">
-      <link rel="stylesheet" href="node_modules/ng2-material/dist/font.css">
+    <!-- Material -->
+    <link rel="stylesheet" href="node_modules/ng2-material/dist/ng2-material.css">
+    <link rel="stylesheet" href="node_modules/ng2-material/dist/font.css">
+
+    <!-- Dragula -->
+    <link rel="stylesheet" href="node_modules/dragula/dist/dragula.min.css">
+
+    <!-- Vaadin -->
+    <link rel="import" href="bower_components/vaadin-grid/vaadin-grid.html">
 
     <!-- 2. Configure SystemJS -->
     <script>
-      System.config({
-        packages: {        
-          app: {
-            format: 'register',
-            defaultExtension: 'js'
-          },
-            'ng2-material': {
-                defaultExtension: 'js'
+        System.config({
+            paths: {
+                'dragula': 'node_modules/dragula/dist/dragula.min.js'
+            },
+            packages: {
+                app: {
+                    format: 'register',
+                    defaultExtension: 'js'
+                },
+                'ng2-material': {
+                    defaultExtension: 'js'
+                },
+                'ng2-dragula': {
+                    defaultExtension: 'js'
+                },
+                'dragula' :{
+                    defaultExtension: 'js'
+                }
+            },
+            map: {
+                'ng2-material': 'node_modules/ng2-material',
+                'ng2-dragula' : 'node_modules/ng2-dragula'
             }
-        },
-          map: {
-              'ng2-material': 'node_modules/ng2-material'
-          }
-      });
-      System.import('app/main')
-            .then(null, console.error.bind(console));
+        });
+        System.import('app/main')
+                .then(null, console.error.bind(console));
     </script>
 
-  </head>
+</head>
 
-  <!-- 3. Display the application -->
-  <body>
-    <wave-app>Loading...</wave-app>
-  </body>
+<!-- 3. Display the application -->
+<body>
+
+<wave-app>Loading...</wave-app>
+</body>
 
 </html>

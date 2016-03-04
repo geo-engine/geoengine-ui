@@ -13,8 +13,14 @@
   },
   "exclude": [
     "node_modules",
-    "bower_modules",
+    "bower_components",
     "typings/main",
-    "typings/main.d.ts"
+    "typings/main.d.ts",
+    "node_modules/ng2-dragula/ng2-dragula.ts",
+    "node_modules/ng2-dragula/ng2-dragula.d.ts",
+    "node_modules/ng2-dragula/src/app/directives/dragula.directive.ts",
+    "node_modules/ng2-dragula/src/app/directives/dragula.directive.d.ts",
+    "node_modules/ng2-dragula/src/app/providers/dragula.provider.ts",
+    "node_modules/ng2-dragula/src/app/directives/dragula.directive.d.ts"
   ]
 }

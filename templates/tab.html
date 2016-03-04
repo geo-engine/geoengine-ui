@@ -1,17 +1,85 @@
 <md-tabs md-dynamic-height md-border-bottom>
     <template md-tab label="Start">
-        <md-content class="md-padding">
-            Tab One
+        <md-content layout="row">
+
+            <fieldset [class.selected]="disabled">
+                <legend>
+                    Layer
+                </legend>
+                <div layout="row">
+                    <div layout="column" layout-margin>
+                        <i md-icon>info</i>
+                        Info
+                    </div>
+                    <div layout="column" layout-margin>
+                        <div>
+                            <i md-icon>cancel</i>
+                            ??
+                        </div>
+                        <div>
+                            <i md-icon>backup</i>
+                            Export
+                        </div>
+                        <div>
+                            <i md-icon>share</i>
+                            Share
+                        </div>
+                    </div>
+                    <div layout="column" layout-margin>
+                        <div>
+                            <i md-icon>cancel</i>
+                            ??
+                        </div>
+                        <div>
+                            <i md-icon>backup</i>
+                            Export
+                        </div>
+                        <div>
+                            <i md-icon>share</i>
+                            Share
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Zoom</legend>
+                <div>
+                    <i md-icon>zoom_in</i>
+                </div>
+                <div>
+                    <i md-icon>zoom_out</i>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Add-Data</legend>
+                <div>
+                    <i md-icon>zoom_in</i>
+                </div>
+                <div>
+                    <i md-icon>zoom_out</i>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Reference Time</legend>
+                <div>
+                    <i md-icon>zoom_in</i>
+                </div>
+                <div>
+                    <i md-icon>zoom_out</i>
+                </div>
+            </fieldset>
+
         </md-content>
     </template>
     <template md-tab label="Operators">
-        <md-content class="md-padding">
+        <md-content layout="row">
             Tab Two
         </md-content>
     </template>
     <template md-tab label="Project">
-        <md-content class="md-padding">
-            Tab Three
-        </md-content>
+        Tab Three
     </template>
 </md-tabs>
