@@ -1,110 +1,205 @@
-import {Component, ViewChild} from 'angular2/core';
+import {Component, ViewChild, ElementRef, AfterViewInit, NgZone} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+
+import {InfoAreaComponent} from './info-area.component';
 import {TabComponent} from './tab.component';
-import {DummyLayer} from './DummyLayer'
-import {Dragula} from 'ng2-dragula/ng2-dragula';
-import {DragulaService} from 'ng2-dragula/ng2-dragula';
+import {InfoBarComponent} from './info-bar.component';
+import {LayerComponent} from './layer.component';
 import {AngularGrid} from './angular-grid';
-import {MapComponent} from './openlayers/map';
-import {LayerComponent} from './openlayers/layer';
+import {MapComponent} from './openlayers/map.component';
+import {MapLayerComponent} from './openlayers/layer.component';
+
+import {Layer} from './layer.model';
+import {Operator, ResultType} from './operator.model';
 
 @Component({
     selector: 'wave-app',
-    templateUrl: 'templates/app.html',
-    styleUrls: ['templates/app.css'],
-    viewProviders: [DragulaService],
-	directives: [MATERIAL_DIRECTIVES, TabComponent, MapComponent, Dragula, AngularGrid]
+    template: `
+    <div class="topContainer md-whiteframe-5dp" layout="row">
+        <div class="infoArea"><info-area-component></info-area-component></div>
+        <div flex="grow">
+            <tab-component [layerSelected]="hasSelectedLayer"
+                           (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
+                           (zoomLayer)="mapComponent.zoomToLayer(layersReverse.indexOf(selectedLayer))"
+                           (zoomMap)="mapComponent.zoomToMap()">
+            </tab-component>
+        </div>
+    </div>
+    <div class="middleContainer md-whiteframe-5dp" [style.height]="middleContainerHeight" layout="row">
+        <div class="layers">
+            <layer-component [layers]="layers"
+                             (hasSelected)="hasSelectedLayer=$event" (selected)="selectedLayer=$event">
+            </layer-component>
+        </div>
+        <div flex="grow">
+            <ol-map [height]="mapHeight">
+                <ol-layer *ngFor="#layer of layersReverse"
+                          [type]="layer.resultType"
+                          [url]="layer.url"
+                          [params]="layer.params"
+                          [style]="layer.style"></ol-layer>
+            </ol-map>
+        </div>
+    </div>
+    <div class="bottomContainer md-whiteframe-5dp" [style.height]="bottomContainerHeight">
+        <md-toolbar class="infoBar">
+            <info-bar-component (tableOpen)="dataTableVisible=$event"></info-bar-component>
+        </md-toolbar>
+        <div class="dataTable" *ngIf="dataTableVisible"><angular-grid></angular-grid></div>
+    </div>
+    `,
+    styles: [`
+    .topContainer {
+        position: absolute;
+        top: 0px;
+        height: 180px;
+        left: 0px;
+        right: 0px;
+    }
+    .infoArea {
+        width: 200px;
+    }
+    .middleContainer {
+        position: absolute;
+        top: 180px;
+        left: 0px;
+        right: 0px;
+    }
+    .middleContainer .layers {
+        width: 200px;
+    }
+    .bottomContainer {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+
+        overflow: hidden;
+    }
+    .bottomContainer .infoBar {
+        min-height: 40px;
+        height: 40px;
+    }
+    .bottomContainer .dataTable {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        top: 40px;
+    }
+    `],
+    directives: [MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent, LayerComponent,
+                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid]
 })
 export class AppComponent {
-    layerListVisible:boolean = true;
-    dataTableVisible:boolean = true;
-
-    selected:DummyLayer;
-    hasSelected:boolean = false;
+    private layerListVisible: boolean = true;
+    private _dataTableVisible: boolean = true;
+    
+    private get dataTableVisible() {
+        return this._dataTableVisible;
+    }
+    
+    private set dataTableVisible(value: boolean) {
+        this._dataTableVisible = value;
+        this.changeSizes();
+        this.mapComponent.resize();
+    }
 
     @ViewChild(MapComponent)
     private mapComponent: MapComponent;
 
-
-    clicked(message: string) {
-        alert(message);
-    }
-
-    layersClicked(){
-        this.layerListVisible = !this.layerListVisible;
-        this.mapComponent.resize();        
-    }
+    private bottomContainerHeight: number = window.innerHeight / 3;
+    private middleContainerHeight: number;
     
-    private layers: Array<any> = [
-        {
-            'type': 'WFS',
-            'url': (extent: Array<number>) => 'http://demo.opengeo.org/geoserver/wfs?service=WFS&version=2.0.0&' +
-                                              'request=GetFeature&outputFormat=application/json&typeNames=states&' +
-                                              'srsName=EPSG:3857' /*+ 
-                         '&bbox=' + extent.join(',') + ',EPSG:3857'*/,
-            'params': {},
-            'style': 'rgba(0, 0, 255, 1.0)'
-        }
-    ];
-    
-    private addLayer() {
-        console.log("push!");
-        this.layers.push({
-            'type': 'WMS',
-            'url': 'http://demo.boundlessgeo.com/geoserver/wms?LAYERS=topp:states',
-            'params': {'LAYERS': 'topp:states'},
-            'style': ''
+    private changeSizes() {
+        this.zone.run(() => {
+            this.bottomContainerHeight = this.dataTableVisible ? window.innerHeight / 3 : 40;
+            this.middleContainerHeight = Math.max(window.innerHeight - this.bottomContainerHeight - 180, 0);
         });
     }
     
-    private swapLayers() {
-        console.log("swap!");
-        this.layers.reverse();
+    constructor(private zone: NgZone) {
+        window.onresize = () => {
+            this.changeSizes();
+        };
+        this.changeSizes();
     }
 
-    clickLayer(layer:DummyLayer){
-        if(this.hasSelected){
-            if(this.selected == layer) {
-                this.hasSelected = false;
-            }
-        } else {
-            this.hasSelected = true;
-        }
-        this.selected = layer;
-    }
+//    clicked(message: string) {
+//        alert(message);
+//    }
+//
+//    layersClicked() {
+//        this.layerListVisible = !this.layerListVisible;
+//        this.mapComponent.resize();
+//    }
 
-    expandLayer(event: MouseEvent, layer:DummyLayer){
-        event.stopPropagation();
-        layer.expanded = !layer.expanded;
-    }
-
-    expandData(){
-        this.dataTableVisible = !this.dataTableVisible;
-        this.mapComponent.resize();
-    }
-
-    replaceContextMenu(event: MouseEvent, layer:DummyLayer){
-        event.preventDefault();
-        alert("A context menu for " + layer.name + " will appear in future versions!");
-    }
-
-
-    dummyLayers: DummyLayer[] = [
-        {
-            "name": "Layer 1",
-            "payload" : "Payload 1",
-            "expanded" : false,
-        },
-        {
-            "name": "Layer 2",
-            "payload" : "Payload 2",
-            "expanded" : false,
-        },
-        {
-            "name": "Layer 3",
-            "payload" : "Payload 3",
-            "expanded" : false,
-        },
+    private layers: Array<Layer> = [
+        new Layer(new Operator(
+            'source',
+            ResultType.RASTER, 
+            new Map<string, string | number>().set('channel', 0).set('sourcename', 'srtm'),
+            'EPSG:4326',
+            'SRTM'
+        )),
+        new Layer(new Operator(
+            'gfbiopointsource',
+            ResultType.POINTS,
+            new Map<string, string | number>()
+                .set('datasource', 'GBIF')
+                .set('query', '{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}'),
+            'EPSG:4326',
+            'Puma Concolor'
+        ))
     ];
+    
+    private get layersReverse() {
+        return this.layers.slice(0).reverse();
+    }
+    
+    //        {
+//            'type': 'WFS',
+//            'url': (extent: Array<number>) => 'http://demo.opengeo.org/geoserver/wfs?service=WFS&version=2.0.0&' +
+//                'request=GetFeature&outputFormat=application/json&typeNames=states&' +
+//                'srsName=EPSG:3857' /*+ 
+//                         '&bbox=' + extent.join(',') + ',EPSG:3857'*/,
+//            'params': {},
+//            'style': 'rgba(0, 0, 255, 1.0)'
+//        }
+    
+//    {
+//            'type': 'WMS',
+//            'url': 'http://demo.boundlessgeo.com/geoserver/wms?LAYERS=topp:states',
+//            'params': { 'LAYERS': 'topp:states' },
+//            'style': ''
+//        }
+
+//    private addLayer() {
+//        console.log("push!");
+//        this.layers.push({
+//            'type': 'WMS',
+//            'url': 'http://demo.boundlessgeo.com/geoserver/wms?LAYERS=topp:states',
+//            'params': { 'LAYERS': 'topp:states' },
+//            'style': ''
+//        });
+//    }
+//
+//    private swapLayers() {
+//        console.log("swap!");
+//        this.layers.reverse();
+//    }
+//
+//    expandLayer(event: MouseEvent, layer: DummyLayer) {
+//        event.stopPropagation();
+//        layer.expanded = !layer.expanded;
+//    }
+//
+//    expandData() {
+////        this.dataTableVisible = !this.dataTableVisible;
+//        //this.sizeMap();
+//        this.mapComponent.resize();
+//    }
+//
+
 
 }

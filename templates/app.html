@@ -1,78 +1,21 @@
-<div class="myContainer">
-    <div class="navbar">
-        <div class="help">
-            <md-toolbar>
-                <div>
-                    VAT
-                    <button md-button class="md-icon-button" aria-label="Person" (click)="clicked('Person')">
-                        <i class="green" md-icon>person</i>
-                    </button>
-                    <button md-button class="md-icon-button" aria-label="Help" (click)="clicked('Help')">
-                        <i md-icon>help</i>
-                    </button>
-                </div>
-                <div class="md-toolbar-tools">
-                    <button md-button class="md-icon-button" aria-label="Settings" (click)="clicked('Menu')">
-                        <i md-icon>menu</i>
-                    </button>
-                    Layers
-                    <button md-button class="md-icon-button" aria-label="Settings" (click)="layersClicked()">
-                        <i *ngIf="!layerListVisible" md-icon>expand_more</i>
-                        <i *ngIf="layerListVisible" md-icon>expand_less</i>
-                    </button>
-                </div>
-            </md-toolbar>
+<div layout="column" style="height: 100%;">
+    <div layout="row" style="height: 180px;">
+        <div style="width: 200px;">
         </div>
-        <div class="tabs">
-            <tab-component [disabled]="!hasSelected"></tab-component>
+        <div>
         </div>
     </div>
-    <div class="core">
-        <div *ngIf="layerListVisible" class="layerList">
-            <md-list>
-                <div class='container' [dragula]='"layer-bag"' [dragulaModel]='many'>
-                    <md-list-item class="md-3-line" *ngFor="#item of dummyLayers; #index = index"
-                                  style="border-width : 1px; border-style: solid;"
-                                  (click)="clickLayer(item)"
-                                  [class.selected]="item === selected && hasSelected"
-                                  (contextmenu)="replaceContextMenu($event, item)">
-                        <div layout="column">
-                            <div class="md-list-item-text">
-
-                                <button md-button class="md-icon-button" aria-label="Settings" (click)="expandLayer($event, item)">
-                                    <i *ngIf="!item.expanded" md-icon>expand_more</i>
-                                    <i *ngIf="item.expanded" md-icon>expand_less</i>
-                                </button>
-
-                                {{item.name}}
-
-                                <button md-button class="md-icon-button" aria-label="More" (click)="clicked('A menu will appear in future versions')">
-                                    <i md-icon>more_vert</i>
-                                </button>
-                            </div>
-                            <div *ngIf="item.expanded">
-                                {{item.payload}}
-                                <br>{{item.payload}}
-                                <br>{{item.payload}}
-                            </div>
-                        </div>
-                    </md-list-item>
-                </div>
-            </md-list>
+    <div layout="row" flex="grow">
+        <div *ngIf="layerListVisible" style="width: 200px;">
         </div>
-        <div class="map">
-            <ol-map>
+        <div flex="grow" id="mapcont">
+            <ol-map [height]="mapHeight">
                 <ol-layer *ngFor="#layer of layers" [type]="layer.type" [url]="layer.url" [style]="layer.style"></ol-layer>
             </ol-map>
         </div>
     </div>
-    <div class="tableSelector">
-        Data Table
-        <button md-button class="md-icon-button" aria-label="Settings" (click)="expandData()">
-            <i *ngIf="!dataTableVisible" md-icon>expand_more</i>
-            <i *ngIf="dataTableVisible" md-icon>expand_less</i>
-        </button>
+    <div style="height: 50px; background-color: magenta;">
     </div>
-    <angular-grid class="table" *ngIf="dataTableVisible">
-    </angular-grid>
+    <div *ngIf="dataTableVisible" flex="30" style="background-color: yellow;">
+    </div>
 </div>

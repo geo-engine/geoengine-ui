@@ -2,53 +2,86 @@
     <template md-tab label="Start">
         <md-content layout="row">
 
-            <fieldset [class.selected]="disabled">
-                <legend>
-                    Layer
-                </legend>
+            <fieldset [class.selected]="layerSelected">
+                <legend>Layer</legend>
                 <div layout="row">
-                    <div layout="column" layout-margin>
-                        <i md-icon>info</i>
-                        Info
-                    </div>
-                    <div layout="column" layout-margin>
-                        <div>
-                            <i md-icon>cancel</i>
-                            ??
-                        </div>
-                        <div>
-                            <i md-icon>backup</i>
-                            Export
-                        </div>
-                        <div>
-                            <i md-icon>share</i>
-                            Share
-                        </div>
-                    </div>
-                    <div layout="column" layout-margin>
-                        <div>
-                            <i md-icon>cancel</i>
-                            ??
-                        </div>
-                        <div>
-                            <i md-icon>backup</i>
-                            Export
-                        </div>
-                        <div>
-                            <i md-icon>share</i>
-                            Share
-                        </div>
-                    </div>
+	                <div layout="column" layout-align="space-around center">
+	                	<button md-button style="margin: 0px; height: auto;"
+	                			class="md-primary" [disabled]="!layerSelected"
+                				layout="column">
+	                		<i md-icon>info</i>
+	                		<div>Info</div>
+	                	</button>
+	               	</div>
+	               	<div layout="column">
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>cancel</i>
+		                    ??
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>backup</i>
+		                    Export
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>share</i>
+		                    Share
+	                    </button>
+					</div>
+					<div layout="column">
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>cancel</i>
+		                    ??
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">>
+		                    <i md-icon>backup</i>
+		                    Export
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>share</i>
+		                    Share
+	                    </button>
+	                </div>
                 </div>
             </fieldset>
 
             <fieldset>
                 <legend>Zoom</legend>
-                <div>
-                    <i md-icon>zoom_in</i>
-                </div>
-                <div>
-                    <i md-icon>zoom_out</i>
+                <div layout="row">
+	                <div layout="column">
+		                <button md-button style="text-align: left; margin: 0px;" class="md-primary"
+		                		(click)="zoomLayerEmitter.emit()"
+		                		[disabled]="!layerSelected">
+			                <i md-icon>zoom_in</i>
+			                Layer
+		                </button>
+		                <button md-button style="text-align: left; margin: 0px;" class="md-primary"
+		                		(click)="zoomProjectEmitter.emit()"
+		                		disabled="true">
+			                <i md-icon>zoom_in</i>
+			                Project
+		                </button>
+		                <button md-button style="text-align: left; margin: 0px;" class="md-primary"
+		                		(click)="zoomMapEmitter.emit()">
+			                <i md-icon>zoom_out</i>
+			                Map
+		                </button>
+	                </div>
+	                <div layout="column" layout-align="space-around center">
+		                <button md-fab class="md-mini md-primary" aria-label="Zoom In"
+		                		(click)="zoomInEmitter.emit()">
+			                <i md-icon>add</i>
+		                </button>
+		                <button md-fab class="md-mini md-primary" aria-label="Zoom Out"
+		                		(click)="zoomOutEmitter.emit()">
+			                <i md-icon>remove</i>
+		                </button>
+	                </div>
                 </div>
             </fieldset>
 
