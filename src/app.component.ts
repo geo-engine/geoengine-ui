@@ -1,4 +1,5 @@
-import {Component, ViewChild, ElementRef, AfterViewInit, NgZone} from 'angular2/core';
+import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
+        ChangeDetectionStrategy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 
 import {InfoAreaComponent} from './info-area.component';
@@ -28,7 +29,7 @@ import {Operator, ResultType} from './operator.model';
     <div class="middleContainer md-whiteframe-5dp" [style.height]="middleContainerHeight" layout="row">
         <div class="layers">
             <layer-component [layers]="layers"
-                             (hasSelected)="hasSelectedLayer=$event" (selected)="selectedLayer=$event">
+                             (selected)="selectedLayer=$event">
             </layer-component>
         </div>
         <div flex="grow">
@@ -45,7 +46,10 @@ import {Operator, ResultType} from './operator.model';
         <md-toolbar class="infoBar">
             <info-bar-component (tableOpen)="dataTableVisible=$event"></info-bar-component>
         </md-toolbar>
-        <div class="dataTable" *ngIf="dataTableVisible"><angular-grid></angular-grid></div>
+        <div class="dataTable" *ngIf="dataTableVisible">
+            <angular-grid [data]="getTabularData()">
+            </angular-grid>
+        </div>
     </div>
     `,
     styles: [`
@@ -89,7 +93,8 @@ import {Operator, ResultType} from './operator.model';
     }
     `],
     directives: [MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent, LayerComponent,
-                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid]
+                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
     private layerListVisible: boolean = true;
@@ -155,6 +160,21 @@ export class AppComponent {
     
     private get layersReverse() {
         return this.layers.slice(0).reverse();
+    }
+    
+    private selectedLayer: Layer;
+    private get hasSelectedLayer() {
+        return this.selectedLayer !== undefined;
+    }
+    
+    private getTabularData(): Array<{}> {
+        //console.log('called!', this.hasSelectedLayer, this.selectedLayer);
+        if(this.hasSelectedLayer) {
+            let layerIndex = this.layersReverse.indexOf(this.selectedLayer);
+            return this.mapComponent.getLayerData(layerIndex);
+        } else {
+           return [];
+        }
     }
     
     //        {

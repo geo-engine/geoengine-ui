@@ -1,4 +1,5 @@
-import {Component, Input, Output, EventEmitter} from 'angular2/core';
+import {Component, Input, Output, EventEmitter,
+        ChangeDetectionStrategy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 
 @Component({
@@ -23,7 +24,8 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
         border: 1px solid rgba(255, 255, 255, 0.87059);
     }
     `],
-    directives: [MATERIAL_DIRECTIVES]
+    directives: [MATERIAL_DIRECTIVES],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class InfoBarComponent {

@@ -11,7 +11,7 @@ import {Layer} from './layer.model';
         <md-list-item md-ink
             *ngFor="#item of layers; #index = index"
              (inked)="clickLayer(item)"
-             [class.md-active]="item === selected && hasSelected"
+             [class.md-active]="hasSelected && item === selected"
              (contextmenu)="replaceContextMenu($event, item)">
                 <button md-button class="md-icon-button" style="margin-left: -16px;"
                         aria-label="Settings"
@@ -34,7 +34,7 @@ import {Layer} from './layer.model';
                     {{item.name}}
                     <br>{{item.name}}
                 </div>
-            <md-divider [class.md-active]="item === selected && hasSelected"></md-divider>
+            <md-divider [class.md-active]="hasSelected && item === selected"></md-divider>
         </md-list-item>
     </md-list>
     `,
@@ -61,13 +61,12 @@ export class LayerComponent {
     private layers: Array<Layer>;    
     
     private selected: Layer;
-    private hasSelected: boolean = false;
+    private get hasSelected() {
+       return this.selected !== undefined;
+    }
     
     @Output('selected')
     private selectedEmitter: EventEmitter<Layer> = new EventEmitter();
-    
-    @Output('hasSelected')
-    private hasSelectedEmitter: EventEmitter<boolean> = new EventEmitter();
     
     constructor(private dragulaService: DragulaService) {
         dragulaService.setOptions('layer-bag', {
@@ -77,10 +76,8 @@ export class LayerComponent {
     }
     
     clickLayer(layer: any) {
-        this.hasSelected = true;
         this.selected = layer;
         
-        this.hasSelectedEmitter.emit(this.hasSelected);
         this.selectedEmitter.emit(this.selected);
     }
     

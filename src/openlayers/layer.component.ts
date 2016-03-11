@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from 'angular2/core';
-import {layer, source, format, style, loadingstrategy, tilegrid} from 'openlayers';
+import ol from 'openlayers';
 
 import {ResultType} from '../operator.model';
 
@@ -30,7 +30,7 @@ export class MapLayerComponent implements OnChanges {
     @Input()
     private style: any;
 
-    private _layer: layer.Layer;
+    private _layer: ol.layer.Layer;
 
     get layer() {
         return this._layer;
@@ -52,80 +52,63 @@ export class MapLayerComponent implements OnChanges {
         
         switch (this.layerType) {
             case ResultType.POINTS:
-                let vectorSource = new source.Vector({
-                    format: new format.GeoJSON(),
+                let vectorSource = new ol.source.Vector({
+                    format: new ol.format.GeoJSON(),
                     url: this.url + '?' + Object.keys(this.params).map(
                         key => key + '=' + this.params[key]
                     ).join('&'),
                     wrapX: false
                 });
 
-                this._layer = new layer.Vector({
+                this._layer = new ol.layer.Vector({
                     source: vectorSource,
-                    style: new style.Style({
-                        image: new style.Circle({
+                    style: new ol.style.Style({
+                        image: new ol.style.Circle({
                             radius: 5,
-                            fill: new style.Fill({ color: this.style.color }),
-                            stroke: new style.Stroke({ color: '#000000', width: 1 })
+                            fill: new ol.style.Fill({ color: this.style.color }),
+                            stroke: new ol.style.Stroke({ color: '#000000', width: 1 })
                         })
                     })
                 });
                 break;
 
             case ResultType.RASTER:
-                let wmsSource = new source.TileWMS({
+                let wmsSource = new ol.source.TileWMS({
                     url: this.url,
                     params: this.params,
                     wrapX: false
                 });
 
-                this._layer = new layer.Tile({
+                this._layer = new ol.layer.Tile({
                     source: wmsSource,
                     opacity: this.style.opacity
                 });
                 break;
         }
 
-        /*
-        console.log('changes', changes, this.url);
-        // TODO: proper **first** detection
-        if (changes['url'].isFirstChange()) {
-//            console.log("first", changes);
-            
-            switch(this.layerType) {
-                case ResultType.POINTS:
-                    let vectorSource = new source.Vector({
-                        format: new format.GeoJSON(),
-                        url: changes['url'].currentValue
-                    });
+    }
+    
+    getTabularData(): Array<{}> {
+        switch(this.layerType) {
+            case ResultType.POINTS:
+                let pointSource = <ol.source.Vector> this.layer.getSource();
+                
+                let data: Array<{}> = [];
+                for(let feature of pointSource.getFeatures()) {
+                    let featureProperties = <any>feature.getProperties();
+                    let geometryName: string = feature.getGeometryName();
+                    let geometry = featureProperties[geometryName];
+                    delete featureProperties[geometryName];
                     
-                    this._layer = new layer.Vector({
-                        source: vectorSource,
-                        style: new style.Style({
-                            stroke: new style.Stroke({
-                                color: this.style,
-                                width: 2
-                            })
-                        })
-                    });
-                    break;
+                    let coordinates = geometry.getCoordinates();
+                    featureProperties['x'] = coordinates[0];
+                    featureProperties['y'] = coordinates[1];
                     
-                case ResultType.RASTER:
-                    let wmsSource = new source.TileWMS({
-                        url: changes['url'].currentValue,
-                        params: this.params
-                    });
-                    
-                    this._layer = new layer.Tile({
-                        source: wmsSource
-                    });
-                    break;
-            }
-            
-        } else {
-//            console.log("another change", changes);
-            // TODO 
+                    data.push(featureProperties);
+                }
+                return data;
+            default:
+                return [];
         }
-        */
     }
 }

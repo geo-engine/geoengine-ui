@@ -118,14 +118,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked {
     }
     
     getLayerData(layerIndex: number): Array<{}> {
-        let layer = this.map.getLayers().getArray()[layerIndex + 1];
-
-        if (layer instanceof ol.layer.Vector) {
-            let data: Array<{}> = [];
-            let features = layer.getSource().getFeatures();
-        } else {
-            return [];
-        }
+        return this.layers.toArray()[layerIndex].getTabularData();
     }
 
 }
