@@ -1,6 +1,7 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
-        ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+        ChangeDetectionStrategy, OnInit} from 'angular2/core';
+import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
+import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
 
 import {InfoAreaComponent} from './info-area.component';
 import {TabComponent} from './tab.component';
@@ -9,6 +10,7 @@ import {LayerComponent} from './layer.component';
 import {AngularGrid} from './angular-grid';
 import {MapComponent} from './openlayers/map.component';
 import {MapLayerComponent} from './openlayers/layer.component';
+import {AddDataComponent} from './add-data.component';
 
 import {Layer} from './layer.model';
 import {Operator, ResultType} from './operator.model';
@@ -20,7 +22,7 @@ import {LayerService} from './services/layer.service';
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea">
-            <info-area-component (layerListVisible)="layerListVisible=$event">
+            <info-area-component (layerListVisible)="layerListVisible$.next($event)">
             </info-area-component>
         </div>
         <div flex="grow">
@@ -28,12 +30,14 @@ import {LayerService} from './services/layer.service';
                 [layerSelected]="hasSelectedLayer | async"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(layersReverse.indexOf(selectedLayer))"
-                (zoomMap)="mapComponent.zoomToMap()">
+                (zoomMap)="mapComponent.zoomToMap()"
+                (addData)="sidenavService.show('right')">
             </tab-component>
         </div>
     </div>
-    <div class="middleContainer md-whiteframe-5dp" [style.height.px]="middleContainerHeight" layout="row">
-        <div class="layers" *ngIf="layerListVisible">
+    <div class="middleContainer md-whiteframe-5dp"
+        [style.height.px]="middleContainerHeight$ | async" layout="row">
+        <div class="layers" *ngIf="layerListVisible$ | async">
             <layer-component [layers]="layers">
             </layer-component>
         </div>
@@ -47,15 +51,23 @@ import {LayerService} from './services/layer.service';
             </ol-map>
         </div>
     </div>
-    <div class="bottomContainer md-whiteframe-5dp" [style.height.px]="bottomContainerHeight">
+    <div class="bottomContainer md-whiteframe-5dp"
+        [style.height.px]="bottomContainerHeight$ | async">
         <md-toolbar class="infoBar">
-            <info-bar-component (tableOpen)="dataTableVisible=$event"></info-bar-component>
+            <info-bar-component (tableOpen)="dataTableVisible$.next($event)">
+            </info-bar-component>
         </md-toolbar>
-        <div class="dataTable" *ngIf="dataTableVisible">
+        <div class="dataTable" *ngIf="dataTableVisible$ | async">
             <angular-grid [height]="bottomContainerHeight - 40">
             </angular-grid>
         </div>
     </div>
+    <md-sidenav-container>
+        <md-sidenav name="right" align="right" layout="column"
+                style="over">
+            TEST
+        </md-sidenav>
+    </md-sidenav-container>
     `,
     styles: [`
     .topContainer {
@@ -67,6 +79,7 @@ import {LayerService} from './services/layer.service';
     }
     .infoArea {
         width: 200px;
+        min-width: 200px;
     }
     .middleContainer {
         position: absolute;
@@ -91,55 +104,65 @@ import {LayerService} from './services/layer.service';
     }
     `],
     directives: [MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent, LayerComponent,
-                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid],
-    //changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService]
+                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid,
+                 AddDataComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [LayerService, SidenavService]
 })
-export class AppComponent {
-    private _layerListVisible: boolean = true;
-    private _dataTableVisible: boolean = true;
-    
+export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
     private mapComponent: MapComponent;
 
-    private bottomContainerHeight: number = window.innerHeight / 3;
-    private middleContainerHeight: number;
+    private layerListVisible$ = new BehaviorSubject(true);
+    private dataTableVisible$ = new BehaviorSubject(true);
+    
+    private middleContainerHeight$: Observable<number>;
+    private bottomContainerHeight$: Observable<number>;
     
     constructor(private zone: NgZone,
-                private layerService: LayerService) {
-        window.onresize = () => {
-            this.changeSizes();
-        };
-        this.changeSizes();
-    }
+                private layerService: LayerService,
+                private sidenavService: SidenavService) {}
     
-    private changeSizes() {
-        this.zone.run(() => {
-            this.bottomContainerHeight = this.dataTableVisible ? window.innerHeight / 3 : 40;
-            this.middleContainerHeight = Math.max(window.innerHeight - this.bottomContainerHeight - 180, 0);
+    ngOnInit() {
+        let windowHeight$ = new BehaviorSubject(window.innerHeight);
+        Observable.fromEvent(window, 'resize')
+                  .map(_ => window.innerHeight)
+                  .subscribe(windowHeight$);
+        this.layerListVisible$.map(() => window.innerHeight)
+                              .subscribe(windowHeight$);
+        this.dataTableVisible$.map(() => window.innerHeight)
+                              .subscribe(windowHeight$);
+        
+        let remainingHeight$ = windowHeight$.map(height => height - 180)
+                                            .map(height => Math.max(height, 0));
+        
+        this.middleContainerHeight$ = remainingHeight$.map(height => {
+            if(this.dataTableVisible$.getValue()) {
+                return Math.ceil(3/5 * height);
+            } else {
+                return Math.max(height - 40, 0);
+            }
+        });
+        
+        this.bottomContainerHeight$ = remainingHeight$.map(height => {
+            if(this.dataTableVisible$.getValue()) {
+                return Math.floor(2/5 * height);
+            } else {
+                return 40;
+            }
         });
     }
-
-    private get layerListVisible() {
-        return this._layerListVisible;
+    
+    ngAfterViewInit() {
+        this.middleContainerHeight$.subscribe(() => {
+            this.mapComponent.resize();
+        });
+        
+        this.bottomContainerHeight$.subscribe(() => {
+            this.mapComponent.resize();
+        });
     }
     
-    private set layerListVisible(value: boolean) {
-        this._layerListVisible = value;
-        this.changeSizes();
-        this.mapComponent.resize();
-    }
-    
-    private get dataTableVisible() {
-        return this._dataTableVisible;
-    }
-    
-    private set dataTableVisible(value: boolean) {
-        this._dataTableVisible = value;
-        this.changeSizes();
-        this.mapComponent.resize();
-    }
-
     private layers: Array<Layer> = [
         new Layer(new Operator(
             'source',

@@ -16,12 +16,12 @@
 	               	<div layout="column">
 	                    <button md-button style="text-align: left; margin: 0px;"
 	                    		class="md-primary" [disabled]="!layerSelected">
-		                    <i md-icon>cancel</i>
-		                    ??
+		                    <i md-icon>merge_type</i>
+		                    Lineage
 	                    </button>
 	                    <button md-button style="text-align: left; margin: 0px;"
 	                    		class="md-primary" [disabled]="!layerSelected">
-		                    <i md-icon>backup</i>
+		                    <i md-icon>file_download</i>
 		                    Export
 	                    </button>
 	                    <button md-button style="text-align: left; margin: 0px;"
@@ -33,18 +33,18 @@
 					<div layout="column">
 	                    <button md-button style="text-align: left; margin: 0px;"
 	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>mode_edit</i>
+		                    Rename
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
+		                    <i md-icon>map</i>
+		                    Symbology
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary" [disabled]="!layerSelected">
 		                    <i md-icon>cancel</i>
-		                    ??
-	                    </button>
-	                    <button md-button style="text-align: left; margin: 0px;"
-	                    		class="md-primary" [disabled]="!layerSelected">
-		                    <i md-icon>backup</i>
-		                    Export
-	                    </button>
-	                    <button md-button style="text-align: left; margin: 0px;"
-	                    		class="md-primary" [disabled]="!layerSelected">
-		                    <i md-icon>share</i>
-		                    Share
+		                    Remove
 	                    </button>
 	                </div>
                 </div>
@@ -86,13 +86,34 @@
             </fieldset>
 
             <fieldset>
-                <legend>Add-Data</legend>
-                <div>
-                    <i md-icon>zoom_in</i>
-                </div>
-                <div>
-                    <i md-icon>zoom_out</i>
-                </div>
+                <legend>Add Data</legend>
+                <div layout="row">
+	                <div layout="column" layout-align="space-around center">
+	                	<button md-button style="margin: 0px; height: auto;"
+	                			class="md-primary" layout="column"
+                				(click)="addDataEmitter.emit()">
+	                		<i md-icon>storage</i>
+	                		<div>Repository</div>
+	                	</button>
+	               	</div>
+	               	<div layout="column">
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary">
+		                    <i md-icon>add_shopping_cart</i>
+		                    GFBio Search
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary">
+		                    <i md-icon>file_upload</i>
+		                    Upload
+	                    </button>
+	                    <button md-button style="text-align: left; margin: 0px;"
+	                    		class="md-primary">
+		                    <i md-icon>brush</i>
+		                    Draw
+	                    </button>
+					</div>
+				</div>
             </fieldset>
 
             <fieldset>

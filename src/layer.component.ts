@@ -8,7 +8,8 @@ import {LayerService} from './services/layer.service';
 
 @Component({
     selector: 'layer-component',
-    template: `<md-content flex>
+    template: `
+    <md-content flex>
     <md-list [dragula]="'layer-bag'" [dragulaModel]="layers">
         <md-list-item md-ink
             *ngFor="#item of layers; #index = index"
@@ -38,7 +39,8 @@ import {LayerService} from './services/layer.service';
                 </div>
             <md-divider [class.md-active]="hasSelected && item === selected"></md-divider>
         </md-list-item>
-    </md-list></md-content>
+    </md-list>
+    </md-content>
     `,
     styles: [`
     .md-active {
@@ -55,6 +57,9 @@ import {LayerService} from './services/layer.service';
     }
     md-list {
         height: 100%;
+    }
+    md-content {
+        overflow-x: hidden;
     }
     `],
     viewProviders: [DragulaService],

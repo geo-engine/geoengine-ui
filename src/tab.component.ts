@@ -49,6 +49,9 @@ export class TabComponent implements AfterViewInit {
     @Output('zoomMap')
     private zoomMapEmitter = new EventEmitter<void>();
     
+    @Output('addData')
+    private addDataEmitter = new EventEmitter<void>();
+    
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private ngZone: NgZone) {}
     
