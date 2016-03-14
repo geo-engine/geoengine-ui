@@ -4,6 +4,8 @@ import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import {Layer} from './layer.model';
 
+import {LayerService} from './services/layer.service';
+
 @Component({
     selector: 'layer-component',
     template: `
@@ -65,20 +67,22 @@ export class LayerComponent {
        return this.selected !== undefined;
     }
     
-    @Output('selected')
-    private selectedEmitter: EventEmitter<Layer> = new EventEmitter();
+//    @Output('selected')
+//    private selectedEmitter: EventEmitter<Layer> = new EventEmitter();
     
-    constructor(private dragulaService: DragulaService) {
+    constructor(private dragulaService: DragulaService,
+                private layerService: LayerService) {
         dragulaService.setOptions('layer-bag', {
             removeOnSpill: false,
             revertOnSpill: true
         });
     }
     
-    clickLayer(layer: any) {
+    clickLayer(layer: Layer) {
         this.selected = layer;
         
-        this.selectedEmitter.emit(this.selected);
+        this.layerService.setSelectedLayer(layer);
+//        this.selectedEmitter.emit(this.selected);
     }
     
     replaceContextMenu(event: MouseEvent, layer: Layer) {

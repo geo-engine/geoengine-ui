@@ -13,23 +13,25 @@ import {MapLayerComponent} from './openlayers/layer.component';
 import {Layer} from './layer.model';
 import {Operator, ResultType} from './operator.model';
 
+import {LayerService} from './services/layer.service';
+
 @Component({
     selector: 'wave-app',
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea"><info-area-component></info-area-component></div>
         <div flex="grow">
-            <tab-component [layerSelected]="hasSelectedLayer"
-                           (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
-                           (zoomLayer)="mapComponent.zoomToLayer(layersReverse.indexOf(selectedLayer))"
-                           (zoomMap)="mapComponent.zoomToMap()">
+            <tab-component
+                [layerSelected]="hasSelectedLayer | async"
+                (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
+                (zoomLayer)="mapComponent.zoomToLayer(layersReverse.indexOf(selectedLayer))"
+                (zoomMap)="mapComponent.zoomToMap()">
             </tab-component>
         </div>
     </div>
     <div class="middleContainer md-whiteframe-5dp" [style.height]="middleContainerHeight" layout="row">
         <div class="layers">
-            <layer-component [layers]="layers"
-                             (selected)="selectedLayer=$event">
+            <layer-component [layers]="layers">
             </layer-component>
         </div>
         <div flex="grow">
@@ -42,12 +44,12 @@ import {Operator, ResultType} from './operator.model';
             </ol-map>
         </div>
     </div>
-    <div class="bottomContainer md-whiteframe-5dp" [style.height]="bottomContainerHeight">
+    <div class="bottomContainer md-whiteframe-5dp" [style.height.px]="bottomContainerHeight">
         <md-toolbar class="infoBar">
             <info-bar-component (tableOpen)="dataTableVisible=$event"></info-bar-component>
         </md-toolbar>
         <div class="dataTable" *ngIf="dataTableVisible">
-            <angular-grid [data]="getTabularData()">
+            <angular-grid [height]="bottomContainerHeight - 40">
             </angular-grid>
         </div>
     </div>
@@ -84,17 +86,11 @@ import {Operator, ResultType} from './operator.model';
         min-height: 40px;
         height: 40px;
     }
-    .bottomContainer .dataTable {
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
-        top: 40px;
-    }
     `],
     directives: [MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent, LayerComponent,
                  MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    //changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [LayerService]
 })
 export class AppComponent {
     private layerListVisible: boolean = true;
@@ -123,7 +119,8 @@ export class AppComponent {
         });
     }
     
-    constructor(private zone: NgZone) {
+    constructor(private zone: NgZone,
+                private layerService: LayerService) {
         window.onresize = () => {
             this.changeSizes();
         };
@@ -162,64 +159,19 @@ export class AppComponent {
         return this.layers.slice(0).reverse();
     }
     
-    private selectedLayer: Layer;
+    //private selectedLayer: Layer;
     private get hasSelectedLayer() {
-        return this.selectedLayer !== undefined;
+        return this.layerService.getSelectedLayer().map(value => value !== undefined);
     }
     
-    private getTabularData(): Array<{}> {
-        //console.log('called!', this.hasSelectedLayer, this.selectedLayer);
-        if(this.hasSelectedLayer) {
-            let layerIndex = this.layersReverse.indexOf(this.selectedLayer);
-            return this.mapComponent.getLayerData(layerIndex);
-        } else {
-           return [];
-        }
-    }
-    
-    //        {
-//            'type': 'WFS',
-//            'url': (extent: Array<number>) => 'http://demo.opengeo.org/geoserver/wfs?service=WFS&version=2.0.0&' +
-//                'request=GetFeature&outputFormat=application/json&typeNames=states&' +
-//                'srsName=EPSG:3857' /*+ 
-//                         '&bbox=' + extent.join(',') + ',EPSG:3857'*/,
-//            'params': {},
-//            'style': 'rgba(0, 0, 255, 1.0)'
+//    private getTabularData(): Array<{}> {
+//        //console.log('called!', this.hasSelectedLayer, this.selectedLayer);
+//        if(this.hasSelectedLayer) {
+//            let layerIndex = this.layersReverse.indexOf(this.selectedLayer);
+//            return this.mapComponent.getLayerData(layerIndex);
+//        } else {
+//           return [];
 //        }
+//    }
     
-//    {
-//            'type': 'WMS',
-//            'url': 'http://demo.boundlessgeo.com/geoserver/wms?LAYERS=topp:states',
-//            'params': { 'LAYERS': 'topp:states' },
-//            'style': ''
-//        }
-
-//    private addLayer() {
-//        console.log("push!");
-//        this.layers.push({
-//            'type': 'WMS',
-//            'url': 'http://demo.boundlessgeo.com/geoserver/wms?LAYERS=topp:states',
-//            'params': { 'LAYERS': 'topp:states' },
-//            'style': ''
-//        });
-//    }
-//
-//    private swapLayers() {
-//        console.log("swap!");
-//        this.layers.reverse();
-//    }
-//
-//    expandLayer(event: MouseEvent, layer: DummyLayer) {
-//        event.stopPropagation();
-//        layer.expanded = !layer.expanded;
-//    }
-//
-//    expandData() {
-////        this.dataTableVisible = !this.dataTableVisible;
-//        //this.sizeMap();
-//        this.mapComponent.resize();
-//    }
-//
-
-
 }

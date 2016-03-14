@@ -1,6 +1,10 @@
 import {Operator, ResultType} from './operator.model';
 import Config from './config.model';
 
+interface Parameters {
+    [key: string]: any
+}
+
 export class Layer {
     private operator: Operator;
     expanded: boolean = false;
@@ -17,7 +21,7 @@ export class Layer {
         return Config.MAPPING_URL;
     }
     
-    get params(): {} {
+    get params(): Parameters {
         let time = '2010-06-06T18:00:00.000Z';
         
         switch(this.operator.resultType) {
@@ -42,7 +46,6 @@ export class Layer {
                 
                 return {
                     'pointquery': operator.toJSON(),
-                    'format': 'geojson',
                     'COLORS': 'hsv',
                     'CRS': 'EPSG:3857',
                     'TIME': time

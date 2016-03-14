@@ -56,7 +56,7 @@ export class MapLayerComponent implements OnChanges {
                     format: new ol.format.GeoJSON(),
                     url: this.url + '?' + Object.keys(this.params).map(
                         key => key + '=' + encodeURIComponent(this.params[key])
-                    ).join('&'),
+                    ).join('&') + '&format=geojson',
                     wrapX: false
                 });
 

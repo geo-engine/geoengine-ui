@@ -1,9 +1,8 @@
-import {View, Component, Input, ViewEncapsulation, Output, EventEmitter} from 'angular2/core';
+import {View, Component, Input, AfterViewInit, NgZone,
+        Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 @Component({
-    selector: 'tab-component'
-})
-@View({
+    selector: 'tab-component',
     templateUrl: 'templates/tab.html',
     styles:[`
     .selected {
@@ -27,10 +26,11 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES]
+    directives: [MATERIAL_DIRECTIVES],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class TabComponent {
+export class TabComponent implements AfterViewInit {
     @Input()
     private layerSelected: boolean;
     
@@ -49,4 +49,13 @@ export class TabComponent {
     @Output('zoomMap')
     private zoomMapEmitter = new EventEmitter<void>();
     
+    constructor(private changeDetectorRef: ChangeDetectorRef,
+                private ngZone: NgZone) {}
+    
+    ngAfterViewInit() {
+        // do this one time for ngMaterial
+        setTimeout(() => {
+            this.changeDetectorRef.markForCheck();
+        }, 0);
+    }
 }
