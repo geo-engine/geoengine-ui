@@ -36,7 +36,7 @@ export class AngularGrid implements AfterViewInit {
                 private changeDetectorRef: ChangeDetectorRef,
                 private layerService: LayerService) {
         this.layerService.getSelectedLayer().subscribe(layer => {
-            console.log("table", layer);
+//            console.log("table", layer);
             
             if(layer === undefined) {
                 this.data$.next([]);
@@ -44,7 +44,7 @@ export class AngularGrid implements AfterViewInit {
             }
             
             if(layer.resultType === ResultType.POINTS) {
-                console.log("POINTS");
+//                console.log("POINTS");
                 
                 this.http.get(
                     Config.MAPPING_URL + '?' + Object.keys(layer.params).map(

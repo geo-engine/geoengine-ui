@@ -8,7 +8,7 @@ import {LayerService} from './services/layer.service';
 
 @Component({
     selector: 'layer-component',
-    template: `
+    template: `<md-content flex>
     <md-list [dragula]="'layer-bag'" [dragulaModel]="layers">
         <md-list-item md-ink
             *ngFor="#item of layers; #index = index"
@@ -38,7 +38,7 @@ import {LayerService} from './services/layer.service';
                 </div>
             <md-divider [class.md-active]="hasSelected && item === selected"></md-divider>
         </md-list-item>
-    </md-list>
+    </md-list></md-content>
     `,
     styles: [`
     .md-active {
@@ -52,6 +52,9 @@ import {LayerService} from './services/layer.service';
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+    }
+    md-list {
+        height: 100%;
     }
     `],
     viewProviders: [DragulaService],
@@ -67,9 +70,6 @@ export class LayerComponent {
        return this.selected !== undefined;
     }
     
-//    @Output('selected')
-//    private selectedEmitter: EventEmitter<Layer> = new EventEmitter();
-    
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
         dragulaService.setOptions('layer-bag', {
@@ -82,7 +82,6 @@ export class LayerComponent {
         this.selected = layer;
         
         this.layerService.setSelectedLayer(layer);
-//        this.selectedEmitter.emit(this.selected);
     }
     
     replaceContextMenu(event: MouseEvent, layer: Layer) {

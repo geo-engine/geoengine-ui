@@ -19,7 +19,10 @@ import {LayerService} from './services/layer.service';
     selector: 'wave-app',
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
-        <div class="infoArea"><info-area-component></info-area-component></div>
+        <div class="infoArea">
+            <info-area-component (layerListVisible)="layerListVisible=$event">
+            </info-area-component>
+        </div>
         <div flex="grow">
             <tab-component
                 [layerSelected]="hasSelectedLayer | async"
@@ -29,8 +32,8 @@ import {LayerService} from './services/layer.service';
             </tab-component>
         </div>
     </div>
-    <div class="middleContainer md-whiteframe-5dp" [style.height]="middleContainerHeight" layout="row">
-        <div class="layers">
+    <div class="middleContainer md-whiteframe-5dp" [style.height.px]="middleContainerHeight" layout="row">
+        <div class="layers" *ngIf="layerListVisible">
             <layer-component [layers]="layers">
             </layer-component>
         </div>
@@ -93,8 +96,39 @@ import {LayerService} from './services/layer.service';
     providers: [LayerService]
 })
 export class AppComponent {
-    private layerListVisible: boolean = true;
+    private _layerListVisible: boolean = true;
     private _dataTableVisible: boolean = true;
+    
+    @ViewChild(MapComponent)
+    private mapComponent: MapComponent;
+
+    private bottomContainerHeight: number = window.innerHeight / 3;
+    private middleContainerHeight: number;
+    
+    constructor(private zone: NgZone,
+                private layerService: LayerService) {
+        window.onresize = () => {
+            this.changeSizes();
+        };
+        this.changeSizes();
+    }
+    
+    private changeSizes() {
+        this.zone.run(() => {
+            this.bottomContainerHeight = this.dataTableVisible ? window.innerHeight / 3 : 40;
+            this.middleContainerHeight = Math.max(window.innerHeight - this.bottomContainerHeight - 180, 0);
+        });
+    }
+
+    private get layerListVisible() {
+        return this._layerListVisible;
+    }
+    
+    private set layerListVisible(value: boolean) {
+        this._layerListVisible = value;
+        this.changeSizes();
+        this.mapComponent.resize();
+    }
     
     private get dataTableVisible() {
         return this._dataTableVisible;
@@ -105,36 +139,6 @@ export class AppComponent {
         this.changeSizes();
         this.mapComponent.resize();
     }
-
-    @ViewChild(MapComponent)
-    private mapComponent: MapComponent;
-
-    private bottomContainerHeight: number = window.innerHeight / 3;
-    private middleContainerHeight: number;
-    
-    private changeSizes() {
-        this.zone.run(() => {
-            this.bottomContainerHeight = this.dataTableVisible ? window.innerHeight / 3 : 40;
-            this.middleContainerHeight = Math.max(window.innerHeight - this.bottomContainerHeight - 180, 0);
-        });
-    }
-    
-    constructor(private zone: NgZone,
-                private layerService: LayerService) {
-        window.onresize = () => {
-            this.changeSizes();
-        };
-        this.changeSizes();
-    }
-
-//    clicked(message: string) {
-//        alert(message);
-//    }
-//
-//    layersClicked() {
-//        this.layerListVisible = !this.layerListVisible;
-//        this.mapComponent.resize();
-//    }
 
     private layers: Array<Layer> = [
         new Layer(new Operator(
@@ -159,19 +163,8 @@ export class AppComponent {
         return this.layers.slice(0).reverse();
     }
     
-    //private selectedLayer: Layer;
     private get hasSelectedLayer() {
         return this.layerService.getSelectedLayer().map(value => value !== undefined);
     }
-    
-//    private getTabularData(): Array<{}> {
-//        //console.log('called!', this.hasSelectedLayer, this.selectedLayer);
-//        if(this.hasSelectedLayer) {
-//            let layerIndex = this.layersReverse.indexOf(this.selectedLayer);
-//            return this.mapComponent.getLayerData(layerIndex);
-//        } else {
-//           return [];
-//        }
-//    }
     
 }
