@@ -55,7 +55,7 @@ export class MapLayerComponent implements OnChanges {
                 let vectorSource = new ol.source.Vector({
                     format: new ol.format.GeoJSON(),
                     url: this.url + '?' + Object.keys(this.params).map(
-                        key => key + '=' + this.params[key]
+                        key => key + '=' + encodeURIComponent(this.params[key])
                     ).join('&'),
                     wrapX: false
                 });
