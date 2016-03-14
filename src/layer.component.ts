@@ -10,7 +10,7 @@ import {Layer} from './layer.model';
     <md-list [dragula]="'layer-bag'" [dragulaModel]="layers">
         <md-list-item md-ink
             *ngFor="#item of layers; #index = index"
-             (inked)="clickLayer(item)"
+             (click)="clickLayer(item)"
              [class.md-active]="hasSelected && item === selected"
              (contextmenu)="replaceContextMenu($event, item)">
                 <button md-button class="md-icon-button" style="margin-left: -16px;"
