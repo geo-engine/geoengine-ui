@@ -12,12 +12,16 @@ import {MapLayerComponent} from './layer.component';
  */
 @Component({
     selector: 'ol-map',
-    template: `<div #mapContainer style="background: black;" [style.height]="_height"></div>
-               <ng-content></ng-content>`,
+    template: `
+    <div #mapContainer style="background: black;"
+         [style.height.px]="height">
+    </div>
+    <ng-content></ng-content>
+    `,
     styleUrls: [
         'node_modules/openlayers/css/ol.css'
     ],
-    changeDetection: ChangeDetectionStrategy.Detached
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapComponent implements AfterViewInit, AfterViewChecked {
 
@@ -32,7 +36,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked {
     */
 
     @Input('height')
-    private _height: number;
+    private height: number;
 
     @ContentChildren(MapLayerComponent)
     private layers: QueryList<MapLayerComponent>;

@@ -42,7 +42,7 @@ import {LayerService} from './services/layer.service';
             </layer-component>
         </div>
         <div flex="grow">
-            <ol-map [height]="mapHeight">
+            <ol-map [height]="middleContainerHeight$ | async">
                 <ol-layer *ngFor="#layer of layersReverse$ | async"
                           [type]="layer.resultType"
                           [url]="layer.url"
@@ -58,7 +58,7 @@ import {LayerService} from './services/layer.service';
             </info-bar-component>
         </md-toolbar>
         <div class="dataTable" *ngIf="dataTableVisible$ | async">
-            <angular-grid [height]="bottomContainerHeight - 40">
+            <angular-grid [height]="(bottomContainerHeight$ | async) - 40">
             </angular-grid>
         </div>
     </div>
