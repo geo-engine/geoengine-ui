@@ -52,6 +52,9 @@ export class TabComponent implements AfterViewInit {
     @Output('addData')
     private addDataEmitter = new EventEmitter<void>();
     
+    @Output('removeLayer')
+    private removeLayerEmitter = new EventEmitter<void>();
+    
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private ngZone: NgZone) {}
     

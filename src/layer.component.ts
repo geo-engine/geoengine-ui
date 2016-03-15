@@ -33,7 +33,7 @@ import {LayerService} from './services/layer.service';
                             style="margin-right: -16px;"
                             aria-label="More"
                             *ngIf="layer === (layerService.getSelectedLayer() | async)"
-                            (click)="clicked('A menu will appear in future versions')">
+                            (click)="replaceContextMenu($event, layer)">
                         <i md-icon>more_vert</i>
                     </button>
                 </div>

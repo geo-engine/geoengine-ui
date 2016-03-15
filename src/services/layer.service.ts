@@ -41,6 +41,10 @@ export class LayerService {
     }
     
     setLayers(layers: Array<Layer>) {
+        if(layers.indexOf(this.selectedLayer$.getValue()) === -1) {
+            this.setSelectedLayer(undefined);
+        }
+        
         this.layers$.next(layers);
     }
     
@@ -48,6 +52,16 @@ export class LayerService {
        let layers = this.layers$.getValue();
        layers.push(layer);
        this.setLayers(layers);
+    }
+    
+    removeLayer(layer: Layer) {
+        let layers = this.layers$.getValue();
+        let index = layers.indexOf(layer);
+        
+        if(index >= 0) {
+            layers.splice(index, 1);
+            this.setLayers(layers);
+        }
     }
     
     setSelectedLayer(layer: Layer) {

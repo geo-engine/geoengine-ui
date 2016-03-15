@@ -28,6 +28,7 @@ import {LayerService} from './services/layer.service';
         <div flex="grow">
             <tab-component
                 [layerSelected]="hasSelectedLayer$ | async"
+                (removeLayer)="layerService.removeLayer(layerService.getSelectedLayerOnce())"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"
