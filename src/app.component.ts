@@ -1,5 +1,6 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
         ChangeDetectionStrategy, OnInit} from 'angular2/core';
+import {COMMON_DIRECTIVES} from 'angular2/common';
 import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
 import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
 
@@ -9,7 +10,7 @@ import {InfoBarComponent} from './info-bar.component';
 import {LayerComponent} from './layer.component';
 import {AngularGrid} from './angular-grid';
 import {MapComponent} from './openlayers/map.component';
-import {MapLayerComponent} from './openlayers/layer.component';
+import {PointLayerComponent, RasterLayerComponent} from './openlayers/layer.component';
 import {AddDataComponent} from './add-data.component';
 
 import {Layer} from './layer.model';
@@ -44,11 +45,15 @@ import {LayerService} from './services/layer.service';
         </div>
         <div flex="grow">
             <ol-map [height]="middleContainerHeight$ | async">
-                <ol-layer *ngFor="#layer of layersReverse$ | async"
-                          [type]="layer.resultType"
-                          [url]="layer.url"
-                          [params]="layer.params"
-                          [style]="layer.style"></ol-layer>
+                <div *ngFor="#layer of layersReverse$ | async; #index = index"
+                     [ngSwitch]="layer.resultType">
+                    <ol-point-layer #olLayer *ngSwitchWhen="LAYER_IS_POINTS"
+                                    [params]="layer.params"
+                                    [style]="layer.style"></ol-point-layer>
+                    <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
+                                    [params]="layer.params"
+                                    [style]="layer.style"></ol-raster-layer>
+                </div>
             </ol-map>
         </div>
     </div>
@@ -104,9 +109,9 @@ import {LayerService} from './services/layer.service';
         height: 40px;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent, LayerComponent,
-                 MapComponent, MapLayerComponent, InfoBarComponent, AngularGrid,
-                 AddDataComponent],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
+                 LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent, 
+                 InfoBarComponent, AngularGrid, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, SidenavService]
 })
@@ -122,6 +127,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     
     private layersReverse$: Observable<Array<Layer>>;
     private hasSelectedLayer$: Observable<boolean>;
+    
+    // for ng-switch
+    private LAYER_IS_POINTS = ResultType.POINTS;
+    private LAYER_IS_RASTER = ResultType.RASTER;
     
     constructor(private zone: NgZone,
                 private layerService: LayerService,
@@ -177,6 +186,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         let layers = this.layerService.getLayersOnce();
         let selectedLayer = this.layerService.getSelectedLayerOnce();
         let index = layers.indexOf(selectedLayer);
-        return layers.length - index;
+        return layers.length - index - 1;
     }
 }

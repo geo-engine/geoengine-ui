@@ -1,6 +1,7 @@
 import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from 'angular2/core';
 import ol from 'openlayers';
 
+import Config from '../config.model';
 import {ResultType} from '../operator.model';
 
 /**
@@ -17,98 +18,109 @@ import {ResultType} from '../operator.model';
     template: '',
     changeDetection: ChangeDetectionStrategy.Detached
 })
-export class MapLayerComponent implements OnChanges {
-    @Input('type')
-    private layerType: ResultType;
+export abstract class MapLayerComponent implements OnChanges {
 
     @Input()
-    private url: string;
-    //    private url: (extent: Array<number>) => strin    
-    @Input()
-    private params: any;
+    protected params: any;
 
     @Input()
-    private style: any;
+    protected style: any;
 
-    private _layer: ol.layer.Layer;
-
-    get layer() {
-        return this._layer;
-    }
-
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        let isFirstChange = false;
+    abstract getLayer(): ol.layer.Layer;
+    
+    protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for(let property in changes) {
             if(changes[property].isFirstChange()) {
-                isFirstChange = true;
-                break;
+                return true;
             }
         }
-        
-        if(!isFirstChange) {
-            // TODO: react on changes
-            return;
-        }
-        
-        switch (this.layerType) {
-            case ResultType.POINTS:
-                let vectorSource = new ol.source.Vector({
-                    format: new ol.format.GeoJSON(),
-                    url: this.url + '?' + Object.keys(this.params).map(
-                        key => key + '=' + encodeURIComponent(this.params[key])
-                    ).join('&') + '&format=geojson',
-                    wrapX: false
-                });
+        return false;
+    }
 
-                this._layer = new ol.layer.Vector({
-                    source: vectorSource,
-                    style: new ol.style.Style({
-                        image: new ol.style.Circle({
-                            radius: 5,
-                            fill: new ol.style.Fill({ color: this.style.color }),
-                            stroke: new ol.style.Stroke({ color: '#000000', width: 1 })
-                        })
-                    })
-                });
-                break;
+    abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
+    
+    abstract getExtent(): number[];
+    
+}
 
-            case ResultType.RASTER:
-                let wmsSource = new ol.source.TileWMS({
-                    url: this.url,
-                    params: this.params,
-                    wrapX: false
-                });
-
-                this._layer = new ol.layer.Tile({
-                    source: wmsSource,
-                    opacity: this.style.opacity
-                });
-                break;
-        }
-
+@Component({
+    selector: 'ol-point-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Detached
+})
+export class PointLayerComponent extends MapLayerComponent {
+    protected source: ol.source.Vector;
+    protected layer: ol.layer.Vector;
+    
+    getLayer(): ol.layer.Vector {
+        return this.layer;
     }
     
-    getTabularData(): Array<{}> {
-        switch(this.layerType) {
-            case ResultType.POINTS:
-                let pointSource = <ol.source.Vector> this.layer.getSource();
-                
-                let data: Array<{}> = [];
-                for(let feature of pointSource.getFeatures()) {
-                    let featureProperties = <any>feature.getProperties();
-                    let geometryName: string = feature.getGeometryName();
-                    let geometry = featureProperties[geometryName];
-                    delete featureProperties[geometryName];
-                    
-                    let coordinates = geometry.getCoordinates();
-                    featureProperties['x'] = coordinates[0];
-                    featureProperties['y'] = coordinates[1];
-                    
-                    data.push(featureProperties);
-                }
-                return data;
-            default:
-                return [];
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
+        if(!this.isFirstChange(changes)) {
+            return; // TODO: react on changes
         }
+        
+//        console.log('point layer');
+        
+        this.source = new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: Config.MAPPING_URL + '?' + Object.keys(this.params).map(
+                key => key + '=' + encodeURIComponent(this.params[key])
+            ).join('&') + '&format=geojson',
+            wrapX: false
+        });
+
+        this.layer = new ol.layer.Vector({
+            source: this.source,
+            style: new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 5,
+                    fill: new ol.style.Fill({ color: this.style.color }),
+                    stroke: new ol.style.Stroke({ color: '#000000', width: 1 })
+                })
+            })
+        });
+    }
+    
+    getExtent() {
+        return this.source.getExtent();
+    }
+}
+
+@Component({
+    selector: 'ol-raster-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Detached
+})
+export class RasterLayerComponent extends MapLayerComponent {
+    protected source: ol.source.TileWMS;
+    protected layer: ol.layer.Tile;
+    
+    getLayer(): ol.layer.Tile {
+        return this.layer;
+    }
+    
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
+        if(!this.isFirstChange(changes)) {
+            return; // TODO: react on changes
+        }
+        
+//        console.log('raster layer');
+        
+        this.source = new ol.source.TileWMS({
+            url: Config.MAPPING_URL,
+            params: this.params,
+            wrapX: false
+        });
+
+        this.layer = new ol.layer.Tile({
+            source: this.source,
+            opacity: this.style.opacity
+        });
+    }
+    
+    getExtent() {
+        return this.layer.getExtent();
     }
 }

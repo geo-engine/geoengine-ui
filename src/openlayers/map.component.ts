@@ -3,7 +3,7 @@ import {Component, ViewChild, ElementRef, Input,
     ContentChildren, QueryList, AfterViewChecked,
     ChangeDetectionStrategy} from 'angular2/core';
 import ol from 'openlayers';
-import {MapLayerComponent} from './layer.component';
+import {MapLayerComponent, PointLayerComponent, RasterLayerComponent} from './layer.component';
 
 
 /**
@@ -19,7 +19,7 @@ import {MapLayerComponent} from './layer.component';
     <ng-content></ng-content>
     `,
     styleUrls: [
-        'node_modules/openlayers/css/ol.css'
+//        'node_modules/openlayers/css/ol.css'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -38,7 +38,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked {
     @Input('height')
     private height: number;
 
-    @ContentChildren(MapLayerComponent)
+    @ContentChildren('olLayer')
     private layers: QueryList<MapLayerComponent>;
 
     private isSizeChanged = false;
@@ -68,20 +68,21 @@ export class MapComponent implements AfterViewInit, AfterViewChecked {
             logo: false
         });
 
+        // this.layers.forEach(layer => console.log('added', layer));
+        
         // initialize layers
         this.layers.forEach(
-            (layerComponent: MapLayerComponent) => this.map.addLayer(layerComponent.layer)
+            (layerComponent: MapLayerComponent) => this.map.addLayer(layerComponent.getLayer())
         );
 
         this.layers.changes.subscribe(_ => {
             // react on changes by removing all layers and inserting them
             // in the correct order.
 
-            //            console.log("a c            
             this.map.getLayers().clear();
             this.map.getLayers().push(backgroundLayer);
             this.layers.forEach(
-                (layerComponent: MapLayerComponent) => this.map.getLayers().push(layerComponent.layer)
+                (layerComponent: MapLayerComponent) => this.map.getLayers().push(layerComponent.getLayer())
             );
         });
     }
@@ -104,25 +105,24 @@ export class MapComponent implements AfterViewInit, AfterViewChecked {
     }
 
     zoomToMap() {
+//        console.log('zoomToMap');
         let extent = this.map.getView().getProjection().getExtent();
         this.map.getView().fit(extent, this.map.getSize());
     }
 
     zoomToLayer(layerIndex: number) {
-        let layer = this.map.getLayers().getArray()[layerIndex + 1];
-
-        if (layer instanceof ol.layer.Vector) {
+        let layer = this.layers.toArray()[layerIndex];
+        
+        let extent = layer.getExtent();
+        
+        if(extent === undefined) {
+            this.zoomToMap();
+        } else {
             this.map.getView().fit(
-                layer.getSource().getExtent(),
+                extent,
                 this.map.getSize()
             );
-        } else {
-            this.zoomToMap();
         }
     }
     
-    getLayerData(layerIndex: number): Array<{}> {
-        return this.layers.toArray()[layerIndex].getTabularData();
-    }
-
 }
