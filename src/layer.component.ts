@@ -11,32 +11,37 @@ import {LayerService} from './services/layer.service';
     template: `
     <md-content flex>
     <md-list [dragula]="'layer-bag'">
-        <md-list-item md-ink
-            *ngFor="#layer of layerService.getLayers() | async; #index = index"
-             (click)="layerService.setSelectedLayer(layer)"
-             [class.md-active]="layer === (layerService.getSelectedLayer() | async)"
-             (contextmenu)="replaceContextMenu($event, layer)">
-                <button md-button class="md-icon-button" style="margin-left: -16px;"
-                        aria-label="Settings"
-                        (click)="expandLayer($event, layer)">
-                    <i *ngIf="!layer.expanded" md-icon>expand_more</i>
-                    <i *ngIf="layer.expanded" md-icon>expand_less</i>
-                </button>
-
-                <div class="md-list-item-text">
-                    {{layer.name}}
+        <md-list-item *ngFor="#layer of layerService.getLayers() | async; #index = index"
+                      md-ink (click)="layerService.setSelectedLayer(layer)"
+                      [class.md-active]="layer === (layerService.getSelectedLayer() | async)"
+                      (contextmenu)="replaceContextMenu($event, layer)">
+            <div layout="column">
+                <div layout="row">
+                    <button md-button class="md-icon-button"
+                            style="margin-left: -16px;"
+                            aria-label="Settings"
+                            (click)="layer.expanded=!layer.expanded">
+                        <i *ngIf="!layer.expanded" md-icon>expand_more</i>
+                        <i *ngIf="layer.expanded" md-icon>expand_less</i>
+                    </button>
+    
+                    <div class="md-list-item-text" style="padding-top: 10px">
+                        {{layer.name}}
+                    </div>
+    
+                    <button md-button class="md-icon-button"
+                            style="margin-right: -16px;"
+                            aria-label="More"
+                            *ngIf="layer === (layerService.getSelectedLayer() | async)"
+                            (click)="clicked('A menu will appear in future versions')">
+                        <i md-icon>more_vert</i>
+                    </button>
                 </div>
-
-                <button md-button class="md-icon-button"  style="margin-right: -16px;"
-                        aria-label="More"
-                        (click)="clicked('A menu will appear in future versions')">
-                    <i md-icon>more_vert</i>
-                </button>
-                
                 <div *ngIf="layer.expanded">
                     {{layer.name}}
                     <br>{{layer.name}}
                 </div>
+            </div>
             <md-divider
                 [class.md-active]="layer === (layerService.getSelectedLayer() | async)">
             </md-divider>
@@ -70,8 +75,6 @@ import {LayerService} from './services/layer.service';
 })
 
 export class LayerComponent {
-//    @Input()
-//    private layers: Array<Layer>;    
     
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
