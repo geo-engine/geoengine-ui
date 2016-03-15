@@ -10,9 +10,9 @@ import {LayerService} from './services/layer.service';
     selector: 'layer-component',
     template: `
     <md-content flex>
-    <md-list [dragula]="'layer-bag'" [dragulaModel]="layers">
+    <md-list [dragula]="'layer-bag'">
         <md-list-item md-ink
-            *ngFor="#layer of layers; #index = index"
+            *ngFor="#layer of layerService.getLayers() | async; #index = index"
              (click)="layerService.setSelectedLayer(layer)"
              [class.md-active]="layer === (layerService.getSelectedLayer() | async)"
              (contextmenu)="replaceContextMenu($event, layer)">
@@ -70,8 +70,8 @@ import {LayerService} from './services/layer.service';
 })
 
 export class LayerComponent {
-    @Input()
-    private layers: Array<Layer>;    
+//    @Input()
+//    private layers: Array<Layer>;    
     
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
@@ -79,6 +79,32 @@ export class LayerComponent {
             removeOnSpill: false,
             revertOnSpill: true
         });
+        
+        this.handleDragAndDrop();
+    }
+    
+    handleDragAndDrop() {
+        let dragIndex: number;
+        let dropIndex: number;
+        
+        this.dragulaService.drag.subscribe((value: any) => {
+            let [_, listItem, list] = value;
+            dragIndex = this.domIndexOf(listItem, list);
+//            console.log('drag', dragIndex);
+        });
+        this.dragulaService.drop.subscribe((value: any) => {
+            let [_, listItem, list] = value;
+            dropIndex = this.domIndexOf(listItem, list);
+//            console.log('drop', dropIndex);
+            
+            let layers = this.layerService.getLayers().getValue();
+            layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
+            this.layerService.setLayers(layers);
+        });
+    }
+    
+    private domIndexOf(child: any, parent: any) {
+        return Array.prototype.indexOf.call(parent.children, child);
     }
     
     replaceContextMenu(event: MouseEvent, layer: Layer) {

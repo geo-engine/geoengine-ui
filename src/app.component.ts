@@ -27,9 +27,9 @@ import {LayerService} from './services/layer.service';
         </div>
         <div flex="grow">
             <tab-component
-                [layerSelected]="hasSelectedLayer | async"
+                [layerSelected]="hasSelectedLayer$ | async"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
-                (zoomLayer)="mapComponent.zoomToLayer(layersReverse.indexOf(selectedLayer))"
+                (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"
                 (addData)="sidenavService.show('right')">
             </tab-component>
@@ -43,7 +43,7 @@ import {LayerService} from './services/layer.service';
         </div>
         <div flex="grow">
             <ol-map [height]="mapHeight">
-                <ol-layer *ngFor="#layer of layersReverse"
+                <ol-layer *ngFor="#layer of layersReverse$ | async"
                           [type]="layer.resultType"
                           [url]="layer.url"
                           [params]="layer.params"
@@ -119,9 +119,18 @@ export class AppComponent implements OnInit, AfterViewInit {
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
     
+    private layersReverse$: Observable<Array<Layer>>;
+    private hasSelectedLayer$: Observable<boolean>;
+    
     constructor(private zone: NgZone,
                 private layerService: LayerService,
-                private sidenavService: SidenavService) {}
+                private sidenavService: SidenavService) {
+        this.layersReverse$ = layerService.getLayers()
+                                         .map(layers => layers.slice(0).reverse());
+        
+        this.hasSelectedLayer$ = layerService.getSelectedLayer()
+                                             .map(value => value !== undefined);
+    }
     
     ngOnInit() {
         let windowHeight$ = new BehaviorSubject(window.innerHeight);
@@ -163,31 +172,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
     
-    private layers: Array<Layer> = [
-        new Layer(new Operator(
-            'source',
-            ResultType.RASTER, 
-            new Map<string, string | number>().set('channel', 0).set('sourcename', 'srtm'),
-            'EPSG:4326',
-            'SRTM'
-        )),
-        new Layer(new Operator(
-            'gfbiopointsource',
-            ResultType.POINTS,
-            new Map<string, string | number>()
-                .set('datasource', 'GBIF')
-                .set('query', '{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}'),
-            'EPSG:4326',
-            'Puma Concolor'
-        ))
-    ];
-    
-    private get layersReverse() {
-        return this.layers.slice(0).reverse();
+    getMapIndexOfSelectedLayer() {
+        let layers = this.layerService.getLayersOnce();
+        let selectedLayer = this.layerService.getSelectedLayerOnce();
+        let index = layers.indexOf(selectedLayer);
+        return layers.length - index;
     }
-    
-    private get hasSelectedLayer() {
-        return this.layerService.getSelectedLayer().map(value => value !== undefined);
-    }
-    
 }
