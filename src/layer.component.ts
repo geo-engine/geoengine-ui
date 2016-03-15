@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from 'angular2/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
@@ -12,19 +12,19 @@ import {LayerService} from './services/layer.service';
     <md-content flex>
     <md-list [dragula]="'layer-bag'" [dragulaModel]="layers">
         <md-list-item md-ink
-            *ngFor="#item of layers; #index = index"
-             (click)="clickLayer(item)"
-             [class.md-active]="hasSelected && item === selected"
-             (contextmenu)="replaceContextMenu($event, item)">
+            *ngFor="#layer of layers; #index = index"
+             (click)="layerService.setSelectedLayer(layer)"
+             [class.md-active]="layer === (layerService.getSelectedLayer() | async)"
+             (contextmenu)="replaceContextMenu($event, layer)">
                 <button md-button class="md-icon-button" style="margin-left: -16px;"
                         aria-label="Settings"
-                        (click)="expandLayer($event, item)">
-                    <i *ngIf="!item.expanded" md-icon>expand_more</i>
-                    <i *ngIf="item.expanded" md-icon>expand_less</i>
+                        (click)="expandLayer($event, layer)">
+                    <i *ngIf="!layer.expanded" md-icon>expand_more</i>
+                    <i *ngIf="layer.expanded" md-icon>expand_less</i>
                 </button>
 
                 <div class="md-list-item-text">
-                    {{item.name}}
+                    {{layer.name}}
                 </div>
 
                 <button md-button class="md-icon-button"  style="margin-right: -16px;"
@@ -33,11 +33,13 @@ import {LayerService} from './services/layer.service';
                     <i md-icon>more_vert</i>
                 </button>
                 
-                <div *ngIf="item.expanded">
-                    {{item.name}}
-                    <br>{{item.name}}
+                <div *ngIf="layer.expanded">
+                    {{layer.name}}
+                    <br>{{layer.name}}
                 </div>
-            <md-divider [class.md-active]="hasSelected && item === selected"></md-divider>
+            <md-divider
+                [class.md-active]="layer === (layerService.getSelectedLayer() | async)">
+            </md-divider>
         </md-list-item>
     </md-list>
     </md-content>
@@ -63,6 +65,7 @@ import {LayerService} from './services/layer.service';
     }
     `],
     viewProviders: [DragulaService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     directives: [MATERIAL_DIRECTIVES, Dragula]
 })
 
@@ -70,23 +73,12 @@ export class LayerComponent {
     @Input()
     private layers: Array<Layer>;    
     
-    private selected: Layer;
-    private get hasSelected() {
-       return this.selected !== undefined;
-    }
-    
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
         dragulaService.setOptions('layer-bag', {
             removeOnSpill: false,
             revertOnSpill: true
         });
-    }
-    
-    clickLayer(layer: Layer) {
-        this.selected = layer;
-        
-        this.layerService.setSelectedLayer(layer);
     }
     
     replaceContextMenu(event: MouseEvent, layer: Layer) {
