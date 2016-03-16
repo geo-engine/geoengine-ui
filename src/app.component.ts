@@ -72,7 +72,7 @@ import {LayerService} from './services/layer.service';
     <md-sidenav-container>
         <md-sidenav name="right" align="right" layout="column"
                 style="over">
-            <add-data-component></add-data-component>
+            <add-data-component style="height:100%"></add-data-component>
         </md-sidenav>
     </md-sidenav-container>
     `,

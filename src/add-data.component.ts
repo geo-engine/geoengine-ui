@@ -11,25 +11,28 @@ import {MappingDataSourceFilter} from './pipes/mapping-data-sources.pipe';
 @Component({
     selector: 'add-data-component',
     template: `
-
-    <md-input-container class="md-block" flex-gt-sm>
+    <div style="height:100%" layout="column">
+    <md-input-container class="md-block" style="margin-bottom: 0px; padding-bottom: 0px;">
       <label>Search term</label>
       <input md-input [(value)]="search_term">
     </md-input-container>
 
-    <md-list>
-    <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
-      <md-subheader class="md-primary">{{source.name}}</md-subheader>
-      <md-list-item class="md-2-line" *ngFor="#channel of source.channels" (click)="add(source, channel)">
-        <img src="http://placehold.it/100x100" alt="placeholder"/>
-        <div class="md-list-item-text" layout="column">
-          <p>{{channel.name}}</p>
-          <p>{{channel.datatype}}</p>
-        </div>
-      </md-list-item>
-      <md-divider></md-divider>
-      </template>
-    </md-list>
+    <md-content flex="grow">
+      <md-list>
+      <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
+        <md-subheader class="md-primary">{{source.name}}</md-subheader>
+        <md-list-item class="md-2-line" *ngFor="#channel of source.channels" (click)="add(source, channel)">
+          <img src="http://placehold.it/100x100" alt="placeholder"/>
+          <div class="md-list-item-text" layout="column">
+            <p>{{channel.name}}</p>
+            <p>{{channel.datatype}}</p>
+          </div>
+        </md-list-item>
+        <md-divider></md-divider>
+        </template>
+      </md-list>
+    </md-content>
+    </div>
     `,
     styles: [``],
     providers: [MappingDataSourcesService],
