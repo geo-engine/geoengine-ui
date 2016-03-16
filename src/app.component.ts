@@ -2,6 +2,7 @@ import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
         ChangeDetectionStrategy, OnInit} from 'angular2/core';
 import {COMMON_DIRECTIVES} from 'angular2/common';
 import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
+import {HTTP_PROVIDERS} from 'angular2/http';
 import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
 
 import {InfoAreaComponent} from './info-area.component';
@@ -71,7 +72,7 @@ import {LayerService} from './services/layer.service';
     <md-sidenav-container>
         <md-sidenav name="right" align="right" layout="column"
                 style="over">
-            TEST
+            <add-data-component></add-data-component>
         </md-sidenav>
     </md-sidenav-container>
     `,
@@ -110,10 +111,10 @@ import {LayerService} from './services/layer.service';
     }
     `],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
-                 LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent, 
+                 LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, AngularGrid, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, SidenavService]
+    providers: [LayerService, SidenavService, HTTP_PROVIDERS]
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
@@ -121,27 +122,27 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private layerListVisible$ = new BehaviorSubject(true);
     private dataTableVisible$ = new BehaviorSubject(true);
-    
+
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
-    
+
     private layersReverse$: Observable<Array<Layer>>;
     private hasSelectedLayer$: Observable<boolean>;
-    
+
     // for ng-switch
     private LAYER_IS_POINTS = ResultType.POINTS;
     private LAYER_IS_RASTER = ResultType.RASTER;
-    
+
     constructor(private zone: NgZone,
                 private layerService: LayerService,
                 private sidenavService: SidenavService) {
         this.layersReverse$ = layerService.getLayers()
                                          .map(layers => layers.slice(0).reverse());
-        
+
         this.hasSelectedLayer$ = layerService.getSelectedLayer()
                                              .map(value => value !== undefined);
     }
-    
+
     ngOnInit() {
         let windowHeight$ = new BehaviorSubject(window.innerHeight);
         Observable.fromEvent(window, 'resize')
@@ -151,10 +152,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                               .subscribe(windowHeight$);
         this.dataTableVisible$.map(() => window.innerHeight)
                               .subscribe(windowHeight$);
-        
+
         let remainingHeight$ = windowHeight$.map(height => height - 180)
                                             .map(height => Math.max(height, 0));
-        
+
         this.middleContainerHeight$ = remainingHeight$.map(height => {
             if(this.dataTableVisible$.getValue()) {
                 return Math.ceil(3/5 * height);
@@ -162,7 +163,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 return Math.max(height - 40, 0);
             }
         });
-        
+
         this.bottomContainerHeight$ = remainingHeight$.map(height => {
             if(this.dataTableVisible$.getValue()) {
                 return Math.floor(2/5 * height);
@@ -171,17 +172,17 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         });
     }
-    
+
     ngAfterViewInit() {
         this.middleContainerHeight$.subscribe(() => {
             this.mapComponent.resize();
         });
-        
+
         this.bottomContainerHeight$.subscribe(() => {
             this.mapComponent.resize();
         });
     }
-    
+
     getMapIndexOfSelectedLayer() {
         let layers = this.layerService.getLayersOnce();
         let selectedLayer = this.layerService.getSelectedLayerOnce();

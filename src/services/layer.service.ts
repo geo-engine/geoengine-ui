@@ -9,7 +9,7 @@ import {Operator, ResultType} from '../operator.model';
 export class LayerService {
     private layers$: BehaviorSubject<Array<Layer>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer> = new BehaviorSubject(undefined);
-    
+
     constructor() {
         this.layers$.next([
             new Layer(new Operator(
@@ -31,47 +31,46 @@ export class LayerService {
             ))
         ]);
     }
-    
+
     getLayers() {
         return this.layers$;
     }
-    
+
     getLayersOnce() {
         return this.layers$.getValue();
     }
-    
+
     setLayers(layers: Array<Layer>) {
         if(layers.indexOf(this.selectedLayer$.getValue()) === -1) {
             this.setSelectedLayer(undefined);
         }
-        
+
         this.layers$.next(layers);
     }
-    
+
     addLayer(layer: Layer) {
        let layers = this.layers$.getValue();
-       layers.push(layer);
-       this.setLayers(layers);
+       this.setLayers([layer, ...layers]);
     }
-    
+
     removeLayer(layer: Layer) {
         let layers = this.layers$.getValue();
         let index = layers.indexOf(layer);
-        
+
         if(index >= 0) {
             layers.splice(index, 1);
             this.setLayers(layers);
         }
     }
-    
+
     setSelectedLayer(layer: Layer) {
         this.selectedLayer$.next(layer);
     }
-    
+
     getSelectedLayer() {
         return this.selectedLayer$.asObservable();
     }
-    
+
     getSelectedLayerOnce() {
         return this.selectedLayer$.getValue();
     }

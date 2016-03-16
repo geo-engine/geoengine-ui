@@ -23,7 +23,7 @@ interface Column {
             [style.height.px]="height">
         </vaadin-grid>
     `,
-    providers: [HTTP_PROVIDERS],
+    providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AngularGrid implements OnInit {
@@ -32,14 +32,14 @@ export class AngularGrid implements OnInit {
 
     private data: Array<{}> = [];
     private columns: Array<Column> = [];
-    
+
     private data$: Observable<Array<{}>>;
     private columns$: Observable<Array<Column>>;
 
     constructor(private http: Http,
                 private changeDetectorRef: ChangeDetectorRef,
                 private layerService: LayerService) {
-        
+
         this.data$ = this.layerService.getSelectedLayer()
                                       .map(layer => {
 //            console.log("data", layer);
@@ -54,7 +54,7 @@ export class AngularGrid implements OnInit {
                             ).join('&') + '&format=csv'
                         ).map(data => {
 //                            console.log("data", data);
-                            
+
                             let lines = data.text().split('\n');
                             let columns = lines[0].split(',')
                                 .map(name => ({ name }));
@@ -77,7 +77,7 @@ export class AngularGrid implements OnInit {
                 }
             }
         }).concatAll();
-        
+
         this.columns$ = this.data$.map((items: Array<{}>) => {
 //            console.log("column", items);
             if (items.length > 0) {
@@ -87,20 +87,20 @@ export class AngularGrid implements OnInit {
                 return [];
             }
         });
-        
+
     }
-    
+
     ngOnInit() {
         this.data$.subscribe((items: Array<{}>) => {
             this.data = items;
-            
+
             if (items.length > 0) {
                 this.columns = Object.keys(items[0])
                                      .map((key: string) => ({ name: key }));
             } else {
                 this.columns = [];
             }
-            
+
             this.changeDetectorRef.markForCheck();
         });
     }

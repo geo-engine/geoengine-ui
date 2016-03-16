@@ -1,0 +1,830 @@
+{
+	"sourcelist": {
+		"isric_wise": {
+			"name": "ISRIC-WISE",
+			"channels": [{
+				"name": "bsat",
+				"datatype": "Float64",
+				"max": 100,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "bulk",
+				"datatype": "Float64",
+				"max": 2,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "cecc",
+				"datatype": "Float64",
+				"max": 115,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "cecs",
+				"datatype": "Float64",
+				"max": 103,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "cfrag",
+				"datatype": "Float64",
+				"max": 37,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "clpc",
+				"datatype": "Float64",
+				"max": 54,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "cnrt",
+				"datatype": "Float64",
+				"max": 29,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "ecec",
+				"datatype": "Float64",
+				"max": 51,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "elco",
+				"datatype": "Float64",
+				"max": 32,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "gyps",
+				"datatype": "Float64",
+				"max": 200,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "phaq",
+				"datatype": "Float64",
+				"max": 9,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "prop",
+				"datatype": "Float64",
+				"max": 100,
+				"min": 24,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "sdto",
+				"datatype": "Float64",
+				"max": 98,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "tawc",
+				"datatype": "Float64",
+				"max": 38,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "tceq",
+				"datatype": "Float64",
+				"max": 212,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "totc",
+				"datatype": "Float64",
+				"max": 408,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "totn",
+				"datatype": "Float64",
+				"max": 26,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}, {
+				"name": "stpc",
+				"datatype": "Float64",
+				"max": 51,
+				"min": -7,
+				"nodata": -1.7976931348623e+308
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-179.99999999952, 83.583332774984],
+				"scale": [0.083333333, -0.083333333],
+				"size": [4319, 1675]
+			}
+		},
+		"worldclim": {
+			"name": "WorldClim",
+			"channels": [{
+				"name": "Min Temp",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1000,
+				"min": -1000,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Max Temp",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1000,
+				"min": -1000,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Avg Temp",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1000,
+				"min": -1000,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Precipitation",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Altitude",
+				"colorizer": "height",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 1 (annual mean temperature)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 2 (mean diurnal range)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 3 (isothermality)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 4 (temp seasonality)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 5 (max temp of warmest month)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 6 (min temp of coldest month)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 7 (temp annual range)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 8 (mean temp of wettest quarter)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 9 (mean temp of dryest quarter)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 10 (mean temp of warmest quarter)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 11 (mean temp of coldest quarter)",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Bio 12 (annual precipitation)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 13 (prec of wettest month)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 14 (prec of driest month)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 15 (prec seasonality)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 16 (prec of wettest quarter)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 17 (prec of driest quarter)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 18 (prec of warmest quarter)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Bio 19 (prec of coldest quarter)",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-180, 90],
+				"scale": [0.0083333333333333, -0.0083333333333333],
+				"size": [43200, 18000]
+			}
+		},
+		"msg9_geos": {
+			"name": "Meteosat 2nd Generation",
+			"colorizer": "grey",
+			"channels": [{
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "VIS 0.6",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "VIS 0.8",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "NIR 1.6",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 3.9",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "WV 6.2",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "WV 7.3",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 8.7",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 9.7",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 10.8",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 12.0",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}, {
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "IR 13.4",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}],
+			"coords": {
+				"epsg": 40453,
+				"origin": [-5570248.4773393, 5570248.4773393],
+				"scale": [3000.4031658173, -3000.4031658173],
+				"size": [3712, 3712]
+			}
+		},
+		"srtm": {
+			"name": "SRTM elevation model",
+			"colorizer": "height",
+			"channels": [{
+				"name": "Elevation",
+				"datatype": "Int16",
+				"nodata": -32768,
+				"unit": {
+					"measurement": "elevation",
+					"unit": "m"
+				}
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-180, 60],
+				"scale": [0.00083333333333334, -0.00083333333333334],
+				"size": [432000, 144000]
+			}
+		},
+		"glc2000_global": {
+			"name": "Global Land Cover Map for the Year 2000",
+			"colorizer": "glc",
+			"channels": [{
+				"datatype": "Byte",
+				"nodata": 0,
+				"unit": {
+					"measurement": "land usage",
+					"unit": "classification",
+					"classes": {
+						"1": "Tree Cover, broadleaved, evergreen",
+						"2": "Tree Cover, broadleaved, deciduous, closed",
+						"3": "Tree Cover, broadleaved, deciduous, open",
+						"4": "Tree Cover, needle-leaved, evergreen",
+						"5": "Tree Cover, needle-leaved, deciduous",
+						"6": "Tree Cover, mixed leaf type",
+						"7": "Tree Cover, regularly flooded, fresh water",
+						"8": "Tree Cover, regularly flooded, saline water",
+						"9": "Mosaic: Tree Cover \/ Other natural vegetation",
+						"10": "Tree Cover, burnt",
+						"11": "Shrub Cover, closed-open, evergreen",
+						"12": "Shrub Cover, closed-open, deciduous",
+						"13": "Herbaceous Cover, closed-open",
+						"14": "Sparse Herbaceous or sparse Shrub Cover",
+						"15": "Regularly flooded Shrub and\/or Herbaceous Cover",
+						"16": "Cultivated and managed areas",
+						"17": "Mosaic: Cropland \/ Tree Cover \/ Other natural vegetation",
+						"18": "Mosaic: Cropland \/ Shrub or Grass Cover",
+						"19": "Bare Areas",
+						"20": "Water Bodies",
+						"21": "Snow and Ice",
+						"22": "Artificial surfaced and associated areas"
+					}
+				}
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-180, 90],
+				"scale": [0.0089285714, -0.0089285714],
+				"size": [40320, 16353]
+			}
+		},
+		"cruts": {
+			"name": "CRU Time Series",
+			"colorizer": "grey",
+			"channels": [{
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Mean temperature (tmp)",
+				"colorizer": "temperature"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Min temperature (tmn)",
+				"colorizer": "temperature"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Max temperature (tmx)",
+				"colorizer": "temperature"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Diurnal temperature range (dtr)"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "cloud cover (cld)"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Potential evopotranspiration (pet)"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Precipitation total (pre)"
+			}, {
+				"datatype": "Float64",
+				"max": 100,
+				"min": -100,
+				"nodata": 9.9692099683869e+36,
+				"name": "Vapor Pressure (vap)"
+			}, {
+				"datatype": "Float64",
+				"max": 31,
+				"min": 0,
+				"nodata": 9.9692099683869e+36,
+				"name": "Rainday counts (wet)"
+			}, {
+				"datatype": "Float64",
+				"max": 31,
+				"min": 0,
+				"nodata": 9.9692099683869e+36,
+				"name": "Frostdays counts (frs)"
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-180, 90],
+				"scale": [0.5, -0.5],
+				"size": [720, 360]
+			}
+		},
+		"msg9_geos_hrv": {
+			"name": "Meteosat 2nd Generation HRV",
+			"colorizer": "grey",
+			"channels": [{
+				"datatype": "Int16",
+				"nodata": 0,
+				"name": "HRV",
+				"unit": {
+					"measurement": "raw",
+					"unit": "unknown",
+					"interpolation": "continuous",
+					"min": 0,
+					"max": 1023
+				},
+				"transform": {
+					"datatype": "Float32",
+					"offset": "msg.CalibrationOffset",
+					"scale": "msg.CalibrationSlope",
+					"unit": {
+						"measurement": "radiance",
+						"unit": "W\u00b7m^(-2)\u00b7sr^(-1)\u00b7cm^(-1)",
+						"interpolation": "continuous"
+					}
+				}
+			}],
+			"coords": {
+				"epsg": 40453,
+				"origin": [-5571248.3903748, 5571248.3903748],
+				"scale": [1000.1343488693, -1000.1343488693],
+				"size": [11136, 11136]
+			}
+		},
+		"modis_vcf": {
+			"name": "MODIS Vegetation Continuous Fields",
+			"colorizer": "gray",
+			"channels": [{
+				"name": "TRE",
+				"datatype": "Byte",
+				"max": 100,
+				"min": 0,
+				"nodata": 200
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-180, 84],
+				"scale": [0.002083333333333, -0.002083333333333],
+				"size": [172800, 71040]
+			}
+		},
+		"btw2015_paper_demo": {
+			"name": "BTW Paper Demo Data",
+			"channels": [{
+				"name": "Worldclim Precipitation December",
+				"datatype": "Int16",
+				"max": 310,
+				"min": 0,
+				"nodata": -9999
+			}, {
+				"name": "Worldclim Precipitation January",
+				"datatype": "Int16",
+				"max": 310,
+				"min": 0,
+				"nodata": -9999
+			}, {
+				"name": "Mean Temperature December",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 300,
+				"min": -400,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Mean Temperature January",
+				"colorizer": "temperature",
+				"datatype": "Int16",
+				"max": 300,
+				"min": -400,
+				"nodata": -9999,
+				"transform": {
+					"datatype": "Float32",
+					"offset": 0,
+					"scale": 0.1
+				}
+			}, {
+				"name": "Worldclim Altitude",
+				"colorizer": "height",
+				"datatype": "Int16",
+				"max": 1500,
+				"min": -0,
+				"nodata": -9999
+			}, {
+				"name": "Global Land Cover 2000",
+				"colorizer": "glc",
+				"datatype": "Byte",
+				"max": 23,
+				"min": 1,
+				"nodata": 0
+			}, {
+				"name": "Result of the workflow",
+				"colorizer": "grey",
+				"datatype": "Byte",
+				"min": 0,
+				"max": 2,
+				"nodata": 2
+			}],
+			"coords": {
+				"epsg": 4326,
+				"origin": [-179.004, 85.0045],
+				"scale": [0.00833333, -0.00833333],
+				"size": [42960, 16800]
+			}
+		}
+	}	
+}
