@@ -19,22 +19,33 @@ import {MappingDataSourceFilter} from './pipes/mapping-data-sources.pipe';
 
     <md-content flex="grow">
       <md-list>
-      <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
-        <md-subheader class="md-primary">{{source.name}}</md-subheader>
-        <md-list-item class="md-2-line" *ngFor="#channel of source.channels" (click)="add(source, channel)">
-          <img src="http://placehold.it/100x100" alt="placeholder"/>
-          <div class="md-list-item-text" layout="column">
-            <p>{{channel.name}}</p>
-            <p>{{channel.datatype}}</p>
-          </div>
-        </md-list-item>
-        <md-divider></md-divider>
+        <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
+          <md-subheader class="md-primary">{{source.name}}</md-subheader>
+          <md-list-item class="md-2-line" style="cursor: pointer;"
+                        *ngFor="#channel of source.channels" (click)="add(source, channel)">
+            <img src="http://placehold.it/100x100" alt="placeholder"/>
+            <div class="md-list-item-text" layout="column">
+              <p>{{channel.name}}</p>
+              <p>{{channel.datatype}}</p>
+            </div>
+          </md-list-item>
+          <md-divider></md-divider>
         </template>
       </md-list>
     </md-content>
     </div>
     `,
-    styles: [``],
+    styles: [`
+    md-list-item {
+      cursor: pointer;
+    }
+    md-list-item:hover {
+      background-color: #f5f5f5;
+    }
+    img {
+      padding: 5px 5px 5px 0px;
+    }
+    `],
     providers: [MappingDataSourcesService],
     directives: [MATERIAL_DIRECTIVES],
     pipes: [MappingDataSourceFilter],

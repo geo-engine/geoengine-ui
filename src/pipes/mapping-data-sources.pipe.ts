@@ -7,7 +7,7 @@ import {MappingSource} from '../mapping-source.model';
 })
 @Injectable()
 export class MappingDataSourceFilter implements PipeTransform {
-    transform(items: Array<MappingSource>, [term]): Array<MappingSource> {
-        return items.filter(item => item.name.indexOf(term) >= 0);
+    transform(items: Array<MappingSource>, [term]: [string]): Array<MappingSource> {
+        return items.filter(item => item.name.toLowerCase().indexOf(term.toLowerCase()) >= 0);
     }
 }
