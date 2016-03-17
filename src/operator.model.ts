@@ -192,9 +192,9 @@ export class Operator {
     }
 
     /**
-     * Dictionary reprensentation of the operator.
+     * Dictionary reprensentation of the operator as query parameter.
      */
-    private toDict(): any {
+    private toQueryDict(): any {
         let dict: any = {
             'type': this.operatorType
         };
@@ -220,7 +220,7 @@ export class Operator {
                 if(source.length > 0) {
                     sources[sourceString] = [];
                     for(let operator of source) {
-                        sources[sourceString].push(operator.toDict());
+                        sources[sourceString].push(operator.toQueryDict());
                     }
                 }
             }
@@ -232,10 +232,51 @@ export class Operator {
     }
 
     /**
-     * String representation of the operator in JSON format.
+     * String representation of the operator as query parameter in JSON format.
      */
+    toQueryJSON(): string {
+        return JSON.stringify(this.toQueryDict());
+    }
+
+    toDict(): any {
+      let dict: any = {
+        id: this._id,
+        name: this.name,
+        resultType: this._resultType,
+        operatorType: this.operatorType,
+        parameters: Array.from(this.parameters.entries()),
+        projection: this._projection,
+        symbology: this.symbology
+      };
+
+      // console.log('dict', dict);
+
+      if(this.hasSources()) {
+          let sources: any = {};
+
+          let sourcesList: Array<[string, Operator[]]> = [
+              [ResultType[ResultType.RASTER], this.rasterSources],
+              [ResultType[ResultType.POINTS], this.pointSources],
+              [ResultType[ResultType.LINES], this.lineSources],
+              [ResultType[ResultType.POLYGONS], this.polygonSources]
+          ];
+          for(let [sourceString, source] of sourcesList) {
+              if(source.length > 0) {
+                  sources[sourceString] = [];
+                  for(let operator of source) {
+                      sources[sourceString].push(operator.toDict());
+                  }
+              }
+          }
+
+          dict['sources'] = sources;
+      }
+
+      return dict;
+    }
+
     toJSON(): string {
-        return JSON.stringify(this.toDict());
+      return JSON.stringify(this.toDict());
     }
 
     static fromJSON(json: string): Operator {
@@ -243,7 +284,40 @@ export class Operator {
     }
 
     private static fromDict(operatorDict: any): Operator {
-      return <Operator>{}; // TODO: implement
+      let operator = new Operator(
+        operatorDict.operatorType,
+        operatorDict.resultType,
+        new Map<string, string | number>(operatorDict.parameters),
+        operatorDict.projection,
+        operatorDict.name
+      );
+
+      operator._id = operatorDict.id;
+      operator.symbology = operatorDict.symbology;
+
+      if(operatorDict.sources !== undefined) {
+        for(let sourceType in operatorDict.sources) {
+          let sourceOperators = operatorDict.sources[sourceType];
+          for(let sourceOperator of sourceOperators) {
+             switch(sourceType) {
+               case ResultType[ResultType.RASTER]:
+                 operator.rasterSources.push(Operator.fromDict(sourceOperator));
+                 break;
+               case ResultType[ResultType.POINTS]:
+                 operator.pointSources.push(Operator.fromDict(sourceOperator));
+                 break;
+               case ResultType[ResultType.LINES]:
+                 operator.lineSources.push(Operator.fromDict(sourceOperator));
+                 break;
+               case ResultType[ResultType.POLYGONS]:
+                 operator.polygonSources.push(Operator.fromDict(sourceOperator));
+                 break;
+             }
+          }
+        }
+      }
+
+      return operator;
     }
 
 }

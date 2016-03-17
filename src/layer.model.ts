@@ -38,7 +38,7 @@ export class Layer {
                     'REQUEST': 'GetMap',
                     'FORMAT': 'image/png',
                     'TRANSPARENT': true,
-                    'LAYERS': operator.toJSON(),
+                    'LAYERS': operator.toQueryJSON(),
                     'COLORS': 'gray',
                     'DEBUG': 1,
                     'TIME': time
@@ -49,7 +49,7 @@ export class Layer {
                 let operator = this.operator.getProjectedOperator('EPSG:3857');
 
                 return {
-                    'pointquery': operator.toJSON(),
+                    'pointquery': operator.toQueryJSON(),
                     'COLORS': 'hsv',
                     'CRS': 'EPSG:3857',
                     'TIME': time

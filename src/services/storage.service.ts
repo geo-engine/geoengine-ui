@@ -44,10 +44,19 @@ export class StorageService {
 
     } else {
       // load
-      let layerStrings: Array<LayerSerialization> = JSON.parse(layersJSON);
+      let layers: Array<Layer> = [];
+      let layerDicts: Array<LayerSerialization> = JSON.parse(layersJSON);
 
-      // TODO: implement
-      console.log(layerStrings);
+      for(let layerDict of layerDicts) {
+        let layer = new Layer(Operator.fromJSON(layerDict.operator));
+        layer.expanded = layerDict.expanded;
+
+        layers.push(layer);
+      }
+
+      // console.log(layers);
+
+      this.layerService.setLayers(layers);
     }
   }
 
@@ -62,6 +71,7 @@ export class StorageService {
         });
       }
 
+      // console.log('store', 'layers', layerStrings);
       localStorage.setItem('layers', JSON.stringify(layerStrings));
     });
   }
