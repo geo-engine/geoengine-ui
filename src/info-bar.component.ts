@@ -1,13 +1,14 @@
-import {Component, Input, Output, EventEmitter,
-        ChangeDetectionStrategy} from 'angular2/core';
+import {Component, Input, ChangeDetectionStrategy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {BehaviorSubject} from "rxjs/Rx";
 
 @Component({
     selector: 'info-bar-component',
     template: `
-    <button md-button class="md-icon-button" aria-label="Settings" (click)="switchTableOpen()">
-        <i *ngIf="tableOpenState" md-icon>expand_more</i>
-        <i *ngIf="!tableOpenState" md-icon>expand_less</i>
+    <button md-button class="md-icon-button" aria-label="Settings"
+            (click)="toggleTableOpen()" [ngSwitch]="dataTableVisible$ | async">
+        <i *ngSwitchWhen="true" md-icon>expand_more</i>
+        <i *ngSwitchWhen="false" md-icon>expand_less</i>
     </button>
     <small>
     Data Table
@@ -30,15 +31,12 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 
 export class InfoBarComponent {
     @Input()
-    private citationString: string = 'none'; 
-    
-    private tableOpenState = true;
-    
-    @Output()
-    private tableOpen: EventEmitter<boolean> = new EventEmitter();
-    
-    switchTableOpen() {
-        this.tableOpenState = !this.tableOpenState;
-        this.tableOpen.emit(this.tableOpenState);
+    private citationString: string = 'none';
+
+    @Input('dataTableVisible')
+    private dataTableVisible$: BehaviorSubject<boolean>;
+
+    private toggleTableOpen() {
+        this.dataTableVisible$.next(!this.dataTableVisible$.getValue());
     }
 }

@@ -1,9 +1,9 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
         ChangeDetectionStrategy, OnInit} from 'angular2/core';
 import {COMMON_DIRECTIVES} from 'angular2/common';
-import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
 import {HTTP_PROVIDERS} from 'angular2/http';
 import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
+import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
 
 import {InfoAreaComponent} from './info-area.component';
 import {TabComponent} from './tab.component';
@@ -18,13 +18,14 @@ import {Layer} from './layer.model';
 import {Operator, ResultType} from './operator.model';
 
 import {LayerService} from './services/layer.service';
+import {StorageService} from './services/storage.service';
 
 @Component({
     selector: 'wave-app',
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea">
-            <info-area-component (layerListVisible)="layerListVisible$.next($event)">
+            <info-area-component [layerListVisible]="layerListVisible$">
             </info-area-component>
         </div>
         <div flex="grow">
@@ -61,7 +62,7 @@ import {LayerService} from './services/layer.service';
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
         <md-toolbar class="infoBar">
-            <info-bar-component (tableOpen)="dataTableVisible$.next($event)">
+            <info-bar-component [dataTableVisible]="dataTableVisible$">
             </info-bar-component>
         </md-toolbar>
         <div class="dataTable" *ngIf="dataTableVisible$ | async">
@@ -114,14 +115,14 @@ import {LayerService} from './services/layer.service';
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, AngularGrid, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, SidenavService, HTTP_PROVIDERS]
+    providers: [LayerService, StorageService, SidenavService, HTTP_PROVIDERS]
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
     private mapComponent: MapComponent;
 
-    private layerListVisible$ = new BehaviorSubject(true);
-    private dataTableVisible$ = new BehaviorSubject(true);
+    private layerListVisible$: BehaviorSubject<boolean>;
+    private dataTableVisible$: BehaviorSubject<boolean>;
 
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
@@ -135,12 +136,21 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     constructor(private zone: NgZone,
                 private layerService: LayerService,
-                private sidenavService: SidenavService) {
+                private sidenavService: SidenavService,
+                private storageService: StorageService) {
         this.layersReverse$ = layerService.getLayers()
                                          .map(layers => layers.slice(0).reverse());
 
         this.hasSelectedLayer$ = layerService.getSelectedLayer()
                                              .map(value => value !== undefined);
+
+        // attach layer list visibility to storage service
+        this.layerListVisible$ = new BehaviorSubject(this.storageService.getLayerListVisible());
+        this.storageService.addLayerListVisibleObservable(this.layerListVisible$);
+
+        // attach data table visibility to storage service
+        this.dataTableVisible$ = new BehaviorSubject(this.storageService.getDataTableVisible());
+        this.storageService.addDataTableVisibleObservable(this.dataTableVisible$);
     }
 
     ngOnInit() {

@@ -20,61 +20,61 @@ type Projection = string; // TODO
  */
 export class Operator {
     private _id: OperatorId;
-    
+
     /**
      * The user-given name of this operator instance.
      */
     public name: string;
-    
+
     private _resultType: ResultType;
     private operatorType: string;
-    
+
     private parameters: Map<string, string | number>;
     private _projection: Projection;
-    
+
     private symbology: any; // TODO
-    
+
     private rasterSources: Operator[] = [];
     private pointSources: Operator[] = [];
     private lineSources: Operator[] = [];
     private polygonSources: Operator[] = [];
-    
+
     private static _operatorId = 1;
-    
+
     /**
      * Instantiate an operator.
-     * 
+     *
      * @param operatorType      The mapping type name of the operator.
      * @param resultType        A {@link resultType}.
      * @param parameters        Operator-specific parameters.
      * @param projection        A {@link Projection}.
      * @param displayName       The user-given name of this operator instance.
-     * @param rasterSources     A list of operators with {@link resultType} `RASTER`. 
-     * @param pointSources      A list of operators with {@link resultType} `POINTS`. 
-     * @param lineSources       A list of operators with {@link resultType} `LINES`. 
-     * @param polygonSources    A list of operators with {@link resultType} `POLYGONS`. 
-     * 
+     * @param rasterSources     A list of operators with {@link resultType} `RASTER`.
+     * @param pointSources      A list of operators with {@link resultType} `POINTS`.
+     * @param lineSources       A list of operators with {@link resultType} `LINES`.
+     * @param polygonSources    A list of operators with {@link resultType} `POLYGONS`.
+     *
      */
-    constructor(operatorType: string, resultType: ResultType, 
+    constructor(operatorType: string, resultType: ResultType,
                 parameters: Map<string, string | number>, projection: Projection,
-                displayName: string, 
+                displayName: string,
                 rasterSources: Operator[] = [], pointSources: Operator[] = [],
                 lineSources: Operator[] = [], polygonSources: Operator[] = []) {
         this._id = Operator.nextOperatorId;
         this.name = displayName;
-        
+
         this.operatorType = operatorType,
         this._resultType = resultType;
         this.parameters = parameters;
         this._projection = projection;
-        
+
         let sources: Array<[Operator[], Operator[], ResultType]> = [
             [rasterSources, this.rasterSources, ResultType.RASTER],
             [pointSources, this.pointSources, ResultType.POINTS],
             [lineSources, this.lineSources, ResultType.LINES],
             [polygonSources, this.polygonSources, ResultType.POLYGONS]
         ];
-        
+
         for(let [source, sink, sinkType] of sources) {
             for(let operator of source) {
                 if(operator.resultType == sinkType) {
@@ -84,34 +84,34 @@ export class Operator {
                 }
             }
         }
-        
+
     }
-    
+
     private static get nextOperatorId(): OperatorId {
         return this._operatorId++;
     }
-    
+
     /**
      * Unique id of this operator instance.
      */
     get id(): OperatorId {
         return this._id;
     }
-    
+
     /**
      * Retrieve the output result type.
      */
     get resultType(): ResultType {
         return this._resultType;
     }
-    
+
     /**
      * Retrieve the output projection.
      */
     get projection(): Projection {
         return this._projection;
     }
-    
+
     /**
      * The total amount of sources.
      */
@@ -119,10 +119,10 @@ export class Operator {
         return this.rasterSources.length + this.pointSources.length
                 + this.lineSources.length + this.polygonSources.length;
     }
-    
+
     /**
      * Retrieve a source by id.
-     * 
+     *
      * @param id The id of the source operator.
      */
     getAnySource(id: number) {
@@ -131,21 +131,21 @@ export class Operator {
                 return source;
             }
         }
-        
+
         throw Error(`getAnySource: no source found with id ${id} in ${JSON.stringify(this)}`);
     }
-    
+
     /**
      * Does the operator has sources or it it a **source operator**?
      */
     hasSources(): boolean {
-        return this.rasterSources.length > 0 || this.pointSources.length > 0 
+        return this.rasterSources.length > 0 || this.pointSources.length > 0
                || this.lineSources.length > 0 || this.polygonSources.length > 0;
     }
-    
+
     /**
      * Retrieve the sources by type.
-     * 
+     *
      * @param sourceType The {@link resultType} of the source.
      */
     getSources(sourceType: ResultType): Operator[] {
@@ -162,11 +162,11 @@ export class Operator {
                 throw Error('Invalid Source Type');
         }
     }
-    
+
     /**
      * Return the operator with an optional projection operator to
      * comply with the desired {@link Projection}.
-     * 
+     *
      * @param projection The desired output projection.
      */
     getProjectedOperator(projection: Projection): Operator {
@@ -176,7 +176,7 @@ export class Operator {
             let parameters = new Map<string, string | number>();
             parameters.set('src_projection', this.projection);
             parameters.set('dest_projection', projection);
-            
+
             return new Operator(
                 'projection',
                 this.resultType,
@@ -190,7 +190,7 @@ export class Operator {
             );
         }
     }
-    
+
     /**
      * Dictionary reprensentation of the operator.
      */
@@ -198,7 +198,7 @@ export class Operator {
         let dict: any = {
             'type': this.operatorType
         };
-        
+
         if(this.parameters.size > 0) {
             let params: {[id:string]: any} = {};
             this.parameters.forEach((value, key, map) => {
@@ -206,10 +206,10 @@ export class Operator {
             });
             dict['params'] = params;
         }
-        
+
         if(this.hasSources()) {
             let sources: any = {};
-            
+
             let sourcesList: Array<[string, Operator[]]> = [
                 [ResultType[ResultType.RASTER].toLowerCase(), this.rasterSources],
                 [ResultType[ResultType.POINTS].toLowerCase(), this.pointSources],
@@ -224,18 +224,26 @@ export class Operator {
                     }
                 }
             }
-            
+
             dict['sources'] = sources;
         }
-        
+
         return dict;
     }
-    
+
     /**
      * String representation of the operator in JSON format.
      */
     toJSON(): string {
         return JSON.stringify(this.toDict());
     }
-    
+
+    static fromJSON(json: string): Operator {
+      return this.fromDict(JSON.parse(json))
+    }
+
+    private static fromDict(operatorDict: any): Operator {
+      return <Operator>{}; // TODO: implement
+    }
+
 }
