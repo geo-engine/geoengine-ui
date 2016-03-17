@@ -14,7 +14,7 @@ import {MappingDataSourceFilter} from './pipes/mapping-data-sources.pipe';
     <div style="height:100%" layout="column">
     <md-input-container class="md-block" style="margin-bottom: 0px; padding-bottom: 0px;">
       <label>Search term</label>
-      <input md-input [(value)]="search_term">
+      <input md-input (valueChange)="search_term = $event">
     </md-input-container>
 
     <md-content flex="grow">
@@ -49,7 +49,7 @@ import {MappingDataSourceFilter} from './pipes/mapping-data-sources.pipe';
     providers: [MappingDataSourcesService],
     directives: [MATERIAL_DIRECTIVES],
     pipes: [MappingDataSourceFilter],
-    //changeDetection: ChangeDetectionStrategy.OnPush
+    // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AddDataComponent {
