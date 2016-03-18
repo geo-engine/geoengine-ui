@@ -1,4 +1,4 @@
-import Config from './config.model';
+import Config from "./config.model";
 
 /**
  * The result type of a mapping operator.
@@ -75,12 +75,12 @@ export class Operator {
             [polygonSources, this.polygonSources, ResultType.POLYGONS]
         ];
 
-        for(let [source, sink, sinkType] of sources) {
-            for(let operator of source) {
-                if(operator.resultType == sinkType) {
+        for (let [source, sink, sinkType] of sources) {
+            for (let operator of source) {
+                if (operator.resultType === sinkType) {
                     sink.push(operator);
                 } else {
-                    throw Error('The Operator in array rasterSources is not of type RASTER.');
+                    throw Error("The Operator in array rasterSources is not of type RASTER.");
                 }
             }
         }
@@ -126,8 +126,8 @@ export class Operator {
      * @param id The id of the source operator.
      */
     getAnySource(id: number) {
-        for(let source of this.rasterSources) {
-            if(source.id == id) {
+        for (let source of this.rasterSources) {
+            if (source.id === id) {
                 return source;
             }
         }
@@ -149,7 +149,7 @@ export class Operator {
      * @param sourceType The {@link resultType} of the source.
      */
     getSources(sourceType: ResultType): Operator[] {
-        switch(sourceType) {
+        switch (sourceType) {
             case ResultType.RASTER:
                 return this.rasterSources;
             case ResultType.POINTS:
@@ -159,7 +159,7 @@ export class Operator {
             case ResultType.POLYGONS:
                 return this.polygonSources;
             default:
-                throw Error('Invalid Source Type');
+                throw Error("Invalid Source Type");
         }
     }
 
@@ -170,23 +170,23 @@ export class Operator {
      * @param projection The desired output projection.
      */
     getProjectedOperator(projection: Projection): Operator {
-        if (projection == this.projection) {
+        if (projection === this.projection) {
             return this;
         } else {
             let parameters = new Map<string, string | number>();
-            parameters.set('src_projection', this.projection);
-            parameters.set('dest_projection', projection);
+            parameters.set("src_projection", this.projection);
+            parameters.set("dest_projection", projection);
 
             return new Operator(
-                'projection',
+                "projection",
                 this.resultType,
                 parameters,
                 projection,
                 `Projection of #${this.id}`,
-                this.resultType == ResultType.RASTER ? [this] : [],
-                this.resultType == ResultType.POINTS ? [this] : [],
-                this.resultType == ResultType.LINES ? [this] : [],
-                this.resultType == ResultType.POLYGONS ? [this] : []
+                this.resultType === ResultType.RASTER ? [this] : [],
+                this.resultType === ResultType.POINTS ? [this] : [],
+                this.resultType === ResultType.LINES ? [this] : [],
+                this.resultType === ResultType.POLYGONS ? [this] : []
             );
         }
     }
@@ -196,18 +196,18 @@ export class Operator {
      */
     private toQueryDict(): any {
         let dict: any = {
-            'type': this.operatorType
+            "type": this.operatorType
         };
 
-        if(this.parameters.size > 0) {
-            let params: {[id:string]: any} = {};
+        if (this.parameters.size > 0) {
+            let params: {[id: string]: any} = {};
             this.parameters.forEach((value, key, map) => {
                 params[key] = value;
             });
-            dict['params'] = params;
+            dict["params"] = params;
         }
 
-        if(this.hasSources()) {
+        if (this.hasSources()) {
             let sources: any = {};
 
             let sourcesList: Array<[string, Operator[]]> = [
@@ -216,16 +216,16 @@ export class Operator {
                 [ResultType[ResultType.LINES].toLowerCase(), this.lineSources],
                 [ResultType[ResultType.POLYGONS].toLowerCase(), this.polygonSources]
             ];
-            for(let [sourceString, source] of sourcesList) {
-                if(source.length > 0) {
+            for (let [sourceString, source] of sourcesList) {
+                if (source.length > 0) {
                     sources[sourceString] = [];
-                    for(let operator of source) {
+                    for (let operator of source) {
                         sources[sourceString].push(operator.toQueryDict());
                     }
                 }
             }
 
-            dict['sources'] = sources;
+            dict["sources"] = sources;
         }
 
         return dict;
@@ -249,9 +249,9 @@ export class Operator {
         symbology: this.symbology
       };
 
-      // console.log('dict', dict);
+      // console.log("dict", dict);
 
-      if(this.hasSources()) {
+      if (this.hasSources()) {
           let sources: any = {};
 
           let sourcesList: Array<[string, Operator[]]> = [
@@ -260,16 +260,16 @@ export class Operator {
               [ResultType[ResultType.LINES], this.lineSources],
               [ResultType[ResultType.POLYGONS], this.polygonSources]
           ];
-          for(let [sourceString, source] of sourcesList) {
-              if(source.length > 0) {
+          for (let [sourceString, source] of sourcesList) {
+              if (source.length > 0) {
                   sources[sourceString] = [];
-                  for(let operator of source) {
+                  for (let operator of source) {
                       sources[sourceString].push(operator.toDict());
                   }
               }
           }
 
-          dict['sources'] = sources;
+          dict["sources"] = sources;
       }
 
       return dict;
@@ -280,7 +280,7 @@ export class Operator {
     }
 
     static fromJSON(json: string): Operator {
-      return this.fromDict(JSON.parse(json))
+      return this.fromDict(JSON.parse(json));
     }
 
     private static fromDict(operatorDict: any): Operator {
@@ -295,11 +295,11 @@ export class Operator {
       operator._id = operatorDict.id;
       operator.symbology = operatorDict.symbology;
 
-      if(operatorDict.sources !== undefined) {
-        for(let sourceType in operatorDict.sources) {
+      if (operatorDict.sources !== undefined) {
+        for (let sourceType in operatorDict.sources) {
           let sourceOperators = operatorDict.sources[sourceType];
-          for(let sourceOperator of sourceOperators) {
-             switch(sourceType) {
+          for (let sourceOperator of sourceOperators) {
+             switch (sourceType) {
                case ResultType[ResultType.RASTER]:
                  operator.rasterSources.push(Operator.fromDict(sourceOperator));
                  break;

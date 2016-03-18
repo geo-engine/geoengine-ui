@@ -1,13 +1,13 @@
-import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from "angular2/core";
+import {MATERIAL_DIRECTIVES} from "ng2-material/all";
+import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 
-import {Layer} from './layer.model';
+import {Layer} from "./layer.model";
 
-import {LayerService} from './services/layer.service';
+import {LayerService} from "./services/layer.service";
 
 @Component({
-    selector: 'layer-component',
+    selector: "layer-component",
     template: `
     <md-content flex>
     <md-list [dragula]="'layer-bag'">
@@ -24,11 +24,11 @@ import {LayerService} from './services/layer.service';
                         <i *ngIf="!layer.expanded" md-icon>expand_more</i>
                         <i *ngIf="layer.expanded" md-icon>expand_less</i>
                     </button>
-    
+
                     <div class="md-list-item-text" style="padding-top: 10px">
                         {{layer.name}}
                     </div>
-    
+
                     <button md-button class="md-icon-button"
                             style="margin-right: -16px;"
                             aria-label="More"
@@ -75,41 +75,41 @@ import {LayerService} from './services/layer.service';
 })
 
 export class LayerComponent {
-    
+
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
-        dragulaService.setOptions('layer-bag', {
+        dragulaService.setOptions("layer-bag", {
             removeOnSpill: false,
             revertOnSpill: true
         });
-        
+
         this.handleDragAndDrop();
     }
-    
+
     handleDragAndDrop() {
         let dragIndex: number;
         let dropIndex: number;
-        
+
         this.dragulaService.drag.subscribe((value: any) => {
             let [_, listItem, list] = value;
             dragIndex = this.domIndexOf(listItem, list);
-//            console.log('drag', dragIndex);
+//            console.log("drag", dragIndex);
         });
         this.dragulaService.drop.subscribe((value: any) => {
             let [_, listItem, list] = value;
             dropIndex = this.domIndexOf(listItem, list);
-//            console.log('drop', dropIndex);
-            
+//            console.log("drop", dropIndex);
+
             let layers = this.layerService.getLayers().getValue();
             layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
             this.layerService.setLayers(layers);
         });
     }
-    
+
     private domIndexOf(child: any, parent: any) {
         return Array.prototype.indexOf.call(parent.children, child);
     }
-    
+
     replaceContextMenu(event: MouseEvent, layer: Layer) {
         event.preventDefault();
         console.log("A context menu for " + layer.name + " will appear in future versions!");

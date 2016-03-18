@@ -1,9 +1,9 @@
-import {Component, Input, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, Input, ChangeDetectionStrategy} from "angular2/core";
+import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {BehaviorSubject} from "rxjs/Rx";
 
 @Component({
-    selector: 'info-bar-component',
+    selector: "info-bar-component",
     template: `
     <button md-button class="md-icon-button" aria-label="Settings"
             (click)="toggleTableOpen()" [ngSwitch]="dataTableVisible$ | async">
@@ -31,9 +31,9 @@ import {BehaviorSubject} from "rxjs/Rx";
 
 export class InfoBarComponent {
     @Input()
-    private citationString: string = 'none';
+    private citationString: string = "none";
 
-    @Input('dataTableVisible')
+    @Input("dataTableVisible")
     private dataTableVisible$: BehaviorSubject<boolean>;
 
     private toggleTableOpen() {

@@ -1,3 +1,3 @@
 export default {
-  MAPPING_URL: '/cgi-bin/mapping'  
+  MAPPING_URL: "/cgi-bin/mapping"
 };

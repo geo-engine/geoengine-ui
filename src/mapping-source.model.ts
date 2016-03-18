@@ -1,5 +1,5 @@
-//import {Operator, ResultType} from "./operator.model";
-//type Colorizer = "gray" | "height";
+// import {Operator, ResultType} from "./operator.model";
+// type Colorizer = "gray" | "height";
 
 export interface MappingSourceChannel {
   name: string;
@@ -17,7 +17,7 @@ export interface MappingSource {
   coords: any;
 
 
-  //intoSourceOperator(): Operator {
+  // intoSourceOperator(): Operator {
   //  return new Operator("source", ResultType.RASTER, )
-  //}
+  // }
 }

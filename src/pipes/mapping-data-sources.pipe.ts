@@ -1,9 +1,9 @@
-import {Pipe, PipeTransform, Injectable} from 'angular2/core';
+import {Pipe, PipeTransform, Injectable} from "angular2/core";
 
-import {MappingSource} from '../mapping-source.model';
+import {MappingSource} from "../mapping-source.model";
 
 @Pipe({
-    name: 'mappingDataSourceFilter',
+    name: "mappingDataSourceFilter",
 })
 @Injectable()
 export class MappingDataSourceFilter implements PipeTransform {

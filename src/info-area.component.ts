@@ -1,9 +1,9 @@
-import {Component, Input, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, Input, ChangeDetectionStrategy} from "angular2/core";
+import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {BehaviorSubject} from "rxjs/Rx";
 
 @Component({
-    selector: 'info-area-component',
+    selector: "info-area-component",
     template: `
     <md-toolbar class="md-accent" layout="column">
         <div layout="row" layout-align="space-between center">
@@ -48,7 +48,7 @@ import {BehaviorSubject} from "rxjs/Rx";
 })
 
 export class InfoAreaComponent {
-    @Input('layerListVisible')
+    @Input("layerListVisible")
     private layerListVisible$: BehaviorSubject<boolean>;
 
     toggleLayersVisible() {

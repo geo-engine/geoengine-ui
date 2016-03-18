@@ -1,8 +1,8 @@
-import {Operator, ResultType} from './operator.model';
-import Config from './config.model';
+import {Operator, ResultType} from "./operator.model";
+import Config from "./config.model";
 
 interface Parameters {
-    [key: string]: any
+    [key: string]: any;
 }
 
 export class Layer {
@@ -26,33 +26,33 @@ export class Layer {
     }
 
     get params(): Parameters {
-        let time = '2010-06-06T18:00:00.000Z';
+        let time = "2010-06-06T18:00:00.000Z";
 
-        switch(this.operator.resultType) {
+        switch (this.operator.resultType) {
            case ResultType.RASTER: {
-                let operator = this.operator.getProjectedOperator('EPSG:3857');
+                let operator = this.operator.getProjectedOperator("EPSG:3857");
 
                 return {
-                    'SERVICE': 'WMS',
-                    'VERSION': '1.3.0',
-                    'REQUEST': 'GetMap',
-                    'FORMAT': 'image/png',
-                    'TRANSPARENT': true,
-                    'LAYERS': operator.toQueryJSON(),
-                    'COLORS': 'gray',
-                    'DEBUG': 1,
-                    'TIME': time
+                    "SERVICE": "WMS",
+                    "VERSION": "1.3.0",
+                    "REQUEST": "GetMap",
+                    "FORMAT": "image/png",
+                    "TRANSPARENT": true,
+                    "LAYERS": operator.toQueryJSON(),
+                    "COLORS": "gray",
+                    "DEBUG": 1,
+                    "TIME": time
                 };
             }
 
             case ResultType.POINTS: {
-                let operator = this.operator.getProjectedOperator('EPSG:3857');
+                let operator = this.operator.getProjectedOperator("EPSG:3857");
 
                 return {
-                    'pointquery': operator.toQueryJSON(),
-                    'COLORS': 'hsv',
-                    'CRS': 'EPSG:3857',
-                    'TIME': time
+                    "pointquery": operator.toQueryJSON(),
+                    "COLORS": "hsv",
+                    "CRS": "EPSG:3857",
+                    "TIME": time
                 };
             }
         }
@@ -63,7 +63,7 @@ export class Layer {
     }
 
     get style(): {} {
-        switch(this.operator.resultType) {
+        switch (this.operator.resultType) {
            case ResultType.RASTER:
                 return {
                     opacity: 0.5
@@ -71,7 +71,7 @@ export class Layer {
 
             case ResultType.POINTS:
                 return {
-                    color: '#FF0000'
+                    color: "#FF0000"
                 };
         }
     }

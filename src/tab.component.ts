@@ -1,10 +1,10 @@
 import {View, Component, Input, AfterViewInit, NgZone,
-        Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+        Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef} from "angular2/core";
+import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 @Component({
-    selector: 'tab-component',
-    templateUrl: 'templates/tab.html',
-    styles:[`
+    selector: "tab-component",
+    templateUrl: "templates/tab.html",
+    styles: [`
     .selected {
       background-color: #f5f5f5 !important;
     }
@@ -33,31 +33,31 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 export class TabComponent implements AfterViewInit {
     @Input()
     private layerSelected: boolean;
-    
-    @Output('zoomIn')
+
+    @Output("zoomIn")
     private zoomInEmitter = new EventEmitter<void>();
-    
-    @Output('zoomOut')
+
+    @Output("zoomOut")
     private zoomOutEmitter = new EventEmitter<void>();
-    
-    @Output('zoomLayer')
+
+    @Output("zoomLayer")
     private zoomLayerEmitter = new EventEmitter<void>();
-    
-    @Output('zoomProject')
+
+    @Output("zoomProject")
     private zoomProjectEmitter = new EventEmitter<void>();
-    
-    @Output('zoomMap')
+
+    @Output("zoomMap")
     private zoomMapEmitter = new EventEmitter<void>();
-    
-    @Output('addData')
+
+    @Output("addData")
     private addDataEmitter = new EventEmitter<void>();
-    
-    @Output('removeLayer')
+
+    @Output("removeLayer")
     private removeLayerEmitter = new EventEmitter<void>();
-    
+
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private ngZone: NgZone) {}
-    
+
     ngAfterViewInit() {
         // do this one time for ngMaterial
         setTimeout(() => {

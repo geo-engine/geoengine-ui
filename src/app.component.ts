@@ -1,27 +1,27 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
-        ChangeDetectionStrategy, OnInit} from 'angular2/core';
-import {COMMON_DIRECTIVES} from 'angular2/common';
-import {HTTP_PROVIDERS} from 'angular2/http';
+        ChangeDetectionStrategy, OnInit} from "angular2/core";
+import {COMMON_DIRECTIVES} from "angular2/common";
+import {HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
-import {MATERIAL_DIRECTIVES, SidenavService} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, SidenavService} from "ng2-material/all";
 
-import {InfoAreaComponent} from './info-area.component';
-import {TabComponent} from './tab.component';
-import {InfoBarComponent} from './info-bar.component';
-import {LayerComponent} from './layer.component';
-import {AngularGrid} from './angular-grid';
-import {MapComponent} from './openlayers/map.component';
-import {PointLayerComponent, RasterLayerComponent} from './openlayers/layer.component';
-import {AddDataComponent} from './add-data.component';
+import {InfoAreaComponent} from "./info-area.component";
+import {TabComponent} from "./tab.component";
+import {InfoBarComponent} from "./info-bar.component";
+import {LayerComponent} from "./layer.component";
+import {AngularGrid} from "./angular-grid";
+import {MapComponent} from "./openlayers/map.component";
+import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
+import {AddDataComponent} from "./add-data.component";
 
-import {Layer} from './layer.model';
-import {Operator, ResultType} from './operator.model';
+import {Layer} from "./layer.model";
+import {Operator, ResultType} from "./operator.model";
 
-import {LayerService} from './services/layer.service';
-import {StorageService} from './services/storage.service';
+import {LayerService} from "./services/layer.service";
+import {StorageService} from "./services/storage.service";
 
 @Component({
-    selector: 'wave-app',
+    selector: "wave-app",
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea">
@@ -155,7 +155,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         let windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, 'resize')
+        Observable.fromEvent(window, "resize")
                   .map(_ => window.innerHeight)
                   .subscribe(windowHeight$);
         this.layerListVisible$.map(() => window.innerHeight)
@@ -167,16 +167,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                                             .map(height => Math.max(height, 0));
 
         this.middleContainerHeight$ = remainingHeight$.map(height => {
-            if(this.dataTableVisible$.getValue()) {
-                return Math.ceil(3/5 * height);
+            if (this.dataTableVisible$.getValue()) {
+                return Math.ceil(3 / 5 * height);
             } else {
                 return Math.max(height - 40, 0);
             }
         });
 
         this.bottomContainerHeight$ = remainingHeight$.map(height => {
-            if(this.dataTableVisible$.getValue()) {
-                return Math.floor(2/5 * height);
+            if (this.dataTableVisible$.getValue()) {
+                return Math.floor(2 / 5 * height);
             } else {
                 return 40;
             }

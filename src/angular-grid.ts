@@ -1,18 +1,18 @@
 import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
-        OnInit, AfterViewInit, ElementRef} from 'angular2/core';
-import {Http, HTTP_PROVIDERS} from 'angular2/http';
+        OnInit, AfterViewInit, ElementRef} from "angular2/core";
+import {Http, HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
-import Config from './config.model';
-import {LayerService} from './services/layer.service';
-import {ResultType} from './operator.model';
+import Config from "./config.model";
+import {LayerService} from "./services/layer.service";
+import {ResultType} from "./operator.model";
 
 interface Column {
-    name: string
+    name: string;
 }
 
 @Component({
-    selector: 'angular-grid',
+    selector: "angular-grid",
     //    template: `
     //    <div *ngFor="#item of data$ | async">{{item}}</div>
     //    `,
@@ -49,19 +49,19 @@ export class AngularGrid implements OnInit {
                 switch (layer.resultType) {
                     case ResultType.POINTS:
                         return this.http.get(
-                            Config.MAPPING_URL + '?' + Object.keys(layer.params).map(
-                                key => key + '=' + encodeURIComponent(layer.params[key])
-                            ).join('&') + '&format=csv'
+                            Config.MAPPING_URL + "?" + Object.keys(layer.params).map(
+                                key => key + "=" + encodeURIComponent(layer.params[key])
+                            ).join("&") + "&format=csv"
                         ).map(data => {
 //                            console.log("data", data);
 
-                            let lines = data.text().split('\n');
-                            let columns = lines[0].split(',')
+                            let lines = data.text().split("\n");
+                            let columns = lines[0].split(",")
                                 .map(name => ({ name }));
 
                             let items: Array<{}> = [];
                             for (let line of lines.slice(1, lines.length - 1)) {
-                                let splitted = line.split(',');
+                                let splitted = line.split(",");
                                 let item: any = {};
                                 for (let i in splitted) {
                                     item[columns[i].name] = splitted[i];
