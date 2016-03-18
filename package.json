@@ -7,7 +7,8 @@
     "tsc:w": "tsc -w",
     "lite": "lite-server",
     "server": "http-server --proxy http://pc12316.mathematik.uni-marburg.de:10080/",
-    "start": "concurrently \"npm run tsc:w\" \"npm run server\" "
+    "start": "concurrently \"npm run tsc:w\" \"npm run server\" ",
+    "bundle": "node bundle.js"
   },
   "license": "ISC",
   "dependencies": {

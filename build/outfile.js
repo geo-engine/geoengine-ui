@@ -1,5 +1,5 @@
 "bundle";
-System.register("app/info-area.component.js", ["angular2/core", "ng2-material/all"], function(exports_1, context_1) {
+System.register("app/info-area.component.js", ["angular2/core", "ng2-material/all", "rxjs/Rx"], function(exports_1, context_1) {
   "use strict";
   var __moduleName = context_1 && context_1.id;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
@@ -19,30 +19,30 @@ System.register("app/info-area.component.js", ["angular2/core", "ng2-material/al
       return Reflect.metadata(k, v);
   };
   var core_1,
-      all_1;
+      all_1,
+      Rx_1;
   var InfoAreaComponent;
   return {
     setters: [function(core_1_1) {
       core_1 = core_1_1;
     }, function(all_1_1) {
       all_1 = all_1_1;
+    }, function(Rx_1_1) {
+      Rx_1 = Rx_1_1;
     }],
     execute: function() {
       InfoAreaComponent = (function() {
-        function InfoAreaComponent() {
-          this.layerListVisibleEmitter = new core_1.EventEmitter();
-          this.layerListVisible = true;
-        }
+        function InfoAreaComponent() {}
         InfoAreaComponent.prototype.toggleLayersVisible = function() {
-          this.layerListVisible = !this.layerListVisible;
-          this.layerListVisibleEmitter.emit(this.layerListVisible);
+          this.layerListVisible$.next(!this.layerListVisible$.getValue());
         };
-        __decorate([core_1.Output('layerListVisible'), __metadata('design:type', Object)], InfoAreaComponent.prototype, "layerListVisibleEmitter", void 0);
+        __decorate([core_1.Input('layerListVisible'), __metadata('design:type', Rx_1.BehaviorSubject)], InfoAreaComponent.prototype, "layerListVisible$", void 0);
         InfoAreaComponent = __decorate([core_1.Component({
           selector: 'info-area-component',
-          template: "\n    <md-toolbar class=\"md-accent\" layout=\"column\">\n        <div layout=\"row\" layout-align=\"space-between center\">\n            <button md-button aria-label=\"User\">\n                <i class=\"green\" md-icon>person</i>\n                Username\n            </button>\n            <button md-button class=\"md-icon-button\" aria-label=\"Help\">\n                <i md-icon>help</i>\n            </button>\n        </div>\n        <md-divider></md-divider>\n        <h1 flex=\"grow\" layout=\"row\" layout-align=\"center center\">WAVE</h1>\n        <md-divider></md-divider>\n        <div layout=\"row\" layout-align=\"space-between center\">\n            <button md-button class=\"md-icon-button\" aria-label=\"Settings\">\n                <i md-icon>menu</i>\n            </button>\n            Layers\n            <button md-button class=\"md-icon-button\" aria-label=\"Settings\"\n                    (click)=\"toggleLayersVisible()\">\n                <i *ngIf=\"!layerListVisible\" md-icon>expand_more</i>\n                <i *ngIf=\"layerListVisible\" md-icon>expand_less</i>\n            </button>\n        </div>\n    </md-toolbar>\n    ",
-          styles: ["\n        md-toolbar {\n            height: 100%;\n        }\n        h1 {\n            opacity: 0.5;\n            font-size: 34px;\n        }\n        .material-icons {\n            vertical-align: middle;\n        }\n    "],
-          directives: [all_1.MATERIAL_DIRECTIVES]
+          template: "\n    <md-toolbar class=\"md-accent\" layout=\"column\">\n        <div layout=\"row\" layout-align=\"space-between center\">\n            <button md-button aria-label=\"User\">\n                <i md-icon>person</i>\n                Username\n            </button>\n            <button md-button class=\"md-icon-button\" aria-label=\"Help\">\n                <i md-icon>help</i>\n            </button>\n        </div>\n        <md-divider></md-divider>\n        <h1 flex=\"grow\" layout=\"row\" layout-align=\"center center\">WAVE</h1>\n        <md-divider></md-divider>\n        <div layout=\"row\" layout-align=\"space-between center\">\n            <button md-button class=\"md-icon-button\" aria-label=\"Settings\">\n                <i md-icon>menu</i>\n            </button>\n            Layers\n            <button md-button class=\"md-icon-button\" aria-label=\"Settings\"\n                    (click)=\"toggleLayersVisible()\" [ngSwitch]=\"layerListVisible$ | async\">\n                <i *ngSwitchWhen=\"true\" md-icon>expand_less</i>\n                <i *ngSwitchWhen=\"false\" md-icon>expand_more</i>\n            </button>\n        </div>\n    </md-toolbar>\n    ",
+          styles: ["\n    md-toolbar {\n        height: 100%;\n    }\n    h1 {\n        opacity: 0.5;\n        font-size: 34px;\n    }\n    .material-icons {\n        vertical-align: middle;\n    }\n    "],
+          directives: [all_1.MATERIAL_DIRECTIVES],
+          changeDetection: core_1.ChangeDetectionStrategy.OnPush
         }), __metadata('design:paramtypes', [])], InfoAreaComponent);
         return InfoAreaComponent;
       }());
@@ -120,7 +120,7 @@ System.register("app/tab.component.js", ["angular2/core", "ng2-material/all"], f
   };
 });
 
-System.register("app/info-bar.component.js", ["angular2/core", "ng2-material/all"], function(exports_1, context_1) {
+System.register("app/info-bar.component.js", ["angular2/core", "ng2-material/all", "rxjs/Rx"], function(exports_1, context_1) {
   "use strict";
   var __moduleName = context_1 && context_1.id;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
@@ -140,30 +140,30 @@ System.register("app/info-bar.component.js", ["angular2/core", "ng2-material/all
       return Reflect.metadata(k, v);
   };
   var core_1,
-      all_1;
+      all_1,
+      Rx_1;
   var InfoBarComponent;
   return {
     setters: [function(core_1_1) {
       core_1 = core_1_1;
     }, function(all_1_1) {
       all_1 = all_1_1;
+    }, function(Rx_1_1) {
+      Rx_1 = Rx_1_1;
     }],
     execute: function() {
       InfoBarComponent = (function() {
         function InfoBarComponent() {
           this.citationString = 'none';
-          this.tableOpenState = true;
-          this.tableOpen = new core_1.EventEmitter();
         }
-        InfoBarComponent.prototype.switchTableOpen = function() {
-          this.tableOpenState = !this.tableOpenState;
-          this.tableOpen.emit(this.tableOpenState);
+        InfoBarComponent.prototype.toggleTableOpen = function() {
+          this.dataTableVisible$.next(!this.dataTableVisible$.getValue());
         };
         __decorate([core_1.Input(), __metadata('design:type', String)], InfoBarComponent.prototype, "citationString", void 0);
-        __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], InfoBarComponent.prototype, "tableOpen", void 0);
+        __decorate([core_1.Input('dataTableVisible'), __metadata('design:type', Rx_1.BehaviorSubject)], InfoBarComponent.prototype, "dataTableVisible$", void 0);
         InfoBarComponent = __decorate([core_1.Component({
           selector: 'info-bar-component',
-          template: "\n    <button md-button class=\"md-icon-button\" aria-label=\"Settings\" (click)=\"switchTableOpen()\">\n        <i *ngIf=\"tableOpenState\" md-icon>expand_more</i>\n        <i *ngIf=\"!tableOpenState\" md-icon>expand_less</i>\n    </button>\n    <small>\n    Data Table\n    <hr>\n    Citation:\n    {{citationString}}\n    </small>\n    ",
+          template: "\n    <button md-button class=\"md-icon-button\" aria-label=\"Settings\"\n            (click)=\"toggleTableOpen()\" [ngSwitch]=\"dataTableVisible$ | async\">\n        <i *ngSwitchWhen=\"true\" md-icon>expand_more</i>\n        <i *ngSwitchWhen=\"false\" md-icon>expand_less</i>\n    </button>\n    <small>\n    Data Table\n    <hr>\n    Citation:\n    {{citationString}}\n    </small>\n    ",
           styles: ["\n    hr {\n        transform:rotate(90deg);\n        margin: 0px 10px;\n        display: inline;\n        border: 1px solid rgba(255, 255, 255, 0.87059);\n    }\n    "],
           directives: [all_1.MATERIAL_DIRECTIVES],
           changeDetection: core_1.ChangeDetectionStrategy.OnPush
@@ -173,3191 +173,6 @@ System.register("app/info-bar.component.js", ["angular2/core", "ng2-material/all
       exports_1("InfoBarComponent", InfoBarComponent);
     }
   };
-});
-
-System.registerDynamic("node_modules/ng2-material/components/content/content.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var MdContent = (function() {
-    function MdContent() {}
-    MdContent = __decorate([core_1.Directive({selector: 'md-content'}), __metadata('design:paramtypes', [])], MdContent);
-    return MdContent;
-  }());
-  exports.MdContent = MdContent;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_config.js", [], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var MdDialogConfig = (function() {
-    function MdDialogConfig() {
-      this.width = null;
-      this.height = null;
-      this.container = null;
-      this.sourceEvent = null;
-      this.clickClose = true;
-      this.context = {};
-    }
-    MdDialogConfig.prototype.parent = function(element) {
-      this.container = element;
-      return this;
-    };
-    MdDialogConfig.prototype.clickOutsideToClose = function(enabled) {
-      this.clickClose = enabled;
-      return this;
-    };
-    MdDialogConfig.prototype.title = function(text) {
-      this.context.title = text;
-      return this;
-    };
-    MdDialogConfig.prototype.textContent = function(text) {
-      this.context.textContent = text;
-      return this;
-    };
-    MdDialogConfig.prototype.ariaLabel = function(text) {
-      this.context.ariaLabel = text;
-      return this;
-    };
-    MdDialogConfig.prototype.ok = function(text) {
-      this.context.ok = text;
-      return this;
-    };
-    MdDialogConfig.prototype.cancel = function(text) {
-      this.context.cancel = text;
-      return this;
-    };
-    MdDialogConfig.prototype.targetEvent = function(ev) {
-      this.sourceEvent = ev;
-      return this;
-    };
-    return MdDialogConfig;
-  }());
-  exports.MdDialogConfig = MdDialogConfig;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_container.js", ["angular2/core", "../../core/key_codes"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var core_1 = $__require('angular2/core');
-  var core_2 = $__require('angular2/core');
-  var core_3 = $__require('angular2/core');
-  var core_4 = $__require('angular2/core');
-  var key_codes_1 = $__require('../../core/key_codes');
-  var core_5 = $__require('angular2/core');
-  var core_6 = $__require('angular2/core');
-  var core_7 = $__require('angular2/core');
-  var core_8 = $__require('angular2/core');
-  var MdDialogContainer = (function() {
-    function MdDialogContainer() {
-      this.contentRef = null;
-      this.dialogRef = null;
-    }
-    MdDialogContainer.prototype.wrapFocus = function() {};
-    MdDialogContainer.prototype.documentKeypress = function(event) {
-      if (event.keyCode == key_codes_1.KeyCodes.ESCAPE) {
-        this.dialogRef.close();
-      }
-    };
-    MdDialogContainer = __decorate([core_3.Component({
-      selector: 'md-dialog-container',
-      host: {
-        'class': 'md-dialog',
-        'tabindex': '0',
-        '(body:keydown)': 'documentKeypress($event)'
-      }
-    }), core_2.View({
-      encapsulation: core_1.ViewEncapsulation.None,
-      template: "\n    <md-dialog-content></md-dialog-content>\n    <div tabindex=\"0\" (focus)=\"wrapFocus()\"></div>",
-      directives: [core_5.forwardRef(function() {
-        return MdDialogContent;
-      })]
-    }), __metadata('design:paramtypes', [])], MdDialogContainer);
-    return MdDialogContainer;
-  }());
-  exports.MdDialogContainer = MdDialogContainer;
-  var MdDialogContent = (function() {
-    function MdDialogContent(dialogContainer, elementRef) {
-      dialogContainer.contentRef = elementRef;
-    }
-    MdDialogContent = __decorate([core_6.Directive({selector: 'md-dialog-content'}), __param(0, core_7.Host()), __param(0, core_8.SkipSelf()), __metadata('design:paramtypes', [MdDialogContainer, core_4.ElementRef])], MdDialogContent);
-    return MdDialogContent;
-  }());
-  exports.MdDialogContent = MdDialogContent;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/button/button.js", ["angular2/core", "angular2/src/facade/async", "angular2/src/facade/lang", "../../core/util/ink"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var async_1 = $__require('angular2/src/facade/async');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var core_2 = $__require('angular2/core');
-  var ink_1 = $__require('../../core/util/ink');
-  var BUTTON_TEMPLATE = "<span class=\"md-button-wrapper\"><ng-content></ng-content></span>";
-  var MdButton = (function() {
-    function MdButton(_element) {
-      this._element = _element;
-      this.isMouseDown = false;
-      this.isKeyboardFocused = false;
-    }
-    MdButton.prototype.onMousedown = function(event) {
-      var _this = this;
-      this.isMouseDown = true;
-      async_1.TimerWrapper.setTimeout(function() {
-        _this.isMouseDown = false;
-      }, 100);
-      if (this._element && ink_1.Ink.canApply(this._element.nativeElement)) {
-        ink_1.Ink.rippleEvent(this._element.nativeElement, event);
-      }
-    };
-    MdButton.prototype.onFocus = function() {
-      this.isKeyboardFocused = !this.isMouseDown;
-    };
-    MdButton.prototype.onBlur = function() {
-      this.isKeyboardFocused = false;
-    };
-    MdButton = __decorate([core_1.Component({
-      selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',
-      host: {
-        '(mousedown)': 'onMousedown($event)',
-        '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()',
-        '[class.md-button-focus]': 'isKeyboardFocused'
-      }
-    }), core_1.View({
-      template: BUTTON_TEMPLATE,
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [core_2.ElementRef])], MdButton);
-    return MdButton;
-  }());
-  exports.MdButton = MdButton;
-  var MdAnchor = (function(_super) {
-    __extends(MdAnchor, _super);
-    function MdAnchor() {
-      _super.apply(this, arguments);
-    }
-    Object.defineProperty(MdAnchor.prototype, "disabled", {
-      get: function() {
-        return this.disabled_;
-      },
-      set: function(value) {
-        this.disabled_ = lang_1.isPresent(value) && this.disabled !== false;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdAnchor.prototype.onClick = function(event) {
-      if (this.disabled) {
-        event.preventDefault();
-      }
-    };
-    MdAnchor.prototype.ngOnChanges = function(_) {
-      this.tabIndex = this.disabled ? -1 : 0;
-    };
-    Object.defineProperty(MdAnchor.prototype, "isAriaDisabled", {
-      get: function() {
-        return this.disabled ? 'true' : 'false';
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdAnchor = __decorate([core_1.Component({
-      selector: 'a[md-button], a[md-raised-button], a[md-fab]',
-      inputs: ['disabled'],
-      host: {
-        '(click)': 'onClick($event)',
-        '(mousedown)': 'onMousedown()',
-        '(focus)': 'onFocus()',
-        '(blur)': 'onBlur()',
-        '[tabIndex]': 'tabIndex',
-        '[class.md-button-focus]': 'isKeyboardFocused',
-        '[attr.aria-disabled]': 'isAriaDisabled'
-      }
-    }), core_1.View({
-      template: BUTTON_TEMPLATE,
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdAnchor);
-    return MdAnchor;
-  }(MdButton));
-  exports.MdAnchor = MdAnchor;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_ref.js", ["angular2/src/facade/promise", "../../core/util/animate", "angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var promise_1 = $__require('angular2/src/facade/promise');
-  var animate_1 = $__require('../../core/util/animate');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var MdDialogRef = (function() {
-    function MdDialogRef() {
-      this._subscription = null;
-      this._contentRef = null;
-      this.containerRef = null;
-      this.isClosed = false;
-      this.contentRefDeferred = promise_1.PromiseWrapper.completer();
-      this.whenClosedDeferred = promise_1.PromiseWrapper.completer();
-    }
-    Object.defineProperty(MdDialogRef.prototype, "backdropRef", {
-      set: function(value) {
-        var _this = this;
-        this._backdropRef = value;
-        if (this._backdropRef) {
-          this._subscription = this._backdropRef.instance.onHiding.subscribe(function() {
-            _this._subscription.unsubscribe();
-            _this.close();
-          });
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdDialogRef.prototype, "contentRef", {
-      set: function(value) {
-        this._contentRef = value;
-        this.contentRefDeferred.resolve(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdDialogRef.prototype, "instance", {
-      get: function() {
-        if (lang_1.isPresent(this._contentRef)) {
-          return this._contentRef.instance;
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdDialogRef.prototype, "whenClosed", {
-      get: function() {
-        return this.whenClosedDeferred.promise;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdDialogRef.prototype.close = function(result) {
-      var _this = this;
-      if (result === void 0) {
-        result = null;
-      }
-      if (this.isClosed) {
-        return this.whenClosedDeferred.promise;
-      }
-      if (this._subscription) {
-        this._subscription.unsubscribe();
-      }
-      this.isClosed = true;
-      return animate_1.Animate.leave(this.containerRef.location.nativeElement, 'md-active').then(function() {
-        var otherAsync = Promise.resolve();
-        if (_this._backdropRef) {
-          otherAsync = _this._backdropRef.instance.hide();
-        }
-        return _this.contentRefDeferred.promise.then(function(_) {
-          otherAsync.then(function() {
-            _this.whenClosedDeferred.resolve(result);
-          });
-        });
-      });
-    };
-    return MdDialogRef;
-  }());
-  exports.MdDialogRef = MdDialogRef;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_basic.js", ["angular2/common", "../button/button", "angular2/core", "./dialog_ref"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var common_1 = $__require('angular2/common');
-  var button_1 = $__require('../button/button');
-  var core_1 = $__require('angular2/core');
-  var core_2 = $__require('angular2/core');
-  var dialog_ref_1 = $__require('./dialog_ref');
-  var core_3 = $__require('angular2/core');
-  var MdDialogBasic = (function() {
-    function MdDialogBasic(dialog) {
-      this.dialog = dialog;
-      this.title = '';
-      this.textContent = '';
-      this.cancel = '';
-      this.ok = '';
-      this.type = 'alert';
-    }
-    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "title", void 0);
-    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "textContent", void 0);
-    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "cancel", void 0);
-    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "ok", void 0);
-    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "type", void 0);
-    MdDialogBasic = __decorate([core_2.Component({selector: 'md-dialog-basic'}), core_1.View({
-      template: "\n  <h2 class=\"md-title\">{{ title }}</h2>\n  <p>{{ textContent }}</p>\n  <md-dialog-actions>\n    <button md-button *ngIf=\"cancel != ''\" type=\"button\" (click)=\"dialog.close(false)\">\n      <span>{{ cancel }}</span>\n    </button>\n    <button md-button *ngIf=\"ok != ''\" class=\"md-primary\" type=\"button\" (click)=\"dialog.close(true)\">\n      <span>{{ ok }}</span>\n    </button>\n  </md-dialog-actions>",
-      directives: [button_1.MdButton, common_1.NgIf]
-    }), __metadata('design:paramtypes', [dialog_ref_1.MdDialogRef])], MdDialogBasic);
-    return MdDialogBasic;
-  }());
-  exports.MdDialogBasic = MdDialogBasic;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/dialog/dialog.js", ["angular2/core", "angular2/src/facade/lang", "./dialog_ref", "./dialog_config", "./dialog_container", "../backdrop/backdrop", "angular2/src/platform/dom/dom_adapter", "../../core/util/animate", "./dialog_basic"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  var core_1 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var dialog_ref_1 = $__require('./dialog_ref');
-  var dialog_config_1 = $__require('./dialog_config');
-  var dialog_container_1 = $__require('./dialog_container');
-  var backdrop_1 = $__require('../backdrop/backdrop');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var animate_1 = $__require('../../core/util/animate');
-  __export($__require('./dialog_config'));
-  __export($__require('./dialog_container'));
-  __export($__require('./dialog_ref'));
-  __export($__require('./dialog_basic'));
-  var MdDialog = (function() {
-    function MdDialog(componentLoader, rootRenderer) {
-      this.componentLoader = componentLoader;
-      this._renderer = null;
-      this._defaultContainer = dom_adapter_1.DOM.query('body');
-      var type = new core_1.RenderComponentType("__md-dialog-" + MdDialog._uniqueId++, core_1.ViewEncapsulation.None, []);
-      this._renderer = rootRenderer.renderComponent(type);
-    }
-    MdDialog.prototype.open = function(type, elementRef, options) {
-      var _this = this;
-      if (options === void 0) {
-        options = new dialog_config_1.MdDialogConfig();
-      }
-      var dialogRef = new dialog_ref_1.MdDialogRef();
-      var bindings = core_1.Injector.resolve([core_1.APPLICATION_COMMON_PROVIDERS, core_1.provide(dialog_ref_1.MdDialogRef, {useValue: dialogRef})]);
-      var backdropRefPromise = this._openBackdrop(elementRef, bindings, options);
-      return this.componentLoader.loadNextToLocation(dialog_container_1.MdDialogContainer, elementRef, bindings).then(function(containerRef) {
-        var dialogElement = containerRef.location.nativeElement;
-        _this._renderer.setElementClass(dialogElement, 'md-dialog-absolute', !!options.container);
-        dom_adapter_1.DOM.appendChild(options.container || _this._defaultContainer, dialogElement);
-        if (lang_1.isPresent(options.width)) {
-          _this._renderer.setElementStyle(dialogElement, 'width', options.width);
-        }
-        if (lang_1.isPresent(options.height)) {
-          _this._renderer.setElementStyle(dialogElement, 'height', options.height);
-        }
-        dialogRef.containerRef = containerRef;
-        return _this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef, bindings).then(function(contentRef) {
-          Object.keys(options.context).forEach(function(key) {
-            contentRef.instance[key] = options.context[key];
-          });
-          dialogRef.contentRef = contentRef;
-          containerRef.instance.dialogRef = dialogRef;
-          backdropRefPromise.then(function(backdropRef) {
-            dialogRef.backdropRef = backdropRef;
-            dialogRef.whenClosed.then(function(_) {
-              backdropRef.instance.hide().then(function() {
-                containerRef.dispose();
-                contentRef.dispose();
-                backdropRef.dispose();
-              });
-            });
-          });
-          return animate_1.Animate.enter(dialogElement, 'md-active').then(function() {
-            return dialogRef;
-          });
-        });
-      });
-    };
-    MdDialog.prototype._openBackdrop = function(elementRef, bindings, options) {
-      var _this = this;
-      return this.componentLoader.loadNextToLocation(backdrop_1.MdBackdrop, elementRef, bindings).then(function(componentRef) {
-        var backdrop = componentRef.instance;
-        backdrop.clickClose = options.clickClose;
-        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-backdrop', true);
-        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-opaque', true);
-        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-backdrop-absolute', !!options.container);
-        dom_adapter_1.DOM.appendChild(options.container || _this._defaultContainer, componentRef.location.nativeElement);
-        return backdrop.show().then(function() {
-          return componentRef;
-        });
-      });
-    };
-    MdDialog.prototype.alert = function(message, okMessage) {
-      throw 'Not implemented';
-    };
-    MdDialog.prototype.confirm = function(message, okMessage, cancelMessage) {
-      throw 'Not implemented';
-    };
-    MdDialog._uniqueId = 0;
-    MdDialog = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [core_1.DynamicComponentLoader, core_1.RootRenderer])], MdDialog);
-    return MdDialog;
-  }());
-  exports.MdDialog = MdDialog;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/divider/divider.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var core_2 = $__require('angular2/core');
-  var MdDivider = (function() {
-    function MdDivider() {}
-    MdDivider = __decorate([core_1.Component({selector: 'md-divider'}), core_1.View({
-      template: '',
-      encapsulation: core_2.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdDivider);
-    return MdDivider;
-  }());
-  exports.MdDivider = MdDivider;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/icon/icon.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var MdIcon = (function() {
-    function MdIcon() {}
-    MdIcon = __decorate([core_1.Directive({
-      selector: '[md-icon], .md-icon',
-      host: {'[class.material-icons]': 'true'}
-    }), __metadata('design:paramtypes', [])], MdIcon);
-    return MdIcon;
-  }());
-  exports.MdIcon = MdIcon;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/ink/ink.js", ["angular2/core", "../../core/util/ink"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var ink_1 = $__require('../../core/util/ink');
-  var MdInk = (function() {
-    function MdInk(_element) {
-      this._element = _element;
-      this.inked = new core_1.EventEmitter(false);
-    }
-    MdInk.prototype.onMousedown = function(event) {
-      var _this = this;
-      if (this._element && ink_1.Ink.canApply(this._element.nativeElement)) {
-        ink_1.Ink.rippleEvent(this._element.nativeElement, event).then(function() {
-          _this.inked.emit(_this);
-        });
-      }
-    };
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdInk.prototype, "inked", void 0);
-    MdInk = __decorate([core_1.Directive({
-      selector: '[md-ink]',
-      host: {'(mousedown)': 'onMousedown($event)'}
-    }), __metadata('design:paramtypes', [core_1.ElementRef])], MdInk);
-    return MdInk;
-  }());
-  exports.MdInk = MdInk;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/form/validators.js", ["angular2/src/facade/lang", "angular2/common", "angular2/core", "../../core/util/util"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var common_1 = $__require('angular2/common');
-  var core_1 = $__require('angular2/core');
-  var util_1 = $__require('../../core/util/util');
-  var lang_2 = $__require('angular2/src/facade/lang');
-  var PATTERN_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
-    useExisting: core_1.forwardRef(function() {
-      return MdPatternValidator;
-    }),
-    multi: true
-  }));
-  var MdPatternValidator = (function() {
-    function MdPatternValidator() {}
-    MdPatternValidator.inline = function(pattern) {
-      return function validate(control) {
-        if (control.value === '' || new RegExp(pattern).test(control.value)) {
-          return null;
-        }
-        return {mdPattern: true};
-      };
-    };
-    MdPatternValidator.prototype.validate = function(control) {
-      return MdPatternValidator.inline(this.mdPattern)(control);
-    };
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdPatternValidator.prototype, "mdPattern", void 0);
-    MdPatternValidator = __decorate([core_1.Directive({
-      selector: '[mdPattern]',
-      providers: [PATTERN_VALIDATOR]
-    }), __metadata('design:paramtypes', [])], MdPatternValidator);
-    return MdPatternValidator;
-  }());
-  exports.MdPatternValidator = MdPatternValidator;
-  var MAXLENGTH_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
-    useExisting: core_1.forwardRef(function() {
-      return MdMaxLengthValidator;
-    }),
-    multi: true
-  }));
-  var MdMaxLengthValidator = (function() {
-    function MdMaxLengthValidator() {}
-    MdMaxLengthValidator.inline = function(length) {
-      return function validate(control) {
-        if (!control.value || control.value.length <= length) {
-          return null;
-        }
-        return {mdMaxLength: true};
-      };
-    };
-    MdMaxLengthValidator.prototype.validate = function(control) {
-      return MdMaxLengthValidator.inline(this.mdMaxLength)(control);
-    };
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdMaxLengthValidator.prototype, "mdMaxLength", void 0);
-    MdMaxLengthValidator = __decorate([core_1.Directive({
-      selector: '[mdMaxLength]',
-      providers: [MAXLENGTH_VALIDATOR]
-    }), __metadata('design:paramtypes', [])], MdMaxLengthValidator);
-    return MdMaxLengthValidator;
-  }());
-  exports.MdMaxLengthValidator = MdMaxLengthValidator;
-  var MAXVALUE_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
-    useExisting: core_1.forwardRef(function() {
-      return MdMaxValueValidator;
-    }),
-    multi: true
-  }));
-  var MdMaxValueValidator = (function() {
-    function MdMaxValueValidator() {}
-    MdMaxValueValidator.inline = function(length) {
-      return function validate(control) {
-        if (lang_2.NumberWrapper.isNaN(control.value) || control.value <= length) {
-          return null;
-        }
-        return {mdMax: true};
-      };
-    };
-    MdMaxValueValidator.prototype.validate = function(control) {
-      return MdMaxValueValidator.inline(this.mdMax)(control);
-    };
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdMaxValueValidator.prototype, "mdMax", void 0);
-    MdMaxValueValidator = __decorate([core_1.Directive({
-      selector: '[mdMax]',
-      providers: [MAXVALUE_VALIDATOR]
-    }), __metadata('design:paramtypes', [])], MdMaxValueValidator);
-    return MdMaxValueValidator;
-  }());
-  exports.MdMaxValueValidator = MdMaxValueValidator;
-  var MINVALUE_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
-    useExisting: core_1.forwardRef(function() {
-      return MdMinValueValidator;
-    }),
-    multi: true
-  }));
-  var MdMinValueValidator = (function() {
-    function MdMinValueValidator() {}
-    MdMinValueValidator.inline = function(length) {
-      return function validate(control) {
-        if (lang_2.NumberWrapper.isNaN(control.value) || control.value >= length) {
-          return null;
-        }
-        return {mdMin: true};
-      };
-    };
-    MdMinValueValidator.prototype.validate = function(control) {
-      return MdMinValueValidator.inline(this.mdMin)(control);
-    };
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdMinValueValidator.prototype, "mdMin", void 0);
-    MdMinValueValidator = __decorate([core_1.Directive({
-      selector: '[mdMin]',
-      providers: [MINVALUE_VALIDATOR]
-    }), __metadata('design:paramtypes', [])], MdMinValueValidator);
-    return MdMinValueValidator;
-  }());
-  exports.MdMinValueValidator = MdMinValueValidator;
-  var NUMBER_REQUIRED_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
-    useExisting: core_1.forwardRef(function() {
-      return MdNumberRequiredValidator;
-    }),
-    multi: true
-  }));
-  var MdNumberRequiredValidator = (function() {
-    function MdNumberRequiredValidator() {}
-    MdNumberRequiredValidator.inline = function() {
-      return function validate(control) {
-        var isNum = !lang_2.NumberWrapper.isNaN(control.value) && util_1.isNumber(control.value);
-        return isNum ? null : {mdNumberRequired: true};
-      };
-    };
-    MdNumberRequiredValidator.prototype.validate = function(control) {
-      return MdNumberRequiredValidator.inline()(control);
-    };
-    MdNumberRequiredValidator = __decorate([core_1.Directive({
-      selector: '[mdNumberRequired]',
-      providers: [NUMBER_REQUIRED_VALIDATOR]
-    }), __metadata('design:paramtypes', [])], MdNumberRequiredValidator);
-    return MdNumberRequiredValidator;
-  }());
-  exports.MdNumberRequiredValidator = MdNumberRequiredValidator;
-  exports.INPUT_VALIDATORS = [MdMaxLengthValidator, MdPatternValidator, MdMaxValueValidator, MdMinValueValidator, MdNumberRequiredValidator];
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/form/messages.js", ["angular2/core", "angular2/common", "angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var core_1 = $__require('angular2/core');
-  var common_1 = $__require('angular2/common');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var MdMessage = (function() {
-    function MdMessage() {
-      this.okay = true;
-    }
-    __decorate([core_1.Input('md-message'), __metadata('design:type', String)], MdMessage.prototype, "errorKey", void 0);
-    MdMessage = __decorate([core_1.Directive({
-      selector: '[md-message]',
-      host: {'[style.display]': 'okay ? "none" : "inherit"'}
-    }), __metadata('design:paramtypes', [])], MdMessage);
-    return MdMessage;
-  }());
-  exports.MdMessage = MdMessage;
-  var MdMessages = (function() {
-    function MdMessages(messages, form) {
-      this.messages = messages;
-      this.form = form;
-      this._unsubscribe = null;
-    }
-    Object.defineProperty(MdMessages.prototype, "valid", {
-      get: function() {
-        if (this.property instanceof common_1.NgControlName) {
-          var ctrl_1 = this.property;
-          return !!ctrl_1.valid;
-        }
-        var prop = this.property;
-        var group = this.form.control;
-        var ctrl = group.controls[prop];
-        return ctrl && ctrl.valid;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdMessages.prototype, "isTouched", {
-      get: function() {
-        if (this.property instanceof common_1.NgControlName) {
-          return this.property.touched;
-        }
-        var prop = this.property;
-        var group = this.form.control;
-        var ctrl = group.controls[prop];
-        return ctrl && ctrl.touched;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdMessages.prototype.ngOnInit = function() {
-      if (this.property instanceof common_1.NgControlName) {
-        var ctrl = this.property;
-        this.form = ctrl.formDirective;
-        this._unsubscribe = ctrl.update.subscribe(this._valueChanged.bind(this));
-      } else {
-        if (!this.form) {
-          throw new Error('md-messages cannot bind to text property without a parent NgFormModel');
-        }
-        var prop = this.property;
-        var group = this.form.control;
-        if (!group) {
-          throw new Error('md-messages cannot bind to text property without a ControlGroup');
-        }
-        var ctrl = group.controls[prop];
-        if (!ctrl) {
-          throw new Error("md-messages cannot find property(" + prop + ") in ControlGroup!");
-        }
-        this._unsubscribe = ctrl.valueChanges.subscribe(this._valueChanged.bind(this));
-      }
-    };
-    MdMessages.prototype.ngOnDestroy = function() {
-      this._unsubscribe.unsubscribe();
-    };
-    MdMessages.prototype._valueChanged = function() {
-      var errors = null;
-      if (this.property instanceof common_1.NgControlName) {
-        var ctrl = this.property;
-        errors = ctrl.errors;
-      } else {
-        var prop = this.property;
-        var group = this.form.control;
-        var ctrl = group.controls[prop];
-        errors = ctrl.errors;
-      }
-      if (errors) {
-        this.messages.toArray().forEach(function(m) {
-          m.okay = !m.errorKey ? !errors : !lang_1.isPresent(errors[m.errorKey]);
-        });
-      }
-    };
-    __decorate([core_1.Input('md-messages'), __metadata('design:type', Object)], MdMessages.prototype, "property", void 0);
-    MdMessages = __decorate([core_1.Directive({
-      selector: '[md-messages]',
-      host: {
-        'md-messages': '',
-        '[style.display]': '(valid || !isTouched) ? "none" : "inherit"',
-        '[class.md-valid]': 'valid && isTouched',
-        '[class.md-invalid]': '!valid && isTouched'
-      }
-    }), __param(0, core_1.Query(MdMessage)), __param(1, core_1.Optional()), __param(1, core_1.SkipSelf()), __param(1, core_1.Host()), __metadata('design:paramtypes', [core_1.QueryList, common_1.NgFormModel])], MdMessages);
-    return MdMessages;
-  }());
-  exports.MdMessages = MdMessages;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/input/input.js", ["angular2/core", "angular2/common", "angular2/src/facade/async", "angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var common_1 = $__require('angular2/common');
-  var async_1 = $__require('angular2/src/facade/async');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var MdInput = (function() {
-    function MdInput() {
-      this.mdChange = new async_1.EventEmitter();
-      this.mdFocusChange = new async_1.EventEmitter(false);
-    }
-    Object.defineProperty(MdInput.prototype, "value", {
-      get: function() {
-        return !lang_1.isBlank(this._value) ? this._value : '';
-      },
-      set: function(value) {
-        this._value = value;
-        async_1.ObservableWrapper.callEmit(this.mdChange, this.value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdInput.prototype.setHasFocus = function(hasFocus) {
-      async_1.ObservableWrapper.callEmit(this.mdFocusChange, hasFocus);
-    };
-    __decorate([core_1.Input('value'), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdInput.prototype, "value", null);
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdInput.prototype, "placeholder", void 0);
-    __decorate([core_1.Output('valueChange'), __metadata('design:type', async_1.EventEmitter)], MdInput.prototype, "mdChange", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', async_1.EventEmitter)], MdInput.prototype, "mdFocusChange", void 0);
-    MdInput = __decorate([core_1.Directive({
-      selector: 'input[md-input],input.md-input,textarea[md-input],textarea.md-input',
-      host: {
-        'class': 'md-input',
-        '[value]': 'value',
-        '(input)': 'value=$event.target.value',
-        '(focus)': 'setHasFocus(true)',
-        '(blur)': 'setHasFocus(false)'
-      },
-      providers: [common_1.FORM_PROVIDERS]
-    }), __metadata('design:paramtypes', [])], MdInput);
-    return MdInput;
-  }());
-  exports.MdInput = MdInput;
-  var MdInputContainer = (function() {
-    function MdInputContainer(_element) {
-      this._element = _element;
-      this._input = null;
-      this.inputHasValue = false;
-      this.inputHasFocus = false;
-      this.inputHasPlaceholder = false;
-    }
-    MdInputContainer.prototype.ngOnChanges = function(_) {
-      this.inputHasValue = this._input.value !== '';
-      this.inputHasPlaceholder = !!dom_adapter_1.DOM.querySelector(this._element.nativeElement, 'label') && !!this._input.placeholder;
-    };
-    MdInputContainer.prototype.ngAfterContentInit = function() {
-      var _this = this;
-      if (this._input === null) {
-        return;
-      }
-      async_1.TimerWrapper.setTimeout(function() {
-        return _this.ngOnChanges({});
-      }, 0);
-      async_1.ObservableWrapper.subscribe(this._input.mdChange, function(value) {
-        _this.inputHasValue = value !== '';
-      });
-      async_1.ObservableWrapper.subscribe(this._input.mdFocusChange, function(hasFocus) {
-        _this.inputHasFocus = hasFocus;
-      });
-    };
-    __decorate([core_1.ContentChild(MdInput), __metadata('design:type', MdInput)], MdInputContainer.prototype, "_input", void 0);
-    MdInputContainer = __decorate([core_1.Component({
-      selector: 'md-input-container',
-      host: {
-        '[class.md-input-has-value]': 'inputHasValue',
-        '[class.md-input-has-placeholder]': 'inputHasPlaceholder',
-        '[class.md-input-focused]': 'inputHasFocus'
-      }
-    }), core_1.View({template: "<ng-content></ng-content><div class=\"md-errors-spacer\"></div>"}), __metadata('design:paramtypes', [core_1.ElementRef])], MdInputContainer);
-    return MdInputContainer;
-  }());
-  exports.MdInputContainer = MdInputContainer;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/list/list.js", ["angular2/core", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var core_2 = $__require('angular2/core');
-  var core_3 = $__require('angular2/core');
-  var core_4 = $__require('angular2/core');
-  var MdList = (function() {
-    function MdList() {}
-    MdList = __decorate([core_1.Directive({
-      selector: 'md-list',
-      host: {'role': 'list'}
-    }), __metadata('design:paramtypes', [])], MdList);
-    return MdList;
-  }());
-  exports.MdList = MdList;
-  var MdListItem = (function() {
-    function MdListItem(_element) {
-      this._element = _element;
-    }
-    MdListItem.prototype.ngAfterViewInit = function() {
-      this.setupToggleAria();
-    };
-    MdListItem.prototype.setupToggleAria = function() {
-      var toggleTypes = ['md-switch', 'md-checkbox'];
-      var toggle;
-      var el = this._element.nativeElement;
-      for (var i = 0,
-          toggleType; toggleType = toggleTypes[i]; ++i) {
-        if (toggle = dom_adapter_1.DOM.querySelector(el, toggleType)) {
-          if (!toggle.hasAttribute('aria-label')) {
-            var p = dom_adapter_1.DOM.querySelector(el, 'p');
-            if (!p)
-              return;
-            toggle.setAttribute('aria-label', 'Toggle ' + p.textContent);
-          }
-        }
-      }
-    };
-    MdListItem = __decorate([core_3.Component({
-      selector: 'md-list-item',
-      host: {'role': 'listitem'},
-      properties: ['wrap']
-    }), core_4.View({template: "\n    <div class=\"md-no-style md-list-item-inner\">\n      <ng-content></ng-content>\n    </div>"}), __metadata('design:paramtypes', [core_2.ElementRef])], MdListItem);
-    return MdListItem;
-  }());
-  exports.MdListItem = MdListItem;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/progress_linear/progress_linear.js", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/math"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var lang_2 = $__require('angular2/src/facade/lang');
-  var math_1 = $__require('angular2/src/facade/math');
-  var core_2 = $__require('angular2/core');
-  var ProgressMode = (function() {
-    function ProgressMode() {}
-    ProgressMode.DETERMINATE = 'determinate';
-    ProgressMode.INDETERMINATE = 'indeterminate';
-    ProgressMode.BUFFER = 'buffer';
-    ProgressMode.QUERY = 'query';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "DETERMINATE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "INDETERMINATE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "BUFFER", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "QUERY", void 0);
-    ProgressMode = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], ProgressMode);
-    return ProgressMode;
-  }());
-  exports.ProgressMode = ProgressMode;
-  var MdProgressLinear = (function() {
-    function MdProgressLinear() {
-      this.mode = ProgressMode.DETERMINATE;
-      this.primaryBarTransform = '';
-      this.secondaryBarTransform = '';
-    }
-    MdProgressLinear.clamp = function(v) {
-      return math_1.Math.max(0, math_1.Math.min(100, v));
-    };
-    Object.defineProperty(MdProgressLinear.prototype, "value", {
-      get: function() {
-        return this.value_;
-      },
-      set: function(v) {
-        if (lang_2.isPresent(v)) {
-          this.value_ = MdProgressLinear.clamp(v);
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdProgressLinear.prototype.ngOnChanges = function(_) {
-      if (this.mode === ProgressMode.QUERY || this.mode === ProgressMode.INDETERMINATE) {
-        return;
-      }
-      if (!lang_2.isBlank(this.value)) {
-        this.primaryBarTransform = this.transformForValue(this.value);
-      }
-      if (this.mode === ProgressMode.BUFFER && !lang_2.isBlank(this.bufferValue)) {
-        this.secondaryBarTransform = this.transformForValue(this.bufferValue);
-      }
-    };
-    MdProgressLinear.prototype.transformForValue = function(value) {
-      var scale = value / 100;
-      var translateX = (value - 100) / 2;
-      return "translateX(" + translateX + "%) scale(" + scale + ", 1)";
-    };
-    __decorate([core_2.Input('value'), __metadata('design:type', Number)], MdProgressLinear.prototype, "value_", void 0);
-    __decorate([core_2.Input(), __metadata('design:type', Number)], MdProgressLinear.prototype, "bufferValue", void 0);
-    __decorate([core_2.Input(), __metadata('design:type', String)], MdProgressLinear.prototype, "mode", void 0);
-    MdProgressLinear = __decorate([core_1.Component({
-      selector: 'md-progress-linear',
-      inputs: ['value', 'bufferValue', 'mode'],
-      host: {
-        'role': 'progressbar',
-        'aria-valuemin': '0',
-        'aria-valuemax': '100',
-        '[attr.aria-valuenow]': 'value',
-        '[attr.mode]': 'mode'
-      }
-    }), core_1.View({
-      template: "\n    <div class=\"md-progress-linear-container md-ready\">\n      <div class=\"md-progress-linear-dashed\"></div>\n      <div class=\"md-progress-linear-bar md-progress-linear-bar1\"\n          [style.-webkit-transform]=\"secondaryBarTransform\"\n          [style.transform]=\"secondaryBarTransform\"></div>\n      <div class=\"md-progress-linear-bar md-progress-linear-bar2\"\n          [style.-webkit-transform]=\"primaryBarTransform\"\n          [style.transform]=\"primaryBarTransform\"></div>\n    </div>",
-      directives: [],
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdProgressLinear);
-    return MdProgressLinear;
-  }());
-  exports.MdProgressLinear = MdProgressLinear;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/progress_circular/progress_circular.js", ["angular2/core", "angular2/src/facade/lang", "../progress_linear/progress_linear", "angular2/src/facade/math"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var progress_linear_1 = $__require('../progress_linear/progress_linear');
-  var math_1 = $__require('angular2/src/facade/math');
-  var ProgressMode = (function() {
-    function ProgressMode() {}
-    ProgressMode.DETERMINATE = 'determinate';
-    ProgressMode.INDETERMINATE = 'indeterminate';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "DETERMINATE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "INDETERMINATE", void 0);
-    ProgressMode = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], ProgressMode);
-    return ProgressMode;
-  }());
-  var Defaults = (function() {
-    function Defaults() {}
-    Defaults.DEFAULT_PROGRESS_SIZE = 100;
-    Defaults.DEFAULT_SCALING = 0.5;
-    Defaults.DEFAULT_HALF_TRANSITION = 'transform 0.1s linear';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_PROGRESS_SIZE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_SCALING", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_HALF_TRANSITION", void 0);
-    Defaults = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], Defaults);
-    return Defaults;
-  }());
-  var MdProgressCircular = (function(_super) {
-    __extends(MdProgressCircular, _super);
-    function MdProgressCircular() {
-      _super.apply(this, arguments);
-      this.defaultHalfTransition = Defaults.DEFAULT_HALF_TRANSITION;
-    }
-    Object.defineProperty(MdProgressCircular.prototype, "diameter", {
-      get: function() {
-        return this.diameter_;
-      },
-      set: function(v) {
-        if (lang_1.isPresent(v)) {
-          this.diameter_ = v;
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdProgressCircular.prototype.ngOnInit = function() {
-      this.updateScale();
-    };
-    MdProgressCircular.prototype.ngOnChanges = function(_) {
-      if (this.mode === ProgressMode.INDETERMINATE || lang_1.isBlank(this.value)) {
-        return;
-      }
-      this.gapTransition = (this.value <= 50) ? '' : 'borderBottomColor 0.1s linear';
-      this.transformLeftHalf(this.value);
-      this.transformRightHalf(this.value);
-    };
-    MdProgressCircular.prototype.transformLeftHalf = function(value) {
-      var rotation = (value <= 50) ? 135 : (((value - 50) / 50 * 180) + 135);
-      this.leftHalfTransform = "rotate(" + rotation + "deg)";
-    };
-    MdProgressCircular.prototype.transformRightHalf = function(value) {
-      var rotation = (value >= 50) ? 45 : (value / 50 * 180 - 135);
-      this.rightHalfTransform = "rotate(" + rotation + "deg)";
-    };
-    MdProgressCircular.prototype.updateScale = function() {
-      this.outerSize = 100 * this.getDiameterRatio() + 'px';
-      this.diameterTransformation = "translate(-50%, -50%) scale( " + this.getDiameterRatio() + " )";
-    };
-    MdProgressCircular.prototype.getDiameterRatio = function() {
-      if (!this.diameter)
-        return Defaults.DEFAULT_SCALING;
-      var match = /([0-9]*)%/.exec(this.diameter);
-      var value = math_1.Math.max(0, (match && match[1] / 100) || parseFloat(this.diameter));
-      return (value > 1) ? value / Defaults.DEFAULT_PROGRESS_SIZE : value;
-    };
-    MdProgressCircular.prototype.webkit = function(style) {
-      return "-webkit-" + style;
-    };
-    __decorate([core_1.Input('diameter'), __metadata('design:type', String)], MdProgressCircular.prototype, "diameter_", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdProgressCircular.prototype, "mode", void 0);
-    MdProgressCircular = __decorate([core_1.Component({
-      selector: 'md-progress-circular',
-      inputs: ['value', 'diameter'],
-      host: {
-        'role': 'progressbar',
-        'aria-valuemin': '0',
-        'aria-valuemax': '100',
-        '[attr.aria-valuenow]': 'value',
-        '[style.width]': 'outerSize',
-        '[style.height]': 'outerSize'
-      }
-    }), core_1.View({
-      template: "\n    <div class=\"md-scale-wrapper\"\n     [style.-webkit-transform]=\"diameterTransformation\"\n     [style.transform]=\"diameterTransformation\">\n      <div class=\"md-spinner-wrapper\">\n        <div class=\"md-inner\">\n          <div class=\"md-gap\"\n          [style.-webkit-transition]=\"gapTransition\"\n          [style.transition]=\"gapTransition\"></div>\n          <div class=\"md-left\">\n            <div class=\"md-half-circle\"\n              [style.-webkit-transform]=\"leftHalfTransform\"\n              [style.transform]=\"leftHalfTransform\"\n              [style.-webkit-transition]=\"defaultHalfTransition\"\n              [style.transition]=\"defaultHalfTransition\"></div>\n          </div>\n          <div class=\"md-right\">\n            <div class=\"md-half-circle\"\n              [style.-webkit-transform]=\"rightHalfTransform\"\n              [style.transform]=\"rightHalfTransform\"\n              [style.-webkit-transition]=\"defaultHalfTransition\"\n              [style.transition]=\"defaultHalfTransition\"></div>\n          </div>\n        </div>\n      </div>\n    </div>",
-      directives: [],
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdProgressCircular);
-    return MdProgressCircular;
-  }(progress_linear_1.MdProgressLinear));
-  exports.MdProgressCircular = MdProgressCircular;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/peekaboo/peekaboo.js", ["angular2/core", "../../core/util/media", "angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var media_1 = $__require('../../core/util/media');
-  var core_2 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var lang_2 = $__require('angular2/src/facade/lang');
-  var lang_3 = $__require('angular2/src/facade/lang');
-  var PeekabooAction = (function() {
-    function PeekabooAction() {}
-    PeekabooAction.SHOW = 'show';
-    PeekabooAction.HIDE = 'hide';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], PeekabooAction, "SHOW", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], PeekabooAction, "HIDE", void 0);
-    PeekabooAction = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], PeekabooAction);
-    return PeekabooAction;
-  }());
-  exports.PeekabooAction = PeekabooAction;
-  var MdPeekaboo = (function() {
-    function MdPeekaboo(media) {
-      var _this = this;
-      this.media = media;
-      this.break = 100;
-      this._active = false;
-      this._breakXs = -1;
-      this._breakSm = -1;
-      this._breakMd = -1;
-      this._breakLg = -1;
-      this._breakXl = -1;
-      this._breakpoint = null;
-      this._mediaListeners = [];
-      this._windowScroll = this.evaluate.bind(this);
-      window.addEventListener('scroll', this._windowScroll);
-      MdPeekaboo.SIZES.forEach(function(size) {
-        _this._watchMediaQuery(size);
-        if (media_1.Media.hasMedia(size)) {
-          _this._breakpoint = size;
-        }
-      });
-      this.evaluate();
-    }
-    MdPeekaboo.MakeNumber = function(value) {
-      return lang_3.isString(value) ? lang_2.NumberWrapper.parseInt(value, 10) : value;
-    };
-    Object.defineProperty(MdPeekaboo.prototype, "active", {
-      get: function() {
-        return this._active;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "scrollTop", {
-      get: function() {
-        return window.pageYOffset || document.documentElement.scrollTop;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakXs", {
-      get: function() {
-        return this._breakXs;
-      },
-      set: function(value) {
-        this._breakXs = MdPeekaboo.MakeNumber(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakSm", {
-      get: function() {
-        return this._breakSm;
-      },
-      set: function(value) {
-        this._breakSm = MdPeekaboo.MakeNumber(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakMd", {
-      get: function() {
-        return this._breakMd;
-      },
-      set: function(value) {
-        this._breakMd = MdPeekaboo.MakeNumber(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakLg", {
-      get: function() {
-        return this._breakLg;
-      },
-      set: function(value) {
-        this._breakLg = MdPeekaboo.MakeNumber(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakXl", {
-      get: function() {
-        return this._breakXl;
-      },
-      set: function(value) {
-        this._breakXl = MdPeekaboo.MakeNumber(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdPeekaboo.prototype, "breakpoint", {
-      get: function() {
-        return this._breakpoint;
-      },
-      set: function(size) {
-        this._breakpoint = size;
-        this.evaluate();
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdPeekaboo.prototype.ngOnDestroy = function() {
-      this._mediaListeners.forEach(function(l) {
-        l.destroy();
-      });
-      this._mediaListeners = [];
-      window.removeEventListener('scroll', this._windowScroll);
-    };
-    MdPeekaboo.prototype._watchMediaQuery = function(size) {
-      var _this = this;
-      var l = this.media.listen(media_1.Media.getQuery(size));
-      l.onMatched.subscribe(function(mql) {
-        _this.breakpoint = size;
-      });
-      this._mediaListeners.push(l);
-    };
-    MdPeekaboo.prototype.evaluate = function() {
-      var top = this.scrollTop;
-      var bp = this.break;
-      switch (this._breakpoint) {
-        case 'xl':
-          if (this._breakXl !== -1) {
-            bp = this._breakXl;
-            break;
-          }
-        case 'lg':
-          if (this._breakLg !== -1) {
-            bp = this._breakLg;
-            break;
-          }
-        case 'md':
-          if (this._breakMd !== -1) {
-            bp = this._breakMd;
-            break;
-          }
-        case 'sm':
-          if (this._breakSm !== -1) {
-            bp = this._breakSm;
-            break;
-          }
-        case 'xs':
-          if (this._breakXs !== -1) {
-            bp = this._breakXs;
-            break;
-          }
-      }
-      if (top >= bp && !this._active) {
-        this._active = true;
-      } else if (top < bp && this._active) {
-        this._active = false;
-      }
-      return bp;
-    };
-    MdPeekaboo.SIZES = ['xs', 'sm', 'md', 'lg', 'xl'];
-    __decorate([core_2.Input(), __metadata('design:type', Number)], MdPeekaboo.prototype, "break", void 0);
-    __decorate([core_2.Input(), __metadata('design:type', String)], MdPeekaboo.prototype, "breakAction", void 0);
-    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakXs", null);
-    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakSm", null);
-    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakMd", null);
-    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakLg", null);
-    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakXl", null);
-    MdPeekaboo = __decorate([core_1.Directive({
-      selector: '[md-peekaboo]',
-      inputs: ['break', 'breakXs', 'breakSm', 'breakMd', 'breakLg', 'breakXl'],
-      host: {
-        '[class.md-peekaboo-active]': 'active',
-        '[attr.breakAction]': 'breakAction'
-      }
-    }), __metadata('design:paramtypes', [media_1.Media])], MdPeekaboo);
-    return MdPeekaboo;
-  }());
-  exports.MdPeekaboo = MdPeekaboo;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/radio/radio_button.js", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/async", "./radio_dispatcher", "../../core/key_codes", "../../core/util/util"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var core_1 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var async_1 = $__require('angular2/src/facade/async');
-  var radio_dispatcher_1 = $__require('./radio_dispatcher');
-  var key_codes_1 = $__require('../../core/key_codes');
-  var core_2 = $__require('angular2/core');
-  var util_1 = $__require('../../core/util/util');
-  var _uniqueIdCounter = 0;
-  var MdRadioGroup = (function() {
-    function MdRadioGroup(tabindex, disabled, radioDispatcher) {
-      this.change = new async_1.EventEmitter(false);
-      this.name_ = "md-radio-group-" + _uniqueIdCounter++;
-      this.radios_ = [];
-      this.disabled_ = false;
-      this.selectedRadioId = '';
-      this.radioDispatcher = radioDispatcher;
-      this.disabled = lang_1.isPresent(disabled);
-      this.tabindex = util_1.parseTabIndexAttribute(tabindex);
-    }
-    Object.defineProperty(MdRadioGroup.prototype, "value", {
-      get: function() {
-        return this.value_;
-      },
-      set: function(value) {
-        this.value_ = value;
-        this._setChildValue(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdRadioGroup.prototype.getName = function() {
-      return this.name_;
-    };
-    Object.defineProperty(MdRadioGroup.prototype, "disabled", {
-      get: function() {
-        return this.disabled_;
-      },
-      set: function(value) {
-        this.disabled_ = lang_1.isPresent(value) && value !== false;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdRadioGroup.prototype.ngOnChanges = function(_) {
-      this.disabled = lang_1.isPresent(this.disabled) && this.disabled !== false;
-      if (lang_1.isPresent(this.value) && this.value !== '') {
-        this.radioDispatcher.notify(this.name_);
-        this._setChildValue(this.value);
-      }
-    };
-    MdRadioGroup.prototype._setChildValue = function(value) {
-      var button = this.getChildByValue(value);
-      if (button) {
-        this.selectedRadioId = button.id;
-        this.activedescendant = button.id;
-        button.checked = true;
-      }
-    };
-    MdRadioGroup.prototype.updateValue = function(value, id) {
-      this.value = value;
-      this.selectedRadioId = id;
-      this.activedescendant = id;
-      async_1.ObservableWrapper.callEmit(this.change, value);
-    };
-    MdRadioGroup.prototype.register = function(radio) {
-      this.radios_.push(radio);
-    };
-    MdRadioGroup.prototype.unregister = function(radio) {
-      this.radios_ = this.radios_.filter(function(r) {
-        return r.id !== radio.id;
-      });
-    };
-    MdRadioGroup.prototype.onKeydown = function(event) {
-      if (this.disabled) {
-        return;
-      }
-      switch (event.keyCode) {
-        case key_codes_1.KeyCodes.UP:
-          this.stepSelectedRadio(-1);
-          event.preventDefault();
-          break;
-        case key_codes_1.KeyCodes.DOWN:
-          this.stepSelectedRadio(1);
-          event.preventDefault();
-          break;
-      }
-    };
-    MdRadioGroup.prototype.getSelectedRadioIndex = function() {
-      for (var i = 0; i < this.radios_.length; i++) {
-        if (this.radios_[i].id === this.selectedRadioId) {
-          return i;
-        }
-      }
-      return -1;
-    };
-    MdRadioGroup.prototype.getChildByValue = function(value) {
-      for (var i = 0; i < this.radios_.length; i++) {
-        if (this.radios_[i].value === value) {
-          return this.radios_[i];
-        }
-      }
-      return null;
-    };
-    MdRadioGroup.prototype.stepSelectedRadio = function(step) {
-      var index = this.getSelectedRadioIndex() + step;
-      if (index < 0 || index >= this.radios_.length) {
-        return;
-      }
-      var radio = this.radios_[index];
-      if (radio.disabled) {
-        this.stepSelectedRadio(step + (step < 0 ? -1 : 1));
-        return;
-      }
-      this.updateValue(radio.value, radio.id);
-      radio.checked = true;
-    };
-    __decorate([core_2.Output('valueChange'), __metadata('design:type', async_1.EventEmitter)], MdRadioGroup.prototype, "change", void 0);
-    __decorate([core_2.Input('value'), __metadata('design:type', Object)], MdRadioGroup.prototype, "value_", void 0);
-    MdRadioGroup = __decorate([core_1.Component({
-      selector: 'md-radio-group',
-      inputs: ['disabled', 'value'],
-      host: {
-        'role': 'radiogroup',
-        '[attr.aria-disabled]': 'disabled',
-        '[attr.aria-activedescendant]': 'activedescendant',
-        '(keydown)': 'onKeydown($event)',
-        '[tabindex]': 'tabindex'
-      }
-    }), core_1.View({
-      template: "<ng-content></ng-content>",
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __param(0, core_1.Attribute('tabindex')), __param(1, core_1.Attribute('disabled')), __metadata('design:paramtypes', [String, String, radio_dispatcher_1.MdRadioDispatcher])], MdRadioGroup);
-    return MdRadioGroup;
-  }());
-  exports.MdRadioGroup = MdRadioGroup;
-  var MdRadioButton = (function() {
-    function MdRadioButton(radioGroup, id, value, checked, tabindex, radioDispatcher) {
-      var _this = this;
-      this.radioGroup = radioGroup;
-      this.radioDispatcher = radioDispatcher;
-      this.value = value ? value : null;
-      this.checked = lang_1.isPresent(checked) ? true : false;
-      this.id = lang_1.isPresent(id) ? id : "md-radio-" + _uniqueIdCounter++;
-      radioDispatcher.listen(function(name) {
-        if (name === _this.name) {
-          _this.checked = false;
-        }
-      });
-      if (lang_1.isPresent(radioGroup)) {
-        this.name = radioGroup.getName();
-        this.radioGroup.register(this);
-        if (this.checked) {
-          this.radioGroup.updateValue(this.value, this.id);
-        }
-      }
-      if (!lang_1.isPresent(radioGroup)) {
-        this.tabindex = util_1.parseTabIndexAttribute(tabindex);
-      } else {
-        this.tabindex = -1;
-      }
-    }
-    MdRadioButton.prototype.ngOnInit = function() {
-      if (lang_1.isPresent(this.radioGroup)) {
-        this.name = this.radioGroup.getName();
-      }
-    };
-    MdRadioButton.prototype.ngOnDestroy = function() {
-      if (lang_1.isPresent(this.radioGroup)) {
-        this.radioGroup.unregister(this);
-      }
-    };
-    MdRadioButton.prototype.isDisabled = function() {
-      return this.disabled || (lang_1.isPresent(this.disabled) && lang_1.StringWrapper.equals(this.disabled, '')) || (lang_1.isPresent(this.radioGroup) && this.radioGroup.disabled);
-    };
-    Object.defineProperty(MdRadioButton.prototype, "disabled", {
-      get: function() {
-        return this.disabled_ || (this.radioGroup && this.radioGroup.disabled);
-      },
-      set: function(value) {
-        this.disabled_ = lang_1.isPresent(value) && value !== false;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdRadioButton.prototype.select = function(event) {
-      if (this.isDisabled()) {
-        event.stopPropagation();
-        return;
-      }
-      this.radioDispatcher.notify(this.name);
-      this.checked = true;
-      if (lang_1.isPresent(this.radioGroup)) {
-        this.radioGroup.updateValue(this.value, this.id);
-      }
-    };
-    MdRadioButton.prototype.onKeydown = function(event) {
-      if (event.keyCode === key_codes_1.KeyCodes.SPACE) {
-        event.preventDefault();
-        this.select(event);
-      }
-    };
-    MdRadioButton = __decorate([core_1.Component({
-      selector: 'md-radio-button',
-      inputs: ['id', 'name', 'value', 'checked', 'disabled'],
-      host: {
-        'role': 'radio',
-        '[id]': 'id',
-        '[tabindex]': 'tabindex',
-        '[attr.aria-checked]': 'checked',
-        '[attr.disabled]': 'disabled ? "" : undefined',
-        '[attr.aria-disabled]': 'disabled',
-        '(keydown)': 'onKeydown($event)',
-        '(click)': 'select($event)'
-      }
-    }), core_1.View({
-      template: "\n    <label role=\"radio\" class=\"md-radio-root\" [class.md-radio-checked]=\"checked\">\n      <div class=\"md-radio-container\">\n        <div class=\"md-radio-off\"></div>\n        <div class=\"md-radio-on\"></div>\n      </div>\n      <div class=\"md-radio-label\">\n        <ng-content></ng-content>\n      </div>\n    </label>",
-      directives: [],
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __param(0, core_1.Optional()), __param(0, core_1.SkipSelf()), __param(0, core_1.Host()), __param(1, core_1.Attribute('id')), __param(2, core_1.Attribute('value')), __param(3, core_1.Attribute('checked')), __param(4, core_1.Attribute('tabindex')), __metadata('design:paramtypes', [MdRadioGroup, String, String, String, String, radio_dispatcher_1.MdRadioDispatcher])], MdRadioButton);
-    return MdRadioButton;
-  }());
-  exports.MdRadioButton = MdRadioButton;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/radio/radio_dispatcher.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var MdRadioDispatcher = (function() {
-    function MdRadioDispatcher() {
-      this.listeners_ = [];
-    }
-    MdRadioDispatcher.prototype.notify = function(name) {
-      this.listeners_.forEach(function(listener) {
-        return listener(name);
-      });
-    };
-    MdRadioDispatcher.prototype.listen = function(listener) {
-      this.listeners_.push(listener);
-    };
-    MdRadioDispatcher = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MdRadioDispatcher);
-    return MdRadioDispatcher;
-  }());
-  exports.MdRadioDispatcher = MdRadioDispatcher;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/core/key_codes.js", ["angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var KeyCodes = (function() {
-    function KeyCodes() {}
-    KeyCodes.ESCAPE = 27;
-    KeyCodes.SPACE = 32;
-    KeyCodes.UP = 38;
-    KeyCodes.DOWN = 40;
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "ESCAPE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "SPACE", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "UP", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "DOWN", void 0);
-    KeyCodes = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], KeyCodes);
-    return KeyCodes;
-  }());
-  exports.KeyCodes = KeyCodes;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/checkbox/checkbox.js", ["angular2/core", "angular2/src/facade/lang", "../../core/key_codes", "../../core/util/util"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var key_codes_1 = $__require('../../core/key_codes');
-  var core_2 = $__require('angular2/core');
-  var util_1 = $__require('../../core/util/util');
-  var MdCheckbox = (function() {
-    function MdCheckbox() {
-      this.checkedChange = new core_2.EventEmitter(false);
-      this.checked = false;
-      this.disabled_ = false;
-    }
-    Object.defineProperty(MdCheckbox.prototype, "tabindex", {
-      get: function() {
-        return this._tabindex;
-      },
-      set: function(value) {
-        this._tabindex = util_1.parseTabIndexAttribute(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdCheckbox.prototype, "disabled", {
-      get: function() {
-        return this.disabled_;
-      },
-      set: function(value) {
-        this.disabled_ = lang_1.isPresent(value) && value !== false;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdCheckbox.prototype.onKeydown = function(event) {
-      if (event.keyCode === key_codes_1.KeyCodes.SPACE) {
-        event.preventDefault();
-        this.toggle(event);
-      }
-    };
-    MdCheckbox.prototype.toggle = function(event) {
-      if (this.disabled) {
-        event.stopPropagation();
-        return;
-      }
-      this.checked = !this.checked;
-      this.checkedChange.emit(this.checked);
-    };
-    __decorate([core_2.Output(), __metadata('design:type', core_2.EventEmitter)], MdCheckbox.prototype, "checkedChange", void 0);
-    __decorate([core_2.Input(), __metadata('design:type', Boolean)], MdCheckbox.prototype, "checked", void 0);
-    __decorate([core_2.Input('disabled'), __metadata('design:type', Boolean)], MdCheckbox.prototype, "disabled_", void 0);
-    __decorate([core_2.Input('tabindex'), __metadata('design:type', Number)], MdCheckbox.prototype, "_tabindex", void 0);
-    MdCheckbox = __decorate([core_1.Component({
-      selector: 'md-checkbox',
-      inputs: ['checked', 'disabled'],
-      host: {
-        'role': 'checkbox',
-        '[attr.aria-checked]': 'checked',
-        '[attr.aria-disabled]': 'disabled',
-        '[tabindex]': 'tabindex',
-        '(keydown)': 'onKeydown($event)',
-        '(click)': 'toggle($event)'
-      }
-    }), core_1.View({
-      template: "\n    <div class=\"md-checkbox-container\">\n      <div class=\"md-checkbox-icon\"></div>\n    </div>\n    <div class=\"md-checkbox-label\"><ng-content></ng-content></div>",
-      directives: [],
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdCheckbox);
-    return MdCheckbox;
-  }());
-  exports.MdCheckbox = MdCheckbox;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/switcher/switch.js", ["angular2/core", "../checkbox/checkbox"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var checkbox_1 = $__require('../checkbox/checkbox');
-  var MdSwitch = (function(_super) {
-    __extends(MdSwitch, _super);
-    function MdSwitch() {
-      _super.apply(this, arguments);
-    }
-    MdSwitch = __decorate([core_1.Component({
-      selector: 'md-switch',
-      inputs: ['checked', 'disabled'],
-      host: {
-        'role': 'checkbox',
-        '[attr.aria-checked]': 'checked',
-        '[attr.aria-disabled]': 'disabled_',
-        '(keydown)': 'onKeydown($event)',
-        '(click)': 'toggle($event)'
-      }
-    }), core_1.View({
-      template: "\n    <div class=\"md-switch-container\">\n      <div class=\"md-switch-bar\"></div>\n      <div class=\"md-switch-thumb-container\">\n        <div class=\"md-switch-thumb\"></div>\n      </div>\n    </div>\n    <div class=\"md-switch-label\">\n      <ng-content></ng-content>\n    </div>",
-      directives: [],
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [])], MdSwitch);
-    return MdSwitch;
-  }(checkbox_1.MdCheckbox));
-  exports.MdSwitch = MdSwitch;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/subheader/subheader.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var MdSubheader = (function() {
-    function MdSubheader() {}
-    MdSubheader = __decorate([core_1.Component({
-      selector: 'md-subheader',
-      host: {'class': 'md-subheader'}
-    }), core_1.View({template: "\n    <div class=\"md-subheader-inner\">\n      <span class=\"md-subheader-content\"><ng-content></ng-content></span>\n    </div>"}), __metadata('design:paramtypes', [])], MdSubheader);
-    return MdSubheader;
-  }());
-  exports.MdSubheader = MdSubheader;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/backdrop/backdrop.js", ["../../core/util/animate", "angular2/core", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var animate_1 = $__require('../../core/util/animate');
-  var core_1 = $__require('angular2/core');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var MdBackdrop = (function() {
-    function MdBackdrop(element) {
-      this.element = element;
-      this.clickClose = false;
-      this.hideScroll = true;
-      this.onHiding = new core_1.EventEmitter(false);
-      this.onHidden = new core_1.EventEmitter(false);
-      this.onShowing = new core_1.EventEmitter();
-      this.onShown = new core_1.EventEmitter();
-      this.transitionClass = 'md-active';
-      this.transitionAddClass = true;
-      this._visible = false;
-      this._transitioning = false;
-      this._previousOverflow = null;
-      this._body = dom_adapter_1.DOM.query('body');
-    }
-    Object.defineProperty(MdBackdrop.prototype, "visible", {
-      get: function() {
-        return this._visible;
-      },
-      set: function(value) {
-        this.toggle(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdBackdrop.prototype.onClick = function() {
-      if (this.clickClose && !this._transitioning && this.visible) {
-        this.hide();
-      }
-    };
-    MdBackdrop.prototype.hide = function() {
-      return this.toggle(false);
-    };
-    MdBackdrop.prototype.show = function() {
-      return this.toggle(true);
-    };
-    MdBackdrop.prototype.toggle = function(visible) {
-      var _this = this;
-      if (visible === void 0) {
-        visible = !this.visible;
-      }
-      if (visible === this._visible) {
-        return Promise.resolve();
-      }
-      var beginEvent = visible ? this.onShowing : this.onHiding;
-      var endEvent = visible ? this.onShown : this.onHidden;
-      this._visible = visible;
-      this._transitioning = true;
-      beginEvent.emit(this);
-      var action = visible ? (this.transitionAddClass ? animate_1.Animate.enter : animate_1.Animate.leave) : (this.transitionAddClass ? animate_1.Animate.leave : animate_1.Animate.enter);
-      if (visible && this.hideScroll && this.element && !this._previousOverflow) {
-        var style = dom_adapter_1.DOM.getStyle(this._body, 'overflow');
-        if (style !== 'hidden') {
-          this._previousOverflow = style;
-          dom_adapter_1.DOM.setStyle(this._body, 'overflow', 'hidden');
-        }
-      } else if (!visible && this.hideScroll && this.element && this._previousOverflow !== null) {
-        dom_adapter_1.DOM.setStyle(this._body, 'overflow', this._previousOverflow);
-        this._previousOverflow = null;
-      }
-      return action(this.element.nativeElement, this.transitionClass).then(function() {
-        _this._transitioning = false;
-        endEvent.emit(_this);
-      });
-    };
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "clickClose", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "hideScroll", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onHiding", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onHidden", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onShowing", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onShown", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdBackdrop.prototype, "transitionClass", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Object)], MdBackdrop.prototype, "transitionAddClass", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "visible", null);
-    MdBackdrop = __decorate([core_1.Component({
-      selector: 'md-backdrop',
-      host: {
-        'class': 'md-backdrop',
-        '(click)': 'onClick()'
-      }
-    }), core_1.View({
-      template: '',
-      encapsulation: core_1.ViewEncapsulation.None
-    }), __metadata('design:paramtypes', [core_1.ElementRef])], MdBackdrop);
-    return MdBackdrop;
-  }());
-  exports.MdBackdrop = MdBackdrop;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/sidenav/sidenav.js", ["angular2/core", "../backdrop/backdrop", "angular2/src/facade/lang", "./sidenav_service", "angular2/src/facade/async"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var core_1 = $__require('angular2/core');
-  var backdrop_1 = $__require('../backdrop/backdrop');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var sidenav_service_1 = $__require('./sidenav_service');
-  var async_1 = $__require('angular2/src/facade/async');
-  var SidenavAlignment = (function() {
-    function SidenavAlignment() {}
-    SidenavAlignment.LEFT = 'left';
-    SidenavAlignment.RIGHT = 'right';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavAlignment, "LEFT", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavAlignment, "RIGHT", void 0);
-    SidenavAlignment = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], SidenavAlignment);
-    return SidenavAlignment;
-  }());
-  exports.SidenavAlignment = SidenavAlignment;
-  var SidenavStyle = (function() {
-    function SidenavStyle() {}
-    SidenavStyle.OVER = 'over';
-    SidenavStyle.SIDE = 'side';
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavStyle, "OVER", void 0);
-    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavStyle, "SIDE", void 0);
-    SidenavStyle = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], SidenavStyle);
-    return SidenavStyle;
-  }());
-  exports.SidenavStyle = SidenavStyle;
-  var MdSidenav = (function(_super) {
-    __extends(MdSidenav, _super);
-    function MdSidenav(element, service, renderer, container) {
-      _super.call(this, element);
-      this.element = element;
-      this.service = service;
-      this.renderer = renderer;
-      this.container = container;
-      this.name = 'default';
-      this._align = SidenavAlignment.LEFT;
-      this._style = SidenavStyle.OVER;
-      this.backdropRef = null;
-      this.transitionClass = 'md-closed';
-      this.transitionAddClass = false;
-      this.renderer.setElementClass(this.element.nativeElement, this.transitionClass, !this.transitionAddClass);
-    }
-    Object.defineProperty(MdSidenav.prototype, "align", {
-      get: function() {
-        return this._align;
-      },
-      set: function(value) {
-        this._align = value === SidenavAlignment.RIGHT ? SidenavAlignment.RIGHT : SidenavAlignment.LEFT;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdSidenav.prototype, "style", {
-      get: function() {
-        return this._style;
-      },
-      set: function(value) {
-        var _this = this;
-        this._style = value === SidenavStyle.SIDE ? SidenavStyle.SIDE : SidenavStyle.OVER;
-        if (this.container) {
-          async_1.TimerWrapper.setTimeout(function() {
-            _this.container.updateStyle(_this);
-          }, 0);
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdSidenav.prototype.ngOnInit = function() {
-      this.service.register(this);
-    };
-    MdSidenav.prototype.ngOnDestroy = function() {
-      this.service.unregister(this);
-      this.backdropRef = null;
-    };
-    MdSidenav.prototype.toggle = function(visible) {
-      if (this.backdropRef) {
-        this.backdropRef.toggle(visible);
-      }
-      return _super.prototype.toggle.call(this, visible);
-    };
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdSidenav.prototype, "name", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onHiding", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onHidden", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onShowing", void 0);
-    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onShown", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdSidenav.prototype, "align", null);
-    __decorate([core_1.Input(), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdSidenav.prototype, "style", null);
-    MdSidenav = __decorate([core_1.Component({
-      selector: 'md-sidenav',
-      host: {
-        '[class.md-style-side]': 'style=="side"',
-        '[class.md-whiteframe-z2]': 'visible',
-        '[class.md-sidenav-left]': 'align!="right"',
-        '[class.md-sidenav-right]': 'align=="right"'
-      },
-      template: "<ng-content></ng-content>",
-      directives: [backdrop_1.MdBackdrop]
-    }), __param(1, core_1.Inject(core_1.forwardRef(function() {
-      return sidenav_service_1.SidenavService;
-    }))), __param(3, core_1.Optional()), __param(3, core_1.SkipSelf()), __param(3, core_1.Host()), __param(3, core_1.Inject(core_1.forwardRef(function() {
-      return MdSidenavContainer;
-    }))), __metadata('design:paramtypes', [core_1.ElementRef, sidenav_service_1.SidenavService, core_1.Renderer, MdSidenavContainer])], MdSidenav);
-    return MdSidenav;
-  }(backdrop_1.MdBackdrop));
-  exports.MdSidenav = MdSidenav;
-  var MdSidenavContainer = (function() {
-    function MdSidenavContainer(_app) {
-      this._app = _app;
-      this._unsubscribe = null;
-      this.isPushed = false;
-    }
-    MdSidenavContainer.prototype.ngOnDestroy = function() {
-      this.children.toArray().forEach(function(m) {
-        m.backdropRef = null;
-      });
-      this._unsubscribe.unsubscribe();
-    };
-    MdSidenavContainer.prototype.ngAfterViewInit = function() {
-      var _this = this;
-      this.children.toArray().forEach(function(m) {
-        m.backdropRef = _this._backdrop;
-      });
-      this._unsubscribe = this._backdrop.onHiding.subscribe(function() {
-        _this.children.toArray().forEach(function(m) {
-          m.visible = false;
-        });
-      });
-    };
-    MdSidenavContainer.prototype.updateStyle = function(child) {
-      var pushed = false;
-      this.children && this.children.toArray().forEach(function(m) {
-        if (m.style === SidenavStyle.SIDE) {
-          pushed = true;
-        }
-      });
-      this.isPushed = pushed;
-      this._app && this._app.tick();
-    };
-    __decorate([core_1.ContentChildren(MdSidenav), __metadata('design:type', core_1.QueryList)], MdSidenavContainer.prototype, "children", void 0);
-    __decorate([core_1.ViewChild(backdrop_1.MdBackdrop), __metadata('design:type', backdrop_1.MdBackdrop)], MdSidenavContainer.prototype, "_backdrop", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdSidenavContainer.prototype, "isPushed", void 0);
-    MdSidenavContainer = __decorate([core_1.Component({
-      selector: 'md-sidenav-container',
-      template: "\n    <md-backdrop class=\"md-opaque\" clickClose=\"true\"></md-backdrop>\n    <ng-content></ng-content>",
-      directives: [backdrop_1.MdBackdrop],
-      host: {'[class.md-pushed]': 'isPushed'}
-    }), __param(0, core_1.Optional()), __metadata('design:paramtypes', [core_1.ApplicationRef])], MdSidenavContainer);
-    return MdSidenavContainer;
-  }());
-  exports.MdSidenavContainer = MdSidenavContainer;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/sidenav/sidenav_service.js", ["angular2/core"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var SidenavService = (function() {
-    function SidenavService() {
-      this._instances = [];
-    }
-    SidenavService.prototype.show = function(name) {
-      var instance = this.find(name);
-      if (!instance) {
-        return Promise.reject('invalid container');
-      }
-      return instance.show();
-    };
-    SidenavService.prototype.hide = function(name) {
-      var instance = this.find(name);
-      if (!instance) {
-        return Promise.reject('invalid container');
-      }
-      return instance.hide();
-    };
-    SidenavService.prototype.find = function(name) {
-      return this._instances.filter(function(c) {
-        return c.name === name;
-      })[0] || null;
-    };
-    SidenavService.prototype.register = function(instance) {
-      this._instances.push(instance);
-    };
-    SidenavService.prototype.unregister = function(instance) {
-      this._instances = this._instances.filter(function(c) {
-        return c.name !== instance.name;
-      });
-    };
-    SidenavService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], SidenavService);
-    return SidenavService;
-  }());
-  exports.SidenavService = SidenavService;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/core/util/util.js", ["angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var lang_2 = $__require('angular2/src/facade/lang');
-  function debounce(func, wait, scope) {
-    var timer;
-    return function debounced() {
-      var context = scope,
-          args = Array.prototype.slice.call(arguments);
-      clearTimeout(timer);
-      timer = setTimeout(function() {
-        timer = undefined;
-        func.apply(context, args);
-      }, wait || 10);
-    };
-  }
-  exports.debounce = debounce;
-  function throttle(func, delay, scope) {
-    var recent;
-    return function throttled() {
-      var context = scope;
-      var args = arguments;
-      var now = new Date().getTime();
-      if (!recent || (now - recent > delay)) {
-        func.apply(context, args);
-        recent = now;
-      }
-    };
-  }
-  exports.throttle = throttle;
-  function rAF(callback) {
-    window.requestAnimationFrame(callback);
-  }
-  exports.rAF = rAF;
-  function parseTabIndexAttribute(attr) {
-    return lang_1.isPresent(attr) ? lang_2.NumberWrapper.parseInt(attr, 10) : 0;
-  }
-  exports.parseTabIndexAttribute = parseTabIndexAttribute;
-  function isNumber(value) {
-    return Object.prototype.toString.call(value) === '[object Number]';
-  }
-  exports.isNumber = isNumber;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/toolbar/toolbar.js", ["angular2/core", "../../core/util/util", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var util_1 = $__require('../../core/util/util');
-  var core_2 = $__require('angular2/core');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var lang_2 = $__require('angular2/src/facade/lang');
-  var lang_3 = $__require('angular2/src/facade/lang');
-  var MdToolbar = (function() {
-    function MdToolbar(el) {
-      this.el = el;
-      this._mdShrinkSpeed = 0.5;
-      this._debouncedContentScroll = null;
-      this._debouncedUpdateHeight = null;
-      this._content = null;
-      this._toolbarHeight = 0;
-      this._cancelScrollShrink = null;
-      this._previousScrollTop = 0;
-      this._currentY = 0;
-      this._mdScrollShrink = false;
-      this._debouncedContentScroll = util_1.throttle(this.onContentScroll, 10, this);
-      this._debouncedUpdateHeight = util_1.debounce(this.updateToolbarHeight, 5 * 1000, this);
-    }
-    Object.defineProperty(MdToolbar.prototype, "mdShrinkSpeed", {
-      get: function() {
-        return this._mdShrinkSpeed;
-      },
-      set: function(value) {
-        this._mdShrinkSpeed = lang_2.isString(value) ? lang_3.NumberWrapper.parseFloat(value) : value;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdToolbar.prototype, "mdScrollShrink", {
-      get: function() {
-        return this._mdScrollShrink;
-      },
-      set: function(value) {
-        this._mdScrollShrink = !!lang_1.isPresent(value);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdToolbar.prototype.ngAfterContentInit = function() {
-      this.disableScrollShrink();
-      if (!this.mdScrollShrink) {
-        return;
-      }
-      this._content = dom_adapter_1.DOM.querySelector(dom_adapter_1.DOM.parentElement(this.el.nativeElement), 'md-content');
-      if (!this._content) {
-        return;
-      }
-      this._cancelScrollShrink = dom_adapter_1.DOM.onAndCancel(this._content, 'scroll', this._debouncedContentScroll);
-      dom_adapter_1.DOM.setAttribute(this._content, 'scroll-shrink', 'true');
-      util_1.rAF(this.updateToolbarHeight.bind(this));
-    };
-    MdToolbar.prototype.ngOnChanges = function(changes) {
-      this.updateToolbarHeight();
-    };
-    MdToolbar.prototype.ngOnDestroy = function() {
-      this.disableScrollShrink();
-    };
-    MdToolbar.prototype.disableScrollShrink = function() {
-      if (this._cancelScrollShrink) {
-        this._cancelScrollShrink();
-        this._cancelScrollShrink = null;
-      }
-    };
-    MdToolbar.prototype.updateToolbarHeight = function() {
-      this._toolbarHeight = dom_adapter_1.DOM.getProperty(this.el.nativeElement, 'offsetHeight');
-      if (this._content) {
-        var margin = (-this._toolbarHeight * this.mdShrinkSpeed) + 'px';
-        dom_adapter_1.DOM.setStyle(this._content, "margin-top", margin);
-        dom_adapter_1.DOM.setStyle(this._content, "margin-bottom", margin);
-        this.onContentScroll();
-      }
-    };
-    MdToolbar.prototype.onContentScroll = function(e) {
-      var _this = this;
-      var scrollTop = e ? e.target.scrollTop : this._previousScrollTop;
-      this._debouncedUpdateHeight();
-      this._currentY = Math.min(this._toolbarHeight / this.mdShrinkSpeed, Math.max(0, this._currentY + scrollTop - this._previousScrollTop));
-      var toolbarXform = "translate3d(0," + -this._currentY * this.mdShrinkSpeed + "px,0)";
-      var contentXform = "translate3d(0," + (this._toolbarHeight - this._currentY) * this.mdShrinkSpeed + "px,0)";
-      dom_adapter_1.DOM.setStyle(this._content, '-webkit-transform', contentXform);
-      dom_adapter_1.DOM.setStyle(this._content, 'transform', contentXform);
-      dom_adapter_1.DOM.setStyle(this.el.nativeElement, '-webkit-transform', toolbarXform);
-      dom_adapter_1.DOM.setStyle(this.el.nativeElement, 'transform', toolbarXform);
-      this._previousScrollTop = scrollTop;
-      util_1.rAF(function() {
-        var hasWhiteFrame = dom_adapter_1.DOM.hasClass(_this.el.nativeElement, 'md-whiteframe-z1');
-        if (hasWhiteFrame && !_this._currentY) {
-          dom_adapter_1.DOM.removeClass(_this.el.nativeElement, 'md-whiteframe-z1');
-        } else if (!hasWhiteFrame && _this._currentY) {
-          dom_adapter_1.DOM.addClass(_this.el.nativeElement, 'md-whiteframe-z1');
-        }
-      });
-    };
-    __decorate([core_1.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdToolbar.prototype, "mdShrinkSpeed", null);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean), __metadata('design:paramtypes', [Boolean])], MdToolbar.prototype, "mdScrollShrink", null);
-    MdToolbar = __decorate([core_1.Directive({
-      selector: 'md-toolbar',
-      inputs: ['mdShrinkSpeed', 'mdScrollShrink']
-    }), __metadata('design:paramtypes', [core_2.ElementRef])], MdToolbar);
-    return MdToolbar;
-  }());
-  exports.MdToolbar = MdToolbar;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/core/util/ink.js", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "./animate"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var animate_1 = $__require('./animate');
-  var Ink = (function() {
-    function Ink() {}
-    Ink.canApply = function(element) {
-      return !dom_adapter_1.DOM.hasAttribute(element, 'md-no-ink');
-    };
-    Ink.getSize = function(fit, width, height) {
-      return fit ? Math.max(width, height) : Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-    };
-    Ink.ripple = function(element, left, top) {
-      var fit = lang_1.isPresent(dom_adapter_1.DOM.getAttribute(element, 'md-fab'));
-      var container = dom_adapter_1.DOM.querySelector(element, '.md-ripple-container');
-      if (!container) {
-        container = dom_adapter_1.DOM.createElement('div');
-        dom_adapter_1.DOM.addClass(container, 'md-ripple-container');
-        dom_adapter_1.DOM.appendChild(element, container);
-      }
-      var ripple = dom_adapter_1.DOM.createElement('div');
-      dom_adapter_1.DOM.addClass(ripple, 'md-ripple');
-      var getInitialStyles = function() {
-        var color = dom_adapter_1.DOM.getComputedStyle(element).color || 'rgb(0,0,0)';
-        var size = Ink.getSize(fit, element.clientWidth, element.clientHeight);
-        return {
-          'background-color': color,
-          left: left + "px",
-          top: top + "px",
-          width: size + "px",
-          height: size + "px"
-        };
-      };
-      return animate_1.Animate.setStyles(ripple, getInitialStyles()).then(function() {
-        return dom_adapter_1.DOM.appendChild(container, ripple);
-      }).then(function() {
-        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-placed');
-      }).then(function() {
-        return animate_1.Animate.wait();
-      }).then(function() {
-        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-scaled');
-      }).then(function() {
-        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-active');
-      }).then(function() {
-        return animate_1.Animate.wait(450);
-      }).then(function() {
-        return dom_adapter_1.DOM.removeClass(ripple, 'md-ripple-active');
-      }).then(function() {
-        return animate_1.Animate.wait(650);
-      }).then(function() {
-        return dom_adapter_1.DOM.removeChild(container, ripple);
-      });
-    };
-    Ink.rippleEvent = function(element, event) {
-      var rippleX = event.offsetX;
-      var rippleY = event.offsetY;
-      if (element !== event.srcElement) {
-        var rect = dom_adapter_1.DOM.getBoundingClientRect(element);
-        rippleX = event.clientX - rect.left;
-        rippleY = event.clientY - rect.top;
-      }
-      return Ink.ripple(element, rippleX, rippleY);
-    };
-    return Ink;
-  }());
-  exports.Ink = Ink;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/components/tabs/tabs.js", ["angular2/core", "../../core/util/ink", "angular2/common"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var core_1 = $__require('angular2/core');
-  var ink_1 = $__require('../../core/util/ink');
-  var core_2 = $__require('angular2/core');
-  var common_1 = $__require('angular2/common');
-  var core_3 = $__require('angular2/core');
-  var core_4 = $__require('angular2/core');
-  var MdTab = (function() {
-    function MdTab(viewContainer, templateRef) {
-      this.viewContainer = viewContainer;
-      this.templateRef = templateRef;
-      this.disabled = false;
-      this._active = false;
-    }
-    Object.defineProperty(MdTab.prototype, "active", {
-      get: function() {
-        return this._active;
-      },
-      set: function(active) {
-        if (active == this._active) {
-          return;
-        }
-        this._active = active;
-        if (active) {
-          this.viewContainer.createEmbeddedView(this.templateRef);
-        } else {
-          this.viewContainer.remove(0);
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    __decorate([core_1.Input(), __metadata('design:type', String)], MdTab.prototype, "label", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdTab.prototype, "disabled", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Boolean), __metadata('design:paramtypes', [Boolean])], MdTab.prototype, "active", null);
-    MdTab = __decorate([core_1.Directive({selector: '[md-tab]'}), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef])], MdTab);
-    return MdTab;
-  }());
-  exports.MdTab = MdTab;
-  var MdTabs = (function() {
-    function MdTabs(panes, _element) {
-      var _this = this;
-      this.panes = panes;
-      this._element = _element;
-      this.mdNoScroll = false;
-      this._selected = 0;
-      this.panes.changes.subscribe(function(_) {
-        _this.panes.toArray().forEach(function(p, index) {
-          p.active = index === _this._selected;
-        });
-      });
-    }
-    Object.defineProperty(MdTabs.prototype, "selected", {
-      get: function() {
-        return this._selected;
-      },
-      set: function(index) {
-        var panes = this.panes.toArray();
-        var pane = null;
-        if (index >= 0 && index < panes.length) {
-          pane = panes[index];
-        }
-        this.selectedTab = pane;
-        this._selected = index;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(MdTabs.prototype, "selectedTab", {
-      get: function() {
-        var result = null;
-        this.panes.toArray().forEach(function(p) {
-          if (p.active) {
-            result = p;
-          }
-        });
-        return result;
-      },
-      set: function(value) {
-        var _this = this;
-        this.panes.toArray().forEach(function(p, index) {
-          p.active = p == value;
-          if (p.active) {
-            _this._selected = index;
-          }
-        });
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MdTabs.prototype.onTabClick = function(pane, event) {
-      if (event && ink_1.Ink.canApply(this._element.nativeElement)) {
-        ink_1.Ink.rippleEvent(event.target, event);
-      }
-      this.selectedTab = pane;
-    };
-    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdTabs.prototype, "mdNoScroll", void 0);
-    __decorate([core_1.Input(), __metadata('design:type', Number)], MdTabs.prototype, "selected", null);
-    MdTabs = __decorate([core_1.Component({
-      selector: 'md-tabs',
-      template: "\n    <md-tabs-wrapper>\n      <md-tab-data></md-tab-data>\n      <md-tabs-canvas role=\"tablist\">\n        <md-pagination-wrapper>\n          <md-tab-item tabindex=\"-1\"\n                       class=\"md-tab\"\n                       (click)=\"onTabClick(pane,$event)\"\n                       [class.md-active]=\"selectedTab == pane\"\n                       [disabled]=\"pane.disabled\"\n                       [style.max-width]=\"maxTabWidth + 'px'\"\n                       *ngFor=\"#pane of panes\"\n                       role=\"tab\">\n            {{pane.label}}\n          </md-tab-item>\n          <md-ink-bar></md-ink-bar>\n        </md-pagination-wrapper>\n      </md-tabs-canvas>\n    </md-tabs-wrapper>\n    <md-tabs-content-wrapper>\n      <md-tab-content role=\"tabpanel\" class=\"md-active\"\n                      [class.md-no-scroll]=\"mdNoScroll\">\n        <ng-content></ng-content>\n      </md-tab-content>\n    </md-tabs-content-wrapper>",
-      directives: [common_1.NgFor],
-      properties: ['selected'],
-      encapsulation: core_2.ViewEncapsulation.None
-    }), __param(0, core_3.Query(MdTab)), __metadata('design:paramtypes', [core_1.QueryList, core_4.ElementRef])], MdTabs);
-    return MdTabs;
-  }());
-  exports.MdTabs = MdTabs;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/core/util/media.js", ["angular2/core", "rxjs/Subject"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = $__require('angular2/core');
-  var Subject_1 = $__require('rxjs/Subject');
-  exports.MEDIA = {
-    'xs': '(max-width: 599px)',
-    'gt-xs': '(min-width: 600px)',
-    'sm': '(min-width: 600px) and (max-width: 959px)',
-    'gt-sm': '(min-width: 960px)',
-    'md': '(min-width: 960px) and (max-width: 1279px)',
-    'gt-md': '(min-width: 1280px)',
-    'lg': '(min-width: 1280px) and (max-width: 1919px)',
-    'gt-lg': '(min-width: 1920px)',
-    'xl': '(min-width: 1920px)'
-  };
-  exports.MEDIA_PRIORITY = ['xl', 'gt-lg', 'lg', 'gt-md', 'md', 'gt-sm', 'sm', 'gt-xs', 'xs'];
-  var MediaListener = (function() {
-    function MediaListener(query, _mql, _media) {
-      var _this = this;
-      this.query = query;
-      this._mql = _mql;
-      this._media = _media;
-      this.onMatched = new Subject_1.Subject();
-      this._destroyed = false;
-      this._listener = function(mql) {
-        return _this.onMatched.next(mql);
-      };
-      this._mql.addListener(this._listener);
-    }
-    Object.defineProperty(MediaListener.prototype, "matches", {
-      get: function() {
-        return !this._destroyed && this._mql.matches;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    MediaListener.prototype.destroy = function() {
-      if (!this._destroyed) {
-        this._mql.removeListener(this._listener);
-        this._media.unregisterListener(this);
-        this._destroyed = true;
-        this._listener = null;
-        this._mql = null;
-      }
-    };
-    return MediaListener;
-  }());
-  exports.MediaListener = MediaListener;
-  var Media = (function() {
-    function Media() {
-      this._cache = {};
-    }
-    Media.prototype.listen = function(query) {
-      var listener = this._cache[query];
-      if (!listener) {
-        listener = this._cache[query] = {
-          mql: window.matchMedia(query),
-          references: 0
-        };
-      }
-      listener.references++;
-      return new MediaListener(query, listener.mql, this);
-    };
-    Media.prototype.unregisterListener = function(listener) {
-      var cached = this._cache[listener.query];
-      if (cached) {
-        cached.references--;
-        delete this._cache[listener.query];
-      }
-    };
-    Media.prototype.hasMedia = function(size) {
-      return Media.hasMedia(size);
-    };
-    Media.hasMedia = function(size) {
-      var query = Media.getQuery(size);
-      if (!query) {
-        return false;
-      }
-      return window.matchMedia(query).matches;
-    };
-    Media.getQuery = function(size) {
-      var query = exports.MEDIA[size];
-      if (!query) {
-        console.warn("unknown media query size " + size + ". Expected one of [" + exports.MEDIA_PRIORITY.join(',') + "]");
-        return null;
-      }
-      return query;
-    };
-    Media = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], Media);
-    return Media;
-  }());
-  exports.Media = Media;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/core/util/animate.js", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/async"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
-  var async_1 = $__require('angular2/src/facade/async');
-  var Animate = (function() {
-    function Animate() {}
-    Animate.enter = function(el, cssClass) {
-      dom_adapter_1.DOM.removeClass(el, cssClass);
-      return new Promise(function(resolve) {
-        dom_adapter_1.DOM.addClass(el, cssClass + '-add');
-        async_1.TimerWrapper.setTimeout(function() {
-          var duration = Animate.getTransitionDuration(el, true);
-          var callTimeout = setTimeout(function() {
-            return done();
-          }, duration);
-          var done = function() {
-            dom_adapter_1.DOM.removeClass(el, cssClass + '-add-active');
-            dom_adapter_1.DOM.removeClass(el, cssClass + '-add');
-            clearTimeout(callTimeout);
-            removeListener();
-            resolve();
-          };
-          var removeListener = dom_adapter_1.DOM.onAndCancel(el, Animate.TRANSITION_EVENT, done);
-          dom_adapter_1.DOM.addClass(el, cssClass + '-add-active');
-          dom_adapter_1.DOM.addClass(el, cssClass);
-        }, 1);
-      });
-    };
-    Animate.leave = function(el, cssClass) {
-      return new Promise(function(resolve) {
-        dom_adapter_1.DOM.addClass(el, cssClass + '-remove');
-        async_1.TimerWrapper.setTimeout(function() {
-          var duration = Animate.getTransitionDuration(el, true);
-          var callTimeout = setTimeout(function() {
-            return done();
-          }, duration);
-          var done = function() {
-            dom_adapter_1.DOM.removeClass(el, cssClass + '-remove-active');
-            dom_adapter_1.DOM.removeClass(el, cssClass + '-remove');
-            clearTimeout(callTimeout);
-            removeListener();
-            resolve();
-          };
-          var removeListener = dom_adapter_1.DOM.onAndCancel(el, Animate.TRANSITION_EVENT, done);
-          dom_adapter_1.DOM.addClass(el, cssClass + '-remove-active');
-          dom_adapter_1.DOM.removeClass(el, cssClass);
-        }, 1);
-      });
-    };
-    Animate.getTransitionDuration = function(element, includeDelay) {
-      if (includeDelay === void 0) {
-        includeDelay = false;
-      }
-      var prefixes = ['', 'moz', 'webkit', 'ms', 'o', 'khtml'];
-      var style = window.getComputedStyle(element);
-      for (var i = 0; i < prefixes.length; i++) {
-        var durationProperty = (i === 0 ? '' : "-" + prefixes[i] + "-") + "transition-duration";
-        var duration = style[durationProperty];
-        if (!duration) {
-          continue;
-        }
-        duration = (duration.indexOf('ms') > -1) ? parseFloat(duration) : parseFloat(duration) * 1000;
-        if (duration === 0) {
-          continue;
-        }
-        if (includeDelay) {
-          var delayProperty = (i === 0 ? '' : "-" + prefixes[i] + "-") + "transition-delay";
-          var delay = style[delayProperty];
-          if (typeof delay !== 'undefined') {
-            duration += (delay.indexOf('ms') > -1) ? parseFloat(delay) : parseFloat(delay) * 1000;
-          }
-        }
-        return duration;
-      }
-      return -1;
-    };
-    Animate.setTransitionDuration = function(element, delayMs) {
-      dom_adapter_1.DOM.setStyle(element, 'transition-duration', delayMs + "ms");
-    };
-    Animate.whichTransitionEvent = function() {
-      var t;
-      var el = document.createElement('fakeelement');
-      var transitions = {
-        'transition': 'transitionend',
-        'OTransition': 'oTransitionEnd',
-        'MozTransition': 'transitionend',
-        'WebkitTransition': 'webkitTransitionEnd'
-      };
-      for (t in transitions) {
-        if (el.style[t] !== undefined) {
-          return transitions[t];
-        }
-      }
-    };
-    Animate.animateStyles = function(element, styles, durationMs) {
-      var saveDuration = Animate.getTransitionDuration(element);
-      Animate.setTransitionDuration(element, durationMs);
-      return new Promise(function(animResolve, animReject) {
-        var callTimeout = setTimeout(function() {
-          return done();
-        }, durationMs);
-        var done = function() {
-          clearTimeout(callTimeout);
-          removeListener();
-          if (saveDuration !== -1) {
-            Animate.setTransitionDuration(element, saveDuration);
-          } else {
-            dom_adapter_1.DOM.removeStyle(element, 'transition-duration');
-          }
-          animResolve();
-        };
-        var removeListener = dom_adapter_1.DOM.onAndCancel(element, Animate.TRANSITION_EVENT, done);
-        Object.keys(styles).forEach(function(key) {
-          dom_adapter_1.DOM.setStyle(element, key, "" + styles[key]);
-        });
-      });
-    };
-    Animate.setStyles = function(element, styles) {
-      var saveDuration = Animate.getTransitionDuration(element);
-      Animate.setTransitionDuration(element, 0);
-      return new Promise(function(resolve, reject) {
-        Object.keys(styles).forEach(function(key) {
-          dom_adapter_1.DOM.setStyle(element, key, "" + styles[key]);
-        });
-        if (saveDuration !== -1) {
-          Animate.setTransitionDuration(element, saveDuration);
-        } else {
-          dom_adapter_1.DOM.removeStyle(element, 'transition-duration');
-        }
-        resolve();
-      });
-    };
-    Animate.wait = function(milliseconds) {
-      if (milliseconds === void 0) {
-        milliseconds = 10;
-      }
-      return new Promise(function(resolve) {
-        async_1.TimerWrapper.setTimeout(function() {
-          return resolve();
-        }, milliseconds);
-      });
-    };
-    Animate.TRANSITION_EVENT = Animate.whichTransitionEvent();
-    return Animate;
-  }());
-  exports.Animate = Animate;
-  return module.exports;
-});
-
-System.registerDynamic("node_modules/ng2-material/all.js", ["angular2/src/facade/lang", "./components/button/button", "./components/checkbox/checkbox", "./components/content/content", "./components/dialog/dialog", "./components/divider/divider", "./components/icon/icon", "./components/ink/ink", "./components/form/validators", "./components/form/messages", "./components/input/input", "./components/list/list", "./components/progress_linear/progress_linear", "./components/progress_circular/progress_circular", "./components/peekaboo/peekaboo", "./components/radio/radio_button", "./components/radio/radio_dispatcher", "./components/switcher/switch", "./components/subheader/subheader", "./components/sidenav/sidenav", "./components/sidenav/sidenav_service", "./components/toolbar/toolbar", "./components/tabs/tabs", "./core/util/media", "./core/util/animate"], true, function($__require, exports, module) {
-  "use strict";
-  ;
-  var define,
-      global = this,
-      GLOBAL = this;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  var lang_1 = $__require('angular2/src/facade/lang');
-  var button_1 = $__require('./components/button/button');
-  __export($__require('./components/button/button'));
-  var checkbox_1 = $__require('./components/checkbox/checkbox');
-  __export($__require('./components/checkbox/checkbox'));
-  var content_1 = $__require('./components/content/content');
-  __export($__require('./components/content/content'));
-  __export($__require('./components/dialog/dialog'));
-  var dialog_2 = $__require('./components/dialog/dialog');
-  var divider_1 = $__require('./components/divider/divider');
-  __export($__require('./components/divider/divider'));
-  var icon_1 = $__require('./components/icon/icon');
-  __export($__require('./components/icon/icon'));
-  var ink_1 = $__require('./components/ink/ink');
-  __export($__require('./components/ink/ink'));
-  var validators_1 = $__require('./components/form/validators');
-  __export($__require('./components/form/validators'));
-  var messages_1 = $__require('./components/form/messages');
-  __export($__require('./components/form/messages'));
-  var input_1 = $__require('./components/input/input');
-  __export($__require('./components/input/input'));
-  var list_1 = $__require('./components/list/list');
-  __export($__require('./components/list/list'));
-  var progress_linear_1 = $__require('./components/progress_linear/progress_linear');
-  __export($__require('./components/progress_linear/progress_linear'));
-  var progress_circular_1 = $__require('./components/progress_circular/progress_circular');
-  __export($__require('./components/progress_circular/progress_circular'));
-  var peekaboo_1 = $__require('./components/peekaboo/peekaboo');
-  __export($__require('./components/peekaboo/peekaboo'));
-  var radio_button_1 = $__require('./components/radio/radio_button');
-  var radio_dispatcher_1 = $__require('./components/radio/radio_dispatcher');
-  __export($__require('./components/radio/radio_button'));
-  __export($__require('./components/radio/radio_dispatcher'));
-  var switch_1 = $__require('./components/switcher/switch');
-  __export($__require('./components/switcher/switch'));
-  var subheader_1 = $__require('./components/subheader/subheader');
-  __export($__require('./components/subheader/subheader'));
-  var sidenav_1 = $__require('./components/sidenav/sidenav');
-  var sidenav_service_1 = $__require('./components/sidenav/sidenav_service');
-  __export($__require('./components/sidenav/sidenav'));
-  __export($__require('./components/sidenav/sidenav_service'));
-  var toolbar_1 = $__require('./components/toolbar/toolbar');
-  __export($__require('./components/toolbar/toolbar'));
-  var tabs_1 = $__require('./components/tabs/tabs');
-  __export($__require('./components/tabs/tabs'));
-  var media_1 = $__require('./core/util/media');
-  __export($__require('./core/util/media'));
-  __export($__require('./core/util/animate'));
-  exports.MATERIAL_DIRECTIVES = lang_1.CONST_EXPR([button_1.MdAnchor, button_1.MdButton, checkbox_1.MdCheckbox, content_1.MdContent, divider_1.MdDivider, icon_1.MdIcon, ink_1.MdInk, input_1.MdInput, input_1.MdInputContainer, validators_1.MdPatternValidator, validators_1.MdMaxLengthValidator, validators_1.MdMinValueValidator, validators_1.MdMaxValueValidator, validators_1.MdNumberRequiredValidator, messages_1.MdMessage, messages_1.MdMessages, list_1.MdList, list_1.MdListItem, peekaboo_1.MdPeekaboo, progress_linear_1.MdProgressLinear, progress_circular_1.MdProgressCircular, radio_button_1.MdRadioButton, radio_button_1.MdRadioGroup, sidenav_1.MdSidenav, sidenav_1.MdSidenavContainer, subheader_1.MdSubheader, switch_1.MdSwitch, toolbar_1.MdToolbar, tabs_1.MdTab, tabs_1.MdTabs]);
-  exports.MATERIAL_PROVIDERS = [dialog_2.MdDialog, media_1.Media, sidenav_service_1.SidenavService, radio_dispatcher_1.MdRadioDispatcher, validators_1.INPUT_VALIDATORS];
-  return module.exports;
 });
 
 System.registerDynamic("node_modules/ng2-dragula/src/app/directives/dragula.directive.js", ["angular2/core", "../providers/dragula.provider", "dragula"], true, function($__require, exports, module) {
@@ -4377,7 +1192,7 @@ System.register("app/angular-grid.js", ["angular2/core", "angular2/http", "rxjs/
         AngularGrid = __decorate([core_1.Component({
           selector: 'angular-grid',
           template: "\n        <vaadin-grid\n            [columns]=\"columns\"\n            [items]=\"data\"\n            [style.height.px]=\"height\">\n        </vaadin-grid>\n    ",
-          providers: [http_1.HTTP_PROVIDERS],
+          providers: [],
           changeDetection: core_1.ChangeDetectionStrategy.OnPush
         }), __metadata('design:paramtypes', [http_1.Http, core_1.ChangeDetectorRef, layer_service_1.LayerService])], AngularGrid);
         return AngularGrid;
@@ -29315,7 +26130,3254 @@ System.register("app/openlayers/layer.component.js", ["angular2/core", "openlaye
   };
 });
 
-System.register("app/add-data.component.js", ["angular2/core"], function(exports_1, context_1) {
+System.registerDynamic("node_modules/ng2-material/components/content/content.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var MdContent = (function() {
+    function MdContent() {}
+    MdContent = __decorate([core_1.Directive({selector: 'md-content'}), __metadata('design:paramtypes', [])], MdContent);
+    return MdContent;
+  }());
+  exports.MdContent = MdContent;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_config.js", [], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var MdDialogConfig = (function() {
+    function MdDialogConfig() {
+      this.width = null;
+      this.height = null;
+      this.container = null;
+      this.sourceEvent = null;
+      this.clickClose = true;
+      this.context = {};
+    }
+    MdDialogConfig.prototype.parent = function(element) {
+      this.container = element;
+      return this;
+    };
+    MdDialogConfig.prototype.clickOutsideToClose = function(enabled) {
+      this.clickClose = enabled;
+      return this;
+    };
+    MdDialogConfig.prototype.title = function(text) {
+      this.context.title = text;
+      return this;
+    };
+    MdDialogConfig.prototype.textContent = function(text) {
+      this.context.textContent = text;
+      return this;
+    };
+    MdDialogConfig.prototype.ariaLabel = function(text) {
+      this.context.ariaLabel = text;
+      return this;
+    };
+    MdDialogConfig.prototype.ok = function(text) {
+      this.context.ok = text;
+      return this;
+    };
+    MdDialogConfig.prototype.cancel = function(text) {
+      this.context.cancel = text;
+      return this;
+    };
+    MdDialogConfig.prototype.targetEvent = function(ev) {
+      this.sourceEvent = ev;
+      return this;
+    };
+    return MdDialogConfig;
+  }());
+  exports.MdDialogConfig = MdDialogConfig;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_container.js", ["angular2/core", "../../core/key_codes"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var core_1 = $__require('angular2/core');
+  var core_2 = $__require('angular2/core');
+  var core_3 = $__require('angular2/core');
+  var core_4 = $__require('angular2/core');
+  var key_codes_1 = $__require('../../core/key_codes');
+  var core_5 = $__require('angular2/core');
+  var core_6 = $__require('angular2/core');
+  var core_7 = $__require('angular2/core');
+  var core_8 = $__require('angular2/core');
+  var MdDialogContainer = (function() {
+    function MdDialogContainer() {
+      this.contentRef = null;
+      this.dialogRef = null;
+    }
+    MdDialogContainer.prototype.wrapFocus = function() {};
+    MdDialogContainer.prototype.documentKeypress = function(event) {
+      if (event.keyCode == key_codes_1.KeyCodes.ESCAPE) {
+        this.dialogRef.close();
+      }
+    };
+    MdDialogContainer = __decorate([core_3.Component({
+      selector: 'md-dialog-container',
+      host: {
+        'class': 'md-dialog',
+        'tabindex': '0',
+        '(body:keydown)': 'documentKeypress($event)'
+      }
+    }), core_2.View({
+      encapsulation: core_1.ViewEncapsulation.None,
+      template: "\n    <md-dialog-content></md-dialog-content>\n    <div tabindex=\"0\" (focus)=\"wrapFocus()\"></div>",
+      directives: [core_5.forwardRef(function() {
+        return MdDialogContent;
+      })]
+    }), __metadata('design:paramtypes', [])], MdDialogContainer);
+    return MdDialogContainer;
+  }());
+  exports.MdDialogContainer = MdDialogContainer;
+  var MdDialogContent = (function() {
+    function MdDialogContent(dialogContainer, elementRef) {
+      dialogContainer.contentRef = elementRef;
+    }
+    MdDialogContent = __decorate([core_6.Directive({selector: 'md-dialog-content'}), __param(0, core_7.Host()), __param(0, core_8.SkipSelf()), __metadata('design:paramtypes', [MdDialogContainer, core_4.ElementRef])], MdDialogContent);
+    return MdDialogContent;
+  }());
+  exports.MdDialogContent = MdDialogContent;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/button/button.js", ["angular2/core", "angular2/src/facade/async", "angular2/src/facade/lang", "../../core/util/ink"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var async_1 = $__require('angular2/src/facade/async');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var core_2 = $__require('angular2/core');
+  var ink_1 = $__require('../../core/util/ink');
+  var BUTTON_TEMPLATE = "<span class=\"md-button-wrapper\"><ng-content></ng-content></span>";
+  var MdButton = (function() {
+    function MdButton(_element) {
+      this._element = _element;
+      this.isMouseDown = false;
+      this.isKeyboardFocused = false;
+    }
+    MdButton.prototype.onMousedown = function(event) {
+      var _this = this;
+      this.isMouseDown = true;
+      async_1.TimerWrapper.setTimeout(function() {
+        _this.isMouseDown = false;
+      }, 100);
+      if (this._element && ink_1.Ink.canApply(this._element.nativeElement)) {
+        ink_1.Ink.rippleEvent(this._element.nativeElement, event);
+      }
+    };
+    MdButton.prototype.onFocus = function() {
+      this.isKeyboardFocused = !this.isMouseDown;
+    };
+    MdButton.prototype.onBlur = function() {
+      this.isKeyboardFocused = false;
+    };
+    MdButton = __decorate([core_1.Component({
+      selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',
+      host: {
+        '(mousedown)': 'onMousedown($event)',
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()',
+        '[class.md-button-focus]': 'isKeyboardFocused'
+      }
+    }), core_1.View({
+      template: BUTTON_TEMPLATE,
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [core_2.ElementRef])], MdButton);
+    return MdButton;
+  }());
+  exports.MdButton = MdButton;
+  var MdAnchor = (function(_super) {
+    __extends(MdAnchor, _super);
+    function MdAnchor() {
+      _super.apply(this, arguments);
+    }
+    Object.defineProperty(MdAnchor.prototype, "disabled", {
+      get: function() {
+        return this.disabled_;
+      },
+      set: function(value) {
+        this.disabled_ = lang_1.isPresent(value) && this.disabled !== false;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdAnchor.prototype.onClick = function(event) {
+      if (this.disabled) {
+        event.preventDefault();
+      }
+    };
+    MdAnchor.prototype.ngOnChanges = function(_) {
+      this.tabIndex = this.disabled ? -1 : 0;
+    };
+    Object.defineProperty(MdAnchor.prototype, "isAriaDisabled", {
+      get: function() {
+        return this.disabled ? 'true' : 'false';
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdAnchor = __decorate([core_1.Component({
+      selector: 'a[md-button], a[md-raised-button], a[md-fab]',
+      inputs: ['disabled'],
+      host: {
+        '(click)': 'onClick($event)',
+        '(mousedown)': 'onMousedown()',
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()',
+        '[tabIndex]': 'tabIndex',
+        '[class.md-button-focus]': 'isKeyboardFocused',
+        '[attr.aria-disabled]': 'isAriaDisabled'
+      }
+    }), core_1.View({
+      template: BUTTON_TEMPLATE,
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdAnchor);
+    return MdAnchor;
+  }(MdButton));
+  exports.MdAnchor = MdAnchor;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_ref.js", ["angular2/src/facade/promise", "../../core/util/animate", "angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var promise_1 = $__require('angular2/src/facade/promise');
+  var animate_1 = $__require('../../core/util/animate');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var MdDialogRef = (function() {
+    function MdDialogRef() {
+      this._subscription = null;
+      this._contentRef = null;
+      this.containerRef = null;
+      this.isClosed = false;
+      this.contentRefDeferred = promise_1.PromiseWrapper.completer();
+      this.whenClosedDeferred = promise_1.PromiseWrapper.completer();
+    }
+    Object.defineProperty(MdDialogRef.prototype, "backdropRef", {
+      set: function(value) {
+        var _this = this;
+        this._backdropRef = value;
+        if (this._backdropRef) {
+          this._subscription = this._backdropRef.instance.onHiding.subscribe(function() {
+            _this._subscription.unsubscribe();
+            _this.close();
+          });
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdDialogRef.prototype, "contentRef", {
+      set: function(value) {
+        this._contentRef = value;
+        this.contentRefDeferred.resolve(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdDialogRef.prototype, "instance", {
+      get: function() {
+        if (lang_1.isPresent(this._contentRef)) {
+          return this._contentRef.instance;
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdDialogRef.prototype, "whenClosed", {
+      get: function() {
+        return this.whenClosedDeferred.promise;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdDialogRef.prototype.close = function(result) {
+      var _this = this;
+      if (result === void 0) {
+        result = null;
+      }
+      if (this.isClosed) {
+        return this.whenClosedDeferred.promise;
+      }
+      if (this._subscription) {
+        this._subscription.unsubscribe();
+      }
+      this.isClosed = true;
+      return animate_1.Animate.leave(this.containerRef.location.nativeElement, 'md-active').then(function() {
+        var otherAsync = Promise.resolve();
+        if (_this._backdropRef) {
+          otherAsync = _this._backdropRef.instance.hide();
+        }
+        return _this.contentRefDeferred.promise.then(function(_) {
+          otherAsync.then(function() {
+            _this.whenClosedDeferred.resolve(result);
+          });
+        });
+      });
+    };
+    return MdDialogRef;
+  }());
+  exports.MdDialogRef = MdDialogRef;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/dialog/dialog_basic.js", ["angular2/common", "../button/button", "angular2/core", "./dialog_ref"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var common_1 = $__require('angular2/common');
+  var button_1 = $__require('../button/button');
+  var core_1 = $__require('angular2/core');
+  var core_2 = $__require('angular2/core');
+  var dialog_ref_1 = $__require('./dialog_ref');
+  var core_3 = $__require('angular2/core');
+  var MdDialogBasic = (function() {
+    function MdDialogBasic(dialog) {
+      this.dialog = dialog;
+      this.title = '';
+      this.textContent = '';
+      this.cancel = '';
+      this.ok = '';
+      this.type = 'alert';
+    }
+    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "title", void 0);
+    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "textContent", void 0);
+    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "cancel", void 0);
+    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "ok", void 0);
+    __decorate([core_3.Input(), __metadata('design:type', String)], MdDialogBasic.prototype, "type", void 0);
+    MdDialogBasic = __decorate([core_2.Component({selector: 'md-dialog-basic'}), core_1.View({
+      template: "\n  <h2 class=\"md-title\">{{ title }}</h2>\n  <p>{{ textContent }}</p>\n  <md-dialog-actions>\n    <button md-button *ngIf=\"cancel != ''\" type=\"button\" (click)=\"dialog.close(false)\">\n      <span>{{ cancel }}</span>\n    </button>\n    <button md-button *ngIf=\"ok != ''\" class=\"md-primary\" type=\"button\" (click)=\"dialog.close(true)\">\n      <span>{{ ok }}</span>\n    </button>\n  </md-dialog-actions>",
+      directives: [button_1.MdButton, common_1.NgIf]
+    }), __metadata('design:paramtypes', [dialog_ref_1.MdDialogRef])], MdDialogBasic);
+    return MdDialogBasic;
+  }());
+  exports.MdDialogBasic = MdDialogBasic;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/dialog/dialog.js", ["angular2/core", "angular2/src/facade/lang", "./dialog_ref", "./dialog_config", "./dialog_container", "../backdrop/backdrop", "angular2/src/platform/dom/dom_adapter", "../../core/util/animate", "./dialog_basic"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  var core_1 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var dialog_ref_1 = $__require('./dialog_ref');
+  var dialog_config_1 = $__require('./dialog_config');
+  var dialog_container_1 = $__require('./dialog_container');
+  var backdrop_1 = $__require('../backdrop/backdrop');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var animate_1 = $__require('../../core/util/animate');
+  __export($__require('./dialog_config'));
+  __export($__require('./dialog_container'));
+  __export($__require('./dialog_ref'));
+  __export($__require('./dialog_basic'));
+  var MdDialog = (function() {
+    function MdDialog(componentLoader, rootRenderer) {
+      this.componentLoader = componentLoader;
+      this._renderer = null;
+      this._defaultContainer = dom_adapter_1.DOM.query('body');
+      var type = new core_1.RenderComponentType("__md-dialog-" + MdDialog._uniqueId++, core_1.ViewEncapsulation.None, []);
+      this._renderer = rootRenderer.renderComponent(type);
+    }
+    MdDialog.prototype.open = function(type, elementRef, options) {
+      var _this = this;
+      if (options === void 0) {
+        options = new dialog_config_1.MdDialogConfig();
+      }
+      var dialogRef = new dialog_ref_1.MdDialogRef();
+      var bindings = core_1.Injector.resolve([core_1.APPLICATION_COMMON_PROVIDERS, core_1.provide(dialog_ref_1.MdDialogRef, {useValue: dialogRef})]);
+      var backdropRefPromise = this._openBackdrop(elementRef, bindings, options);
+      return this.componentLoader.loadNextToLocation(dialog_container_1.MdDialogContainer, elementRef, bindings).then(function(containerRef) {
+        var dialogElement = containerRef.location.nativeElement;
+        _this._renderer.setElementClass(dialogElement, 'md-dialog-absolute', !!options.container);
+        dom_adapter_1.DOM.appendChild(options.container || _this._defaultContainer, dialogElement);
+        if (lang_1.isPresent(options.width)) {
+          _this._renderer.setElementStyle(dialogElement, 'width', options.width);
+        }
+        if (lang_1.isPresent(options.height)) {
+          _this._renderer.setElementStyle(dialogElement, 'height', options.height);
+        }
+        dialogRef.containerRef = containerRef;
+        return _this.componentLoader.loadNextToLocation(type, containerRef.instance.contentRef, bindings).then(function(contentRef) {
+          Object.keys(options.context).forEach(function(key) {
+            contentRef.instance[key] = options.context[key];
+          });
+          dialogRef.contentRef = contentRef;
+          containerRef.instance.dialogRef = dialogRef;
+          backdropRefPromise.then(function(backdropRef) {
+            dialogRef.backdropRef = backdropRef;
+            dialogRef.whenClosed.then(function(_) {
+              backdropRef.instance.hide().then(function() {
+                containerRef.dispose();
+                contentRef.dispose();
+                backdropRef.dispose();
+              });
+            });
+          });
+          return animate_1.Animate.enter(dialogElement, 'md-active').then(function() {
+            return dialogRef;
+          });
+        });
+      });
+    };
+    MdDialog.prototype._openBackdrop = function(elementRef, bindings, options) {
+      var _this = this;
+      return this.componentLoader.loadNextToLocation(backdrop_1.MdBackdrop, elementRef, bindings).then(function(componentRef) {
+        var backdrop = componentRef.instance;
+        backdrop.clickClose = options.clickClose;
+        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-backdrop', true);
+        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-opaque', true);
+        _this._renderer.setElementClass(componentRef.location.nativeElement, 'md-backdrop-absolute', !!options.container);
+        dom_adapter_1.DOM.appendChild(options.container || _this._defaultContainer, componentRef.location.nativeElement);
+        return backdrop.show().then(function() {
+          return componentRef;
+        });
+      });
+    };
+    MdDialog.prototype.alert = function(message, okMessage) {
+      throw 'Not implemented';
+    };
+    MdDialog.prototype.confirm = function(message, okMessage, cancelMessage) {
+      throw 'Not implemented';
+    };
+    MdDialog._uniqueId = 0;
+    MdDialog = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [core_1.DynamicComponentLoader, core_1.RootRenderer])], MdDialog);
+    return MdDialog;
+  }());
+  exports.MdDialog = MdDialog;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/divider/divider.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var core_2 = $__require('angular2/core');
+  var MdDivider = (function() {
+    function MdDivider() {}
+    MdDivider = __decorate([core_1.Component({selector: 'md-divider'}), core_1.View({
+      template: '',
+      encapsulation: core_2.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdDivider);
+    return MdDivider;
+  }());
+  exports.MdDivider = MdDivider;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/icon/icon.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var MdIcon = (function() {
+    function MdIcon() {}
+    MdIcon = __decorate([core_1.Directive({
+      selector: '[md-icon], .md-icon',
+      host: {'[class.material-icons]': 'true'}
+    }), __metadata('design:paramtypes', [])], MdIcon);
+    return MdIcon;
+  }());
+  exports.MdIcon = MdIcon;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/ink/ink.js", ["angular2/core", "../../core/util/ink"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var ink_1 = $__require('../../core/util/ink');
+  var MdInk = (function() {
+    function MdInk(_element) {
+      this._element = _element;
+      this.inked = new core_1.EventEmitter(false);
+    }
+    MdInk.prototype.onMousedown = function(event) {
+      var _this = this;
+      if (this._element && ink_1.Ink.canApply(this._element.nativeElement)) {
+        ink_1.Ink.rippleEvent(this._element.nativeElement, event).then(function() {
+          _this.inked.emit(_this);
+        });
+      }
+    };
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdInk.prototype, "inked", void 0);
+    MdInk = __decorate([core_1.Directive({
+      selector: '[md-ink]',
+      host: {'(mousedown)': 'onMousedown($event)'}
+    }), __metadata('design:paramtypes', [core_1.ElementRef])], MdInk);
+    return MdInk;
+  }());
+  exports.MdInk = MdInk;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/form/validators.js", ["angular2/src/facade/lang", "angular2/common", "angular2/core", "../../core/util/util"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var common_1 = $__require('angular2/common');
+  var core_1 = $__require('angular2/core');
+  var util_1 = $__require('../../core/util/util');
+  var lang_2 = $__require('angular2/src/facade/lang');
+  var PATTERN_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
+    useExisting: core_1.forwardRef(function() {
+      return MdPatternValidator;
+    }),
+    multi: true
+  }));
+  var MdPatternValidator = (function() {
+    function MdPatternValidator() {}
+    MdPatternValidator.inline = function(pattern) {
+      return function validate(control) {
+        if (control.value === '' || new RegExp(pattern).test(control.value)) {
+          return null;
+        }
+        return {mdPattern: true};
+      };
+    };
+    MdPatternValidator.prototype.validate = function(control) {
+      return MdPatternValidator.inline(this.mdPattern)(control);
+    };
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdPatternValidator.prototype, "mdPattern", void 0);
+    MdPatternValidator = __decorate([core_1.Directive({
+      selector: '[mdPattern]',
+      providers: [PATTERN_VALIDATOR]
+    }), __metadata('design:paramtypes', [])], MdPatternValidator);
+    return MdPatternValidator;
+  }());
+  exports.MdPatternValidator = MdPatternValidator;
+  var MAXLENGTH_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
+    useExisting: core_1.forwardRef(function() {
+      return MdMaxLengthValidator;
+    }),
+    multi: true
+  }));
+  var MdMaxLengthValidator = (function() {
+    function MdMaxLengthValidator() {}
+    MdMaxLengthValidator.inline = function(length) {
+      return function validate(control) {
+        if (!control.value || control.value.length <= length) {
+          return null;
+        }
+        return {mdMaxLength: true};
+      };
+    };
+    MdMaxLengthValidator.prototype.validate = function(control) {
+      return MdMaxLengthValidator.inline(this.mdMaxLength)(control);
+    };
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdMaxLengthValidator.prototype, "mdMaxLength", void 0);
+    MdMaxLengthValidator = __decorate([core_1.Directive({
+      selector: '[mdMaxLength]',
+      providers: [MAXLENGTH_VALIDATOR]
+    }), __metadata('design:paramtypes', [])], MdMaxLengthValidator);
+    return MdMaxLengthValidator;
+  }());
+  exports.MdMaxLengthValidator = MdMaxLengthValidator;
+  var MAXVALUE_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
+    useExisting: core_1.forwardRef(function() {
+      return MdMaxValueValidator;
+    }),
+    multi: true
+  }));
+  var MdMaxValueValidator = (function() {
+    function MdMaxValueValidator() {}
+    MdMaxValueValidator.inline = function(length) {
+      return function validate(control) {
+        if (lang_2.NumberWrapper.isNaN(control.value) || control.value <= length) {
+          return null;
+        }
+        return {mdMax: true};
+      };
+    };
+    MdMaxValueValidator.prototype.validate = function(control) {
+      return MdMaxValueValidator.inline(this.mdMax)(control);
+    };
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdMaxValueValidator.prototype, "mdMax", void 0);
+    MdMaxValueValidator = __decorate([core_1.Directive({
+      selector: '[mdMax]',
+      providers: [MAXVALUE_VALIDATOR]
+    }), __metadata('design:paramtypes', [])], MdMaxValueValidator);
+    return MdMaxValueValidator;
+  }());
+  exports.MdMaxValueValidator = MdMaxValueValidator;
+  var MINVALUE_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
+    useExisting: core_1.forwardRef(function() {
+      return MdMinValueValidator;
+    }),
+    multi: true
+  }));
+  var MdMinValueValidator = (function() {
+    function MdMinValueValidator() {}
+    MdMinValueValidator.inline = function(length) {
+      return function validate(control) {
+        if (lang_2.NumberWrapper.isNaN(control.value) || control.value >= length) {
+          return null;
+        }
+        return {mdMin: true};
+      };
+    };
+    MdMinValueValidator.prototype.validate = function(control) {
+      return MdMinValueValidator.inline(this.mdMin)(control);
+    };
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdMinValueValidator.prototype, "mdMin", void 0);
+    MdMinValueValidator = __decorate([core_1.Directive({
+      selector: '[mdMin]',
+      providers: [MINVALUE_VALIDATOR]
+    }), __metadata('design:paramtypes', [])], MdMinValueValidator);
+    return MdMinValueValidator;
+  }());
+  exports.MdMinValueValidator = MdMinValueValidator;
+  var NUMBER_REQUIRED_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(common_1.NG_VALIDATORS, {
+    useExisting: core_1.forwardRef(function() {
+      return MdNumberRequiredValidator;
+    }),
+    multi: true
+  }));
+  var MdNumberRequiredValidator = (function() {
+    function MdNumberRequiredValidator() {}
+    MdNumberRequiredValidator.inline = function() {
+      return function validate(control) {
+        var isNum = !lang_2.NumberWrapper.isNaN(control.value) && util_1.isNumber(control.value);
+        return isNum ? null : {mdNumberRequired: true};
+      };
+    };
+    MdNumberRequiredValidator.prototype.validate = function(control) {
+      return MdNumberRequiredValidator.inline()(control);
+    };
+    MdNumberRequiredValidator = __decorate([core_1.Directive({
+      selector: '[mdNumberRequired]',
+      providers: [NUMBER_REQUIRED_VALIDATOR]
+    }), __metadata('design:paramtypes', [])], MdNumberRequiredValidator);
+    return MdNumberRequiredValidator;
+  }());
+  exports.MdNumberRequiredValidator = MdNumberRequiredValidator;
+  exports.INPUT_VALIDATORS = [MdMaxLengthValidator, MdPatternValidator, MdMaxValueValidator, MdMinValueValidator, MdNumberRequiredValidator];
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/form/messages.js", ["angular2/core", "angular2/common", "angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var core_1 = $__require('angular2/core');
+  var common_1 = $__require('angular2/common');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var MdMessage = (function() {
+    function MdMessage() {
+      this.okay = true;
+    }
+    __decorate([core_1.Input('md-message'), __metadata('design:type', String)], MdMessage.prototype, "errorKey", void 0);
+    MdMessage = __decorate([core_1.Directive({
+      selector: '[md-message]',
+      host: {'[style.display]': 'okay ? "none" : "inherit"'}
+    }), __metadata('design:paramtypes', [])], MdMessage);
+    return MdMessage;
+  }());
+  exports.MdMessage = MdMessage;
+  var MdMessages = (function() {
+    function MdMessages(messages, form) {
+      this.messages = messages;
+      this.form = form;
+      this._unsubscribe = null;
+    }
+    Object.defineProperty(MdMessages.prototype, "valid", {
+      get: function() {
+        if (this.property instanceof common_1.NgControlName) {
+          var ctrl_1 = this.property;
+          return !!ctrl_1.valid;
+        }
+        var prop = this.property;
+        var group = this.form.control;
+        var ctrl = group.controls[prop];
+        return ctrl && ctrl.valid;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdMessages.prototype, "isTouched", {
+      get: function() {
+        if (this.property instanceof common_1.NgControlName) {
+          return this.property.touched;
+        }
+        var prop = this.property;
+        var group = this.form.control;
+        var ctrl = group.controls[prop];
+        return ctrl && ctrl.touched;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdMessages.prototype.ngOnInit = function() {
+      if (this.property instanceof common_1.NgControlName) {
+        var ctrl = this.property;
+        this.form = ctrl.formDirective;
+        this._unsubscribe = ctrl.update.subscribe(this._valueChanged.bind(this));
+      } else {
+        if (!this.form) {
+          throw new Error('md-messages cannot bind to text property without a parent NgFormModel');
+        }
+        var prop = this.property;
+        var group = this.form.control;
+        if (!group) {
+          throw new Error('md-messages cannot bind to text property without a ControlGroup');
+        }
+        var ctrl = group.controls[prop];
+        if (!ctrl) {
+          throw new Error("md-messages cannot find property(" + prop + ") in ControlGroup!");
+        }
+        this._unsubscribe = ctrl.valueChanges.subscribe(this._valueChanged.bind(this));
+      }
+    };
+    MdMessages.prototype.ngOnDestroy = function() {
+      this._unsubscribe.unsubscribe();
+    };
+    MdMessages.prototype._valueChanged = function() {
+      var errors = null;
+      if (this.property instanceof common_1.NgControlName) {
+        var ctrl = this.property;
+        errors = ctrl.errors;
+      } else {
+        var prop = this.property;
+        var group = this.form.control;
+        var ctrl = group.controls[prop];
+        errors = ctrl.errors;
+      }
+      if (errors) {
+        this.messages.toArray().forEach(function(m) {
+          m.okay = !m.errorKey ? !errors : !lang_1.isPresent(errors[m.errorKey]);
+        });
+      }
+    };
+    __decorate([core_1.Input('md-messages'), __metadata('design:type', Object)], MdMessages.prototype, "property", void 0);
+    MdMessages = __decorate([core_1.Directive({
+      selector: '[md-messages]',
+      host: {
+        'md-messages': '',
+        '[style.display]': '(valid || !isTouched) ? "none" : "inherit"',
+        '[class.md-valid]': 'valid && isTouched',
+        '[class.md-invalid]': '!valid && isTouched'
+      }
+    }), __param(0, core_1.Query(MdMessage)), __param(1, core_1.Optional()), __param(1, core_1.SkipSelf()), __param(1, core_1.Host()), __metadata('design:paramtypes', [core_1.QueryList, common_1.NgFormModel])], MdMessages);
+    return MdMessages;
+  }());
+  exports.MdMessages = MdMessages;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/input/input.js", ["angular2/core", "angular2/common", "angular2/src/facade/async", "angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var common_1 = $__require('angular2/common');
+  var async_1 = $__require('angular2/src/facade/async');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var MdInput = (function() {
+    function MdInput() {
+      this.mdChange = new async_1.EventEmitter();
+      this.mdFocusChange = new async_1.EventEmitter(false);
+    }
+    Object.defineProperty(MdInput.prototype, "value", {
+      get: function() {
+        return !lang_1.isBlank(this._value) ? this._value : '';
+      },
+      set: function(value) {
+        this._value = value;
+        async_1.ObservableWrapper.callEmit(this.mdChange, this.value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdInput.prototype.setHasFocus = function(hasFocus) {
+      async_1.ObservableWrapper.callEmit(this.mdFocusChange, hasFocus);
+    };
+    __decorate([core_1.Input('value'), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdInput.prototype, "value", null);
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdInput.prototype, "placeholder", void 0);
+    __decorate([core_1.Output('valueChange'), __metadata('design:type', async_1.EventEmitter)], MdInput.prototype, "mdChange", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', async_1.EventEmitter)], MdInput.prototype, "mdFocusChange", void 0);
+    MdInput = __decorate([core_1.Directive({
+      selector: 'input[md-input],input.md-input,textarea[md-input],textarea.md-input',
+      host: {
+        'class': 'md-input',
+        '[value]': 'value',
+        '(input)': 'value=$event.target.value',
+        '(focus)': 'setHasFocus(true)',
+        '(blur)': 'setHasFocus(false)'
+      },
+      providers: [common_1.FORM_PROVIDERS]
+    }), __metadata('design:paramtypes', [])], MdInput);
+    return MdInput;
+  }());
+  exports.MdInput = MdInput;
+  var MdInputContainer = (function() {
+    function MdInputContainer(_element) {
+      this._element = _element;
+      this._input = null;
+      this.inputHasValue = false;
+      this.inputHasFocus = false;
+      this.inputHasPlaceholder = false;
+    }
+    MdInputContainer.prototype.ngOnChanges = function(_) {
+      this.inputHasValue = this._input.value !== '';
+      this.inputHasPlaceholder = !!dom_adapter_1.DOM.querySelector(this._element.nativeElement, 'label') && !!this._input.placeholder;
+    };
+    MdInputContainer.prototype.ngAfterContentInit = function() {
+      var _this = this;
+      if (this._input === null) {
+        return;
+      }
+      async_1.TimerWrapper.setTimeout(function() {
+        return _this.ngOnChanges({});
+      }, 0);
+      async_1.ObservableWrapper.subscribe(this._input.mdChange, function(value) {
+        _this.inputHasValue = value !== '';
+      });
+      async_1.ObservableWrapper.subscribe(this._input.mdFocusChange, function(hasFocus) {
+        _this.inputHasFocus = hasFocus;
+      });
+    };
+    __decorate([core_1.ContentChild(MdInput), __metadata('design:type', MdInput)], MdInputContainer.prototype, "_input", void 0);
+    MdInputContainer = __decorate([core_1.Component({
+      selector: 'md-input-container',
+      host: {
+        '[class.md-input-has-value]': 'inputHasValue',
+        '[class.md-input-has-placeholder]': 'inputHasPlaceholder',
+        '[class.md-input-focused]': 'inputHasFocus'
+      }
+    }), core_1.View({template: "<ng-content></ng-content><div class=\"md-errors-spacer\"></div>"}), __metadata('design:paramtypes', [core_1.ElementRef])], MdInputContainer);
+    return MdInputContainer;
+  }());
+  exports.MdInputContainer = MdInputContainer;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/list/list.js", ["angular2/core", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var core_2 = $__require('angular2/core');
+  var core_3 = $__require('angular2/core');
+  var core_4 = $__require('angular2/core');
+  var MdList = (function() {
+    function MdList() {}
+    MdList = __decorate([core_1.Directive({
+      selector: 'md-list',
+      host: {'role': 'list'}
+    }), __metadata('design:paramtypes', [])], MdList);
+    return MdList;
+  }());
+  exports.MdList = MdList;
+  var MdListItem = (function() {
+    function MdListItem(_element) {
+      this._element = _element;
+    }
+    MdListItem.prototype.ngAfterViewInit = function() {
+      this.setupToggleAria();
+    };
+    MdListItem.prototype.setupToggleAria = function() {
+      var toggleTypes = ['md-switch', 'md-checkbox'];
+      var toggle;
+      var el = this._element.nativeElement;
+      for (var i = 0,
+          toggleType; toggleType = toggleTypes[i]; ++i) {
+        if (toggle = dom_adapter_1.DOM.querySelector(el, toggleType)) {
+          if (!toggle.hasAttribute('aria-label')) {
+            var p = dom_adapter_1.DOM.querySelector(el, 'p');
+            if (!p)
+              return;
+            toggle.setAttribute('aria-label', 'Toggle ' + p.textContent);
+          }
+        }
+      }
+    };
+    MdListItem = __decorate([core_3.Component({
+      selector: 'md-list-item',
+      host: {'role': 'listitem'},
+      properties: ['wrap']
+    }), core_4.View({template: "\n    <div class=\"md-no-style md-list-item-inner\">\n      <ng-content></ng-content>\n    </div>"}), __metadata('design:paramtypes', [core_2.ElementRef])], MdListItem);
+    return MdListItem;
+  }());
+  exports.MdListItem = MdListItem;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/progress_linear/progress_linear.js", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/math"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var lang_2 = $__require('angular2/src/facade/lang');
+  var math_1 = $__require('angular2/src/facade/math');
+  var core_2 = $__require('angular2/core');
+  var ProgressMode = (function() {
+    function ProgressMode() {}
+    ProgressMode.DETERMINATE = 'determinate';
+    ProgressMode.INDETERMINATE = 'indeterminate';
+    ProgressMode.BUFFER = 'buffer';
+    ProgressMode.QUERY = 'query';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "DETERMINATE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "INDETERMINATE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "BUFFER", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "QUERY", void 0);
+    ProgressMode = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], ProgressMode);
+    return ProgressMode;
+  }());
+  exports.ProgressMode = ProgressMode;
+  var MdProgressLinear = (function() {
+    function MdProgressLinear() {
+      this.mode = ProgressMode.DETERMINATE;
+      this.primaryBarTransform = '';
+      this.secondaryBarTransform = '';
+    }
+    MdProgressLinear.clamp = function(v) {
+      return math_1.Math.max(0, math_1.Math.min(100, v));
+    };
+    Object.defineProperty(MdProgressLinear.prototype, "value", {
+      get: function() {
+        return this.value_;
+      },
+      set: function(v) {
+        if (lang_2.isPresent(v)) {
+          this.value_ = MdProgressLinear.clamp(v);
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdProgressLinear.prototype.ngOnChanges = function(_) {
+      if (this.mode === ProgressMode.QUERY || this.mode === ProgressMode.INDETERMINATE) {
+        return;
+      }
+      if (!lang_2.isBlank(this.value)) {
+        this.primaryBarTransform = this.transformForValue(this.value);
+      }
+      if (this.mode === ProgressMode.BUFFER && !lang_2.isBlank(this.bufferValue)) {
+        this.secondaryBarTransform = this.transformForValue(this.bufferValue);
+      }
+    };
+    MdProgressLinear.prototype.transformForValue = function(value) {
+      var scale = value / 100;
+      var translateX = (value - 100) / 2;
+      return "translateX(" + translateX + "%) scale(" + scale + ", 1)";
+    };
+    __decorate([core_2.Input('value'), __metadata('design:type', Number)], MdProgressLinear.prototype, "value_", void 0);
+    __decorate([core_2.Input(), __metadata('design:type', Number)], MdProgressLinear.prototype, "bufferValue", void 0);
+    __decorate([core_2.Input(), __metadata('design:type', String)], MdProgressLinear.prototype, "mode", void 0);
+    MdProgressLinear = __decorate([core_1.Component({
+      selector: 'md-progress-linear',
+      inputs: ['value', 'bufferValue', 'mode'],
+      host: {
+        'role': 'progressbar',
+        'aria-valuemin': '0',
+        'aria-valuemax': '100',
+        '[attr.aria-valuenow]': 'value',
+        '[attr.mode]': 'mode'
+      }
+    }), core_1.View({
+      template: "\n    <div class=\"md-progress-linear-container md-ready\">\n      <div class=\"md-progress-linear-dashed\"></div>\n      <div class=\"md-progress-linear-bar md-progress-linear-bar1\"\n          [style.-webkit-transform]=\"secondaryBarTransform\"\n          [style.transform]=\"secondaryBarTransform\"></div>\n      <div class=\"md-progress-linear-bar md-progress-linear-bar2\"\n          [style.-webkit-transform]=\"primaryBarTransform\"\n          [style.transform]=\"primaryBarTransform\"></div>\n    </div>",
+      directives: [],
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdProgressLinear);
+    return MdProgressLinear;
+  }());
+  exports.MdProgressLinear = MdProgressLinear;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/progress_circular/progress_circular.js", ["angular2/core", "angular2/src/facade/lang", "../progress_linear/progress_linear", "angular2/src/facade/math"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var progress_linear_1 = $__require('../progress_linear/progress_linear');
+  var math_1 = $__require('angular2/src/facade/math');
+  var ProgressMode = (function() {
+    function ProgressMode() {}
+    ProgressMode.DETERMINATE = 'determinate';
+    ProgressMode.INDETERMINATE = 'indeterminate';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "DETERMINATE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], ProgressMode, "INDETERMINATE", void 0);
+    ProgressMode = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], ProgressMode);
+    return ProgressMode;
+  }());
+  var Defaults = (function() {
+    function Defaults() {}
+    Defaults.DEFAULT_PROGRESS_SIZE = 100;
+    Defaults.DEFAULT_SCALING = 0.5;
+    Defaults.DEFAULT_HALF_TRANSITION = 'transform 0.1s linear';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_PROGRESS_SIZE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_SCALING", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], Defaults, "DEFAULT_HALF_TRANSITION", void 0);
+    Defaults = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], Defaults);
+    return Defaults;
+  }());
+  var MdProgressCircular = (function(_super) {
+    __extends(MdProgressCircular, _super);
+    function MdProgressCircular() {
+      _super.apply(this, arguments);
+      this.defaultHalfTransition = Defaults.DEFAULT_HALF_TRANSITION;
+    }
+    Object.defineProperty(MdProgressCircular.prototype, "diameter", {
+      get: function() {
+        return this.diameter_;
+      },
+      set: function(v) {
+        if (lang_1.isPresent(v)) {
+          this.diameter_ = v;
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdProgressCircular.prototype.ngOnInit = function() {
+      this.updateScale();
+    };
+    MdProgressCircular.prototype.ngOnChanges = function(_) {
+      if (this.mode === ProgressMode.INDETERMINATE || lang_1.isBlank(this.value)) {
+        return;
+      }
+      this.gapTransition = (this.value <= 50) ? '' : 'borderBottomColor 0.1s linear';
+      this.transformLeftHalf(this.value);
+      this.transformRightHalf(this.value);
+    };
+    MdProgressCircular.prototype.transformLeftHalf = function(value) {
+      var rotation = (value <= 50) ? 135 : (((value - 50) / 50 * 180) + 135);
+      this.leftHalfTransform = "rotate(" + rotation + "deg)";
+    };
+    MdProgressCircular.prototype.transformRightHalf = function(value) {
+      var rotation = (value >= 50) ? 45 : (value / 50 * 180 - 135);
+      this.rightHalfTransform = "rotate(" + rotation + "deg)";
+    };
+    MdProgressCircular.prototype.updateScale = function() {
+      this.outerSize = 100 * this.getDiameterRatio() + 'px';
+      this.diameterTransformation = "translate(-50%, -50%) scale( " + this.getDiameterRatio() + " )";
+    };
+    MdProgressCircular.prototype.getDiameterRatio = function() {
+      if (!this.diameter)
+        return Defaults.DEFAULT_SCALING;
+      var match = /([0-9]*)%/.exec(this.diameter);
+      var value = math_1.Math.max(0, (match && match[1] / 100) || parseFloat(this.diameter));
+      return (value > 1) ? value / Defaults.DEFAULT_PROGRESS_SIZE : value;
+    };
+    MdProgressCircular.prototype.webkit = function(style) {
+      return "-webkit-" + style;
+    };
+    __decorate([core_1.Input('diameter'), __metadata('design:type', String)], MdProgressCircular.prototype, "diameter_", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdProgressCircular.prototype, "mode", void 0);
+    MdProgressCircular = __decorate([core_1.Component({
+      selector: 'md-progress-circular',
+      inputs: ['value', 'diameter'],
+      host: {
+        'role': 'progressbar',
+        'aria-valuemin': '0',
+        'aria-valuemax': '100',
+        '[attr.aria-valuenow]': 'value',
+        '[style.width]': 'outerSize',
+        '[style.height]': 'outerSize'
+      }
+    }), core_1.View({
+      template: "\n    <div class=\"md-scale-wrapper\"\n     [style.-webkit-transform]=\"diameterTransformation\"\n     [style.transform]=\"diameterTransformation\">\n      <div class=\"md-spinner-wrapper\">\n        <div class=\"md-inner\">\n          <div class=\"md-gap\"\n          [style.-webkit-transition]=\"gapTransition\"\n          [style.transition]=\"gapTransition\"></div>\n          <div class=\"md-left\">\n            <div class=\"md-half-circle\"\n              [style.-webkit-transform]=\"leftHalfTransform\"\n              [style.transform]=\"leftHalfTransform\"\n              [style.-webkit-transition]=\"defaultHalfTransition\"\n              [style.transition]=\"defaultHalfTransition\"></div>\n          </div>\n          <div class=\"md-right\">\n            <div class=\"md-half-circle\"\n              [style.-webkit-transform]=\"rightHalfTransform\"\n              [style.transform]=\"rightHalfTransform\"\n              [style.-webkit-transition]=\"defaultHalfTransition\"\n              [style.transition]=\"defaultHalfTransition\"></div>\n          </div>\n        </div>\n      </div>\n    </div>",
+      directives: [],
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdProgressCircular);
+    return MdProgressCircular;
+  }(progress_linear_1.MdProgressLinear));
+  exports.MdProgressCircular = MdProgressCircular;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/peekaboo/peekaboo.js", ["angular2/core", "../../core/util/media", "angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var media_1 = $__require('../../core/util/media');
+  var core_2 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var lang_2 = $__require('angular2/src/facade/lang');
+  var lang_3 = $__require('angular2/src/facade/lang');
+  var PeekabooAction = (function() {
+    function PeekabooAction() {}
+    PeekabooAction.SHOW = 'show';
+    PeekabooAction.HIDE = 'hide';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], PeekabooAction, "SHOW", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], PeekabooAction, "HIDE", void 0);
+    PeekabooAction = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], PeekabooAction);
+    return PeekabooAction;
+  }());
+  exports.PeekabooAction = PeekabooAction;
+  var MdPeekaboo = (function() {
+    function MdPeekaboo(media) {
+      var _this = this;
+      this.media = media;
+      this.break = 100;
+      this._active = false;
+      this._breakXs = -1;
+      this._breakSm = -1;
+      this._breakMd = -1;
+      this._breakLg = -1;
+      this._breakXl = -1;
+      this._breakpoint = null;
+      this._mediaListeners = [];
+      this._windowScroll = this.evaluate.bind(this);
+      window.addEventListener('scroll', this._windowScroll);
+      MdPeekaboo.SIZES.forEach(function(size) {
+        _this._watchMediaQuery(size);
+        if (media_1.Media.hasMedia(size)) {
+          _this._breakpoint = size;
+        }
+      });
+      this.evaluate();
+    }
+    MdPeekaboo.MakeNumber = function(value) {
+      return lang_3.isString(value) ? lang_2.NumberWrapper.parseInt(value, 10) : value;
+    };
+    Object.defineProperty(MdPeekaboo.prototype, "active", {
+      get: function() {
+        return this._active;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "scrollTop", {
+      get: function() {
+        return window.pageYOffset || document.documentElement.scrollTop;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakXs", {
+      get: function() {
+        return this._breakXs;
+      },
+      set: function(value) {
+        this._breakXs = MdPeekaboo.MakeNumber(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakSm", {
+      get: function() {
+        return this._breakSm;
+      },
+      set: function(value) {
+        this._breakSm = MdPeekaboo.MakeNumber(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakMd", {
+      get: function() {
+        return this._breakMd;
+      },
+      set: function(value) {
+        this._breakMd = MdPeekaboo.MakeNumber(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakLg", {
+      get: function() {
+        return this._breakLg;
+      },
+      set: function(value) {
+        this._breakLg = MdPeekaboo.MakeNumber(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakXl", {
+      get: function() {
+        return this._breakXl;
+      },
+      set: function(value) {
+        this._breakXl = MdPeekaboo.MakeNumber(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdPeekaboo.prototype, "breakpoint", {
+      get: function() {
+        return this._breakpoint;
+      },
+      set: function(size) {
+        this._breakpoint = size;
+        this.evaluate();
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdPeekaboo.prototype.ngOnDestroy = function() {
+      this._mediaListeners.forEach(function(l) {
+        l.destroy();
+      });
+      this._mediaListeners = [];
+      window.removeEventListener('scroll', this._windowScroll);
+    };
+    MdPeekaboo.prototype._watchMediaQuery = function(size) {
+      var _this = this;
+      var l = this.media.listen(media_1.Media.getQuery(size));
+      l.onMatched.subscribe(function(mql) {
+        _this.breakpoint = size;
+      });
+      this._mediaListeners.push(l);
+    };
+    MdPeekaboo.prototype.evaluate = function() {
+      var top = this.scrollTop;
+      var bp = this.break;
+      switch (this._breakpoint) {
+        case 'xl':
+          if (this._breakXl !== -1) {
+            bp = this._breakXl;
+            break;
+          }
+        case 'lg':
+          if (this._breakLg !== -1) {
+            bp = this._breakLg;
+            break;
+          }
+        case 'md':
+          if (this._breakMd !== -1) {
+            bp = this._breakMd;
+            break;
+          }
+        case 'sm':
+          if (this._breakSm !== -1) {
+            bp = this._breakSm;
+            break;
+          }
+        case 'xs':
+          if (this._breakXs !== -1) {
+            bp = this._breakXs;
+            break;
+          }
+      }
+      if (top >= bp && !this._active) {
+        this._active = true;
+      } else if (top < bp && this._active) {
+        this._active = false;
+      }
+      return bp;
+    };
+    MdPeekaboo.SIZES = ['xs', 'sm', 'md', 'lg', 'xl'];
+    __decorate([core_2.Input(), __metadata('design:type', Number)], MdPeekaboo.prototype, "break", void 0);
+    __decorate([core_2.Input(), __metadata('design:type', String)], MdPeekaboo.prototype, "breakAction", void 0);
+    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakXs", null);
+    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakSm", null);
+    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakMd", null);
+    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakLg", null);
+    __decorate([core_2.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdPeekaboo.prototype, "breakXl", null);
+    MdPeekaboo = __decorate([core_1.Directive({
+      selector: '[md-peekaboo]',
+      inputs: ['break', 'breakXs', 'breakSm', 'breakMd', 'breakLg', 'breakXl'],
+      host: {
+        '[class.md-peekaboo-active]': 'active',
+        '[attr.breakAction]': 'breakAction'
+      }
+    }), __metadata('design:paramtypes', [media_1.Media])], MdPeekaboo);
+    return MdPeekaboo;
+  }());
+  exports.MdPeekaboo = MdPeekaboo;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/radio/radio_button.js", ["angular2/core", "angular2/src/facade/lang", "angular2/src/facade/async", "./radio_dispatcher", "../../core/key_codes", "../../core/util/util"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var core_1 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var async_1 = $__require('angular2/src/facade/async');
+  var radio_dispatcher_1 = $__require('./radio_dispatcher');
+  var key_codes_1 = $__require('../../core/key_codes');
+  var core_2 = $__require('angular2/core');
+  var util_1 = $__require('../../core/util/util');
+  var _uniqueIdCounter = 0;
+  var MdRadioGroup = (function() {
+    function MdRadioGroup(tabindex, disabled, radioDispatcher) {
+      this.change = new async_1.EventEmitter(false);
+      this.name_ = "md-radio-group-" + _uniqueIdCounter++;
+      this.radios_ = [];
+      this.disabled_ = false;
+      this.selectedRadioId = '';
+      this.radioDispatcher = radioDispatcher;
+      this.disabled = lang_1.isPresent(disabled);
+      this.tabindex = util_1.parseTabIndexAttribute(tabindex);
+    }
+    Object.defineProperty(MdRadioGroup.prototype, "value", {
+      get: function() {
+        return this.value_;
+      },
+      set: function(value) {
+        this.value_ = value;
+        this._setChildValue(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdRadioGroup.prototype.getName = function() {
+      return this.name_;
+    };
+    Object.defineProperty(MdRadioGroup.prototype, "disabled", {
+      get: function() {
+        return this.disabled_;
+      },
+      set: function(value) {
+        this.disabled_ = lang_1.isPresent(value) && value !== false;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdRadioGroup.prototype.ngOnChanges = function(_) {
+      this.disabled = lang_1.isPresent(this.disabled) && this.disabled !== false;
+      if (lang_1.isPresent(this.value) && this.value !== '') {
+        this.radioDispatcher.notify(this.name_);
+        this._setChildValue(this.value);
+      }
+    };
+    MdRadioGroup.prototype._setChildValue = function(value) {
+      var button = this.getChildByValue(value);
+      if (button) {
+        this.selectedRadioId = button.id;
+        this.activedescendant = button.id;
+        button.checked = true;
+      }
+    };
+    MdRadioGroup.prototype.updateValue = function(value, id) {
+      this.value = value;
+      this.selectedRadioId = id;
+      this.activedescendant = id;
+      async_1.ObservableWrapper.callEmit(this.change, value);
+    };
+    MdRadioGroup.prototype.register = function(radio) {
+      this.radios_.push(radio);
+    };
+    MdRadioGroup.prototype.unregister = function(radio) {
+      this.radios_ = this.radios_.filter(function(r) {
+        return r.id !== radio.id;
+      });
+    };
+    MdRadioGroup.prototype.onKeydown = function(event) {
+      if (this.disabled) {
+        return;
+      }
+      switch (event.keyCode) {
+        case key_codes_1.KeyCodes.UP:
+          this.stepSelectedRadio(-1);
+          event.preventDefault();
+          break;
+        case key_codes_1.KeyCodes.DOWN:
+          this.stepSelectedRadio(1);
+          event.preventDefault();
+          break;
+      }
+    };
+    MdRadioGroup.prototype.getSelectedRadioIndex = function() {
+      for (var i = 0; i < this.radios_.length; i++) {
+        if (this.radios_[i].id === this.selectedRadioId) {
+          return i;
+        }
+      }
+      return -1;
+    };
+    MdRadioGroup.prototype.getChildByValue = function(value) {
+      for (var i = 0; i < this.radios_.length; i++) {
+        if (this.radios_[i].value === value) {
+          return this.radios_[i];
+        }
+      }
+      return null;
+    };
+    MdRadioGroup.prototype.stepSelectedRadio = function(step) {
+      var index = this.getSelectedRadioIndex() + step;
+      if (index < 0 || index >= this.radios_.length) {
+        return;
+      }
+      var radio = this.radios_[index];
+      if (radio.disabled) {
+        this.stepSelectedRadio(step + (step < 0 ? -1 : 1));
+        return;
+      }
+      this.updateValue(radio.value, radio.id);
+      radio.checked = true;
+    };
+    __decorate([core_2.Output('valueChange'), __metadata('design:type', async_1.EventEmitter)], MdRadioGroup.prototype, "change", void 0);
+    __decorate([core_2.Input('value'), __metadata('design:type', Object)], MdRadioGroup.prototype, "value_", void 0);
+    MdRadioGroup = __decorate([core_1.Component({
+      selector: 'md-radio-group',
+      inputs: ['disabled', 'value'],
+      host: {
+        'role': 'radiogroup',
+        '[attr.aria-disabled]': 'disabled',
+        '[attr.aria-activedescendant]': 'activedescendant',
+        '(keydown)': 'onKeydown($event)',
+        '[tabindex]': 'tabindex'
+      }
+    }), core_1.View({
+      template: "<ng-content></ng-content>",
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __param(0, core_1.Attribute('tabindex')), __param(1, core_1.Attribute('disabled')), __metadata('design:paramtypes', [String, String, radio_dispatcher_1.MdRadioDispatcher])], MdRadioGroup);
+    return MdRadioGroup;
+  }());
+  exports.MdRadioGroup = MdRadioGroup;
+  var MdRadioButton = (function() {
+    function MdRadioButton(radioGroup, id, value, checked, tabindex, radioDispatcher) {
+      var _this = this;
+      this.radioGroup = radioGroup;
+      this.radioDispatcher = radioDispatcher;
+      this.value = value ? value : null;
+      this.checked = lang_1.isPresent(checked) ? true : false;
+      this.id = lang_1.isPresent(id) ? id : "md-radio-" + _uniqueIdCounter++;
+      radioDispatcher.listen(function(name) {
+        if (name === _this.name) {
+          _this.checked = false;
+        }
+      });
+      if (lang_1.isPresent(radioGroup)) {
+        this.name = radioGroup.getName();
+        this.radioGroup.register(this);
+        if (this.checked) {
+          this.radioGroup.updateValue(this.value, this.id);
+        }
+      }
+      if (!lang_1.isPresent(radioGroup)) {
+        this.tabindex = util_1.parseTabIndexAttribute(tabindex);
+      } else {
+        this.tabindex = -1;
+      }
+    }
+    MdRadioButton.prototype.ngOnInit = function() {
+      if (lang_1.isPresent(this.radioGroup)) {
+        this.name = this.radioGroup.getName();
+      }
+    };
+    MdRadioButton.prototype.ngOnDestroy = function() {
+      if (lang_1.isPresent(this.radioGroup)) {
+        this.radioGroup.unregister(this);
+      }
+    };
+    MdRadioButton.prototype.isDisabled = function() {
+      return this.disabled || (lang_1.isPresent(this.disabled) && lang_1.StringWrapper.equals(this.disabled, '')) || (lang_1.isPresent(this.radioGroup) && this.radioGroup.disabled);
+    };
+    Object.defineProperty(MdRadioButton.prototype, "disabled", {
+      get: function() {
+        return this.disabled_ || (this.radioGroup && this.radioGroup.disabled);
+      },
+      set: function(value) {
+        this.disabled_ = lang_1.isPresent(value) && value !== false;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdRadioButton.prototype.select = function(event) {
+      if (this.isDisabled()) {
+        event.stopPropagation();
+        return;
+      }
+      this.radioDispatcher.notify(this.name);
+      this.checked = true;
+      if (lang_1.isPresent(this.radioGroup)) {
+        this.radioGroup.updateValue(this.value, this.id);
+      }
+    };
+    MdRadioButton.prototype.onKeydown = function(event) {
+      if (event.keyCode === key_codes_1.KeyCodes.SPACE) {
+        event.preventDefault();
+        this.select(event);
+      }
+    };
+    MdRadioButton = __decorate([core_1.Component({
+      selector: 'md-radio-button',
+      inputs: ['id', 'name', 'value', 'checked', 'disabled'],
+      host: {
+        'role': 'radio',
+        '[id]': 'id',
+        '[tabindex]': 'tabindex',
+        '[attr.aria-checked]': 'checked',
+        '[attr.disabled]': 'disabled ? "" : undefined',
+        '[attr.aria-disabled]': 'disabled',
+        '(keydown)': 'onKeydown($event)',
+        '(click)': 'select($event)'
+      }
+    }), core_1.View({
+      template: "\n    <label role=\"radio\" class=\"md-radio-root\" [class.md-radio-checked]=\"checked\">\n      <div class=\"md-radio-container\">\n        <div class=\"md-radio-off\"></div>\n        <div class=\"md-radio-on\"></div>\n      </div>\n      <div class=\"md-radio-label\">\n        <ng-content></ng-content>\n      </div>\n    </label>",
+      directives: [],
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __param(0, core_1.Optional()), __param(0, core_1.SkipSelf()), __param(0, core_1.Host()), __param(1, core_1.Attribute('id')), __param(2, core_1.Attribute('value')), __param(3, core_1.Attribute('checked')), __param(4, core_1.Attribute('tabindex')), __metadata('design:paramtypes', [MdRadioGroup, String, String, String, String, radio_dispatcher_1.MdRadioDispatcher])], MdRadioButton);
+    return MdRadioButton;
+  }());
+  exports.MdRadioButton = MdRadioButton;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/radio/radio_dispatcher.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var MdRadioDispatcher = (function() {
+    function MdRadioDispatcher() {
+      this.listeners_ = [];
+    }
+    MdRadioDispatcher.prototype.notify = function(name) {
+      this.listeners_.forEach(function(listener) {
+        return listener(name);
+      });
+    };
+    MdRadioDispatcher.prototype.listen = function(listener) {
+      this.listeners_.push(listener);
+    };
+    MdRadioDispatcher = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MdRadioDispatcher);
+    return MdRadioDispatcher;
+  }());
+  exports.MdRadioDispatcher = MdRadioDispatcher;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/core/key_codes.js", ["angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var KeyCodes = (function() {
+    function KeyCodes() {}
+    KeyCodes.ESCAPE = 27;
+    KeyCodes.SPACE = 32;
+    KeyCodes.UP = 38;
+    KeyCodes.DOWN = 40;
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "ESCAPE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "SPACE", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "UP", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], KeyCodes, "DOWN", void 0);
+    KeyCodes = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], KeyCodes);
+    return KeyCodes;
+  }());
+  exports.KeyCodes = KeyCodes;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/checkbox/checkbox.js", ["angular2/core", "angular2/src/facade/lang", "../../core/key_codes", "../../core/util/util"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var key_codes_1 = $__require('../../core/key_codes');
+  var core_2 = $__require('angular2/core');
+  var util_1 = $__require('../../core/util/util');
+  var MdCheckbox = (function() {
+    function MdCheckbox() {
+      this.checkedChange = new core_2.EventEmitter(false);
+      this.checked = false;
+      this.disabled_ = false;
+    }
+    Object.defineProperty(MdCheckbox.prototype, "tabindex", {
+      get: function() {
+        return this._tabindex;
+      },
+      set: function(value) {
+        this._tabindex = util_1.parseTabIndexAttribute(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdCheckbox.prototype, "disabled", {
+      get: function() {
+        return this.disabled_;
+      },
+      set: function(value) {
+        this.disabled_ = lang_1.isPresent(value) && value !== false;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdCheckbox.prototype.onKeydown = function(event) {
+      if (event.keyCode === key_codes_1.KeyCodes.SPACE) {
+        event.preventDefault();
+        this.toggle(event);
+      }
+    };
+    MdCheckbox.prototype.toggle = function(event) {
+      if (this.disabled) {
+        event.stopPropagation();
+        return;
+      }
+      this.checked = !this.checked;
+      this.checkedChange.emit(this.checked);
+    };
+    __decorate([core_2.Output(), __metadata('design:type', core_2.EventEmitter)], MdCheckbox.prototype, "checkedChange", void 0);
+    __decorate([core_2.Input(), __metadata('design:type', Boolean)], MdCheckbox.prototype, "checked", void 0);
+    __decorate([core_2.Input('disabled'), __metadata('design:type', Boolean)], MdCheckbox.prototype, "disabled_", void 0);
+    __decorate([core_2.Input('tabindex'), __metadata('design:type', Number)], MdCheckbox.prototype, "_tabindex", void 0);
+    MdCheckbox = __decorate([core_1.Component({
+      selector: 'md-checkbox',
+      inputs: ['checked', 'disabled'],
+      host: {
+        'role': 'checkbox',
+        '[attr.aria-checked]': 'checked',
+        '[attr.aria-disabled]': 'disabled',
+        '[tabindex]': 'tabindex',
+        '(keydown)': 'onKeydown($event)',
+        '(click)': 'toggle($event)'
+      }
+    }), core_1.View({
+      template: "\n    <div class=\"md-checkbox-container\">\n      <div class=\"md-checkbox-icon\"></div>\n    </div>\n    <div class=\"md-checkbox-label\"><ng-content></ng-content></div>",
+      directives: [],
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdCheckbox);
+    return MdCheckbox;
+  }());
+  exports.MdCheckbox = MdCheckbox;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/switcher/switch.js", ["angular2/core", "../checkbox/checkbox"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var checkbox_1 = $__require('../checkbox/checkbox');
+  var MdSwitch = (function(_super) {
+    __extends(MdSwitch, _super);
+    function MdSwitch() {
+      _super.apply(this, arguments);
+    }
+    MdSwitch = __decorate([core_1.Component({
+      selector: 'md-switch',
+      inputs: ['checked', 'disabled'],
+      host: {
+        'role': 'checkbox',
+        '[attr.aria-checked]': 'checked',
+        '[attr.aria-disabled]': 'disabled_',
+        '(keydown)': 'onKeydown($event)',
+        '(click)': 'toggle($event)'
+      }
+    }), core_1.View({
+      template: "\n    <div class=\"md-switch-container\">\n      <div class=\"md-switch-bar\"></div>\n      <div class=\"md-switch-thumb-container\">\n        <div class=\"md-switch-thumb\"></div>\n      </div>\n    </div>\n    <div class=\"md-switch-label\">\n      <ng-content></ng-content>\n    </div>",
+      directives: [],
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [])], MdSwitch);
+    return MdSwitch;
+  }(checkbox_1.MdCheckbox));
+  exports.MdSwitch = MdSwitch;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/subheader/subheader.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var MdSubheader = (function() {
+    function MdSubheader() {}
+    MdSubheader = __decorate([core_1.Component({
+      selector: 'md-subheader',
+      host: {'class': 'md-subheader'}
+    }), core_1.View({template: "\n    <div class=\"md-subheader-inner\">\n      <span class=\"md-subheader-content\"><ng-content></ng-content></span>\n    </div>"}), __metadata('design:paramtypes', [])], MdSubheader);
+    return MdSubheader;
+  }());
+  exports.MdSubheader = MdSubheader;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/backdrop/backdrop.js", ["../../core/util/animate", "angular2/core", "angular2/src/platform/dom/dom_adapter"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var animate_1 = $__require('../../core/util/animate');
+  var core_1 = $__require('angular2/core');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var MdBackdrop = (function() {
+    function MdBackdrop(element) {
+      this.element = element;
+      this.clickClose = false;
+      this.hideScroll = true;
+      this.onHiding = new core_1.EventEmitter(false);
+      this.onHidden = new core_1.EventEmitter(false);
+      this.onShowing = new core_1.EventEmitter();
+      this.onShown = new core_1.EventEmitter();
+      this.transitionClass = 'md-active';
+      this.transitionAddClass = true;
+      this._visible = false;
+      this._transitioning = false;
+      this._previousOverflow = null;
+      this._body = dom_adapter_1.DOM.query('body');
+    }
+    Object.defineProperty(MdBackdrop.prototype, "visible", {
+      get: function() {
+        return this._visible;
+      },
+      set: function(value) {
+        this.toggle(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdBackdrop.prototype.onClick = function() {
+      if (this.clickClose && !this._transitioning && this.visible) {
+        this.hide();
+      }
+    };
+    MdBackdrop.prototype.hide = function() {
+      return this.toggle(false);
+    };
+    MdBackdrop.prototype.show = function() {
+      return this.toggle(true);
+    };
+    MdBackdrop.prototype.toggle = function(visible) {
+      var _this = this;
+      if (visible === void 0) {
+        visible = !this.visible;
+      }
+      if (visible === this._visible) {
+        return Promise.resolve();
+      }
+      var beginEvent = visible ? this.onShowing : this.onHiding;
+      var endEvent = visible ? this.onShown : this.onHidden;
+      this._visible = visible;
+      this._transitioning = true;
+      beginEvent.emit(this);
+      var action = visible ? (this.transitionAddClass ? animate_1.Animate.enter : animate_1.Animate.leave) : (this.transitionAddClass ? animate_1.Animate.leave : animate_1.Animate.enter);
+      if (visible && this.hideScroll && this.element && !this._previousOverflow) {
+        var style = dom_adapter_1.DOM.getStyle(this._body, 'overflow');
+        if (style !== 'hidden') {
+          this._previousOverflow = style;
+          dom_adapter_1.DOM.setStyle(this._body, 'overflow', 'hidden');
+        }
+      } else if (!visible && this.hideScroll && this.element && this._previousOverflow !== null) {
+        dom_adapter_1.DOM.setStyle(this._body, 'overflow', this._previousOverflow);
+        this._previousOverflow = null;
+      }
+      return action(this.element.nativeElement, this.transitionClass).then(function() {
+        _this._transitioning = false;
+        endEvent.emit(_this);
+      });
+    };
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "clickClose", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "hideScroll", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onHiding", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onHidden", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onShowing", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdBackdrop.prototype, "onShown", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdBackdrop.prototype, "transitionClass", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Object)], MdBackdrop.prototype, "transitionAddClass", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdBackdrop.prototype, "visible", null);
+    MdBackdrop = __decorate([core_1.Component({
+      selector: 'md-backdrop',
+      host: {
+        'class': 'md-backdrop',
+        '(click)': 'onClick()'
+      }
+    }), core_1.View({
+      template: '',
+      encapsulation: core_1.ViewEncapsulation.None
+    }), __metadata('design:paramtypes', [core_1.ElementRef])], MdBackdrop);
+    return MdBackdrop;
+  }());
+  exports.MdBackdrop = MdBackdrop;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/sidenav/sidenav.js", ["angular2/core", "../backdrop/backdrop", "angular2/src/facade/lang", "./sidenav_service", "angular2/src/facade/async"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var core_1 = $__require('angular2/core');
+  var backdrop_1 = $__require('../backdrop/backdrop');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var sidenav_service_1 = $__require('./sidenav_service');
+  var async_1 = $__require('angular2/src/facade/async');
+  var SidenavAlignment = (function() {
+    function SidenavAlignment() {}
+    SidenavAlignment.LEFT = 'left';
+    SidenavAlignment.RIGHT = 'right';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavAlignment, "LEFT", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavAlignment, "RIGHT", void 0);
+    SidenavAlignment = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], SidenavAlignment);
+    return SidenavAlignment;
+  }());
+  exports.SidenavAlignment = SidenavAlignment;
+  var SidenavStyle = (function() {
+    function SidenavStyle() {}
+    SidenavStyle.OVER = 'over';
+    SidenavStyle.SIDE = 'side';
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavStyle, "OVER", void 0);
+    __decorate([lang_1.CONST(), __metadata('design:type', Object)], SidenavStyle, "SIDE", void 0);
+    SidenavStyle = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [])], SidenavStyle);
+    return SidenavStyle;
+  }());
+  exports.SidenavStyle = SidenavStyle;
+  var MdSidenav = (function(_super) {
+    __extends(MdSidenav, _super);
+    function MdSidenav(element, service, renderer, container) {
+      _super.call(this, element);
+      this.element = element;
+      this.service = service;
+      this.renderer = renderer;
+      this.container = container;
+      this.name = 'default';
+      this._align = SidenavAlignment.LEFT;
+      this._style = SidenavStyle.OVER;
+      this.backdropRef = null;
+      this.transitionClass = 'md-closed';
+      this.transitionAddClass = false;
+      this.renderer.setElementClass(this.element.nativeElement, this.transitionClass, !this.transitionAddClass);
+    }
+    Object.defineProperty(MdSidenav.prototype, "align", {
+      get: function() {
+        return this._align;
+      },
+      set: function(value) {
+        this._align = value === SidenavAlignment.RIGHT ? SidenavAlignment.RIGHT : SidenavAlignment.LEFT;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdSidenav.prototype, "style", {
+      get: function() {
+        return this._style;
+      },
+      set: function(value) {
+        var _this = this;
+        this._style = value === SidenavStyle.SIDE ? SidenavStyle.SIDE : SidenavStyle.OVER;
+        if (this.container) {
+          async_1.TimerWrapper.setTimeout(function() {
+            _this.container.updateStyle(_this);
+          }, 0);
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdSidenav.prototype.ngOnInit = function() {
+      this.service.register(this);
+    };
+    MdSidenav.prototype.ngOnDestroy = function() {
+      this.service.unregister(this);
+      this.backdropRef = null;
+    };
+    MdSidenav.prototype.toggle = function(visible) {
+      if (this.backdropRef) {
+        this.backdropRef.toggle(visible);
+      }
+      return _super.prototype.toggle.call(this, visible);
+    };
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdSidenav.prototype, "name", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onHiding", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onHidden", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onShowing", void 0);
+    __decorate([core_1.Output(), __metadata('design:type', core_1.EventEmitter)], MdSidenav.prototype, "onShown", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdSidenav.prototype, "align", null);
+    __decorate([core_1.Input(), __metadata('design:type', String), __metadata('design:paramtypes', [String])], MdSidenav.prototype, "style", null);
+    MdSidenav = __decorate([core_1.Component({
+      selector: 'md-sidenav',
+      host: {
+        '[class.md-style-side]': 'style=="side"',
+        '[class.md-whiteframe-z2]': 'visible',
+        '[class.md-sidenav-left]': 'align!="right"',
+        '[class.md-sidenav-right]': 'align=="right"'
+      },
+      template: "<ng-content></ng-content>",
+      directives: [backdrop_1.MdBackdrop]
+    }), __param(1, core_1.Inject(core_1.forwardRef(function() {
+      return sidenav_service_1.SidenavService;
+    }))), __param(3, core_1.Optional()), __param(3, core_1.SkipSelf()), __param(3, core_1.Host()), __param(3, core_1.Inject(core_1.forwardRef(function() {
+      return MdSidenavContainer;
+    }))), __metadata('design:paramtypes', [core_1.ElementRef, sidenav_service_1.SidenavService, core_1.Renderer, MdSidenavContainer])], MdSidenav);
+    return MdSidenav;
+  }(backdrop_1.MdBackdrop));
+  exports.MdSidenav = MdSidenav;
+  var MdSidenavContainer = (function() {
+    function MdSidenavContainer(_app) {
+      this._app = _app;
+      this._unsubscribe = null;
+      this.isPushed = false;
+    }
+    MdSidenavContainer.prototype.ngOnDestroy = function() {
+      this.children.toArray().forEach(function(m) {
+        m.backdropRef = null;
+      });
+      this._unsubscribe.unsubscribe();
+    };
+    MdSidenavContainer.prototype.ngAfterViewInit = function() {
+      var _this = this;
+      this.children.toArray().forEach(function(m) {
+        m.backdropRef = _this._backdrop;
+      });
+      this._unsubscribe = this._backdrop.onHiding.subscribe(function() {
+        _this.children.toArray().forEach(function(m) {
+          m.visible = false;
+        });
+      });
+    };
+    MdSidenavContainer.prototype.updateStyle = function(child) {
+      var pushed = false;
+      this.children && this.children.toArray().forEach(function(m) {
+        if (m.style === SidenavStyle.SIDE) {
+          pushed = true;
+        }
+      });
+      this.isPushed = pushed;
+      this._app && this._app.tick();
+    };
+    __decorate([core_1.ContentChildren(MdSidenav), __metadata('design:type', core_1.QueryList)], MdSidenavContainer.prototype, "children", void 0);
+    __decorate([core_1.ViewChild(backdrop_1.MdBackdrop), __metadata('design:type', backdrop_1.MdBackdrop)], MdSidenavContainer.prototype, "_backdrop", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdSidenavContainer.prototype, "isPushed", void 0);
+    MdSidenavContainer = __decorate([core_1.Component({
+      selector: 'md-sidenav-container',
+      template: "\n    <md-backdrop class=\"md-opaque\" clickClose=\"true\"></md-backdrop>\n    <ng-content></ng-content>",
+      directives: [backdrop_1.MdBackdrop],
+      host: {'[class.md-pushed]': 'isPushed'}
+    }), __param(0, core_1.Optional()), __metadata('design:paramtypes', [core_1.ApplicationRef])], MdSidenavContainer);
+    return MdSidenavContainer;
+  }());
+  exports.MdSidenavContainer = MdSidenavContainer;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/sidenav/sidenav_service.js", ["angular2/core"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var SidenavService = (function() {
+    function SidenavService() {
+      this._instances = [];
+    }
+    SidenavService.prototype.show = function(name) {
+      var instance = this.find(name);
+      if (!instance) {
+        return Promise.reject('invalid container');
+      }
+      return instance.show();
+    };
+    SidenavService.prototype.hide = function(name) {
+      var instance = this.find(name);
+      if (!instance) {
+        return Promise.reject('invalid container');
+      }
+      return instance.hide();
+    };
+    SidenavService.prototype.find = function(name) {
+      return this._instances.filter(function(c) {
+        return c.name === name;
+      })[0] || null;
+    };
+    SidenavService.prototype.register = function(instance) {
+      this._instances.push(instance);
+    };
+    SidenavService.prototype.unregister = function(instance) {
+      this._instances = this._instances.filter(function(c) {
+        return c.name !== instance.name;
+      });
+    };
+    SidenavService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], SidenavService);
+    return SidenavService;
+  }());
+  exports.SidenavService = SidenavService;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/core/util/util.js", ["angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var lang_2 = $__require('angular2/src/facade/lang');
+  function debounce(func, wait, scope) {
+    var timer;
+    return function debounced() {
+      var context = scope,
+          args = Array.prototype.slice.call(arguments);
+      clearTimeout(timer);
+      timer = setTimeout(function() {
+        timer = undefined;
+        func.apply(context, args);
+      }, wait || 10);
+    };
+  }
+  exports.debounce = debounce;
+  function throttle(func, delay, scope) {
+    var recent;
+    return function throttled() {
+      var context = scope;
+      var args = arguments;
+      var now = new Date().getTime();
+      if (!recent || (now - recent > delay)) {
+        func.apply(context, args);
+        recent = now;
+      }
+    };
+  }
+  exports.throttle = throttle;
+  function rAF(callback) {
+    window.requestAnimationFrame(callback);
+  }
+  exports.rAF = rAF;
+  function parseTabIndexAttribute(attr) {
+    return lang_1.isPresent(attr) ? lang_2.NumberWrapper.parseInt(attr, 10) : 0;
+  }
+  exports.parseTabIndexAttribute = parseTabIndexAttribute;
+  function isNumber(value) {
+    return Object.prototype.toString.call(value) === '[object Number]';
+  }
+  exports.isNumber = isNumber;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/toolbar/toolbar.js", ["angular2/core", "../../core/util/util", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var util_1 = $__require('../../core/util/util');
+  var core_2 = $__require('angular2/core');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var lang_2 = $__require('angular2/src/facade/lang');
+  var lang_3 = $__require('angular2/src/facade/lang');
+  var MdToolbar = (function() {
+    function MdToolbar(el) {
+      this.el = el;
+      this._mdShrinkSpeed = 0.5;
+      this._debouncedContentScroll = null;
+      this._debouncedUpdateHeight = null;
+      this._content = null;
+      this._toolbarHeight = 0;
+      this._cancelScrollShrink = null;
+      this._previousScrollTop = 0;
+      this._currentY = 0;
+      this._mdScrollShrink = false;
+      this._debouncedContentScroll = util_1.throttle(this.onContentScroll, 10, this);
+      this._debouncedUpdateHeight = util_1.debounce(this.updateToolbarHeight, 5 * 1000, this);
+    }
+    Object.defineProperty(MdToolbar.prototype, "mdShrinkSpeed", {
+      get: function() {
+        return this._mdShrinkSpeed;
+      },
+      set: function(value) {
+        this._mdShrinkSpeed = lang_2.isString(value) ? lang_3.NumberWrapper.parseFloat(value) : value;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdToolbar.prototype, "mdScrollShrink", {
+      get: function() {
+        return this._mdScrollShrink;
+      },
+      set: function(value) {
+        this._mdScrollShrink = !!lang_1.isPresent(value);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdToolbar.prototype.ngAfterContentInit = function() {
+      this.disableScrollShrink();
+      if (!this.mdScrollShrink) {
+        return;
+      }
+      this._content = dom_adapter_1.DOM.querySelector(dom_adapter_1.DOM.parentElement(this.el.nativeElement), 'md-content');
+      if (!this._content) {
+        return;
+      }
+      this._cancelScrollShrink = dom_adapter_1.DOM.onAndCancel(this._content, 'scroll', this._debouncedContentScroll);
+      dom_adapter_1.DOM.setAttribute(this._content, 'scroll-shrink', 'true');
+      util_1.rAF(this.updateToolbarHeight.bind(this));
+    };
+    MdToolbar.prototype.ngOnChanges = function(changes) {
+      this.updateToolbarHeight();
+    };
+    MdToolbar.prototype.ngOnDestroy = function() {
+      this.disableScrollShrink();
+    };
+    MdToolbar.prototype.disableScrollShrink = function() {
+      if (this._cancelScrollShrink) {
+        this._cancelScrollShrink();
+        this._cancelScrollShrink = null;
+      }
+    };
+    MdToolbar.prototype.updateToolbarHeight = function() {
+      this._toolbarHeight = dom_adapter_1.DOM.getProperty(this.el.nativeElement, 'offsetHeight');
+      if (this._content) {
+        var margin = (-this._toolbarHeight * this.mdShrinkSpeed) + 'px';
+        dom_adapter_1.DOM.setStyle(this._content, "margin-top", margin);
+        dom_adapter_1.DOM.setStyle(this._content, "margin-bottom", margin);
+        this.onContentScroll();
+      }
+    };
+    MdToolbar.prototype.onContentScroll = function(e) {
+      var _this = this;
+      var scrollTop = e ? e.target.scrollTop : this._previousScrollTop;
+      this._debouncedUpdateHeight();
+      this._currentY = Math.min(this._toolbarHeight / this.mdShrinkSpeed, Math.max(0, this._currentY + scrollTop - this._previousScrollTop));
+      var toolbarXform = "translate3d(0," + -this._currentY * this.mdShrinkSpeed + "px,0)";
+      var contentXform = "translate3d(0," + (this._toolbarHeight - this._currentY) * this.mdShrinkSpeed + "px,0)";
+      dom_adapter_1.DOM.setStyle(this._content, '-webkit-transform', contentXform);
+      dom_adapter_1.DOM.setStyle(this._content, 'transform', contentXform);
+      dom_adapter_1.DOM.setStyle(this.el.nativeElement, '-webkit-transform', toolbarXform);
+      dom_adapter_1.DOM.setStyle(this.el.nativeElement, 'transform', toolbarXform);
+      this._previousScrollTop = scrollTop;
+      util_1.rAF(function() {
+        var hasWhiteFrame = dom_adapter_1.DOM.hasClass(_this.el.nativeElement, 'md-whiteframe-z1');
+        if (hasWhiteFrame && !_this._currentY) {
+          dom_adapter_1.DOM.removeClass(_this.el.nativeElement, 'md-whiteframe-z1');
+        } else if (!hasWhiteFrame && _this._currentY) {
+          dom_adapter_1.DOM.addClass(_this.el.nativeElement, 'md-whiteframe-z1');
+        }
+      });
+    };
+    __decorate([core_1.Input(), __metadata('design:type', Number), __metadata('design:paramtypes', [Number])], MdToolbar.prototype, "mdShrinkSpeed", null);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean), __metadata('design:paramtypes', [Boolean])], MdToolbar.prototype, "mdScrollShrink", null);
+    MdToolbar = __decorate([core_1.Directive({
+      selector: 'md-toolbar',
+      inputs: ['mdShrinkSpeed', 'mdScrollShrink']
+    }), __metadata('design:paramtypes', [core_2.ElementRef])], MdToolbar);
+    return MdToolbar;
+  }());
+  exports.MdToolbar = MdToolbar;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/core/util/ink.js", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "./animate"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var animate_1 = $__require('./animate');
+  var Ink = (function() {
+    function Ink() {}
+    Ink.canApply = function(element) {
+      return !dom_adapter_1.DOM.hasAttribute(element, 'md-no-ink');
+    };
+    Ink.getSize = function(fit, width, height) {
+      return fit ? Math.max(width, height) : Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+    };
+    Ink.ripple = function(element, left, top) {
+      var fit = lang_1.isPresent(dom_adapter_1.DOM.getAttribute(element, 'md-fab'));
+      var container = dom_adapter_1.DOM.querySelector(element, '.md-ripple-container');
+      if (!container) {
+        container = dom_adapter_1.DOM.createElement('div');
+        dom_adapter_1.DOM.addClass(container, 'md-ripple-container');
+        dom_adapter_1.DOM.appendChild(element, container);
+      }
+      var ripple = dom_adapter_1.DOM.createElement('div');
+      dom_adapter_1.DOM.addClass(ripple, 'md-ripple');
+      var getInitialStyles = function() {
+        var color = dom_adapter_1.DOM.getComputedStyle(element).color || 'rgb(0,0,0)';
+        var size = Ink.getSize(fit, element.clientWidth, element.clientHeight);
+        return {
+          'background-color': color,
+          left: left + "px",
+          top: top + "px",
+          width: size + "px",
+          height: size + "px"
+        };
+      };
+      return animate_1.Animate.setStyles(ripple, getInitialStyles()).then(function() {
+        return dom_adapter_1.DOM.appendChild(container, ripple);
+      }).then(function() {
+        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-placed');
+      }).then(function() {
+        return animate_1.Animate.wait();
+      }).then(function() {
+        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-scaled');
+      }).then(function() {
+        return dom_adapter_1.DOM.addClass(ripple, 'md-ripple-active');
+      }).then(function() {
+        return animate_1.Animate.wait(450);
+      }).then(function() {
+        return dom_adapter_1.DOM.removeClass(ripple, 'md-ripple-active');
+      }).then(function() {
+        return animate_1.Animate.wait(650);
+      }).then(function() {
+        return dom_adapter_1.DOM.removeChild(container, ripple);
+      });
+    };
+    Ink.rippleEvent = function(element, event) {
+      var rippleX = event.offsetX;
+      var rippleY = event.offsetY;
+      if (element !== event.srcElement) {
+        var rect = dom_adapter_1.DOM.getBoundingClientRect(element);
+        rippleX = event.clientX - rect.left;
+        rippleY = event.clientY - rect.top;
+      }
+      return Ink.ripple(element, rippleX, rippleY);
+    };
+    return Ink;
+  }());
+  exports.Ink = Ink;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/components/tabs/tabs.js", ["angular2/core", "../../core/util/ink", "angular2/common"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var core_1 = $__require('angular2/core');
+  var ink_1 = $__require('../../core/util/ink');
+  var core_2 = $__require('angular2/core');
+  var common_1 = $__require('angular2/common');
+  var core_3 = $__require('angular2/core');
+  var core_4 = $__require('angular2/core');
+  var MdTab = (function() {
+    function MdTab(viewContainer, templateRef) {
+      this.viewContainer = viewContainer;
+      this.templateRef = templateRef;
+      this.disabled = false;
+      this._active = false;
+    }
+    Object.defineProperty(MdTab.prototype, "active", {
+      get: function() {
+        return this._active;
+      },
+      set: function(active) {
+        if (active == this._active) {
+          return;
+        }
+        this._active = active;
+        if (active) {
+          this.viewContainer.createEmbeddedView(this.templateRef);
+        } else {
+          this.viewContainer.remove(0);
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    __decorate([core_1.Input(), __metadata('design:type', String)], MdTab.prototype, "label", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdTab.prototype, "disabled", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Boolean), __metadata('design:paramtypes', [Boolean])], MdTab.prototype, "active", null);
+    MdTab = __decorate([core_1.Directive({selector: '[md-tab]'}), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef])], MdTab);
+    return MdTab;
+  }());
+  exports.MdTab = MdTab;
+  var MdTabs = (function() {
+    function MdTabs(panes, _element) {
+      var _this = this;
+      this.panes = panes;
+      this._element = _element;
+      this.mdNoScroll = false;
+      this._selected = 0;
+      this.panes.changes.subscribe(function(_) {
+        _this.panes.toArray().forEach(function(p, index) {
+          p.active = index === _this._selected;
+        });
+      });
+    }
+    Object.defineProperty(MdTabs.prototype, "selected", {
+      get: function() {
+        return this._selected;
+      },
+      set: function(index) {
+        var panes = this.panes.toArray();
+        var pane = null;
+        if (index >= 0 && index < panes.length) {
+          pane = panes[index];
+        }
+        this.selectedTab = pane;
+        this._selected = index;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(MdTabs.prototype, "selectedTab", {
+      get: function() {
+        var result = null;
+        this.panes.toArray().forEach(function(p) {
+          if (p.active) {
+            result = p;
+          }
+        });
+        return result;
+      },
+      set: function(value) {
+        var _this = this;
+        this.panes.toArray().forEach(function(p, index) {
+          p.active = p == value;
+          if (p.active) {
+            _this._selected = index;
+          }
+        });
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MdTabs.prototype.onTabClick = function(pane, event) {
+      if (event && ink_1.Ink.canApply(this._element.nativeElement)) {
+        ink_1.Ink.rippleEvent(event.target, event);
+      }
+      this.selectedTab = pane;
+    };
+    __decorate([core_1.Input(), __metadata('design:type', Boolean)], MdTabs.prototype, "mdNoScroll", void 0);
+    __decorate([core_1.Input(), __metadata('design:type', Number)], MdTabs.prototype, "selected", null);
+    MdTabs = __decorate([core_1.Component({
+      selector: 'md-tabs',
+      template: "\n    <md-tabs-wrapper>\n      <md-tab-data></md-tab-data>\n      <md-tabs-canvas role=\"tablist\">\n        <md-pagination-wrapper>\n          <md-tab-item tabindex=\"-1\"\n                       class=\"md-tab\"\n                       (click)=\"onTabClick(pane,$event)\"\n                       [class.md-active]=\"selectedTab == pane\"\n                       [disabled]=\"pane.disabled\"\n                       [style.max-width]=\"maxTabWidth + 'px'\"\n                       *ngFor=\"#pane of panes\"\n                       role=\"tab\">\n            {{pane.label}}\n          </md-tab-item>\n          <md-ink-bar></md-ink-bar>\n        </md-pagination-wrapper>\n      </md-tabs-canvas>\n    </md-tabs-wrapper>\n    <md-tabs-content-wrapper>\n      <md-tab-content role=\"tabpanel\" class=\"md-active\"\n                      [class.md-no-scroll]=\"mdNoScroll\">\n        <ng-content></ng-content>\n      </md-tab-content>\n    </md-tabs-content-wrapper>",
+      directives: [common_1.NgFor],
+      properties: ['selected'],
+      encapsulation: core_2.ViewEncapsulation.None
+    }), __param(0, core_3.Query(MdTab)), __metadata('design:paramtypes', [core_1.QueryList, core_4.ElementRef])], MdTabs);
+    return MdTabs;
+  }());
+  exports.MdTabs = MdTabs;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/core/util/media.js", ["angular2/core", "rxjs/Subject"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = $__require('angular2/core');
+  var Subject_1 = $__require('rxjs/Subject');
+  exports.MEDIA = {
+    'xs': '(max-width: 599px)',
+    'gt-xs': '(min-width: 600px)',
+    'sm': '(min-width: 600px) and (max-width: 959px)',
+    'gt-sm': '(min-width: 960px)',
+    'md': '(min-width: 960px) and (max-width: 1279px)',
+    'gt-md': '(min-width: 1280px)',
+    'lg': '(min-width: 1280px) and (max-width: 1919px)',
+    'gt-lg': '(min-width: 1920px)',
+    'xl': '(min-width: 1920px)'
+  };
+  exports.MEDIA_PRIORITY = ['xl', 'gt-lg', 'lg', 'gt-md', 'md', 'gt-sm', 'sm', 'gt-xs', 'xs'];
+  var MediaListener = (function() {
+    function MediaListener(query, _mql, _media) {
+      var _this = this;
+      this.query = query;
+      this._mql = _mql;
+      this._media = _media;
+      this.onMatched = new Subject_1.Subject();
+      this._destroyed = false;
+      this._listener = function(mql) {
+        return _this.onMatched.next(mql);
+      };
+      this._mql.addListener(this._listener);
+    }
+    Object.defineProperty(MediaListener.prototype, "matches", {
+      get: function() {
+        return !this._destroyed && this._mql.matches;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    MediaListener.prototype.destroy = function() {
+      if (!this._destroyed) {
+        this._mql.removeListener(this._listener);
+        this._media.unregisterListener(this);
+        this._destroyed = true;
+        this._listener = null;
+        this._mql = null;
+      }
+    };
+    return MediaListener;
+  }());
+  exports.MediaListener = MediaListener;
+  var Media = (function() {
+    function Media() {
+      this._cache = {};
+    }
+    Media.prototype.listen = function(query) {
+      var listener = this._cache[query];
+      if (!listener) {
+        listener = this._cache[query] = {
+          mql: window.matchMedia(query),
+          references: 0
+        };
+      }
+      listener.references++;
+      return new MediaListener(query, listener.mql, this);
+    };
+    Media.prototype.unregisterListener = function(listener) {
+      var cached = this._cache[listener.query];
+      if (cached) {
+        cached.references--;
+        delete this._cache[listener.query];
+      }
+    };
+    Media.prototype.hasMedia = function(size) {
+      return Media.hasMedia(size);
+    };
+    Media.hasMedia = function(size) {
+      var query = Media.getQuery(size);
+      if (!query) {
+        return false;
+      }
+      return window.matchMedia(query).matches;
+    };
+    Media.getQuery = function(size) {
+      var query = exports.MEDIA[size];
+      if (!query) {
+        console.warn("unknown media query size " + size + ". Expected one of [" + exports.MEDIA_PRIORITY.join(',') + "]");
+        return null;
+      }
+      return query;
+    };
+    Media = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], Media);
+    return Media;
+  }());
+  exports.Media = Media;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/core/util/animate.js", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/async"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  var dom_adapter_1 = $__require('angular2/src/platform/dom/dom_adapter');
+  var async_1 = $__require('angular2/src/facade/async');
+  var Animate = (function() {
+    function Animate() {}
+    Animate.enter = function(el, cssClass) {
+      dom_adapter_1.DOM.removeClass(el, cssClass);
+      return new Promise(function(resolve) {
+        dom_adapter_1.DOM.addClass(el, cssClass + '-add');
+        async_1.TimerWrapper.setTimeout(function() {
+          var duration = Animate.getTransitionDuration(el, true);
+          var callTimeout = setTimeout(function() {
+            return done();
+          }, duration);
+          var done = function() {
+            dom_adapter_1.DOM.removeClass(el, cssClass + '-add-active');
+            dom_adapter_1.DOM.removeClass(el, cssClass + '-add');
+            clearTimeout(callTimeout);
+            removeListener();
+            resolve();
+          };
+          var removeListener = dom_adapter_1.DOM.onAndCancel(el, Animate.TRANSITION_EVENT, done);
+          dom_adapter_1.DOM.addClass(el, cssClass + '-add-active');
+          dom_adapter_1.DOM.addClass(el, cssClass);
+        }, 1);
+      });
+    };
+    Animate.leave = function(el, cssClass) {
+      return new Promise(function(resolve) {
+        dom_adapter_1.DOM.addClass(el, cssClass + '-remove');
+        async_1.TimerWrapper.setTimeout(function() {
+          var duration = Animate.getTransitionDuration(el, true);
+          var callTimeout = setTimeout(function() {
+            return done();
+          }, duration);
+          var done = function() {
+            dom_adapter_1.DOM.removeClass(el, cssClass + '-remove-active');
+            dom_adapter_1.DOM.removeClass(el, cssClass + '-remove');
+            clearTimeout(callTimeout);
+            removeListener();
+            resolve();
+          };
+          var removeListener = dom_adapter_1.DOM.onAndCancel(el, Animate.TRANSITION_EVENT, done);
+          dom_adapter_1.DOM.addClass(el, cssClass + '-remove-active');
+          dom_adapter_1.DOM.removeClass(el, cssClass);
+        }, 1);
+      });
+    };
+    Animate.getTransitionDuration = function(element, includeDelay) {
+      if (includeDelay === void 0) {
+        includeDelay = false;
+      }
+      var prefixes = ['', 'moz', 'webkit', 'ms', 'o', 'khtml'];
+      var style = window.getComputedStyle(element);
+      for (var i = 0; i < prefixes.length; i++) {
+        var durationProperty = (i === 0 ? '' : "-" + prefixes[i] + "-") + "transition-duration";
+        var duration = style[durationProperty];
+        if (!duration) {
+          continue;
+        }
+        duration = (duration.indexOf('ms') > -1) ? parseFloat(duration) : parseFloat(duration) * 1000;
+        if (duration === 0) {
+          continue;
+        }
+        if (includeDelay) {
+          var delayProperty = (i === 0 ? '' : "-" + prefixes[i] + "-") + "transition-delay";
+          var delay = style[delayProperty];
+          if (typeof delay !== 'undefined') {
+            duration += (delay.indexOf('ms') > -1) ? parseFloat(delay) : parseFloat(delay) * 1000;
+          }
+        }
+        return duration;
+      }
+      return -1;
+    };
+    Animate.setTransitionDuration = function(element, delayMs) {
+      dom_adapter_1.DOM.setStyle(element, 'transition-duration', delayMs + "ms");
+    };
+    Animate.whichTransitionEvent = function() {
+      var t;
+      var el = document.createElement('fakeelement');
+      var transitions = {
+        'transition': 'transitionend',
+        'OTransition': 'oTransitionEnd',
+        'MozTransition': 'transitionend',
+        'WebkitTransition': 'webkitTransitionEnd'
+      };
+      for (t in transitions) {
+        if (el.style[t] !== undefined) {
+          return transitions[t];
+        }
+      }
+    };
+    Animate.animateStyles = function(element, styles, durationMs) {
+      var saveDuration = Animate.getTransitionDuration(element);
+      Animate.setTransitionDuration(element, durationMs);
+      return new Promise(function(animResolve, animReject) {
+        var callTimeout = setTimeout(function() {
+          return done();
+        }, durationMs);
+        var done = function() {
+          clearTimeout(callTimeout);
+          removeListener();
+          if (saveDuration !== -1) {
+            Animate.setTransitionDuration(element, saveDuration);
+          } else {
+            dom_adapter_1.DOM.removeStyle(element, 'transition-duration');
+          }
+          animResolve();
+        };
+        var removeListener = dom_adapter_1.DOM.onAndCancel(element, Animate.TRANSITION_EVENT, done);
+        Object.keys(styles).forEach(function(key) {
+          dom_adapter_1.DOM.setStyle(element, key, "" + styles[key]);
+        });
+      });
+    };
+    Animate.setStyles = function(element, styles) {
+      var saveDuration = Animate.getTransitionDuration(element);
+      Animate.setTransitionDuration(element, 0);
+      return new Promise(function(resolve, reject) {
+        Object.keys(styles).forEach(function(key) {
+          dom_adapter_1.DOM.setStyle(element, key, "" + styles[key]);
+        });
+        if (saveDuration !== -1) {
+          Animate.setTransitionDuration(element, saveDuration);
+        } else {
+          dom_adapter_1.DOM.removeStyle(element, 'transition-duration');
+        }
+        resolve();
+      });
+    };
+    Animate.wait = function(milliseconds) {
+      if (milliseconds === void 0) {
+        milliseconds = 10;
+      }
+      return new Promise(function(resolve) {
+        async_1.TimerWrapper.setTimeout(function() {
+          return resolve();
+        }, milliseconds);
+      });
+    };
+    Animate.TRANSITION_EVENT = Animate.whichTransitionEvent();
+    return Animate;
+  }());
+  exports.Animate = Animate;
+  return module.exports;
+});
+
+System.registerDynamic("node_modules/ng2-material/all.js", ["angular2/src/facade/lang", "./components/button/button", "./components/checkbox/checkbox", "./components/content/content", "./components/dialog/dialog", "./components/divider/divider", "./components/icon/icon", "./components/ink/ink", "./components/form/validators", "./components/form/messages", "./components/input/input", "./components/list/list", "./components/progress_linear/progress_linear", "./components/progress_circular/progress_circular", "./components/peekaboo/peekaboo", "./components/radio/radio_button", "./components/radio/radio_dispatcher", "./components/switcher/switch", "./components/subheader/subheader", "./components/sidenav/sidenav", "./components/sidenav/sidenav_service", "./components/toolbar/toolbar", "./components/tabs/tabs", "./core/util/media", "./core/util/animate"], true, function($__require, exports, module) {
+  "use strict";
+  ;
+  var define,
+      global = this,
+      GLOBAL = this;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  var lang_1 = $__require('angular2/src/facade/lang');
+  var button_1 = $__require('./components/button/button');
+  __export($__require('./components/button/button'));
+  var checkbox_1 = $__require('./components/checkbox/checkbox');
+  __export($__require('./components/checkbox/checkbox'));
+  var content_1 = $__require('./components/content/content');
+  __export($__require('./components/content/content'));
+  __export($__require('./components/dialog/dialog'));
+  var dialog_2 = $__require('./components/dialog/dialog');
+  var divider_1 = $__require('./components/divider/divider');
+  __export($__require('./components/divider/divider'));
+  var icon_1 = $__require('./components/icon/icon');
+  __export($__require('./components/icon/icon'));
+  var ink_1 = $__require('./components/ink/ink');
+  __export($__require('./components/ink/ink'));
+  var validators_1 = $__require('./components/form/validators');
+  __export($__require('./components/form/validators'));
+  var messages_1 = $__require('./components/form/messages');
+  __export($__require('./components/form/messages'));
+  var input_1 = $__require('./components/input/input');
+  __export($__require('./components/input/input'));
+  var list_1 = $__require('./components/list/list');
+  __export($__require('./components/list/list'));
+  var progress_linear_1 = $__require('./components/progress_linear/progress_linear');
+  __export($__require('./components/progress_linear/progress_linear'));
+  var progress_circular_1 = $__require('./components/progress_circular/progress_circular');
+  __export($__require('./components/progress_circular/progress_circular'));
+  var peekaboo_1 = $__require('./components/peekaboo/peekaboo');
+  __export($__require('./components/peekaboo/peekaboo'));
+  var radio_button_1 = $__require('./components/radio/radio_button');
+  var radio_dispatcher_1 = $__require('./components/radio/radio_dispatcher');
+  __export($__require('./components/radio/radio_button'));
+  __export($__require('./components/radio/radio_dispatcher'));
+  var switch_1 = $__require('./components/switcher/switch');
+  __export($__require('./components/switcher/switch'));
+  var subheader_1 = $__require('./components/subheader/subheader');
+  __export($__require('./components/subheader/subheader'));
+  var sidenav_1 = $__require('./components/sidenav/sidenav');
+  var sidenav_service_1 = $__require('./components/sidenav/sidenav_service');
+  __export($__require('./components/sidenav/sidenav'));
+  __export($__require('./components/sidenav/sidenav_service'));
+  var toolbar_1 = $__require('./components/toolbar/toolbar');
+  __export($__require('./components/toolbar/toolbar'));
+  var tabs_1 = $__require('./components/tabs/tabs');
+  __export($__require('./components/tabs/tabs'));
+  var media_1 = $__require('./core/util/media');
+  __export($__require('./core/util/media'));
+  __export($__require('./core/util/animate'));
+  exports.MATERIAL_DIRECTIVES = lang_1.CONST_EXPR([button_1.MdAnchor, button_1.MdButton, checkbox_1.MdCheckbox, content_1.MdContent, divider_1.MdDivider, icon_1.MdIcon, ink_1.MdInk, input_1.MdInput, input_1.MdInputContainer, validators_1.MdPatternValidator, validators_1.MdMaxLengthValidator, validators_1.MdMinValueValidator, validators_1.MdMaxValueValidator, validators_1.MdNumberRequiredValidator, messages_1.MdMessage, messages_1.MdMessages, list_1.MdList, list_1.MdListItem, peekaboo_1.MdPeekaboo, progress_linear_1.MdProgressLinear, progress_circular_1.MdProgressCircular, radio_button_1.MdRadioButton, radio_button_1.MdRadioGroup, sidenav_1.MdSidenav, sidenav_1.MdSidenavContainer, subheader_1.MdSubheader, switch_1.MdSwitch, toolbar_1.MdToolbar, tabs_1.MdTab, tabs_1.MdTabs]);
+  exports.MATERIAL_PROVIDERS = [dialog_2.MdDialog, media_1.Media, sidenav_service_1.SidenavService, radio_dispatcher_1.MdRadioDispatcher, validators_1.INPUT_VALIDATORS];
+  return module.exports;
+});
+
+System.register("app/services/mapping-data-sources.service.js", ["angular2/core", "angular2/http"], function(exports_1, context_1) {
+  "use strict";
+  var __moduleName = context_1 && context_1.id;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1,
+      http_1;
+  var MappingDataSourcesService;
+  return {
+    setters: [function(core_1_1) {
+      core_1 = core_1_1;
+    }, function(http_1_1) {
+      http_1 = http_1_1;
+    }],
+    execute: function() {
+      MappingDataSourcesService = (function() {
+        function MappingDataSourcesService(http) {
+          this.http = http;
+        }
+        MappingDataSourcesService.prototype.getSources = function() {
+          return this.http.get('/assets/mapping-data-sources.json').map(function(res) {
+            return res.json();
+          }).map(function(json) {
+            var arr = [];
+            for (var source in json['sourcelist']) {
+              var details = json['sourcelist'][source];
+              arr.push({
+                source: source,
+                name: details.name,
+                channels: details.channels.map(function(value, index) {
+                  value.id = index;
+                  return value;
+                }),
+                colorizer: details.colorizer,
+                coords: details.coords
+              });
+            }
+            return arr;
+          });
+        };
+        MappingDataSourcesService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [http_1.Http])], MappingDataSourcesService);
+        return MappingDataSourcesService;
+      }());
+      exports_1("MappingDataSourcesService", MappingDataSourcesService);
+    }
+  };
+});
+
+System.register("app/pipes/mapping-data-sources.pipe.js", ["angular2/core"], function(exports_1, context_1) {
   "use strict";
   var __moduleName = context_1 && context_1.id;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
@@ -29335,23 +29397,181 @@ System.register("app/add-data.component.js", ["angular2/core"], function(exports
       return Reflect.metadata(k, v);
   };
   var core_1;
-  var AddDataComponent;
+  var MappingDataSourceFilter;
   return {
     setters: [function(core_1_1) {
       core_1 = core_1_1;
     }],
     execute: function() {
+      MappingDataSourceFilter = (function() {
+        function MappingDataSourceFilter() {}
+        MappingDataSourceFilter.prototype.transform = function(items, _a) {
+          var term = _a[0];
+          return items.filter(function(item) {
+            return item.name.toLowerCase().indexOf(term.toLowerCase()) >= 0;
+          });
+        };
+        MappingDataSourceFilter = __decorate([core_1.Pipe({name: 'mappingDataSourceFilter'}), core_1.Injectable(), __metadata('design:paramtypes', [])], MappingDataSourceFilter);
+        return MappingDataSourceFilter;
+      }());
+      exports_1("MappingDataSourceFilter", MappingDataSourceFilter);
+    }
+  };
+});
+
+System.register("app/add-data.component.js", ["angular2/core", "ng2-material/all", "./services/layer.service", "./layer.model", "./operator.model", "./services/mapping-data-sources.service", "./pipes/mapping-data-sources.pipe"], function(exports_1, context_1) {
+  "use strict";
+  var __moduleName = context_1 && context_1.id;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1,
+      all_1,
+      layer_service_1,
+      layer_model_1,
+      operator_model_1,
+      mapping_data_sources_service_1,
+      mapping_data_sources_pipe_1;
+  var AddDataComponent;
+  return {
+    setters: [function(core_1_1) {
+      core_1 = core_1_1;
+    }, function(all_1_1) {
+      all_1 = all_1_1;
+    }, function(layer_service_1_1) {
+      layer_service_1 = layer_service_1_1;
+    }, function(layer_model_1_1) {
+      layer_model_1 = layer_model_1_1;
+    }, function(operator_model_1_1) {
+      operator_model_1 = operator_model_1_1;
+    }, function(mapping_data_sources_service_1_1) {
+      mapping_data_sources_service_1 = mapping_data_sources_service_1_1;
+    }, function(mapping_data_sources_pipe_1_1) {
+      mapping_data_sources_pipe_1 = mapping_data_sources_pipe_1_1;
+    }],
+    execute: function() {
       AddDataComponent = (function() {
-        function AddDataComponent() {}
+        function AddDataComponent(_mappingDataSourcesService, _layerService) {
+          var _this = this;
+          this._mappingDataSourcesService = _mappingDataSourcesService;
+          this._layerService = _layerService;
+          this.sources = [];
+          this.search_term = '';
+          _mappingDataSourcesService.getSources().subscribe(function(x) {
+            return _this.sources = x;
+          });
+        }
+        AddDataComponent.prototype.add = function(source, channel) {
+          var op = new operator_model_1.Operator("source", operator_model_1.ResultType.RASTER, new Map().set('channel', channel.id).set('sourcename', source.source), "EPSG:" + source.coords.epsg, channel.name);
+          var layer = new layer_model_1.Layer(op);
+          this._layerService.addLayer(layer);
+        };
         AddDataComponent = __decorate([core_1.Component({
           selector: 'add-data-component',
-          template: "\n    <md-sidenav name=\"right\" align=\"right\" layout=\"column\"\n                style=\"over\" (onShown)=\"input.focus()\">\n      <md-toolbar class=\"md-theme-light\">\n        <h1 class=\"md-toolbar-tools\">Sidenav Right</h1>\n      </md-toolbar>\n      <md-content layout-padding>\n        <form>\n          <md-input-container class=\"md-block\">\n            <label for=\"testInput\">Test input</label>\n            <input type=\"text\" id=\"testInput\" md-input #input\n                   [(value)]=\"data\" md-autofocus>\n          </md-input-container>\n        </form>\n        <button md-raised-button (click)=\"close('right')\" class=\"md-primary\">\n          Close Sidenav Right\n        </button>\n      </md-content>\n    </md-sidenav>\n    ",
-          styles: [""],
-          changeDetection: core_1.ChangeDetectionStrategy.OnPush
-        }), __metadata('design:paramtypes', [])], AddDataComponent);
+          template: "\n    <div style=\"height:100%\" layout=\"column\">\n    <md-input-container class=\"md-block\" style=\"margin-bottom: 0px; padding-bottom: 0px;\">\n      <label>Search term</label>\n      <input md-input (valueChange)=\"search_term = $event\">\n    </md-input-container>\n\n    <md-content flex=\"grow\">\n      <md-list>\n        <template ngFor #source [ngForOf]=\"sources | mappingDataSourceFilter:search_term\" #i=\"index\">\n          <md-subheader class=\"md-primary\">{{source.name}}</md-subheader>\n          <md-list-item class=\"md-2-line\" style=\"cursor: pointer;\"\n                        *ngFor=\"#channel of source.channels\" (click)=\"add(source, channel)\">\n            <img src=\"http://placehold.it/100x100\" alt=\"placeholder\"/>\n            <div class=\"md-list-item-text\" layout=\"column\">\n              <p>{{channel.name}}</p>\n              <p>{{channel.datatype}}</p>\n            </div>\n          </md-list-item>\n          <md-divider></md-divider>\n        </template>\n      </md-list>\n    </md-content>\n    </div>\n    ",
+          styles: ["\n    md-list-item {\n      cursor: pointer;\n    }\n    md-list-item:hover {\n      background-color: #f5f5f5;\n    }\n    img {\n      padding: 5px 5px 5px 0px;\n    }\n    "],
+          providers: [mapping_data_sources_service_1.MappingDataSourcesService],
+          directives: [all_1.MATERIAL_DIRECTIVES],
+          pipes: [mapping_data_sources_pipe_1.MappingDataSourceFilter]
+        }), __metadata('design:paramtypes', [mapping_data_sources_service_1.MappingDataSourcesService, layer_service_1.LayerService])], AddDataComponent);
         return AddDataComponent;
       }());
       exports_1("AddDataComponent", AddDataComponent);
+    }
+  };
+});
+
+System.register("app/services/layer.service.js", ["angular2/core", "rxjs/Rx", "../layer.model", "../operator.model"], function(exports_1, context_1) {
+  "use strict";
+  var __moduleName = context_1 && context_1.id;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1,
+      Rx_1,
+      layer_model_1,
+      operator_model_1;
+  var LayerService;
+  return {
+    setters: [function(core_1_1) {
+      core_1 = core_1_1;
+    }, function(Rx_1_1) {
+      Rx_1 = Rx_1_1;
+    }, function(layer_model_1_1) {
+      layer_model_1 = layer_model_1_1;
+    }, function(operator_model_1_1) {
+      operator_model_1 = operator_model_1_1;
+    }],
+    execute: function() {
+      LayerService = (function() {
+        function LayerService() {
+          this.layers$ = new Rx_1.BehaviorSubject([]);
+          this.selectedLayer$ = new Rx_1.BehaviorSubject(undefined);
+          this.layers$.next([new layer_model_1.Layer(new operator_model_1.Operator('source', operator_model_1.ResultType.RASTER, new Map().set('channel', 0).set('sourcename', 'srtm'), 'EPSG:4326', 'SRTM')), new layer_model_1.Layer(new operator_model_1.Operator('gfbiopointsource', operator_model_1.ResultType.POINTS, new Map().set('datasource', 'GBIF').set('query', '{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}'), 'EPSG:4326', 'Puma Concolor'))]);
+        }
+        LayerService.prototype.getLayers = function() {
+          return this.layers$;
+        };
+        LayerService.prototype.getLayersOnce = function() {
+          return this.layers$.getValue();
+        };
+        LayerService.prototype.setLayers = function(layers) {
+          if (layers.indexOf(this.selectedLayer$.getValue()) === -1) {
+            this.setSelectedLayer(undefined);
+          }
+          this.layers$.next(layers);
+        };
+        LayerService.prototype.addLayer = function(layer) {
+          var layers = this.layers$.getValue();
+          this.setLayers([layer].concat(layers));
+        };
+        LayerService.prototype.removeLayer = function(layer) {
+          var layers = this.layers$.getValue();
+          var index = layers.indexOf(layer);
+          if (index >= 0) {
+            layers.splice(index, 1);
+            this.setLayers(layers);
+          }
+        };
+        LayerService.prototype.setSelectedLayer = function(layer) {
+          this.selectedLayer$.next(layer);
+        };
+        LayerService.prototype.getSelectedLayer = function() {
+          return this.selectedLayer$.asObservable();
+        };
+        LayerService.prototype.getSelectedLayerOnce = function() {
+          return this.selectedLayer$.getValue();
+        };
+        LayerService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], LayerService);
+        return LayerService;
+      }());
+      exports_1("LayerService", LayerService);
     }
   };
 });
@@ -29383,7 +29603,7 @@ System.register("app/layer.model.js", ["./operator.model", "./config.model"], fu
       Layer = (function() {
         function Layer(operator) {
           this.expanded = false;
-          this.operator = operator;
+          this._operator = operator;
         }
         Object.defineProperty(Layer.prototype, "name", {
           get: function() {
@@ -29395,6 +29615,13 @@ System.register("app/layer.model.js", ["./operator.model", "./config.model"], fu
         Object.defineProperty(Layer.prototype, "url", {
           get: function() {
             return config_model_1.default.MAPPING_URL;
+          },
+          enumerable: true,
+          configurable: true
+        });
+        Object.defineProperty(Layer.prototype, "operator", {
+          get: function() {
+            return this._operator;
           },
           enumerable: true,
           configurable: true
@@ -29412,7 +29639,7 @@ System.register("app/layer.model.js", ["./operator.model", "./config.model"], fu
                     'REQUEST': 'GetMap',
                     'FORMAT': 'image/png',
                     'TRANSPARENT': true,
-                    'LAYERS': operator.toJSON(),
+                    'LAYERS': operator.toQueryJSON(),
                     'COLORS': 'gray',
                     'DEBUG': 1,
                     'TIME': time
@@ -29422,7 +29649,7 @@ System.register("app/layer.model.js", ["./operator.model", "./config.model"], fu
                 {
                   var operator = this.operator.getProjectedOperator('EPSG:3857');
                   return {
-                    'pointquery': operator.toJSON(),
+                    'pointquery': operator.toQueryJSON(),
                     'COLORS': 'hsv',
                     'CRS': 'EPSG:3857',
                     'TIME': time
@@ -29588,7 +29815,7 @@ System.register("app/operator.model.js", [], function(exports_1, context_1) {
             return new Operator('projection', this.resultType, parameters, projection, "Projection of #" + this.id, this.resultType == ResultType.RASTER ? [this] : [], this.resultType == ResultType.POINTS ? [this] : [], this.resultType == ResultType.LINES ? [this] : [], this.resultType == ResultType.POLYGONS ? [this] : []);
           }
         };
-        Operator.prototype.toDict = function() {
+        Operator.prototype.toQueryDict = function() {
           var dict = {'type': this.operatorType};
           if (this.parameters.size > 0) {
             var params_1 = {};
@@ -29610,6 +29837,40 @@ System.register("app/operator.model.js", [], function(exports_1, context_1) {
                 for (var _b = 0,
                     source_2 = source; _b < source_2.length; _b++) {
                   var operator = source_2[_b];
+                  sources[sourceString].push(operator.toQueryDict());
+                }
+              }
+            }
+            dict['sources'] = sources;
+          }
+          return dict;
+        };
+        Operator.prototype.toQueryJSON = function() {
+          return JSON.stringify(this.toQueryDict());
+        };
+        Operator.prototype.toDict = function() {
+          var dict = {
+            id: this._id,
+            name: this.name,
+            resultType: this._resultType,
+            operatorType: this.operatorType,
+            parameters: Array.from(this.parameters.entries()),
+            projection: this._projection,
+            symbology: this.symbology
+          };
+          if (this.hasSources()) {
+            var sources = {};
+            var sourcesList = [[ResultType[ResultType.RASTER], this.rasterSources], [ResultType[ResultType.POINTS], this.pointSources], [ResultType[ResultType.LINES], this.lineSources], [ResultType[ResultType.POLYGONS], this.polygonSources]];
+            for (var _i = 0,
+                sourcesList_2 = sourcesList; _i < sourcesList_2.length; _i++) {
+              var _a = sourcesList_2[_i],
+                  sourceString = _a[0],
+                  source = _a[1];
+              if (source.length > 0) {
+                sources[sourceString] = [];
+                for (var _b = 0,
+                    source_3 = source; _b < source_3.length; _b++) {
+                  var operator = source_3[_b];
                   sources[sourceString].push(operator.toDict());
                 }
               }
@@ -29621,6 +29882,38 @@ System.register("app/operator.model.js", [], function(exports_1, context_1) {
         Operator.prototype.toJSON = function() {
           return JSON.stringify(this.toDict());
         };
+        Operator.fromJSON = function(json) {
+          return this.fromDict(JSON.parse(json));
+        };
+        Operator.fromDict = function(operatorDict) {
+          var operator = new Operator(operatorDict.operatorType, operatorDict.resultType, new Map(operatorDict.parameters), operatorDict.projection, operatorDict.name);
+          operator._id = operatorDict.id;
+          operator.symbology = operatorDict.symbology;
+          if (operatorDict.sources !== undefined) {
+            for (var sourceType in operatorDict.sources) {
+              var sourceOperators = operatorDict.sources[sourceType];
+              for (var _i = 0,
+                  sourceOperators_1 = sourceOperators; _i < sourceOperators_1.length; _i++) {
+                var sourceOperator = sourceOperators_1[_i];
+                switch (sourceType) {
+                  case ResultType[ResultType.RASTER]:
+                    operator.rasterSources.push(Operator.fromDict(sourceOperator));
+                    break;
+                  case ResultType[ResultType.POINTS]:
+                    operator.pointSources.push(Operator.fromDict(sourceOperator));
+                    break;
+                  case ResultType[ResultType.LINES]:
+                    operator.lineSources.push(Operator.fromDict(sourceOperator));
+                    break;
+                  case ResultType[ResultType.POLYGONS]:
+                    operator.polygonSources.push(Operator.fromDict(sourceOperator));
+                    break;
+                }
+              }
+            }
+          }
+          return operator;
+        };
         Operator._operatorId = 1;
         return Operator;
       }());
@@ -29629,7 +29922,7 @@ System.register("app/operator.model.js", [], function(exports_1, context_1) {
   };
 });
 
-System.register("app/services/layer.service.js", ["angular2/core", "rxjs/Rx", "../layer.model", "../operator.model"], function(exports_1, context_1) {
+System.register("app/services/storage.service.js", ["angular2/core", "./layer.service", "../layer.model", "../operator.model"], function(exports_1, context_1) {
   "use strict";
   var __moduleName = context_1 && context_1.id;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
@@ -29649,70 +29942,93 @@ System.register("app/services/layer.service.js", ["angular2/core", "rxjs/Rx", ".
       return Reflect.metadata(k, v);
   };
   var core_1,
-      Rx_1,
+      layer_service_1,
       layer_model_1,
       operator_model_1;
-  var LayerService;
+  var StorageService;
   return {
     setters: [function(core_1_1) {
       core_1 = core_1_1;
-    }, function(Rx_1_1) {
-      Rx_1 = Rx_1_1;
+    }, function(layer_service_1_1) {
+      layer_service_1 = layer_service_1_1;
     }, function(layer_model_1_1) {
       layer_model_1 = layer_model_1_1;
     }, function(operator_model_1_1) {
       operator_model_1 = operator_model_1_1;
     }],
     execute: function() {
-      LayerService = (function() {
-        function LayerService() {
-          this.layers$ = new Rx_1.BehaviorSubject([]);
-          this.selectedLayer$ = new Rx_1.BehaviorSubject(undefined);
-          this.layers$.next([new layer_model_1.Layer(new operator_model_1.Operator('source', operator_model_1.ResultType.RASTER, new Map().set('channel', 0).set('sourcename', 'srtm'), 'EPSG:4326', 'SRTM')), new layer_model_1.Layer(new operator_model_1.Operator('gfbiopointsource', operator_model_1.ResultType.POINTS, new Map().set('datasource', 'GBIF').set('query', '{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}'), 'EPSG:4326', 'Puma Concolor'))]);
+      StorageService = (function() {
+        function StorageService(layerService) {
+          this.layerService = layerService;
+          this.loadLayers();
+          this.storeLayersSetup();
         }
-        LayerService.prototype.getLayers = function() {
-          return this.layers$;
-        };
-        LayerService.prototype.getLayersOnce = function() {
-          return this.layers$.getValue();
-        };
-        LayerService.prototype.setLayers = function(layers) {
-          if (layers.indexOf(this.selectedLayer$.getValue()) === -1) {
-            this.setSelectedLayer(undefined);
-          }
-          this.layers$.next(layers);
-        };
-        LayerService.prototype.addLayer = function(layer) {
-          var layers = this.layers$.getValue();
-          layers.push(layer);
-          this.setLayers(layers);
-        };
-        LayerService.prototype.removeLayer = function(layer) {
-          var layers = this.layers$.getValue();
-          var index = layers.indexOf(layer);
-          if (index >= 0) {
-            layers.splice(index, 1);
-            this.setLayers(layers);
+        StorageService.prototype.loadLayers = function() {
+          var layersJSON = localStorage.getItem('layers');
+          if (layersJSON === null) {
+            this.layerService.setLayers([new layer_model_1.Layer(new operator_model_1.Operator('source', operator_model_1.ResultType.RASTER, new Map().set('channel', 0).set('sourcename', 'srtm'), 'EPSG:4326', 'SRTM')), new layer_model_1.Layer(new operator_model_1.Operator('gfbiopointsource', operator_model_1.ResultType.POINTS, new Map().set('datasource', 'GBIF').set('query', '{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}'), 'EPSG:4326', 'Puma Concolor'))]);
+          } else {
+            var layers = [];
+            var layerDicts = JSON.parse(layersJSON);
+            for (var _i = 0,
+                layerDicts_1 = layerDicts; _i < layerDicts_1.length; _i++) {
+              var layerDict = layerDicts_1[_i];
+              var layer = new layer_model_1.Layer(operator_model_1.Operator.fromJSON(layerDict.operator));
+              layer.expanded = layerDict.expanded;
+              layers.push(layer);
+            }
+            this.layerService.setLayers(layers);
           }
         };
-        LayerService.prototype.setSelectedLayer = function(layer) {
-          this.selectedLayer$.next(layer);
+        StorageService.prototype.storeLayersSetup = function() {
+          this.layerService.getLayers().subscribe(function(layers) {
+            var layerStrings = [];
+            for (var _i = 0,
+                layers_1 = layers; _i < layers_1.length; _i++) {
+              var layer = layers_1[_i];
+              layerStrings.push({
+                operator: layer.operator.toJSON(),
+                expanded: layer.expanded
+              });
+            }
+            localStorage.setItem('layers', JSON.stringify(layerStrings));
+          });
         };
-        LayerService.prototype.getSelectedLayer = function() {
-          return this.selectedLayer$.asObservable();
+        StorageService.prototype.addLayerListVisibleObservable = function(layerListVisible$) {
+          layerListVisible$.subscribe(function(visible) {
+            localStorage.setItem('layerListVisible', JSON.stringify(visible));
+          });
         };
-        LayerService.prototype.getSelectedLayerOnce = function() {
-          return this.selectedLayer$.getValue();
+        StorageService.prototype.getLayerListVisible = function() {
+          var layerListVisible = localStorage.getItem('layerListVisible');
+          if (layerListVisible === null) {
+            return true;
+          } else {
+            return JSON.parse(layerListVisible);
+          }
         };
-        LayerService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], LayerService);
-        return LayerService;
+        StorageService.prototype.addDataTableVisibleObservable = function(dataTableVisible$) {
+          dataTableVisible$.subscribe(function(visible) {
+            localStorage.setItem('dataTableVisible', JSON.stringify(visible));
+          });
+        };
+        StorageService.prototype.getDataTableVisible = function() {
+          var dataTableVisible = localStorage.getItem('dataTableVisible');
+          if (dataTableVisible === null) {
+            return true;
+          } else {
+            return JSON.parse(dataTableVisible);
+          }
+        };
+        StorageService = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [layer_service_1.LayerService])], StorageService);
+        return StorageService;
       }());
-      exports_1("LayerService", LayerService);
+      exports_1("StorageService", StorageService);
     }
   };
 });
 
-System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng2-material/all", "rxjs/Rx", "./info-area.component", "./tab.component", "./info-bar.component", "./layer.component", "./angular-grid", "./openlayers/map.component", "./openlayers/layer.component", "./add-data.component", "./operator.model", "./services/layer.service"], function(exports_1, context_1) {
+System.register("app/app.component.js", ["angular2/core", "angular2/common", "angular2/http", "rxjs/Rx", "ng2-material/all", "./info-area.component", "./tab.component", "./info-bar.component", "./layer.component", "./angular-grid", "./openlayers/map.component", "./openlayers/layer.component", "./add-data.component", "./operator.model", "./services/layer.service", "./services/storage.service"], function(exports_1, context_1) {
   "use strict";
   var __moduleName = context_1 && context_1.id;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
@@ -29733,8 +30049,9 @@ System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng
   };
   var core_1,
       common_1,
-      all_1,
+      http_1,
       Rx_1,
+      all_1,
       info_area_component_1,
       tab_component_1,
       info_bar_component_1,
@@ -29744,17 +30061,20 @@ System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng
       layer_component_2,
       add_data_component_1,
       operator_model_1,
-      layer_service_1;
+      layer_service_1,
+      storage_service_1;
   var AppComponent;
   return {
     setters: [function(core_1_1) {
       core_1 = core_1_1;
     }, function(common_1_1) {
       common_1 = common_1_1;
-    }, function(all_1_1) {
-      all_1 = all_1_1;
+    }, function(http_1_1) {
+      http_1 = http_1_1;
     }, function(Rx_1_1) {
       Rx_1 = Rx_1_1;
+    }, function(all_1_1) {
+      all_1 = all_1_1;
     }, function(info_area_component_1_1) {
       info_area_component_1 = info_area_component_1_1;
     }, function(tab_component_1_1) {
@@ -29775,15 +30095,16 @@ System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng
       operator_model_1 = operator_model_1_1;
     }, function(layer_service_1_1) {
       layer_service_1 = layer_service_1_1;
+    }, function(storage_service_1_1) {
+      storage_service_1 = storage_service_1_1;
     }],
     execute: function() {
       AppComponent = (function() {
-        function AppComponent(zone, layerService, sidenavService) {
+        function AppComponent(zone, layerService, sidenavService, storageService) {
           this.zone = zone;
           this.layerService = layerService;
           this.sidenavService = sidenavService;
-          this.layerListVisible$ = new Rx_1.BehaviorSubject(true);
-          this.dataTableVisible$ = new Rx_1.BehaviorSubject(true);
+          this.storageService = storageService;
           this.LAYER_IS_POINTS = operator_model_1.ResultType.POINTS;
           this.LAYER_IS_RASTER = operator_model_1.ResultType.RASTER;
           this.layersReverse$ = layerService.getLayers().map(function(layers) {
@@ -29792,6 +30113,10 @@ System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng
           this.hasSelectedLayer$ = layerService.getSelectedLayer().map(function(value) {
             return value !== undefined;
           });
+          this.layerListVisible$ = new Rx_1.BehaviorSubject(this.storageService.getLayerListVisible());
+          this.storageService.addLayerListVisibleObservable(this.layerListVisible$);
+          this.dataTableVisible$ = new Rx_1.BehaviorSubject(this.storageService.getDataTableVisible());
+          this.storageService.addDataTableVisibleObservable(this.dataTableVisible$);
         }
         AppComponent.prototype.ngOnInit = function() {
           var _this = this;
@@ -29843,12 +30168,12 @@ System.register("app/app.component.js", ["angular2/core", "angular2/common", "ng
         __decorate([core_1.ViewChild(map_component_1.MapComponent), __metadata('design:type', map_component_1.MapComponent)], AppComponent.prototype, "mapComponent", void 0);
         AppComponent = __decorate([core_1.Component({
           selector: 'wave-app',
-          template: "\n    <div class=\"topContainer md-whiteframe-5dp\" layout=\"row\">\n        <div class=\"infoArea\">\n            <info-area-component (layerListVisible)=\"layerListVisible$.next($event)\">\n            </info-area-component>\n        </div>\n        <div flex=\"grow\">\n            <tab-component\n                [layerSelected]=\"hasSelectedLayer$ | async\"\n                (removeLayer)=\"layerService.removeLayer(layerService.getSelectedLayerOnce())\"\n                (zoomIn)=\"mapComponent.zoomIn()\" (zoomOut)=\"mapComponent.zoomOut()\"\n                (zoomLayer)=\"mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())\"\n                (zoomMap)=\"mapComponent.zoomToMap()\"\n                (addData)=\"sidenavService.show('right')\">\n            </tab-component>\n        </div>\n    </div>\n    <div class=\"middleContainer md-whiteframe-5dp\"\n        [style.height.px]=\"middleContainerHeight$ | async\" layout=\"row\">\n        <div class=\"layers\" *ngIf=\"layerListVisible$ | async\">\n            <layer-component [layers]=\"layers\">\n            </layer-component>\n        </div>\n        <div flex=\"grow\">\n            <ol-map [height]=\"middleContainerHeight$ | async\">\n                <div *ngFor=\"#layer of layersReverse$ | async; #index = index\"\n                     [ngSwitch]=\"layer.resultType\">\n                    <ol-point-layer #olLayer *ngSwitchWhen=\"LAYER_IS_POINTS\"\n                                    [params]=\"layer.params\"\n                                    [style]=\"layer.style\"></ol-point-layer>\n                    <ol-raster-layer #olLayer *ngSwitchWhen=\"LAYER_IS_RASTER\"\n                                    [params]=\"layer.params\"\n                                    [style]=\"layer.style\"></ol-raster-layer>\n                </div>\n            </ol-map>\n        </div>\n    </div>\n    <div class=\"bottomContainer md-whiteframe-5dp\"\n        [style.height.px]=\"bottomContainerHeight$ | async\">\n        <md-toolbar class=\"infoBar\">\n            <info-bar-component (tableOpen)=\"dataTableVisible$.next($event)\">\n            </info-bar-component>\n        </md-toolbar>\n        <div class=\"dataTable\" *ngIf=\"dataTableVisible$ | async\">\n            <angular-grid [height]=\"(bottomContainerHeight$ | async) - 40\">\n            </angular-grid>\n        </div>\n    </div>\n    <md-sidenav-container>\n        <md-sidenav name=\"right\" align=\"right\" layout=\"column\"\n                style=\"over\">\n            TEST\n        </md-sidenav>\n    </md-sidenav-container>\n    ",
+          template: "\n    <div class=\"topContainer md-whiteframe-5dp\" layout=\"row\">\n        <div class=\"infoArea\">\n            <info-area-component [layerListVisible]=\"layerListVisible$\">\n            </info-area-component>\n        </div>\n        <div flex=\"grow\">\n            <tab-component\n                [layerSelected]=\"hasSelectedLayer$ | async\"\n                (removeLayer)=\"layerService.removeLayer(layerService.getSelectedLayerOnce())\"\n                (zoomIn)=\"mapComponent.zoomIn()\" (zoomOut)=\"mapComponent.zoomOut()\"\n                (zoomLayer)=\"mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())\"\n                (zoomMap)=\"mapComponent.zoomToMap()\"\n                (addData)=\"sidenavService.show('right')\">\n            </tab-component>\n        </div>\n    </div>\n    <div class=\"middleContainer md-whiteframe-5dp\"\n        [style.height.px]=\"middleContainerHeight$ | async\" layout=\"row\">\n        <div class=\"layers\" *ngIf=\"layerListVisible$ | async\">\n            <layer-component [layers]=\"layers\">\n            </layer-component>\n        </div>\n        <div flex=\"grow\">\n            <ol-map [height]=\"middleContainerHeight$ | async\">\n                <div *ngFor=\"#layer of layersReverse$ | async; #index = index\"\n                     [ngSwitch]=\"layer.resultType\">\n                    <ol-point-layer #olLayer *ngSwitchWhen=\"LAYER_IS_POINTS\"\n                                    [params]=\"layer.params\"\n                                    [style]=\"layer.style\"></ol-point-layer>\n                    <ol-raster-layer #olLayer *ngSwitchWhen=\"LAYER_IS_RASTER\"\n                                    [params]=\"layer.params\"\n                                    [style]=\"layer.style\"></ol-raster-layer>\n                </div>\n            </ol-map>\n        </div>\n    </div>\n    <div class=\"bottomContainer md-whiteframe-5dp\"\n        [style.height.px]=\"bottomContainerHeight$ | async\">\n        <md-toolbar class=\"infoBar\">\n            <info-bar-component [dataTableVisible]=\"dataTableVisible$\">\n            </info-bar-component>\n        </md-toolbar>\n        <div class=\"dataTable\" *ngIf=\"dataTableVisible$ | async\">\n            <angular-grid [height]=\"(bottomContainerHeight$ | async) - 40\">\n            </angular-grid>\n        </div>\n    </div>\n    <md-sidenav-container>\n        <md-sidenav name=\"right\" align=\"right\" layout=\"column\"\n                style=\"over\">\n            <add-data-component style=\"height:100%\"></add-data-component>\n        </md-sidenav>\n    </md-sidenav-container>\n    ",
           styles: ["\n    .topContainer {\n        position: absolute;\n        top: 0px;\n        height: 180px;\n        left: 0px;\n        right: 0px;\n    }\n    .infoArea {\n        width: 200px;\n        min-width: 200px;\n    }\n    .middleContainer {\n        position: absolute;\n        top: 180px;\n        left: 0px;\n        right: 0px;\n    }\n    .middleContainer .layers {\n        width: 200px;\n    }\n    .bottomContainer {\n        position: absolute;\n        bottom: 0px;\n        left: 0px;\n        right: 0px;\n\n        overflow: hidden;\n    }\n    .bottomContainer .infoBar {\n        min-height: 40px;\n        height: 40px;\n    }\n    "],
           directives: [common_1.COMMON_DIRECTIVES, all_1.MATERIAL_DIRECTIVES, info_area_component_1.InfoAreaComponent, tab_component_1.TabComponent, layer_component_1.LayerComponent, map_component_1.MapComponent, layer_component_2.PointLayerComponent, layer_component_2.RasterLayerComponent, info_bar_component_1.InfoBarComponent, angular_grid_1.AngularGrid, add_data_component_1.AddDataComponent],
           changeDetection: core_1.ChangeDetectionStrategy.OnPush,
-          providers: [layer_service_1.LayerService, all_1.SidenavService]
-        }), __metadata('design:paramtypes', [core_1.NgZone, layer_service_1.LayerService, all_1.SidenavService])], AppComponent);
+          providers: [layer_service_1.LayerService, storage_service_1.StorageService, all_1.SidenavService, http_1.HTTP_PROVIDERS]
+        }), __metadata('design:paramtypes', [core_1.NgZone, layer_service_1.LayerService, all_1.SidenavService, storage_service_1.StorageService])], AppComponent);
         return AppComponent;
       }());
       exports_1("AppComponent", AppComponent);
