@@ -23,7 +23,7 @@ import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
           <md-subheader class="md-primary">{{source.name}}</md-subheader>
           <md-list-item class="md-2-line" style="cursor: pointer;"
                         *ngFor="#channel of source.channels" (click)="add(source, channel)">
-            <img src="http://placehold.it/100x100" alt="placeholder"/>
+
             <div class="md-list-item-text" layout="column">
               <p>{{channel.name}}</p>
               <p>{{channel.datatype}}</p>
@@ -63,7 +63,7 @@ export class AddDataComponent {
   private add(source: MappingSource, channel: MappingSourceChannel) {
     let op = new Operator(
       "source", ResultType.RASTER,
-      new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source),
+      new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source).set("colorizer", channel.colorizer || source.colorizer || "gray"),
       "EPSG:" + source.coords.epsg,
       channel.name);
     let layer = new Layer(op);
