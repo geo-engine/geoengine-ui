@@ -34,13 +34,13 @@ export class Layer {
 
                 return {
                     "SERVICE": "WMS",
-                    "VERSION": "1.3.0",
+                    "VERSION": Config.WMS_VERSION,
                     "REQUEST": "GetMap",
-                    "FORMAT": "image/png",
+                    "FORMAT": Config.WMS_FORMAT,
                     "TRANSPARENT": true,
                     "LAYERS": operator.toQueryJSON(),
                     "COLORS": "gray",
-                    "DEBUG": 1,
+                    "DEBUG": (Config.DEBUG_MODE ? 1: 0),
                     "TIME": time
                 };
             }
