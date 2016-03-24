@@ -21,22 +21,27 @@ import {HighlightPipe} from "./pipes/highlight.pipe";
     <md-content flex="grow">
       <md-list>
         <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
-          <md-subheader class="md-primary"><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
-          <md-list-item class="md-2-line" style="cursor: pointer;"
-                        *ngFor="#channel of source.channels" (click)="add(source, channel)">
-
-            <div class="md-list-item-text" layout="column">
-              <p bind-innerHtml = "channel.name | highlightPipe:search_term"></p>
-              <p>{{channel.datatype}}</p>
-            </div>
-          </md-list-item>
-          <md-divider></md-divider>
+          <md-subheader><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
+          <template ngFor #channel [ngForOf]="source.channels">
+            <md-divider></md-divider>
+            <md-list-item class="md-2-line" style="cursor: pointer;" (click)="add(source, channel)">
+              <div class="md-list-item-text" layout="column">
+                <p bind-innerHtml = "channel.name | highlightPipe:search_term"></p>
+                <p>{{channel.datatype}}</p>
+              </div>
+            </md-list-item>
+          </template>
         </template>
       </md-list>
     </md-content>
     </div>
     `,
     styles: [`
+    md-subheader {
+      color:#ffffff;
+      background-color:#3f51b5;
+      font-weight: bold;
+    }
     md-list-item {
       cursor: pointer;
     }
