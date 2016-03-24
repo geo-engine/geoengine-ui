@@ -6,6 +6,7 @@ import {Operator, ResultType} from "./operator.model";
 import {MappingDataSourcesService} from "./services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "./mapping-source.model";
 import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
+import {HighlightPipe} from "./pipes/highlight.pipe";
 
 
 @Component({
@@ -20,12 +21,12 @@ import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
     <md-content flex="grow">
       <md-list>
         <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
-          <md-subheader class="md-primary">{{source.name}}</md-subheader>
+          <md-subheader class="md-primary"><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
           <md-list-item class="md-2-line" style="cursor: pointer;"
                         *ngFor="#channel of source.channels" (click)="add(source, channel)">
 
             <div class="md-list-item-text" layout="column">
-              <p>{{channel.name}}</p>
+              <p bind-innerHtml = "channel.name | highlightPipe:search_term"></p>
               <p>{{channel.datatype}}</p>
             </div>
           </md-list-item>
@@ -48,7 +49,7 @@ import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
     `],
     providers: [MappingDataSourcesService],
     directives: [MATERIAL_DIRECTIVES],
-    pipes: [MappingDataSourceFilter],
+    pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
