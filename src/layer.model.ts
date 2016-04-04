@@ -1,4 +1,4 @@
-import {Operator, ResultType} from "./operator.model";
+import {Operator, ResultType} from "./models/operator.model";
 import Config from "./config.model";
 
 interface Parameters {

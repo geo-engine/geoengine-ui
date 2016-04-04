@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import Config from "./config.model";
 import {LayerService} from "./services/layer.service";
-import {ResultType} from "./operator.model";
+import {ResultType} from "./models/operator.model";
 
 interface Column {
     name: string;

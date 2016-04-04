@@ -3,7 +3,8 @@ import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
 import {COMMON_DIRECTIVES} from "angular2/common";
 import {HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
-import {MATERIAL_DIRECTIVES, SidenavService} from "ng2-material/all";
+import {MATERIAL_DIRECTIVES, SidenavService, MdDialog} from "ng2-material/all";
+import {MdDialogConfig, MdDialogBasic, MdDialogRef} from "ng2-material/components/dialog/dialog";
 
 import {InfoAreaComponent} from "./info-area.component";
 import {TabComponent} from "./tab.component";
@@ -12,10 +13,13 @@ import {LayerComponent} from "./layer.component";
 import {AngularGrid} from "./angular-grid";
 import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
+
 import {AddDataComponent} from "./add-data.component";
 
+import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
+
 import {Layer} from "./layer.model";
-import {Operator, ResultType} from "./operator.model";
+import {Operator, ResultType} from "./models/operator.model";
 
 import {LayerService} from "./services/layer.service";
 import {StorageService} from "./services/storage.service";
@@ -31,6 +35,7 @@ import {StorageService} from "./services/storage.service";
         <div flex="grow">
             <tab-component
                 [layerSelected]="hasSelectedLayer$ | async"
+                (renameLayer)="renameLayerDialog($event)"
                 (removeLayer)="layerService.removeLayer(layerService.getSelectedLayerOnce())"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
@@ -115,7 +120,7 @@ import {StorageService} from "./services/storage.service";
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, AngularGrid, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, StorageService, SidenavService, HTTP_PROVIDERS]
+    providers: [LayerService, StorageService, SidenavService, HTTP_PROVIDERS, MdDialog]
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
@@ -137,7 +142,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     constructor(private zone: NgZone,
                 private layerService: LayerService,
                 private sidenavService: SidenavService,
-                private storageService: StorageService) {
+                private storageService: StorageService,
+                private mdDialog: MdDialog,
+                private elementRef: ElementRef) {
         this.layersReverse$ = layerService.getLayers()
                                          .map(layers => layers.slice(0).reverse());
 
@@ -198,5 +205,29 @@ export class AppComponent implements OnInit, AfterViewInit {
         let selectedLayer = this.layerService.getSelectedLayerOnce();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
+    }
+
+    private renameLayerDialog(event: Event) {
+      let config = new RenameLayerDialogConfig()
+      .layer(this.layerService.getSelectedLayerOnce())
+      .layerName(this.layerService.getSelectedLayerOnce().name)
+      .textContent("Rename the current layer:")
+      .clickOutsideToClose(true)
+      .title("Rename Layer")
+      .ariaLabel("Rename Layer")
+      .ok("Save")
+      .cancel("Cancel")
+      .targetEvent(event);
+
+      this.mdDialog.open(RenameLayerComponent, this.elementRef, config)
+      .then((mdDialogRef: MdDialogRef) => {
+        console.log(mdDialogRef);
+
+        mdDialogRef.whenClosed.then(([changed, layerName]: [boolean, string]) => {
+          if (changed) {
+            this.layerService.changeLayerName(this.layerService.getSelectedLayerOnce(), layerName);
+          }
+        });
+      });
     }
 }

@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {LayerService} from "./layer.service";
 
 import {Layer} from "../layer.model";
-import {Operator, ResultType} from "../operator.model";
+import {Operator, ResultType} from "../models/operator.model";
 
 interface LayerSerialization {
   operator: string;

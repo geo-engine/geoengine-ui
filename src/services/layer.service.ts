@@ -3,7 +3,7 @@ import {BehaviorSubject} from "rxjs/Rx";
 
 import {Layer} from "../layer.model";
 
-import {Operator, ResultType} from "../operator.model";
+import {Operator, ResultType} from "../models/operator.model";
 
 @Injectable()
 export class LayerService {
@@ -61,6 +61,11 @@ export class LayerService {
             layers.splice(index, 1);
             this.setLayers(layers);
         }
+    }
+
+    changeLayerName(layer: Layer, newName: string) {
+      layer.operator.name = newName;
+      this.layers$.next(this.getLayersOnce());
     }
 
     setSelectedLayer(layer: Layer) {

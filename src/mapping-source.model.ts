@@ -1,4 +1,4 @@
-// import {Operator, ResultType} from "./operator.model";
+// import {Operator, ResultType} from "./models/operator.model";
 // type Colorizer = "gray" | "height";
 
 export interface MappingSourceChannel {

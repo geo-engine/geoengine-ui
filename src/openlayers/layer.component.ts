@@ -2,7 +2,7 @@ import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from
 import ol from "openlayers";
 
 import Config from "../config.model";
-import {ResultType} from "../operator.model";
+import {ResultType} from "../models/operator.model";
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.

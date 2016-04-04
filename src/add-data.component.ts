@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {LayerService} from "./services/layer.service";
 import {Layer} from "./layer.model";
-import {Operator, ResultType} from "./operator.model";
+import {Operator, ResultType} from "./models/operator.model";
 import {MappingDataSourcesService} from "./services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "./mapping-source.model";
 import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
