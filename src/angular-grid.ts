@@ -13,16 +13,16 @@ interface Column {
 
 @Component({
     selector: "angular-grid",
-    //    template: `
-    //    <div *ngFor="#item of data$ | async">{{item}}</div>
-    //    `,
-    template: `
-        <vaadin-grid
-            [columns]="columns"
-            [items]="data"
-            [style.height.px]="height">
-        </vaadin-grid>
-    `,
+        template: `
+        <div *ngFor="#item of data">{{item}}</div>
+        `,
+    //template: `
+    //    <vaadin-grid
+    //        [columns]="columns"
+    //        [items]="data"
+    //        [style.height.px]="height">
+    //    </vaadin-grid>
+    //`,
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

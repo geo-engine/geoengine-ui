@@ -7,6 +7,7 @@ export interface MappingSourceChannel {
   datatype: string;
   nodata: number;
   unit: any;
+  colorizer: string;
 }
 
 export interface MappingSource {

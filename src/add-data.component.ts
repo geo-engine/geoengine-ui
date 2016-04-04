@@ -6,6 +6,7 @@ import {Operator, ResultType} from "./models/operator.model";
 import {MappingDataSourcesService} from "./services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "./mapping-source.model";
 import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
+import {HighlightPipe} from "./pipes/highlight.pipe";
 
 
 @Component({
@@ -20,22 +21,27 @@ import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
     <md-content flex="grow">
       <md-list>
         <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
-          <md-subheader class="md-primary">{{source.name}}</md-subheader>
-          <md-list-item class="md-2-line" style="cursor: pointer;"
-                        *ngFor="#channel of source.channels" (click)="add(source, channel)">
-            <img src="http://placehold.it/100x100" alt="placeholder"/>
-            <div class="md-list-item-text" layout="column">
-              <p>{{channel.name}}</p>
-              <p>{{channel.datatype}}</p>
-            </div>
-          </md-list-item>
-          <md-divider></md-divider>
+          <md-subheader><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
+          <template ngFor #channel [ngForOf]="source.channels">
+            <md-divider></md-divider>
+            <md-list-item class="md-2-line" style="cursor: pointer;" (click)="add(source, channel)">
+              <div class="md-list-item-text" layout="column">
+                <p bind-innerHtml = "channel.name | highlightPipe:search_term"></p>
+                <p>{{channel.datatype}}</p>
+              </div>
+            </md-list-item>
+          </template>
         </template>
       </md-list>
     </md-content>
     </div>
     `,
     styles: [`
+    md-subheader {
+      color:#ffffff;
+      background-color:#3f51b5;
+      font-weight: bold;
+    }
     md-list-item {
       cursor: pointer;
     }
@@ -48,7 +54,7 @@ import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
     `],
     providers: [MappingDataSourcesService],
     directives: [MATERIAL_DIRECTIVES],
-    pipes: [MappingDataSourceFilter],
+    pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -63,7 +69,7 @@ export class AddDataComponent {
   private add(source: MappingSource, channel: MappingSourceChannel) {
     let op = new Operator(
       "source", ResultType.RASTER,
-      new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source),
+      new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source).set("colorizer", channel.colorizer || source.colorizer || "gray"),
       "EPSG:" + source.coords.epsg,
       channel.name);
     let layer = new Layer(op);
