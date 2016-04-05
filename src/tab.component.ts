@@ -1,5 +1,5 @@
-import {View, Component, Input, AfterViewInit, NgZone,
-        Output, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef} from "angular2/core";
+import {Component, Input, AfterViewInit, NgZone, Output, EventEmitter, ChangeDetectionStrategy,
+        ChangeDetectorRef} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 @Component({
     selector: "tab-component",
