@@ -10,7 +10,7 @@ import {InfoAreaComponent} from "./info-area.component";
 import {TabComponent} from "./tab.component";
 import {InfoBarComponent} from "./info-bar.component";
 import {LayerComponent} from "./layer.component";
-import {AngularGrid} from "./angular-grid";
+import {DataTable} from "./data-table.component";
 import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
 
@@ -70,9 +70,9 @@ import {StorageService} from "./services/storage.service";
             <info-bar-component [dataTableVisible]="dataTableVisible$">
             </info-bar-component>
         </md-toolbar>
-        <div class="dataTable" *ngIf="dataTableVisible$ | async">
-            <angular-grid [height]="(bottomContainerHeight$ | async) - 40">
-            </angular-grid>
+        <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40" *ngIf="dataTableVisible$ | async">
+            <wv-data-table>
+            </wv-data-table>
         </div>
     </div>
     <md-sidenav-container>
@@ -83,6 +83,10 @@ import {StorageService} from "./services/storage.service";
     </md-sidenav-container>
     `,
     styles: [`
+
+    .dataTable {
+      overflow-y: auto;
+    }
     .topContainer {
         position: absolute;
         top: 0px;
@@ -109,7 +113,7 @@ import {StorageService} from "./services/storage.service";
         left: 0px;
         right: 0px;
 
-        overflow: hidden;
+
     }
     .bottomContainer .infoBar {
         min-height: 40px;
@@ -118,7 +122,7 @@ import {StorageService} from "./services/storage.service";
     `],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
-                 InfoBarComponent, AngularGrid, AddDataComponent],
+                 InfoBarComponent, DataTable, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, StorageService, SidenavService, HTTP_PROVIDERS, MdDialog]
 })
