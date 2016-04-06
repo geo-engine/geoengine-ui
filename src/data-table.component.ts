@@ -50,9 +50,9 @@ export class DataTable implements OnInit {
     @Input()
     private height: number;
 
-    private rows: Array<Array<any>> = [];
+    private rows: Array<Array<string>> = [];
     private columns: Array<Column> = [];
-    private data$: Observable<Array<Array<any>>>;
+    private data$: Observable<Array<Array<string>>>;
 
     constructor(private http: Http,
                 private changeDetectorRef: ChangeDetectorRef,
@@ -67,7 +67,7 @@ export class DataTable implements OnInit {
                                   return this.http.get(Config.MAPPING_URL + "?" + Object.keys(layer.params).map(key => key + "=" + encodeURIComponent(layer.params[key])).join("&") + "&format=csv").map(result => {
 
                                         const csv_rows = result.text().split("\n"); // split by new lines to seperate the rows
-                                        let data_rows: Array<Array<any>> = [];
+                                        let data_rows: Array<Array<string>> = [];
                                         for(let csv_row of csv_rows){
                                           data_rows.push(csv_row.split(","));
                                         }
@@ -80,7 +80,7 @@ export class DataTable implements OnInit {
     }
 
     ngOnInit() {
-      this.data$.subscribe( (data_rows: Array<Array<any>>) => {
+      this.data$.subscribe( (data_rows: Array<Array<string>>) => {
         if (data_rows.length > 0){
           const [car, ...cdr] = data_rows;
           this.columns = car.map(name => ({ name })); // take the first row (HEADER) and put them into new objects with name attribute = interface Column. TODO: get type?
