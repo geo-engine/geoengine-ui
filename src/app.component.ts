@@ -208,26 +208,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private renameLayerDialog(event: Event) {
-      let config = new RenameLayerDialogConfig()
-      .layer(this.layerService.getSelectedLayerOnce())
-      .layerName(this.layerService.getSelectedLayerOnce().name)
-      .textContent("Rename the current layer:")
-      .clickOutsideToClose(true)
-      .title("Rename Layer")
-      .ariaLabel("Rename Layer")
-      .ok("Save")
-      .cancel("Cancel")
-      .targetEvent(event);
+        let config = new RenameLayerDialogConfig()
+            .layerService(this.layerService)
+            .clickOutsideToClose(true)
+            .targetEvent(event);
 
-      this.mdDialog.open(RenameLayerComponent, this.elementRef, config)
-      .then((mdDialogRef: MdDialogRef) => {
-        console.log(mdDialogRef);
-
-        mdDialogRef.whenClosed.then(([changed, layerName]: [boolean, string]) => {
-          if (changed) {
-            this.layerService.changeLayerName(this.layerService.getSelectedLayerOnce(), layerName);
-          }
-        });
-      });
+        this.mdDialog.open(RenameLayerComponent, this.elementRef, config);
     }
 }
