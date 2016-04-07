@@ -53,7 +53,9 @@ export class RenameLayerComponent implements OnInit {
     }
 
     save() {
-        this.layerService.changeLayerName(this.layer, this.layerName);
+        if (this.layerName !== this.layer.name) {
+            this.layerService.changeLayerName(this.layer, this.layerName);
+        }
         this.dialog.close();
     }
 

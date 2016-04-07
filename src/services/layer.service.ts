@@ -69,7 +69,9 @@ export class LayerService {
     }
 
     setSelectedLayer(layer: Layer) {
-        this.selectedLayer$.next(layer);
+        if (layer !== this.selectedLayer$.value) {
+            this.selectedLayer$.next(layer);
+        }
     }
 
     getSelectedLayer() {
