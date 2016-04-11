@@ -47,9 +47,8 @@ import {ProjectService} from "./services/project.service";
             </tab-component>
         </div>
     </div>
-    <div class="middleContainer md-whiteframe-5dp"
-        [style.height.px]="middleContainerHeight$ | async" layout="row">
-        <div class="layers" *ngIf="layerListVisible$ | async">
+    <div class="middleContainer md-whiteframe-5dp" [style.height.px]="middleContainerHeight$ | async" layout="row">
+        <div class="layers" *ngIf="layerListVisible$ | async" [style.max-height.px]="middleContainerHeight$ | async">
             <layer-component [layers]="layers">
             </layer-component>
         </div>
@@ -86,7 +85,12 @@ import {ProjectService} from "./services/project.service";
     </md-sidenav-container>
     `,
     styles: [`
-
+    .layers {
+      position: absolute;
+      z-index: 1;
+      overflow-y: auto;
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    }
     .dataTable {
       overflow-y: auto;
     }

@@ -22,8 +22,8 @@ interface Column {
         <th *ngFor="#column of columns">{{column.name}}</th>
       </tr>
       </thead>
-      <tbody style="height:90px">
-      <template ngFor #row [ngForOf]="rows" #i="index">
+      <tbody>
+      <template ngFor #row [ngForOf]="rows">
         <tr>
           <td *ngFor="#entry of row">{{ entry }}</td>
         </tr>
@@ -60,7 +60,7 @@ export class DataTable implements OnInit {
 
                 this.data$ = this.layerService.getSelectedLayer().map(layer => {
                       if (layer === undefined) {
-                        return Observable.of([[]]);
+                        return Observable.of([]);
                       }
                           switch (layer.resultType) {
                               case ResultType.POINTS:
@@ -74,7 +74,7 @@ export class DataTable implements OnInit {
                                         return data_rows;
                                       });
                                 default:
-                                    return Observable.of([[]]);
+                                    return Observable.of([]);
                                 };
                           }).concatAll();
     }
