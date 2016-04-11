@@ -27,7 +27,7 @@ export class Project {
 
     static fromJSON(json: string): Project {
         let config = JSON.parse(json);
-        console.log(json, config);
+        // console.log(json, config);
         return new Project({
             name: config.name,
             workingProjection: Projections.fromEPSGCode(config.workingProjection),

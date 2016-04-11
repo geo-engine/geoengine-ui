@@ -1,6 +1,11 @@
 import {Component, Input, AfterViewInit, NgZone, Output, EventEmitter, ChangeDetectionStrategy,
-        ChangeDetectorRef} from "angular2/core";
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
+        ChangeDetectorRef, AfterViewChecked, ViewChild} from "angular2/core";
+
+import {BehaviorSubject, Subject} from "rxjs/Rx";
+
+import {StorageService} from "./services/storage.service";
+
+import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
     selector: "tab-component",
     templateUrl: "templates/tab.html",
@@ -30,43 +35,52 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class TabComponent implements AfterViewInit {
-    @Input()
-    private layerSelected: boolean;
+export class TabComponent implements AfterViewInit, AfterViewChecked {
 
-    @Output("zoomIn")
-    private zoomInEmitter = new EventEmitter<void>();
+    @ViewChild(MdTabs) tabs: MdTabs;
 
-    @Output("zoomOut")
-    private zoomOutEmitter = new EventEmitter<void>();
+    private tabIndex$: BehaviorSubject<number>;
 
-    @Output("zoomLayer")
-    private zoomLayerEmitter = new EventEmitter<void>();
+    @Input() layerSelected: boolean;
 
-    @Output("zoomProject")
-    private zoomProjectEmitter = new EventEmitter<void>();
+    @Output("zoomIn") zoomInEmitter = new EventEmitter<void>();
 
-    @Output("zoomMap")
-    private zoomMapEmitter = new EventEmitter<void>();
+    @Output("zoomOut") zoomOutEmitter = new EventEmitter<void>();
 
-    @Output("addData")
-    private addDataEmitter = new EventEmitter<void>();
+    @Output("zoomLayer") zoomLayerEmitter = new EventEmitter<void>();
 
-    @Output("removeLayer")
-    private removeLayerEmitter = new EventEmitter<void>();
+    @Output("zoomProject") zoomProjectEmitter = new EventEmitter<void>();
 
-    @Output("renameLayer")
-    private renameLayerEmitter = new EventEmitter<void>();
+    @Output("zoomMap") zoomMapEmitter = new EventEmitter<void>();
+
+    @Output("addData") addDataEmitter = new EventEmitter<void>();
+
+    @Output("removeLayer") removeLayerEmitter = new EventEmitter<void>();
+
+    @Output("renameLayer") renameLayerEmitter = new EventEmitter<void>();
 
     @Output() projectSettings = new EventEmitter<void>();
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
-                private ngZone: NgZone) {}
+                private ngZone: NgZone,
+                private storageService: StorageService) {
+        this.tabIndex$ = new BehaviorSubject(this.storageService.getTabIndex());
+        this.storageService.addTabIndexObservable(this.tabIndex$);
+    }
 
     ngAfterViewInit() {
         // do this one time for ngMaterial
         setTimeout(() => {
             this.changeDetectorRef.markForCheck();
         }, 0);
+    }
+
+    ngAfterViewChecked() {
+        // publish tab index if changed
+        let newTabIndex = this.tabs.selected;
+        let oldTabIndex = this.tabIndex$.value;
+        if (newTabIndex !== oldTabIndex) {
+            this.tabIndex$.next(newTabIndex);
+        }
     }
 }

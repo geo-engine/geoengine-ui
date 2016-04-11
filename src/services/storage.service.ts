@@ -131,4 +131,23 @@ export class StorageService {
       return JSON.parse(dataTableVisible);
     }
   }
+
+  addTabIndexObservable(tabIndex$: Observable<number>) {
+    tabIndex$.subscribe(index => {
+        // console.log("tindex", index);
+        localStorage.setItem("tabIndex", JSON.stringify(index));
+    });
+  }
+
+  getTabIndex(): number {
+    let tabIndex = localStorage.getItem("tabIndex");
+    // console.log("tindex", tabIndex);
+    if (tabIndex === null) {
+      // default
+      return 0;
+    } else {
+      // load and parse
+      return JSON.parse(tabIndex);
+    }
+  }
 }
