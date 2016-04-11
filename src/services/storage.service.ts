@@ -2,8 +2,10 @@ import {Injectable} from "angular2/core";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {LayerService} from "./layer.service";
+import {ProjectService} from "./project.service";
 
-import {Layer} from "../layer.model";
+import {Layer} from "../models/layer.model";
+import {Project} from "../models/project.model";
 import {Operator, ResultType} from "../models/operator.model";
 
 interface LayerSerialization {
@@ -13,8 +15,10 @@ interface LayerSerialization {
 
 @Injectable()
 export class StorageService {
-  constructor(private layerService: LayerService) {
+  constructor(private layerService: LayerService, private projectService: ProjectService) {
+    this.loadProject();
     this.loadLayers();
+    this.storeProjectSetup();
     this.storeLayersSetup();
   }
 
@@ -73,6 +77,22 @@ export class StorageService {
 
       // console.log("store", "layers", layerStrings);
       localStorage.setItem("layers", JSON.stringify(layerStrings));
+    });
+  }
+
+  private loadProject() {
+      let projectJSON = localStorage.getItem("project");
+      if (projectJSON === null) {
+          // use default project
+      } else {
+          let project = Project.fromJSON(projectJSON);
+          this.projectService.setProject(project);
+      }
+  }
+
+  private storeProjectSetup() {
+    this.projectService.getProject().subscribe((project: Project) => {
+        localStorage.setItem("project", project.toJSON());
     });
   }
 

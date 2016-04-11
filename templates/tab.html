@@ -136,6 +136,17 @@
         </md-content>
     </template>
     <template md-tab label="Project">
-        Tab Three
+        <fieldset>
+            <legend>Project</legend>
+            <div layout="row">
+                <div layout="column" layout-align="space-around center">
+                    <button md-button style="margin: 0px; height: auto;"
+                            class="md-primary" layout="column" (click)="projectSettings.emit()">
+                        <i md-icon>settings</i>
+                        <div>Configuration</div>
+                    </button>
+                </div>
+            </div>
+        </fieldset>
     </template>
 </md-tabs>

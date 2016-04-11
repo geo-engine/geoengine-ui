@@ -1,7 +1,7 @@
 import {Injectable} from "angular2/core";
 import {BehaviorSubject} from "rxjs/Rx";
 
-import {Layer} from "../layer.model";
+import {Layer} from "../models/layer.model";
 
 import {Operator, ResultType} from "../models/operator.model";
 

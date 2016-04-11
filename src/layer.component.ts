@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from "a
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 
-import {Layer} from "./layer.model";
+import {Layer} from "./models/layer.model";
 
 import {LayerService} from "./services/layer.service";
 

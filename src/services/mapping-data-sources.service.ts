@@ -9,7 +9,7 @@ export class MappingDataSourcesService {
   constructor(private http: Http) { }
 
     getSources(): Observable<Array<MappingSource>> {
-      return this.http.get("/assets/mapping-data-sources.json").map((res: Response) => res.json()).map((json: JSON) => {
+      return this.http.get("assets/mapping-data-sources.json").map((res: Response) => res.json()).map((json: JSON) => {
         let arr: Array<MappingSource> = [];
 
         for (let sourceId in json["sourcelist"]) {

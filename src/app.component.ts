@@ -17,12 +17,14 @@ import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.comp
 import {AddDataComponent} from "./add-data.component";
 
 import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
+import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./components/project-settings.component";
 
-import {Layer} from "./layer.model";
+import {Layer} from "./models/layer.model";
 import {Operator, ResultType} from "./models/operator.model";
 
 import {LayerService} from "./services/layer.service";
 import {StorageService} from "./services/storage.service";
+import {ProjectService} from "./services/project.service";
 
 @Component({
     selector: "wave-app",
@@ -40,7 +42,8 @@ import {StorageService} from "./services/storage.service";
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"
-                (addData)="sidenavService.show('right')">
+                (addData)="sidenavService.show('right')"
+                (projectSettings)="projectSettingsDialog($event)">
             </tab-component>
         </div>
     </div>
@@ -124,7 +127,7 @@ import {StorageService} from "./services/storage.service";
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, DataTable, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, StorageService, SidenavService, HTTP_PROVIDERS, MdDialog]
+    providers: [LayerService, StorageService, ProjectService, SidenavService, HTTP_PROVIDERS, MdDialog]
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
@@ -147,6 +150,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private layerService: LayerService,
                 private sidenavService: SidenavService,
                 private storageService: StorageService,
+                private projectService: ProjectService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef) {
         this.layersReverse$ = layerService.getLayers()
@@ -218,5 +222,14 @@ export class AppComponent implements OnInit, AfterViewInit {
             .targetEvent(event);
 
         this.mdDialog.open(RenameLayerComponent, this.elementRef, config);
+    }
+
+    private projectSettingsDialog(event: Event) {
+        let config = new ProjectSettingsDialogConfig()
+            .projectService(this.projectService)
+            .clickOutsideToClose(true)
+            .targetEvent(event);
+
+        this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
     }
 }

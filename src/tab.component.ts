@@ -58,6 +58,8 @@ export class TabComponent implements AfterViewInit {
     @Output("renameLayer")
     private renameLayerEmitter = new EventEmitter<void>();
 
+    @Output() projectSettings = new EventEmitter<void>();
+
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private ngZone: NgZone) {}
 
