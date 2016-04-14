@@ -55,15 +55,15 @@ import {ProjectService} from "./services/project.service";
         </div>
         <div flex="grow">
             <ol-map [height]="middleContainerHeight$ | async"
-                    [projection]="mapProjection$ | async">
+                    [projection]="projectService.getMapProjection() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.resultType">
                     <ol-point-layer #olLayer *ngSwitchWhen="LAYER_IS_POINTS"
                                     [layer]="layer"
-                                    [projection]="mapProjection$ | async"></ol-point-layer>
+                                    [projection]="projectService.getMapProjection() | async"></ol-point-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
                                     [layer]="layer"
-                                    [projection]="mapProjection$ | async"></ol-raster-layer>
+                                    [projection]="projectService.getMapProjection() | async"></ol-raster-layer>
                 </div>
             </ol-map>
         </div>
@@ -174,9 +174,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         // attach data table visibility to storage service
         this.dataTableVisible$ = new BehaviorSubject(this.storageService.getDataTableVisible());
         this.storageService.addDataTableVisibleObservable(this.dataTableVisible$);
-
-        this.mapProjection$ =  this.projectService.getProject()
-                                                  .map(project => project.mapProjection);
     }
 
     ngOnInit() {

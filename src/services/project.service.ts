@@ -1,13 +1,15 @@
 import {Injectable} from "angular2/core";
-import {BehaviorSubject} from "rxjs/Rx";
+import {BehaviorSubject, Observable} from "rxjs/Rx";
 
-import {Projections} from "../models/projection.model";
+import {Projections, Projection} from "../models/projection.model";
 
 import {Project, ProjectConfig} from "../models/project.model";
 
 @Injectable()
 export class ProjectService {
     private project$: BehaviorSubject<Project>;
+    private mapProjection$: BehaviorSubject<Projection>;
+    private workingProjection$: BehaviorSubject<Projection>;
 
     constructor() {
         this.project$ = new BehaviorSubject(
@@ -17,6 +19,17 @@ export class ProjectService {
                 mapProjection: Projections.WEB_MERCATOR
             })
         );
+
+        this.mapProjection$ = new BehaviorSubject(this.project$.value.mapProjection);
+        this.workingProjection$ = new BehaviorSubject(this.project$.value.workingProjection);
+        this.project$.subscribe(project => {
+            if (project.mapProjection !== this.mapProjection$.value) {
+                this.mapProjection$.next(project.mapProjection);
+            }
+            if (project.workingProjection !== this.workingProjection$.value) {
+                this.workingProjection$.next(project.workingProjection);
+            }
+        });
     }
 
     getProject() {
@@ -38,6 +51,14 @@ export class ProjectService {
         project.mapProjection = config.mapProjection;
 
         this.project$.next(project);
+    }
+
+    getWorkingProjection(): Observable<Projection> {
+        return this.workingProjection$;
+    }
+
+    getMapProjection(): Observable<Projection> {
+        return this.mapProjection$;
     }
 
 }
