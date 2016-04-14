@@ -7,7 +7,8 @@
     "tsc:w": "tsc -w",
     "server": "http-server --proxy http://pc12316.mathematik.uni-marburg.de:10080/",
     "start": "concurrently \"npm run tsc:w\" \"npm run server\" ",
-    "bundle": "node bundle.js"
+    "bundle": "node bundle.js",
+    "doc": "typedoc --target ES5 --mode modules --experimentalDecorators --module system --excludeExternals --moduleResolution node --preserveConstEnums --stripInternal --suppressExcessPropertyErrors --suppressImplicitAnyIndexErrors --ignoreCompilerErrors --out ./doc ./src"
   },
   "license": "MIT",
   "dependencies": {
@@ -25,12 +26,13 @@
     "zone.js": "0.6.6"
   },
   "devDependencies": {
+    "bower": "^1.7.9",
     "concurrently": "^2.0.0",
     "http-server": "^0.9.0",
-    "typescript": "^1.8.9",
+    "systemjs-builder": "^0.15.14",
     "tslint": "3.6.0",
-    "typings": "^0.7.12",
-    "bower": "^1.7.9",
-    "systemjs-builder": "^0.15.14"
+    "typedoc": "^0.3.12",
+    "typescript": "^1.8.9",
+    "typings": "^0.7.12"
   }
 }
