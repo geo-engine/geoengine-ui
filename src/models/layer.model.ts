@@ -1,5 +1,6 @@
 import {Operator, ResultType} from "./operator.model";
 import Config from "../config.model";
+import {Projection, Projections} from "./projection.model";
 
 interface Parameters {
     [key: string]: any;
@@ -25,12 +26,12 @@ export class Layer {
       return this._operator;
     }
 
-    get params(): Parameters {
-        let time = "2010-06-06T18:00:00.000Z";
+    getParams(projection: Projection): Parameters {
+        let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter
 
         switch (this.operator.resultType) {
            case ResultType.RASTER: {
-                let operator = this.operator.getProjectedOperator("EPSG:3857");
+                let operator = this.operator.getProjectedOperator(projection);
 
                 return {
                     "SERVICE": "WMS",
@@ -40,18 +41,18 @@ export class Layer {
                     "TRANSPARENT": true,
                     "LAYERS": operator.toQueryJSON(),
                     "COLORS": "gray",
-                    "DEBUG": (Config.DEBUG_MODE ? 1: 0),
+                    "DEBUG": (Config.DEBUG_MODE ? 1 : 0),
                     "TIME": time
                 };
             }
 
             case ResultType.POINTS: {
-                let operator = this.operator.getProjectedOperator("EPSG:3857");
+                let operator = this.operator.getProjectedOperator(projection);
 
                 return {
                     "pointquery": operator.toQueryJSON(),
                     "COLORS": "hsv",
-                    "CRS": "EPSG:3857",
+                    "CRS": projection.getCode(),
                     "TIME": time
                 };
             }

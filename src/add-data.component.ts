@@ -7,6 +7,7 @@ import {MappingDataSourcesService} from "./services/mapping-data-sources.service
 import {MappingSource, MappingSourceChannel} from "./mapping-source.model";
 import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "./pipes/highlight.pipe";
+import {Projections} from "./models/projection.model";
 
 
 @Component({
@@ -70,7 +71,7 @@ export class AddDataComponent {
     let op = new Operator(
       "source", ResultType.RASTER,
       new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source).set("colorizer", channel.colorizer || source.colorizer || "gray"),
-      "EPSG:" + source.coords.epsg,
+      Projections.fromEPSGCode("EPSG:" + source.coords.epsg),
       channel.name);
     let layer = new Layer(op);
     this._layerService.addLayer(layer);

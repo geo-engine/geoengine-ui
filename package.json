@@ -18,6 +18,7 @@
     "ng2-dragula": "^1.1.5",
     "ng2-material": "^0.3.5",
     "openlayers": "^3.15.0",
+    "proj4": "^2.3.14",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-beta.2",
     "systemjs": "0.19.25",

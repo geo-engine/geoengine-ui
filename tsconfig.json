@@ -15,6 +15,7 @@
     "node_modules",
     "bower_components",
     "typings/main",
-    "typings/main.d.ts"
+    "typings/main.d.ts",
+    "custom_typings"
   ]
 }

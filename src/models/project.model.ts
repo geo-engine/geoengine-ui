@@ -20,8 +20,8 @@ export class Project {
     toJSON(): string {
         return JSON.stringify({
             name: this.name,
-            workingProjection: this.workingProjection.getEPSGCode(),
-            mapProjection: this.mapProjection.getEPSGCode(),
+            workingProjection: this.workingProjection.getCode(),
+            mapProjection: this.mapProjection.getCode(),
         });
     }
 

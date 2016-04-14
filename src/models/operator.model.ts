@@ -1,4 +1,5 @@
 import Config from "../config.model";
+import {Projection, Projections} from "./projection.model";
 
 /**
  * The result type of a mapping operator.
@@ -12,7 +13,6 @@ export enum ResultType {
 }
 
 type OperatorId = number;
-type Projection = string; // TODO
 
 /**
  * An operator represents a query graph consisting of source operators.
@@ -87,6 +87,10 @@ export class Operator {
 
     }
 
+    /**
+     * Retrieve a new unique id.
+     * @return operator id
+     */
     private static get nextOperatorId(): OperatorId {
         return this._operatorId++;
     }
@@ -174,8 +178,8 @@ export class Operator {
             return this;
         } else {
             let parameters = new Map<string, string | number>();
-            parameters.set("src_projection", this.projection);
-            parameters.set("dest_projection", projection);
+            parameters.set("src_projection", this.projection.getCode());
+            parameters.set("dest_projection", projection.getCode());
 
             return new Operator(
                 "projection",
@@ -245,7 +249,7 @@ export class Operator {
         resultType: this._resultType,
         operatorType: this.operatorType,
         parameters: Array.from(this.parameters.entries()),
-        projection: this._projection,
+        projection: this._projection.getCode(),
         symbology: this.symbology
       };
 
@@ -288,7 +292,7 @@ export class Operator {
         operatorDict.operatorType,
         operatorDict.resultType,
         new Map<string, string | number>(operatorDict.parameters),
-        operatorDict.projection,
+        Projections.fromEPSGCode(operatorDict.projection),
         operatorDict.name
       );
 

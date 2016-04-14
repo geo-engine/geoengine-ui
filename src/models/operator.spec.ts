@@ -1,4 +1,5 @@
 import {Operator, ResultType} from "./operator.model";
+import {Projections} from "./projection.model";
 
 describe("OperatorModel", () => {
   it("trivial", () => {
@@ -6,7 +7,7 @@ describe("OperatorModel", () => {
       "testType",
       ResultType.RASTER,
       new Map<string, string | number>(),
-      "emptyProjection",
+      Projections.WGS_84,
       "displayName"
     );
     expect(op.resultType).toBe(ResultType.RASTER);

@@ -4,9 +4,11 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {LayerService} from "./layer.service";
 import {ProjectService} from "./project.service";
 
+import Config from "../config.model";
 import {Layer} from "../models/layer.model";
 import {Project} from "../models/project.model";
 import {Operator, ResultType} from "../models/operator.model";
+import {Projections} from "../models/projection.model";
 
 interface LayerSerialization {
     operator: string;
@@ -19,9 +21,16 @@ interface LayerSerialization {
 @Injectable()
 export class StorageService {
     private storageProvider: StorageProvider;
+    private defaults: StorageDefaults;
 
     constructor(private layerService: LayerService, private projectService: ProjectService) {
         this.storageProvider = new BrowserStorageProvider();
+
+        if (Config.DEBUG_MODE) {
+            this.defaults = new DeveloperDefaults();
+        } else {
+            this.defaults = new StorageDefaults();
+        }
 
         this.loadProject();
         this.loadLayers();
@@ -33,30 +42,11 @@ export class StorageService {
         let layers = this.storageProvider.loadLayers();
 
         if (layers === undefined) {
-            // default
-            // TODO: should be empty later on
-            this.layerService.setLayers([
-                new Layer(new Operator(
-                    "source",
-                    ResultType.RASTER,
-                    new Map<string, string | number>().set("channel", 0)
-                    .set("sourcename", "srtm"),
-                    "EPSG:4326",
-                    "SRTM"
-                )),
-                new Layer(new Operator(
-                    "gfbiopointsource",
-                    ResultType.POINTS,
-                    new Map<string, string | number>()
-                    .set("datasource", "GBIF")
-                    .set("query", `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`),
-                    "EPSG:4326",
-                    "Puma Concolor"
-                ))
-            ]);
-        } else {
-            this.layerService.setLayers(layers);
+            // load default
+            layers = this.defaults.getLayers();
         }
+
+        this.layerService.setLayers(layers);
     }
 
     private storeLayersSetup() {
@@ -84,11 +74,10 @@ export class StorageService {
         let layerListVisible = this.storageProvider.loadLayerListVisible();
         if (layerListVisible === undefined) {
             // default
-            return true;
-        } else {
-            // load and parse
-            return layerListVisible;
+            layerListVisible = this.defaults.getLayerListVisible();
         }
+
+        return layerListVisible;
     }
 
     addDataTableVisibleObservable(dataTableVisible$: Observable<boolean>) {
@@ -99,11 +88,10 @@ export class StorageService {
         let dataTableVisible = this.storageProvider.loadDataTableVisible();
         if (dataTableVisible === undefined) {
             // default
-            return true;
-        } else {
-            // load and parse
-            return dataTableVisible;
+            dataTableVisible = this.defaults.getDataTableVisible();
         }
+
+        return dataTableVisible;
     }
 
     addTabIndexObservable(tabIndex$: Observable<number>) {
@@ -114,11 +102,10 @@ export class StorageService {
         let tabIndex = this.storageProvider.loadTabIndex();
         if (tabIndex === undefined) {
             // default
-            return 0;
-        } else {
-            // load and parse
-            return tabIndex;
+            tabIndex = this.defaults.getTabIndex();
         }
+
+        return tabIndex;
     }
 }
 
@@ -203,7 +190,7 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveProject(project: Project) {
-      localStorage.setItem("project", project.toJSON());
+        localStorage.setItem("project", project.toJSON());
     }
 
     loadLayers(): Array<Layer> {
@@ -275,5 +262,59 @@ class BrowserStorageProvider implements StorageProvider {
 
     saveTabIndex(tabIndex: number) {
         localStorage.setItem("tabIndex", JSON.stringify(tabIndex));
+    }
+}
+
+/**
+ * Default values when the storage is empty.
+ */
+class StorageDefaults {
+    getLayers(): Array<Layer> {
+        return [];
+    }
+    getLayerListVisible(): boolean {
+        return true;
+    }
+    getDataTableVisible(): boolean {
+        return true;
+    }
+    getTabIndex(): number {
+        return 0;
+    }
+}
+
+/**
+ * Default values for debugging the application.
+ */
+class DeveloperDefaults extends StorageDefaults {
+    getLayers(): Array<Layer> {
+        return [
+            new Layer(new Operator(
+                "source",
+                ResultType.RASTER,
+                new Map<string, string | number>().set("channel", 0)
+                .set("sourcename", "srtm"),
+                Projections.fromEPSGCode("EPSG:4326"),
+                "SRTM"
+            )),
+            new Layer(new Operator(
+                "gfbiopointsource",
+                ResultType.POINTS,
+                new Map<string, string | number>()
+                .set("datasource", "GBIF")
+                .set("query", `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`),
+                Projections.fromEPSGCode("EPSG:4326"),
+                "Puma Concolor"
+            ))
+        ];
+    }
+    getLayerListVisible(): boolean {
+        return true;
+    }
+    getDataTableVisible(): boolean {
+        return true;
+    }
+    getTabIndex(): number {
+        return 0;
     }
 }

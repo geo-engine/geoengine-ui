@@ -21,6 +21,7 @@ import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./component
 
 import {Layer} from "./models/layer.model";
 import {Operator, ResultType} from "./models/operator.model";
+import {Projection} from "./models/projection.model";
 
 import {LayerService} from "./services/layer.service";
 import {StorageService} from "./services/storage.service";
@@ -53,15 +54,16 @@ import {ProjectService} from "./services/project.service";
             </layer-component>
         </div>
         <div flex="grow">
-            <ol-map [height]="middleContainerHeight$ | async">
+            <ol-map [height]="middleContainerHeight$ | async"
+                    [projection]="mapProjection$ | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.resultType">
                     <ol-point-layer #olLayer *ngSwitchWhen="LAYER_IS_POINTS"
-                                    [params]="layer.params"
-                                    [style]="layer.style"></ol-point-layer>
+                                    [layer]="layer"
+                                    [projection]="mapProjection$ | async"></ol-point-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
-                                    [params]="layer.params"
-                                    [style]="layer.style"></ol-raster-layer>
+                                    [layer]="layer"
+                                    [projection]="mapProjection$ | async"></ol-raster-layer>
                 </div>
             </ol-map>
         </div>
@@ -146,6 +148,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     private layersReverse$: Observable<Array<Layer>>;
     private hasSelectedLayer$: Observable<boolean>;
 
+    private mapProjection$: Observable<Projection>;
+
     // for ng-switch
     private LAYER_IS_POINTS = ResultType.POINTS;
     private LAYER_IS_RASTER = ResultType.RASTER;
@@ -170,6 +174,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         // attach data table visibility to storage service
         this.dataTableVisible$ = new BehaviorSubject(this.storageService.getDataTableVisible());
         this.storageService.addDataTableVisibleObservable(this.dataTableVisible$);
+
+        this.mapProjection$ =  this.projectService.getProject()
+                                                  .map(project => project.mapProjection);
     }
 
     ngOnInit() {
@@ -204,11 +211,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.middleContainerHeight$.subscribe(() => {
-            this.mapComponent.resize();
+            // this.mapComponent.resize();
         });
 
         this.bottomContainerHeight$.subscribe(() => {
-            this.mapComponent.resize();
+            // this.mapComponent.resize();
         });
     }
 

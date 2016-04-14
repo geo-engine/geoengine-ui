@@ -22,7 +22,7 @@ import {Projection, Projections} from "../models/projection.model";
         <md-input-container class="md-block md-input-has-value">
             <label>Working Projection</label>
             <select [(ngModel)]="workingProjection">
-                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [value]="projection">
+                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
                     {{projection}}
                 </option>
             </select>
@@ -32,7 +32,7 @@ import {Projection, Projections} from "../models/projection.model";
         <md-input-container class="md-block md-input-has-value">
             <label>Map Projection</label>
             <select [(ngModel)]="mapProjection">
-                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [value]="projection">
+                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
                     {{projection}}
                 </option>
             </select>

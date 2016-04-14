@@ -3,5 +3,5 @@ export default {
   WMS_VERSION: "1.3.0",
   WMS_FORMAT: "image/png",
   WFS_FORMAT: "application/json",
-  DEBUG_MODE: false
+  DEBUG_MODE: true
 };

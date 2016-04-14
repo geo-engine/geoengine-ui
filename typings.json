@@ -1,8 +1,9 @@
 {
   "ambientDependencies": {
-    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
-    "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
-    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd"
+    "es6-shim":   "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
+    "jasmine":    "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
+    "require":    "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
+    "proj4":      "file:custom_typings/proj4.d.ts"
   }
 }

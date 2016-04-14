@@ -2,11 +2,12 @@ import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
         OnInit, AfterViewInit, ElementRef} from "angular2/core";
 import {Http, HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
 import Config from "./config.model";
 import {LayerService} from "./services/layer.service";
 import {ResultType} from "./models/operator.model";
+import {ProjectService} from "./services/project.service";
 
 
 interface Column {
@@ -33,16 +34,16 @@ interface Column {
     `,
 
 
-    //template: `
-    //<div *ngFor="#item of data">{{item}}</div>
-    //`,
-    //template: `
-    //    <vaadin-grid
-    //        [columns]="columns"
-    //        [items]="data"
-    //        [style.height.px]="height">
-    //    </vaadin-grid>
-    //`,
+    // template: `
+    // <div *ngFor="#item of data">{{item}}</div>
+    // `,
+    // template: `
+    //     <vaadin-grid
+    //         [columns]="columns"
+    //         [items]="data"
+    //         [style.height.px]="height">
+    //     </vaadin-grid>
+    // `,
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -56,7 +57,8 @@ export class DataTable implements OnInit {
 
     constructor(private http: Http,
                 private changeDetectorRef: ChangeDetectorRef,
-                private layerService: LayerService) {
+                private layerService: LayerService,
+                private projectService: ProjectService) {
 
                 this.data$ = this.layerService.getSelectedLayer().map(layer => {
                       if (layer === undefined) {
@@ -64,11 +66,12 @@ export class DataTable implements OnInit {
                       }
                           switch (layer.resultType) {
                               case ResultType.POINTS:
-                                  return this.http.get(Config.MAPPING_URL + "?" + Object.keys(layer.params).map(key => key + "=" + encodeURIComponent(layer.params[key])).join("&") + "&format=csv").map(result => {
+                                let layerParams = layer.getParams(this.projectService.getProjectOnce().workingProjection);
+                                  return this.http.get(Config.MAPPING_URL + "?" + Object.keys(layerParams).map(key => key + "=" + encodeURIComponent(layerParams[key])).join("&") + "&format=csv").map(result => {
 
                                         const csv_rows = result.text().split("\n"); // split by new lines to seperate the rows
                                         let data_rows: Array<Array<string>> = [];
-                                        for(let csv_row of csv_rows){
+                                        for (let csv_row of csv_rows){
                                           data_rows.push(csv_row.split(","));
                                         }
                                         return data_rows;
@@ -81,7 +84,7 @@ export class DataTable implements OnInit {
 
     ngOnInit() {
       this.data$.subscribe( (data_rows: Array<Array<string>>) => {
-        if (data_rows.length > 0){
+        if (data_rows.length > 0) {
           const [car, ...cdr] = data_rows;
           this.columns = car.map(name => ({ name })); // take the first row (HEADER) and put them into new objects with name attribute = interface Column. TODO: get type?
           this.rows = cdr;

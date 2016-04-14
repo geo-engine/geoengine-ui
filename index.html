@@ -18,6 +18,9 @@
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
     <script src="node_modules/angular2/bundles/http.dev.js"></script>
 
+    <!-- Proj4 -->
+    <script src="node_modules/proj4/dist/proj4.js"></script>
+
     <!-- Material -->
     <link rel="stylesheet" href="node_modules/ng2-material/dist/ng2-material.css">
     <link rel="stylesheet" href="node_modules/ng2-material/dist/font.css">
@@ -49,7 +52,11 @@
             map: {
                 'ng2-material': 'node_modules/ng2-material',
                 'ng2-dragula': 'node_modules/ng2-dragula',
-                'openlayers': 'node_modules/openlayers/dist/ol.js'
+                'openlayers': 'node_modules/openlayers/dist/ol.js',
+                'proj4': 'node_modules/proj4/dist/proj4.js'
+            },
+            meta: {
+                'node_modules/proj4/dist/proj4.js': { format: 'global' }
             }
         });
       System.import('app/main')

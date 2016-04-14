@@ -3,6 +3,8 @@ import ol from "openlayers";
 
 import Config from "../config.model";
 import {ResultType} from "../models/operator.model";
+import {Layer} from "../models/layer.model";
+import {Projection} from "../models/projection.model";
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -16,17 +18,14 @@ import {ResultType} from "../models/operator.model";
 @Component({
     selector: "ol-layer",
     template: "",
-    changeDetection: ChangeDetectionStrategy.Detached
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export abstract class MapLayerComponent implements OnChanges {
 
-    @Input()
-    protected params: any;
+    @Input() layer: Layer;
+    @Input() projection: Projection;
 
-    @Input()
-    protected style: any;
-
-    abstract getLayer(): ol.layer.Layer;
+    abstract getMapLayer(): ol.layer.Layer;
 
     protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for (let property in changes) {
@@ -46,37 +45,36 @@ export abstract class MapLayerComponent implements OnChanges {
 @Component({
     selector: "ol-point-layer",
     template: "",
-    changeDetection: ChangeDetectionStrategy.Detached
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PointLayerComponent extends MapLayerComponent {
     protected source: ol.source.Vector;
-    protected layer: ol.layer.Vector;
+    protected mapLayer: ol.layer.Vector;
 
-    getLayer(): ol.layer.Vector {
-        return this.layer;
+    getMapLayer(): ol.layer.Vector {
+        return this.mapLayer;
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (!this.isFirstChange(changes)) {
-            return; // TODO: react on changes
-        }
+        // console.log("point layer changes", changes);
 
-//        console.log("point layer");
+        let params = this.layer.getParams(this.projection);
+        let style: any = this.layer.style;
 
         this.source = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
-            url: Config.MAPPING_URL + "?" + Object.keys(this.params).map(
-                key => key + "=" + encodeURIComponent(this.params[key])
+            url: Config.MAPPING_URL + "?" + Object.keys(params).map(
+                key => key + "=" + encodeURIComponent(params[key])
             ).join("&") + "&format=geojson",
             wrapX: false
         });
 
-        this.layer = new ol.layer.Vector({
+        this.mapLayer = new ol.layer.Vector({
             source: this.source,
             style: new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: 5,
-                    fill: new ol.style.Fill({ color: this.style.color }),
+                    fill: new ol.style.Fill({ color: style.color }),
                     stroke: new ol.style.Stroke({ color: "#000000", width: 1 })
                 })
             })
@@ -91,36 +89,33 @@ export class PointLayerComponent extends MapLayerComponent {
 @Component({
     selector: "ol-raster-layer",
     template: "",
-    changeDetection: ChangeDetectionStrategy.Detached
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RasterLayerComponent extends MapLayerComponent {
     protected source: ol.source.TileWMS;
-    protected layer: ol.layer.Tile;
+    protected mapLayer: ol.layer.Tile;
 
-    getLayer(): ol.layer.Tile {
-        return this.layer;
+    getMapLayer(): ol.layer.Tile {
+        return this.mapLayer;
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (!this.isFirstChange(changes)) {
-            return; // TODO: react on changes
-        }
-
-//        console.log("raster layer");
+        let params = this.layer.getParams(this.projection);
+        let style: any = this.layer.style;
 
         this.source = new ol.source.TileWMS({
             url: Config.MAPPING_URL,
-            params: this.params,
+            params: params,
             wrapX: false
         });
 
-        this.layer = new ol.layer.Tile({
+        this.mapLayer = new ol.layer.Tile({
             source: this.source,
-            opacity: this.style.opacity
+            opacity: style.opacity
         });
     }
 
     getExtent() {
-        return this.layer.getExtent();
+        return this.mapLayer.getExtent();
     }
 }
