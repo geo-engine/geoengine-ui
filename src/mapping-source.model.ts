@@ -8,6 +8,7 @@ export interface MappingSourceChannel {
   nodata: number;
   unit: any;
   colorizer: string;
+  transform: any;
 }
 
 export interface MappingSource {

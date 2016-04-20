@@ -15,6 +15,7 @@ import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
 
 import {AddDataComponent} from "./add-data.component";
+import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig} from "./components/operators/operator.component";
 
 import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
 import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./components/project-settings.component";
@@ -40,11 +41,12 @@ import {UserService} from "./services/user.service";
             <tab-component
                 [layerSelected]="hasSelectedLayer$ | async"
                 (renameLayer)="renameLayerDialog($event)"
-                (removeLayer)="layerService.removeLayer(layerService.getSelectedLayerOnce())"
+                (removeLayer)="layerService.removeLayer(layerService.getSelectedLayer())"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"
                 (addData)="sidenavService.show('right')"
+                (showOperator)="showAddOperatorDialog($event)"
                 (projectSettings)="projectSettingsDialog($event)">
             </tab-component>
         </div>
@@ -164,10 +166,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef) {
-        this.layersReverse$ = layerService.getLayers()
+        this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
 
-        this.hasSelectedLayer$ = layerService.getSelectedLayer()
+        this.hasSelectedLayer$ = layerService.getSelectedLayerStream()
                                              .map(value => value !== undefined);
 
         // attach layer list visibility to storage service
@@ -220,8 +222,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     getMapIndexOfSelectedLayer() {
-        let layers = this.layerService.getLayersOnce();
-        let selectedLayer = this.layerService.getSelectedLayerOnce();
+        let layers = this.layerService.getLayers();
+        let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
     }
@@ -242,5 +244,13 @@ export class AppComponent implements OnInit, AfterViewInit {
             .targetEvent(event);
 
         this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
+    }
+
+    private showAddOperatorDialog(OperatorComponent: OperatorBase) {
+        let config = new OperatorDialogConfig()
+            .layerService(this.layerService)
+            .clickOutsideToClose(true);
+
+        this.mdDialog.open(<Function> OperatorComponent, this.elementRef, config);
     }
 }

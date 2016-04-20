@@ -21,7 +21,7 @@ export class MappingDataSourcesService {
             coords: source.coords,
             channels: source.channels.map((channel: any, index: number) => {
               channel.id = index;
-              channel.name = channel.name || "Channel #"+index;
+              channel.name = channel.name || "Channel #" + index;
                 /*
                 channel.preview = Config.MAPPING_URL+"?SERVICE=WMS"+
                 "&VERSION="+Config.WMS_VERSION+

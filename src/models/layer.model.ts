@@ -1,4 +1,4 @@
-import {Operator, ResultType} from "./operator.model";
+import {Operator, ResultType, OperatorDict} from "./operator.model";
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
 
@@ -6,16 +6,28 @@ interface Parameters {
     [key: string]: any;
 }
 
+interface LayerConfig {
+    name: string;
+    operator: Operator;
+}
+
+/**
+ * Dictionary for serialization.
+ */
+export interface LayerDict {
+    name: string;
+    operator: OperatorDict;
+    expanded: boolean;
+}
+
 export class Layer {
     private _operator: Operator;
+    name: string;
     expanded: boolean = false;
 
-    constructor(operator: Operator) {
-        this._operator = operator;
-    }
-
-    get name(): string {
-        return this.operator.name;
+    constructor(config: LayerConfig) {
+        this.name = config.name;
+        this._operator = config.operator;
     }
 
     get url() {
@@ -75,6 +87,24 @@ export class Layer {
                     color: "#FF0000"
                 };
         }
+    }
+
+    toDict(): LayerDict {
+        return {
+            name: this.name,
+            operator: this._operator.toDict(),
+            expanded: this.expanded,
+        };
+    }
+
+    static fromDict(dict: LayerDict): Layer {
+        let layer = new Layer({
+            name: dict.name,
+            operator: Operator.fromDict(dict.operator),
+        });
+        layer.expanded = dict.expanded;
+
+        return layer;
     }
 
 }

@@ -3,11 +3,13 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {LayerService} from "./services/layer.service";
 import {Layer} from "./models/layer.model";
 import {Operator, ResultType} from "./models/operator.model";
+import {DataType, DataTypes} from "./models/datatype.model";
 import {MappingDataSourcesService} from "./services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "./mapping-source.model";
 import {MappingDataSourceFilter} from "./pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "./pipes/highlight.pipe";
 import {Projections} from "./models/projection.model";
+import {Unit, Interpolation} from "./models/unit.model";
 
 
 @Component({
@@ -63,17 +65,33 @@ export class AddDataComponent {
 
   private sources: Array<MappingSource> = [];
   private search_term: String = "";
-  constructor(private _mappingDataSourcesService: MappingDataSourcesService, private _layerService: LayerService) {
+  constructor(private _mappingDataSourcesService: MappingDataSourcesService,
+              private _layerService: LayerService) {
     _mappingDataSourcesService.getSources().subscribe(x => this.sources = x);
   }
 
   private add(source: MappingSource, channel: MappingSourceChannel) {
-    let op = new Operator(
-      "source", ResultType.RASTER,
-      new Map<string, string | number>().set("channel", channel.id).set("sourcename", source.source).set("colorizer", channel.colorizer || source.colorizer || "gray"),
-      Projections.fromEPSGCode("EPSG:" + source.coords.epsg),
-      channel.name);
-    let layer = new Layer(op);
+    let op = new Operator({
+        operatorType: "source",
+        resultType: ResultType.RASTER,
+        parameters: new Map<string, string | number>()
+                        .set("channel", channel.id)
+                        .set("sourcename", source.source)
+                        .set("colorizer", channel.colorizer || source.colorizer || "gray"),
+        projection: Projections.fromEPSGCode("EPSG:" + source.coords.epsg),
+        attributes: ["value"],
+        dataTypes: new Map<string, DataType>().set(
+            "value", DataTypes.fromCode(
+                channel.transform === undefined ? channel.datatype : channel.transform.datatype
+            )
+        ),
+        units: new Map<string, Unit>().set("value", new Unit({
+            measurement: "raw",
+            unit: "unknown",
+            interpolation: Interpolation.Continuous
+        }))
+    });
+    let layer = new Layer({name: channel.name, operator: op});
     this._layerService.addLayer(layer);
   }
 

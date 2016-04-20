@@ -1,10 +1,13 @@
 import {Injectable} from "angular2/core";
-import {BehaviorSubject} from "rxjs/Rx";
+import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {Layer} from "../models/layer.model";
 
 import {Operator, ResultType} from "../models/operator.model";
 
+/**
+ * A service that is responsible for managing the active layer array.
+ */
 @Injectable()
 export class LayerService {
     private layers$: BehaviorSubject<Array<Layer>> = new BehaviorSubject([]);
@@ -12,14 +15,24 @@ export class LayerService {
 
     constructor() {}
 
-    getLayers() {
-        return this.layers$;
-    }
-
-    getLayersOnce() {
+    /**
+     * @returns The layer list.
+     */
+    getLayers(): Array<Layer> {
         return this.layers$.getValue();
     }
 
+    /**
+     * @returns The stream of the layer list.
+     */
+    getLayersStream(): Observable<Array<Layer>> {
+        return this.layers$;
+    }
+
+    /**
+     * Insert a new array of layers. Resets the selected layer.
+     * @param layers The layer list.
+     */
     setLayers(layers: Array<Layer>) {
         if (layers.indexOf(this.selectedLayer$.getValue()) === -1) {
             this.setSelectedLayer(undefined);
@@ -28,11 +41,19 @@ export class LayerService {
         this.layers$.next(layers);
     }
 
+    /**
+     * Adds a layer on top of the layer list.
+     * @param layer The new layer.
+     */
     addLayer(layer: Layer) {
        let layers = this.layers$.getValue();
        this.setLayers([layer, ...layers]);
     }
 
+    /**
+     * Removes a layer from the list.
+     * @param layer The layer to remove.
+     */
     removeLayer(layer: Layer) {
         let layers = this.layers$.getValue();
         let index = layers.indexOf(layer);
@@ -43,22 +64,38 @@ export class LayerService {
         }
     }
 
+    /**
+     * Changes the display name of a layer.
+     * @param layer The layer to modify
+     * @param newName The new layer name
+     */
     changeLayerName(layer: Layer, newName: string) {
-      layer.operator.name = newName;
-      this.layers$.next(this.getLayersOnce());
+      layer.name = newName;
+      this.layers$.next(this.getLayers());
     }
 
+    /**
+     * Set a new selected layer.
+     * Does nothing if the layer is not within the list.
+     * @param layer The layer to select.
+     */
     setSelectedLayer(layer: Layer) {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
         }
     }
 
-    getSelectedLayer() {
+    /**
+     * @returns The currently selected layer as stream.
+     */
+    getSelectedLayerStream() {
         return this.selectedLayer$.asObservable();
     }
 
-    getSelectedLayerOnce() {
+    /**
+     * @returns The currently selected layer.
+     */
+    getSelectedLayer() {
         return this.selectedLayer$.getValue();
     }
 }

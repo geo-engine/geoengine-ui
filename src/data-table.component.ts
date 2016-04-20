@@ -60,7 +60,7 @@ export class DataTable implements OnInit {
                 private layerService: LayerService,
                 private projectService: ProjectService) {
 
-                this.data$ = this.layerService.getSelectedLayer().map(layer => {
+                this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
                       if (layer === undefined) {
                         return Observable.of([]);
                       }

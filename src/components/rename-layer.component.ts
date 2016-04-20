@@ -48,7 +48,7 @@ export class RenameLayerComponent implements OnInit {
     constructor(private dialog: MdDialogRef) {}
 
     ngOnInit() {
-        this.layer = this.layerService.getSelectedLayerOnce();
+        this.layer = this.layerService.getSelectedLayer();
         this.layerName = this.layer.name;
     }
 

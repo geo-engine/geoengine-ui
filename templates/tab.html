@@ -132,21 +132,35 @@
     </template>
     <template md-tab label="Operators">
         <md-content layout="row">
-            Tab Two
+            <fieldset>
+                <legend>Expression</legend>
+                <div layout="row">
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+                                class="md-primary" layout="column" (click)="addExpressionOperator()">
+                            <i md-icon>settings</i>
+                            <div>Expression</div>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
         </md-content>
     </template>
     <template md-tab label="Project">
-        <fieldset>
-            <legend>Project</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column" (click)="projectSettings.emit()">
-                        <i md-icon>settings</i>
-                        <div>Configuration</div>
-                    </button>
+        <md-content layout="row">
+            <fieldset>
+                <legend>Project</legend>
+                <div layout="row">
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+                                class="md-primary" layout="column"
+                                (click)="projectSettings.emit()">
+                            <i md-icon>settings</i>
+                            <div>Configuration</div>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </fieldset>
+            </fieldset>
+        </md-content>
     </template>
 </md-tabs>

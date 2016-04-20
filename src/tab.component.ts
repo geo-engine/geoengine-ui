@@ -5,6 +5,9 @@ import {BehaviorSubject, Subject} from "rxjs/Rx";
 
 import {StorageService} from "./services/storage.service";
 
+import {OperatorBaseComponent, OperatorBase} from "./components/operators/operator.component";
+import {ExpressionOperatorComponent} from "./components/operators/expression-operator.component";
+
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
     selector: "tab-component",
@@ -59,6 +62,8 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     @Output("renameLayer") renameLayerEmitter = new EventEmitter<void>();
 
+    @Output() showOperator = new EventEmitter<OperatorBase>();
+
     @Output() projectSettings = new EventEmitter<void>();
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
@@ -82,5 +87,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
         if (newTabIndex !== oldTabIndex) {
             this.tabIndex$.next(newTabIndex);
         }
+    }
+
+    private addExpressionOperator() {
+        this.showOperator.emit(ExpressionOperatorComponent);
     }
 }

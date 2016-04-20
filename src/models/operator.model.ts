@@ -1,5 +1,7 @@
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
+import {Unit, UnitDict} from "./unit.model";
+import {DataType, DataTypes} from "./datatype.model";
 
 /**
  * The result type of a mapping operator.
@@ -12,7 +14,76 @@ export enum ResultType {
     PLOT = 4242 // this result type must not be used as an input.
 }
 
+export function resultTypeNameConverter(type: ResultType): string {
+    switch (type) {
+        case ResultType.RASTER:
+            return "Raster";
+        case ResultType.POINTS:
+            return "Points";
+        case ResultType.LINES:
+            return "Lines";
+        case ResultType.POLYGONS:
+            return "Polygons";
+        case ResultType.PLOT:
+            return "Plot";
+        default:
+            throw "Invalid Result Type";
+    }
+};
+
 type OperatorId = number;
+type AttributeName = string;
+type ParameterName = string;
+
+interface OperatorConfig {
+    operatorType: string;
+    resultType: ResultType;
+    parameters: Map<ParameterName, OperatorParam>;
+    projection: Projection;
+    attributes: Array<AttributeName>;
+    dataTypes: Map<AttributeName, DataType>;
+    units: Map<AttributeName, Unit>;
+    rasterSources?: Array<Operator>;
+    pointSources?: Array<Operator>;
+    lineSources?: Array<Operator>;
+    polygonSources?: Array<Operator>;
+}
+
+/**
+ * Serialization interface
+ */
+export interface OperatorDict {
+    id: number;
+    symbology: any; // TODO
+    operatorType: string;
+    resultType: number;
+    parameters: Array<[string, OperatorParam]>;
+    projection: string;
+    attributes: Array<string>;
+    dataTypes: Array<[string, string]>;
+    units: Array<[string, UnitDict]>;
+    rasterSources: Array<OperatorDict>;
+    pointSources: Array<OperatorDict>;
+    lineSources: Array<OperatorDict>;
+    polygonSources: Array<OperatorDict>;
+}
+
+export interface ComplexOperatorParam {
+    [index: string]: any;
+}
+
+type OperatorParam = string | number | ComplexOperatorParam;
+
+interface QueryDict {
+    type: string;
+    params?: {[index: string]: OperatorParam};
+    sources?: {
+        RASTER?: Array<QueryDict>;
+        POINTS?: Array<QueryDict>;
+        LINES?: Array<QueryDict>;
+        POLYGONS?: Array<QueryDict>;
+    };
+}
 
 /**
  * An operator represents a query graph consisting of source operators.
@@ -21,15 +92,14 @@ type OperatorId = number;
 export class Operator {
     private _id: OperatorId;
 
-    /**
-     * The user-given name of this operator instance.
-     */
-    public name: string;
-
     private _resultType: ResultType;
     private operatorType: string;
 
-    private parameters: Map<string, string | number>;
+    private _attributes: Array<AttributeName>;
+    private _dataTypes: Map<AttributeName, DataType>;
+    private _units: Map<AttributeName, Unit>;
+
+    private parameters: Map<ParameterName, OperatorParam>;
     private _projection: Projection;
 
     private symbology: any; // TODO
@@ -44,35 +114,48 @@ export class Operator {
     /**
      * Instantiate an operator.
      *
-     * @param operatorType      The mapping type name of the operator.
-     * @param resultType        A {@link resultType}.
-     * @param parameters        Operator-specific parameters.
-     * @param projection        A {@link Projection}.
-     * @param displayName       The user-given name of this operator instance.
-     * @param rasterSources     A list of operators with {@link resultType} `RASTER`.
-     * @param pointSources      A list of operators with {@link resultType} `POINTS`.
-     * @param lineSources       A list of operators with {@link resultType} `LINES`.
-     * @param polygonSources    A list of operators with {@link resultType} `POLYGONS`.
+     * @param config.operatorType      The mapping type name of the operator.
+     * @param config.resultType        A {@link resultType}.
+     * @param config.parameters        Operator-specific parameters.
+     * @param config.projection        A {@link Projection}.
+     * @param config.displayName       The user-given name of this operator instance.
+     * @param config.rasterSources     A list of operators with {@link resultType} `RASTER`.
+     * @param config.pointSources      A list of operators with {@link resultType} `POINTS`.
+     * @param config.lineSources       A list of operators with {@link resultType} `LINES`.
+     * @param config.polygonSources    A list of operators with {@link resultType} `POLYGONS`.
      *
      */
-    constructor(operatorType: string, resultType: ResultType,
-                parameters: Map<string, string | number>, projection: Projection,
-                displayName: string,
-                rasterSources: Operator[] = [], pointSources: Operator[] = [],
-                lineSources: Operator[] = [], polygonSources: Operator[] = []) {
+    constructor(config: OperatorConfig) {
         this._id = Operator.nextOperatorId;
-        this.name = displayName;
 
-        this.operatorType = operatorType,
-        this._resultType = resultType;
-        this.parameters = parameters;
-        this._projection = projection;
+        this.operatorType = config.operatorType,
+        this._resultType = config.resultType;
+
+        this.parameters = config.parameters;
+        this._projection = config.projection;
+
+        this._attributes = config.attributes;
+        this._dataTypes = config.dataTypes;
+        this._units = config.units;
+
+        if (config.rasterSources === undefined) {
+            config.rasterSources = [];
+        }
+        if (config.pointSources === undefined) {
+            config.pointSources = [];
+        }
+        if (config.lineSources === undefined) {
+            config.lineSources = [];
+        }
+        if (config.polygonSources === undefined) {
+            config.polygonSources = [];
+        }
 
         let sources: Array<[Operator[], Operator[], ResultType]> = [
-            [rasterSources, this.rasterSources, ResultType.RASTER],
-            [pointSources, this.pointSources, ResultType.POINTS],
-            [lineSources, this.lineSources, ResultType.LINES],
-            [polygonSources, this.polygonSources, ResultType.POLYGONS]
+            [config.rasterSources, this.rasterSources, ResultType.RASTER],
+            [config.pointSources, this.pointSources, ResultType.POINTS],
+            [config.lineSources, this.lineSources, ResultType.LINES],
+            [config.polygonSources, this.polygonSources, ResultType.POLYGONS]
         ];
 
         for (let [source, sink, sinkType] of sources) {
@@ -114,6 +197,27 @@ export class Operator {
      */
     get projection(): Projection {
         return this._projection;
+    }
+
+    /**
+     * Retrieve the output attributes.
+     */
+    get attributes(): Array<AttributeName> {
+        return this._attributes;
+    }
+
+    /**
+     * Retrieve the attribute data type.
+     */
+    getDataType(attribute: AttributeName): DataType {
+        return this._dataTypes.get(attribute);
+    }
+
+    /**
+     * Retrieve the attribute unit.
+     */
+    getUnit(attribute: AttributeName): Unit {
+        return this._units.get(attribute);
     }
 
     /**
@@ -177,34 +281,36 @@ export class Operator {
         if (projection === this.projection) {
             return this;
         } else {
-            let parameters = new Map<string, string | number>();
-            parameters.set("src_projection", this.projection.getCode());
-            parameters.set("dest_projection", projection.getCode());
+            let parameters = new Map<string, OperatorParam>()
+                .set("src_projection", this.projection.getCode())
+                .set("dest_projection", projection.getCode());
 
-            return new Operator(
-                "projection",
-                this.resultType,
-                parameters,
-                projection,
-                `Projection of #${this.id}`,
-                this.resultType === ResultType.RASTER ? [this] : [],
-                this.resultType === ResultType.POINTS ? [this] : [],
-                this.resultType === ResultType.LINES ? [this] : [],
-                this.resultType === ResultType.POLYGONS ? [this] : []
-            );
+            return new Operator({
+                operatorType: "projection",
+                resultType: this.resultType,
+                parameters: parameters,
+                projection: projection,
+                attributes: this._attributes,
+                dataTypes: this._dataTypes,
+                units: this._units,
+                rasterSources: this.resultType === ResultType.RASTER ? [this] : [],
+                pointSources: this.resultType === ResultType.POINTS ? [this] : [],
+                lineSources: this.resultType === ResultType.LINES ? [this] : [],
+                polygonSources: this.resultType === ResultType.POLYGONS ? [this] : []
+            });
         }
     }
 
     /**
      * Dictionary reprensentation of the operator as query parameter.
      */
-    private toQueryDict(): any {
-        let dict: any = {
-            "type": this.operatorType
+    private toQueryDict(): QueryDict {
+        let dict: QueryDict = {
+            type: this.operatorType
         };
 
         if (this.parameters.size > 0) {
-            let params: {[id: string]: any} = {};
+            let params: {[index: string]: OperatorParam} = {};
             this.parameters.forEach((value, key, map) => {
                 params[key] = value;
             });
@@ -214,7 +320,7 @@ export class Operator {
         if (this.hasSources()) {
             let sources: any = {};
 
-            let sourcesList: Array<[string, Operator[]]> = [
+            let sourcesList: Array<[string, Array<Operator>]> = [
                 [ResultType[ResultType.RASTER].toLowerCase(), this.rasterSources],
                 [ResultType[ResultType.POINTS].toLowerCase(), this.pointSources],
                 [ResultType[ResultType.LINES].toLowerCase(), this.lineSources],
@@ -242,39 +348,26 @@ export class Operator {
         return JSON.stringify(this.toQueryDict());
     }
 
-    toDict(): any {
-      let dict: any = {
+    toDict(): OperatorDict {
+      let dict: OperatorDict = {
         id: this._id,
-        name: this.name,
         resultType: this._resultType,
         operatorType: this.operatorType,
         parameters: Array.from(this.parameters.entries()),
         projection: this._projection.getCode(),
-        symbology: this.symbology
+        symbology: this.symbology,
+        attributes: this._attributes,
+        dataTypes: <Array<[AttributeName, string]>> Array.from(this._dataTypes.entries()).map(
+            ([name, datatype]) => [name, datatype.getCode()]
+        ),
+        units: <Array<[AttributeName, UnitDict]>> Array.from(this._units.entries()).map(
+            ([name, unit]) => [name, unit.toDict()]
+        ),
+        rasterSources: this.rasterSources.map(operator => operator.toDict()),
+        pointSources: this.pointSources.map(operator => operator.toDict()),
+        lineSources: this.lineSources.map(operator => operator.toDict()),
+        polygonSources: this.polygonSources.map(operator => operator.toDict()),
       };
-
-      // console.log("dict", dict);
-
-      if (this.hasSources()) {
-          let sources: any = {};
-
-          let sourcesList: Array<[string, Operator[]]> = [
-              [ResultType[ResultType.RASTER], this.rasterSources],
-              [ResultType[ResultType.POINTS], this.pointSources],
-              [ResultType[ResultType.LINES], this.lineSources],
-              [ResultType[ResultType.POLYGONS], this.polygonSources]
-          ];
-          for (let [sourceString, source] of sourcesList) {
-              if (source.length > 0) {
-                  sources[sourceString] = [];
-                  for (let operator of source) {
-                      sources[sourceString].push(operator.toDict());
-                  }
-              }
-          }
-
-          dict["sources"] = sources;
-      }
 
       return dict;
     }
@@ -287,41 +380,33 @@ export class Operator {
       return this.fromDict(JSON.parse(json));
     }
 
-    private static fromDict(operatorDict: any): Operator {
-      let operator = new Operator(
-        operatorDict.operatorType,
-        operatorDict.resultType,
-        new Map<string, string | number>(operatorDict.parameters),
-        Projections.fromEPSGCode(operatorDict.projection),
-        operatorDict.name
-      );
+    static fromDict(operatorDict: OperatorDict): Operator {
+        let operator = new Operator({
+            operatorType: operatorDict.operatorType,
+            resultType: operatorDict.resultType,
+            parameters: new Map<string, OperatorParam>(operatorDict.parameters),
+            projection: Projections.fromEPSGCode(operatorDict.projection),
+            attributes: operatorDict.attributes,
+            dataTypes: new Map<AttributeName, DataType>(
+                <Array<[AttributeName, DataType]>>
+                operatorDict.dataTypes.map(
+                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
+                )
+            ),
+            units: new Map<AttributeName, Unit>(
+                <Array<[AttributeName, Unit]>>
+                operatorDict.units.map(([name, unitDict]) => [name, Unit.fromDict(unitDict)])
+            ),
+            rasterSources: operatorDict.rasterSources.map(Operator.fromDict),
+            pointSources: operatorDict.pointSources.map(Operator.fromDict),
+            lineSources: operatorDict.lineSources.map(Operator.fromDict),
+            polygonSources: operatorDict.polygonSources.map(Operator.fromDict),
+        });
 
-      operator._id = operatorDict.id;
-      operator.symbology = operatorDict.symbology;
+        operator._id = operatorDict.id;
+        operator.symbology = operatorDict.symbology;
 
-      if (operatorDict.sources !== undefined) {
-        for (let sourceType in operatorDict.sources) {
-          let sourceOperators = operatorDict.sources[sourceType];
-          for (let sourceOperator of sourceOperators) {
-             switch (sourceType) {
-               case ResultType[ResultType.RASTER]:
-                 operator.rasterSources.push(Operator.fromDict(sourceOperator));
-                 break;
-               case ResultType[ResultType.POINTS]:
-                 operator.pointSources.push(Operator.fromDict(sourceOperator));
-                 break;
-               case ResultType[ResultType.LINES]:
-                 operator.lineSources.push(Operator.fromDict(sourceOperator));
-                 break;
-               case ResultType[ResultType.POLYGONS]:
-                 operator.polygonSources.push(Operator.fromDict(sourceOperator));
-                 break;
-             }
-          }
-        }
-      }
-
-      return operator;
+        return operator;
     }
 
 }

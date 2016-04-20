@@ -11,9 +11,9 @@ import {LayerService} from "./services/layer.service";
     template: `
     <md-content flex>
     <md-list [dragula]="'layer-bag'">
-        <md-list-item *ngFor="#layer of layerService.getLayers() | async; #index = index"
+        <md-list-item *ngFor="#layer of layerService.getLayersStream() | async; #index = index"
                       md-ink (click)="layerService.setSelectedLayer(layer)"
-                      [class.md-active]="layer === (layerService.getSelectedLayer() | async)"
+                      [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)"
                       (contextmenu)="replaceContextMenu($event, layer)">
             <div layout="column">
                 <div layout="row">
@@ -32,7 +32,7 @@ import {LayerService} from "./services/layer.service";
                     <button md-button class="md-icon-button"
                             style="margin-right: -16px;"
                             aria-label="More"
-                            *ngIf="layer === (layerService.getSelectedLayer() | async)"
+                            *ngIf="layer === (layerService.getSelectedLayerStream() | async)"
                             (click)="replaceContextMenu($event, layer)">
                         <i md-icon>more_vert</i>
                     </button>
@@ -43,7 +43,7 @@ import {LayerService} from "./services/layer.service";
                 </div>
             </div>
             <md-divider
-                [class.md-active]="layer === (layerService.getSelectedLayer() | async)">
+                [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)">
             </md-divider>
         </md-list-item>
     </md-list>
@@ -100,7 +100,7 @@ export class LayerComponent {
             dropIndex = this.domIndexOf(listItem, list);
 //            console.log("drop", dropIndex);
 
-            let layers = this.layerService.getLayers().getValue();
+            let layers = this.layerService.getLayers();
             layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
             this.layerService.setLayers(layers);
         });

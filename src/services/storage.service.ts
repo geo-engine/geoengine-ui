@@ -5,15 +5,12 @@ import {LayerService} from "./layer.service";
 import {ProjectService} from "./project.service";
 
 import Config from "../config.model";
-import {Layer} from "../models/layer.model";
+import {Layer, LayerDict} from "../models/layer.model";
 import {Project} from "../models/project.model";
 import {Operator, ResultType} from "../models/operator.model";
+import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
-
-interface LayerSerialization {
-    operator: string;
-    expanded: boolean;
-}
+import {Unit, Interpolation} from "../models/unit.model";
 
 /**
  * This service allows persisting the current execution context.
@@ -50,7 +47,7 @@ export class StorageService {
     }
 
     private storeLayersSetup() {
-        this.layerService.getLayers().subscribe(this.storageProvider.saveLayers);
+        this.layerService.getLayersStream().subscribe(this.storageProvider.saveLayers);
     }
 
     private loadProject() {
@@ -199,13 +196,10 @@ class BrowserStorageProvider implements StorageProvider {
             return undefined;
         } else {
             let layers: Array<Layer> = [];
-            let layerDicts: Array<LayerSerialization> = JSON.parse(layersJSON);
+            let layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
             for (let layerDict of layerDicts) {
-                let layer = new Layer(Operator.fromJSON(layerDict.operator));
-                layer.expanded = layerDict.expanded;
-
-                layers.push(layer);
+                layers.push(Layer.fromDict(layerDict));
             }
 
             return layers;
@@ -213,16 +207,13 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveLayers(layers: Array<Layer>) {
-        let layerStrings: Array<LayerSerialization> = [];
+        let layerDicts: Array<LayerDict> = [];
 
         for (let layer of layers) {
-          layerStrings.push({
-            operator: layer.operator.toJSON(),
-            expanded: layer.expanded
-          });
+            layerDicts.push(layer.toDict());
         }
 
-        localStorage.setItem("layers", JSON.stringify(layerStrings));
+        localStorage.setItem("layers", JSON.stringify(layerDicts));
     }
 
     loadLayerListVisible(): boolean {
@@ -289,23 +280,37 @@ class StorageDefaults {
 class DeveloperDefaults extends StorageDefaults {
     getLayers(): Array<Layer> {
         return [
-            new Layer(new Operator(
-                "source",
-                ResultType.RASTER,
-                new Map<string, string | number>().set("channel", 0)
-                .set("sourcename", "srtm"),
-                Projections.fromEPSGCode("EPSG:4326"),
-                "SRTM"
-            )),
-            new Layer(new Operator(
-                "gfbiopointsource",
-                ResultType.POINTS,
-                new Map<string, string | number>()
-                .set("datasource", "GBIF")
-                .set("query", `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`),
-                Projections.fromEPSGCode("EPSG:4326"),
-                "Puma Concolor"
-            ))
+            new Layer({
+                name: "SRTM",
+                operator: new Operator({
+                    operatorType: "source",
+                    resultType: ResultType.RASTER,
+                    parameters: new Map<string, string | number>().set("channel", 0)
+                                                                  .set("sourcename", "srtm"),
+                    projection: Projections.fromEPSGCode("EPSG:4326"),
+                    attributes: ["value"],
+                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
+                    units: new Map<string, Unit>().set("value", new Unit({
+                        measurement: "elevation",
+                        unit: "m",
+                        interpolation: Interpolation.Continuous
+                    }))
+                })
+            }),
+            new Layer({
+                name: "Puma Concolor",
+                operator: new Operator({
+                    operatorType: "gfbiopointsource",
+                    resultType: ResultType.POINTS,
+                    parameters: new Map<string, string | number>()
+                                    .set("datasource", "GBIF")
+                                    .set("query", `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`),
+                    projection: Projections.fromEPSGCode("EPSG:4326"),
+                    attributes: [],
+                    dataTypes: new Map<string, DataType>(),
+                    units: new Map<string, Unit>()
+                })
+            })
         ];
     }
     getLayerListVisible(): boolean {
