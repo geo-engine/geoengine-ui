@@ -6,7 +6,7 @@ import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
 import {MATERIAL_DIRECTIVES, SidenavService, MdDialog} from "ng2-material/all";
 import {MdDialogConfig, MdDialogBasic, MdDialogRef} from "ng2-material/components/dialog/dialog";
 
-import {InfoAreaComponent} from "./info-area.component";
+import {InfoAreaComponent} from "./components/info-area.component";
 import {TabComponent} from "./tab.component";
 import {InfoBarComponent} from "./info-bar.component";
 import {LayerComponent} from "./layer.component";
@@ -26,6 +26,7 @@ import {Projection} from "./models/projection.model";
 import {LayerService} from "./services/layer.service";
 import {StorageService} from "./services/storage.service";
 import {ProjectService} from "./services/project.service";
+import {UserService} from "./services/user.service";
 
 @Component({
     selector: "wave-app",
@@ -133,7 +134,8 @@ import {ProjectService} from "./services/project.service";
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, DataTable, AddDataComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, StorageService, ProjectService, SidenavService, HTTP_PROVIDERS, MdDialog]
+    providers: [LayerService, StorageService, ProjectService, UserService,
+                SidenavService, HTTP_PROVIDERS, MdDialog]
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent)
@@ -159,6 +161,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private sidenavService: SidenavService,
                 private storageService: StorageService,
                 private projectService: ProjectService,
+                private userService: UserService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef) {
         this.layersReverse$ = layerService.getLayers()

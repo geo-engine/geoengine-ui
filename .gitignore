@@ -8,5 +8,8 @@
 # Compiled typesript sources.
 /app
 
+# Documentation
+/doc
+
 # Eclipse
 .project
