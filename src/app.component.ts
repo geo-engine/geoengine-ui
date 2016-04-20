@@ -78,7 +78,7 @@ import {UserService} from "./services/user.service";
             </info-bar-component>
         </md-toolbar>
         <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40" *ngIf="dataTableVisible$ | async">
-            <wv-data-table>
+            <wv-data-table [height]="(bottomContainerHeight$ | async) - 40">
             </wv-data-table>
         </div>
     </div>
