@@ -10,7 +10,7 @@ import {FORM_DIRECTIVES, Validators, FormBuilder,
 
 import {DialogHeaderComponent} from "../dialogs/header.component";
 
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
+import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContentComponent,
         OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
 
 import {LayerService} from "../../services/layer.service";
@@ -27,50 +27,53 @@ import {Projection} from "../../models/projection.model";
 @Component({
     selector: "wave-raster-value-extraction",
     template: `
-    <wave-dialog-header>Extract a Raster Value and Add it to the Vector Layer</wave-dialog-header>
-    <form [ngFormModel]="configForm">
-        <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1" [type]="LAYER_IS_POINTS"
-                                    (selectedLayers)="selectedPointLayer = $event[0]">
-        </wave-multi-layer-selection>
-        <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="9" [type]="LAYER_IS_RASTER"
-                                    (selectedLayers)="onSelectRasterLayers($event)">
-        </wave-multi-layer-selection>
-        <md-card>
-            <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
-            </md-card-header>
-            <md-card-content>
-                <div layout="row" ngControlGroup="valueNames">
-                    <md-input-container class="md-block"
-                                        *ngFor="#control of valueNamesControls.controls; #i = index">
-                        <label>
-                            Value Name for Raster {{toLetters(i+1)}}
+    <wave-operator-content title="Extract a Raster Value and Add it to the Vector Layer"
+                            (add)="addLayer()" (cancel)="dialog.close()">
+        <form [ngFormModel]="configForm">
+            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
+                                        [type]="LAYER_IS_POINTS"
+                                        (selectedLayers)="selectedPointLayer = $event[0]">
+            </wave-multi-layer-selection>
+            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="9"
+                                        [type]="LAYER_IS_RASTER"
+                                        (selectedLayers)="onSelectRasterLayers($event)">
+            </wave-multi-layer-selection>
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">Configuration</span>
+                        <span class="md-subheader">Specify the operator</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-card-content>
+                    <div layout="row" ngControlGroup="valueNames">
+                        <md-input-container class="md-block"
+                                    *ngFor="#control of valueNamesControls.controls; #i = index">
+                            <label>
+                                Value Name for Raster {{toLetters(i+1)}}
+                            </label>
+                            <input md-input [ngFormControl]="control">
+                            <div md-messages="valueNames">
+                                <div md-message="required">You must specify a value name.</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                    <md-input-container class="md-block">
+                        <label for="name">
+                            Output Layer Name
                         </label>
-                        <input md-input [ngFormControl]="control">
-                        <div md-messages="valueNames">
-                            <div md-message="required">You must specify a value name.</div>
+                        <input md-input ngControl="name" [(value)]="name">
+                        <div md-messages="name">
+                            <div md-message="required">You must specify a layer name.</div>
                         </div>
                     </md-input-container>
-                </div>
-                <md-input-container class="md-block">
-                    <label for="name">
-                        Output Layer Name
-                    </label>
-                    <input md-input ngControl="name" [(value)]="name">
-                    <div md-messages="name">
-                        <div md-message="required">You must specify a layer name.</div>
-                    </div>
-                </md-input-container>
-            </md-card-content>
-        </md-card>
-        <wave-operator-buttons (add)="addLayer()" (cancel)="dialog.close()"></wave-operator-buttons>
-    </form>
+                </md-card-content>
+            </md-card>
+        </form>
+    </wave-operator-content>
     `,
     directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 DialogHeaderComponent, OperatorButtonsComponent],
+                 OperatorContentComponent],
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent {
@@ -88,7 +91,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
-        console.log("ExpressionOperatorComponent", "constructor", this.layerService);
+        console.log("RasterValueExtractionOperatorComponent", "constructor", this.layerService, dialog);
 
         this.valueNamesControls = formBuilder.array([]);
         this.configForm = formBuilder.group({
