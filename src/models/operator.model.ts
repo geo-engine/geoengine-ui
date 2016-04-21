@@ -214,10 +214,24 @@ export class Operator {
     }
 
     /**
+     * Retrieve all data types.
+     */
+    get dataTypes(): Map<AttributeName, DataType> {
+        return this._dataTypes;
+    }
+
+    /**
      * Retrieve the attribute unit.
      */
     getUnit(attribute: AttributeName): Unit {
         return this._units.get(attribute);
+    }
+
+    /**
+     * Retrieve all units.
+     */
+    get units(): Map<AttributeName, Unit> {
+        return this._units;
     }
 
     /**

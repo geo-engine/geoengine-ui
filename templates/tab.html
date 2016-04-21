@@ -133,11 +133,25 @@
     <template md-tab label="Operators">
         <md-content layout="row">
             <fieldset>
-                <legend>Expression</legend>
+                <legend>Points</legend>
                 <div layout="row">
                     <div layout="column" layout-align="space-around center">
                         <button md-button style="margin: 0px; height: auto;"
-                                class="md-primary" layout="column" (click)="addExpressionOperator()">
+                                class="md-primary" layout="column"
+                                (click)="addRasterValueExtractionOperator()">
+                            <i md-icon>settings</i>
+                            <div>Raster Value Extraction</div>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Raster</legend>
+                <div layout="row">
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+                                class="md-primary" layout="column"
+                                (click)="addExpressionOperator()">
                             <i md-icon>settings</i>
                             <div>Expression</div>
                         </button>

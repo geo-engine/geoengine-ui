@@ -65,7 +65,7 @@ import {Projection} from "../../models/projection.model";
                         <label for="minValue">
                             Minimum Value
                         </label>
-                        <input md-input ngControl="minValue" [(value)]="minValue">
+                        <input md-input type="number" ngControl="minValue" [(value)]="minValue">
                         <div md-messages="expression">
                             <div md-message="required">There must be a minimum value.</div>
                         </div>
@@ -74,7 +74,7 @@ import {Projection} from "../../models/projection.model";
                         <label for="maxValue">
                             Maximum Value
                         </label>
-                        <input md-input ngControl="maxValue" [(value)]="maxValue">
+                        <input md-input type="number" ngControl="maxValue" [(value)]="maxValue">
                         <div md-messages="expression">
                             <div md-message="required">There must be a maximum value.</div>
                         </div>
@@ -98,7 +98,7 @@ import {Projection} from "../../models/projection.model";
                         Output Layer Name
                     </label>
                     <input md-input ngControl="name" [(value)]="name">
-                    <div md-messages="expression">
+                    <div md-messages="name">
                         <div md-message="required">You must specify a layer name.</div>
                     </div>
                 </md-input-container>
