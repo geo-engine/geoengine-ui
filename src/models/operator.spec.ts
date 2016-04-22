@@ -8,7 +8,7 @@ describe("OperatorModel", () => {
     let op = new Operator({
       operatorType: "testType",
       resultType: ResultType.RASTER,
-      parameters: new Map<string, string | number>(),
+      parameters: new Map<string, string | number | boolean>(),
       projection: Projections.WGS_84,
       attributes: ["value"],
       dataTypes: new Map<string, DataType>().set("value", DataTypes.Float32),
