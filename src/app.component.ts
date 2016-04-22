@@ -14,7 +14,7 @@ import {DataTable} from "./data-table.component";
 import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
 
-import {AddDataComponent} from "./add-data.component";
+import {RasterRepositoryComponent} from "./components/raster-repository.component";
 import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig} from "./components/operators/operator.component";
 
 import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
@@ -85,7 +85,7 @@ import {UserService} from "./services/user.service";
     <md-sidenav-container>
         <md-sidenav name="right" align="right" layout="column"
                 style="over">
-            <add-data-component style="height:100%"></add-data-component>
+            <raster-repository-component style="height:100%"></raster-repository-component>
         </md-sidenav>
     </md-sidenav-container>
     `,
@@ -134,7 +134,7 @@ import {UserService} from "./services/user.service";
     `],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
-                 InfoBarComponent, DataTable, AddDataComponent],
+                 InfoBarComponent, DataTable, RasterRepositoryComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, StorageService, ProjectService, UserService,
                 SidenavService, HTTP_PROVIDERS, MdDialog]

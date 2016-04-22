@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform, Injectable} from "angular2/core";
 
-import {MappingSource, MappingSourceChannel} from "../mapping-source.model";
+import {MappingSource, MappingSourceChannel} from "../models/mapping-source.model";
 
 @Pipe({
     name: "mappingDataSourceFilter",

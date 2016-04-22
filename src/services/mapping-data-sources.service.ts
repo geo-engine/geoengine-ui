@@ -1,7 +1,8 @@
 import {Injectable} from "angular2/core";
 import {Http, Response} from "angular2/http";
 import {Observable} from "rxjs/Rx";
-import {MappingSource} from "../mapping-source.model";
+import {MappingSource} from "../models/mapping-source.model";
+import {Interpolation, nameToInterpolation} from "../models/unit.model";
 
 @Injectable()
 export class MappingDataSourcesService {
@@ -22,6 +23,34 @@ export class MappingDataSourcesService {
             channels: source.channels.map((channel: any, index: number) => {
               channel.id = index;
               channel.name = channel.name || "Channel #" + index;
+              channel.hasTransform = channel.transform != null;
+
+              if (channel.hasTransform) {
+                if (channel.transform.unit != null) {
+                  channel.transform.unit.interpolation = nameToInterpolation(channel.transform.unit.interpolation);
+                }
+                else {
+                  channel.transform.unit = {
+                    measurement: "raw",
+                    unit: "unknown",
+                    interpolation: Interpolation.Continuous
+                  };
+                }
+              }
+
+              if (channel.unit != null) {
+                channel.unit.interpolation = nameToInterpolation(channel.unit.interpolation);
+              }
+              else {
+                channel.unit = {
+                  measurement: "raw",
+                  unit: "unknown",
+                  interpolation: Interpolation.Continuous
+                };
+              }
+
+              // channel.hasTransform = channel.transform != null;
+              // console.log("channel.hasTransform", channel.hasTransform, channel.unit, channel.transform);
                 /*
                 channel.preview = Config.MAPPING_URL+"?SERVICE=WMS"+
                 "&VERSION="+Config.WMS_VERSION+
@@ -39,7 +68,7 @@ export class MappingDataSourcesService {
             })
           });
         }
-
+        console.log("arr", arr);
         return arr;
       });
     }
