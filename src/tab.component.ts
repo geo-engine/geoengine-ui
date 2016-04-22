@@ -7,6 +7,8 @@ import {StorageService} from "./services/storage.service";
 
 import {OperatorBaseComponent, OperatorBase} from "./components/operators/operator.component";
 import {ExpressionOperatorComponent} from "./components/operators/expression-operator.component";
+import {RasterValueExtractionOperatorComponent}
+        from "./components/operators/raster-value-extraction.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
@@ -91,5 +93,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addExpressionOperator() {
         this.showOperator.emit(ExpressionOperatorComponent);
+    }
+
+    private addRasterValueExtractionOperator() {
+        this.showOperator.emit(RasterValueExtractionOperatorComponent);
     }
 }

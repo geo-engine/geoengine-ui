@@ -4,7 +4,7 @@ export const enum Interpolation {
     Discrete = 2,
 }
 
-function interpolationToName(interpolation: Interpolation) {
+function interpolationToName(interpolation: Interpolation): string {
     switch (interpolation) {
         case Interpolation.Unknown:
             return "unknown";

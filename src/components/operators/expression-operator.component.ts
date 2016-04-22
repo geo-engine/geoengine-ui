@@ -10,7 +10,7 @@ import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "a
 import {DialogHeaderComponent} from "../dialogs/header.component";
 
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
+        OperatorBaseComponent, toLetters, OperatorContentComponent} from "./operator.component";
 
 import {LayerService} from "../../services/layer.service";
 
@@ -26,89 +26,95 @@ import {Projection} from "../../models/projection.model";
 @Component({
     selector: "wave-operator-expression",
     template: `
-    <wave-dialog-header>Calculate Expression on Raster</wave-dialog-header>
-    <form [ngFormModel]="configForm">
-        <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5" [type]="LAYER_IS_RASTER"
-                                    (selectedLayers)="onSelectLayers($event)">
-        </wave-multi-layer-selection>
-        <md-card>
-            <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
-            </md-card-header>
-            <md-card-content>
-                <p>Use A to reference the existing pixel of the first raster,
-                B for the second one, etc.</p>
-                <md-input-container class="md-block">
-                    <label for="expression">
-                        Expression
-                    </label>
-                    <input md-input ngControl="expression" [(value)]="expression">
-                    <div md-messages="expression">
-                        <div md-message="required">This is required.</div>
-                        <div md-message="pattern">You need to specify at least Raster A here.</div>
-                    </div>
-                </md-input-container>
-                <div layout="row">
-                    <md-input-container class="md-block md-input-has-value">
-                        <label for="dataType">Output Data Type</label>
-                        <select ngControl="dataType">
-                            <option *ngFor="#dataType of outputDataTypes" [ngValue]="dataType[0]">
-                                {{dataType[0]}} {{dataType[1]}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
+    <wave-operator-content title="Calculate Expression on Raster"
+                            (add)="addLayer()" (cancel)="dialog.close()">
+        <form [ngFormModel]="configForm">
+            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
+                                        [type]="LAYER_IS_RASTER"
+                                        (selectedLayers)="onSelectLayers($event)">
+            </wave-multi-layer-selection>
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">Configuration</span>
+                        <span class="md-subheader">Specify the operator</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-card-content>
+                    <p>Use A to reference the existing pixel of the first raster,
+                    B for the second one, etc.</p>
                     <md-input-container class="md-block">
-                        <label for="minValue">
-                            Minimum Value
+                        <label for="expression">
+                            Expression
                         </label>
-                        <input md-input ngControl="minValue" [(value)]="minValue">
+                        <input md-input ngControl="expression" [(value)]="expression">
                         <div md-messages="expression">
-                            <div md-message="required">There must be a minimum value.</div>
+                            <div md-message="required">This is required.</div>
+                            <div md-message="pattern">
+                                You need to specify at least Raster A here.
+                            </div>
                         </div>
                     </md-input-container>
+                    <div layout="row">
+                        <md-input-container class="md-block md-input-has-value">
+                            <label for="dataType">Output Data Type</label>
+                            <select ngControl="dataType">
+                                <option *ngFor="#dataType of outputDataTypes"
+                                        [ngValue]="dataType[0]">
+                                    {{dataType[0]}} {{dataType[1]}}
+                                </option>
+                            </select>
+                            <input md-input type="hidden" value="0"><!-- HACK -->
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label for="minValue">
+                                Minimum Value
+                            </label>
+                            <input md-input type="number" ngControl="minValue" [(value)]="minValue">
+                            <div md-messages="expression">
+                                <div md-message="required">There must be a minimum value.</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label for="maxValue">
+                                Maximum Value
+                            </label>
+                            <input md-input type="number" ngControl="maxValue" [(value)]="maxValue">
+                            <div md-messages="expression">
+                                <div md-message="required">There must be a maximum value.</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                    <div layout="row">
+                        <md-input-container class="md-block md-input-has-value">
+                            <label for="unit">Output Unit</label>
+                            <select ngControl="unit">
+                                <option *ngFor="#unit of outputUnits" [ngValue]="unit">
+                                    {{unit}}
+                                </option>
+                            </select>
+                            <input md-input type="hidden" value="0"><!-- HACK -->
+                        </md-input-container>
+                        <wave-reprojetion-selection [layers]="layers"
+                                                    (valueChange)="onSelectProjection($event)">
+                        </wave-reprojetion-selection>
+                    </div>
                     <md-input-container class="md-block">
-                        <label for="maxValue">
-                            Maximum Value
+                        <label for="name">
+                            Output Layer Name
                         </label>
-                        <input md-input ngControl="maxValue" [(value)]="maxValue">
-                        <div md-messages="expression">
-                            <div md-message="required">There must be a maximum value.</div>
+                        <input md-input ngControl="name" [(value)]="name">
+                        <div md-messages="name">
+                            <div md-message="required">You must specify a layer name.</div>
                         </div>
                     </md-input-container>
-                </div>
-                <div layout="row">
-                    <md-input-container class="md-block md-input-has-value">
-                        <label for="unit">Output Unit</label>
-                        <select ngControl="unit">
-                            <option *ngFor="#unit of outputUnits" [ngValue]="unit">
-                                {{unit}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
-                    <wave-reprojetion-selection [layers]="layers" (valueChange)="onSelectProjection($event)">
-                    </wave-reprojetion-selection>
-                </div>
-                <md-input-container class="md-block">
-                    <label for="name">
-                        Output Layer Name
-                    </label>
-                    <input md-input ngControl="name" [(value)]="name">
-                    <div md-messages="expression">
-                        <div md-message="required">You must specify a layer name.</div>
-                    </div>
-                </md-input-container>
-            </md-card-content>
-        </md-card>
-        <wave-operator-buttons (add)="addLayer()" (cancel)="dialog.close()"></wave-operator-buttons>
-    </form>
+                </md-card-content>
+            </md-card>
+        </form>
+    </wave-operator-content>
     `,
     directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 DialogHeaderComponent, OperatorButtonsComponent],
+                 OperatorContentComponent],
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent

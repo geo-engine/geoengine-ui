@@ -3,6 +3,9 @@ import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetecti
 import {NgModel, NgControl, FORM_PROVIDERS, ControlValueAccessor} from "angular2/common";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {DialogHeaderComponent} from "../dialogs/header.component";
+
+import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {Layer} from "../../models/layer.model";
 import {LayerService} from "../../services/layer.service";
@@ -314,6 +317,48 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
 export class OperatorButtonsComponent {
     @Output() add = new EventEmitter<void>();
     @Output() cancel = new EventEmitter<void>();
+}
+
+@Component({
+    selector: "wave-operator-content",
+    template: `
+    <wave-dialog-header>{{title}}</wave-dialog-header>
+    <md-content [style.maxHeight.px]="(windowHeight$ | async) - 48*4"
+                [style.maxWidth.px]="(windowWidth$ | async) - 48*2">
+        <ng-content></ng-content>
+    </md-content>
+    <wave-operator-buttons (add)="add.emit()" (cancel)="cancel.emit()"></wave-operator-buttons>
+    `,
+    styles: [`
+    md-content {
+        margin-left: -24px;
+        padding-left: 24px;
+        margin-right: -24px;
+        padding-right: 24px;
+    }
+    `],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    directives: [DialogHeaderComponent, OperatorButtonsComponent],
+})
+export class OperatorContentComponent {
+    @Input() title: string;
+    @Output() add = new EventEmitter<void>();
+    @Output() cancel = new EventEmitter<void>();
+
+    private windowHeight$: BehaviorSubject<number>;
+    private windowWidth$: BehaviorSubject<number>;
+
+    constructor() {
+        this.windowHeight$ = new BehaviorSubject(window.innerHeight);
+        Observable.fromEvent(window, "resize")
+                  .map(_ => window.innerHeight)
+                  .subscribe(this.windowHeight$);
+
+        this.windowWidth$ = new BehaviorSubject(window.innerWidth);
+        Observable.fromEvent(window, "resize")
+                  .map(_ => window.innerWidth)
+                  .subscribe(this.windowWidth$);
+    }
 }
 
 /**
