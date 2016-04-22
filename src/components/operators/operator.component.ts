@@ -329,6 +329,14 @@ export class OperatorButtonsComponent {
     </md-content>
     <wave-operator-buttons (add)="add.emit()" (cancel)="cancel.emit()"></wave-operator-buttons>
     `,
+    styles: [`
+    md-content {
+        margin-left: -24px;
+        padding-left: 24px;
+        margin-right: -24px;
+        padding-right: 24px;
+    }
+    `],
     changeDetection: ChangeDetectionStrategy.OnPush,
     directives: [DialogHeaderComponent, OperatorButtonsComponent],
 })
