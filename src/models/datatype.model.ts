@@ -66,6 +66,13 @@ class Float32 extends DataType {
     getMax(): number { return Number.NEGATIVE_INFINITY; }
 }
 
+class Float64 extends DataType {
+    toString(): string { return "Float 64"; }
+    getCode(): string { return "Float64"; }
+    getMin(): number { return Number.POSITIVE_INFINITY; }
+    getMax(): number { return Number.NEGATIVE_INFINITY; }
+}
+
 class DataTypeCollection {
     Byte: DataType =  new Byte();
     Int16: DataType =  new Int16();
@@ -73,16 +80,17 @@ class DataTypeCollection {
     Int32: DataType =  new Int32();
     UInt32: DataType =  new UInt32();
     Float32: DataType =  new Float32();
+    Float64: DataType = new Float64();
 
     ALL_DATATYPES: Array<DataType>;
     ALL_NUMERICS: Array<DataType>;
 
     constructor() {
         this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32
+            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64
         ];
         this.ALL_NUMERICS = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32
+            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64
         ];
     }
 
@@ -100,6 +108,8 @@ class DataTypeCollection {
                 return this.UInt32;
             case this.Float32.getCode():
                 return this.Float32;
+            case this.Float64.getCode():
+                return this.Float64;
             default:
                 throw "Invalid Data Type";
         }
