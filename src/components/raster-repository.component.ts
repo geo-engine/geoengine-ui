@@ -88,9 +88,6 @@ export class RasterRepositoryComponent {
   }
 
   private add(source: MappingSource, channel: MappingSourceChannel, doTransform: boolean) {
-    // let doTransform = channel.hasTransform; // TODO: let the user decide if the data should be transformed
-    console.log("doTransform", doTransform);
-
     let dataType = channel.datatype;
     let unitConfig: UnitConfig = channel.unit;
 

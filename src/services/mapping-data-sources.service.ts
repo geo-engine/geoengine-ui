@@ -68,7 +68,6 @@ export class MappingDataSourcesService {
             })
           });
         }
-        console.log("arr", arr);
         return arr;
       });
     }
