@@ -15,9 +15,19 @@ function interpolationToName(interpolation: Interpolation) {
     }
 }
 
+export function nameToInterpolation(name: string): Interpolation {
+  if (name === interpolationToName(Interpolation.Continuous)) {
+    return Interpolation.Continuous;
+  }
+  if (name === interpolationToName(Interpolation.Discrete)) {
+    return Interpolation.Discrete;
+  }
+  return Interpolation.Unknown;
+}
+
 type Class = string;
 
-interface UnitConfig {
+export interface UnitConfig {
     measurement: string;
     unit: string;
     min?: number;
