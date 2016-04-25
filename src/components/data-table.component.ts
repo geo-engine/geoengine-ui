@@ -4,10 +4,10 @@ import {Http, HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
-import Config from "./config.model";
-import {LayerService} from "./services/layer.service";
-import {ResultType} from "./models/operator.model";
-import {ProjectService} from "./services/project.service";
+import Config from "../config.model";
+import {LayerService} from "../services/layer.service";
+import {ResultType} from "../models/operator.model";
+import {ProjectService} from "../services/project.service";
 
 
 interface Column {

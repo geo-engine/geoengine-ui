@@ -10,7 +10,7 @@ import {InfoAreaComponent} from "./components/info-area.component";
 import {TabComponent} from "./tab.component";
 import {InfoBarComponent} from "./info-bar.component";
 import {LayerComponent} from "./layer.component";
-import {DataTable} from "./data-table.component";
+import {DataTable} from "./components/data-table.component";
 import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
 
