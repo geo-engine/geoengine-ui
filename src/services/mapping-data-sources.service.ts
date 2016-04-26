@@ -1,7 +1,8 @@
 import {Injectable} from "angular2/core";
 import {Http, Response} from "angular2/http";
 import {Observable} from "rxjs/Rx";
-import {MappingSource} from "../mapping-source.model";
+import {MappingSource} from "../models/mapping-source.model";
+import {Unit} from "../models/unit.model";
 
 @Injectable()
 export class MappingDataSourcesService {
@@ -22,6 +23,30 @@ export class MappingDataSourcesService {
             channels: source.channels.map((channel: any, index: number) => {
               channel.id = index;
               channel.name = channel.name || "Channel #" + index;
+
+              // unit handling
+              if (channel.unit != null) {
+                channel.unit = Unit.fromMappingDict(channel.unit);
+              }
+              else {
+                channel.unit = Unit.defaultUnit;
+              }
+
+              // transform unit handling
+              channel.hasTransform = channel.transform != null;
+              if (channel.hasTransform) {
+                if (channel.transform.unit != null) {
+                    channel.transform.unit = Unit.fromMappingDict(channel.transform.unit);
+                }
+                else {
+                  channel.transform.unit = Unit.defaultUnit;
+                }
+              }
+
+
+
+              // channel.hasTransform = channel.transform != null;
+              // console.log("channel.hasTransform", channel.hasTransform, channel.unit, channel.transform);
                 /*
                 channel.preview = Config.MAPPING_URL+"?SERVICE=WMS"+
                 "&VERSION="+Config.WMS_VERSION+
@@ -39,7 +64,6 @@ export class MappingDataSourcesService {
             })
           });
         }
-
         return arr;
       });
     }

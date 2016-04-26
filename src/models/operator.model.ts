@@ -72,7 +72,7 @@ export interface ComplexOperatorParam {
     [index: string]: any;
 }
 
-type OperatorParam = string | number | ComplexOperatorParam;
+type OperatorParam = string | number | ComplexOperatorParam | boolean;
 
 interface QueryDict {
     type: string;
