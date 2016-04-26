@@ -252,7 +252,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             parameters: new Map<string, string | number | ComplexOperatorParam>()
                         .set("expression", expression)
                         .set("datatype", dataType.getCode())
-                        .set("unit", unit.toQueryDict()),
+                        .set("unit", unit.toMappingDict()),
             projection: projection,
             attributes: ["value"],
             dataTypes: new Map<string, DataType>()

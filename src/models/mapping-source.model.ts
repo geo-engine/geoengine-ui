@@ -1,28 +1,18 @@
-import {UnitConfig} from "../models/unit.model";
-
-export interface MappingUnit {
-  measurement: string;
-  unit: string;
-  min?: number;
-  max?: number;
-  classes?: Map<number, string>;
-  interpolation?: string;
-}
+import {Unit} from "../models/unit.model";
 
 export interface MappingTransform {
   datatype: string;
   offset: number;
   scale: number;
-  unit?: UnitConfig;
+  unit: Unit;
 }
-
 
 export interface MappingSourceChannel {
   name: string;
   id: number;
   datatype: string;
   nodata: number;
-  unit?: UnitConfig;
+  unit: Unit;
   colorizer?: string;
   transform?: MappingTransform;
   hasTransform: boolean;

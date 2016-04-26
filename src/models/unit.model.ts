@@ -45,7 +45,7 @@ export interface UnitDict {
     classes: {[index: number]: string};
 }
 
-export interface UnitQueryDict {
+export interface UnitMappingDict {
     measurement: string;
     unit: string;
     min?: number;
@@ -156,7 +156,7 @@ export class Unit {
         return Unit._defaultUnit;
     }
 
-    toQueryDict(): UnitQueryDict {
+    toMappingDict(): UnitMappingDict {
         let dict = {
             measurement: this._measurement,
             unit: this._unit,
@@ -178,5 +178,24 @@ export class Unit {
         }
 
         return dict;
+    }
+
+    static fromMappingDict(dict: UnitMappingDict): Unit {
+      let interpolation = (dict.interpolation !== undefined) ? nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
+      let classes = new Map<number, Class>();
+      if (dict.classes !== undefined) {
+          for (let className in dict.classes) {
+              classes.set(parseFloat(className), dict.classes[className]);
+          }
+      }
+      let config: UnitConfig = {
+          measurement: dict.measurement,
+          unit: dict.unit,
+          min: dict.min,
+          max: dict.max,
+          interpolation: interpolation,
+          classes: classes
+      };
+      return new Unit(config);
     }
 }

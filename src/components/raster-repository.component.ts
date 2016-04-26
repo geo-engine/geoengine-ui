@@ -89,10 +89,10 @@ export class RasterRepositoryComponent {
 
   private add(source: MappingSource, channel: MappingSourceChannel, doTransform: boolean) {
     let dataType = channel.datatype;
-    let unitConfig: UnitConfig = channel.unit;
+    let unit: Unit = channel.unit;
 
-    if (doTransform && channel.hasTransform && channel.transform.unit != null) {
-      unitConfig = channel.transform.unit;
+    if (doTransform && channel.hasTransform) {
+      unit = channel.transform.unit;
       dataType = channel.transform.datatype;
     }
 
@@ -109,10 +109,9 @@ export class RasterRepositoryComponent {
         dataTypes: new Map<string, DataType>().set(
             "value", DataTypes.fromCode(dataType)
         ),
-        units: new Map<string, Unit>().set("value", new Unit(unitConfig))
+        units: new Map<string, Unit>().set("value", unit)
     });
     let layer = new Layer({name: channel.name, operator: op});
     this._layerService.addLayer(layer);
   }
-
 }
