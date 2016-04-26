@@ -3,7 +3,7 @@ import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetecti
 import {NgModel, NgControl, FORM_PROVIDERS, ControlValueAccessor} from "angular2/common";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
-import {DialogHeaderComponent} from "../dialogs/header.component";
+import {DialogContainerComponent} from "../dialogs/dialog-basics.component";
 
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
@@ -320,14 +320,13 @@ export class OperatorButtonsComponent {
 }
 
 @Component({
-    selector: "wave-operator-content",
+    selector: "wave-operator-container",
     template: `
-    <wave-dialog-header>{{title}}</wave-dialog-header>
-    <md-content [style.maxHeight.px]="(windowHeight$ | async) - 48*4"
-                [style.maxWidth.px]="(windowWidth$ | async) - 48*2">
+    <wave-dialog-container [title]="title">
         <ng-content></ng-content>
-    </md-content>
-    <wave-operator-buttons (add)="add.emit()" (cancel)="cancel.emit()"></wave-operator-buttons>
+        <wave-operator-buttons actions (add)="add.emit()" (cancel)="cancel.emit()">
+        </wave-operator-buttons>
+    </wave-dialog-container>
     `,
     styles: [`
     md-content {
@@ -338,9 +337,9 @@ export class OperatorButtonsComponent {
     }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [DialogHeaderComponent, OperatorButtonsComponent],
+    directives: [DialogContainerComponent, OperatorButtonsComponent],
 })
-export class OperatorContentComponent {
+export class OperatorContainerComponent {
     @Input() title: string;
     @Output() add = new EventEmitter<void>();
     @Output() cancel = new EventEmitter<void>();

@@ -8,9 +8,7 @@ import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog
 import {FORM_DIRECTIVES, Validators, FormBuilder,
         ControlGroup, Control, ControlArray} from "angular2/common";
 
-import {DialogHeaderComponent} from "../dialogs/header.component";
-
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContentComponent,
+import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
         OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
 
 import {LayerService} from "../../services/layer.service";
@@ -27,7 +25,7 @@ import {Projection} from "../../models/projection.model";
 @Component({
     selector: "wave-raster-value-extraction",
     template: `
-    <wave-operator-content title="Extract a Raster Value and Add it to the Vector Layer"
+    <wave-operator-container title="Extract a Raster Value and Add it to the Vector Layer"
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
@@ -70,10 +68,10 @@ import {Projection} from "../../models/projection.model";
                 </md-card-content>
             </md-card>
         </form>
-    </wave-operator-content>
+    </wave-operator-container>
     `,
     directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 OperatorContentComponent],
+                 OperatorContainerComponent],
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent {

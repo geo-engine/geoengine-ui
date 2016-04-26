@@ -7,10 +7,8 @@ import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog
 
 import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
 
-import {DialogHeaderComponent} from "../dialogs/header.component";
-
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorContentComponent} from "./operator.component";
+        OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
 
 import {LayerService} from "../../services/layer.service";
 
@@ -26,7 +24,7 @@ import {Projection} from "../../models/projection.model";
 @Component({
     selector: "wave-operator-expression",
     template: `
-    <wave-operator-content title="Calculate Expression on Raster"
+    <wave-operator-container title="Calculate Expression on Raster"
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
@@ -111,10 +109,10 @@ import {Projection} from "../../models/projection.model";
                 </md-card-content>
             </md-card>
         </form>
-    </wave-operator-content>
+    </wave-operator-container>
     `,
     directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 OperatorContentComponent],
+                 OperatorContainerComponent],
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent
