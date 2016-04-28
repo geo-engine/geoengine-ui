@@ -15,7 +15,8 @@
 	               	</div>
 	               	<div layout="column">
 	                    <button md-button style="text-align: left; margin: 0px;"
-	                    		class="md-primary" [disabled]="!layerSelected">
+	                    		class="md-primary" [disabled]="!layerSelected"
+                                (click)="lineage.emit(true)">
 		                    <i md-icon>merge_type</i>
 		                    Lineage
 	                    </button>

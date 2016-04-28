@@ -93,13 +93,13 @@ export class Operator {
     private _id: OperatorId;
 
     private _resultType: ResultType;
-    private operatorType: string;
+    private _operatorType: string;
 
     private _attributes: Array<AttributeName>;
     private _dataTypes: Map<AttributeName, DataType>;
     private _units: Map<AttributeName, Unit>;
 
-    private parameters: Map<ParameterName, OperatorParam>;
+    private _parameters: Map<ParameterName, OperatorParam>;
     private _projection: Projection;
 
     private symbology: any; // TODO
@@ -128,10 +128,10 @@ export class Operator {
     constructor(config: OperatorConfig) {
         this._id = Operator.nextOperatorId;
 
-        this.operatorType = config.operatorType,
+        this._operatorType = config.operatorType,
         this._resultType = config.resultType;
 
-        this.parameters = config.parameters;
+        this._parameters = config.parameters;
         this._projection = config.projection;
 
         this._attributes = config.attributes;
@@ -186,6 +186,13 @@ export class Operator {
     }
 
     /**
+     * The type of the operator.
+     */
+    get operatorType(): string {
+        return this._operatorType;
+    }
+
+    /**
      * Retrieve the output result type.
      */
     get resultType(): ResultType {
@@ -204,6 +211,13 @@ export class Operator {
      */
     get attributes(): Array<AttributeName> {
         return this._attributes;
+    }
+
+    /**
+     * Retrieve the parameters.
+     */
+    get parameters(): Map<string, string | number | ComplexOperatorParam | boolean> {
+        return this._parameters;
     }
 
     /**
@@ -320,12 +334,12 @@ export class Operator {
      */
     private toQueryDict(): QueryDict {
         let dict: QueryDict = {
-            type: this.operatorType
+            type: this._operatorType
         };
 
-        if (this.parameters.size > 0) {
+        if (this._parameters.size > 0) {
             let params: {[index: string]: OperatorParam} = {};
-            this.parameters.forEach((value, key, map) => {
+            this._parameters.forEach((value, key, map) => {
                 params[key] = value;
             });
             dict["params"] = params;
@@ -366,8 +380,8 @@ export class Operator {
       let dict: OperatorDict = {
         id: this._id,
         resultType: this._resultType,
-        operatorType: this.operatorType,
-        parameters: Array.from(this.parameters.entries()),
+        operatorType: this._operatorType,
+        parameters: Array.from(this._parameters.entries()),
         projection: this._projection.getCode(),
         symbology: this.symbology,
         attributes: this._attributes,
