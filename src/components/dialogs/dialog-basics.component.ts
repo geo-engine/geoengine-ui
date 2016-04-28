@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from "angular2/core";
+import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter} from "angular2/core";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
@@ -10,8 +10,14 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
     selector: "wave-dialog-header",
     template: `
     <md-toolbar class="md-primary">
-        <h2 class="md-toolbar-tools">
-            <ng-content></ng-content>
+        <h2 class="md-toolbar-tools" layout="column">
+            <span flex="grow">
+                <ng-content></ng-content>
+            </span>
+            <button md-button class="md-icon-button" aria-label="Close Dialog"
+                    (click)="close.emit()">
+                <i md-icon>close</i>
+            </button>
         </h2>
     </md-toolbar>
     <div class="placeholder"></div>
@@ -30,12 +36,14 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
     directives: [MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DialogHeaderComponent {}
+export class DialogHeaderComponent {
+    @Output() close = new EventEmitter<void>();
+}
 
 @Component({
     selector: "wave-dialog-container",
     template: `
-    <wave-dialog-header>{{title}}</wave-dialog-header>
+    <wave-dialog-header (close)="close.emit()">{{title}}</wave-dialog-header>
     <md-content [style.maxHeight.px]="(windowHeight$ | async) - 48*4"
                 [style.maxWidth.px]="(windowWidth$ | async) - 48*2"
                 [class.no-overflow]="!overflow">
@@ -60,6 +68,8 @@ export class DialogHeaderComponent {}
 export class DialogContainerComponent {
     @Input() title: string;
     @Input() overflow: boolean = true;
+
+    @Output() close = new EventEmitter<void>();
 
     private windowHeight$: BehaviorSubject<number>;
     private windowWidth$: BehaviorSubject<number>;
