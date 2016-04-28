@@ -18,7 +18,7 @@
 	                    		class="md-primary" [disabled]="!layerSelected"
                                 (click)="lineage.emit(true)">
 		                    <i md-icon>merge_type</i>
-		                    Lineage
+		                    Workflow
 	                    </button>
 	                    <button md-button style="text-align: left; margin: 0px;"
 	                    		class="md-primary" [disabled]="!layerSelected">
@@ -173,6 +173,14 @@
                             <i md-icon>settings</i>
                             <div>Configuration</div>
                         </button>
+                    </div>
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+	                    		class="md-primary" layout="column"
+                                (click)="lineage.emit(false)">
+		                    <i md-icon>merge_type</i>
+		                    <div>Workflow</div>
+	                    </button>
                     </div>
                 </div>
             </fieldset>

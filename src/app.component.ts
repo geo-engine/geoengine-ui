@@ -43,7 +43,7 @@ import {UserService} from "./services/user.service";
                 [layerSelected]="hasSelectedLayer$ | async"
                 (renameLayer)="renameLayerDialog($event)"
                 (removeLayer)="layerService.removeLayer(layerService.getSelectedLayer())"
-                (lineage)="showLineage(true)"
+                (lineage)="showLineage($event)"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"

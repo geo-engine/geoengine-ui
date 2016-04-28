@@ -15,14 +15,176 @@ import d3 from "d3";
 import dagre from "dagre";
 import dagreD3 from "dagre-d3";
 
+const GRAPH_STYLE = {
+    general: {
+        width: 200,
+        headerHeight: 48,
+        margin: 5,
+    },
+    operator: {
+        height: 136,
+        borderHeight: 1,
+    },
+    surrounding: {
+        margin: 40,
+        detailComponentWidth: 200,
+    }
+};
+
+/**
+ * The dialog window for displaying the operator graph.
+ */
 @Component({
     selector: "wave-operator-graph-dialog",
     template: `
-    <wave-dialog-container #container [title]="title" [overflow]="false">
-        <svg #graph [style.width.px]="width$ | async" [style.height.px]="height$ | async"></svg>
+    <wave-dialog-container #container [title]="title" [overflow]="false" [layout]="'row'"
+                           (close)="dialog.close()">
+        <div layout="row">
+            <svg #graph class="graph"
+                 [style.width.px]="width$ | async" [style.height.px]="height$ | async"></svg>
+            <md-content class="detailView" [style.height.px]="height$ | async">
+                <md-list>
+                    <md-subheader class="md-sticky md-primary">Type</md-subheader>
+                    <md-list-item class="md-2-line">{{selectedOperatorName$ | async}}</md-list-item>
+                    <md-divider></md-divider>
+                    <md-subheader class="md-sticky md-primary">Parameters</md-subheader>
+                        <md-list>
+                            <template ngFor #parameter [ngForOf]="parameters$ | async" #i="index">
+                                <md-subheader class="md-no-sticky">{{parameter.key}}</md-subheader>
+                                <md-list-item>{{parameter.value}}</md-list-item>
+                                <md-divider></md-divider>
+                            </template>
+                        </md-list>
+                </md-list>
+            </md-content>
+        </div>
     </wave-dialog-container>
     `,
-    styles: [``],
+    styles: [`
+        .detailView {
+            width: ${GRAPH_STYLE.surrounding.detailComponentWidth}px;
+        }
+        .detailView >>> .md-list-item-inner {
+            word-break: break-all;
+        }
+
+        /* GRAPH RELATED */
+
+        .graph {
+            background-color: #f5f5f5;
+        }
+
+        /* node header */
+        :host .graph >>> .label .header {
+            width: ${GRAPH_STYLE.general.width - (2 * GRAPH_STYLE.general.margin)}px;
+            padding: ${GRAPH_STYLE.general.margin}px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            whiteSpace: nowrap;
+            font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        /* operator header */
+        :host .graph >>> .operator .label .header {
+            height: ${GRAPH_STYLE.general.headerHeight
+                      - (2 * GRAPH_STYLE.general.margin)
+                      - GRAPH_STYLE.operator.borderHeight}px;
+            line-height: ${GRAPH_STYLE.general.headerHeight
+                           - (2 * GRAPH_STYLE.general.margin)
+                           - GRAPH_STYLE.operator.borderHeight}px;
+            color: rgba(0, 0, 0, 0.87);
+            border-bottom: ${GRAPH_STYLE.operator.borderHeight}px solid rgba(0, 0, 0, 0.12);
+        }
+
+        /* layer header */
+        :host .graph >>> .layer .label .header {
+            height: ${GRAPH_STYLE.general.headerHeight - (2 * GRAPH_STYLE.general.margin)}px;
+            line-height: ${GRAPH_STYLE.general.headerHeight - (2 * GRAPH_STYLE.general.margin)}px;
+            background-color: #3f51b5;
+            color: rgba(255, 255, 255, 0.87059);
+        }
+
+        /* layer header accent */
+        :host .graph >>> .layer.accent .label .header {
+            background-color: #e91e63 !important;
+        }
+
+        /* operator header icon */
+        :host .graph >>> .label .header .icon {
+            display: block;
+            float: left;
+            width: ${GRAPH_STYLE.general.headerHeight
+                     - (2 * GRAPH_STYLE.general.margin)
+                     - GRAPH_STYLE.operator.borderHeight}px;
+            height: ${GRAPH_STYLE.general.headerHeight
+                      - (2 * GRAPH_STYLE.general.margin)
+                      - GRAPH_STYLE.operator.borderHeight}px;
+            margin-right: ${GRAPH_STYLE.general.margin}px;
+            border-radius: ${GRAPH_STYLE.general.margin}px;
+        }
+
+        /* operator parameter content */
+        :host .graph >>> .label .parameters {
+            width: ${GRAPH_STYLE.general.width - (2 * GRAPH_STYLE.general.margin)}px;
+            height: ${GRAPH_STYLE.operator.height
+                      - GRAPH_STYLE.general.headerHeight
+                      - (2 * GRAPH_STYLE.general.margin)}px;
+            padding: ${GRAPH_STYLE.general.margin}px;
+            overflow: hidden;
+        }
+
+        /* operator parameter content table */
+        :host .graph >>> .label .parameters table {
+            width: ${GRAPH_STYLE.general.width - (2 * GRAPH_STYLE.general.margin)}px;
+            table-layout: fixed;
+        }
+        :host .graph >>> .label .parameters .key,
+        :host .graph >>> .label .parameters .value {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        :host .graph >>> .label .parameters .key {
+            width: 33%;
+        }
+        :host .graph >>> .label .parameters .value {
+            width: 67%;
+        }
+
+        /* node box */
+        :host .graph >>> .node rect {
+            stroke: rgba(0, 0, 0, 0.12);
+            fill: #fff;
+            stroke-width: 1.5px;
+        }
+
+        /* node box shadow */
+        :host .graph >>> .label > g > foreignObject > div {
+            box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+                          0px 5px 8px 0px rgba(0, 0, 0, 0.14),
+                          0px 1px 14px 0px rgba(0, 0, 0, 0.12);
+        }
+
+        /* pointer */
+        :host .graph >>> .operator .label > g > foreignObject > div {
+            cursor: pointer;
+        }
+
+        /* highlight */
+        :host .graph >>> .highlight rect {
+            stroke: #3f51b5 !important;
+        }
+
+        /* edge */
+        :host .graph >>> .edgePath path {
+            stroke: #333;
+            stroke-width: 1.5px;
+        }
+
+        /* edge to layer */
+        :host .graph >>> .layer-edge path {
+            stroke-dasharray: 5, 5;
+        }
+    `],
     directives: [MATERIAL_DIRECTIVES, DialogContainerComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -38,20 +200,9 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     private width$: BehaviorSubject<number> = new BehaviorSubject(0);
     private height$: BehaviorSubject<number> = new BehaviorSubject(0);
 
-    private graphStyle = {
-        operator: {
-            width: 200,
-            height: 136,
-            headerHeight: 48,
-            margin: 5,
-            borderHeight: 1,
-        },
-        layer: {
-            width: 200,
-            height: 48,
-            margin: 5,
-        }
-    };
+    private selectedOperatorName$: BehaviorSubject<string> = new BehaviorSubject("");
+    private parameters$: BehaviorSubject<Array<{key: string, value: string}>> =
+        new BehaviorSubject([]);
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MdDialogRef) {}
@@ -68,10 +219,25 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
             title = `Workflow for ${layer.name}`;
 
-            this.fillGraph(graph, [layer.operator], [layer]);
+            const operatorIdsInGraph = this.addOperatorsToGraph(graph, [layer.operator], [layer]);
+            this.addLayersToGraph(
+                graph,
+                this.layerService.getLayers(),
+                [layer],
+                operatorIdsInGraph
+            );
         } else {
-            // this.title.next(`Workflow`);
-            this.fillGraph(graph, this.layerService.getLayers().map(layer => layer.operator), [...this.layerService.getLayers()]);
+            const operatorIdsInGraph = this.addOperatorsToGraph(
+                graph,
+                this.layerService.getLayers().map(layer => layer.operator),
+                this.layerService.getLayers()
+            );
+            this.addLayersToGraph(
+                graph,
+                this.layerService.getLayers(),
+                [],
+                operatorIdsInGraph
+            );
         }
 
         // create the renderer
@@ -84,25 +250,35 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         // Run the renderer. This is what draws the final graph.
         render(svgGroup, graph);
 
-        this.setStyles(svg);
+        this.fixLabelPosition(svg);
 
+        // do this asynchronously to start a new cycle of change detection
         setTimeout(() => {
             this.title = title;
             const sizes = this.setupWidthObservables(graph);
             this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
-            // this.centerGraph(graph, svg, svgGroup);
+            this.addClickHandler(svg, graph);
         });
     }
 
     private setupWidthObservables(graph: dagreD3.graphlib.Graph): {width: number, height: number} {
+        // create observables for the current graph bounds
         const graphWidth$ = Observable.of(graph.graph().width);
         const graphHeight$ = Observable.of(graph.graph().height);
 
         const widthBound = (maxWidth: number, graphWidth: number) => {
-            const margin = 40;
-            return Math.min(maxWidth, graphWidth + margin);
+            return Math.min(
+                maxWidth,
+                graphWidth
+                + GRAPH_STYLE.surrounding.margin
+                + GRAPH_STYLE.surrounding.detailComponentWidth
+            );
+        };
+        const heightBound = (maxWidth: number, graphWidth: number) => {
+            return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
         };
 
+        // combine the maximum window widths with the graph width
         Observable.zip(
             this.dialogContainer.maxWidth$,
             graphWidth$,
@@ -112,17 +288,22 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         Observable.zip(
             this.dialogContainer.maxHeight$,
             graphHeight$,
-            widthBound
+            heightBound
         ).subscribe(this.height$);
 
+        // return the current width bounds
         return {
             width: widthBound(this.dialogContainer.maxWidth$.getValue(), graph.graph().width),
-            height: widthBound(this.dialogContainer.maxHeight$.getValue(), graph.graph().height),
+            height: heightBound(this.dialogContainer.maxHeight$.getValue(), graph.graph().height),
         };
     }
 
-    private fillGraph(graph: dagreD3.graphlib.Graph, initialOperators: Array<Operator>, layers: Array<Layer>) {
-        // from `http://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript`
+    private addOperatorsToGraph(graph: dagreD3.graphlib.Graph,
+                      initialOperators: Array<Operator>,
+                      layers: Array<Layer>): Array<number> {
+        // TODO: replace with proper icons
+        // from `http://stackoverflow.com/questions/3426404/
+        // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
         const hashCode = (str: string) => { // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -138,21 +319,27 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         };
 
         const RESULT_TYPES = [ResultType.RASTER, ResultType.POINTS,
-                             ResultType.LINES, ResultType.POLYGONS];
+                              ResultType.LINES, ResultType.POLYGONS];
+
+        let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
         let edges: Array<[number, number]>  = [];
         while (operators.length > 0) {
             let operator = operators.pop();
 
+            operatorIdsInGraph.push(operator.id);
+
             // add node to graph
             graph.setNode(`operator_${operator.id}`, {
-                operatorId: operator.id,
-                class: "operator",
+                operator: operator,
+                type: "operator",
+                class: `operator operator_${operator.id}`,
                 labelType: "html",
                 label: `
-                <div class="type">
-                    <span style="background-color: #${intToRGB(hashCode(operator.operatorType))}">
+                <div class="header">
+                    <span class="icon"
+                          style="background-color: #${intToRGB(hashCode(operator.operatorType))}">
                     </span>
                     ${operator.operatorType}
                 </div>
@@ -170,8 +357,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 </div>
                 `,
                 padding: 0,
-                width: this.graphStyle.operator.width,
-                height: this.graphStyle.operator.height,
+                width: GRAPH_STYLE.general.width,
+                height: GRAPH_STYLE.operator.height,
             });
 
             // add children
@@ -188,35 +375,51 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`);
         }
 
-        // add layers as nodes and connect layers to operators
-        for (let layer of layers) {
-            graph.setNode(`layer_${layer.operator.id}`, {
-                class: "layer",
-                labelType: "html",
-                label: `<div class="layer">${layer.name}</div>`,
-                padding: 0,
-                width: this.graphStyle.layer.width,
-                height: this.graphStyle.layer.height,
-            });
+        // return all operator ids that are contained in the graph
+        return operatorIdsInGraph;
+    }
 
-            graph.setEdge(`operator_${layer.operator.id}`, `layer_${layer.operator.id}`);
+    private addLayersToGraph(graph: dagreD3.graphlib.Graph,
+                             layers: Array<Layer>,
+                             layersToAccent: Array<Layer>,
+                             operatorIdsInGraph: Array<number>) {
+        for (let layer of layers) {
+            // operator of layer is contained in graph
+            if (operatorIdsInGraph.indexOf(layer.operator.id) >= 0) {
+                // add node
+                const hasAccent = layersToAccent.indexOf(layer) >= 0;
+                graph.setNode(`layer_${layer.operator.id}`, {
+                    class: hasAccent ? "layer accent" : "layer",
+                    type: "layer",
+                    labelType: "html",
+                    label: `<div class="header">${layer.name}</div>`,
+                    padding: 0,
+                    width: GRAPH_STYLE.general.width,
+                    height: GRAPH_STYLE.general.headerHeight,
+                });
+
+                // add edge
+                graph.setEdge(`operator_${layer.operator.id}`, `layer_${layer.operator.id}`, {
+                    class: "layer-edge",
+                });
+            }
         }
     }
 
     private addZoomSupport(svg: d3.Selection<any>, svgGroup: d3.Selection<any>,
                            graph: dagreD3.graphlib.Graph,
                            svgWidth: number, svgHeight: number) {
-        const margin = 40;
-        const paddedWidth = svgWidth - margin;
-        const paddedHeight = svgHeight - margin;
+        // calculate available space after subtracting the margin
+        const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
+        const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
 
+        // calculate the initial zoom level that captures the whole graph
         const scale = Math.min(
             paddedWidth / graph.graph().width,
             paddedHeight / graph.graph().height
         );
 
-        console.log(`Center: ${(svgHeight - (scale * svgHeight)) / 2}, svg: ${svgHeight}, padded: ${paddedHeight}, graph: ${graph.graph().height}`);
-
+        // create zoom behavior
         const zoom = d3.behavior.zoom()
                                 .translate([
                                     (svgWidth - (scale * graph.graph().width)) / 2,
@@ -224,8 +427,10 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                                  ])
                                 .scale(scale);
 
+        // apply zoom to svg
         zoom.event(svgGroup.transition().duration(500));
 
+        // add zoom handler
         zoom.on("zoom", () => {
             // TODO: add `d3.event.translate` and `d3.event.scale` to definition file
             let d3Event: any = d3.event;
@@ -238,125 +443,69 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         svg.call(zoom);
     }
 
-    private centerGraph(graph: dagreD3.graphlib.Graph,
-                        svg: d3.Selection<any>, svgGroup: d3.Selection<any>) {
-        const containerWidth = this.graphContainer.nativeElement.scrollWidth;
-        const graphWidth = graph.graph().width;
-        const xCenterOffset = (containerWidth - graphWidth) / 2 + 20;
-        svgGroup.attr("transform", `translate(${xCenterOffset}, 20)`);
-        // svg.attr("height", graph.graph().height + 40);
-        // svg.attr("width", graph.graph().width + 40);
+    private addClickHandler(svg: d3.Selection<any>, graph: dagreD3.graphlib.Graph) {
+        svg.selectAll(".node").on("click", (nodeId: string) => {
+            const node = graph.node(nodeId);
+            if (node.type === "operator") {
+                const operator: Operator = node.operator;
+
+                // update operator type
+                this.selectedOperatorName$.next(operator.operatorType);
+
+                // update parameter view
+                let parameters: Array<{key: string, value: any}> =
+                    Array.from(operator.parameters.entries()).map(([key, value]) => {
+                        return {
+                            key: key,
+                            value: value.toString(),
+                        };
+                    });
+                this.parameters$.next(parameters);
+
+                // de-select all
+                svg.selectAll(".operator").classed("highlight", false);
+                // set highlight
+                svg.select(`.${nodeId}`).classed("highlight", true);
+            }
+        });
     }
 
-    private setStyles(svg: d3.Selection<any>) {
-        // HACK: style the graph here because of view encapsulation
-
+    private fixLabelPosition(svg: d3.Selection<any>) {
         // HACK: move html label from center to top left
         svg.selectAll(".operator > .label > g > foreignObject")
-           .attr("x", -this.graphStyle.operator.width / 2)
-           .attr("y", -this.graphStyle.operator.height / 2)
-           .attr("width", this.graphStyle.operator.width)
-           .attr("height", this.graphStyle.operator.height);
+           .attr("x", -GRAPH_STYLE.general.width / 2)
+           .attr("y", -GRAPH_STYLE.operator.height / 2)
+           .attr("width", GRAPH_STYLE.general.width)
+           .attr("height", GRAPH_STYLE.operator.height);
         svg.selectAll(".layer > .label > g > foreignObject")
-           .attr("x", -this.graphStyle.layer.width / 2)
-           .attr("y", -this.graphStyle.layer.height / 2)
-           .attr("width", this.graphStyle.layer.width)
-           .attr("height", this.graphStyle.layer.height);
+           .attr("x", -GRAPH_STYLE.general.width / 2)
+           .attr("y", -GRAPH_STYLE.general.headerHeight / 2)
+           .attr("width", GRAPH_STYLE.general.width)
+           .attr("height", GRAPH_STYLE.general.headerHeight);
         svg.selectAll(".label > g").attr("transform", undefined);
-
-        // style node div
-        svg.selectAll(".label > g > foreignObject >  div").style({
-            "box-shadow": `0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-                           0px 5px 8px 0px rgba(0, 0, 0, 0.14),
-                           0px 1px 14px 0px rgba(0, 0, 0, 0.12)`,
-        });
-
-        // style label header
-        svg.selectAll(".label .type").style({
-            width: `${this.graphStyle.operator.width - this.graphStyle.operator.margin}px`,
-            "padding-right": `${this.graphStyle.operator.margin}px`,
-            height: `${this.graphStyle.operator.headerHeight
-                       - this.graphStyle.operator.borderHeight}px`,
-            "line-height": `${this.graphStyle.operator.headerHeight
-                              - this.graphStyle.operator.borderHeight}px`,
-            overflow: "hidden",
-            "text-overflow": "ellipsis",
-            whiteSpace: "nowrap",
-            color: "rgba(0, 0, 0, 0.87)",
-            "border-bottom": `${this.graphStyle.operator.borderHeight}px solid rgba(0, 0, 0, 0.12)`,
-            "font-family": "RobotoDraft, Roboto, 'Helvetica Neue', sans-serif",
-        });
-
-        // style label icon
-        svg.selectAll(".label .type span").style({
-            width: `${this.graphStyle.operator.headerHeight}px`,
-            height: `${this.graphStyle.operator.headerHeight}px`,
-            display: "block",
-            float: "left",
-            "margin-right": `${this.graphStyle.operator.margin}px`,
-        });
-
-        // style label parameter content
-        svg.selectAll(".label .parameters").style({
-            width: `${this.graphStyle.operator.width - (2 * this.graphStyle.operator.margin)}px`,
-            height: `${this.graphStyle.operator.height
-                       - this.graphStyle.operator.headerHeight
-                       - (2 * this.graphStyle.operator.margin)}px`,
-            "background-color": "#f5f5f5",
-            padding: `${this.graphStyle.operator.margin}px`,
-            overflow: "hidden",
-            "text-overflow": "ellipsis",
-            whiteSpace: "nowrap",
-        });
-
-        // style label parameter content table
-        svg.selectAll(".label .parameters table").style({
-            width: `${this.graphStyle.operator.width - (2 * this.graphStyle.operator.margin)}px`,
-            "table-layout": "fixed",
-        });
-        svg.selectAll(".label .parameters .key").style({
-            width: `33%`,
-            overflow: "hidden",
-            "text-overflow": "ellipsis",
-        });
-        svg.selectAll(".label .parameters .value").style({
-            width: `67%`,
-            overflow: "hidden",
-            "text-overflow": "ellipsis",
-        });
-
-        // style of layer
-        svg.selectAll(".label .layer").style({
-            height: `${this.graphStyle.layer.height - (2 * this.graphStyle.operator.margin)}px`,
-            "line-height": `${this.graphStyle.layer.height
-                              - (2 * this.graphStyle.operator.margin)}px`,
-            width: `${this.graphStyle.layer.width - (2 * this.graphStyle.operator.margin)}px`,
-            padding: `${this.graphStyle.operator.margin}px`,
-            "font-family": "RobotoDraft, Roboto, 'Helvetica Neue', sans-serif",
-            "background-color": "#3f51b5",
-            color: "rgba(255, 255, 255, 0.87059)",
-        });
-
-        // style of node rectangle
-        svg.selectAll(".node rect").style({
-            stroke: "rgba(0, 0, 0, 0.12)",
-            fill: "#fff",
-            strokeWidth: "1.5px",
-        });
-
-        // style of edge
-        svg.selectAll(".edgePath path").style({
-            stroke: "#333",
-            strokeWidth: "1.5px",
-        });
     }
 }
 
+/**
+ * Dialog config for the operator graph
+ */
 export class OperatorGraphDialogConfig extends MdDialogConfig {
+    /**
+     * It is required to pass a LayerService instance.
+     * @param layerService a LayerService instance
+     * @returns the config object
+     */
     layerService(layerService: LayerService): OperatorGraphDialogConfig {
         this.context.layerService = layerService;
         return this;
     }
+
+    /**
+     * It is required to pass a boolean wether the operators of all layers should be displayed or
+     * only the operators of the selected one.
+     * @param selectedLayerOnly should only the selected layer's operators be displayed?
+     * @returns the config object
+     */
     selectedLayerOnly(selectedLayerOnly: boolean): OperatorGraphDialogConfig {
         this.context.selectedLayerOnly = selectedLayerOnly;
         return this;
