@@ -64,6 +64,8 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     @Output("renameLayer") renameLayerEmitter = new EventEmitter<void>();
 
+    @Output("symbology") symbologyEmitter = new EventEmitter<void>();
+
     @Output() showOperator = new EventEmitter<OperatorBase>();
 
     @Output() projectSettings = new EventEmitter<void>();

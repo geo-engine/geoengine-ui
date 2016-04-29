@@ -1,6 +1,7 @@
 import {Operator, ResultType, OperatorDict} from "./operator.model";
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
+import {Symbology} from "./symbology.model";
 
 interface Parameters {
     [key: string]: any;
@@ -24,10 +25,12 @@ export class Layer {
     private _operator: Operator;
     name: string;
     expanded: boolean = false;
+    symbology: Symbology;
 
     constructor(config: LayerConfig) {
         this.name = config.name;
         this._operator = config.operator;
+        this.symbology = Symbology.randomSimplePointSymbology(); // TODO: random by type
     }
 
     get url() {
@@ -75,7 +78,9 @@ export class Layer {
         return this.operator.resultType;
     }
 
-    get style(): {} {
+
+    get olStyle(): ol.style.Style {
+        /*
         switch (this.operator.resultType) {
            case ResultType.RASTER:
                 return {
@@ -87,7 +92,10 @@ export class Layer {
                     color: "#FF0000"
                 };
         }
+        */
+        return this.symbology.olStyle;
     }
+
 
     toDict(): LayerDict {
         return {

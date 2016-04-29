@@ -5,6 +5,7 @@ import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 import {Layer} from "./models/layer.model";
 
 import {LayerService} from "./services/layer.service";
+import {LegendaryPointComponent} from "./components/legendary/legendary-point.component";
 
 @Component({
     selector: "layer-component",
@@ -38,8 +39,7 @@ import {LayerService} from "./services/layer.service";
                     </button>
                 </div>
                 <div *ngIf="layer.expanded">
-                    {{layer.name}}
-                    <br>{{layer.name}}
+                    <wave-legendary-points [symbology]="layer.symbology"></wave-legendary-points>
                 </div>
             </div>
             <md-divider
@@ -71,7 +71,7 @@ import {LayerService} from "./services/layer.service";
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [MATERIAL_DIRECTIVES, Dragula]
+    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent]
 })
 
 export class LayerComponent {
