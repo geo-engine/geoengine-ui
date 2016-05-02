@@ -11,8 +11,8 @@ import {LayerService} from "../../services/layer.service";
 import {Layer} from "../../models/layer.model";
 import {Operator, ResultType} from "../../models/operator.model";
 
-import d3 from "d3";
-import dagre from "dagre";
+import d3 from "d3"; // necessary for dagreD3
+// import dagre from "dagre";
 import dagreD3 from "dagre-d3";
 
 const GRAPH_STYLE = {
@@ -244,6 +244,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         let render = new dagreD3.render();
 
         // Set up an SVG group so that we can translate the final graph.
+        console.log(this.graphContainer.nativeElement);
         let svg = d3.select(this.graphContainer.nativeElement);
         let svgGroup = svg.append("g");
 
@@ -261,7 +262,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         });
     }
 
-    private setupWidthObservables(graph: dagreD3.graphlib.Graph): {width: number, height: number} {
+    private setupWidthObservables(graph: Dagre.Graph): {width: number, height: number} {
         // create observables for the current graph bounds
         const graphWidth$ = Observable.of(graph.graph().width);
         const graphHeight$ = Observable.of(graph.graph().height);
@@ -298,7 +299,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         };
     }
 
-    private addOperatorsToGraph(graph: dagreD3.graphlib.Graph,
+    private addOperatorsToGraph(graph: Dagre.Graph,
                       initialOperators: Array<Operator>,
                       layers: Array<Layer>): Array<number> {
         // TODO: replace with proper icons
@@ -375,11 +376,13 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`);
         }
 
+        console.log(graph.edges(), graph);
+
         // return all operator ids that are contained in the graph
         return operatorIdsInGraph;
     }
 
-    private addLayersToGraph(graph: dagreD3.graphlib.Graph,
+    private addLayersToGraph(graph: Dagre.Graph,
                              layers: Array<Layer>,
                              layersToAccent: Array<Layer>,
                              operatorIdsInGraph: Array<number>) {
@@ -407,7 +410,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     }
 
     private addZoomSupport(svg: d3.Selection<any>, svgGroup: d3.Selection<any>,
-                           graph: dagreD3.graphlib.Graph,
+                           graph: Dagre.Graph,
                            svgWidth: number, svgHeight: number) {
         // calculate available space after subtracting the margin
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
@@ -443,7 +446,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         svg.call(zoom);
     }
 
-    private addClickHandler(svg: d3.Selection<any>, graph: dagreD3.graphlib.Graph) {
+    private addClickHandler(svg: d3.Selection<any>, graph: Dagre.Graph) {
         svg.selectAll(".node").on("click", (nodeId: string) => {
             const node = graph.node(nodeId);
             if (node.type === "operator") {
