@@ -2,10 +2,13 @@ import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from "a
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 
+import {ResultType} from "./models/operator.model";
 import {Layer} from "./models/layer.model";
 
 import {LayerService} from "./services/layer.service";
-import {LegendaryPointComponent} from "./components/legendary/legendary-point.component";
+import {LegendaryPointComponent} from  "./components/legendary/legendary-point.component";
+import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.component";
+
 
 @Component({
     selector: "layer-component",
@@ -38,8 +41,9 @@ import {LegendaryPointComponent} from "./components/legendary/legendary-point.co
                         <i md-icon>more_vert</i>
                     </button>
                 </div>
-                <div *ngIf="layer.expanded">
-                    <wave-legendary-points [symbology]="layer.symbology"></wave-legendary-points>
+                <div *ngIf="layer.expanded" [ngSwitch]="layer.resultType">
+                    <wave-legendary-points *ngSwitchWhen="enumResultType.POINTS" [symbology]="layer.symbology"></wave-legendary-points>
+                    <wave-legendary-raster *ngSwitchWhen="enumResultType.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
                 </div>
             </div>
             <md-divider
@@ -71,10 +75,12 @@ import {LegendaryPointComponent} from "./components/legendary/legendary-point.co
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent]
+    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent, LegendaryRasterComponent]
 })
 
 export class LayerComponent {
+    // for ng-switch
+    public enumResultType = ResultType;
 
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {

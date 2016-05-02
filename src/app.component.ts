@@ -69,6 +69,7 @@ import {UserService} from "./services/user.service";
                                     [projection]="projectService.getMapProjection() | async"></ol-point-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
                                     [layer]="layer"
+                                    [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"></ol-raster-layer>
                 </div>
             </ol-map>

@@ -18,7 +18,7 @@ import {RgbaToCssStringPipe} from "../../pipes/rgba-to-css-string.pipe";
         </md-list>
         `,
     styles: [`
-        .wave-legendary-points {
+        wave-legendary-points {
             overflow: hidden;
         }
         .circle {

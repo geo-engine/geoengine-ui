@@ -78,6 +78,8 @@ export class SimplePointSymbology extends AbstractVectorSymbology {
 
 export class RasterSymbology extends Symbology {
     opacity: number = 1;
+    hue: number = 0;
+    saturation: number = 0;
 
     constructor(opacity: number) {
         super();
@@ -87,6 +89,8 @@ export class RasterSymbology extends Symbology {
 
     clone(): RasterSymbology {
         let clone = new RasterSymbology(this.opacity);
+        clone.saturation = this.saturation;
+        clone.hue = this.hue;
         return clone;
     }
 

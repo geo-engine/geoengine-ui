@@ -34,16 +34,17 @@ export class Layer {
             case ResultType.POINTS: {
                 this.symbology = Symbology.randomSimplePointSymbology(); // TODO: random by type
                 break;
-            };
+            }
             case ResultType.RASTER: {
                 this.symbology = new RasterSymbology(0.5); // TODO: random by type
                 break;
-            };
+            }
             default: {
                 this.symbology = Symbology.randomSimpleVectorSymbology();
                 break;
-            };
+            }
         }
+        console.log("layer constructor", this);
     }
 
     get url() {

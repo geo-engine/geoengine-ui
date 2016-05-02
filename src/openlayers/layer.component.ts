@@ -102,7 +102,8 @@ export class RasterLayerComponent extends MapLayerComponent {
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         let params = this.layer.getParams(this.projection);
-        // let style: any = this.layer.symbology.style;
+
+        let rasterSymbology: RasterSymbology = <RasterSymbology> this.layer.symbology;
         if (changes["layer"] || changes["projection"]) {
             this.source = new ol.source.TileWMS({
                 url: Config.MAPPING_URL,
@@ -112,12 +113,14 @@ export class RasterLayerComponent extends MapLayerComponent {
 
             this.mapLayer = new ol.layer.Tile({
                 source: this.source,
-                opacity: 0.5 // style.opacity
+                opacity: rasterSymbology.opacity
             });
         }
 
         if (changes["symbology"]) {
-          this.mapLayer.setOpacity((<RasterSymbology>this.layer.symbology).opacity);
+            this.mapLayer.setOpacity(rasterSymbology.opacity);
+            // this.mapLayer.setHue(rasterSymbology.hue);
+            // this.mapLayer.setSaturation(rasterSymbology.saturation);
         }
     }
 
