@@ -19,6 +19,7 @@ import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig} from "./compo
 
 import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
 import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./components/project-settings.component";
+import {OperatorGraphDialogComponent, OperatorGraphDialogConfig} from "./components/dialogs/operator-graph.component";
 import {SymbologyDialogComponent, SymbologyDialogConfig} from "./components/dialogs/symbology-dialog.component";
 
 import {Layer} from "./models/layer.model";
@@ -43,6 +44,7 @@ import {UserService} from "./services/user.service";
                 [layerSelected]="hasSelectedLayer$ | async"
                 (renameLayer)="renameLayerDialog($event)"
                 (removeLayer)="layerService.removeLayer(layerService.getSelectedLayer())"
+                (lineage)="showLineage($event)"
                 (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                 (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                 (zoomMap)="mapComponent.zoomToMap()"
@@ -256,6 +258,15 @@ export class AppComponent implements OnInit, AfterViewInit {
             .clickOutsideToClose(true);
 
         this.mdDialog.open(<Function> OperatorComponent, this.elementRef, config);
+    }
+
+    private showLineage(selectedLayerOnly: boolean) {
+        let config = new OperatorGraphDialogConfig()
+            .layerService(this.layerService)
+            .selectedLayerOnly(selectedLayerOnly)
+            .clickOutsideToClose(true);
+
+        this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
     }
 
     private symbologyDialog(event: Event) {
