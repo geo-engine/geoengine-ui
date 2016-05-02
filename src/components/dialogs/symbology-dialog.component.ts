@@ -40,12 +40,10 @@ export class SymbologyDialogComponent implements OnInit {
 
     ngOnInit() {
             this._layer = this.layerService.getSelectedLayer();
-            console.log("layer symbology", this._layer);
             this._symbology = this._layer.symbology.clone();
     }
 
     update_symbology(symbology: Symbology) {
-        console.log("symbology", symbology);
         this.layerService.changeLayerSymbology(this._layer, symbology);
     }
 }

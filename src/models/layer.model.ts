@@ -44,7 +44,6 @@ export class Layer {
                 break;
             }
         }
-        console.log("layer constructor", this);
     }
 
     get url() {

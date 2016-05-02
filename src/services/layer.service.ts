@@ -83,7 +83,7 @@ export class LayerService {
     * @param symbology The new symbology
     */
     changeLayerSymbology(layer: Layer, symbology: Symbology) {
-        console.log("changeLayerSymbology", layer, symbology);
+        // console.log("changeLayerSymbology", layer, symbology);
         layer.symbology = symbology;
         this.layers$.next(this.getLayers());
     }
