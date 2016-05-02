@@ -1,44 +1,94 @@
 import ol from "openlayers";
+import {ResultType} from "./operator.model";
 
-export abstract class Symbology {
+export enum SymbologyType {
+    RASTER,
+    SIMPLE_POINT,
+    SIMPLE_VECTOR,
+}
+
+
+/**
+ * Serialization interface
+ */
+ export interface SymbologyDict {
+     symbologyTypeId: string;
+     symbologyConfig: ISymbology;
+ }
+
+export interface ISymbology {
+}
+
+export abstract class Symbology implements ISymbology {
+    abstract get symbologyType(): SymbologyType;
+
+    get symbologyTypeId(): string {
+        return SymbologyType[this.symbologyType];
+    }
+
     abstract clone(): Symbology;
 
-    static randomSimplePointSymbology(): SimplePointSymbology {
-        return new SimplePointSymbology([255, 0, 0, 0.8]);
+    abstract toConfig(): ISymbology;
+
+    toDict(): SymbologyDict {
+        return {
+            symbologyTypeId: this.symbologyTypeId,
+            symbologyConfig: this.toConfig(),
+        };
     }
 
-    static randomSimpleVectorSymbology(): SimpleVectorSymbology {
-        return new SimpleVectorSymbology([255, 0, 0, 0.8]);
+    static fromDict(dict: SymbologyDict): Symbology {
+        let symbologyType: SymbologyType = SymbologyType[dict.symbologyTypeId];
+        switch (symbologyType) {
+            case SymbologyType.SIMPLE_POINT: return new SimplePointSymbology(dict.symbologyConfig);
+            case SymbologyType.SIMPLE_VECTOR: return new SimpleVectorSymbology(dict.symbologyConfig);
+            case SymbologyType.RASTER: return new RasterSymbology(dict.symbologyConfig);
+        }
     }
-
 };
 
-export abstract class AbstractVectorSymbology extends Symbology {
+export interface IVectorSymbology extends ISymbology {
+    fill_rgba?: Array<number>;
+    stroke_rgba?: Array<number>;
+    stroke_width?: number;
+}
+
+export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
     fill_rgba: Array<number> = [255, 0, 0, 0.8]; // TODO: maybe a new iterface rgba? or just [number]?
     stroke_rgba: Array<number> = [0, 0, 0, 1];
     stroke_width: number = 1;
 
     abstract get olStyle(): ol.style.Style;
 
-    constructor(fill_rgba: Array<number>) {
+    constructor(config: IVectorSymbology) {
         super();
-        this.fill_rgba = fill_rgba;
+        if (config.fill_rgba) this.fill_rgba = config.fill_rgba;
+        if (config.stroke_rgba) this.stroke_rgba = config.stroke_rgba;
+        if (config.stroke_width) this.stroke_width = config.stroke_width;
     }
 
 }
 
 export class SimpleVectorSymbology extends AbstractVectorSymbology {
 
-    constructor(fill_color: Array<number>) {
-        super(fill_color);
+    constructor(config: IVectorSymbology) {
+        super(config);
+    }
+
+    get symbologyType(): SymbologyType {
+        return SymbologyType.SIMPLE_VECTOR;
     }
 
     clone(): SimpleVectorSymbology {
-        let clone = new SimpleVectorSymbology(this.fill_rgba);
-        // clone.fill_rgba = this.fill_rgba;
-        clone.stroke_rgba = this.stroke_rgba;
-        clone.stroke_width = this.stroke_width;
-        return clone;
+        return new SimpleVectorSymbology(this);
+    }
+
+    toConfig(): IVectorSymbology {
+        return this.clone();
+    }
+
+    static fromConfig(config: IVectorSymbology) {
+        return new SimpleVectorSymbology(config);
     }
 
     get olStyle(): ol.style.Style {
@@ -49,20 +99,28 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
     }
 }
 
-export class SimplePointSymbology extends AbstractVectorSymbology {
+export interface ISimplePointSymbology extends IVectorSymbology {
+    radius?: number;
+}
+
+export class SimplePointSymbology extends AbstractVectorSymbology implements ISimplePointSymbology {
   radius: number = 5;
 
-  constructor(fill_rgba: Array<number>) {
-      super(fill_rgba);
+  constructor(config: ISimplePointSymbology) {
+      super(config);
+      if (config.radius) this.radius = config.radius;
+  }
+
+  get symbologyType(): SymbologyType {
+      return SymbologyType.SIMPLE_POINT;
   }
 
   clone(): SimplePointSymbology {
-      let clone = new SimplePointSymbology(this.fill_rgba);
-      // clone.fill_rgba = this.fill_rgba;
-      clone.stroke_rgba = this.stroke_rgba;
-      clone.stroke_width = this.stroke_width;
-      clone.radius = this.radius;
-      return clone;
+      return new SimplePointSymbology(this);
+  }
+
+  toConfig(): ISimplePointSymbology {
+      return this.clone();
   }
 
   get olStyle(): ol.style.Style {
@@ -76,22 +134,34 @@ export class SimplePointSymbology extends AbstractVectorSymbology {
   }
 }
 
-export class RasterSymbology extends Symbology {
+export interface IRasterSymbology extends ISymbology {
+    opacity?: number;
+    hue?: number;
+    saturation?: number;
+}
+
+export class RasterSymbology extends Symbology implements IRasterSymbology {
     opacity: number = 1;
     hue: number = 0;
     saturation: number = 0;
 
-    constructor(opacity: number) {
+    constructor(config: IRasterSymbology) {
         super();
-        this.opacity = opacity;
+        if (config.opacity) this.opacity = config.opacity;
+        if (config.hue) this.hue = config.hue;
+        if (config.saturation) this.saturation = config.saturation;
     }
 
+    get symbologyType(): SymbologyType {
+        return SymbologyType.RASTER;
+    }
+
+    toConfig(): IRasterSymbology {
+        return this.clone();
+    }
 
     clone(): RasterSymbology {
-        let clone = new RasterSymbology(this.opacity);
-        clone.saturation = this.saturation;
-        clone.hue = this.hue;
-        return clone;
+        return new RasterSymbology(this);
     }
 
 }

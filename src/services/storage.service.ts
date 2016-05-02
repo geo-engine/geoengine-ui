@@ -11,6 +11,7 @@ import {Operator, ResultType} from "../models/operator.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
+import {Symbology, SimplePointSymbology, RasterSymbology, ISymbology} from "../models/symbology.model";
 
 /**
  * This service allows persisting the current execution context.
@@ -282,6 +283,7 @@ class DeveloperDefaults extends StorageDefaults {
         return [
             new Layer({
                 name: "SRTM",
+                symbology: new RasterSymbology({}),
                 operator: new Operator({
                     operatorType: "source",
                     resultType: ResultType.RASTER,
@@ -299,6 +301,7 @@ class DeveloperDefaults extends StorageDefaults {
             }),
             new Layer({
                 name: "Puma Concolor",
+                symbology: new SimplePointSymbology({}),
                 operator: new Operator({
                     operatorType: "gfbiopointsource",
                     resultType: ResultType.POINTS,

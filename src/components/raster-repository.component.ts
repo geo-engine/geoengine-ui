@@ -10,6 +10,7 @@ import {MappingDataSourceFilter} from "../pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "../pipes/highlight.pipe";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation, UnitConfig} from "../models/unit.model";
+import {RasterSymbology} from "../models/symbology.model";
 
 
 @Component({
@@ -111,7 +112,7 @@ export class RasterRepositoryComponent {
         ),
         units: new Map<string, Unit>().set("value", unit)
     });
-    let layer = new Layer({name: channel.name, operator: op});
+    let layer = new Layer({name: channel.name, operator: op, symbology: new RasterSymbology({})}); // TODO: get info from server?
     this._layerService.addLayer(layer);
   }
 }
