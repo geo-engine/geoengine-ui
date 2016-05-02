@@ -1,4 +1,5 @@
-import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef} from "angular2/core";
+import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter,
+        ChangeDetectorRef} from "angular2/core";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
