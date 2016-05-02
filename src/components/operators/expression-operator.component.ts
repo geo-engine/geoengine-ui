@@ -28,7 +28,7 @@ import {Projection} from "../../models/projection.model";
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
-                                        [type]="LAYER_IS_RASTER"
+                                        [type]="enumResultType.RASTER"
                                         (selectedLayers)="onSelectLayers($event)">
             </wave-multi-layer-selection>
             <md-card>

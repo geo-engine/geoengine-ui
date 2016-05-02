@@ -65,11 +65,11 @@ import {UserService} from "./services/user.service";
                     [projection]="projectService.getMapProjection() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.resultType">
-                    <ol-point-layer #olLayer *ngSwitchWhen="LAYER_IS_POINTS"
+                    <ol-point-layer #olLayer *ngSwitchWhen="enumResultType.POINTS"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"></ol-point-layer>
-                    <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
+                    <ol-raster-layer #olLayer *ngSwitchWhen="enumResultType.RASTER"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"></ol-raster-layer>
@@ -161,8 +161,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private mapProjection$: Observable<Projection>;
 
     // for ng-switch
-    private LAYER_IS_POINTS = ResultType.POINTS;
-    private LAYER_IS_RASTER = ResultType.RASTER;
+    private enumResultType = ResultType;
 
     constructor(private zone: NgZone,
                 private layerService: LayerService,

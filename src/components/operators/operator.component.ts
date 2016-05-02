@@ -376,8 +376,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     protected layers: Array<Layer> = [];
 
     // types
-    protected LAYER_IS_POINTS = ResultType.POINTS;
-    protected LAYER_IS_RASTER = ResultType.RASTER;
+    protected enumResultType = ResultType;
 
     constructor() {}
 
