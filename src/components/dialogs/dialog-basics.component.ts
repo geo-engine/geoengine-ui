@@ -1,7 +1,8 @@
-import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter} from "angular2/core";
+import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef} from "angular2/core";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
+import {MdDialogRef} from "ng2-material/components/dialog/dialog";
 
 /**
  * This component allows selecting an input operator by choosing a layer.
@@ -38,6 +39,10 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 })
 export class DialogHeaderComponent {
     @Output() close = new EventEmitter<void>();
+
+    constructor(private dialog: MdDialogRef) {
+        this.close.subscribe(() => this.dialog.close());
+    }
 }
 
 @Component({
