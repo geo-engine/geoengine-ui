@@ -1,7 +1,7 @@
 import {Operator, ResultType, OperatorDict} from "./operator.model";
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
-import {Symbology} from "./symbology.model";
+import {Symbology, RasterSymbology} from "./symbology.model";
 
 interface Parameters {
     [key: string]: any;
@@ -30,7 +30,20 @@ export class Layer {
     constructor(config: LayerConfig) {
         this.name = config.name;
         this._operator = config.operator;
-        this.symbology = Symbology.randomSimplePointSymbology(); // TODO: random by type
+        switch (this._operator.resultType) {
+            case ResultType.POINTS: {
+                this.symbology = Symbology.randomSimplePointSymbology(); // TODO: random by type
+                break;
+            };
+            case ResultType.RASTER: {
+                this.symbology = new RasterSymbology(0.5); // TODO: random by type
+                break;
+            };
+            default: {
+                this.symbology = Symbology.randomSimpleVectorSymbology();
+                break;
+            };
+        }
     }
 
     get url() {
@@ -77,25 +90,6 @@ export class Layer {
     get resultType(): ResultType {
         return this.operator.resultType;
     }
-
-
-    get olStyle(): ol.style.Style {
-        /*
-        switch (this.operator.resultType) {
-           case ResultType.RASTER:
-                return {
-                    opacity: 0.5
-                };
-
-            case ResultType.POINTS:
-                return {
-                    color: "#FF0000"
-                };
-        }
-        */
-        return this.symbology.olStyle;
-    }
-
 
     toDict(): LayerDict {
         return {

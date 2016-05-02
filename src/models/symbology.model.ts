@@ -13,7 +13,7 @@ export abstract class Symbology {
 
 };
 
-export abstract class VectorSymbology {
+export abstract class AbstractVectorSymbology extends Symbology {
     fill_rgba: Array<number> = [255, 0, 0, 0.8]; // TODO: maybe a new iterface rgba? or just [number]?
     stroke_rgba: Array<number> = [0, 0, 0, 1];
     stroke_width: number = 1;
@@ -21,12 +21,13 @@ export abstract class VectorSymbology {
     abstract get olStyle(): ol.style.Style;
 
     constructor(fill_rgba: Array<number>) {
+        super();
         this.fill_rgba = fill_rgba;
     }
 
 }
 
-export class SimpleVectorSymbology extends VectorSymbology {
+export class SimpleVectorSymbology extends AbstractVectorSymbology {
 
     constructor(fill_color: Array<number>) {
         super(fill_color);
@@ -48,7 +49,7 @@ export class SimpleVectorSymbology extends VectorSymbology {
     }
 }
 
-export class SimplePointSymbology extends VectorSymbology {
+export class SimplePointSymbology extends AbstractVectorSymbology {
   radius: number = 5;
 
   constructor(fill_rgba: Array<number>) {
@@ -76,11 +77,16 @@ export class SimplePointSymbology extends VectorSymbology {
 }
 
 export class RasterSymbology extends Symbology {
-    opacity: number = 0.8;
+    opacity: number = 1;
+
+    constructor(opacity: number) {
+        super();
+        this.opacity = opacity;
+    }
+
 
     clone(): RasterSymbology {
-        let clone = new RasterSymbology();
-        clone.opacity = this.opacity;
+        let clone = new RasterSymbology(this.opacity);
         return clone;
     }
 

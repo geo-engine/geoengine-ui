@@ -5,7 +5,7 @@ import Config from "../config.model";
 import {ResultType} from "../models/operator.model";
 import {Layer} from "../models/layer.model";
 import {Projection} from "../models/projection.model";
-import {Symbology} from "../models/symbology.model";
+import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../models/symbology.model";
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -58,9 +58,8 @@ export class PointLayerComponent extends MapLayerComponent {
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         // console.log("point layer changes", changes);
-
         let params = this.layer.getParams(this.projection);
-        let olStyle: any = this.layer.symbology.olStyle;
+        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
         // console.log("style", olStyle
 
         if (changes["layer"] || changes["projection"]) {
@@ -118,7 +117,7 @@ export class RasterLayerComponent extends MapLayerComponent {
         }
 
         if (changes["symbology"]) {
-          this.mapLayer.setOpacity(0.5);
+          this.mapLayer.setOpacity((<RasterSymbology>this.layer.symbology).opacity);
         }
     }
 
