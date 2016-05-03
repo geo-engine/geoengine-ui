@@ -111,7 +111,7 @@ class ProjectionCollection {
         this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS];
     }
 
-    fromEPSGCode(json: string) {
+    fromCode(json: string) {
         switch (json) {
             case this.WEB_MERCATOR.getCode():
                 return this.WEB_MERCATOR;

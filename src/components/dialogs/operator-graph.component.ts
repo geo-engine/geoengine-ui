@@ -339,20 +339,18 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 labelType: "html",
                 label: `
                 <div class="header">
-                    <span class="icon"
-                          style="background-color: #${intToRGB(hashCode(operator.operatorType))}">
+                    <img href="${operator.operatorType.getIconUrl()}">
                     </span>
                     ${operator.operatorType}
                 </div>
                 <div class="parameters">
                     <table>
                         <tr>
-                        ${Array.from(operator.parameters.entries())
-                               .map(([key, value]: [string, any]) => {
-                                   return `<td class="key">${key}</td>
-                                           <td class="value">${value}</td>`;
-                               })
-                               .join("</tr><tr>")}
+                        ${operator.operatorType.getParametersAsStrings()
+                                               .map(([key, value]: [string, string]) => {
+                                                    return `<td class="key">${key}</td>
+                                                            <td class="value">${value}</td>`;
+                                             }).join("</tr><tr>")}
                         </tr>
                     </table>
                 </div>
@@ -453,17 +451,17 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 const operator: Operator = node.operator;
 
                 // update operator type
-                this.selectedOperatorName$.next(operator.operatorType);
+                this.selectedOperatorName$.next(operator.operatorType.getMappingName());
 
                 // update parameter view
-                let parameters: Array<{key: string, value: any}> =
-                    Array.from(operator.parameters.entries()).map(([key, value]) => {
+                this.parameters$.next(
+                    operator.operatorType.getParametersAsStrings().map(([key, value]) => {
                         return {
                             key: key,
                             value: value.toString(),
                         };
-                    });
-                this.parameters$.next(parameters);
+                    })
+                );
 
                 // de-select all
                 svg.selectAll(".operator").classed("highlight", false);

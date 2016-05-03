@@ -30,8 +30,8 @@ export class Project {
         // console.log(json, config);
         return new Project({
             name: config.name,
-            workingProjection: Projections.fromEPSGCode(config.workingProjection),
-            mapProjection: Projections.fromEPSGCode(config.mapProjection)
+            workingProjection: Projections.fromCode(config.workingProjection),
+            mapProjection: Projections.fromCode(config.mapProjection)
         });
     }
 

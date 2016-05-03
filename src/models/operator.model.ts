@@ -2,6 +2,8 @@ import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
 import {Unit, UnitDict} from "./unit.model";
 import {DataType, DataTypes} from "./datatype.model";
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict, ProjectionType}
+        from "./operator-type.model";
 
 /**
  * The result type of a mapping operator.
@@ -33,12 +35,10 @@ export function resultTypeNameConverter(type: ResultType): string {
 
 type OperatorId = number;
 type AttributeName = string;
-type ParameterName = string;
 
 interface OperatorConfig {
-    operatorType: string;
+    operatorType: OperatorType;
     resultType: ResultType;
-    parameters: Map<ParameterName, OperatorParam>;
     projection: Projection;
     attributes: Array<AttributeName>;
     dataTypes: Map<AttributeName, DataType>;
@@ -54,10 +54,8 @@ interface OperatorConfig {
  */
 export interface OperatorDict {
     id: number;
-    symbology: any; // TODO
-    operatorType: string;
+    operatorType: OperatorTypeDict;
     resultType: number;
-    parameters: Array<[string, OperatorParam]>;
     projection: string;
     attributes: Array<string>;
     dataTypes: Array<[string, string]>;
@@ -68,15 +66,9 @@ export interface OperatorDict {
     polygonSources: Array<OperatorDict>;
 }
 
-export interface ComplexOperatorParam {
-    [index: string]: any;
-}
-
-type OperatorParam = string | number | ComplexOperatorParam | boolean;
-
 interface QueryDict {
     type: string;
-    params?: {[index: string]: OperatorParam};
+    params: OperatorTypeMappingDict;
     sources?: {
         RASTER?: Array<QueryDict>;
         POINTS?: Array<QueryDict>;
@@ -93,16 +85,13 @@ export class Operator {
     private _id: OperatorId;
 
     private _resultType: ResultType;
-    private _operatorType: string;
+    private _operatorType: OperatorType;
 
     private _attributes: Array<AttributeName>;
     private _dataTypes: Map<AttributeName, DataType>;
     private _units: Map<AttributeName, Unit>;
 
-    private _parameters: Map<ParameterName, OperatorParam>;
     private _projection: Projection;
-
-    private symbology: any; // TODO
 
     private rasterSources: Operator[] = [];
     private pointSources: Operator[] = [];
@@ -116,7 +105,6 @@ export class Operator {
      *
      * @param config.operatorType      The mapping type name of the operator.
      * @param config.resultType        A {@link resultType}.
-     * @param config.parameters        Operator-specific parameters.
      * @param config.projection        A {@link Projection}.
      * @param config.displayName       The user-given name of this operator instance.
      * @param config.rasterSources     A list of operators with {@link resultType} `RASTER`.
@@ -131,7 +119,6 @@ export class Operator {
         this._operatorType = config.operatorType,
         this._resultType = config.resultType;
 
-        this._parameters = config.parameters;
         this._projection = config.projection;
 
         this._attributes = config.attributes;
@@ -188,7 +175,7 @@ export class Operator {
     /**
      * The type of the operator.
      */
-    get operatorType(): string {
+    get operatorType(): OperatorType {
         return this._operatorType;
     }
 
@@ -211,13 +198,6 @@ export class Operator {
      */
     get attributes(): Array<AttributeName> {
         return this._attributes;
-    }
-
-    /**
-     * Retrieve the parameters.
-     */
-    get parameters(): Map<string, string | number | ComplexOperatorParam | boolean> {
-        return this._parameters;
     }
 
     /**
@@ -309,14 +289,12 @@ export class Operator {
         if (projection === this.projection) {
             return this;
         } else {
-            let parameters = new Map<string, OperatorParam>()
-                .set("src_projection", this.projection.getCode())
-                .set("dest_projection", projection.getCode());
-
             return new Operator({
-                operatorType: "projection",
+                operatorType: new ProjectionType({
+                    srcProjection: this.projection,
+                    destProjection: projection,
+                }),
                 resultType: this.resultType,
-                parameters: parameters,
                 projection: projection,
                 attributes: this._attributes,
                 dataTypes: this._dataTypes,
@@ -324,7 +302,7 @@ export class Operator {
                 rasterSources: this.resultType === ResultType.RASTER ? [this] : [],
                 pointSources: this.resultType === ResultType.POINTS ? [this] : [],
                 lineSources: this.resultType === ResultType.LINES ? [this] : [],
-                polygonSources: this.resultType === ResultType.POLYGONS ? [this] : []
+                polygonSources: this.resultType === ResultType.POLYGONS ? [this] : [],
             });
         }
     }
@@ -334,16 +312,9 @@ export class Operator {
      */
     private toQueryDict(): QueryDict {
         let dict: QueryDict = {
-            type: this._operatorType
+            type: this._operatorType.getMappingName(),
+            params: this._operatorType.toMappingDict(),
         };
-
-        if (this._parameters.size > 0) {
-            let params: {[index: string]: OperatorParam} = {};
-            this._parameters.forEach((value, key, map) => {
-                params[key] = value;
-            });
-            dict["params"] = params;
-        }
 
         if (this.hasSources()) {
             let sources: any = {};
@@ -380,10 +351,8 @@ export class Operator {
       let dict: OperatorDict = {
         id: this._id,
         resultType: this._resultType,
-        operatorType: this._operatorType,
-        parameters: Array.from(this._parameters.entries()),
+        operatorType: this._operatorType.toDict(),
         projection: this._projection.getCode(),
-        symbology: this.symbology,
         attributes: this._attributes,
         dataTypes: <Array<[AttributeName, string]>> Array.from(this._dataTypes.entries()).map(
             ([name, datatype]) => [name, datatype.getCode()]
@@ -410,10 +379,9 @@ export class Operator {
 
     static fromDict(operatorDict: OperatorDict): Operator {
         let operator = new Operator({
-            operatorType: operatorDict.operatorType,
+            operatorType: OperatorType.fromDict(operatorDict.operatorType),
             resultType: operatorDict.resultType,
-            parameters: new Map<string, OperatorParam>(operatorDict.parameters),
-            projection: Projections.fromEPSGCode(operatorDict.projection),
+            projection: Projections.fromCode(operatorDict.projection),
             attributes: operatorDict.attributes,
             dataTypes: new Map<AttributeName, DataType>(
                 <Array<[AttributeName, DataType]>>
@@ -432,7 +400,6 @@ export class Operator {
         });
 
         operator._id = operatorDict.id;
-        operator.symbology = operatorDict.symbology;
 
         return operator;
     }

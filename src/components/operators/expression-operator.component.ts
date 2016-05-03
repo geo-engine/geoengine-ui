@@ -13,10 +13,11 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
 import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
-import {Operator, ResultType, ComplexOperatorParam} from "../../models/operator.model";
+import {Operator, ResultType} from "../../models/operator.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
 import {Projection} from "../../models/projection.model";
+import {ExpressionType} from "../../models/operator-type.model";
 
 /**
  * This component allows creating the expression operator.
@@ -28,7 +29,7 @@ import {Projection} from "../../models/projection.model";
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
-                                        [type]="LAYER_IS_RASTER"
+                                        [types]="[ResultType.RASTER]"
                                         (selectedLayers)="onSelectLayers($event)">
             </wave-multi-layer-selection>
             <md-card>
@@ -245,12 +246,12 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         });
 
         let operator = new Operator({
-            operatorType: "expression",
+            operatorType: new ExpressionType({
+                expression: expression,
+                datatype: dataType,
+                unit: unit,
+            }),
             resultType: ResultType.RASTER,
-            parameters: new Map<string, string | number | ComplexOperatorParam>()
-                        .set("expression", expression)
-                        .set("datatype", dataType.getCode())
-                        .set("unit", unit.toMappingDict()),
             projection: projection,
             attributes: ["value"],
             dataTypes: new Map<string, DataType>()

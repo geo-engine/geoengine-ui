@@ -85,7 +85,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
         <md-card-header>
             <md-card-header-text>
                 <div class="md-title" layout="row">
-                    <span flex="grow">{{typeConverter(type)}}</span>
+                    <span flex="grow">{{title}}</span>
                     <span>
                         <button md-button class="md-icon-button md-primary amount-button"
                                 aria-label="Add"
@@ -99,12 +99,12 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
                         </button>
                     </span>
                 </div>
-                <span class="md-subheader">Select input {{typeConverter(type)}}</span>
+                <span class="md-subheader">Select input {{title}}</span>
             </md-card-header-text>
         </md-card-header>
         <md-card-content layout="row">
             <div *ngFor="#id of ids; #i = index" layout="row">
-                <wave-layer-selection [id]="id" [type]="type" [layers]="layers"
+                <wave-layer-selection [id]="id" [layers]="layers"
                                       (selectedLayer)="updateLayer(i, $event)">
                 </wave-layer-selection>
             </div>
@@ -145,7 +145,12 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * The type is used as a filter for the layers to choose from.
      */
-    @Input() type: ResultType;
+    @Input() types: Array<ResultType>;
+
+    /**
+     * The title of the component (optional).
+     */
+    @Input() title: string = undefined;
 
     /**
      * This output emits the selected layer.
@@ -159,8 +164,6 @@ export class LayerMultiSelectComponent implements OnChanges {
 
     private selectedLayers: Array<Layer> = [];
 
-    private typeConverter = resultTypeNameConverter;
-
     constructor() {
         this.selectedLayersEmitter.subscribe((layers: Array<Layer>) => {
             this.selectedLayers = layers;
@@ -171,10 +174,14 @@ export class LayerMultiSelectComponent implements OnChanges {
         for (let propName in changes) {
             switch (propName) {
                 case "inputLayers":
-                case "type":
+                case "types":
                     this.layers = this.inputLayers.filter(layer => {
-                        return layer.operator.resultType === this.type;
+                        return this.types.indexOf(layer.operator.resultType) >= 0;
                     });
+                    if (this.title === undefined) {
+                        this.title = this.types.map(type => resultTypeNameConverter(type))
+                                               .join(", ");
+                    }
                     break;
                 case "min":
                     this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
@@ -376,8 +383,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     protected layers: Array<Layer> = [];
 
     // types
-    protected LAYER_IS_POINTS = ResultType.POINTS;
-    protected LAYER_IS_RASTER = ResultType.RASTER;
+    protected ResultType = ResultType;
 
     constructor() {}
 

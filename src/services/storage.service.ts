@@ -11,6 +11,7 @@ import {Operator, ResultType} from "../models/operator.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
+import {RasterSourceType, GFBioPointSourceType} from "../models/operator-type.model";
 
 /**
  * This service allows persisting the current execution context.
@@ -283,11 +284,13 @@ class DeveloperDefaults extends StorageDefaults {
             new Layer({
                 name: "SRTM",
                 operator: new Operator({
-                    operatorType: "source",
+                    operatorType: new RasterSourceType({
+                        channel: 0,
+                        sourcename: "srtm",
+                        transform: true,
+                    }),
                     resultType: ResultType.RASTER,
-                    parameters: new Map<string, string | number>().set("channel", 0)
-                                                                  .set("sourcename", "srtm"),
-                    projection: Projections.fromEPSGCode("EPSG:4326"),
+                    projection: Projections.fromCode("EPSG:4326"),
                     attributes: ["value"],
                     dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
                     units: new Map<string, Unit>().set("value", new Unit({
@@ -300,12 +303,12 @@ class DeveloperDefaults extends StorageDefaults {
             new Layer({
                 name: "Puma Concolor",
                 operator: new Operator({
-                    operatorType: "gfbiopointsource",
+                    operatorType: new GFBioPointSourceType({
+                        datasource: "GBIF",
+                        query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
+                    }),
                     resultType: ResultType.POINTS,
-                    parameters: new Map<string, string | number>()
-                                    .set("datasource", "GBIF")
-                                    .set("query", `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`),
-                    projection: Projections.fromEPSGCode("EPSG:4326"),
+                    projection: Projections.fromCode("EPSG:4326"),
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),
                     units: new Map<string, Unit>()

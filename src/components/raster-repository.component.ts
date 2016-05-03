@@ -10,6 +10,7 @@ import {MappingDataSourceFilter} from "../pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "../pipes/highlight.pipe";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation, UnitConfig} from "../models/unit.model";
+import {RasterSourceType} from "../models/operator-type.model";
 
 
 @Component({
@@ -97,14 +98,13 @@ export class RasterRepositoryComponent {
     }
 
     let op = new Operator({
-        operatorType: "source",
+        operatorType: new RasterSourceType({
+            channel: channel.id,
+            sourcename: source.source,
+            transform: doTransform, // FIXME user selectable transform?
+        }),
         resultType: ResultType.RASTER,
-        parameters: new Map<string, string | number | boolean>()
-                        .set("channel", channel.id)
-                        .set("sourcename", source.source)
-                        .set("colorizer", channel.colorizer || source.colorizer || "gray")
-                        .set("transform", doTransform), // FIXME user selectable transform?
-        projection: Projections.fromEPSGCode("EPSG:" + source.coords.epsg),
+        projection: Projections.fromCode("EPSG:" + source.coords.epsg),
         attributes: ["value"],
         dataTypes: new Map<string, DataType>().set(
             "value", DataTypes.fromCode(dataType)

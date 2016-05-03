@@ -9,6 +9,8 @@ import {OperatorBaseComponent, OperatorBase} from "./components/operators/operat
 import {ExpressionOperatorComponent} from "./components/operators/expression-operator.component";
 import {RasterValueExtractionOperatorComponent}
         from "./components/operators/raster-value-extraction.component";
+import {NumericAttributeFilterOperatorComponent}
+    from "./components/operators/numeric-attribute-filter.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
@@ -99,5 +101,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addRasterValueExtractionOperator() {
         this.showOperator.emit(RasterValueExtractionOperatorComponent);
+    }
+
+    private addNumericAttributesFilterOperator() {
+        this.showOperator.emit(NumericAttributeFilterOperatorComponent);
     }
 }
