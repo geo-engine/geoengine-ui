@@ -68,6 +68,8 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     @Output() lineage = new EventEmitter<boolean>();
 
+    @Output("symbology") symbologyEmitter = new EventEmitter<void>();
+
     @Output() showOperator = new EventEmitter<OperatorBase>();
 
     @Output() projectSettings = new EventEmitter<void>();

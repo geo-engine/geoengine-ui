@@ -13,6 +13,8 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
 import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
+import {RasterSymbology} from "../../models/symbology.model";
+
 import {Operator, ResultType} from "../../models/operator.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
@@ -264,6 +266,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
+            symbology: new RasterSymbology({})
         }));
 
         this.dialog.close();

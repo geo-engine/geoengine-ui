@@ -5,6 +5,8 @@ import {Layer} from "../models/layer.model";
 
 import {Operator, ResultType} from "../models/operator.model";
 
+import {Symbology} from "../models/symbology.model";
+
 /**
  * A service that is responsible for managing the active layer array.
  */
@@ -72,6 +74,18 @@ export class LayerService {
     changeLayerName(layer: Layer, newName: string) {
       layer.name = newName;
       this.layers$.next(this.getLayers());
+    }
+
+
+    /**
+    * Changes the symbology of a layer.
+    * @param layer The layer to modify
+    * @param symbology The new symbology
+    */
+    changeLayerSymbology(layer: Layer, symbology: Symbology) {
+        // console.log("changeLayerSymbology", layer, symbology);
+        layer.symbology = symbology;
+        this.layers$.next(this.getLayers());
     }
 
     /**

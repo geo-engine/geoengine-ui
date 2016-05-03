@@ -11,6 +11,7 @@ import {Operator, ResultType} from "../models/operator.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
+import {Symbology, SimplePointSymbology, RasterSymbology, ISymbology} from "../models/symbology.model";
 import {RasterSourceType, GFBioPointSourceType} from "../models/operator-type.model";
 
 /**
@@ -283,6 +284,7 @@ class DeveloperDefaults extends StorageDefaults {
         return [
             new Layer({
                 name: "SRTM",
+                symbology: new RasterSymbology({}),
                 operator: new Operator({
                     operatorType: new RasterSourceType({
                         channel: 0,
@@ -302,6 +304,7 @@ class DeveloperDefaults extends StorageDefaults {
             }),
             new Layer({
                 name: "Puma Concolor",
+                symbology: new SimplePointSymbology({}),
                 operator: new Operator({
                     operatorType: new GFBioPointSourceType({
                         datasource: "GBIF",

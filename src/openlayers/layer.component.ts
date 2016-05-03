@@ -5,6 +5,7 @@ import Config from "../config.model";
 import {ResultType} from "../models/operator.model";
 import {Layer} from "../models/layer.model";
 import {Projection} from "../models/projection.model";
+import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../models/symbology.model";
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -24,6 +25,7 @@ export abstract class MapLayerComponent implements OnChanges {
 
     @Input() layer: Layer;
     @Input() projection: Projection;
+    @Input() symbology: Symbology;
 
     abstract getMapLayer(): ol.layer.Layer;
 
@@ -39,7 +41,6 @@ export abstract class MapLayerComponent implements OnChanges {
     abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
     abstract getExtent(): number[];
-
 }
 
 @Component({
@@ -57,28 +58,28 @@ export class PointLayerComponent extends MapLayerComponent {
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         // console.log("point layer changes", changes);
-
         let params = this.layer.getParams(this.projection);
-        let style: any = this.layer.style;
+        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
+        // console.log("style", olStyle
 
-        this.source = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: Config.MAPPING_URL + "?" + Object.keys(params).map(
-                key => key + "=" + encodeURIComponent(params[key])
-            ).join("&") + "&format=geojson",
-            wrapX: false
-        });
+        if (changes["layer"] || changes["projection"]) {
+            this.source = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: Config.MAPPING_URL + "?" + Object.keys(params).map(
+                    key => key + "=" + encodeURIComponent(params[key])
+                ).join("&") + "&format=geojson",
+                wrapX: false
+            });
 
-        this.mapLayer = new ol.layer.Vector({
-            source: this.source,
-            style: new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 5,
-                    fill: new ol.style.Fill({ color: style.color }),
-                    stroke: new ol.style.Stroke({ color: "#000000", width: 1 })
-                })
-            })
-        });
+            this.mapLayer = new ol.layer.Vector({
+                source: this.source,
+                style: olStyle,
+            });
+        }
+
+        if (changes["symbology"]) {
+          this.mapLayer.setStyle(olStyle);
+        }
     }
 
     getExtent() {
@@ -101,18 +102,26 @@ export class RasterLayerComponent extends MapLayerComponent {
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         let params = this.layer.getParams(this.projection);
-        let style: any = this.layer.style;
 
-        this.source = new ol.source.TileWMS({
-            url: Config.MAPPING_URL,
-            params: params,
-            wrapX: false
-        });
+        let rasterSymbology: RasterSymbology = <RasterSymbology> this.layer.symbology;
+        if (changes["layer"] || changes["projection"]) {
+            this.source = new ol.source.TileWMS({
+                url: Config.MAPPING_URL,
+                params: params,
+                wrapX: false
+            });
 
-        this.mapLayer = new ol.layer.Tile({
-            source: this.source,
-            opacity: style.opacity
-        });
+            this.mapLayer = new ol.layer.Tile({
+                source: this.source,
+                opacity: rasterSymbology.opacity
+            });
+        }
+
+        if (changes["symbology"]) {
+            this.mapLayer.setOpacity(rasterSymbology.opacity);
+            // this.mapLayer.setHue(rasterSymbology.hue);
+            // this.mapLayer.setSaturation(rasterSymbology.saturation);
+        }
     }
 
     getExtent() {

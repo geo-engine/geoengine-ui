@@ -1,6 +1,7 @@
 import {Operator, ResultType, OperatorDict} from "./operator.model";
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
+import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyDict} from "./symbology.model";
 
 interface Parameters {
     [key: string]: any;
@@ -9,6 +10,7 @@ interface Parameters {
 interface LayerConfig {
     name: string;
     operator: Operator;
+    symbology: Symbology;
 }
 
 /**
@@ -18,16 +20,19 @@ export interface LayerDict {
     name: string;
     operator: OperatorDict;
     expanded: boolean;
+    symbology: SymbologyDict;
 }
 
 export class Layer {
     private _operator: Operator;
     name: string;
     expanded: boolean = false;
+    symbology: Symbology;
 
     constructor(config: LayerConfig) {
         this.name = config.name;
         this._operator = config.operator;
+        this.symbology = (config.symbology) ? config.symbology : new SimplePointSymbology({}); // TODO: relax symbology to optional and add creation by type
     }
 
     get url() {
@@ -75,25 +80,12 @@ export class Layer {
         return this.operator.resultType;
     }
 
-    get style(): {} {
-        switch (this.operator.resultType) {
-           case ResultType.RASTER:
-                return {
-                    opacity: 0.5
-                };
-
-            case ResultType.POINTS:
-                return {
-                    color: "#FF0000"
-                };
-        }
-    }
-
     toDict(): LayerDict {
         return {
             name: this.name,
             operator: this._operator.toDict(),
             expanded: this.expanded,
+            symbology: this.symbology.toDict(),
         };
     }
 
@@ -101,6 +93,7 @@ export class Layer {
         let layer = new Layer({
             name: dict.name,
             operator: Operator.fromDict(dict.operator),
+            symbology: Symbology.fromDict(dict.symbology),
         });
         layer.expanded = dict.expanded;
 

@@ -20,6 +20,7 @@ import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig} from "./compo
 import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
 import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./components/project-settings.component";
 import {OperatorGraphDialogComponent, OperatorGraphDialogConfig} from "./components/dialogs/operator-graph.component";
+import {SymbologyDialogComponent, SymbologyDialogConfig} from "./components/dialogs/symbology-dialog.component";
 
 import {Layer} from "./models/layer.model";
 import {Operator, ResultType} from "./models/operator.model";
@@ -49,7 +50,8 @@ import {UserService} from "./services/user.service";
                 (zoomMap)="mapComponent.zoomToMap()"
                 (addData)="sidenavService.show('right')"
                 (showOperator)="showAddOperatorDialog($event)"
-                (projectSettings)="projectSettingsDialog($event)">
+                (projectSettings)="projectSettingsDialog($event)"
+                (symbology)="symbologyDialog($event)">
             </tab-component>
         </div>
     </div>
@@ -63,11 +65,13 @@ import {UserService} from "./services/user.service";
                     [projection]="projectService.getMapProjection() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.resultType">
-                    <ol-point-layer #olLayer *ngSwitchWhen="LAYER_IS_POINTS"
+                    <ol-point-layer #olLayer *ngSwitchWhen="enumResultType.POINTS"
                                     [layer]="layer"
+                                    [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"></ol-point-layer>
-                    <ol-raster-layer #olLayer *ngSwitchWhen="LAYER_IS_RASTER"
+                    <ol-raster-layer #olLayer *ngSwitchWhen="enumResultType.RASTER"
                                     [layer]="layer"
+                                    [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"></ol-raster-layer>
                 </div>
             </ol-map>
@@ -157,8 +161,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private mapProjection$: Observable<Projection>;
 
     // for ng-switch
-    private LAYER_IS_POINTS = ResultType.POINTS;
-    private LAYER_IS_RASTER = ResultType.RASTER;
+    private enumResultType = ResultType;
 
     constructor(private zone: NgZone,
                 private layerService: LayerService,
@@ -263,5 +266,14 @@ export class AppComponent implements OnInit, AfterViewInit {
             .clickOutsideToClose(true);
 
         this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
+    }
+
+    private symbologyDialog(event: Event) {
+        let config = new SymbologyDialogConfig()
+          .layerService(this.layerService)
+          .clickOutsideToClose(true)
+          .targetEvent(event);
+
+        this.mdDialog.open(SymbologyDialogComponent, this.elementRef, config);
     }
 }
