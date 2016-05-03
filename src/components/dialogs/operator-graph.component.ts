@@ -276,7 +276,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             );
         };
         const heightBound = (maxWidth: number, graphWidth: number) => {
-            return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
+            // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
+            return maxWidth;
         };
 
         // combine the maximum window widths with the graph width
@@ -339,7 +340,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 labelType: "html",
                 label: `
                 <div class="header">
-                    <img href="${operator.operatorType.getIconUrl()}">
+                    <img src="${operator.operatorType.getIconUrl()}" class="icon">
                     </span>
                     ${operator.operatorType}
                 </div>
@@ -451,7 +452,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 const operator: Operator = node.operator;
 
                 // update operator type
-                this.selectedOperatorName$.next(operator.operatorType.getMappingName());
+                this.selectedOperatorName$.next(operator.operatorType.toString());
 
                 // update parameter view
                 this.parameters$.next(

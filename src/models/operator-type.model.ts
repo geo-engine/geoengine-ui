@@ -58,9 +58,14 @@ export abstract class OperatorType {
             return "00000".substring(0, 6 - c.length) + c;
         };
 
+        const color = "#" + intToRGB(hashCode(this.getMappingName()));
+        const size = 64;
+
         const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
         const context = canvas.getContext("2d");
-        context.fillStyle = intToRGB(hashCode(this.getMappingName()));
+        context.fillStyle = color;
         context.fillRect(0, 0, 64, 64);
         return canvas.toDataURL("image/png");
     }
@@ -529,5 +534,89 @@ export class RasterSourceType extends OperatorType {
 
     static fromDict(dict: RasterSourceTypeDict): RasterSourceType {
         return new RasterSourceType(dict);
+    }
+}
+
+interface HistogramTypeMappingDict extends OperatorTypeMappingDict {
+    attribute: string;
+    range: [number, number] | string; // `[min, max]` or `unit` or `data`
+    buckets?: number;
+}
+
+interface HistogramTypeDict extends OperatorTypeDict {
+    attribute: string;
+    range: { min: number, max: number } | string;
+    buckets?: number;
+}
+
+interface HistogramTypeConfig {
+    attribute: string;
+    range: { min: number, max: number } | string;
+    buckets?: number;
+}
+
+/**
+ * The histogram type.
+ */
+export class HistogramType extends OperatorType {
+    static get TYPE(): string { return "histogram"; };
+
+    private attribute: string;
+    private range: { min: number, max: number } | string;
+    private buckets: number;
+
+    constructor(config: HistogramTypeConfig) {
+        super();
+        this.attribute = config.attribute;
+        this.range = config.range;
+        this.buckets = config.buckets;
+    }
+
+    getMappingName(): string {
+        return HistogramType.TYPE;
+    }
+
+    toString(): string {
+        return "Histogram";
+    }
+
+    getParametersAsStrings(): Array<[string, string]> {
+        return [
+            ["attribute", this.attribute.toString()],
+            [
+                "range",
+                typeof this.range === "string" ?
+                    this.range.toString() : `min: ${this.range.min}, max: ${this.range.max}`
+            ],
+            ["buckets", this.buckets.toString()],
+        ];
+    }
+
+    toMappingDict(): HistogramTypeMappingDict {
+        let range: [number, number] | string;
+        if (typeof this.range === "string") {
+            range = this.range;
+        } else {
+            range = [this.range.min, this.range.max];
+        }
+
+        return {
+            attribute: this.attribute,
+            range: range,
+            buckets: this.buckets,
+        };
+    }
+
+    toDict(): HistogramTypeDict {
+        return {
+            operatorType: HistogramType.TYPE,
+            attribute: this.attribute,
+            range: this.range,
+            buckets: this.buckets,
+        };
+    }
+
+    static fromDict(dict: HistogramTypeDict): HistogramType {
+        return new HistogramType(dict);
     }
 }
