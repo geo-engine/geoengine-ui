@@ -1,16 +1,15 @@
 import {Component, Input, Output, EventEmitter,
         OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy} from "angular2/core";
+import {Http, HTTP_PROVIDERS} from "angular2/http";
+import {FORM_DIRECTIVES, Validators, FormBuilder,
+        ControlGroup, Control, ControlArray} from "angular2/common";
 
 import {MdPatternValidator, MdMinValueValidator, MdNumberRequiredValidator, MdMaxValueValidator,
         MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
 
-import {FORM_DIRECTIVES, Validators, FormBuilder,
-        ControlGroup, Control, ControlArray} from "angular2/common";
-
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
         OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
-
 import {HistogramComponent, HistogramData} from "../plots/histogram.component";
 
 import {LayerService} from "../../services/layer.service";
@@ -21,8 +20,9 @@ import {NumericAttributeFilterType} from "../../models/operator-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
 import {Projection} from "../../models/projection.model";
+import {SimplePointSymbology} from "../../models/symbology.model";
 
-import {Http, HTTP_PROVIDERS} from "angular2/http";
+
 
 /**
  * This component allows creating the expression operator.
@@ -190,6 +190,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
+            symbology: new SimplePointSymbology({}),
         }));
 
         this.dialog.close();

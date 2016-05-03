@@ -43,6 +43,7 @@ export class Layer {
       return this._operator;
     }
 
+    // TODO: move?
     getParams(projection: Projection): Parameters {
         let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter
 
@@ -52,14 +53,14 @@ export class Layer {
 
                 return {
                     "SERVICE": "WMS",
-                    "VERSION": Config.WMS_VERSION,
+                    "VERSION": Config.WMS.VERSION,
                     "REQUEST": "GetMap",
-                    "FORMAT": Config.WMS_FORMAT,
+                    "FORMAT": Config.WMS.FORMAT,
                     "TRANSPARENT": true,
                     "LAYERS": operator.toQueryJSON(),
                     "COLORS": "gray",
                     "DEBUG": (Config.DEBUG_MODE ? 1 : 0),
-                    "TIME": time
+                    "TIME": time,
                 };
             }
 
@@ -67,10 +68,12 @@ export class Layer {
                 let operator = this.operator.getProjectedOperator(projection);
 
                 return {
-                    "pointquery": operator.toQueryJSON(),
-                    "COLORS": "hsv",
-                    "CRS": projection.getCode(),
-                    "TIME": time
+                    service: "WFS",
+                    version: Config.WFS.VERSION,
+                    request: "GetFeature",
+                    typeNames: `points:${operator.toQueryJSON()}`,
+                    srsname: projection.getCode(),
+                    time: time,
                 };
             }
         }
