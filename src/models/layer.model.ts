@@ -32,7 +32,7 @@ export class Layer {
     constructor(config: LayerConfig) {
         this.name = config.name;
         this._operator = config.operator;
-        this.symbology = (config.symbology) ? config.symbology : new SimplePointSymbology({}); // TODO: by type
+        this.symbology = (config.symbology) ? config.symbology : new SimplePointSymbology({}); // TODO: relax symbology to optional and add creation by type
     }
 
     get url() {
