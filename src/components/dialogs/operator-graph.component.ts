@@ -269,14 +269,15 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
         const widthBound = (maxWidth: number, graphWidth: number) => {
             return Math.min(
-                maxWidth,
+                maxWidth
+                - GRAPH_STYLE.surrounding.detailComponentWidth
+                - GRAPH_STYLE.surrounding.margin,
                 graphWidth
-                + GRAPH_STYLE.surrounding.margin
-                + GRAPH_STYLE.surrounding.detailComponentWidth
             );
         };
         const heightBound = (maxWidth: number, graphWidth: number) => {
-            return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
+            // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
+            return maxWidth;
         };
 
         // combine the maximum window widths with the graph width
@@ -339,20 +340,18 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 labelType: "html",
                 label: `
                 <div class="header">
-                    <span class="icon"
-                          style="background-color: #${intToRGB(hashCode(operator.operatorType))}">
+                    <img src="${operator.operatorType.getIconUrl()}" class="icon">
                     </span>
                     ${operator.operatorType}
                 </div>
                 <div class="parameters">
                     <table>
                         <tr>
-                        ${Array.from(operator.parameters.entries())
-                               .map(([key, value]: [string, any]) => {
-                                   return `<td class="key">${key}</td>
-                                           <td class="value">${value}</td>`;
-                               })
-                               .join("</tr><tr>")}
+                        ${operator.operatorType.getParametersAsStrings()
+                                               .map(([key, value]: [string, string]) => {
+                                                    return `<td class="key">${key}</td>
+                                                            <td class="value">${value}</td>`;
+                                             }).join("</tr><tr>")}
                         </tr>
                     </table>
                 </div>
@@ -419,7 +418,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         // calculate the initial zoom level that captures the whole graph
         const scale = Math.min(
             paddedWidth / graph.graph().width,
-            paddedHeight / graph.graph().height
+            paddedHeight / graph.graph().height,
+            1 // do not scale more than 100% of size initially
         );
 
         // create zoom behavior
@@ -435,12 +435,9 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
         // add zoom handler
         zoom.on("zoom", () => {
-            // TODO: add `d3.event.translate` and `d3.event.scale` to definition file
-            let d3Event: any = d3.event;
-
             svgGroup.attr(
                 "transform",
-                `translate(${d3Event.translate})scale(${d3Event.scale})`
+                `translate(${d3.event["translate"]})scale(${d3.event["scale"]})`
             );
         });
         svg.call(zoom);
@@ -453,17 +450,17 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 const operator: Operator = node.operator;
 
                 // update operator type
-                this.selectedOperatorName$.next(operator.operatorType);
+                this.selectedOperatorName$.next(operator.operatorType.toString());
 
                 // update parameter view
-                let parameters: Array<{key: string, value: any}> =
-                    Array.from(operator.parameters.entries()).map(([key, value]) => {
+                this.parameters$.next(
+                    operator.operatorType.getParametersAsStrings().map(([key, value]) => {
                         return {
                             key: key,
                             value: value.toString(),
                         };
-                    });
-                this.parameters$.next(parameters);
+                    })
+                );
 
                 // de-select all
                 svg.selectAll(".operator").classed("highlight", false);

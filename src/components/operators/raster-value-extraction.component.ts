@@ -15,10 +15,12 @@ import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
 import {SimplePointSymbology} from "../../models/symbology.model";
-import {Operator, ResultType, ComplexOperatorParam} from "../../models/operator.model";
+
+import {Operator, ResultType} from "../../models/operator.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
 import {Projection} from "../../models/projection.model";
+import {RasterValueExtractionType} from "../../models/operator-type.model";
 
 /**
  * This component allows creating the expression operator.
@@ -30,11 +32,11 @@ import {Projection} from "../../models/projection.model";
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
-                                        [type]="enumResultType.POINTS"
+                                        [types]="[ResultType.POINTS]"
                                         (selectedLayers)="selectedPointLayer = $event[0]">
             </wave-multi-layer-selection>
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="9"
-                                        [type]="enumResultType.RASTER"
+                                        [types]="[ResultType.RASTER]"
                                         (selectedLayers)="onSelectRasterLayers($event)">
             </wave-multi-layer-selection>
             <md-card>
@@ -90,7 +92,6 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
-        console.log("RasterValueExtractionOperatorComponent", "constructor", this.layerService, dialog);
 
         this.valueNamesControls = formBuilder.array([]);
         this.configForm = formBuilder.group({
@@ -108,8 +109,6 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     }
 
     private onSelectRasterLayers(layers: Array<Layer>) {
-        console.log("onSelectRasterLayers", layers);
-
         let discrepancy = layers.length - this.valueNamesControls.length;
         if (discrepancy > 0) {
             for (let i = this.valueNamesControls.length; i < layers.length; i++) {
@@ -123,8 +122,6 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             }
         }
 
-        console.log("onSelectRasterLayers", this.valueNamesControls);
-
         this.selectedRasterLayers = layers;
     }
 
@@ -136,23 +133,25 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
 
         let units = new Map<string, Unit>(pointOperator.units.entries());
         let dataTypes = new Map<string, DataType>(pointOperator.dataTypes.entries());
+        let attributes = Array.from(pointOperator.attributes.values());
 
         for (let i = 0; i < rasterOperators.length; i++) {
             units.set(valueNames[i], rasterOperators[i].getUnit("value"));
             dataTypes.set(valueNames[i], rasterOperators[i].getDataType("value"));
+            attributes.push(valueNames[i]);
         }
 
         let name: string = this.configForm.controls["name"].value;
 
         let operator = new Operator({
-            operatorType: "raster_metadata_to_points",
+            operatorType: new RasterValueExtractionType({
+                xResolution: this.resolutionX,
+                yResolution: this.resolutionY,
+                attributeNames: valueNames,
+            }),
             resultType: ResultType.POINTS,
-            parameters: new Map<string, string | number | ComplexOperatorParam>()
-                        .set("xResolution", this.resolutionX)
-                        .set("yResolution", this.resolutionY)
-                        .set("names", valueNames),
             projection: pointOperator.projection,
-            attributes: ["value"],
+            attributes: attributes,
             dataTypes: dataTypes,
             units: units,
             pointSources: [pointOperator],
