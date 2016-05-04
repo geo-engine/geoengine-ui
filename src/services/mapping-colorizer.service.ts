@@ -17,7 +17,7 @@ export class MappingColorizerService {
     static requestType: string = "GetColorizer";
 
     static buildRequest(op: Operator): string {
-        return Config.MAPPING_URL + "?" + "SERVICE=WMS" + "&" + "VERSION=" + Config.WMS_VERSION + "&" + "REQUEST=" + MappingColorizerService.requestType + "&" + "LAYERS=" + op.toQueryJSON() + "&" + "CRS=" + op.projection.getCode();
+        return Config.MAPPING_URL + "?" + "SERVICE=WMS" + "&" + "VERSION=" + Config.WMS.VERSION + "&" + "REQUEST=" + MappingColorizerService.requestType + "&" + "LAYERS=" + op.toQueryJSON() + "&" + "CRS=" + op.projection.getCode();
     }
 
     getColorizer(op: Operator): Promise<MappingColorizer> {
