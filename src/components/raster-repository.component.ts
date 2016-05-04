@@ -10,7 +10,8 @@ import {MappingDataSourceFilter} from "../pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "../pipes/highlight.pipe";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation, UnitConfig} from "../models/unit.model";
-import {RasterSymbology} from "../models/symbology.model";
+import {MappingColorizerRasterSymbology, RasterSymbology} from "../models/symbology.model";
+import {MappingColorizerService} from "../services/mapping-colorizer.service";
 
 
 @Component({
@@ -73,7 +74,7 @@ import {RasterSymbology} from "../models/symbology.model";
       padding: 5px 5px 5px 0px;
     }
     `],
-    providers: [MappingDataSourcesService],
+    providers: [MappingDataSourcesService, MappingColorizerService],
     directives: [MATERIAL_DIRECTIVES],
     pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -84,6 +85,7 @@ export class RasterRepositoryComponent {
   private sources: Array<MappingSource> = [];
   private search_term: String = "";
   constructor(private _mappingDataSourcesService: MappingDataSourcesService,
+              private _mappingColorizerService: MappingColorizerService,
               private _layerService: LayerService) {
     _mappingDataSourcesService.getSources().subscribe(x => this.sources = x);
   }
@@ -112,7 +114,22 @@ export class RasterRepositoryComponent {
         ),
         units: new Map<string, Unit>().set("value", unit)
     });
-    let layer = new Layer({name: channel.name, operator: op, symbology: new RasterSymbology({})}); // TODO: get info from server?
-    this._layerService.addLayer(layer);
+
+    this._mappingColorizerService.getColorizer(op).then(x => { // TODO: move to layer?
+        let layer = new Layer({
+            name: channel.name,
+            operator: op,
+            symbology: new MappingColorizerRasterSymbology(x),
+        });
+        this._layerService.addLayer(layer);
+    }).catch(ex => {
+        console.log("_mappingColorizerService.getColorizer", ex);
+        let layer = new Layer({
+            name: channel.name,
+            operator: op,
+            symbology: new RasterSymbology({}),
+        }); // TODO: get info from server?
+        this._layerService.addLayer(layer);
+    });
   }
 }

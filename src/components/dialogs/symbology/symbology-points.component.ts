@@ -37,10 +37,23 @@ export class SymbologyPointsComponent implements OnInit {
 
     @Output("symbologyChanged") symbologyChangedEmitter: EventEmitter<SimplePointSymbology> = new EventEmitter<SimplePointSymbology>();
 
+    static minStrokeWidth: number = 1;
+    static minRadius: number = 1;
+
     private _cssStringToRgbaTransformer = new CssStringToRgbaPipe();
 
     update() {
         // console.log("wave-symbology-points", "update", this.symbology);
+
+        // guard against negative values
+        if (this.symbology.radius < SymbologyPointsComponent.minRadius) {
+            this.symbology.radius = SymbologyPointsComponent.minRadius;
+        }
+        if (this.symbology.stroke_width < SymbologyPointsComponent.minStrokeWidth) {
+            this.symbology.stroke_width = SymbologyPointsComponent.minStrokeWidth;
+        }
+
+        // return a clone (immutablility)
         this.symbologyChangedEmitter.emit(this.symbology.clone());
     }
 
