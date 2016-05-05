@@ -4,6 +4,8 @@ export enum SymbologyType {
     RASTER,
     SIMPLE_POINT,
     SIMPLE_VECTOR,
+    MAPPING_COLORIZER_RASTER,
+    ICON_POINT,
 }
 
 
@@ -42,19 +44,20 @@ export abstract class Symbology implements ISymbology {
             case SymbologyType.SIMPLE_POINT: return new SimplePointSymbology(dict.symbologyConfig);
             case SymbologyType.SIMPLE_VECTOR: return new SimpleVectorSymbology(dict.symbologyConfig);
             case SymbologyType.RASTER: return new RasterSymbology(dict.symbologyConfig);
+            case SymbologyType.MAPPING_COLORIZER_RASTER: return new MappingColorizerRasterSymbology(<IMappingColorizerRasterSymbology>(dict.symbologyConfig)); // cast needed here
         }
     }
 };
 
 export interface IVectorSymbology extends ISymbology {
-    fill_rgba?: Array<number>;
-    stroke_rgba?: Array<number>;
+    fill_rgba?: [number, number, number, number];
+    stroke_rgba?: [number, number, number, number];
     stroke_width?: number;
 }
 
 export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
-    fill_rgba: Array<number> = [255, 0, 0, 0.8]; // TODO: maybe a new iterface rgba? or just [number]?
-    stroke_rgba: Array<number> = [0, 0, 0, 1];
+    fill_rgba: [number, number, number, number] = [255, 0, 0, 0.8]; // TODO: maybe a new iterface rgba? or just [number]?
+    stroke_rgba: [number, number, number, number] = [0, 0, 0, 1];
     stroke_width: number = 1;
 
     abstract get olStyle(): ol.style.Style;
@@ -162,5 +165,33 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     clone(): RasterSymbology {
         return new RasterSymbology(this);
     }
+}
 
+export interface IMappingColorizerRasterSymbology extends IRasterSymbology {
+    interpolation: string;
+    breakpoints: Array<[number, string, string]>;
+}
+
+export class MappingColorizerRasterSymbology extends RasterSymbology implements IMappingColorizerRasterSymbology {
+    interpolation: string; // TODO: is this the same as unit.interpolation ?
+    breakpoints: Array<[number, string, string]>;
+
+    constructor(config: IMappingColorizerRasterSymbology) {
+        super(config);
+        this.interpolation = config.interpolation;
+        this.breakpoints = config.breakpoints;
+        console.log("new MappingColorizerRasterSymbology", this);
+    }
+
+    get symbologyType(): SymbologyType {
+        return SymbologyType.MAPPING_COLORIZER_RASTER;
+    }
+
+    toConfig(): IRasterSymbology {
+        return this.clone();
+    }
+
+    clone(): MappingColorizerRasterSymbology {
+        return new MappingColorizerRasterSymbology(this);
+    }
 }

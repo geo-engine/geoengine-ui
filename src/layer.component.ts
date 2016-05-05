@@ -2,12 +2,11 @@ import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from "a
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 
-import {ResultTypes} from "./models/result-type.model";
+import {SymbologyType} from "./models/symbology.model";
 import {Layer} from "./models/layer.model";
 
 import {LayerService} from "./services/layer.service";
-import {LegendaryPointComponent} from  "./components/legendary/legendary-point.component";
-import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.component";
+import {LegendaryComponent, LegendaryRasterComponent, LegendaryPointComponent, LegendaryMappingColorizerRasterComponent} from "./components/legendary/legendary.component";
 
 
 @Component({
@@ -41,9 +40,11 @@ import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.
                         <i md-icon>more_vert</i>
                     </button>
                 </div>
-                <div *ngIf="layer.expanded" [ngSwitch]="layer.resultType">
-                    <wave-legendary-points *ngSwitchWhen="ResultTypes.POINTS" [symbology]="layer.symbology"></wave-legendary-points>
-                    <wave-legendary-raster *ngSwitchWhen="ResultTypes.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
+                <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.symbologyType">
+                    <wave-legendary-points *ngSwitchWhen="enumSymbologyType.SIMPLE_POINT" [symbology]="layer.symbology"></wave-legendary-points>
+                    <wave-legendary-raster *ngSwitchWhen="enumSymbologyType.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
+                    <wave-legendary-mapping-colorizer-raster *ngSwitchWhen="enumSymbologyType.MAPPING_COLORIZER_RASTER" [symbology]="layer.symbology"></wave-legendary-mapping-colorizer-raster>
+                    <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
                 </div>
             </div>
             <md-divider
@@ -75,12 +76,12 @@ import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent, LegendaryRasterComponent]
+    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent, LegendaryRasterComponent, LegendaryMappingColorizerRasterComponent]
 })
 
 export class LayerComponent {
     // for ng-switch
-    public ResultTypes = ResultTypes;
+    private enumSymbologyType = SymbologyType;
 
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {
