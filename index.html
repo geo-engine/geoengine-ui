@@ -31,12 +31,12 @@
     <!-- Dragula -->
     <link rel="stylesheet" href="node_modules/dragula/dist/dragula.min.css">
 
+    <!-- Codemirror -->
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
+
     <!-- 2. Configure SystemJS -->
     <script>
         System.config({
-            paths: {
-                'dragula': 'node_modules/dragula/dist/dragula.min.js'
-            },
             packages: {
                 app: {
                     format: 'register',
@@ -50,6 +50,10 @@
                 },
                 'dragula': {
                     defaultExtension: 'js'
+                },
+                "codemirror": {
+                    main: "lib/codemirror.js",
+                    defaultExtension: "js"
                 }
             },
             map: {
@@ -59,7 +63,9 @@
                 'proj4': 'node_modules/proj4/dist/proj4.js',
                 'd3': 'node_modules/d3/d3.js',
                 'dagre': 'node_modules/dagre/dist/dagre.js',
-                'dagre-d3': 'node_modules/dagre-d3/dist/dagre-d3.js'
+                'dagre-d3': 'node_modules/dagre-d3/dist/dagre-d3.js',
+                'dragula': 'node_modules/dragula/dist/dragula.min.js',
+                "codemirror": "node_modules/codemirror"
             },
             meta: {
                 'node_modules/proj4/dist/proj4.js': { format: 'global' }

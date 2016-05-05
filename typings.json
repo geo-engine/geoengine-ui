@@ -7,6 +7,7 @@
     "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
     "dagre": "github:DefinitelyTyped/DefinitelyTyped/dagre/dagre.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
     "dagre-d3": "github:DefinitelyTyped/DefinitelyTyped/dagre-d3/dagre-d3.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
+    "codemirror": "github:DefinitelyTyped/DefinitelyTyped/codemirror/codemirror.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
     "proj4": "file:custom_typings/proj4.d.ts"
   }
 }

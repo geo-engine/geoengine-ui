@@ -12,7 +12,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "ace-editor-builds": "^1.2.0",
     "angular2": "2.0.0-beta.15",
+    "codemirror": "^5.14.2",
     "d3": "^3.5.16",
     "dagre": "^0.7.4",
     "dagre-d3": "^0.4.17",
