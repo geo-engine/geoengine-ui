@@ -3,11 +3,15 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {LayerService} from "./layer.service";
 import {ProjectService} from "./project.service";
+import {PlotService} from "./plot.service";
+import {MappingQueryService} from "./mapping-query.service";
 
 import Config from "../config.model";
 import {Layer, LayerDict} from "../models/layer.model";
 import {Project} from "../models/project.model";
-import {Operator, ResultType} from "../models/operator.model";
+import {Plot, PlotDict} from "../models/plot.model";
+import {Operator} from "../models/operator.model";
+import {ResultTypes} from "../models/result-type.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
@@ -22,7 +26,10 @@ export class StorageService {
     private storageProvider: StorageProvider;
     private defaults: StorageDefaults;
 
-    constructor(private layerService: LayerService, private projectService: ProjectService) {
+    constructor(private layerService: LayerService,
+                private projectService: ProjectService,
+                private plotService: PlotService,
+                private mappingQueryService: MappingQueryService) {
         this.storageProvider = new BrowserStorageProvider();
 
         if (Config.DEBUG_MODE) {
@@ -33,8 +40,10 @@ export class StorageService {
 
         this.loadProject();
         this.loadLayers();
+        this.loadPlots();
         this.storeProjectSetup();
         this.storeLayersSetup();
+        this.storePlotsSetup();
     }
 
     private loadLayers() {
@@ -52,8 +61,27 @@ export class StorageService {
         this.layerService.getLayersStream().subscribe(this.storageProvider.saveLayers);
     }
 
+    private loadPlots() {
+        let plots = this.storageProvider.loadPlots();
+
+        if (plots === undefined) {
+            // load default
+            plots = this.defaults.getPlots();
+        }
+
+        for (const plot of plots) {
+            plot.data = this.mappingQueryService.getPlotData(plot.operator);
+        }
+
+        this.plotService.setPlots(plots);
+    }
+
+    private storePlotsSetup() {
+        this.plotService.getPlotsStream().subscribe(this.storageProvider.savePlots);
+    }
+
     private loadProject() {
-        let project = this.storageProvider.loadProject();
+        const project = this.storageProvider.loadProject();
         if (project === undefined) {
             // use default project
         } else {
@@ -133,9 +161,22 @@ interface StorageProvider {
 
     /**
      * Save the current layers.
-     * @param layers An array if layers.
+     * @param layers An array of layers.
      */
     saveLayers(layers: Array<Layer>): void;
+
+    /**
+     * Load the current plots.
+     * @param mappingQueryService Service to load the plot data.
+     * @returns An array of plots.
+     */
+    loadPlots(): Array<Plot>;
+
+    /**
+     * Save the current plots.
+     * @param plots An array of plots.
+     */
+    savePlots(plots: Array<Plot>): void;
 
     /**
      * Load the current layer list visibility.
@@ -179,11 +220,11 @@ interface StorageProvider {
  */
 class BrowserStorageProvider implements StorageProvider {
     loadProject(): Project {
-        let projectJSON = localStorage.getItem("project");
+        const projectJSON = localStorage.getItem("project");
         if (projectJSON === null) {
             return undefined;
         } else {
-            let project = Project.fromJSON(projectJSON);
+            const project = Project.fromJSON(projectJSON);
             return project;
         }
     }
@@ -193,14 +234,14 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     loadLayers(): Array<Layer> {
-        let layersJSON = localStorage.getItem("layers");
+        const layersJSON = localStorage.getItem("layers");
         if (layersJSON === null) {
             return undefined;
         } else {
-            let layers: Array<Layer> = [];
-            let layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
+            const layers: Array<Layer> = [];
+            const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
-            for (let layerDict of layerDicts) {
+            for (const layerDict of layerDicts) {
                 layers.push(Layer.fromDict(layerDict));
             }
 
@@ -209,17 +250,43 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveLayers(layers: Array<Layer>) {
-        let layerDicts: Array<LayerDict> = [];
+        const layerDicts: Array<LayerDict> = [];
 
-        for (let layer of layers) {
+        for (const layer of layers) {
             layerDicts.push(layer.toDict());
         }
 
         localStorage.setItem("layers", JSON.stringify(layerDicts));
     }
 
+    loadPlots(): Array<Plot> {
+        const plotsJSON = localStorage.getItem("plots");
+        if (plotsJSON === null) {
+            return undefined;
+        } else {
+            const plots: Array<Plot> = [];
+            const plotDicts: Array<PlotDict> = JSON.parse(plotsJSON);
+
+            for (const plotDict of plotDicts) {
+                plots.push(Plot.fromDict(plotDict));
+            }
+
+            return plots;
+        }
+    }
+
+    savePlots(plots: Array<Plot>) {
+        const plotDicts: Array<PlotDict> = [];
+
+        for (const plot of plots) {
+            plotDicts.push(plot.toDict());
+        }
+
+        localStorage.setItem("plots", JSON.stringify(plotDicts));
+    }
+
     loadLayerListVisible(): boolean {
-        let layerListVisible = localStorage.getItem("layerListVisible");
+        const layerListVisible = localStorage.getItem("layerListVisible");
         if (layerListVisible === null) {
             return undefined;
         } else {
@@ -232,7 +299,7 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     loadDataTableVisible(): boolean {
-        let dataTableVisible = localStorage.getItem("dataTableVisible");
+        const dataTableVisible = localStorage.getItem("dataTableVisible");
         if (dataTableVisible === null) {
             return undefined;
         } else {
@@ -245,7 +312,7 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     loadTabIndex(): number {
-        let tabIndex = localStorage.getItem("tabIndex");
+        const tabIndex = localStorage.getItem("tabIndex");
         if (tabIndex === null) {
             return undefined;
         } else {
@@ -263,6 +330,9 @@ class BrowserStorageProvider implements StorageProvider {
  */
 class StorageDefaults {
     getLayers(): Array<Layer> {
+        return [];
+    }
+    getPlots(): Array<Plot> {
         return [];
     }
     getLayerListVisible(): boolean {
@@ -291,7 +361,7 @@ class DeveloperDefaults extends StorageDefaults {
                         sourcename: "srtm",
                         transform: true,
                     }),
-                    resultType: ResultType.RASTER,
+                    resultType: ResultTypes.RASTER,
                     projection: Projections.fromCode("EPSG:4326"),
                     attributes: ["value"],
                     dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
@@ -310,7 +380,7 @@ class DeveloperDefaults extends StorageDefaults {
                         datasource: "GBIF",
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
-                    resultType: ResultType.POINTS,
+                    resultType: ResultTypes.POINTS,
                     projection: Projections.fromCode("EPSG:4326"),
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),
@@ -318,6 +388,9 @@ class DeveloperDefaults extends StorageDefaults {
                 })
             })
         ];
+    }
+    getPlots(): Array<Plot> {
+        return [];
     }
     getLayerListVisible(): boolean {
         return true;

@@ -7,9 +7,14 @@ import {DialogContainerComponent} from "../dialogs/dialog-basics.component";
 
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
-import {Layer} from "../../models/layer.model";
 import {LayerService} from "../../services/layer.service";
-import {Operator, ResultType, resultTypeNameConverter} from "../../models/operator.model";
+import {PlotService} from "../../services/plot.service";
+import {MappingQueryService} from "../../services/mapping-query.service";
+
+import {Layer} from "../../models/layer.model";
+import {Plot} from "../../models/plot.model";
+import {Operator} from "../../models/operator.model";
+import {ResultType, ResultTypes} from "../../models/result-type.model";
 import {Projection} from "../../models/projection.model";
 
 /**
@@ -142,6 +147,8 @@ export class LayerMultiSelectComponent implements OnChanges {
      */
     @Input() max: number = 1;
 
+    @Input() initialAmount = 1;
+
     /**
      * The type is used as a filter for the layers to choose from.
      */
@@ -173,13 +180,16 @@ export class LayerMultiSelectComponent implements OnChanges {
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
             switch (propName) {
+                case "initialAmount":
+                    this.amountOfLayers = this.initialAmount;
+                    this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
                 case "inputLayers":
                 case "types":
                     this.layers = this.inputLayers.filter(layer => {
                         return this.types.indexOf(layer.operator.resultType) >= 0;
                     });
                     if (this.title === undefined) {
-                        this.title = this.types.map(type => resultTypeNameConverter(type))
+                        this.title = this.types.map(type => type.toString())
                                                .join(", ");
                     }
                     break;
@@ -379,16 +389,20 @@ export class OperatorContainerComponent {
 export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnChanges {
 
     @Input() layerService: LayerService;
+    @Input() plotService: PlotService;
+    @Input() mappingQueryService: MappingQueryService;
 
     protected layers: Array<Layer> = [];
 
     // types
-    protected ResultType = ResultType;
+    protected ResultTypes = ResultTypes;
 
     constructor() {}
 
     ngOnInit() {
-        this.layers = this.layerService.getLayers();
+        if (this.layers) {
+            this.layers = this.layerService.getLayers();
+        }
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
@@ -404,13 +418,22 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
 }
 
 /**
- * This interface allows passing classes as parameter.
+ * This interface allows passing class instances as parameter.
  */
 export interface OperatorBase {}
 
 export class OperatorDialogConfig extends MdDialogConfig {
     layerService(layerService: LayerService): OperatorDialogConfig {
         this.context.layerService = layerService;
+        return this;
+    }
+
+    plotService(plotService: PlotService): OperatorDialogConfig {
+        this.context.plotService = plotService;
+        return this;
+    }
+    mappingQueryService(mappingQueryService: MappingQueryService) {
+        this.context.mappingQueryService = mappingQueryService;
         return this;
     }
 }

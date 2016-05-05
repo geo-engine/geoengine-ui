@@ -15,7 +15,8 @@ import {HistogramComponent, HistogramData} from "../plots/histogram.component";
 import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
-import {Operator, ResultType} from "../../models/operator.model";
+import {Operator} from "../../models/operator.model";
+import {ResultTypes} from "../../models/result-type.model";
 import {NumericAttributeFilterType} from "../../models/operator-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
@@ -35,7 +36,7 @@ import {SimplePointSymbology} from "../../models/symbology.model";
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection
                 [layers]="layers" [min]="1" [max]="1"
-                [types]="[ResultType.POINTS, ResultType.LINES, ResultType.POLYGONS]"
+                [types]="ResultTypes.VECTOR_TYPES"
                 (selectedLayers)="onSelectLayer($event[0])">
             </wave-multi-layer-selection>
             <md-card>
@@ -166,7 +167,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 rangeMin: boundsMin,
                 rangeMax: boundsMax,
             }),
-            resultType: ResultType.POINTS,
+            resultType: ResultTypes.POINTS,
             projection: vectorOperator.projection,
             attributes: attributes,
             dataTypes: dataTypes,
@@ -174,13 +175,13 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         };
 
         switch (vectorOperator.resultType) {
-            case ResultType.POINTS:
+            case ResultTypes.POINTS:
                 dict["pointSources"] = [vectorOperator];
                 break;
-            case ResultType.LINES:
+            case ResultTypes.LINES:
                 dict["lineSources"] = [vectorOperator];
                 break;
-            case ResultType.POLYGONS:
+            case ResultTypes.POLYGONS:
                 dict["polygonSources"] = [vectorOperator];
                 break;
         }

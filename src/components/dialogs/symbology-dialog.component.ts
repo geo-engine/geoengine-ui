@@ -11,7 +11,7 @@ import {SymbologyRasterComponent} from "./symbology/symbology-raster.component";
 import {SymbologyPointsComponent} from "./symbology/symbology-points.component";
 
 import {Layer} from "../../models/layer.model";
-import {ResultType} from "../../models/operator.model";
+import {ResultTypes} from "../../models/result-type.model";
 
 
 @Component({
@@ -19,8 +19,8 @@ import {ResultType} from "../../models/operator.model";
     template: `
     <wave-dialog-container [title]="_layer?.name" >
         <div [ngSwitch]="_layer.resultType">
-            <wave-symbology-points *ngSwitchWhen="enumResultType.POINTS" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-points>
-            <wave-symbology-raster *ngSwitchWhen="enumResultType.RASTER" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-raster>
+            <wave-symbology-points *ngSwitchWhen="ResultTypes.POINTS" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-points>
+            <wave-symbology-raster *ngSwitchWhen="ResultTypes.RASTER" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-raster>
         </div>
     </wave-dialog-container>
     `,
@@ -34,7 +34,7 @@ export class SymbologyDialogComponent implements OnInit {
     private _symbology: Symbology;
 
     // for ng-switch
-    public enumResultType = ResultType;
+    public ResultTypes = ResultTypes;
 
     constructor(private dialog: MdDialogRef) {}
 

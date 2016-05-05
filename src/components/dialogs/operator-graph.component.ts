@@ -9,7 +9,8 @@ import {DialogContainerComponent} from "./dialog-basics.component";
 import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
-import {Operator, ResultType} from "../../models/operator.model";
+import {Operator} from "../../models/operator.model";
+import {ResultTypes} from "../../models/result-type.model";
 
 import d3 from "d3"; // necessary for dagreD3
 // import dagre from "dagre";
@@ -320,9 +321,6 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             return "00000".substring(0, 6 - c.length) + c;
         };
 
-        const RESULT_TYPES = [ResultType.RASTER, ResultType.POINTS,
-                              ResultType.LINES, ResultType.POLYGONS];
-
         let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
@@ -362,7 +360,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             });
 
             // add children
-            for (let resultType of RESULT_TYPES) {
+            for (let resultType of ResultTypes.INPUT_TYPES) {
                 for (let child of operator.getSources(resultType)) {
                     operators.push(child);
                     edges.push([child.id, operator.id]);

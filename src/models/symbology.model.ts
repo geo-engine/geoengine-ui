@@ -1,5 +1,4 @@
 import ol from "openlayers";
-import {ResultType} from "./operator.model";
 
 export enum SymbologyType {
     RASTER,

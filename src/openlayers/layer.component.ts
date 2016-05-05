@@ -2,7 +2,6 @@ import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from
 import ol from "openlayers";
 
 import Config from "../config.model";
-import {ResultType} from "../models/operator.model";
 import {Layer} from "../models/layer.model";
 import {Projection} from "../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../models/symbology.model";
@@ -67,7 +66,7 @@ export class PointLayerComponent extends MapLayerComponent {
                 format: new ol.format.GeoJSON(),
                 url: Config.MAPPING_URL + "?" + Object.keys(params).map(
                     key => key + "=" + encodeURIComponent(params[key])
-                ).join("&") + "&format=geojson",
+                ).join("&") + `&outputFormat=${Config.WFS.FORMAT}`,
                 wrapX: false
             });
 

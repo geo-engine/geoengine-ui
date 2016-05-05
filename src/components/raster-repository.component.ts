@@ -2,7 +2,8 @@ import {Component, ChangeDetectionStrategy} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {LayerService} from "../services/layer.service";
 import {Layer} from "../models/layer.model";
-import {Operator, ResultType} from "../models/operator.model";
+import {Operator} from "../models/operator.model";
+import {ResultTypes} from "../models/result-type.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {MappingDataSourcesService} from "../services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "../models/mapping-source.model";
@@ -104,7 +105,7 @@ export class RasterRepositoryComponent {
             sourcename: source.source,
             transform: doTransform, // FIXME user selectable transform?
         }),
-        resultType: ResultType.RASTER,
+        resultType: ResultTypes.RASTER,
         projection: Projections.fromCode("EPSG:" + source.coords.epsg),
         attributes: ["value"],
         dataTypes: new Map<string, DataType>().set(

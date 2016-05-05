@@ -6,7 +6,7 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
 import Config from "../config.model";
 import {LayerService} from "../services/layer.service";
-import {ResultType} from "../models/operator.model";
+import {ResultTypes} from "../models/result-type.model";
 import {ProjectService} from "../services/project.service";
 
 
@@ -83,26 +83,33 @@ export class DataTable implements OnInit, OnChanges {
                 private layerService: LayerService,
                 private projectService: ProjectService) {
 
-                this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
-                      if (layer === undefined) {
-                        return Observable.of([]);
-                      }
-                          switch (layer.resultType) {
-                              case ResultType.POINTS:
-                                let layerParams = layer.getParams(this.projectService.getProjectOnce().workingProjection);
-                                  return this.http.get(Config.MAPPING_URL + "?" + Object.keys(layerParams).map(key => key + "=" + encodeURIComponent(layerParams[key])).join("&") + "&format=csv").map(result => {
-
-                                        const csv_rows = result.text().split("\n"); // split by new lines to seperate the rows
-                                        let data_rows: Array<Array<string>> = [];
-                                        for (let csv_row of csv_rows){
-                                          data_rows.push(csv_row.split(","));
-                                        }
-                                        return data_rows;
-                                      });
-                                default:
-                                    return Observable.of([]);
-                                };
-                          }).concatAll();
+        this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
+            if (layer === undefined) {
+                return Observable.of([]);
+            }
+            switch (layer.operator.resultType) {
+                case ResultTypes.POINTS:
+                    let layerParams = layer.getParams(
+                        this.projectService.getProjectOnce().workingProjection
+                    );
+                    return this.http.get(
+                        Config.MAPPING_URL + "?" +
+                        Object.keys(layerParams).map(
+                            key => key + "=" + encodeURIComponent(layerParams[key])
+                        ).join("&") + "&outputFormat=csv"
+                    ).map(result => {
+                        // split by new lines to seperate the rows
+                        const csv_rows = result.text().split("\n");
+                        let data_rows: Array<Array<string>> = [];
+                        for (let csv_row of csv_rows){
+                          data_rows.push(csv_row.split(","));
+                        }
+                        return data_rows;
+                      });
+                default:
+                    return Observable.of([]);
+            };
+        }).concatAll();
     }
 
     ngOnInit() {

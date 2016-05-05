@@ -4,34 +4,7 @@ import {Unit, UnitDict} from "./unit.model";
 import {DataType, DataTypes} from "./datatype.model";
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict, ProjectionType}
         from "./operator-type.model";
-
-/**
- * The result type of a mapping operator.
- */
-export enum ResultType {
-    RASTER = 1,
-    POINTS = 2,
-    LINES = 3,
-    POLYGONS = 4,
-    PLOT = 4242 // this result type must not be used as an input.
-}
-
-export function resultTypeNameConverter(type: ResultType): string {
-    switch (type) {
-        case ResultType.RASTER:
-            return "Raster";
-        case ResultType.POINTS:
-            return "Points";
-        case ResultType.LINES:
-            return "Lines";
-        case ResultType.POLYGONS:
-            return "Polygons";
-        case ResultType.PLOT:
-            return "Plot";
-        default:
-            throw "Invalid Result Type";
-    }
-};
+import {ResultType, ResultTypes} from "./result-type.model";
 
 type OperatorId = number;
 type AttributeName = string;
@@ -55,7 +28,7 @@ interface OperatorConfig {
 export interface OperatorDict {
     id: number;
     operatorType: OperatorTypeDict;
-    resultType: number;
+    resultType: string;
     projection: string;
     attributes: Array<string>;
     dataTypes: Array<[string, string]>;
@@ -70,10 +43,10 @@ interface QueryDict {
     type: string;
     params: OperatorTypeMappingDict;
     sources?: {
-        RASTER?: Array<QueryDict>;
-        POINTS?: Array<QueryDict>;
-        LINES?: Array<QueryDict>;
-        POLYGONS?: Array<QueryDict>;
+        raster?: Array<QueryDict>;
+        points?: Array<QueryDict>;
+        lines?: Array<QueryDict>;
+        polygons?: Array<QueryDict>;
     };
 }
 
@@ -139,10 +112,10 @@ export class Operator {
         }
 
         let sources: Array<[Operator[], Operator[], ResultType]> = [
-            [config.rasterSources, this.rasterSources, ResultType.RASTER],
-            [config.pointSources, this.pointSources, ResultType.POINTS],
-            [config.lineSources, this.lineSources, ResultType.LINES],
-            [config.polygonSources, this.polygonSources, ResultType.POLYGONS]
+            [config.rasterSources, this.rasterSources, ResultTypes.RASTER],
+            [config.pointSources, this.pointSources, ResultTypes.POINTS],
+            [config.lineSources, this.lineSources, ResultTypes.LINES],
+            [config.polygonSources, this.polygonSources, ResultTypes.POLYGONS]
         ];
 
         for (let [source, sink, sinkType] of sources) {
@@ -266,13 +239,13 @@ export class Operator {
      */
     getSources(sourceType: ResultType): Operator[] {
         switch (sourceType) {
-            case ResultType.RASTER:
+            case ResultTypes.RASTER:
                 return this.rasterSources;
-            case ResultType.POINTS:
+            case ResultTypes.POINTS:
                 return this.pointSources;
-            case ResultType.LINES:
+            case ResultTypes.LINES:
                 return this.lineSources;
-            case ResultType.POLYGONS:
+            case ResultTypes.POLYGONS:
                 return this.polygonSources;
             default:
                 throw Error("Invalid Source Type");
@@ -299,10 +272,10 @@ export class Operator {
                 attributes: this._attributes,
                 dataTypes: this._dataTypes,
                 units: this._units,
-                rasterSources: this.resultType === ResultType.RASTER ? [this] : [],
-                pointSources: this.resultType === ResultType.POINTS ? [this] : [],
-                lineSources: this.resultType === ResultType.LINES ? [this] : [],
-                polygonSources: this.resultType === ResultType.POLYGONS ? [this] : [],
+                rasterSources: this.resultType === ResultTypes.RASTER ? [this] : [],
+                pointSources: this.resultType === ResultTypes.POINTS ? [this] : [],
+                lineSources: this.resultType === ResultTypes.LINES ? [this] : [],
+                polygonSources: this.resultType === ResultTypes.POLYGONS ? [this] : [],
             });
         }
     }
@@ -320,10 +293,10 @@ export class Operator {
             let sources: any = {};
 
             let sourcesList: Array<[string, Array<Operator>]> = [
-                [ResultType[ResultType.RASTER].toLowerCase(), this.rasterSources],
-                [ResultType[ResultType.POINTS].toLowerCase(), this.pointSources],
-                [ResultType[ResultType.LINES].toLowerCase(), this.lineSources],
-                [ResultType[ResultType.POLYGONS].toLowerCase(), this.polygonSources]
+                [ResultTypes.RASTER.getCode(), this.rasterSources],
+                [ResultTypes.POINTS.getCode(), this.pointSources],
+                [ResultTypes.LINES.getCode(), this.lineSources],
+                [ResultTypes.POLYGONS.getCode(), this.polygonSources]
             ];
             for (let [sourceString, source] of sourcesList) {
                 if (source.length > 0) {
@@ -350,7 +323,7 @@ export class Operator {
     toDict(): OperatorDict {
       let dict: OperatorDict = {
         id: this._id,
-        resultType: this._resultType,
+        resultType: this._resultType.getCode(),
         operatorType: this._operatorType.toDict(),
         projection: this._projection.getCode(),
         attributes: this._attributes,
@@ -380,7 +353,7 @@ export class Operator {
     static fromDict(operatorDict: OperatorDict): Operator {
         let operator = new Operator({
             operatorType: OperatorType.fromDict(operatorDict.operatorType),
-            resultType: operatorDict.resultType,
+            resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
             attributes: operatorDict.attributes,
             dataTypes: new Map<AttributeName, DataType>(
@@ -399,7 +372,9 @@ export class Operator {
             polygonSources: operatorDict.polygonSources.map(Operator.fromDict),
         });
 
+        Operator._operatorId = Math.max(Operator._operatorId, operatorDict.id + 1);
         operator._id = operatorDict.id;
+        // TODO: check for operator id clashes.
 
         return operator;
     }

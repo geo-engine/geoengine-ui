@@ -1,6 +1,7 @@
 import {Unit, UnitDict, UnitMappingDict} from "./unit.model";
 import {DataType, DataTypes} from "./datatype.model";
 import {Projection, Projections} from "./projection.model";
+import {ResultTypes, ResultType} from "./result-type.model";
 
 /**
  * Dictionary for querying the server.
@@ -92,6 +93,10 @@ export abstract class OperatorType {
                 return GFBioPointSourceType.fromDict(<GFBioPointSourceTypeDict> dict);
             case RasterSourceType.TYPE:
                 return RasterSourceType.fromDict(<RasterSourceTypeDict> dict);
+            case HistogramType.TYPE:
+                return HistogramType.fromDict(<HistogramTypeDict> dict);
+            case RType.TYPE:
+                return RType.fromDict(<RTypeDict> dict);
         }
     }
 }
@@ -618,5 +623,73 @@ export class HistogramType extends OperatorType {
 
     static fromDict(dict: HistogramTypeDict): HistogramType {
         return new HistogramType(dict);
+    }
+}
+
+interface RTypeMappingDict extends OperatorTypeMappingDict {
+    source: string;
+    result_type: string;
+}
+
+interface RTypeDict extends OperatorTypeDict {
+    code: string;
+    resultType: string;
+}
+
+interface RTypeConfig {
+    code: string;
+    resultType: ResultType;
+}
+
+/**
+ * The R type.
+ */
+export class RType extends OperatorType {
+    static get TYPE(): string { return "r"; };
+
+    private code: string;
+    private resultType: ResultType;
+
+    constructor(config: RTypeConfig) {
+        super();
+        this.code = config.code;
+        this.resultType = config.resultType;
+    }
+
+    getMappingName(): string {
+        return RType.TYPE;
+    }
+
+    toString(): string {
+        return "R Operator";
+    }
+
+    getParametersAsStrings(): Array<[string, string]> {
+        return [
+            ["code", this.code.toString()],
+            ["resultType", this.resultType.toString()],
+        ];
+    }
+
+    toMappingDict(): RTypeMappingDict {
+        return {
+            source: this.code,
+            result_type: this.resultType.getCode(),
+        };
+    }
+
+    toDict(): RTypeDict {
+        return {
+            operatorType: RType.TYPE,
+            code: this.code,
+            resultType: this.resultType.getCode(),
+        };
+    }
+
+    static fromDict(dict: RTypeDict): RType {
+        return new RType({
+            code: dict.code,
+            resultType: ResultTypes.fromCode(dict.resultType),
+        });
     }
 }

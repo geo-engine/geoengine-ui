@@ -16,7 +16,8 @@ import {LayerService} from "../../services/layer.service";
 import {Layer} from "../../models/layer.model";
 import {SimplePointSymbology} from "../../models/symbology.model";
 
-import {Operator, ResultType} from "../../models/operator.model";
+import {Operator} from "../../models/operator.model";
+import {ResultTypes} from "../../models/result-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
 import {Projection} from "../../models/projection.model";
@@ -32,11 +33,11 @@ import {RasterValueExtractionType} from "../../models/operator-type.model";
                             (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
-                                        [types]="[ResultType.POINTS]"
+                                        [types]="[ResultTypes.POINTS]"
                                         (selectedLayers)="selectedPointLayer = $event[0]">
             </wave-multi-layer-selection>
             <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="9"
-                                        [types]="[ResultType.RASTER]"
+                                        [types]="[ResultTypes.RASTER]"
                                         (selectedLayers)="onSelectRasterLayers($event)">
             </wave-multi-layer-selection>
             <md-card>
@@ -149,7 +150,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
                 yResolution: this.resolutionY,
                 attributeNames: valueNames,
             }),
-            resultType: ResultType.POINTS,
+            resultType: ResultTypes.POINTS,
             projection: pointOperator.projection,
             attributes: attributes,
             dataTypes: dataTypes,

@@ -181,7 +181,8 @@ export class Unit {
     }
 
     static fromMappingDict(dict: UnitMappingDict): Unit {
-      let interpolation = (dict.interpolation !== undefined) ? nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
+      let interpolation = (dict.interpolation !== undefined) ?
+        nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
       let classes = new Map<number, Class>();
       if (dict.classes !== undefined) {
           for (let className in dict.classes) {

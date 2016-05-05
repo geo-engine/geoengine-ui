@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from "a
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {Dragula, DragulaService} from "ng2-dragula/ng2-dragula";
 
-import {ResultType} from "./models/operator.model";
+import {ResultTypes} from "./models/result-type.model";
 import {Layer} from "./models/layer.model";
 
 import {LayerService} from "./services/layer.service";
@@ -42,8 +42,8 @@ import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.
                     </button>
                 </div>
                 <div *ngIf="layer.expanded" [ngSwitch]="layer.resultType">
-                    <wave-legendary-points *ngSwitchWhen="enumResultType.POINTS" [symbology]="layer.symbology"></wave-legendary-points>
-                    <wave-legendary-raster *ngSwitchWhen="enumResultType.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
+                    <wave-legendary-points *ngSwitchWhen="ResultTypes.POINTS" [symbology]="layer.symbology"></wave-legendary-points>
+                    <wave-legendary-raster *ngSwitchWhen="ResultTypes.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
                 </div>
             </div>
             <md-divider
@@ -80,7 +80,7 @@ import {LegendaryRasterComponent} from "./components/legendary/legendary-raster.
 
 export class LayerComponent {
     // for ng-switch
-    public enumResultType = ResultType;
+    public ResultTypes = ResultTypes;
 
     constructor(private dragulaService: DragulaService,
                 private layerService: LayerService) {

@@ -15,21 +15,29 @@ import {MapComponent} from "./openlayers/map.component";
 import {PointLayerComponent, RasterLayerComponent} from "./openlayers/layer.component";
 
 import {RasterRepositoryComponent} from "./components/raster-repository.component";
-import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig} from "./components/operators/operator.component";
+import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig}
+    from "./components/operators/operator.component";
 
-import {RenameLayerComponent, RenameLayerDialogConfig} from "./components/rename-layer.component";
-import {ProjectSettingsComponent, ProjectSettingsDialogConfig} from "./components/project-settings.component";
-import {OperatorGraphDialogComponent, OperatorGraphDialogConfig} from "./components/dialogs/operator-graph.component";
-import {SymbologyDialogComponent, SymbologyDialogConfig} from "./components/dialogs/symbology-dialog.component";
+import {RenameLayerComponent, RenameLayerDialogConfig}
+    from "./components/rename-layer.component";
+import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
+    from "./components/project-settings.component";
+import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
+    from "./components/dialogs/operator-graph.component";
+import {SymbologyDialogComponent, SymbologyDialogConfig}
+    from "./components/dialogs/symbology-dialog.component";
 
 import {Layer} from "./models/layer.model";
-import {Operator, ResultType} from "./models/operator.model";
+import {Operator} from "./models/operator.model";
+import {ResultTypes} from "./models/result-type.model";
 import {Projection} from "./models/projection.model";
 
 import {LayerService} from "./services/layer.service";
+import {PlotService} from "./services/plot.service";
 import {StorageService} from "./services/storage.service";
 import {ProjectService} from "./services/project.service";
 import {UserService} from "./services/user.service";
+import {MappingQueryService} from "./services/mapping-query.service";
 
 @Component({
     selector: "wave-app",
@@ -55,8 +63,10 @@ import {UserService} from "./services/user.service";
             </tab-component>
         </div>
     </div>
-    <div class="middleContainer md-whiteframe-5dp" [style.height.px]="middleContainerHeight$ | async" layout="row">
-        <div class="layers" *ngIf="layerListVisible$ | async" [style.max-height.px]="middleContainerHeight$ | async">
+    <div class="middleContainer md-whiteframe-5dp" layout="row"
+         [style.height.px]="middleContainerHeight$ | async">
+        <div class="layers" *ngIf="layerListVisible$ | async"
+             [style.max-height.px]="middleContainerHeight$ | async">
             <layer-component [layers]="layers">
             </layer-component>
         </div>
@@ -64,18 +74,22 @@ import {UserService} from "./services/user.service";
             <ol-map [height]="middleContainerHeight$ | async"
                     [projection]="projectService.getMapProjection() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
-                     [ngSwitch]="layer.resultType">
-                    <ol-point-layer #olLayer *ngSwitchWhen="enumResultType.POINTS"
+                     [ngSwitch]="layer.operator.resultType">
+                    <ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async"></ol-point-layer>
-                    <ol-raster-layer #olLayer *ngSwitchWhen="enumResultType.RASTER"
+                                    [projection]="projectService.getMapProjection() | async">
+                    </ol-point-layer>
+                    <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async"></ol-raster-layer>
+                                    [projection]="projectService.getMapProjection() | async">
+                    </ol-raster-layer>
                 </div>
             </ol-map>
         </div>
+        <div class="plots" *ngIf="plotListVisible$ | async"
+             [style.max-height.px]="middleContainerHeight$ | async"></div>
     </div>
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
@@ -83,7 +97,8 @@ import {UserService} from "./services/user.service";
             <info-bar-component [dataTableVisible]="dataTableVisible$">
             </info-bar-component>
         </md-toolbar>
-        <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40" *ngIf="dataTableVisible$ | async">
+        <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40"
+             *ngIf="dataTableVisible$ | async">
             <wv-data-table [height]="(bottomContainerHeight$ | async) - 40">
             </wv-data-table>
         </div>
@@ -96,15 +111,6 @@ import {UserService} from "./services/user.service";
     </md-sidenav-container>
     `,
     styles: [`
-    .layers {
-      position: absolute;
-      z-index: 1;
-      overflow-y: auto;
-      box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
-    }
-    .dataTable {
-      overflow-y: auto;
-    }
     .topContainer {
         position: absolute;
         top: 0px;
@@ -112,7 +118,7 @@ import {UserService} from "./services/user.service";
         left: 0px;
         right: 0px;
     }
-    .infoArea {
+    .topContainer .infoArea {
         width: 200px;
         min-width: 200px;
     }
@@ -122,27 +128,36 @@ import {UserService} from "./services/user.service";
         left: 0px;
         right: 0px;
     }
-    .middleContainer .layers {
+    .middleContainer .layers, .middleContainer .plots {
         width: 200px;
+        position: absolute;
+        z-index: 1;
+        overflow-y: auto;
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    }
+    .middleContainer .plots {
+        right: 0px;
     }
     .bottomContainer {
         position: absolute;
         bottom: 0px;
         left: 0px;
         right: 0px;
-
-
     }
     .bottomContainer .infoBar {
         min-height: 40px;
         height: 40px;
+    }
+    .bottomContainer .dataTable {
+      overflow-y: auto;
     }
     `],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
                  LayerComponent, MapComponent, PointLayerComponent, RasterLayerComponent,
                  InfoBarComponent, DataTable, RasterRepositoryComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, StorageService, ProjectService, UserService,
+    providers: [LayerService, PlotService, StorageService, ProjectService, UserService,
+                MappingQueryService,
                 SidenavService, HTTP_PROVIDERS, MdDialog]
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -150,6 +165,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private mapComponent: MapComponent;
 
     private layerListVisible$: BehaviorSubject<boolean>;
+    private plotListVisible$: BehaviorSubject<boolean>;
     private dataTableVisible$: BehaviorSubject<boolean>;
 
     private middleContainerHeight$: Observable<number>;
@@ -161,13 +177,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     private mapProjection$: Observable<Projection>;
 
     // for ng-switch
-    private enumResultType = ResultType;
+    private ResultTypes = ResultTypes;
 
     constructor(private zone: NgZone,
                 private layerService: LayerService,
+                private plotService: PlotService,
                 private sidenavService: SidenavService,
                 private storageService: StorageService,
                 private projectService: ProjectService,
+                private mappingQueryService: MappingQueryService,
                 private userService: UserService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef) {
@@ -180,6 +198,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         // attach layer list visibility to storage service
         this.layerListVisible$ = new BehaviorSubject(this.storageService.getLayerListVisible());
         this.storageService.addLayerListVisibleObservable(this.layerListVisible$);
+
+        // plot list visiblity
+        this.plotListVisible$ = new BehaviorSubject(false);
+        this.plotService.getPlotsStream()
+                        .map(plots => plots.length > 0)
+                        .subscribe(this.plotListVisible$);
 
         // attach data table visibility to storage service
         this.dataTableVisible$ = new BehaviorSubject(this.storageService.getDataTableVisible());
@@ -254,6 +278,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     private showAddOperatorDialog(OperatorComponent: OperatorBase) {
         let config = new OperatorDialogConfig()
             .layerService(this.layerService)
+            .plotService(this.plotService)
+            .mappingQueryService(this.mappingQueryService)
             .clickOutsideToClose(true);
 
         this.mdDialog.open(<Function> OperatorComponent, this.elementRef, config);

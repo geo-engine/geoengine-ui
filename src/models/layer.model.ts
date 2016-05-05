@@ -1,4 +1,5 @@
-import {Operator, ResultType, OperatorDict} from "./operator.model";
+import {Operator, OperatorDict} from "./operator.model";
+import {ResultTypes} from "./result-type.model";
 import Config from "../config.model";
 import {Projection, Projections} from "./projection.model";
 import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyDict} from "./symbology.model";
@@ -48,7 +49,7 @@ export class Layer {
         let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter
 
         switch (this.operator.resultType) {
-           case ResultType.RASTER: {
+           case ResultTypes.RASTER: {
                 let operator = this.operator.getProjectedOperator(projection);
 
                 return {
@@ -64,7 +65,7 @@ export class Layer {
                 };
             }
 
-            case ResultType.POINTS: {
+            case ResultTypes.POINTS: {
                 let operator = this.operator.getProjectedOperator(projection);
 
                 return {
@@ -77,10 +78,6 @@ export class Layer {
                 };
             }
         }
-    }
-
-    get resultType(): ResultType {
-        return this.operator.resultType;
     }
 
     toDict(): LayerDict {

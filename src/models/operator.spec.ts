@@ -1,4 +1,5 @@
-import {Operator, ResultType} from "./operator.model";
+import {Operator} from "./operator.model";
+import {ResultTypes} from "./result-type.model";
 import {DataType, DataTypes} from "./datatype.model";
 import {Projections} from "./projection.model";
 import {Unit, Interpolation} from "./unit.model";
@@ -16,7 +17,7 @@ describe("OperatorModel", () => {
               interpolation: Interpolation.Continuous
           }),
       }),
-      resultType: ResultType.RASTER,
+      resultType: ResultTypes.RASTER,
       projection: Projections.WGS_84,
       attributes: ["value"],
       dataTypes: new Map<string, DataType>().set("value", DataTypes.Float32),
@@ -26,6 +27,6 @@ describe("OperatorModel", () => {
           interpolation: Interpolation.Continuous
       }))
   });
-    expect(op.resultType).toBe(ResultType.RASTER);
+    expect(op.resultType).toBe(ResultTypes.RASTER);
   });
 });
