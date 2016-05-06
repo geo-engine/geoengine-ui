@@ -6,6 +6,8 @@ import {Layer} from "../../models/layer.model";
 import {Projection} from "../../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
 
+import moment from "moment";
+
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
  *
@@ -25,7 +27,7 @@ export abstract class OlMapLayerComponent implements OnChanges {
     @Input() layer: Layer;
     @Input() projection: Projection;
     @Input() symbology: Symbology;
-    @Input() time: string;
+    @Input() time: moment.Moment;
 
     abstract getMapLayer(): ol.layer.Layer;
 
@@ -123,7 +125,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent {
         }
 
         if (changes["time"]) {
-            this.source.updateParams({time: this.time});
+            this.source.updateParams({TIME: this.time.toISOString()});
             this.source.refresh();
         }
 

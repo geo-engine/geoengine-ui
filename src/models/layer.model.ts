@@ -3,6 +3,7 @@ import {ResultTypes} from "./result-type.model";
 import Config from "./config.model";
 import {Projection, Projections} from "./projection.model";
 import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyDict} from "./symbology.model";
+import * as moment from "moment";
 
 interface Parameters {
     [key: string]: any;
@@ -45,8 +46,9 @@ export class Layer {
     }
 
     // TODO: move?
-    getParams(projection: Projection, time: string): Parameters {
-        // let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter moment.toIsoString();
+    getParams(projection: Projection, time: moment.Moment): Parameters {
+        let isoTime = time.toISOString(); // "2010-06-06T18:00:00.000Z"; // TODO: make a parameter moment.toIsoString();
+        console.log("isoTime", isoTime);
 
         switch (this.operator.resultType) {
            case ResultTypes.RASTER: {
@@ -61,7 +63,7 @@ export class Layer {
                     "LAYERS": operator.toQueryJSON(),
                     "COLORS": "gray",
                     "DEBUG": (Config.DEBUG_MODE ? 1 : 0),
-                    "TIME": time,
+                    "TIME": isoTime,
                 };
             }
 
@@ -74,7 +76,7 @@ export class Layer {
                     request: "GetFeature",
                     typeNames: `points:${operator.toQueryJSON()}`,
                     srsname: projection.getCode(),
-                    time: time,
+                    time: isoTime,
                 };
             }
         }

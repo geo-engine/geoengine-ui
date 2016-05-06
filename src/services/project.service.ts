@@ -5,13 +5,15 @@ import {Projections, Projection} from "../models/projection.model";
 
 import {Project, ProjectConfig} from "../models/project.model";
 
+import moment from "moment";
+
 @Injectable()
 export class ProjectService {
     private project$: BehaviorSubject<Project>;
     private mapProjection$: BehaviorSubject<Projection>;
     private workingProjection$: BehaviorSubject<Projection>;
 
-    private time$: BehaviorSubject<string>;
+    private time$: BehaviorSubject<moment.Moment>;
 
     constructor() {
         this.project$ = new BehaviorSubject(
@@ -19,7 +21,7 @@ export class ProjectService {
                 name: "Default",
                 workingProjection: Projections.WGS_84,
                 mapProjection: Projections.WEB_MERCATOR,
-                time: "2010-06-06T18:00:00.000Z"
+                time: moment("2010-06-06T18:00:00.000Z")
             })
         );
 
@@ -74,7 +76,7 @@ export class ProjectService {
         return this.mapProjection$;
     }
 
-    getTime(): Observable<string> {
+    getTime(): Observable<moment.Moment> {
         return this.time$;
     }
 

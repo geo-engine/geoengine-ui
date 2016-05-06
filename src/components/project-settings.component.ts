@@ -8,6 +8,8 @@ import {ProjectService} from "../services/project.service";
 import {Project} from "../models/project.model";
 import {Projection, Projections} from "../models/projection.model";
 
+import moment from "moment";
+
 @Component({
     selector: "wave-project-settings",
     template: `
@@ -79,19 +81,21 @@ export class ProjectSettingsComponent implements OnInit {
         this.workingProjection = this.project.workingProjection;
         this.mapProjection = this.project.mapProjection;
         this.projectName = this.project.name;
-        this.time = this.project.time;
+        this.time = this.project.time.toISOString();
     }
 
     save() {
+        let newTime = moment(this.time);
+
         if (this.project.name !== this.projectName ||
             this.project.workingProjection !== this.workingProjection ||
             this.project.mapProjection !== this.mapProjection ||
-            this.project.time !== this.time) {
+            !this.project.time.isSame(newTime)) {
             this.projectService.changeProjectConfig({
                 name: this.projectName,
                 workingProjection: this.workingProjection,
                 mapProjection: this.mapProjection,
-                time: this.time
+                time: newTime
             });
         }
         this.dialog.close();
