@@ -16,16 +16,9 @@ export class MappingQueryService {
 
     getPlotQueryUrl(operator: Operator, time: string = TIME_CONSTANT): string {
         const parameters: {[index: string]: string | number | boolean} = {
-            SERVICE: "WMS",
-            VERSION: Config.WMS.VERSION,
-            REQUEST: "GetMap",
-            FORMAT: Config.WMS.FORMAT,
-            TRANSPARENT: true,
-            LAYERS: operator.toQueryJSON(),
-            COLORS: "gray",
-            DEBUG: (Config.DEBUG_MODE ? 1 : 0),
-            TIME: time,
-            outputFormat: Config.WFS.FORMAT,
+            service: "plot",
+            query: operator.toQueryJSON(),
+            time: time,
         };
         return Config.MAPPING_URL + "?" +
                Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
