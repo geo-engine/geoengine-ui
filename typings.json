@@ -1,13 +1,13 @@
 {
   "ambientDependencies": {
-    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "dagre": "github:DefinitelyTyped/DefinitelyTyped/dagre/dagre.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "dagre-d3": "github:DefinitelyTyped/DefinitelyTyped/dagre-d3/dagre-d3.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
-    "codemirror": "github:DefinitelyTyped/DefinitelyTyped/codemirror/codemirror.d.ts#310c247694d7f31bd2e3198f71c55221f7c3a3c7",
+    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "dagre": "github:DefinitelyTyped/DefinitelyTyped/dagre/dagre.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "dagre-d3": "github:DefinitelyTyped/DefinitelyTyped/dagre-d3/dagre-d3.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
+    "codemirror": "github:DefinitelyTyped/DefinitelyTyped/codemirror/codemirror.d.ts#067edc80b9b70a1a4f342a53e7dc1dd00708d3fd",
     "proj4": "file:custom_typings/proj4.d.ts"
   }
 }
