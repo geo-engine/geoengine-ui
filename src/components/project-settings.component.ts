@@ -38,6 +38,10 @@ import {Projection, Projections} from "../models/projection.model";
             </select>
             <input md-input type="hidden" value="0"><!-- HACK -->
         </md-input-container>
+        <md-input-container class="md-block md-input-has-value">
+            <label>Date/Time</label>
+            <input md-input [(value)]="time">
+        </md-input-container>
         <md-dialog-actions>
             <button md-button type="button" (click)="dialog.close()">
                 <span>Cancel</span>
@@ -66,6 +70,7 @@ export class ProjectSettingsComponent implements OnInit {
     private projectName: string;
     private workingProjection: Projection;
     private mapProjection: Projection;
+    private time: string;
 
     constructor(private dialog: MdDialogRef) {}
 
@@ -74,16 +79,19 @@ export class ProjectSettingsComponent implements OnInit {
         this.workingProjection = this.project.workingProjection;
         this.mapProjection = this.project.mapProjection;
         this.projectName = this.project.name;
+        this.time = this.project.time;
     }
 
     save() {
         if (this.project.name !== this.projectName ||
             this.project.workingProjection !== this.workingProjection ||
-            this.project.mapProjection !== this.mapProjection) {
+            this.project.mapProjection !== this.mapProjection ||
+            this.project.time !== this.time) {
             this.projectService.changeProjectConfig({
                 name: this.projectName,
                 workingProjection: this.workingProjection,
-                mapProjection: this.mapProjection
+                mapProjection: this.mapProjection,
+                time: this.time
             });
         }
         this.dialog.close();

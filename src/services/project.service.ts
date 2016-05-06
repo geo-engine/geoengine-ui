@@ -11,17 +11,22 @@ export class ProjectService {
     private mapProjection$: BehaviorSubject<Projection>;
     private workingProjection$: BehaviorSubject<Projection>;
 
+    private time$: BehaviorSubject<string>;
+
     constructor() {
         this.project$ = new BehaviorSubject(
             new Project({
                 name: "Default",
                 workingProjection: Projections.WGS_84,
-                mapProjection: Projections.WEB_MERCATOR
+                mapProjection: Projections.WEB_MERCATOR,
+                time: "2010-06-06T18:00:00.000Z"
             })
         );
 
         this.mapProjection$ = new BehaviorSubject(this.project$.value.mapProjection);
         this.workingProjection$ = new BehaviorSubject(this.project$.value.workingProjection);
+        this.time$ = new BehaviorSubject(this.project$.value.time);
+
         this.project$.subscribe(project => {
             if (project.mapProjection !== this.mapProjection$.value) {
                 this.mapProjection$.next(project.mapProjection);
@@ -29,7 +34,12 @@ export class ProjectService {
             if (project.workingProjection !== this.workingProjection$.value) {
                 this.workingProjection$.next(project.workingProjection);
             }
+            if (project.time !== this.time$.value) {
+                console.log("time changed", project.time);
+                this.time$.next(project.time);
+            }
         });
+
     }
 
     getProject() {
@@ -45,10 +55,13 @@ export class ProjectService {
     }
 
     changeProjectConfig(config: ProjectConfig) {
+        console.log("config changed:", config);
+
         let project = this.project$.value;
         project.name = config.name;
         project.workingProjection = config.workingProjection;
         project.mapProjection = config.mapProjection;
+        project.time = config.time;
 
         this.project$.next(project);
     }
@@ -59,6 +72,10 @@ export class ProjectService {
 
     getMapProjection(): Observable<Projection> {
         return this.mapProjection$;
+    }
+
+    getTime(): Observable<string> {
+        return this.time$;
     }
 
 }

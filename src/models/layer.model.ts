@@ -45,8 +45,8 @@ export class Layer {
     }
 
     // TODO: move?
-    getParams(projection: Projection): Parameters {
-        let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter
+    getParams(projection: Projection, time: string): Parameters {
+        // let time = "2010-06-06T18:00:00.000Z"; // TODO: make a parameter moment.toIsoString();
 
         switch (this.operator.resultType) {
            case ResultTypes.RASTER: {
