@@ -4,7 +4,7 @@ import {Http, HTTP_PROVIDERS} from "angular2/http";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
-import Config from "../config.model";
+import Config from "../models/config.model";
 import {LayerService} from "../services/layer.service";
 import {ResultTypes} from "../models/result-type.model";
 import {ProjectService} from "../services/project.service";

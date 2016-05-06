@@ -4,7 +4,7 @@ import {Observable} from "rxjs/Rx";
 
 import {Operator} from "../models/operator.model";
 
-import Config from "../config.model";
+import Config from "../models/config.model";
 import {PlotData} from "../models/plot.model";
 
 // TODO: change

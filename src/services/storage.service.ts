@@ -6,7 +6,7 @@ import {ProjectService} from "./project.service";
 import {PlotService} from "./plot.service";
 import {MappingQueryService} from "./mapping-query.service";
 
-import Config from "../config.model";
+import Config from "../models/config.model";
 import {Layer, LayerDict} from "../models/layer.model";
 import {Project} from "../models/project.model";
 import {Plot, PlotDict} from "../models/plot.model";
