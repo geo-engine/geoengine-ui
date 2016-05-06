@@ -1,6 +1,6 @@
 import {Operator, OperatorDict} from "./operator.model";
 import {ResultTypes} from "./result-type.model";
-import Config from "../config.model";
+import Config from "./config.model";
 import {Projection, Projections} from "./projection.model";
 import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyDict} from "./symbology.model";
 

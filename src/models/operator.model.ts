@@ -1,4 +1,4 @@
-import Config from "../config.model";
+import Config from "./config.model";
 import {Projection, Projections} from "./projection.model";
 import {Unit, UnitDict} from "./unit.model";
 import {DataType, DataTypes} from "./datatype.model";

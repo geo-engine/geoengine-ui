@@ -1,7 +1,7 @@
 import {Injectable} from "angular2/core";
 import {Http, Response} from "angular2/http";
 import {Observable} from "rxjs/Rx";
-import Config from "../config.model";
+import Config from "../models/config.model";
 import {Operator} from "../models/operator.model";
 
 export interface MappingColorizer {
