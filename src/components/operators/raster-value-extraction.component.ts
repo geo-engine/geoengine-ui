@@ -127,14 +127,16 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     }
 
     private addLayer() {
-        let pointOperator = this.selectedPointLayer.operator;
-        let rasterOperators = this.selectedRasterLayers.map(layer => layer.operator);
+        const pointOperator = this.selectedPointLayer.operator;
+        const rasterOperators = this.selectedRasterLayers.map(layer => layer.operator);
 
-        let valueNames = this.valueNamesControls.controls.map(control => control.value);
+        const valueNames = this.valueNamesControls.controls.map(control => control.value);
 
-        let units = new Map<string, Unit>(pointOperator.units.entries());
-        let dataTypes = new Map<string, DataType>(pointOperator.dataTypes.entries());
-        let attributes = Array.from(pointOperator.attributes.values());
+        // ATTENTION: make the three mutable copies to loop just once over the rasters
+        //            -> make them immutable to put them into the operator
+        const units = pointOperator.units.asMutable();
+        const dataTypes = pointOperator.dataTypes.asMutable();
+        const attributes = pointOperator.attributes.asMutable();
 
         for (let i = 0; i < rasterOperators.length; i++) {
             units.set(valueNames[i], rasterOperators[i].getUnit("value"));
@@ -142,9 +144,9 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             attributes.push(valueNames[i]);
         }
 
-        let name: string = this.configForm.controls["name"].value;
+        const name: string = this.configForm.controls["name"].value;
 
-        let operator = new Operator({
+        const operator = new Operator({
             operatorType: new RasterValueExtractionType({
                 xResolution: this.resolutionX,
                 yResolution: this.resolutionY,
@@ -152,9 +154,9 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             }),
             resultType: ResultTypes.POINTS,
             projection: pointOperator.projection,
-            attributes: attributes,
-            dataTypes: dataTypes,
-            units: units,
+            attributes: attributes.asImmutable(),  // immutable!
+            dataTypes: dataTypes.asImmutable(),  // immutable!
+            units: units.asImmutable(), // immutable!
             pointSources: [pointOperator],
             rasterSources: rasterOperators,
         });

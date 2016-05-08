@@ -148,7 +148,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
         this.attributes = layer.operator.attributes.filter(attribute => {
             return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
-        });
+        }).toArray();
 
         if (this.attributes.length > 0) {
             (<Control> this.configForm.controls["attributeName"]).updateValue(
@@ -163,9 +163,9 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
     private addLayer() {
         const vectorOperator = this.selectedLayer.operator;
 
-        const units = new Map<string, Unit>(vectorOperator.units.entries());
-        const dataTypes = new Map<string, DataType>(vectorOperator.dataTypes.entries());
-        const attributes = Array.from(vectorOperator.attributes.values());
+        const units = vectorOperator.units;
+        const dataTypes = vectorOperator.dataTypes;
+        const attributes = vectorOperator.attributes;
 
         const nodata = this.configForm.controls["nodata"].value;
         const attributeName = this.configForm.controls["attributeName"].value;
