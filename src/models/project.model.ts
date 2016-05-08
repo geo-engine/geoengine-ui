@@ -1,20 +1,24 @@
 import {Projection, Projections} from "./projection.model";
+import moment from "moment";
 
 export interface ProjectConfig {
     name: string;
     workingProjection: Projection;
     mapProjection: Projection;
+    time: moment.Moment;
 }
 
 export class Project {
     name: string;
     workingProjection: Projection;
     mapProjection: Projection;
+    time: moment.Moment;
 
     constructor(config: ProjectConfig) {
         this.name = config.name;
         this.workingProjection = config.workingProjection;
         this.mapProjection = config.mapProjection;
+        this.time = config.time;
     }
 
     toJSON(): string {
@@ -22,6 +26,7 @@ export class Project {
             name: this.name,
             workingProjection: this.workingProjection.getCode(),
             mapProjection: this.mapProjection.getCode(),
+            time: this.time.toJSON()
         });
     }
 
@@ -31,7 +36,8 @@ export class Project {
         return new Project({
             name: config.name,
             workingProjection: Projections.fromCode(config.workingProjection),
-            mapProjection: Projections.fromCode(config.mapProjection)
+            mapProjection: Projections.fromCode(config.mapProjection),
+            time: moment(config.time)
         });
     }
 

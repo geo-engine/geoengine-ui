@@ -6,6 +6,8 @@ import {Layer} from "../../models/layer.model";
 import {Projection} from "../../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
 
+import moment from "moment";
+
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
  *
@@ -25,6 +27,7 @@ export abstract class OlMapLayerComponent implements OnChanges {
     @Input() layer: Layer;
     @Input() projection: Projection;
     @Input() symbology: Symbology;
+    @Input() time: moment.Moment;
 
     abstract getMapLayer(): ol.layer.Layer;
 
@@ -56,8 +59,8 @@ export class OlPointLayerComponent extends OlMapLayerComponent {
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        // console.log("point layer changes", changes);
-        let params = this.layer.getParams(this.projection);
+        console.log("point layer changes", changes);
+        let params = this.layer.getParams(this.projection, this.time);
         let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
         // console.log("style", olStyle
 
@@ -74,6 +77,10 @@ export class OlPointLayerComponent extends OlMapLayerComponent {
                 source: this.source,
                 style: olStyle,
             });
+        }
+
+        if (changes["time"]) {
+            this.source.clear(true);
         }
 
         if (changes["symbology"]) {
@@ -100,7 +107,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent {
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        let params = this.layer.getParams(this.projection);
+        console.log("raster layer changes", changes);
+        let params = this.layer.getParams(this.projection, this.time);
 
         let rasterSymbology: RasterSymbology = <RasterSymbology> this.layer.symbology;
         if (changes["layer"] || changes["projection"]) {
@@ -114,6 +122,11 @@ export class OlRasterLayerComponent extends OlMapLayerComponent {
                 source: this.source,
                 opacity: rasterSymbology.opacity
             });
+        }
+
+        if (changes["time"]) {
+            this.source.updateParams({TIME: this.time.toISOString()});
+            this.source.refresh();
         }
 
         if (changes["symbology"]) {

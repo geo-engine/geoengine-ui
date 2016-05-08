@@ -78,12 +78,14 @@ import {MappingQueryService} from "../services/mapping-query.service";
                     <ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async">
+                                    [projection]="projectService.getMapProjection() | async"
+                                    [time]="projectService.getTime() | async">
                     </ol-point-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async">
+                                    [projection]="projectService.getMapProjection() | async"
+                                    [time]="projectService.getTime() | async">
                     </ol-raster-layer>
                 </div>
             </ol-map>
