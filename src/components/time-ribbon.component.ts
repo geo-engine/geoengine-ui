@@ -63,9 +63,15 @@ export class TimeRibbonComponent implements OnInit {
 
     private static eventToNumber(event: any): number {
         if (typeof(event) === "string") {
+            if ( event === "" ) {
+                return 0;
+            }
             return parseInt(event);
         }
-        return event;
+        if (typeof(event) === "number") {
+            return event;
+        }
+        return 0;
     }
 
     updateYear(event: any) { this.moment.year(TimeRibbonComponent.eventToNumber(event)); this.push(); }
@@ -76,7 +82,9 @@ export class TimeRibbonComponent implements OnInit {
     updateSecond(event: any) { this.moment.second(TimeRibbonComponent.eventToNumber(event)); this.push(); }
 
     private push() {
-        this.projectService.setTime(this.moment.clone());
+        if (this.moment.isValid()) {
+            this.projectService.setTime(this.moment.clone());
+        }
     }
 
     ngOnInit() {
