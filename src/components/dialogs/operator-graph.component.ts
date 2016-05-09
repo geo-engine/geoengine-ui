@@ -361,10 +361,10 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
             // add children
             for (let resultType of ResultTypes.INPUT_TYPES) {
-                for (let child of operator.getSources(resultType)) {
+                operator.getSources(resultType).forEach(child => {
                     operators.push(child);
                     edges.push([child.id, operator.id]);
-                }
+                });
             }
         }
 
