@@ -47,8 +47,7 @@ export class Layer {
 
     // TODO: move?
     getParams(projection: Projection, time: moment.Moment): Parameters {
-        let isoTime = time.toISOString(); // "2010-06-06T18:00:00.000Z"; // TODO: make a parameter moment.toIsoString();
-        console.log("isoTime", isoTime);
+        let isoTime = time.toISOString();
 
         switch (this.operator.resultType) {
            case ResultTypes.RASTER: {

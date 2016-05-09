@@ -36,8 +36,8 @@ export class ProjectService {
             if (project.workingProjection !== this.workingProjection$.value) {
                 this.workingProjection$.next(project.workingProjection);
             }
-            if (project.time !== this.time$.value) {
-                console.log("time changed", project.time);
+            if (!project.time.isSame(this.time$.value)) {
+                // console.log("time changed", project.time);
                 this.time$.next(project.time);
             }
         });
@@ -56,14 +56,24 @@ export class ProjectService {
         this.project$.next(project);
     }
 
+    setTime(time: moment.Moment) {
+        let value = this.project$.value;
+        this.changeProjectConfig({
+            time: time,
+            name: value.name,
+            workingProjection: value.workingProjection,
+            mapProjection: value.mapProjection
+        });
+    }
+
     changeProjectConfig(config: ProjectConfig) {
         console.log("config changed:", config);
 
         let project = this.project$.value;
-        project.name = config.name;
-        project.workingProjection = config.workingProjection;
-        project.mapProjection = config.mapProjection;
-        project.time = config.time;
+        if (config.name) project.name = config.name;
+        if (config.workingProjection) project.workingProjection = config.workingProjection;
+        if (config.mapProjection) project.mapProjection = config.mapProjection;
+        if (config.time) project.time = config.time;
 
         this.project$.next(project);
     }

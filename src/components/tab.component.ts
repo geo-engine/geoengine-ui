@@ -10,6 +10,7 @@ import {ExpressionOperatorComponent} from "./operators/expression-operator.compo
 import {RasterValueExtractionOperatorComponent} from "./operators/raster-value-extraction.component";
 import {NumericAttributeFilterOperatorComponent} from "./operators/numeric-attribute-filter.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
+import {TimeRibbonComponent} from "./time-ribbon.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
@@ -37,7 +38,7 @@ import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, TimeRibbonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
