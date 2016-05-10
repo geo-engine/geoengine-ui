@@ -130,7 +130,7 @@
     <template md-tab label="Operators">
         <md-content layout="row">
             <fieldset>
-                <legend>Points</legend>
+                <legend>Vector</legend>
                 <div layout="row">
                     <div layout="column" layout-align="space-around center">
                         <button md-button style="margin: 0px; height: auto;"
@@ -146,6 +146,14 @@
                                 (click)="addNumericAttributesFilterOperator()">
                             <i md-icon>settings</i>
                             <div>Numeric Attributes Filter</div>
+                        </button>
+                    </div>
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+                                class="md-primary" layout="column"
+                                (click)="addPointInPolygonFilterOperator()">
+                            <i md-icon>settings</i>
+                            <div>Point in Polygon Filter</div>
                         </button>
                     </div>
                 </div>

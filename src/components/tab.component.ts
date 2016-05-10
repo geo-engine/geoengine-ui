@@ -11,6 +11,8 @@ import {RasterValueExtractionOperatorComponent}
     from "./operators/raster-value-extraction.component";
 import {NumericAttributeFilterOperatorComponent}
     from "./operators/numeric-attribute-filter.component";
+import {PointInPolygonFilterOperatorComponent}
+    from "./operators/point-in-polygon-filter.component";
 import {HistogramOperatorComponent} from "./operators/histogram.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
 import {TimeRibbonComponent} from "./time-ribbon.component";
@@ -118,5 +120,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addHistogramOperator() {
         this.showOperator.emit(HistogramOperatorComponent);
+    }
+
+    private addPointInPolygonFilterOperator() {
+        this.showOperator.emit(PointInPolygonFilterOperatorComponent);
     }
 }

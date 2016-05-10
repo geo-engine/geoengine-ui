@@ -99,6 +99,8 @@ export abstract class OperatorType {
                 return HistogramType.fromDict(<HistogramTypeDict> dict);
             case RType.TYPE:
                 return RType.fromDict(<RTypeDict> dict);
+            case PointInPolygonFilterType.TYPE:
+                return PointInPolygonFilterType.fromDict(<PointInPolygonFilterTypeDict> dict);
         }
     }
 }
@@ -761,5 +763,48 @@ export class RType extends OperatorType {
             code: dict.code,
             resultType: ResultTypes.fromCode(dict.resultType),
         });
+    }
+}
+
+interface PointInPolygonFilterTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface PointInPolygonFilterTypeDict extends OperatorTypeDict {}
+
+interface PointInPolygonFilterTypeConfig {}
+
+/**
+ * The Point in Polygon Filter type.
+ */
+export class PointInPolygonFilterType extends OperatorType {
+    static get TYPE(): string { return "filterpointsbygeometry"; /*"point_in_polygon_filter";*/ };
+
+    constructor(config: PointInPolygonFilterTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string {
+        return PointInPolygonFilterType.TYPE;
+    }
+
+    toString(): string {
+        return "Point in Polygon Filter";
+    }
+
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
+
+    toMappingDict(): PointInPolygonFilterTypeMappingDict {
+        return {};
+    }
+
+    toDict(): PointInPolygonFilterTypeDict {
+        return {
+            operatorType: PointInPolygonFilterType.TYPE,
+        };
+    }
+
+    static fromDict(dict: PointInPolygonFilterTypeDict): PointInPolygonFilterType {
+        return new PointInPolygonFilterType({});
     }
 }
