@@ -2,29 +2,50 @@ import {Injectable} from "angular2/core";
 import {Http, Response} from "angular2/http";
 import {Observable} from "rxjs/Rx";
 
+import moment from "moment";
+
 import {Operator} from "../models/operator.model";
 
 import Config from "../models/config.model";
 import {PlotData} from "../models/plot.model";
 
-// TODO: change
-const TIME_CONSTANT = "2010-06-06T18:00:00.000Z";
+type ParametersType = {[index: string]: string | number | boolean};
 
 @Injectable()
 export class MappingQueryService {
     constructor(private http: Http) {}
 
-    getPlotQueryUrl(operator: Operator, time: string = TIME_CONSTANT): string {
-        const parameters: {[index: string]: string | number | boolean} = {
+    getPlotQueryUrl(operator: Operator, time: moment.Moment): string {
+        const parameters: ParametersType = {
             service: "plot",
             query: operator.toQueryJSON(),
-            time: time,
+            time: time.toISOString(),
         };
         return Config.MAPPING_URL + "?" +
                Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
     }
 
-    getPlotData(operator: Operator, time: string = TIME_CONSTANT): Promise<PlotData> {
+    getPlotData(operator: Operator, time: moment.Moment): Promise<PlotData> {
         return this.http.get(this.getPlotQueryUrl(operator, time)).toPromise().then(r => r.json());
+    }
+
+    getPlotDataStream(operator: Operator, time$: Observable<moment.Moment>): Observable<PlotData> {
+        // TODO: remove  `fromPromise` when new rxjs version is used
+        // TODO: use flatMapLatest
+        return time$.flatMap(time => Observable.fromPromise(this.getPlotData(operator, time)));
+    }
+
+    getWFSQueryUrl(operator: Operator, time: moment.Moment): string {
+        const parameters: ParametersType = {
+            service: "WFS",
+            version: Config.WFS.VERSION,
+            request: "GetFeature",
+            typeNames: operator.resultType.getCode() + ":" + operator.toQueryJSON(),
+            srsname: operator.projection.getCode(),
+            time: time.toISOString(),
+        };
+
+        return Config.MAPPING_URL + "?" +
+               Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
     }
 }

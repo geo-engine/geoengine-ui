@@ -44,11 +44,11 @@ export class ProjectService {
 
     }
 
-    getProject() {
+    getProjectStream() {
         return this.project$;
     }
 
-    getProjectOnce() {
+    getProject() {
         return this.project$.getValue();
     }
 
@@ -86,8 +86,12 @@ export class ProjectService {
         return this.mapProjection$;
     }
 
-    getTime(): Observable<moment.Moment> {
+    getTimeStream(): Observable<moment.Moment> {
         return this.time$;
+    }
+
+    getTime(): moment.Moment {
+        return this.time$.getValue();
     }
 
 }

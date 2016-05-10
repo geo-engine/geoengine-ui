@@ -1,3 +1,5 @@
+import {Observable} from "rxjs/Rx";
+
 import {Operator, OperatorDict} from "./operator.model";
 
 /**
@@ -5,19 +7,20 @@ import {Operator, OperatorDict} from "./operator.model";
  */
 export interface PlotData {
    type: string;
-   data: Array<number>;
+   data: Array<number> | string;
    lines?: Array<{name: string, pos: number}>;
-   metadata: {
-       numberOfBuckets: number,
-       min: number,
-       max: number,
-       nodata: number,
+   metadata?: {
+       numberOfBuckets?: number,
+       min?: number,
+       max?: number,
+       nodata?: number,
    };
 }
 
 interface PlotConfig {
     name: string;
     operator: Operator;
+    data$: Observable<PlotData>;
 }
 
 /**
@@ -34,11 +37,16 @@ export interface PlotDict {
 export class Plot {
     name: string;
     private _operator: Operator;
-    data: Promise<PlotData>;
+
+    /**
+     * A data observable that emits new data on time changes.
+     */
+    private _data$: Observable<PlotData>;
 
     constructor(config: PlotConfig) {
         this.name = config.name;
         this._operator = config.operator;
+        this._data$ = config.data$;
     }
 
     /**
@@ -46,6 +54,13 @@ export class Plot {
      */
     get operator(): Operator {
         return this._operator;
+    }
+
+    /**
+     *
+     */
+    get data$(): Observable<PlotData> {
+        return this._data$;
     }
 
     /**
@@ -61,10 +76,13 @@ export class Plot {
     /**
      * De-Serialization
      */
-    static fromDict(dict: PlotDict): Plot {
+    static fromDict(dict: PlotDict,
+                    dataCallback: (operator: Operator) => Observable<PlotData>): Plot {
+        const operator = Operator.fromDict(dict.operator);
         return new Plot({
             name: dict.name,
             operator: Operator.fromDict(dict.operator),
+            data$: dataCallback(operator),
         });
     }
 }

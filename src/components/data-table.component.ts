@@ -89,7 +89,7 @@ export class DataTable implements OnInit, OnChanges {
             }
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
-                    let project = this.projectService.getProjectOnce();
+                    let project = this.projectService.getProject();
                     let layerParams = layer.getParams(
                         project.workingProjection,
                         project.time

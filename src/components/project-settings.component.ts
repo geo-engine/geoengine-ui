@@ -77,7 +77,7 @@ export class ProjectSettingsComponent implements OnInit {
     constructor(private dialog: MdDialogRef) {}
 
     ngOnInit() {
-        this.project = this.projectService.getProjectOnce();
+        this.project = this.projectService.getProject();
         this.workingProjection = this.project.workingProjection;
         this.mapProjection = this.project.mapProjection;
         this.projectName = this.project.name;

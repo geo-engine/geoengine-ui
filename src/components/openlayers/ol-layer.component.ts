@@ -6,6 +6,8 @@ import {Layer} from "../../models/layer.model";
 import {Projection} from "../../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
 
+import {MappingQueryService} from "../../services/mapping-query.service";
+
 import moment from "moment";
 
 /**
@@ -28,6 +30,8 @@ export abstract class OlMapLayerComponent implements OnChanges {
     @Input() projection: Projection;
     @Input() symbology: Symbology;
     @Input() time: moment.Moment;
+
+    constructor(protected mappingQueryService: MappingQueryService) {}
 
     abstract getMapLayer(): ol.layer.Layer;
 
@@ -70,6 +74,55 @@ export class OlPointLayerComponent extends OlMapLayerComponent {
                 url: Config.MAPPING_URL + "?" + Object.keys(params).map(
                     key => key + "=" + encodeURIComponent(params[key])
                 ).join("&") + `&outputFormat=${Config.WFS.FORMAT}`,
+                wrapX: false
+            });
+
+            this.mapLayer = new ol.layer.Vector({
+                source: this.source,
+                style: olStyle,
+            });
+        }
+
+        if (changes["time"]) {
+            this.source.clear(true);
+        }
+
+        if (changes["symbology"]) {
+          this.mapLayer.setStyle(olStyle);
+        }
+    }
+
+    getExtent() {
+        return this.source.getExtent();
+    }
+}
+
+@Component({
+    selector: "ol-polygon-layer",
+    template: "",
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class OlPolygonLayerComponent extends OlMapLayerComponent {
+    protected source: ol.source.Vector;
+    protected mapLayer: ol.layer.Vector;
+
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
+    }
+
+    getMapLayer(): ol.layer.Vector {
+        return this.mapLayer;
+    }
+
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
+        let operator = this.layer.operator.getProjectedOperator(this.projection);
+
+        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
+
+        if (changes["layer"] || changes["projection"]) {
+            this.source = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: this.mappingQueryService.getWFSQueryUrl(operator, this.time),
                 wrapX: false
             });
 

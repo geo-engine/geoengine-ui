@@ -15,8 +15,10 @@ import {ResultTypes} from "../models/result-type.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
-import {Symbology, SimplePointSymbology, RasterSymbology, ISymbology} from "../models/symbology.model";
-import {RasterSourceType, GFBioPointSourceType} from "../models/operator-type.model";
+import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
+    from "../models/symbology.model";
+import {RasterSourceType, GFBioPointSourceType, GFBioGeometrySourceType}
+    from "../models/operator-type.model";
 
 /**
  * This service allows persisting the current execution context.
@@ -62,22 +64,35 @@ export class StorageService {
     }
 
     private loadPlots() {
-        let plots = this.storageProvider.loadPlots();
+        // plots
+        let plots = this.storageProvider.loadPlots(this.mappingQueryService, this.projectService);
 
         if (plots === undefined) {
             // load default
             plots = this.defaults.getPlots();
         }
 
-        for (const plot of plots) {
-            plot.data = this.mappingQueryService.getPlotData(plot.operator);
+        this.plotService.setPlots(plots);
+
+        // plot list visibility
+        let plotListVisibility = this.storageProvider.loadPlotListVisibility();
+
+        if (plotListVisibility === undefined) {
+            // load default
+            plotListVisibility = this.defaults.getPlotListVisibility();
         }
 
-        this.plotService.setPlots(plots);
+        this.plotService.setPlotListVisibility(plotListVisibility);
     }
 
     private storePlotsSetup() {
+        // plots
         this.plotService.getPlotsStream().subscribe(this.storageProvider.savePlots);
+
+        // plot list visibility
+        this.plotService.getPlotListVisibleStream().subscribe(
+            this.storageProvider.savePlotListVisibility
+        );
     }
 
     private loadProject() {
@@ -90,7 +105,7 @@ export class StorageService {
     }
 
     private storeProjectSetup() {
-        this.projectService.getProject().subscribe(this.storageProvider.saveProject);
+        this.projectService.getProjectStream().subscribe(this.storageProvider.saveProject);
     }
 
     addLayerListVisibleObservable(layerListVisible$: Observable<boolean>) {
@@ -170,7 +185,8 @@ interface StorageProvider {
      * @param mappingQueryService Service to load the plot data.
      * @returns An array of plots.
      */
-    loadPlots(): Array<Plot>;
+    loadPlots(mappingQueryService: MappingQueryService,
+              projectService: ProjectService): Array<Plot>;
 
     /**
      * Save the current plots.
@@ -201,6 +217,18 @@ interface StorageProvider {
      * @param visible The visibility.
      */
     saveDataTableVisible(visible: boolean): void;
+
+    /**
+     * Load the current plot list visibility.
+     * @returns The visibility.
+     */
+    loadPlotListVisibility(): boolean;
+
+    /**
+     * Save the current plot list visiblity.
+     * @param visible The visibility.
+     */
+    savePlotListVisibility(visible: boolean): void;
 
     /**
      * Load the current tab index of the tob component.
@@ -259,7 +287,8 @@ class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem("layers", JSON.stringify(layerDicts));
     }
 
-    loadPlots(): Array<Plot> {
+    loadPlots(mappingQueryService: MappingQueryService,
+              projectService: ProjectService): Array<Plot> {
         const plotsJSON = localStorage.getItem("plots");
         if (plotsJSON === null) {
             return undefined;
@@ -268,7 +297,14 @@ class BrowserStorageProvider implements StorageProvider {
             const plotDicts: Array<PlotDict> = JSON.parse(plotsJSON);
 
             for (const plotDict of plotDicts) {
-                plots.push(Plot.fromDict(plotDict));
+                plots.push(
+                    Plot.fromDict(
+                        plotDict,
+                        operator => mappingQueryService.getPlotDataStream(
+                            operator, projectService.getTimeStream()
+                        )
+                    )
+                );
             }
 
             return plots;
@@ -311,6 +347,19 @@ class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem("dataTableVisible", JSON.stringify(visible));
     }
 
+    loadPlotListVisibility(): boolean {
+        const plotListVisible = localStorage.getItem("plotListVisibility");
+        if (plotListVisible === null) {
+            return undefined;
+        } else {
+            return JSON.parse(plotListVisible);
+        }
+    }
+
+    savePlotListVisibility(visible: boolean) {
+        localStorage.setItem("plotListVisibility", JSON.stringify(visible));
+    }
+
     loadTabIndex(): number {
         const tabIndex = localStorage.getItem("tabIndex");
         if (tabIndex === null) {
@@ -341,6 +390,9 @@ class StorageDefaults {
     getDataTableVisible(): boolean {
         return true;
     }
+    getPlotListVisibility(): boolean {
+        return true;
+    }
     getTabIndex(): number {
         return 0;
     }
@@ -353,23 +405,18 @@ class DeveloperDefaults extends StorageDefaults {
     getLayers(): Array<Layer> {
         return [
             new Layer({
-                name: "SRTM",
-                symbology: new RasterSymbology({}),
+                name: "IUCN Puma Concolor",
+                symbology: new SimpleVectorSymbology({}),
                 operator: new Operator({
-                    operatorType: new RasterSourceType({
-                        channel: 0,
-                        sourcename: "srtm",
-                        transform: true,
+                    operatorType: new GFBioGeometrySourceType({
+                        datasource: "IUCN",
+                        query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
-                    resultType: ResultTypes.RASTER,
-                    projection: Projections.fromCode("EPSG:4326"),
-                    attributes: ["value"],
-                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
-                    units: new Map<string, Unit>().set("value", new Unit({
-                        measurement: "elevation",
-                        unit: "m",
-                        interpolation: Interpolation.Continuous
-                    }))
+                    resultType: ResultTypes.POLYGONS,
+                    projection: Projections.WGS_84,
+                    attributes: [],
+                    dataTypes: new Map<string, DataType>(),
+                    units: new Map<string, Unit>()
                 })
             }),
             new Layer({
@@ -381,24 +428,32 @@ class DeveloperDefaults extends StorageDefaults {
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
                     resultType: ResultTypes.POINTS,
-                    projection: Projections.fromCode("EPSG:4326"),
+                    projection: Projections.WGS_84,
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),
                     units: new Map<string, Unit>()
                 })
-            })
+            }),
+            new Layer({
+                name: "SRTM",
+                symbology: new RasterSymbology({}),
+                operator: new Operator({
+                    operatorType: new RasterSourceType({
+                        channel: 0,
+                        sourcename: "srtm",
+                        transform: true,
+                    }),
+                    resultType: ResultTypes.RASTER,
+                    projection: Projections.WGS_84,
+                    attributes: ["value"],
+                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
+                    units: new Map<string, Unit>().set("value", new Unit({
+                        measurement: "elevation",
+                        unit: "m",
+                        interpolation: Interpolation.Continuous
+                    }))
+                })
+            }),
         ];
-    }
-    getPlots(): Array<Plot> {
-        return [];
-    }
-    getLayerListVisible(): boolean {
-        return true;
-    }
-    getDataTableVisible(): boolean {
-        return true;
-    }
-    getTabIndex(): number {
-        return 0;
     }
 }

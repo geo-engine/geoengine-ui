@@ -12,7 +12,9 @@ import {InfoBarComponent} from "../components/info-bar.component";
 import {LayerComponent} from "../components/layer.component";
 import {DataTable} from "../components/data-table.component";
 import {OlMapComponent} from "./openlayers/ol-map.component";
-import {OlPointLayerComponent, OlRasterLayerComponent} from "./openlayers/ol-layer.component";
+import {OlPointLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent}
+    from "./openlayers/ol-layer.component";
+import {PlotListComponent} from "./plots/plot-list.component";
 
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
 import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig}
@@ -80,19 +82,24 @@ import {MappingColorizerService} from "../services/mapping-colorizer.service";
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTime() | async">
+                                    [time]="projectService.getTimeStream() | async">
                     </ol-point-layer>
+                    <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjection() | async"
+                                    [time]="projectService.getTimeStream() | async">
+                    </ol-polygon-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTime() | async">
+                                    [time]="projectService.getTimeStream() | async">
                     </ol-raster-layer>
                 </div>
             </ol-map>
         </div>
-        <div class="plots" *ngIf="plotListVisible$ | async"
-             [style.max-height.px]="middleContainerHeight$ | async"></div>
+        <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"></wave-plot-list>
     </div>
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
@@ -155,9 +162,12 @@ import {MappingColorizerService} from "../services/mapping-colorizer.service";
       overflow-y: auto;
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
-                 LayerComponent, OlMapComponent, OlPointLayerComponent, OlRasterLayerComponent,
-                 InfoBarComponent, DataTable, RasterRepositoryComponent],
+    directives: [
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
+        InfoAreaComponent, TabComponent, LayerComponent, InfoBarComponent, DataTable,
+        RasterRepositoryComponent, PlotListComponent,
+        OlMapComponent, OlPointLayerComponent, OlRasterLayerComponent, OlPolygonLayerComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, PlotService, StorageService, ProjectService, UserService,
                 MappingQueryService, MappingColorizerService,
@@ -283,6 +293,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         let config = new OperatorDialogConfig()
             .layerService(this.layerService)
             .plotService(this.plotService)
+            .projectService(this.projectService)
             .mappingQueryService(this.mappingQueryService)
             .mappingColorizerService(this.mappingColorizerService)
             .clickOutsideToClose(true);

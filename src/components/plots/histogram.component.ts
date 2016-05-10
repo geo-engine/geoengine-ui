@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, Input, Output, AfterViewInit, EventEmitter,
-        ViewChild, ElementRef} from "angular2/core";
+        ViewChild, ElementRef, OnChanges, SimpleChange} from "angular2/core";
 
 import d3 from "d3";
 
@@ -113,22 +113,36 @@ interface Slider {
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistogramComponent implements AfterViewInit {
+export class HistogramComponent implements AfterViewInit, OnChanges {
     @ViewChild("svg") svgRef: ElementRef;
 
     @Input() data: HistogramData;
 
     @Input("height") histogramHeight: number;
     @Input("width") histogramWidth: number;
+    @Input() viewBoxRatio: number = 1;
 
     @Input() selectable: boolean = false;
+    @Input() interactable: boolean = false;
 
     @Output() minRange = new EventEmitter<number>();
     @Output() maxRange = new EventEmitter<number>();
 
     constructor() {}
 
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+        if (changes["data"] && !changes["data"].isFirstChange()) {
+            this.drawHistogram();
+        }
+    }
+
     ngAfterViewInit() {
+        if (this.data) {
+            this.drawHistogram();
+        }
+    }
+
+    private drawHistogram() {
         const drawLines: boolean = (this.data.lines !== undefined);
 
         const margin = {
@@ -138,8 +152,8 @@ export class HistogramComponent implements AfterViewInit {
             left: 50
         };
 
-        const width = this.histogramWidth - margin.left - margin.right;
-        const height = this.histogramHeight - margin.top - margin.bottom;
+        const width = this.histogramWidth * this.viewBoxRatio - margin.left - margin.right;
+        const height = this.histogramHeight * this.viewBoxRatio - margin.top - margin.bottom;
 
         const x = d3.scale.linear()
                           .domain([this.data.metadata.min, this.data.metadata.max])
@@ -155,6 +169,15 @@ export class HistogramComponent implements AfterViewInit {
         const svg = d3.select(this.svgRef.nativeElement)
                       .attr("width", this.histogramWidth)
                       .attr("height", this.histogramHeight)
+                      .attr(
+                          "viewBox",
+                          [
+                              0,
+                              0,
+                              this.histogramWidth * this.viewBoxRatio,
+                              this.histogramWidth * this.viewBoxRatio,
+                          ].join(" ")
+                      )
                       .append("g")
                       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -289,7 +312,11 @@ export class HistogramComponent implements AfterViewInit {
                            .attr("class", "chartbg")
                            .attr("width", width)
                            .attr("height", height);
-        chartbg.call(zoom);
+
+        if (this.interactable) {
+            chartbg.call(zoom);
+        }
+
     }
 
     private zoomed(svg: d3.Selection<any>,
