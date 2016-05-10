@@ -305,8 +305,6 @@ class BrowserStorageProvider implements StorageProvider {
                 );
             }
 
-            console.log(plots);
-
             return plots;
         }
     }
