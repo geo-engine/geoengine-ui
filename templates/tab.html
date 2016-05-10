@@ -176,6 +176,19 @@
                     </div>
                 </div>
             </fieldset>
+            <fieldset>
+                <legend>MSG</legend>
+                <div layout="row">
+                    <div layout="column" layout-align="space-around center">
+                        <button md-button style="margin: 0px; height: auto;"
+                                class="md-primary" layout="column"
+                                (click)="addMsgRadianceOperator()">
+                            <i md-icon>satellite</i>
+                            <div>To radiances</div>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
         </md-content>
     </template>
     <template md-tab label="Project">
@@ -201,6 +214,7 @@
                     </div>
                 </div>
             </fieldset>
+
         </md-content>
     </template>
 </md-tabs>

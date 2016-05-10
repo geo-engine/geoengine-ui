@@ -693,3 +693,71 @@ export class RType extends OperatorType {
         });
     }
 }
+
+/* The MSG radiance type */
+interface MsgRadianceTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface MsgRadianceTypeDict extends OperatorTypeDict {}
+
+interface MsgRadianceTypeConfig {}
+
+/**
+ * The MSG radiance type.
+ */
+export class MsgRadianceType extends OperatorType {
+    static get TYPE(): string { return "msatradiance"; };
+
+    constructor(config: MsgRadianceTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string { return MsgRadianceType.TYPE; }
+
+    toString(): string { return "MSG radiance Operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgRadianceTypeMappingDict { return {}; }
+
+    toDict(): MsgRadianceTypeDict {
+        return {
+            operatorType: MsgRadianceType.TYPE,
+        };
+    }
+
+    static fromDict(dict: MsgRadianceTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
+}
+
+/* The MSG radiance type */
+interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface MsgReflectanceTypeDict extends OperatorTypeDict {}
+
+interface MsgReflectanceTypeConfig {}
+
+/**
+ * The MSG radiance type.
+ */
+export class MsgReflectanceType extends OperatorType {
+    static get TYPE(): string { return "msatreflectance"; };
+
+    constructor(config: MsgReflectanceTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string { return MsgReflectanceType.TYPE; }
+
+    toString(): string { return "MSG reflectance Operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgReflectanceTypeMappingDict { return {}; }
+
+    toDict(): MsgReflectanceTypeDict {
+        return {
+            operatorType: MsgReflectanceType.TYPE,
+        };
+    }
+
+    static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType({}); }
+}

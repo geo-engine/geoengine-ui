@@ -10,6 +10,7 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {LayerService} from "../../services/layer.service";
 import {PlotService} from "../../services/plot.service";
 import {MappingQueryService} from "../../services/mapping-query.service";
+import {MappingColorizerService} from "../../services/mapping-colorizer.service";
 
 import {Layer} from "../../models/layer.model";
 import {Plot} from "../../models/plot.model";
@@ -391,6 +392,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     @Input() layerService: LayerService;
     @Input() plotService: PlotService;
     @Input() mappingQueryService: MappingQueryService;
+    @Input() mappingColorizerService: MappingColorizerService;
 
     protected layers: Array<Layer> = [];
 
@@ -434,6 +436,10 @@ export class OperatorDialogConfig extends MdDialogConfig {
     }
     mappingQueryService(mappingQueryService: MappingQueryService) {
         this.context.mappingQueryService = mappingQueryService;
+        return this;
+    }
+    mappingColorizerService(mappingcolorizerService: MappingColorizerService) {
+        this.context.mappingColorizerService = mappingcolorizerService;
         return this;
     }
 }
