@@ -94,6 +94,63 @@ export class OlPointLayerComponent extends OlMapLayerComponent {
 }
 
 @Component({
+    selector: "ol-polygon-layer",
+    template: "",
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class OlPolygonLayerComponent extends OlMapLayerComponent {
+    protected source: ol.source.Vector;
+    protected mapLayer: ol.layer.Vector;
+
+    getMapLayer(): ol.layer.Vector {
+        return this.mapLayer;
+    }
+
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
+        let operator = this.layer.operator.getProjectedOperator(this.projection);
+
+        let params = {
+            service: "WFS",
+            version: Config.WFS.VERSION,
+            request: "GetFeature",
+            typeNames: `polygons:${operator.toQueryJSON()}`,
+            srsname: this.projection.getCode(),
+            time: this.time.toISOString(),
+        };
+        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
+
+        console.log(this.time, params);
+
+        if (changes["layer"] || changes["projection"]) {
+            this.source = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: Config.MAPPING_URL + "?" + Object.keys(params).map(
+                    key => key + "=" + encodeURIComponent(params[key])
+                ).join("&") + `&outputFormat=${Config.WFS.FORMAT}`,
+                wrapX: false
+            });
+
+            this.mapLayer = new ol.layer.Vector({
+                source: this.source,
+                style: olStyle,
+            });
+        }
+
+        if (changes["time"]) {
+            this.source.clear(true);
+        }
+
+        if (changes["symbology"]) {
+          this.mapLayer.setStyle(olStyle);
+        }
+    }
+
+    getExtent() {
+        return this.source.getExtent();
+    }
+}
+
+@Component({
     selector: "ol-raster-layer",
     template: "",
     changeDetection: ChangeDetectionStrategy.OnPush

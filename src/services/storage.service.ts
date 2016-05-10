@@ -15,8 +15,10 @@ import {ResultTypes} from "../models/result-type.model";
 import {DataType, DataTypes} from "../models/datatype.model";
 import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
-import {Symbology, SimplePointSymbology, RasterSymbology, ISymbology} from "../models/symbology.model";
-import {RasterSourceType, GFBioPointSourceType} from "../models/operator-type.model";
+import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
+    from "../models/symbology.model";
+import {RasterSourceType, GFBioPointSourceType, GFBioGeometrySourceType}
+    from "../models/operator-type.model";
 
 /**
  * This service allows persisting the current execution context.
@@ -403,23 +405,18 @@ class DeveloperDefaults extends StorageDefaults {
     getLayers(): Array<Layer> {
         return [
             new Layer({
-                name: "SRTM",
-                symbology: new RasterSymbology({}),
+                name: "IUCN Puma Concolor",
+                symbology: new SimpleVectorSymbology({}),
                 operator: new Operator({
-                    operatorType: new RasterSourceType({
-                        channel: 0,
-                        sourcename: "srtm",
-                        transform: true,
+                    operatorType: new GFBioGeometrySourceType({
+                        datasource: "IUCN",
+                        query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
-                    resultType: ResultTypes.RASTER,
-                    projection: Projections.fromCode("EPSG:4326"),
-                    attributes: ["value"],
-                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
-                    units: new Map<string, Unit>().set("value", new Unit({
-                        measurement: "elevation",
-                        unit: "m",
-                        interpolation: Interpolation.Continuous
-                    }))
+                    resultType: ResultTypes.POLYGONS,
+                    projection: Projections.WGS_84,
+                    attributes: [],
+                    dataTypes: new Map<string, DataType>(),
+                    units: new Map<string, Unit>()
                 })
             }),
             new Layer({
@@ -431,12 +428,32 @@ class DeveloperDefaults extends StorageDefaults {
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
                     resultType: ResultTypes.POINTS,
-                    projection: Projections.fromCode("EPSG:4326"),
+                    projection: Projections.WGS_84,
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),
                     units: new Map<string, Unit>()
                 })
-            })
+            }),
+            new Layer({
+                name: "SRTM",
+                symbology: new RasterSymbology({}),
+                operator: new Operator({
+                    operatorType: new RasterSourceType({
+                        channel: 0,
+                        sourcename: "srtm",
+                        transform: true,
+                    }),
+                    resultType: ResultTypes.RASTER,
+                    projection: Projections.WGS_84,
+                    attributes: ["value"],
+                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
+                    units: new Map<string, Unit>().set("value", new Unit({
+                        measurement: "elevation",
+                        unit: "m",
+                        interpolation: Interpolation.Continuous
+                    }))
+                })
+            }),
         ];
     }
 }

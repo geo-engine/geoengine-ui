@@ -91,6 +91,8 @@ export abstract class OperatorType {
                 return ProjectionType.fromDict(<ProjectionTypeDict> dict);
             case GFBioPointSourceType.TYPE:
                 return GFBioPointSourceType.fromDict(<GFBioPointSourceTypeDict> dict);
+            case GFBioGeometrySourceType.TYPE:
+                return GFBioGeometrySourceType.fromDict(<GFBioGeometrySourceTypeDict> dict);
             case RasterSourceType.TYPE:
                 return RasterSourceType.fromDict(<RasterSourceTypeDict> dict);
             case HistogramType.TYPE:
@@ -395,6 +397,74 @@ export class GFBioPointSourceType extends OperatorType {
 
     static fromDict(dict: GFBioPointSourceTypeDict): GFBioPointSourceType {
         return new GFBioPointSourceType({
+            datasource: dict.datasource,
+            query: dict.query,
+        });
+    }
+}
+
+interface GFBioGeometrySourceTypeConfig {
+    datasource: string;
+    query: string;
+}
+
+interface GFBioGeometrySourceTypeMappingDict extends OperatorTypeMappingDict {
+    datasource: string;
+    query: string;
+}
+
+interface GFBioGeometrySourceTypeDict extends OperatorTypeDict  {
+    datasource: string;
+    query: string;
+}
+
+/**
+ * The GFBio geometry source type.
+ */
+export class GFBioGeometrySourceType extends OperatorType {
+    static get TYPE(): string { return "gfbiogeometrysource"; };
+
+    private datasource: string;
+    private query: string;
+
+    constructor(config: GFBioGeometrySourceTypeConfig) {
+        super();
+        this.datasource = config.datasource;
+        this.query = config.query;
+    }
+
+    getMappingName(): string {
+        return GFBioGeometrySourceType.TYPE;
+    }
+
+    toString(): string {
+        return "GFBio Geometry Source";
+    }
+
+    getParametersAsStrings(): Array<[string, string]> {
+        return [
+            ["datasource", this.datasource.toString()],
+            ["query", this.query.toString()],
+        ];
+    }
+
+    toMappingDict(): GFBioGeometrySourceTypeMappingDict {
+        return {
+            datasource: this.datasource,
+            query: this.query,
+        };
+    }
+
+    toDict(): GFBioGeometrySourceTypeDict {
+        return {
+            operatorType: GFBioGeometrySourceType.TYPE,
+            datasource: this.datasource,
+            query: this.query,
+        };
+    }
+
+    static fromDict(dict: GFBioGeometrySourceTypeDict): GFBioGeometrySourceType {
+        return new GFBioGeometrySourceType({
             datasource: dict.datasource,
             query: dict.query,
         });
