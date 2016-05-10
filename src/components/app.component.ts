@@ -13,6 +13,7 @@ import {LayerComponent} from "../components/layer.component";
 import {DataTable} from "../components/data-table.component";
 import {OlMapComponent} from "./openlayers/ol-map.component";
 import {OlPointLayerComponent, OlRasterLayerComponent} from "./openlayers/ol-layer.component";
+import {PlotListComponent} from "./plots/plot-list.component";
 
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
 import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig}
@@ -79,19 +80,18 @@ import {MappingQueryService} from "../services/mapping-query.service";
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTime() | async">
+                                    [time]="projectService.getTimeStream() | async">
                     </ol-point-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                     [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTime() | async">
+                                    [time]="projectService.getTimeStream() | async">
                     </ol-raster-layer>
                 </div>
             </ol-map>
         </div>
-        <div class="plots" *ngIf="plotListVisible$ | async"
-             [style.max-height.px]="middleContainerHeight$ | async"></div>
+        <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"></wave-plot-list>
     </div>
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
@@ -156,7 +156,7 @@ import {MappingQueryService} from "../services/mapping-query.service";
     `],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, InfoAreaComponent, TabComponent,
                  LayerComponent, OlMapComponent, OlPointLayerComponent, OlRasterLayerComponent,
-                 InfoBarComponent, DataTable, RasterRepositoryComponent],
+                 InfoBarComponent, DataTable, RasterRepositoryComponent, PlotListComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, PlotService, StorageService, ProjectService, UserService,
                 MappingQueryService,
@@ -281,6 +281,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         let config = new OperatorDialogConfig()
             .layerService(this.layerService)
             .plotService(this.plotService)
+            .projectService(this.projectService)
             .mappingQueryService(this.mappingQueryService)
             .clickOutsideToClose(true);
 

@@ -7,7 +7,17 @@ import {Plot} from "../models/plot.model";
 export class PlotService {
     private plots$: BehaviorSubject<Array<Plot>> = new BehaviorSubject([]);
 
-    constructor() {}
+    private plotsVisible$: Observable<boolean>;
+    private listVisible$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+    constructor() {
+        this.plotsVisible$ = this.plots$.map(plots => plots.length > 0);
+
+        // if plots are empty set visibility to true for new plots
+        this.plotsVisible$.filter(visible => visible === false)
+                          .map(() => true)
+                          .subscribe(this.listVisible$);
+    }
 
     /**
      * @returns The plot list.
@@ -55,6 +65,13 @@ export class PlotService {
     }
 
     /**
+     * Remove all plots.
+     */
+    clearPlots() {
+        this.plots$.next([]);
+    }
+
+    /**
      * Changes the display name of a plot.
      * @param plot The plot to modify
      * @param newName The new layer name
@@ -62,5 +79,35 @@ export class PlotService {
     changePlotName(plot: Plot, newName: string) {
       plot.name = newName;
       this.plots$.next(this.getPlots());
+    }
+
+    /**
+     * Is the plot component visible?
+     */
+    getPlotsVisibleStream(): Observable<boolean> {
+        return this.plotsVisible$;
+    }
+
+    /**
+     * Is the plot list visible in the component?
+     */
+    getPlotListVisibleStream(): Observable<boolean> {
+        return this.listVisible$;
+    }
+
+    /**
+     * Sets the visibility of the plot list.
+     */
+    setPlotListVisibility(visible: boolean) {
+        if (this.plots$.value.length > 0) {
+            this.listVisible$.next(visible);
+        }
+    }
+
+    /**
+     * Toggles the visibility of the plot list.
+     */
+    togglePlotListVisibility() {
+        this.setPlotListVisibility(!this.listVisible$.value);
     }
 }

@@ -7,8 +7,11 @@ import {StorageService} from "../services/storage.service";
 
 import {OperatorBaseComponent, OperatorBase} from "./operators/operator.component";
 import {ExpressionOperatorComponent} from "./operators/expression-operator.component";
-import {RasterValueExtractionOperatorComponent} from "./operators/raster-value-extraction.component";
-import {NumericAttributeFilterOperatorComponent} from "./operators/numeric-attribute-filter.component";
+import {RasterValueExtractionOperatorComponent}
+    from "./operators/raster-value-extraction.component";
+import {NumericAttributeFilterOperatorComponent}
+    from "./operators/numeric-attribute-filter.component";
+import {HistogramOperatorComponent} from "./operators/histogram.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
@@ -110,5 +113,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addROperator() {
         this.showOperator.emit(ROperatorComponent);
+    }
+
+    private addHistogramOperator() {
+        this.showOperator.emit(HistogramOperatorComponent);
     }
 }

@@ -57,7 +57,7 @@ import {SimplePointSymbology} from "../../models/symbology.model";
                         <input md-input type="hidden" value="0"><!-- HACK -->
                     </md-input-container>
                     <wave-histogram [height]="500" [width]="500" [selectable]="true"
-                                    *ngIf="data" [data]="data"
+                                    *ngIf="data" [data]="data" interactable="true"
                                     (minRange)="boundsMin = $event" (maxRange)="boundsMax = $event">
                     </wave-histogram>
                     <md-input-container class="md-block">
@@ -120,7 +120,8 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 pointSources: [this.selectedLayer.operator],
             });
 
-            this.mappingQueryService.getPlotData(operator).then(data => this.data = data);
+            this.mappingQueryService.getPlotData(operator, this.projectService.getTime())
+                                    .then(data => this.data = <HistogramData> data);
             // this.http.get(
             //     `http://pc12316:10080/cgi-bin/mapping?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&TRANSPARENT=true&TILED=true&FORMAT=application/json&LAYERS=%7B%22type%22%3A%22histogram_from_features%22%2C%22params%22%3A%7B%22name%22%3A%22srtm%230%22%2C%22numberOfBuckets%22%3A20%7D%2C%22sources%22%3A%7B%22points%22%3A%5B%7B%22type%22%3A%22raster_metadata_to_points%22%2C%22params%22%3A%7B%22names%22%3A%5B%22srtm%230%22%5D%2C%22xResolution%22%3A1024%2C%22yResolution%22%3A1024%7D%2C%22sources%22%3A%7B%22raster%22%3A%5B%7B%22type%22%3A%22source%22%2C%22params%22%3A%7B%22sourcename%22%3A%22srtm%22%2C%22channel%22%3A0%7D%7D%5D%2C%22points%22%3A%5B%7B%22type%22%3A%22gfbiopointsource%22%2C%22params%22%3A%7B%22datasource%22%3A%22GBIF%22%2C%22query%22%3A%22%7B%5C%22globalAttributes%5C%22%3A%7B%5C%22speciesName%5C%22%3A%5C%22Puma%20concolor%5C%22%7D%2C%5C%22localAttributes%5C%22%3A%7B%7D%7D%22%7D%7D%5D%7D%7D%5D%7D%7D&DEBUG=1&COLORS=hsv&CRS=EPSG:4326&BBOX=-90,-180,90,180&WIDTH=1000&HEIGHT=1000&_=1462193142288`
             // ).toPromise().then(response => {

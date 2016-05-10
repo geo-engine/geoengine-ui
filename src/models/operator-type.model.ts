@@ -628,7 +628,7 @@ export class HistogramType extends OperatorType {
 
 interface RTypeMappingDict extends OperatorTypeMappingDict {
     source: string;
-    result_type: string;
+    result: string;
 }
 
 interface RTypeDict extends OperatorTypeDict {
@@ -674,7 +674,7 @@ export class RType extends OperatorType {
     toMappingDict(): RTypeMappingDict {
         return {
             source: this.code,
-            result_type: this.resultType.getCode(),
+            result: this.resultType.getCode(),
         };
     }
 

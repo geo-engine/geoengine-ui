@@ -147,17 +147,19 @@ export class ROperatorComponent extends OperatorBaseComponent {
             }
 
             this.layerService.addLayer(new Layer({
-                name: name,
+                name: outputName,
                 operator: operator,
                 symbology: symbology,
             }));
         } else {
             // PLOT
             const plot = new Plot({
-                name: name,
+                name: outputName,
                 operator: operator,
+                data$: this.mappingQueryService.getPlotDataStream(
+                    operator, this.projectService.getTimeStream()
+                ),
             });
-            plot.data = this.mappingQueryService.getPlotData(operator);
             this.plotService.addPlot(plot);
         }
 
