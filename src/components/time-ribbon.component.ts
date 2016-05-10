@@ -88,7 +88,7 @@ export class TimeRibbonComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.projectService.getTime().subscribe(time => {
+        this.projectService.getTimeStream().subscribe(time => {
             if (!time.isSame(this.moment)) {
                 this.moment = time.clone();
                 // console.log("wave-time-ribbon", "projectService changed", this.moment);
