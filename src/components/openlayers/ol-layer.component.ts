@@ -6,6 +6,8 @@ import {Layer} from "../../models/layer.model";
 import {Projection} from "../../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
 
+import {MappingQueryService} from "../../services/mapping-query.service";
+
 import moment from "moment";
 
 /**
@@ -28,6 +30,8 @@ export abstract class OlMapLayerComponent implements OnChanges {
     @Input() projection: Projection;
     @Input() symbology: Symbology;
     @Input() time: moment.Moment;
+
+    constructor(protected mappingQueryService: MappingQueryService) {}
 
     abstract getMapLayer(): ol.layer.Layer;
 
@@ -102,6 +106,10 @@ export class OlPolygonLayerComponent extends OlMapLayerComponent {
     protected source: ol.source.Vector;
     protected mapLayer: ol.layer.Vector;
 
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
+    }
+
     getMapLayer(): ol.layer.Vector {
         return this.mapLayer;
     }
@@ -109,24 +117,12 @@ export class OlPolygonLayerComponent extends OlMapLayerComponent {
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
         let operator = this.layer.operator.getProjectedOperator(this.projection);
 
-        let params = {
-            service: "WFS",
-            version: Config.WFS.VERSION,
-            request: "GetFeature",
-            typeNames: `polygons:${operator.toQueryJSON()}`,
-            srsname: this.projection.getCode(),
-            time: this.time.toISOString(),
-        };
         let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
-
-        console.log(this.time, params);
 
         if (changes["layer"] || changes["projection"]) {
             this.source = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
-                url: Config.MAPPING_URL + "?" + Object.keys(params).map(
-                    key => key + "=" + encodeURIComponent(params[key])
-                ).join("&") + `&outputFormat=${Config.WFS.FORMAT}`,
+                url: this.mappingQueryService.getWFSQueryUrl(operator, this.time),
                 wrapX: false
             });
 

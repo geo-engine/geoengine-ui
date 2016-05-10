@@ -9,12 +9,14 @@ import {Operator} from "../models/operator.model";
 import Config from "../models/config.model";
 import {PlotData} from "../models/plot.model";
 
+type ParametersType = {[index: string]: string | number | boolean};
+
 @Injectable()
 export class MappingQueryService {
     constructor(private http: Http) {}
 
     getPlotQueryUrl(operator: Operator, time: moment.Moment): string {
-        const parameters: {[index: string]: string | number | boolean} = {
+        const parameters: ParametersType = {
             service: "plot",
             query: operator.toQueryJSON(),
             time: time.toISOString(),
@@ -31,5 +33,19 @@ export class MappingQueryService {
         // TODO: remove  `fromPromise` when new rxjs version is used
         // TODO: use flatMapLatest
         return time$.flatMap(time => Observable.fromPromise(this.getPlotData(operator, time)));
+    }
+
+    getWFSQueryUrl(operator: Operator, time: moment.Moment): string {
+        const parameters: ParametersType = {
+            service: "WFS",
+            version: Config.WFS.VERSION,
+            request: "GetFeature",
+            typeNames: operator.resultType.getCode() + ":" + operator.toQueryJSON(),
+            srsname: operator.projection.getCode(),
+            time: time.toISOString(),
+        };
+
+        return Config.MAPPING_URL + "?" +
+               Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
     }
 }
