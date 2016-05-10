@@ -53,6 +53,10 @@ import {PlotService} from "../../services/plot.service";
                             <template ngSwitchWhen="text">
                                 <pre>{{(plot.data$ | async)?.data}}</pre>
                             </template>
+                            <template ngSwitchWhen="png">
+                                <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}"
+                                     width="150" height="150" alt="{{plot.name}}">
+                            </template>
                             <template ngSwitchWhen="histogram">
                                 <wave-histogram [data]="plot.data$ | async"
                                                 width="150" height="150"
