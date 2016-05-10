@@ -13,6 +13,7 @@ import {NumericAttributeFilterOperatorComponent}
     from "./operators/numeric-attribute-filter.component";
 import {HistogramOperatorComponent} from "./operators/histogram.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
+import {TimeRibbonComponent} from "./time-ribbon.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
 @Component({
@@ -40,7 +41,7 @@ import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, TimeRibbonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
