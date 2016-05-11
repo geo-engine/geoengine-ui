@@ -13,7 +13,7 @@ import {NumericAttributeFilterOperatorComponent}
     from "./operators/numeric-attribute-filter.component";
 import {HistogramOperatorComponent} from "./operators/histogram.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
-import {MsgRadianceOperatorComponent} from "./operators/msg-operators.component";
+import {MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent} from "./operators/msg-operators.component";
 import {TimeRibbonComponent} from "./time-ribbon.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
@@ -123,5 +123,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addMsgRadianceOperator() {
         this.showOperator.emit(MsgRadianceOperatorComponent);
+    }
+
+    private addMsgReflectanceOperator() {
+        this.showOperator.emit(MsgReflectanceOperatorComponent);
     }
 }

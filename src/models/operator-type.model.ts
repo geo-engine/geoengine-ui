@@ -99,6 +99,10 @@ export abstract class OperatorType {
                 return HistogramType.fromDict(<HistogramTypeDict> dict);
             case RType.TYPE:
                 return RType.fromDict(<RTypeDict> dict);
+            case MsgRadianceType.TYPE:
+                return MsgRadianceType.fromDict(<MsgRadianceTypeDict> dict);
+            case MsgReflectanceType.TYPE:
+                return MsgReflectanceType.fromDict(<MsgReflectanceTypeDict> dict);
         }
     }
 }
@@ -799,20 +803,42 @@ export class MsgRadianceType extends OperatorType {
 }
 
 /* The MSG radiance type */
-interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {}
+interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatellite?: MeteosatSatelliteName;
+}
 
-interface MsgReflectanceTypeDict extends OperatorTypeDict {}
+interface MsgReflectanceTypeDict extends OperatorTypeDict {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatelliteName?: MeteosatSatelliteName;
+}
 
-interface MsgReflectanceTypeConfig {}
+interface MsgReflectanceTypeConfig {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatelliteName?: MeteosatSatelliteName;
+}
+
+export type MeteosatSatelliteName = "Meteosat-8" | "Meteosat-9" | "Meteosat-10" | "Meteosat-11";
 
 /**
  * The MSG radiance type.
  */
 export class MsgReflectanceType extends OperatorType {
     static get TYPE(): string { return "msatreflectance"; };
+    private isHrv: boolean = false;
+    private solarCorrection: boolean = true;
+    private forceSatelliteName: MeteosatSatelliteName = null;
+    private forceSatellite: boolean = false;
 
     constructor(config: MsgReflectanceTypeConfig) {
         super();
+        this.isHrv = config.isHrv;
+        this.solarCorrection = config.solarCorrection;
+        if ( config.forceSatelliteName ) this.forceSatelliteName = config.forceSatelliteName;
+        this.forceSatellite = this.forceSatelliteName !== "";
     }
 
     getMappingName(): string { return MsgReflectanceType.TYPE; }
@@ -821,13 +847,28 @@ export class MsgReflectanceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
-    toMappingDict(): MsgReflectanceTypeMappingDict { return {}; }
-
-    toDict(): MsgReflectanceTypeDict {
-        return {
-            operatorType: MsgReflectanceType.TYPE,
+    toMappingDict(): MsgReflectanceTypeMappingDict {
+        let config = {
+            isHrv: this.isHrv,
+            solarCorrection: this.solarCorrection
         };
+        if (this.forceSatellite && this.forceSatelliteName) {
+            config["forceSatellite"] = this.forceSatelliteName;
+        }
+        return config;
     }
 
-    static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType({}); }
+    toDict(): MsgReflectanceTypeDict {
+        let dict: MsgReflectanceTypeDict = {
+            operatorType: MsgReflectanceType.TYPE,
+            isHrv: this.isHrv,
+            solarCorrection: this.solarCorrection
+        };
+        if (this.forceSatellite && this.forceSatelliteName) {
+            dict["forceSatelliteName"] = this.forceSatelliteName;
+        }
+        return dict;
+    }
+
+    static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType(dict); }
 }
