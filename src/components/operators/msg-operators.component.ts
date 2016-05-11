@@ -17,7 +17,7 @@ import {ResultTypes} from "../../models/result-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
 import {Unit} from "../../models/unit.model";
 import {Projection, Projections} from "../../models/projection.model";
-import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MeteosatSatelliteName, SolarangleName} from "../../models/operator-type.model";
+import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName, SolarangleName} from "../../models/operator-type.model";
 import {Symbology, MappingColorizerRasterSymbology, RasterSymbology} from "../../models/symbology.model";
 import {MappingColorizerService} from "../../services/mapping-colorizer.service";
 
@@ -406,5 +406,87 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
         });
         this.dialog.close();
     }
+}
 
+/**
+ * This component allows creating the MSG pansharpening operator.
+ */
+@Component({
+    selector: "wave-msg-pansharpen-operator",
+    template: `
+    <wave-operator-container title="Pansharpen" (add)="addLayer()" (cancel)="dialog.close()">
+        <form [ngFormModel]="configForm">
+            <wave-multi-layer-selection [layers]="layers" [min]="2" [max]="2" initialAmount="1"
+                                        [types]="[ResultTypes.RASTER]"
+                                        (selectedLayers)="selectedRasterSources = $event">
+            </wave-multi-layer-selection>
+            <md-card>
+                <md-card-header>
+                    <md-card-header-text>
+                        <span class="md-title">Configuration</span>
+                        <span class="md-subheader">Specify the operator</span>
+                    </md-card-header-text>
+                </md-card-header>
+                <md-card-content>
+                    <md-input-container class="md-block">
+                        <label for="name">
+                            Output Name
+                        </label>
+                        <input md-input ngControl="name" [(value)]="name">
+                        <div md-messages="name">
+                            <div md-message="required">You must specify an output name.</div>
+                        </div>
+                    </md-input-container>
+                </md-card-content>
+            </md-card>
+        </form>
+    </wave-operator-container>
+    `,
+    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    changeDetection: ChangeDetectionStrategy.Default,
+})
+export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
+    private configForm: ControlGroup;
+    private selectedRasterSources: Array<Layer>;
+
+
+    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
+        super();
+        this.configForm = formBuilder.group({
+            "name": ["Pansharpen (MSG)", Validators.required],
+        });
+    }
+
+    private addLayer() {
+        const outputName: string = this.configForm.controls["name"].value;
+        const rasterSources = this.selectedRasterSources.map(layer => layer.operator);
+
+        const operator = new Operator({
+            operatorType: new MsgPansharpenType({}),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: [], // TODO: user input?
+            dataTypes: new Map<string, DataType>(), // TODO: user input?
+            units: new Map<string, Unit>(), // TODO: user input?
+            rasterSources: rasterSources,
+        });
+
+        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+            let layer = new Layer({
+                name: outputName,
+                operator: operator,
+                symbology: new MappingColorizerRasterSymbology(x),
+            });
+            this.layerService.addLayer(layer);
+        }).catch(ex => {
+            console.log("_mappingColorizerService.getColorizer", ex);
+            let layer = new Layer({
+                name: outputName,
+                operator: operator,
+                symbology: new RasterSymbology({}),
+            });
+            this.layerService.addLayer(layer);
+        });
+        this.dialog.close();
+    }
 }

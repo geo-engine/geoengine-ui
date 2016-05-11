@@ -109,6 +109,8 @@ export abstract class OperatorType {
                 return MsgSolarangleType.fromDict(<MsgSolarangleTypeDict> dict);
             case MsgTemperatureType.TYPE:
                 return MsgTemperatureType.fromDict(<MsgTemperatureTypeDict> dict);
+            case MsgPansharpenType.TYPE:
+                return MsgPansharpenType.fromDict(<MsgPansharpenTypeDict> dict);
         }
     }
 }
@@ -1002,4 +1004,38 @@ export class MsgTemperatureType extends OperatorType {
     }
 
     static fromDict(dict: MsgTemperatureTypeDict): MsgTemperatureType { return new MsgTemperatureType(dict); }
+}
+
+/* The MSG pansharpen type */
+interface MsgPansharpenTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface MsgPansharpenTypeDict extends OperatorTypeDict {}
+
+interface MsgPansharpenTypeConfig {}
+
+/**
+ * The MSG pansharpen type.
+ */
+export class MsgPansharpenType extends OperatorType {
+    static get TYPE(): string { return "msatpansharpening"; };
+
+    constructor(config: MsgPansharpenTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string { return MsgPansharpenType.TYPE; }
+
+    toString(): string { return "MSG pansharpen operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgPansharpenTypeMappingDict { return {}; }
+
+    toDict(): MsgPansharpenTypeDict {
+        return {
+            operatorType: MsgPansharpenType.TYPE,
+        };
+    }
+
+    static fromDict(dict: MsgPansharpenTypeDict): MsgPansharpenType { return new MsgPansharpenType(dict); }
 }
