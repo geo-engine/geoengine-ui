@@ -41,8 +41,8 @@ export abstract class Symbology implements ISymbology {
     static fromDict(dict: SymbologyDict): Symbology {
         let symbologyType: SymbologyType = SymbologyType[dict.symbologyTypeId];
         switch (symbologyType) {
-            case SymbologyType.SIMPLE_POINT: return new SimplePointSymbology(dict.symbologyConfig);
-            case SymbologyType.SIMPLE_VECTOR: return new SimpleVectorSymbology(dict.symbologyConfig);
+            case SymbologyType.SIMPLE_POINT: return new SimplePointSymbology(<IVectorSymbology> dict.symbologyConfig);
+            case SymbologyType.SIMPLE_VECTOR: return new SimpleVectorSymbology(<IVectorSymbology> dict.symbologyConfig);
             case SymbologyType.RASTER: return new RasterSymbology(dict.symbologyConfig);
             case SymbologyType.MAPPING_COLORIZER_RASTER: return new MappingColorizerRasterSymbology(<IMappingColorizerRasterSymbology>(dict.symbologyConfig)); // cast needed here
         }
@@ -50,13 +50,13 @@ export abstract class Symbology implements ISymbology {
 };
 
 export interface IVectorSymbology extends ISymbology {
-    fill_rgba?: [number, number, number, number];
+    fill_rgba: [number, number, number, number];
     stroke_rgba?: [number, number, number, number];
     stroke_width?: number;
 }
 
 export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
-    fill_rgba: [number, number, number, number] = [255, 0, 0, 0.8]; // TODO: maybe a new iterface rgba? or just [number]?
+    fill_rgba: [number, number, number, number]; // TODO: maybe a new iterface rgba? or just [number]?
     stroke_rgba: [number, number, number, number] = [0, 0, 0, 1];
     stroke_width: number = 1;
 
@@ -64,7 +64,7 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
 
     constructor(config: IVectorSymbology) {
         super();
-        if (config.fill_rgba) this.fill_rgba = config.fill_rgba;
+        this.fill_rgba = config.fill_rgba;
         if (config.stroke_rgba) this.stroke_rgba = config.stroke_rgba;
         if (config.stroke_width) this.stroke_width = config.stroke_width;
     }

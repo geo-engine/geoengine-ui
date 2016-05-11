@@ -96,7 +96,7 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({}),
+            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
         }));
 
         this.dialog.close();

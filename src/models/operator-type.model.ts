@@ -103,6 +103,18 @@ export abstract class OperatorType {
                 return PointInPolygonFilterType.fromDict(<PointInPolygonFilterTypeDict> dict);
             case WKTSourceType.TYPE:
                 return WKTSourceType.fromDict(<WKTSourceTypeDict> dict);
+            case MsgRadianceType.TYPE:
+                return MsgRadianceType.fromDict(dict);
+            case MsgReflectanceType.TYPE:
+                return MsgReflectanceType.fromDict(<MsgReflectanceTypeDict> dict);
+            case MsgSolarangleType.TYPE:
+                return MsgSolarangleType.fromDict(<MsgSolarangleTypeDict> dict);
+            case MsgTemperatureType.TYPE:
+                return MsgTemperatureType.fromDict(dict);
+            case MsgPansharpenType.TYPE:
+                return MsgPansharpenType.fromDict(<MsgPansharpenTypeDict> dict);
+            case MsgCo2CorrectionType.TYPE:
+                return MsgCo2CorrectionType.fromDict(dict);
         }
     }
 }
@@ -811,72 +823,237 @@ export class PointInPolygonFilterType extends OperatorType {
     }
 }
 
-/* The MSG radiance type */
-interface MsgRadianceTypeMappingDict extends OperatorTypeMappingDict {}
-
-interface MsgRadianceTypeDict extends OperatorTypeDict {}
-
-interface MsgRadianceTypeConfig {}
-
 /**
  * The MSG radiance type.
  */
 export class MsgRadianceType extends OperatorType {
     static get TYPE(): string { return "msatradiance"; };
 
-    constructor(config: MsgRadianceTypeConfig) {
+    constructor(config: {}) {
         super();
     }
 
     getMappingName(): string { return MsgRadianceType.TYPE; }
 
-    toString(): string { return "MSG radiance Operator"; }
+    toString(): string { return "MSG radiance operator"; }
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
-    toMappingDict(): MsgRadianceTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
 
-    toDict(): MsgRadianceTypeDict {
+    toDict(): OperatorTypeDict {
         return {
             operatorType: MsgRadianceType.TYPE,
         };
     }
 
-    static fromDict(dict: MsgRadianceTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
+    static fromDict(dict: OperatorTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
 }
 
-/* The MSG radiance type */
-interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {}
+/* The MSG reflectance type */
+interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatellite?: MeteosatSatelliteName;
+}
 
-interface MsgReflectanceTypeDict extends OperatorTypeDict {}
+interface MsgReflectanceTypeDict extends OperatorTypeDict {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatelliteName?: MeteosatSatelliteName;
+}
 
-interface MsgReflectanceTypeConfig {}
+interface MsgReflectanceTypeConfig {
+    isHrv: boolean;
+    solarCorrection: boolean;
+    forceSatelliteName?: MeteosatSatelliteName;
+}
+
+export type MeteosatSatelliteName = "Meteosat-8" | "Meteosat-9" | "Meteosat-10" | "Meteosat-11";
 
 /**
  * The MSG radiance type.
  */
 export class MsgReflectanceType extends OperatorType {
     static get TYPE(): string { return "msatreflectance"; };
+    private isHrv: boolean = false;
+    private solarCorrection: boolean = true;
+    private forceSatelliteName: MeteosatSatelliteName = null;
+    private forceSatellite: boolean = false;
 
     constructor(config: MsgReflectanceTypeConfig) {
         super();
+        this.isHrv = config.isHrv;
+        this.solarCorrection = config.solarCorrection;
+        if ( config.forceSatelliteName ) this.forceSatelliteName = config.forceSatelliteName;
+        this.forceSatellite = this.forceSatelliteName !== "";
     }
 
     getMappingName(): string { return MsgReflectanceType.TYPE; }
 
-    toString(): string { return "MSG reflectance Operator"; }
+    toString(): string { return "MSG reflectance operator"; }
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
-    toMappingDict(): MsgReflectanceTypeMappingDict { return {}; }
+    toMappingDict(): MsgReflectanceTypeMappingDict {
+        let config = {
+            isHrv: this.isHrv,
+            solarCorrection: this.solarCorrection
+        };
+        if (this.forceSatellite && this.forceSatelliteName) {
+            config["forceSatellite"] = this.forceSatelliteName;
+        }
+        return config;
+    }
 
     toDict(): MsgReflectanceTypeDict {
-        return {
+        let dict: MsgReflectanceTypeDict = {
             operatorType: MsgReflectanceType.TYPE,
+            isHrv: this.isHrv,
+            solarCorrection: this.solarCorrection
+        };
+        if (this.forceSatellite && this.forceSatelliteName) {
+            dict["forceSatelliteName"] = this.forceSatelliteName;
+        }
+        return dict;
+    }
+
+    static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType(dict); }
+}
+
+/* The MSG solarangle type */
+interface MsgSolarangleTypeMappingDict extends OperatorTypeMappingDict {
+    solarangle: string;
+}
+
+interface MsgSolarangleTypeDict extends OperatorTypeDict {
+    solarangle: SolarangleName;
+}
+
+interface MsgSolarangleTypeConfig {
+    solarangle: SolarangleName;
+}
+
+export type SolarangleName = "azimuth" | "zenith";
+
+/**
+ * The MSG solarangle type.
+ */
+export class MsgSolarangleType extends OperatorType {
+    static get TYPE(): string { return "msatsolarangle"; };
+    private solarangle: SolarangleName;
+
+    constructor(config: MsgSolarangleTypeConfig) {
+        super();
+        this.solarangle = config.solarangle;
+    }
+
+    getMappingName(): string { return MsgSolarangleType.TYPE; }
+
+    toString(): string { return "MSG solarangle operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgSolarangleTypeMappingDict { return {
+        solarangle: this.solarangle,
+    }; }
+
+    toDict(): MsgSolarangleTypeDict {
+        return {
+            operatorType: MsgSolarangleType.TYPE,
+            solarangle: this.solarangle,
         };
     }
 
-    static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType({}); }
+    static fromDict(dict: MsgSolarangleTypeDict): MsgRadianceType { return new MsgRadianceType(dict); }
+}
+
+/**
+ * The MSG temperature type.
+ */
+export class MsgTemperatureType extends OperatorType {
+    static get TYPE(): string { return "msattemperature"; };
+
+    constructor(config: {}) {
+        super();
+    }
+
+    getMappingName(): string { return MsgTemperatureType.TYPE; }
+
+    toString(): string { return "MSG temperature operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
+
+    toDict(): OperatorTypeDict {
+        return {
+            operatorType: MsgTemperatureType.TYPE,
+        };
+    }
+
+    static fromDict(dict: OperatorTypeDict): MsgTemperatureType { return new MsgTemperatureType(dict); }
+}
+
+/* The MSG pansharpen type */
+interface MsgPansharpenTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface MsgPansharpenTypeDict extends OperatorTypeDict {}
+
+interface MsgPansharpenTypeConfig {}
+
+/**
+ * The MSG pansharpen type.
+ */
+export class MsgPansharpenType extends OperatorType {
+    static get TYPE(): string { return "msatpansharpening"; };
+
+    constructor(config: MsgPansharpenTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string { return MsgPansharpenType.TYPE; }
+
+    toString(): string { return "MSG pansharpen operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgPansharpenTypeMappingDict { return {}; }
+
+    toDict(): MsgPansharpenTypeDict {
+        return {
+            operatorType: MsgPansharpenType.TYPE,
+        };
+    }
+
+    static fromDict(dict: MsgPansharpenTypeDict): MsgPansharpenType { return new MsgPansharpenType(dict); }
+}
+
+/**
+ * The MSG temperature type.
+ */
+export class MsgCo2CorrectionType extends OperatorType {
+    static get TYPE(): string { return "msatco2correction"; };
+
+    constructor(config: {}) {
+        super();
+    }
+
+    getMappingName(): string { return MsgTemperatureType.TYPE; }
+
+    toString(): string { return "MSG CO2 correction operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
+
+    toDict(): OperatorTypeDict {
+        return {
+            operatorType: MsgTemperatureType.TYPE,
+        };
+    }
+
+    static fromDict(dict: OperatorTypeDict): MsgCo2CorrectionType { return new MsgCo2CorrectionType(dict); }
 }
 
 interface WKTSourceTypeMappingDict extends OperatorTypeMappingDict {

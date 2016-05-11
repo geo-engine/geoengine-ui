@@ -164,7 +164,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({})
+            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()})
         }));
 
         this.dialog.close();

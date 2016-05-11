@@ -406,7 +406,7 @@ class DeveloperDefaults extends StorageDefaults {
         return [
             new Layer({
                 name: "IUCN Puma Concolor",
-                symbology: new SimpleVectorSymbology({}),
+                symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: new Operator({
                     operatorType: new GFBioGeometrySourceType({
                         datasource: "IUCN",
@@ -421,7 +421,7 @@ class DeveloperDefaults extends StorageDefaults {
             }),
             new Layer({
                 name: "WKT",
-                symbology: new SimpleVectorSymbology({}),
+                symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
                 operator: new Operator({
                     operatorType: new WKTSourceType({
                         type: ResultTypes.LINES,
@@ -436,7 +436,7 @@ class DeveloperDefaults extends StorageDefaults {
             }),
             new Layer({
                 name: "Puma Concolor",
-                symbology: new SimplePointSymbology({}),
+                symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: new Operator({
                     operatorType: new GFBioPointSourceType({
                         datasource: "GBIF",
