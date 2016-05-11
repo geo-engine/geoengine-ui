@@ -89,10 +89,8 @@ export abstract class OperatorType {
                 return ExpressionType.fromDict(<ExpressionTypeDict> dict);
             case ProjectionType.TYPE:
                 return ProjectionType.fromDict(<ProjectionTypeDict> dict);
-            case GFBioPointSourceType.TYPE:
-                return GFBioPointSourceType.fromDict(<GFBioPointSourceTypeDict> dict);
-            case GFBioGeometrySourceType.TYPE:
-                return GFBioGeometrySourceType.fromDict(<GFBioGeometrySourceTypeDict> dict);
+            case GFBioSourceType.TYPE:
+                return GFBioSourceType.fromDict(<GFBioSourceTypeDict> dict);
             case RasterSourceType.TYPE:
                 return RasterSourceType.fromDict(<RasterSourceTypeDict> dict);
             case HistogramType.TYPE:
@@ -144,7 +142,7 @@ interface NumericAttributeFilterTypeConfig {
  * The numeric attribute filter type.
  */
 export class NumericAttributeFilterType extends OperatorType {
-    static get TYPE(): string { return "features_filter_by_range"; };
+    static get TYPE(): string { return "numeric_attribute_filter"; };
 
     private name: string;
     private includeNoData: boolean;
@@ -222,7 +220,7 @@ interface RasterValueExtractionTypeConfig {
  */
 export class RasterValueExtractionType extends OperatorType {
     static get TYPE(): string {
-        return "raster_metadata_to_points";
+        return "raster_value_extraction";
     }
 
     private xResolution: number;
@@ -351,38 +349,38 @@ export class ExpressionType extends OperatorType {
     }
 }
 
-interface GFBioPointSourceTypeConfig {
+interface GFBioSourceTypeConfig {
     datasource: string;
     query: string;
 }
 
-interface GFBioPointSourceTypeMappingDict extends OperatorTypeMappingDict {
+interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
     datasource: string;
     query: string;
 }
 
-interface GFBioPointSourceTypeDict extends OperatorTypeDict  {
+interface GFBioSourceTypeDict extends OperatorTypeDict  {
     datasource: string;
     query: string;
 }
 
 /**
- * The GFBio point source type.
+ * The GFBio source type.
  */
-export class GFBioPointSourceType extends OperatorType {
-    static get TYPE(): string { return "gfbiopointsource"; };
+export class GFBioSourceType extends OperatorType {
+    static get TYPE(): string { return "gfbio_source"; };
 
     private datasource: string;
     private query: string;
 
-    constructor(config: GFBioPointSourceTypeConfig) {
+    constructor(config: GFBioSourceTypeConfig) {
         super();
         this.datasource = config.datasource;
         this.query = config.query;
     }
 
     getMappingName(): string {
-        return GFBioPointSourceType.TYPE;
+        return GFBioSourceType.TYPE;
     }
 
     toString(): string {
@@ -396,91 +394,23 @@ export class GFBioPointSourceType extends OperatorType {
         ];
     }
 
-    toMappingDict(): GFBioPointSourceTypeMappingDict {
+    toMappingDict(): GFBioSourceTypeMappingDict {
         return {
             datasource: this.datasource,
             query: this.query,
         };
     }
 
-    toDict(): GFBioPointSourceTypeDict {
+    toDict(): GFBioSourceTypeDict {
         return {
-            operatorType: GFBioPointSourceType.TYPE,
+            operatorType: GFBioSourceType.TYPE,
             datasource: this.datasource,
             query: this.query,
         };
     }
 
-    static fromDict(dict: GFBioPointSourceTypeDict): GFBioPointSourceType {
-        return new GFBioPointSourceType({
-            datasource: dict.datasource,
-            query: dict.query,
-        });
-    }
-}
-
-interface GFBioGeometrySourceTypeConfig {
-    datasource: string;
-    query: string;
-}
-
-interface GFBioGeometrySourceTypeMappingDict extends OperatorTypeMappingDict {
-    datasource: string;
-    query: string;
-}
-
-interface GFBioGeometrySourceTypeDict extends OperatorTypeDict  {
-    datasource: string;
-    query: string;
-}
-
-/**
- * The GFBio geometry source type.
- */
-export class GFBioGeometrySourceType extends OperatorType {
-    static get TYPE(): string { return "gfbiogeometrysource"; };
-
-    private datasource: string;
-    private query: string;
-
-    constructor(config: GFBioGeometrySourceTypeConfig) {
-        super();
-        this.datasource = config.datasource;
-        this.query = config.query;
-    }
-
-    getMappingName(): string {
-        return GFBioGeometrySourceType.TYPE;
-    }
-
-    toString(): string {
-        return "GFBio Geometry Source";
-    }
-
-    getParametersAsStrings(): Array<[string, string]> {
-        return [
-            ["datasource", this.datasource.toString()],
-            ["query", this.query.toString()],
-        ];
-    }
-
-    toMappingDict(): GFBioGeometrySourceTypeMappingDict {
-        return {
-            datasource: this.datasource,
-            query: this.query,
-        };
-    }
-
-    toDict(): GFBioGeometrySourceTypeDict {
-        return {
-            operatorType: GFBioGeometrySourceType.TYPE,
-            datasource: this.datasource,
-            query: this.query,
-        };
-    }
-
-    static fromDict(dict: GFBioGeometrySourceTypeDict): GFBioGeometrySourceType {
-        return new GFBioGeometrySourceType({
+    static fromDict(dict: GFBioSourceTypeDict): GFBioSourceType {
+        return new GFBioSourceType({
             datasource: dict.datasource,
             query: dict.query,
         });
@@ -577,7 +507,7 @@ interface RasterSourceTypeDict extends OperatorTypeDict  {
  * The raster source type.
  */
 export class RasterSourceType extends OperatorType {
-    static get TYPE(): string { return "source"; };
+    static get TYPE(): string { return "rasterdb_source"; };
 
     private channel: number;
     private sourcename: string;
@@ -731,7 +661,7 @@ interface RTypeConfig {
  * The R type.
  */
 export class RType extends OperatorType {
-    static get TYPE(): string { return "r"; };
+    static get TYPE(): string { return "r_script"; };
 
     private code: string;
     private resultType: ResultType;
@@ -790,7 +720,7 @@ interface PointInPolygonFilterTypeConfig {}
  * The Point in Polygon Filter type.
  */
 export class PointInPolygonFilterType extends OperatorType {
-    static get TYPE(): string { return "filterpointsbygeometry"; /*"point_in_polygon_filter";*/ };
+    static get TYPE(): string { return "point_in_polygon_filter"; };
 
     constructor(config: PointInPolygonFilterTypeConfig) {
         super();
@@ -827,7 +757,7 @@ export class PointInPolygonFilterType extends OperatorType {
  * The MSG radiance type.
  */
 export class MsgRadianceType extends OperatorType {
-    static get TYPE(): string { return "msatradiance"; };
+    static get TYPE(): string { return "meteosat_radiance"; };
 
     constructor(config: {}) {
         super();
@@ -875,7 +805,7 @@ export type MeteosatSatelliteName = "Meteosat-8" | "Meteosat-9" | "Meteosat-10" 
  * The MSG radiance type.
  */
 export class MsgReflectanceType extends OperatorType {
-    static get TYPE(): string { return "msatreflectance"; };
+    static get TYPE(): string { return "meteosat_reflectance"; };
     private isHrv: boolean = false;
     private solarCorrection: boolean = true;
     private forceSatelliteName: MeteosatSatelliteName = null;
@@ -940,7 +870,7 @@ export type SolarangleName = "azimuth" | "zenith";
  * The MSG solarangle type.
  */
 export class MsgSolarangleType extends OperatorType {
-    static get TYPE(): string { return "msatsolarangle"; };
+    static get TYPE(): string { return "meteosat_solar_angle"; };
     private solarangle: SolarangleName;
 
     constructor(config: MsgSolarangleTypeConfig) {
@@ -972,7 +902,7 @@ export class MsgSolarangleType extends OperatorType {
  * The MSG temperature type.
  */
 export class MsgTemperatureType extends OperatorType {
-    static get TYPE(): string { return "msattemperature"; };
+    static get TYPE(): string { return "meteosat_temperature"; };
 
     constructor(config: {}) {
         super();
@@ -1006,7 +936,7 @@ interface MsgPansharpenTypeConfig {}
  * The MSG pansharpen type.
  */
 export class MsgPansharpenType extends OperatorType {
-    static get TYPE(): string { return "msatpansharpening"; };
+    static get TYPE(): string { return "meteosat_pansharpening"; };
 
     constructor(config: MsgPansharpenTypeConfig) {
         super();
@@ -1033,7 +963,7 @@ export class MsgPansharpenType extends OperatorType {
  * The MSG temperature type.
  */
 export class MsgCo2CorrectionType extends OperatorType {
-    static get TYPE(): string { return "msatco2correction"; };
+    static get TYPE(): string { return "meteosat_co2correction"; };
 
     constructor(config: {}) {
         super();
@@ -1075,7 +1005,7 @@ interface WKTSourceTypeConfig {
  * The WKT Source type.
  */
 export class WKTSourceType extends OperatorType {
-    static get TYPE(): string { return "wktsource"; };
+    static get TYPE(): string { return "wkt_source"; };
 
     private type: ResultType;
     private wkt: string;

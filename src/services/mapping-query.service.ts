@@ -6,6 +6,7 @@ import moment from "moment";
 
 import {Operator} from "../models/operator.model";
 import {Projection} from "../models/projection.model";
+import {ResultTypes} from "../models/result-type.model";
 
 import Config from "../models/config.model";
 import {PlotData} from "../models/plot.model";
@@ -72,7 +73,14 @@ export class MappingQueryService {
             service: "plot",
             query: operator.toQueryJSON(),
             time: time.toISOString(),
+            crs: operator.projection.getCode(),
         };
+
+        if (operator.getSources(ResultTypes.RASTER).size > 0) {
+            parameters["height"] = 1024; // magic number
+            parameters["width"] = 1024; // magic number
+        }
+
         return Config.MAPPING_URL + "?" +
                Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
     }

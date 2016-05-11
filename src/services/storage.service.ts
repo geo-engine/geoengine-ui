@@ -17,7 +17,7 @@ import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
 import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
     from "../models/symbology.model";
-import {RasterSourceType, GFBioPointSourceType, GFBioGeometrySourceType, WKTSourceType}
+import {RasterSourceType, GFBioSourceType, WKTSourceType}
     from "../models/operator-type.model";
 
 /**
@@ -408,7 +408,7 @@ class DeveloperDefaults extends StorageDefaults {
                 name: "IUCN Puma Concolor",
                 symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: new Operator({
-                    operatorType: new GFBioGeometrySourceType({
+                    operatorType: new GFBioSourceType({
                         datasource: "IUCN",
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
@@ -438,7 +438,7 @@ class DeveloperDefaults extends StorageDefaults {
                 name: "Puma Concolor",
                 symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: new Operator({
-                    operatorType: new GFBioPointSourceType({
+                    operatorType: new GFBioSourceType({
                         datasource: "GBIF",
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
