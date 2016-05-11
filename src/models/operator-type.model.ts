@@ -102,15 +102,17 @@ export abstract class OperatorType {
             case PointInPolygonFilterType.TYPE:
                 return PointInPolygonFilterType.fromDict(<PointInPolygonFilterTypeDict> dict);
             case MsgRadianceType.TYPE:
-                return MsgRadianceType.fromDict(<MsgRadianceTypeDict> dict);
+                return MsgRadianceType.fromDict(dict);
             case MsgReflectanceType.TYPE:
                 return MsgReflectanceType.fromDict(<MsgReflectanceTypeDict> dict);
             case MsgSolarangleType.TYPE:
                 return MsgSolarangleType.fromDict(<MsgSolarangleTypeDict> dict);
             case MsgTemperatureType.TYPE:
-                return MsgTemperatureType.fromDict(<MsgTemperatureTypeDict> dict);
+                return MsgTemperatureType.fromDict(dict);
             case MsgPansharpenType.TYPE:
                 return MsgPansharpenType.fromDict(<MsgPansharpenTypeDict> dict);
+            case MsgCo2CorrectionType.TYPE:
+                return MsgCo2CorrectionType.fromDict(dict);
         }
     }
 }
@@ -819,20 +821,13 @@ export class PointInPolygonFilterType extends OperatorType {
     }
 }
 
-/* The MSG radiance type */
-interface MsgRadianceTypeMappingDict extends OperatorTypeMappingDict {}
-
-interface MsgRadianceTypeDict extends OperatorTypeDict {}
-
-interface MsgRadianceTypeConfig {}
-
 /**
  * The MSG radiance type.
  */
 export class MsgRadianceType extends OperatorType {
     static get TYPE(): string { return "msatradiance"; };
 
-    constructor(config: MsgRadianceTypeConfig) {
+    constructor(config: {}) {
         super();
     }
 
@@ -842,15 +837,15 @@ export class MsgRadianceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
-    toMappingDict(): MsgRadianceTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
 
-    toDict(): MsgRadianceTypeDict {
+    toDict(): OperatorTypeDict {
         return {
             operatorType: MsgRadianceType.TYPE,
         };
     }
 
-    static fromDict(dict: MsgRadianceTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
+    static fromDict(dict: OperatorTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
 }
 
 /* The MSG reflectance type */
@@ -971,21 +966,13 @@ export class MsgSolarangleType extends OperatorType {
     static fromDict(dict: MsgSolarangleTypeDict): MsgRadianceType { return new MsgRadianceType(dict); }
 }
 
-
-/* The MSG temperature type */
-interface MsgTemperatureTypeMappingDict extends OperatorTypeMappingDict {}
-
-interface MsgTemperatureTypeDict extends OperatorTypeDict {}
-
-interface MsgTemperatureTypeConfig {}
-
 /**
  * The MSG temperature type.
  */
 export class MsgTemperatureType extends OperatorType {
     static get TYPE(): string { return "msattemperature"; };
 
-    constructor(config: MsgTemperatureTypeConfig) {
+    constructor(config: {}) {
         super();
     }
 
@@ -995,15 +982,15 @@ export class MsgTemperatureType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
-    toMappingDict(): MsgTemperatureTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
 
-    toDict(): MsgTemperatureTypeDict {
+    toDict(): OperatorTypeDict {
         return {
             operatorType: MsgTemperatureType.TYPE,
         };
     }
 
-    static fromDict(dict: MsgTemperatureTypeDict): MsgTemperatureType { return new MsgTemperatureType(dict); }
+    static fromDict(dict: OperatorTypeDict): MsgTemperatureType { return new MsgTemperatureType(dict); }
 }
 
 /* The MSG pansharpen type */
@@ -1038,4 +1025,31 @@ export class MsgPansharpenType extends OperatorType {
     }
 
     static fromDict(dict: MsgPansharpenTypeDict): MsgPansharpenType { return new MsgPansharpenType(dict); }
+}
+
+/**
+ * The MSG temperature type.
+ */
+export class MsgCo2CorrectionType extends OperatorType {
+    static get TYPE(): string { return "msatco2correction"; };
+
+    constructor(config: {}) {
+        super();
+    }
+
+    getMappingName(): string { return MsgTemperatureType.TYPE; }
+
+    toString(): string { return "MSG CO2 correction operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
+
+    toDict(): OperatorTypeDict {
+        return {
+            operatorType: MsgTemperatureType.TYPE,
+        };
+    }
+
+    static fromDict(dict: OperatorTypeDict): MsgCo2CorrectionType { return new MsgCo2CorrectionType(dict); }
 }
