@@ -105,6 +105,10 @@ export abstract class OperatorType {
                 return MsgRadianceType.fromDict(<MsgRadianceTypeDict> dict);
             case MsgReflectanceType.TYPE:
                 return MsgReflectanceType.fromDict(<MsgReflectanceTypeDict> dict);
+            case MsgSolarangleType.TYPE:
+                return MsgSolarangleType.fromDict(<MsgSolarangleTypeDict> dict);
+            case MsgTemperatureType.TYPE:
+                return MsgTemperatureType.fromDict(<MsgTemperatureTypeDict> dict);
         }
     }
 }
@@ -832,7 +836,7 @@ export class MsgRadianceType extends OperatorType {
 
     getMappingName(): string { return MsgRadianceType.TYPE; }
 
-    toString(): string { return "MSG radiance Operator"; }
+    toString(): string { return "MSG radiance operator"; }
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
@@ -847,7 +851,7 @@ export class MsgRadianceType extends OperatorType {
     static fromDict(dict: MsgRadianceTypeDict): MsgRadianceType { return new MsgRadianceType({}); }
 }
 
-/* The MSG radiance type */
+/* The MSG reflectance type */
 interface MsgReflectanceTypeMappingDict extends OperatorTypeMappingDict {
     isHrv: boolean;
     solarCorrection: boolean;
@@ -888,7 +892,7 @@ export class MsgReflectanceType extends OperatorType {
 
     getMappingName(): string { return MsgReflectanceType.TYPE; }
 
-    toString(): string { return "MSG reflectance Operator"; }
+    toString(): string { return "MSG reflectance operator"; }
 
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
@@ -916,4 +920,86 @@ export class MsgReflectanceType extends OperatorType {
     }
 
     static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType(dict); }
+}
+
+/* The MSG solarangle type */
+interface MsgSolarangleTypeMappingDict extends OperatorTypeMappingDict {
+    solarangle: string;
+}
+
+interface MsgSolarangleTypeDict extends OperatorTypeDict {
+    solarangle: SolarangleName;
+}
+
+interface MsgSolarangleTypeConfig {
+    solarangle: SolarangleName;
+}
+
+export type SolarangleName = "azimuth" | "zenith";
+
+/**
+ * The MSG solarangle type.
+ */
+export class MsgSolarangleType extends OperatorType {
+    static get TYPE(): string { return "msatsolarangle"; };
+    private solarangle: SolarangleName;
+
+    constructor(config: MsgSolarangleTypeConfig) {
+        super();
+        this.solarangle = config.solarangle;
+    }
+
+    getMappingName(): string { return MsgSolarangleType.TYPE; }
+
+    toString(): string { return "MSG solarangle operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgSolarangleTypeMappingDict { return {
+        solarangle: this.solarangle,
+    }; }
+
+    toDict(): MsgSolarangleTypeDict {
+        return {
+            operatorType: MsgSolarangleType.TYPE,
+            solarangle: this.solarangle,
+        };
+    }
+
+    static fromDict(dict: MsgSolarangleTypeDict): MsgRadianceType { return new MsgRadianceType(dict); }
+}
+
+
+/* The MSG temperature type */
+interface MsgTemperatureTypeMappingDict extends OperatorTypeMappingDict {}
+
+interface MsgTemperatureTypeDict extends OperatorTypeDict {}
+
+interface MsgTemperatureTypeConfig {}
+
+/**
+ * The MSG temperature type.
+ */
+export class MsgTemperatureType extends OperatorType {
+    static get TYPE(): string { return "msattemperature"; };
+
+    constructor(config: MsgTemperatureTypeConfig) {
+        super();
+    }
+
+    getMappingName(): string { return MsgTemperatureType.TYPE; }
+
+    toString(): string { return "MSG temperature operator"; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): MsgTemperatureTypeMappingDict { return {}; }
+
+    toDict(): MsgTemperatureTypeDict {
+        return {
+            operatorType: MsgTemperatureType.TYPE,
+        };
+    }
+
+    static fromDict(dict: MsgTemperatureTypeDict): MsgTemperatureType { return new MsgTemperatureType(dict); }
 }
