@@ -109,6 +109,12 @@ export class DataTable implements OnInit, OnChanges {
                         }
                         return data_rows;
                       });
+                case ResultTypes.RASTER:
+                    return Observable.of([
+                        ["Attribute", "Value"],
+                        ["Unit", layer.operator.getUnit("value").toString()],
+                        ["Datatype", layer.operator.getDataType("value").toString()],
+                    ]);
                 default:
                     return Observable.of([]);
             };
