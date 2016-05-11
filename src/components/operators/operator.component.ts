@@ -12,6 +12,7 @@ import {PlotService} from "../../services/plot.service";
 import {ProjectService} from  "../../services/project.service";
 import {MappingQueryService} from "../../services/mapping-query.service";
 import {MappingColorizerService} from "../../services/mapping-colorizer.service";
+import {RandomColorService} from "../../services/random-color.service";
 
 import {Layer} from "../../models/layer.model";
 import {Plot} from "../../models/plot.model";
@@ -395,6 +396,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     @Input() projectService: ProjectService;
     @Input() mappingQueryService: MappingQueryService;
     @Input() mappingColorizerService: MappingColorizerService;
+    @Input() randomColorService: RandomColorService;
 
     protected layers: Array<Layer> = [];
 
@@ -448,6 +450,10 @@ export class OperatorDialogConfig extends MdDialogConfig {
     }
     mappingColorizerService(mappingcolorizerService: MappingColorizerService) {
         this.context.mappingColorizerService = mappingcolorizerService;
+        return this;
+    }
+    randomColorService(randomColorService: RandomColorService) {
+        this.context.randomColorService = randomColorService;
         return this;
     }
 }

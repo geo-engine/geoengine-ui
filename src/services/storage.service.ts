@@ -405,14 +405,14 @@ class DeveloperDefaults extends StorageDefaults {
     getLayers(): Array<Layer> {
         return [
             new Layer({
-                name: "IUCN Puma Concolor",
-                symbology: new SimpleVectorSymbology({}),
+                name: "Puma Concolor",
+                symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: new Operator({
-                    operatorType: new GFBioGeometrySourceType({
-                        datasource: "IUCN",
+                    operatorType: new GFBioPointSourceType({
+                        datasource: "GBIF",
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
-                    resultType: ResultTypes.POLYGONS,
+                    resultType: ResultTypes.POINTS,
                     projection: Projections.WGS_84,
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),
@@ -420,14 +420,14 @@ class DeveloperDefaults extends StorageDefaults {
                 })
             }),
             new Layer({
-                name: "Puma Concolor",
-                symbology: new SimplePointSymbology({}),
+                name: "IUCN Puma Concolor",
+                symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: new Operator({
-                    operatorType: new GFBioPointSourceType({
-                        datasource: "GBIF",
+                    operatorType: new GFBioGeometrySourceType({
+                        datasource: "IUCN",
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
-                    resultType: ResultTypes.POINTS,
+                    resultType: ResultTypes.POLYGONS,
                     projection: Projections.WGS_84,
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),

@@ -137,7 +137,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
             let symbology: Symbology;
             switch (resultType) {
                 case ResultTypes.POINTS:
-                    symbology = new SimplePointSymbology({});
+                    symbology = new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()});
                     break;
                 case ResultTypes.POINTS:
                     symbology = new RasterSymbology({});
