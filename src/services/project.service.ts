@@ -78,11 +78,11 @@ export class ProjectService {
         this.project$.next(project);
     }
 
-    getWorkingProjection(): Observable<Projection> {
+    getWorkingProjectionStream(): Observable<Projection> {
         return this.workingProjection$;
     }
 
-    getMapProjection(): Observable<Projection> {
+    getMapProjectionStream(): Observable<Projection> {
         return this.mapProjection$;
     }
 

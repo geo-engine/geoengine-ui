@@ -5,9 +5,11 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
 import Config from "../models/config.model";
-import {LayerService} from "../services/layer.service";
 import {ResultTypes} from "../models/result-type.model";
+
+import {LayerService} from "../services/layer.service";
 import {ProjectService} from "../services/project.service";
+import {MappingQueryService, WFSOutputFormats} from "../services/mapping-query.service";
 
 
 interface Column {
@@ -81,27 +83,26 @@ export class DataTable implements OnInit, OnChanges {
     constructor(private http: Http,
                 private changeDetectorRef: ChangeDetectorRef,
                 private layerService: LayerService,
-                private projectService: ProjectService) {
+                private projectService: ProjectService,
+                private mappingQueryService: MappingQueryService) {
 
+        // TODO: use flatMapLatest on next rxjs version
         this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
             if (layer === undefined) {
                 return Observable.of([]);
             }
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
-                    let project = this.projectService.getProject();
-                    let layerParams = layer.getParams(
-                        project.workingProjection,
-                        project.time
-                    );
-                    return this.http.get(
-                        Config.MAPPING_URL + "?" +
-                        Object.keys(layerParams).map(
-                            key => key + "=" + encodeURIComponent(layerParams[key])
-                        ).join("&") + "&outputFormat=csv"
+                case ResultTypes.LINES:
+                case ResultTypes.POLYGONS:
+                    return this.mappingQueryService.getWFSDataStream(
+                        layer.operator,
+                        this.projectService.getTimeStream(),
+                        this.projectService.getWorkingProjectionStream(),
+                        WFSOutputFormats.CSV
                     ).map(result => {
                         // split by new lines to seperate the rows
-                        const csv_rows = result.text().split("\n");
+                        const csv_rows = result.split("\n");
                         let data_rows: Array<Array<string>> = [];
                         for (let csv_row of csv_rows){
                           data_rows.push(csv_row.split(","));
@@ -111,7 +112,7 @@ export class DataTable implements OnInit, OnChanges {
                 default:
                     return Observable.of([]);
             };
-        }).concatAll();
+        }).switch();
     }
 
     ngOnInit() {

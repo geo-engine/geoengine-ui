@@ -45,42 +45,6 @@ export class Layer {
       return this._operator;
     }
 
-    // TODO: move?
-    getParams(projection: Projection, time: moment.Moment): Parameters {
-        let isoTime = time.toISOString();
-
-        switch (this.operator.resultType) {
-           case ResultTypes.RASTER: {
-                let operator = this.operator.getProjectedOperator(projection);
-
-                return {
-                    "SERVICE": "WMS",
-                    "VERSION": Config.WMS.VERSION,
-                    "REQUEST": "GetMap",
-                    "FORMAT": Config.WMS.FORMAT,
-                    "TRANSPARENT": true,
-                    "LAYERS": operator.toQueryJSON(),
-                    "COLORS": "gray",
-                    "DEBUG": (Config.DEBUG_MODE ? 1 : 0),
-                    "TIME": isoTime,
-                };
-            }
-
-            case ResultTypes.POINTS: {
-                let operator = this.operator.getProjectedOperator(projection);
-
-                return {
-                    service: "WFS",
-                    version: Config.WFS.VERSION,
-                    request: "GetFeature",
-                    typeNames: `points:${operator.toQueryJSON()}`,
-                    srsname: projection.getCode(),
-                    time: isoTime,
-                };
-            }
-        }
-    }
-
     toDict(): LayerDict {
         return {
             name: this.name,

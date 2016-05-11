@@ -2,11 +2,11 @@ import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from
 import ol from "openlayers";
 
 import Config from "../../models/config.model";
-import {Layer} from "../../models/layer.model";
+import {Operator} from "../../models/operator.model";
 import {Projection} from "../../models/projection.model";
 import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
 
-import {MappingQueryService} from "../../services/mapping-query.service";
+import {MappingQueryService, WFSOutputFormats} from "../../services/mapping-query.service";
 
 import moment from "moment";
 
@@ -24,19 +24,24 @@ import moment from "moment";
     template: "",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export abstract class OlMapLayerComponent implements OnChanges {
+export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
+                                          OlSource extends ol.source.Source,
+                                          S extends Symbology> implements OnChanges {
 
-    @Input() layer: Layer;
+    @Input() operator: Operator;
     @Input() projection: Projection;
-    @Input() symbology: Symbology;
+    @Input() symbology: S;
     @Input() time: moment.Moment;
+
+    protected _mapLayer: OlLayer;
+    protected source: OlSource;
 
     constructor(protected mappingQueryService: MappingQueryService) {}
 
-    abstract getMapLayer(): ol.layer.Layer;
+    get mapLayer(): OlLayer { return this._mapLayer; };
 
     protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
-        for (let property in changes) {
+        for (const property in changes) {
             if (changes[property].isFirstChange()) {
                 return true;
             }
@@ -46,7 +51,48 @@ export abstract class OlMapLayerComponent implements OnChanges {
 
     abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
-    abstract getExtent(): number[];
+    abstract get extent(): number[];
+}
+
+abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector,
+                                                                  ol.source.Vector,
+                                                                  AbstractVectorSymbology> {
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
+    }
+
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
+        if (changes["operator"] || changes["projection"] || changes["time"]) {
+            this.source = new ol.source.Vector({
+                format: new ol.format.GeoJSON(),
+                url: this.mappingQueryService.getWFSQueryUrl(
+                    this.operator,
+                    this.time,
+                    this.projection,
+                    WFSOutputFormats.JSON
+                ),
+                wrapX: false,
+            });
+        }
+
+        if (this.isFirstChange(changes)) {
+            this._mapLayer = new ol.layer.Vector({
+                source: this.source,
+                style: this.symbology.olStyle,
+            });
+        } else {
+            if (changes["operator"] || changes["projection"] || changes["time"]) {
+                this.mapLayer.setSource(this.source);
+            }
+            if (changes["symbology"]) {
+                this.mapLayer.setStyle(this.symbology.olStyle);
+            }
+        }
+    }
+
+    get extent() {
+        return this.source.getExtent();
+    }
 }
 
 @Component({
@@ -54,46 +100,20 @@ export abstract class OlMapLayerComponent implements OnChanges {
     template: "",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OlPointLayerComponent extends OlMapLayerComponent {
-    protected source: ol.source.Vector;
-    protected mapLayer: ol.layer.Vector;
-
-    getMapLayer(): ol.layer.Vector {
-        return this.mapLayer;
+export class OlPointLayerComponent extends OlVectorLayerComponent {
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
     }
+}
 
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        console.log("point layer changes", changes);
-        let params = this.layer.getParams(this.projection, this.time);
-        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
-        // console.log("style", olStyle
-
-        if (changes["layer"] || changes["projection"]) {
-            this.source = new ol.source.Vector({
-                format: new ol.format.GeoJSON(),
-                url: Config.MAPPING_URL + "?" + Object.keys(params).map(
-                    key => key + "=" + encodeURIComponent(params[key])
-                ).join("&") + `&outputFormat=${Config.WFS.FORMAT}`,
-                wrapX: false
-            });
-
-            this.mapLayer = new ol.layer.Vector({
-                source: this.source,
-                style: olStyle,
-            });
-        }
-
-        if (changes["time"]) {
-            this.source.clear(true);
-        }
-
-        if (changes["symbology"]) {
-          this.mapLayer.setStyle(olStyle);
-        }
-    }
-
-    getExtent() {
-        return this.source.getExtent();
+@Component({
+    selector: "ol-line-layer",
+    template: "",
+    changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class OlLineLayerComponent extends OlVectorLayerComponent {
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
     }
 }
 
@@ -102,47 +122,9 @@ export class OlPointLayerComponent extends OlMapLayerComponent {
     template: "",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OlPolygonLayerComponent extends OlMapLayerComponent {
-    protected source: ol.source.Vector;
-    protected mapLayer: ol.layer.Vector;
-
+export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
         super(mappingQueryService);
-    }
-
-    getMapLayer(): ol.layer.Vector {
-        return this.mapLayer;
-    }
-
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        let operator = this.layer.operator.getProjectedOperator(this.projection);
-
-        let olStyle: any = (<AbstractVectorSymbology>this.layer.symbology).olStyle; // TODO: generics?
-
-        if (changes["layer"] || changes["projection"]) {
-            this.source = new ol.source.Vector({
-                format: new ol.format.GeoJSON(),
-                url: this.mappingQueryService.getWFSQueryUrl(operator, this.time),
-                wrapX: false
-            });
-
-            this.mapLayer = new ol.layer.Vector({
-                source: this.source,
-                style: olStyle,
-            });
-        }
-
-        if (changes["time"]) {
-            this.source.clear(true);
-        }
-
-        if (changes["symbology"]) {
-          this.mapLayer.setStyle(olStyle);
-        }
-    }
-
-    getExtent() {
-        return this.source.getExtent();
     }
 }
 
@@ -151,45 +133,50 @@ export class OlPolygonLayerComponent extends OlMapLayerComponent {
     template: "",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OlRasterLayerComponent extends OlMapLayerComponent {
-    protected source: ol.source.TileWMS;
-    protected mapLayer: ol.layer.Tile;
-
-    getMapLayer(): ol.layer.Tile {
-        return this.mapLayer;
+export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile,
+                                                                ol.source.TileWMS,
+                                                                RasterSymbology> {
+    constructor(protected mappingQueryService: MappingQueryService) {
+        super(mappingQueryService);
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        console.log("raster layer changes", changes);
-        let params = this.layer.getParams(this.projection, this.time);
-
-        let rasterSymbology: RasterSymbology = <RasterSymbology> this.layer.symbology;
-        if (changes["layer"] || changes["projection"]) {
+        if (this.isFirstChange(changes)) {
             this.source = new ol.source.TileWMS({
                 url: Config.MAPPING_URL,
-                params: params,
-                wrapX: false
+                params: this.mappingQueryService.getWMSQueryParameters(
+                    this.operator,
+                    this.time,
+                    this.projection
+                ),
+                wrapX: false,
             });
 
-            this.mapLayer = new ol.layer.Tile({
+            this._mapLayer = new ol.layer.Tile({
                 source: this.source,
-                opacity: rasterSymbology.opacity
+                opacity: this.symbology.opacity,
             });
-        }
-
-        if (changes["time"]) {
-            this.source.updateParams({TIME: this.time.toISOString()});
-            this.source.refresh();
-        }
-
-        if (changes["symbology"]) {
-            this.mapLayer.setOpacity(rasterSymbology.opacity);
-            // this.mapLayer.setHue(rasterSymbology.hue);
-            // this.mapLayer.setSaturation(rasterSymbology.saturation);
+        } else {
+            if (changes["operator"] || changes["projection"] || changes["time"]) {
+                // TODO: add these functions to the typings file.
+                (<any> this.source).updateParams(
+                    this.mappingQueryService.getWMSQueryParameters(
+                        this.operator,
+                        this.time,
+                        this.projection
+                    )
+                );
+                (<any> this.source).refresh();
+            }
+            if (changes["symbology"]) {
+                this._mapLayer.setOpacity(this.symbology.opacity);
+                // this._mapLayer.setHue(rasterSymbology.hue);
+                // this._mapLayer.setSaturation(rasterSymbology.saturation);
+            }
         }
     }
 
-    getExtent() {
-        return this.mapLayer.getExtent();
+    get extent() {
+        return this._mapLayer.getExtent();
     }
 }

@@ -4,6 +4,7 @@ import ol from "openlayers";
 import {OlMapLayerComponent, OlPointLayerComponent, OlRasterLayerComponent} from "./ol-layer.component";
 
 import {Projection, Projections} from "../../models/projection.model";
+import {Symbology} from "../../models/symbology.model";
 
 /**
  * The `ol-map` component represents an openLayers 3 map component.
@@ -38,7 +39,7 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
     @Input() height: number;
 
     @ContentChildren("olLayer")
-    private layers: QueryList<OlMapLayerComponent>;
+    private layers: QueryList<OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology>>;
 
     private isSizeChanged = false;
     private isProjectionChanged = false;
@@ -94,7 +95,7 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
 
         // initialize layers
         this.layers.forEach(
-            (layerComponent: OlMapLayerComponent) => this.map.addLayer(layerComponent.getMapLayer())
+            layerComponent => this.map.addLayer(layerComponent.mapLayer)
         );
 
         this.layers.changes.subscribe(_ => {
@@ -104,22 +105,24 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
             this.map.getLayers().clear();
             this.map.getLayers().push(this.createBackgroundLayer(this.projection));
             this.layers.forEach(
-                (layerComponent: OlMapLayerComponent) => this.map.getLayers()
-                                                               .push(layerComponent.getMapLayer())
+                layerComponent => this.map.getLayers().push(layerComponent.mapLayer)
             );
         });
     }
 
     ngAfterViewChecked() {
         if (this.isProjectionChanged) {
-            let oldProjection = this.map.getView().getProjection();
-            let newProjection = this.projection.getOpenlayersProjection();
-            let oldCenterPoint = new ol.geom.Point(this.map.getView().getCenter());
-            let newCenterPoint = <ol.geom.Point> oldCenterPoint.clone().transform(
+            const oldProjection = this.map.getView().getProjection();
+            const newProjection = this.projection.getOpenlayersProjection();
+            const oldCenterPoint = new ol.geom.Point(this.map.getView().getCenter());
+            const newCenterPoint = <ol.geom.Point> oldCenterPoint.clone().transform(
                 oldProjection, newProjection
             );
 
-            // console.log("oldcenter:", oldCenterPoint.getCoordinates(), "newcenter:", newCenterPoint.getCoordinates());
+            // console.log(
+            //     "oldcenter:", oldCenterPoint.getCoordinates(),
+            //     "newcenter:", newCenterPoint.getCoordinates()
+            // );
 
             this.map.setView(new ol.View({
                 projection: this.projection.getOpenlayersProjection(),
@@ -130,7 +133,7 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
             this.map.getLayers().clear();
             this.map.getLayers().push(this.createBackgroundLayer(this.projection));
             this.layers.forEach(
-                (layerComponent: OlMapLayerComponent) => this.map.addLayer(layerComponent.getMapLayer())
+                layerComponent => this.map.addLayer(layerComponent.mapLayer)
             );
 
             this.isProjectionChanged = false;
@@ -142,25 +145,24 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
     }
 
     zoomIn() {
-        let zoomLevel = this.map.getView().getZoom();
+        const zoomLevel = this.map.getView().getZoom();
         this.map.getView().setZoom(zoomLevel + 1);
     }
 
     zoomOut() {
-        let zoomLevel = this.map.getView().getZoom();
+        const zoomLevel = this.map.getView().getZoom();
         this.map.getView().setZoom(zoomLevel - 1);
     }
 
     zoomToMap() {
-//        console.log("zoomToMap");
-        let extent = this.map.getView().getProjection().getExtent();
+        const extent = this.map.getView().getProjection().getExtent();
         this.map.getView().fit(extent, this.map.getSize());
     }
 
     zoomToLayer(layerIndex: number) {
-        let layer = this.layers.toArray()[layerIndex];
+        const layer = this.layers.toArray()[layerIndex];
 
-        let extent = layer.getExtent();
+        const extent = layer.extent;
 
         if (extent === undefined) {
             this.zoomToMap();

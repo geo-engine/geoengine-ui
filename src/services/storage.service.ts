@@ -17,7 +17,7 @@ import {Projections} from "../models/projection.model";
 import {Unit, Interpolation} from "../models/unit.model";
 import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
     from "../models/symbology.model";
-import {RasterSourceType, GFBioPointSourceType, GFBioGeometrySourceType}
+import {RasterSourceType, GFBioPointSourceType, GFBioGeometrySourceType, WKTSourceType}
     from "../models/operator-type.model";
 
 /**
@@ -413,6 +413,21 @@ class DeveloperDefaults extends StorageDefaults {
                         query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
                     }),
                     resultType: ResultTypes.POLYGONS,
+                    projection: Projections.WGS_84,
+                    attributes: [],
+                    dataTypes: new Map<string, DataType>(),
+                    units: new Map<string, Unit>()
+                })
+            }),
+            new Layer({
+                name: "WKT",
+                symbology: new SimpleVectorSymbology({}),
+                operator: new Operator({
+                    operatorType: new WKTSourceType({
+                        type: ResultTypes.LINES,
+                        wkt: `GEOMETRYCOLLECTION(LINESTRING(-65.3906249908975 24.046463996515854,47.812499993344474 57.04072983307594,55.8984374922189 -46.43785688998231,-65.3906249908975 24.046463996515854))`,
+                    }),
+                    resultType: ResultTypes.LINES,
                     projection: Projections.WGS_84,
                     attributes: [],
                     dataTypes: new Map<string, DataType>(),

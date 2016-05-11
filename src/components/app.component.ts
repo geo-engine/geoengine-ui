@@ -12,8 +12,8 @@ import {InfoBarComponent} from "../components/info-bar.component";
 import {LayerComponent} from "../components/layer.component";
 import {DataTable} from "../components/data-table.component";
 import {OlMapComponent} from "./openlayers/ol-map.component";
-import {OlPointLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent}
-    from "./openlayers/ol-layer.component";
+import {OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent,
+        OlRasterLayerComponent} from "./openlayers/ol-layer.component";
 import {PlotListComponent} from "./plots/plot-list.component";
 
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
@@ -75,26 +75,32 @@ import {MappingColorizerService} from "../services/mapping-colorizer.service";
         </div>
         <div flex="grow">
             <ol-map [height]="middleContainerHeight$ | async"
-                    [projection]="projectService.getMapProjection() | async">
+                    [projection]="projectService.getMapProjectionStream() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.operator.resultType">
                     <ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                                    [layer]="layer"
+                                    [operator]="layer.operator"
                                     [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async"
+                                    [projection]="projectService.getMapProjectionStream() | async"
                                     [time]="projectService.getTimeStream() | async">
                     </ol-point-layer>
+                    <ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
+                                   [operator]="layer.operator"
+                                   [symbology]="layer.symbology"
+                                   [projection]="projectService.getMapProjectionStream() | async"
+                                   [time]="projectService.getTimeStream() | async">
+                    </ol-line-layer>
                     <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                                    [layer]="layer"
-                                    [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTimeStream() | async">
+                                      [operator]="layer.operator"
+                                      [symbology]="layer.symbology"
+                                      [projection]="projectService.getMapProjectionStream() | async"
+                                      [time]="projectService.getTimeStream() | async">
                     </ol-polygon-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                                    [layer]="layer"
-                                    [symbology]="layer.symbology"
-                                    [projection]="projectService.getMapProjection() | async"
-                                    [time]="projectService.getTimeStream() | async">
+                                     [operator]="layer.operator"
+                                     [symbology]="layer.symbology"
+                                     [projection]="projectService.getMapProjectionStream() | async"
+                                     [time]="projectService.getTimeStream() | async">
                     </ol-raster-layer>
                 </div>
             </ol-map>
@@ -166,7 +172,8 @@ import {MappingColorizerService} from "../services/mapping-colorizer.service";
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
         InfoAreaComponent, TabComponent, LayerComponent, InfoBarComponent, DataTable,
         RasterRepositoryComponent, PlotListComponent,
-        OlMapComponent, OlPointLayerComponent, OlRasterLayerComponent, OlPolygonLayerComponent,
+        OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
+        OlPolygonLayerComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, PlotService, StorageService, ProjectService, UserService,

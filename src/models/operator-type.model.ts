@@ -101,6 +101,8 @@ export abstract class OperatorType {
                 return RType.fromDict(<RTypeDict> dict);
             case PointInPolygonFilterType.TYPE:
                 return PointInPolygonFilterType.fromDict(<PointInPolygonFilterTypeDict> dict);
+            case WKTSourceType.TYPE:
+                return WKTSourceType.fromDict(<WKTSourceTypeDict> dict);
         }
     }
 }
@@ -875,4 +877,72 @@ export class MsgReflectanceType extends OperatorType {
     }
 
     static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType { return new MsgReflectanceType({}); }
+}
+
+interface WKTSourceTypeMappingDict extends OperatorTypeMappingDict {
+    type: string;
+    wkt: string;
+}
+
+interface WKTSourceTypeDict extends OperatorTypeDict {
+    type: string;
+    wkt: string;
+}
+
+interface WKTSourceTypeConfig {
+    type: ResultType;
+    wkt: string;
+}
+
+/**
+ * The WKT Source type.
+ */
+export class WKTSourceType extends OperatorType {
+    static get TYPE(): string { return "wktsource"; };
+
+    private type: ResultType;
+    private wkt: string;
+
+    constructor(config: WKTSourceTypeConfig) {
+        super();
+        this.type = config.type;
+        this.wkt = config.wkt;
+    }
+
+    getMappingName(): string {
+        return WKTSourceType.TYPE;
+    }
+
+    toString(): string {
+        return "WKT Source";
+    }
+
+    getParametersAsStrings(): Array<[string, string]> {
+        return [
+            ["type", this.type.toString()],
+            ["wkt", this.wkt.toString()],
+        ];
+    }
+
+    toMappingDict(): WKTSourceTypeMappingDict {
+        return {
+            type: this.type.getCode(),
+            wkt: this.wkt,
+        };
+    }
+
+    toDict(): WKTSourceTypeDict {
+        return {
+            operatorType: WKTSourceType.TYPE,
+            type: this.type.getCode(),
+            wkt: this.wkt,
+        };
+    }
+
+    static fromDict(dict: WKTSourceTypeDict): WKTSourceType {
+        return new WKTSourceType({
+            type:  ResultTypes.fromCode(dict.type),
+            wkt: dict.wkt,
+        });
+    }
 }
