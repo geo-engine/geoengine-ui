@@ -85,17 +85,18 @@ export class ProjectSettingsComponent implements OnInit {
     }
 
     save() {
-        let newTime = moment(this.time);
+        let newTime: moment.Moment = moment(this.time);
+        let useTime: boolean = (newTime.isValid() && !this.project.time.isSame(newTime));
 
         if (this.project.name !== this.projectName ||
             this.project.workingProjection !== this.workingProjection ||
             this.project.mapProjection !== this.mapProjection ||
-            !this.project.time.isSame(newTime)) {
+            useTime) {
             this.projectService.changeProjectConfig({
                 name: this.projectName,
                 workingProjection: this.workingProjection,
                 mapProjection: this.mapProjection,
-                time: newTime
+                time: (useTime) ? newTime : this.project.time
             });
         }
         this.dialog.close();

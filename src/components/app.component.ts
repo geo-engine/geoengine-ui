@@ -40,6 +40,7 @@ import {StorageService} from "../services/storage.service";
 import {ProjectService} from "../services/project.service";
 import {UserService} from "../services/user.service";
 import {MappingQueryService} from "../services/mapping-query.service";
+import {MappingColorizerService} from "../services/mapping-colorizer.service";
 
 @Component({
     selector: "wave-app",
@@ -169,7 +170,7 @@ import {MappingQueryService} from "../services/mapping-query.service";
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LayerService, PlotService, StorageService, ProjectService, UserService,
-                MappingQueryService,
+                MappingQueryService, MappingColorizerService,
                 SidenavService, HTTP_PROVIDERS, MdDialog]
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -200,7 +201,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private mappingQueryService: MappingQueryService,
                 private userService: UserService,
                 private mdDialog: MdDialog,
-                private elementRef: ElementRef) {
+                private elementRef: ElementRef,
+                private mappingColorizerService: MappingColorizerService) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
 
@@ -293,6 +295,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             .plotService(this.plotService)
             .projectService(this.projectService)
             .mappingQueryService(this.mappingQueryService)
+            .mappingColorizerService(this.mappingColorizerService)
             .clickOutsideToClose(true);
 
         this.mdDialog.open(<Function> OperatorComponent, this.elementRef, config);

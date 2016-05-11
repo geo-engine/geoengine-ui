@@ -6,7 +6,7 @@ import {SymbologyType} from "../models/symbology.model";
 import {Layer} from "../models/layer.model";
 
 import {LayerService} from "../services/layer.service";
-import {LegendaryComponent, LegendaryRasterComponent, LegendaryPointComponent, LegendaryMappingColorizerRasterComponent} from "./legendary/legendary.component";
+import {LegendaryComponent, LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent, LegendaryMappingColorizerRasterComponent} from "./legendary/legendary.component";
 
 
 @Component({
@@ -42,6 +42,7 @@ import {LegendaryComponent, LegendaryRasterComponent, LegendaryPointComponent, L
                 </div>
                 <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.symbologyType">
                     <wave-legendary-points *ngSwitchWhen="enumSymbologyType.SIMPLE_POINT" [symbology]="layer.symbology"></wave-legendary-points>
+                    <wave-legendary-vector *ngSwitchWhen="enumSymbologyType.SIMPLE_VECTOR" [symbology]="layer.symbology"></wave-legendary-vector>
                     <wave-legendary-raster *ngSwitchWhen="enumSymbologyType.RASTER" [symbology]="layer.symbology"></wave-legendary-raster>
                     <wave-legendary-mapping-colorizer-raster *ngSwitchWhen="enumSymbologyType.MAPPING_COLORIZER_RASTER" [symbology]="layer.symbology"></wave-legendary-mapping-colorizer-raster>
                     <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
@@ -76,7 +77,7 @@ import {LegendaryComponent, LegendaryRasterComponent, LegendaryPointComponent, L
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent, LegendaryRasterComponent, LegendaryMappingColorizerRasterComponent]
+    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent, LegendaryMappingColorizerRasterComponent]
 })
 
 export class LayerComponent {

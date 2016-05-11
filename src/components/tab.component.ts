@@ -15,6 +15,7 @@ import {PointInPolygonFilterOperatorComponent}
     from "./operators/point-in-polygon-filter.component";
 import {HistogramOperatorComponent} from "./operators/histogram.component";
 import {ROperatorComponent} from "./operators/r-operator.component";
+import {MsgRadianceOperatorComponent} from "./operators/msg-operators.component";
 import {TimeRibbonComponent} from "./time-ribbon.component";
 
 import {MATERIAL_DIRECTIVES, MdTabs} from "ng2-material/all";
@@ -124,5 +125,9 @@ export class TabComponent implements AfterViewInit, AfterViewChecked {
 
     private addPointInPolygonFilterOperator() {
         this.showOperator.emit(PointInPolygonFilterOperatorComponent);
+    }
+
+    private addMsgRadianceOperator() {
+        this.showOperator.emit(MsgRadianceOperatorComponent);
     }
 }

@@ -8,7 +8,7 @@ import {LayerService} from "../../services/layer.service";
 
 import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyType} from "../../models/symbology.model";
 import {SymbologyRasterComponent} from "./symbology/symbology-raster.component";
-import {SymbologyPointsComponent} from "./symbology/symbology-points.component";
+import {SymbologyPointsComponent, SymbologyVectorComponent} from "./symbology/symbology-points.component";
 
 import {Layer} from "../../models/layer.model";
 
@@ -19,13 +19,14 @@ import {Layer} from "../../models/layer.model";
     <wave-dialog-container [title]="_layer?.name" >
         <div [ngSwitch]="_symbology.symbologyType">
             <wave-symbology-points *ngSwitchWhen="enumSymbologyType.SIMPLE_POINT" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-points>
+            <wave-symbology-vector *ngSwitchWhen="enumSymbologyType.SIMPLE_VECTOR" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-vector>
             <wave-symbology-raster *ngSwitchWhen="enumSymbologyType.RASTER" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-raster>
             <wave-symbology-raster *ngSwitchWhen="enumSymbologyType.MAPPING_COLORIZER_RASTER" [symbology]="_symbology" (symbologyChanged)="update_symbology($event)"></wave-symbology-raster>
         </div>
     </wave-dialog-container>
     `,
     styles: [``],
-    directives: [MATERIAL_DIRECTIVES, DialogContainerComponent, SymbologyPointsComponent, SymbologyRasterComponent],
+    directives: [MATERIAL_DIRECTIVES, DialogContainerComponent, SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbologyDialogComponent implements OnInit {

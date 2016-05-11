@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, Input, Output, EventEmitter} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
-import {Symbology, SimplePointSymbology, RasterSymbology, MappingColorizerRasterSymbology} from "../../models/symbology.model";
+import {Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology, MappingColorizerRasterSymbology} from "../../models/symbology.model";
 import {Layer} from "../../models/layer.model";
 
 import {RgbaToCssStringPipe} from "../../pipes/rgba-to-css-string.pipe";
@@ -28,7 +28,7 @@ export class LegendaryComponent<S extends Symbology> {
         <md-list>
             <md-list-item>
                 <i md-icon class="circle" [style.width.px]="symbology.radius*2" [style.height.px]="symbology.radius*2" [style.border-width.px]="symbology.stroke_width" [style.border-color]="symbology.stroke_rgba | rgbaToCssStringPipe" [style.background-color]="symbology.fill_rgba | rgbaToCssStringPipe"></i>
-                <p class="md-list-item-text">point</p>
+                <p class="md-list-item-text"></p>
             </md-list-item>
         </md-list>
         `,
@@ -51,6 +51,32 @@ export class LegendaryComponent<S extends Symbology> {
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryPointComponent<S extends SimplePointSymbology> extends LegendaryComponent<S> {}
+
+@Component({
+    selector: "wave-legendary-vector",
+    template: `
+        <md-list>
+            <md-list-item>
+                <i md-icon class="vector" [style.border-width.px]="symbology.stroke_width" [style.border-color]="symbology.stroke_rgba | rgbaToCssStringPipe" [style.background-color]="symbology.fill_rgba | rgbaToCssStringPipe"></i>
+                <p class="md-list-item-text"></p>
+            </md-list-item>
+        </md-list>
+        `,
+    styles: [`
+        .vector {
+            width: 20px;
+            height: 20px;
+            max-width: 50px;
+            max-height: 50px;
+            border: 1.5px solid #fff;
+            color: white;
+        }`
+    ],
+    directives: [MATERIAL_DIRECTIVES],
+    pipes: [RgbaToCssStringPipe],
+    // changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class LegendaryVectorComponent<S extends SimpleVectorSymbology> extends LegendaryComponent<S> {}
 
 @Component({
     selector: "wave-legendary-raster",
