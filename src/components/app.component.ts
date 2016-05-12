@@ -14,7 +14,6 @@ import {DataTable} from "../components/data-table.component";
 import {OlMapComponent} from "./openlayers/ol-map.component";
 import {OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent,
         OlRasterLayerComponent} from "./openlayers/ol-layer.component";
-import {PlotListComponent} from "./plots/plot-list.component";
 
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
 import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig}
@@ -29,19 +28,25 @@ import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
 import {SymbologyDialogComponent, SymbologyDialogConfig}
     from "../components/dialogs/symbology-dialog.component";
 
+
 import {Layer} from "../models/layer.model";
 import {Operator} from "../models/operator.model";
 import {ResultTypes} from "../models/result-type.model";
 import {Projection} from "../models/projection.model";
 
 import {LayerService} from "../services/layer.service";
-import {PlotService} from "../services/plot.service";
 import {StorageService} from "../services/storage.service";
 import {ProjectService} from "../services/project.service";
 import {UserService} from "../services/user.service";
 import {MappingQueryService} from "../services/mapping-query.service";
 import {MappingColorizerService} from "../services/mapping-colorizer.service";
 import {RandomColorService} from "../services/random-color.service";
+
+import {PlotListComponent} from "../plots/plot-list.component";
+import {PlotDetailsDialogComponent, PlotDetailsDialogConfig}
+    from "../plots/plot-detail-dialog.component";
+import {PlotService} from "../plots/plot.service";
+import {Plot} from "../plots/plot.model";
 
 @Component({
     selector: "wave-app",
@@ -106,7 +111,8 @@ import {RandomColorService} from "../services/random-color.service";
                 </div>
             </ol-map>
         </div>
-        <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"></wave-plot-list>
+        <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"
+                        (openDetailView)="showPlotDetailDialog($event)"></wave-plot-list>
     </div>
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
@@ -327,5 +333,13 @@ export class AppComponent implements OnInit, AfterViewInit {
           .targetEvent(event);
 
         this.mdDialog.open(SymbologyDialogComponent, this.elementRef, config);
+    }
+
+    private showPlotDetailDialog(plot: Plot) {
+        const config = new PlotDetailsDialogConfig()
+            .plot(plot)
+            .clickOutsideToClose(true);
+
+        this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
     }
 }

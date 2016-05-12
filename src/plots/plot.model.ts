@@ -1,6 +1,6 @@
-import {Observable} from "rxjs/Rx";
+import {Observable} from 'rxjs/Rx';
 
-import {Operator, OperatorDict} from "./operator.model";
+import {Operator, OperatorDict} from '../models/operator.model';
 
 /**
  * Schema for plot data.
@@ -50,6 +50,19 @@ export class Plot {
     }
 
     /**
+     * De-Serialization
+     */
+    static fromDict(dict: PlotDict,
+                    dataCallback: (operator: Operator) => Observable<PlotData>): Plot {
+        const operator = Operator.fromDict(dict.operator);
+        return new Plot({
+            name: dict.name,
+            operator: Operator.fromDict(dict.operator),
+            data$: dataCallback(operator),
+        });
+    }
+
+    /**
      * @return the operator.
      */
     get operator(): Operator {
@@ -57,7 +70,7 @@ export class Plot {
     }
 
     /**
-     *
+     * @returns the data observable.
      */
     get data$(): Observable<PlotData> {
         return this._data$;
@@ -73,16 +86,4 @@ export class Plot {
         };
     }
 
-    /**
-     * De-Serialization
-     */
-    static fromDict(dict: PlotDict,
-                    dataCallback: (operator: Operator) => Observable<PlotData>): Plot {
-        const operator = Operator.fromDict(dict.operator);
-        return new Plot({
-            name: dict.name,
-            operator: Operator.fromDict(dict.operator),
-            data$: dataCallback(operator),
-        });
-    }
 }

@@ -1,16 +1,15 @@
-import {Component, ChangeDetectionStrategy, Input} from "angular2/core";
+import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter} from 'angular2/core';
 
-import {BehaviorSubject} from "rxjs/Rx";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
+import {HistogramComponent} from './histogram.component';
 
-import {HistogramComponent} from "./histogram.component";
+import {PlotService} from './plot.service';
 
-import {StorageService} from "../../services/storage.service";
-import {PlotService} from "../../services/plot.service";
+import {Plot} from './plot.model';
 
 @Component({
-    selector: "wave-plot-list",
+    selector: 'wave-plot-list',
     template: `
     <div layout="column" *ngIf="plotService.getPlotsVisibleStream() | async"
                          [style.max-height.px]="maxHeight">
@@ -41,7 +40,7 @@ import {PlotService} from "../../services/plot.service";
                         <div layout="row">
                             <h3 flex>{{plot.name}}</h3>
                             <button md-button class="md-icon-button" aria-label="Remove Output"
-                                    disabled="true">
+                                    (click)="openDetailView.emit(plot)">
                                 <i md-icon>info</i>
                             </button>
                             <button md-button class="md-icon-button" aria-label="Remove Output"
@@ -71,44 +70,47 @@ import {PlotService} from "../../services/plot.service";
         </md-content>
     </div>
     `,
-    styles: [`
-    md-content {
-        overflow-y: auto !important;
-    }
-    md-toolbar {
-        min-height: 40px;
-    }
-    .md-toolbar-tools {
-        height: 40px;
-    }
-    md-list-item >>> .md-list-item-inner {
-        padding-right: 0px;
-    }
-    .plot-header h3 {
-        line-height: 40px !important;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-    .plot-header .md-icon-button {
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-    .plot-content {
-        padding-right: 16px;
-    }
-    pre {
-        white-space: pre-wrap;
-        word-wrap: break-word; /* IE */
-        max-height: 200px; /* TODO: reasonable value */
-        overflow-y: hidden;
-    }
-    `],
+    styles: [
+        `
+        md-content {
+            overflow-y: auto !important;
+        }
+        md-toolbar {
+            min-height: 40px;
+        }
+        .md-toolbar-tools {
+            height: 40px;
+        }
+        md-list-item >>> .md-list-item-inner {
+            padding-right: 0px;
+        }
+        .plot-header h3 {
+            line-height: 40px !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .plot-header .md-icon-button {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+        .plot-content {
+            padding-right: 16px;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word; /* IE */
+            max-height: 200px; /* TODO: reasonable value */
+            overflow-y: hidden;
+        }
+        `,
+    ],
     directives: [MATERIAL_DIRECTIVES, HistogramComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {
     @Input() maxHeight: number;
+    @Output() openDetailView = new EventEmitter<Plot>();
 
     constructor(private plotService: PlotService) {}
 }

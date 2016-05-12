@@ -76,6 +76,7 @@ export class DialogContainerComponent {
     @Input() overflow: boolean = true;
 
     @Output() close = new EventEmitter<void>();
+    @Output() contentMaxSize = new EventEmitter<{ width: number; height: number; }>();
 
     private windowHeight$: BehaviorSubject<number>;
     private windowWidth$: BehaviorSubject<number>;

@@ -3,13 +3,13 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {LayerService} from "./layer.service";
 import {ProjectService} from "./project.service";
-import {PlotService} from "./plot.service";
+import {PlotService} from "../plots/plot.service";
 import {MappingQueryService} from "./mapping-query.service";
 
 import Config from "../models/config.model";
 import {Layer, LayerDict} from "../models/layer.model";
 import {Project} from "../models/project.model";
-import {Plot, PlotDict} from "../models/plot.model";
+import {Plot, PlotDict} from "../plots/plot.model";
 import {Operator} from "../models/operator.model";
 import {ResultTypes} from "../models/result-type.model";
 import {DataType, DataTypes} from "../models/datatype.model";

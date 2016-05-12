@@ -1,7 +1,7 @@
-import {Injectable} from "angular2/core";
-import {BehaviorSubject, Observable} from "rxjs/Rx";
+import {Injectable} from 'angular2/core';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {Plot} from "../models/plot.model";
+import {Plot} from './plot.model';
 
 @Injectable()
 export class PlotService {

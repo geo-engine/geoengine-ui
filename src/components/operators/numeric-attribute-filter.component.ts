@@ -10,7 +10,7 @@ import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog
 
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
         OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
-import {HistogramComponent, HistogramData} from "../plots/histogram.component";
+import {HistogramComponent, HistogramData} from "../../plots/histogram.component";
 
 import {LayerService} from "../../services/layer.service";
 

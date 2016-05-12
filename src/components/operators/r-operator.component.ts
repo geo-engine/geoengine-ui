@@ -12,7 +12,7 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
 import {CodeEditorComponent} from "../code-editor.component";
 
 import {Layer} from "../../models/layer.model";
-import {Plot} from "../../models/plot.model";
+import {Plot} from "../../plots/plot.model";
 import {Symbology, SimplePointSymbology, RasterSymbology} from "../../models/symbology.model";
 import {Operator} from "../../models/operator.model";
 import {ResultTypes} from "../../models/result-type.model";

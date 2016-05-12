@@ -8,14 +8,14 @@ import {DialogContainerComponent} from "../dialogs/dialog-basics.component";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {LayerService} from "../../services/layer.service";
-import {PlotService} from "../../services/plot.service";
+import {PlotService} from "../../plots/plot.service";
 import {ProjectService} from  "../../services/project.service";
 import {MappingQueryService} from "../../services/mapping-query.service";
 import {MappingColorizerService} from "../../services/mapping-colorizer.service";
 import {RandomColorService} from "../../services/random-color.service";
 
 import {Layer} from "../../models/layer.model";
-import {Plot} from "../../models/plot.model";
+import {Plot} from "../../plots/plot.model";
 import {Operator} from "../../models/operator.model";
 import {ResultType, ResultTypes} from "../../models/result-type.model";
 import {Projection} from "../../models/projection.model";
@@ -235,7 +235,9 @@ export class LayerMultiSelectComponent implements OnChanges {
 
 export function toLetters(num: number): string {
     let mod = num % 26;
+    /* tslint:disable */
     let pow = num / 26 | 0;
+    /* tslint:enable */
     let out = mod ? String.fromCharCode(64 + mod) : (--pow, "Z");
     return pow ? this.toLetters(pow) + out : out;
 }

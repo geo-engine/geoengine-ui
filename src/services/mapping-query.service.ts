@@ -9,7 +9,7 @@ import {Projection} from "../models/projection.model";
 import {ResultTypes} from "../models/result-type.model";
 
 import Config from "../models/config.model";
-import {PlotData} from "../models/plot.model";
+import {PlotData} from "../plots/plot.model";
 
 type ParametersType = {[index: string]: string | number | boolean};
 

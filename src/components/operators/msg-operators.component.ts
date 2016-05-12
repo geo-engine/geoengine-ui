@@ -11,7 +11,6 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
 
 import {Layer} from "../../models/layer.model";
-import {Plot} from "../../models/plot.model";
 import {Operator} from "../../models/operator.model";
 import {ResultTypes} from "../../models/result-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
