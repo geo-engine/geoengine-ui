@@ -1,9 +1,9 @@
-import {Pipe, PipeTransform, Injectable} from "angular2/core";
+import {Pipe, PipeTransform, Injectable} from 'angular2/core';
 
-import {MappingSource, MappingSourceChannel} from "../models/mapping-source.model";
+import {MappingSource} from '../models/mapping-source.model';
 
 @Pipe({
-    name: "mappingDataSourceFilter",
+    name: 'waveMappingDataSourceFilter',
 })
 @Injectable()
 export class MappingDataSourceFilter implements PipeTransform {
@@ -12,9 +12,10 @@ export class MappingDataSourceFilter implements PipeTransform {
         for (let source of items) {
             if (source.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
               resultSources.push(source);
-            }
-            else {
-              let resultChannels: Array<MappingSourceChannel> = source.channels.filter(c => c.name.toLowerCase().indexOf(term.toLowerCase()) >= 0);
+            } else {
+              let resultChannels = source.channels.filter(
+                  c => c.name.toLowerCase().indexOf(term.toLowerCase()) >= 0
+              );
               if (resultChannels.length > 0) {
                 let s = Object.assign({}, source);
                 s.channels = resultChannels;
