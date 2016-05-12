@@ -1,55 +1,40 @@
-import {Component, ViewChild, ElementRef, AfterViewInit, NgZone,
-        ChangeDetectionStrategy, OnInit} from "angular2/core";
-import {COMMON_DIRECTIVES} from "angular2/common";
-import {HTTP_PROVIDERS} from "angular2/http";
-import {BehaviorSubject, Subject, Observable} from "rxjs/Rx";
-import {MATERIAL_DIRECTIVES, SidenavService, MdDialog} from "ng2-material/all";
-import {MdDialogConfig, MdDialogBasic, MdDialogRef} from "ng2-material/components/dialog/dialog";
+import {
+    Component, ViewChild, ElementRef, AfterViewInit, NgZone, ChangeDetectionStrategy, OnInit,
+} from 'angular2/core';
+import {COMMON_DIRECTIVES} from 'angular2/common';
+import {HTTP_PROVIDERS} from 'angular2/http';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {MATERIAL_DIRECTIVES, SidenavService, MdDialog} from 'ng2-material/all';
 
-import {InfoAreaComponent} from "../components/info-area.component";
-import {TabComponent} from "../components/tab.component";
-import {InfoBarComponent} from "../components/info-bar.component";
-import {LayerComponent} from "../components/layer.component";
-import {DataTable} from "../components/data-table.component";
-import {OlMapComponent} from "./openlayers/ol-map.component";
-import {OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent,
-        OlRasterLayerComponent} from "./openlayers/ol-layer.component";
+import {InfoAreaComponent} from '../components/info-area.component';
+import {RibbonsComponent} from '../ribbons/ribbons.component';
+import {InfoBarComponent} from '../components/info-bar.component';
+import {LayerComponent} from '../components/layer.component';
+import {DataTable} from '../components/data-table.component';
+import {OlMapComponent} from './openlayers/ol-map.component';
+import {
+    OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
+} from './openlayers/ol-layer.component';
 
-import {RasterRepositoryComponent} from "../components/raster-repository.component";
-import {OperatorBaseComponent, OperatorBase, OperatorDialogConfig}
-    from "../components/operators/operator.component";
+import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
-import {RenameLayerComponent, RenameLayerDialogConfig}
-    from "../components/rename-layer.component";
-import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
-    from "../components/project-settings.component";
-import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
-    from "../components/dialogs/operator-graph.component";
-import {SymbologyDialogComponent, SymbologyDialogConfig}
-    from "../components/dialogs/symbology-dialog.component";
+import {Layer} from '../models/layer.model';
+import {ResultTypes} from '../models/result-type.model';
 
+import {LayerService} from '../services/layer.service';
+import {StorageService} from '../services/storage.service';
+import {ProjectService} from '../services/project.service';
+import {UserService} from '../services/user.service';
+import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingColorizerService} from '../services/mapping-colorizer.service';
+import {RandomColorService} from '../services/random-color.service';
 
-import {Layer} from "../models/layer.model";
-import {Operator} from "../models/operator.model";
-import {ResultTypes} from "../models/result-type.model";
-import {Projection} from "../models/projection.model";
+import {PlotListComponent} from '../plots/plot-list.component';
 
-import {LayerService} from "../services/layer.service";
-import {StorageService} from "../services/storage.service";
-import {ProjectService} from "../services/project.service";
-import {UserService} from "../services/user.service";
-import {MappingQueryService} from "../services/mapping-query.service";
-import {MappingColorizerService} from "../services/mapping-colorizer.service";
-import {RandomColorService} from "../services/random-color.service";
-
-import {PlotListComponent} from "../plots/plot-list.component";
-import {PlotDetailsDialogComponent, PlotDetailsDialogConfig}
-    from "../plots/plot-detail-dialog.component";
-import {PlotService} from "../plots/plot.service";
-import {Plot} from "../plots/plot.model";
+import {PlotService} from '../plots/plot.service';
 
 @Component({
-    selector: "wave-app",
+    selector: 'wave-app',
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea">
@@ -57,7 +42,7 @@ import {Plot} from "../plots/plot.model";
             </info-area-component>
         </div>
         <div flex="grow">
-            <tab-component
+            <wave-ribbons-component
                 [layerSelected]="hasSelectedLayer$ | async"
                 (renameLayer)="renameLayerDialog($event)"
                 (removeLayer)="layerService.removeLayer(layerService.getSelectedLayer())"
@@ -69,7 +54,7 @@ import {Plot} from "../plots/plot.model";
                 (showOperator)="showAddOperatorDialog($event)"
                 (projectSettings)="projectSettingsDialog($event)"
                 (symbology)="symbologyDialog($event)">
-            </tab-component>
+            </wave-ribbons-component>
         </div>
     </div>
     <div class="middleContainer md-whiteframe-5dp" layout="row"
@@ -177,19 +162,20 @@ import {Plot} from "../plots/plot.model";
     `],
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
-        InfoAreaComponent, TabComponent, LayerComponent, InfoBarComponent, DataTable,
+        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTable,
         RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LayerService, PlotService, StorageService, ProjectService, UserService,
-                MappingQueryService, MappingColorizerService, RandomColorService,
-                SidenavService, HTTP_PROVIDERS, MdDialog]
+    providers: [
+        HTTP_PROVIDERS, SidenavService, MdDialog,
+        LayerService, PlotService, StorageService, ProjectService, UserService, MappingQueryService,
+        MappingColorizerService, RandomColorService,
+    ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(OlMapComponent)
-    private mapComponent: OlMapComponent;
+    @ViewChild(OlMapComponent) mapComponent: OlMapComponent;
 
     private layerListVisible$: BehaviorSubject<boolean>;
     private plotListVisible$: BehaviorSubject<boolean>;
@@ -201,10 +187,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     private layersReverse$: Observable<Array<Layer>>;
     private hasSelectedLayer$: Observable<boolean>;
 
-    private mapProjection$: Observable<Projection>;
-
     // for ng-switch
-    private ResultTypes = ResultTypes;
+    private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
 
     constructor(private zone: NgZone,
                 private layerService: LayerService,
@@ -241,7 +225,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         let windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, "resize")
+        Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerHeight)
                   .subscribe(windowHeight$);
         this.layerListVisible$.map(() => window.innerHeight)
@@ -286,60 +270,4 @@ export class AppComponent implements OnInit, AfterViewInit {
         return layers.length - index - 1;
     }
 
-    private renameLayerDialog(event: Event) {
-        let config = new RenameLayerDialogConfig()
-            .layerService(this.layerService)
-            .clickOutsideToClose(true)
-            .targetEvent(event);
-
-        this.mdDialog.open(RenameLayerComponent, this.elementRef, config);
-    }
-
-    private projectSettingsDialog(event: Event) {
-        let config = new ProjectSettingsDialogConfig()
-            .projectService(this.projectService)
-            .clickOutsideToClose(true)
-            .targetEvent(event);
-
-        this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
-    }
-
-    private showAddOperatorDialog(OperatorComponent: OperatorBase) {
-        let config = new OperatorDialogConfig()
-            .layerService(this.layerService)
-            .plotService(this.plotService)
-            .projectService(this.projectService)
-            .mappingQueryService(this.mappingQueryService)
-            .mappingColorizerService(this.mappingColorizerService)
-            .randomColorService(this.randomColorService)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(<Function> OperatorComponent, this.elementRef, config);
-    }
-
-    private showLineage(selectedLayerOnly: boolean) {
-        let config = new OperatorGraphDialogConfig()
-            .layerService(this.layerService)
-            .selectedLayerOnly(selectedLayerOnly)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
-    }
-
-    private symbologyDialog(event: Event) {
-        let config = new SymbologyDialogConfig()
-          .layerService(this.layerService)
-          .clickOutsideToClose(true)
-          .targetEvent(event);
-
-        this.mdDialog.open(SymbologyDialogComponent, this.elementRef, config);
-    }
-
-    private showPlotDetailDialog(plot: Plot) {
-        const config = new PlotDetailsDialogConfig()
-            .plot(plot)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
-    }
 }
