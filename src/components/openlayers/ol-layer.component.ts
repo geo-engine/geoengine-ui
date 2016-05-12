@@ -1,14 +1,14 @@
-import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from "angular2/core";
-import ol from "openlayers";
+import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from 'angular2/core';
+import ol from 'openlayers';
 
-import Config from "../../models/config.model";
-import {Operator} from "../../models/operator.model";
-import {Projection} from "../../models/projection.model";
-import {Symbology, AbstractVectorSymbology, RasterSymbology} from "../../models/symbology.model";
+import Config from '../../models/config.model';
+import {Operator} from '../../models/operator.model';
+import {Projection} from '../../models/projection.model';
+import {Symbology, AbstractVectorSymbology, RasterSymbology} from '../../models/symbology.model';
 
-import {MappingQueryService, WFSOutputFormats} from "../../services/mapping-query.service";
+import {MappingQueryService, WFSOutputFormats} from '../../services/mapping-query.service';
 
-import moment from "moment";
+import moment from 'moment';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -20,9 +20,9 @@ import moment from "moment";
  * * style
  */
 @Component({
-    selector: "ol-layer",
-    template: "",
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ol-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
                                           OlSource extends ol.source.Source,
@@ -40,6 +40,10 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
 
     get mapLayer(): OlLayer { return this._mapLayer; };
 
+    abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
+
+    abstract get extent(): number[];
+
     protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for (const property in changes) {
             if (changes[property].isFirstChange()) {
@@ -48,21 +52,18 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
         }
         return false;
     }
-
-    abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
-
-    abstract get extent(): number[];
 }
 
-abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector,
-                                                                  ol.source.Vector,
-                                                                  AbstractVectorSymbology> {
+abstract class OlVectorLayerComponent
+    extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector, AbstractVectorSymbology>
+    implements OnChanges {
+
     constructor(protected mappingQueryService: MappingQueryService) {
         super(mappingQueryService);
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (changes["operator"] || changes["projection"] || changes["time"]) {
+        if (changes['operator'] || changes['projection'] || changes['time']) {
             this.source = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
                 url: this.mappingQueryService.getWFSQueryUrl(
@@ -81,10 +82,10 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
                 style: this.symbology.olStyle,
             });
         } else {
-            if (changes["operator"] || changes["projection"] || changes["time"]) {
+            if (changes['operator'] || changes['projection'] || changes['time']) {
                 this.mapLayer.setSource(this.source);
             }
-            if (changes["symbology"]) {
+            if (changes['symbology']) {
                 this.mapLayer.setStyle(this.symbology.olStyle);
             }
         }
@@ -96,9 +97,9 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
 }
 
 @Component({
-    selector: "ol-point-layer",
-    template: "",
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ol-point-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -107,8 +108,8 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
 }
 
 @Component({
-    selector: "ol-line-layer",
-    template: "",
+    selector: 'ol-line-layer',
+    template: '',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
@@ -118,9 +119,9 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
 }
 
 @Component({
-    selector: "ol-polygon-layer",
-    template: "",
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ol-polygon-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -129,13 +130,14 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
 }
 
 @Component({
-    selector: "ol-raster-layer",
-    template: "",
-    changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ol-raster-layer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile,
-                                                                ol.source.TileWMS,
-                                                                RasterSymbology> {
+export class OlRasterLayerComponent
+    extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS, RasterSymbology>
+    implements OnChanges {
+
     constructor(protected mappingQueryService: MappingQueryService) {
         super(mappingQueryService);
     }
@@ -157,18 +159,18 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile,
                 opacity: this.symbology.opacity,
             });
         } else {
-            if (changes["operator"] || changes["projection"] || changes["time"]) {
+            if (changes['operator'] || changes['projection'] || changes['time']) {
                 // TODO: add these functions to the typings file.
-                (<any> this.source).updateParams(
+                (this.source as any).updateParams(
                     this.mappingQueryService.getWMSQueryParameters(
                         this.operator,
                         this.time,
                         this.projection
                     )
                 );
-                (<any> this.source).refresh();
+                (this.source as any).refresh();
             }
-            if (changes["symbology"]) {
+            if (changes['symbology']) {
                 this._mapLayer.setOpacity(this.symbology.opacity);
                 // this._mapLayer.setHue(rasterSymbology.hue);
                 // this._mapLayer.setSaturation(rasterSymbology.saturation);

@@ -27,7 +27,7 @@ import {RasterSourceType} from "../models/operator-type.model";
 
     <md-content flex="grow">
       <md-list>
-        <template ngFor #source [ngForOf]="sources | mappingDataSourceFilter:search_term" #i="index">
+        <template ngFor #source [ngForOf]="sources | waveMappingDataSourceFilter:search_term" #i="index">
           <md-subheader><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
           <template ngFor #channel [ngForOf]="source.channels">
             <md-divider></md-divider>
