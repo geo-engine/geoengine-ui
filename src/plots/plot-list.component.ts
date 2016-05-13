@@ -1,13 +1,17 @@
-import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter} from 'angular2/core';
+import {Component, ChangeDetectionStrategy, Input, ElementRef}
+  from 'angular2/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
 
 import {HistogramComponent} from './histogram.component';
 
+import {PlotDetailsDialogComponent, PlotDetailsDialogConfig} from './plot-detail-dialog.component';
 import {PlotService} from './plot.service';
-
 import {Plot} from './plot.model';
 
+/**
+ * A component to list all plots.
+ */
 @Component({
     selector: 'wave-plot-list',
     template: `
@@ -40,7 +44,7 @@ import {Plot} from './plot.model';
                         <div layout="row">
                             <h3 flex>{{plot.name}}</h3>
                             <button md-button class="md-icon-button" aria-label="Remove Output"
-                                    (click)="openDetailView.emit(plot)">
+                                    (click)="showPlotDetailDialog(plot)">
                                 <i md-icon>info</i>
                             </button>
                             <button md-button class="md-icon-button" aria-label="Remove Output"
@@ -110,7 +114,22 @@ import {Plot} from './plot.model';
 })
 export class PlotListComponent {
     @Input() maxHeight: number;
-    @Output() openDetailView = new EventEmitter<Plot>();
 
-    constructor(private plotService: PlotService) {}
+    constructor(
+        private elementRef: ElementRef,
+        private mdDialog: MdDialog,
+        private plotService: PlotService
+    ) {}
+
+    /**
+     * Show the plot detail dialog
+     * @param plot the plot to show
+     */
+    showPlotDetailDialog(plot: Plot) {
+        const config = new PlotDetailsDialogConfig()
+            .plot(plot)
+            .clickOutsideToClose(true);
+
+        this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
+    }
 }

@@ -57,7 +57,7 @@ export class Plot {
         const operator = Operator.fromDict(dict.operator);
         return new Plot({
             name: dict.name,
-            operator: Operator.fromDict(dict.operator),
+            operator: operator,
             data$: dataCallback(operator),
         });
     }
