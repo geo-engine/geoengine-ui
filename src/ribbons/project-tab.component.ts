@@ -89,7 +89,7 @@ export class ProjectTabComponent {
     showLineage() {
         const config = new OperatorGraphDialogConfig()
             .layerService(this.layerService)
-            .selectedLayerOnly(true)
+            .selectedLayerOnly(false)
             .clickOutsideToClose(true);
 
         this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);

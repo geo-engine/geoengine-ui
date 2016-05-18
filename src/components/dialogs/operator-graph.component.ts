@@ -1,20 +1,20 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit,
-        Input, ViewChild, ElementRef, ChangeDetectorRef} from "angular2/core";
-import {Observable, Subject, BehaviorSubject} from "rxjs/Rx";
+        Input, ViewChild, ElementRef, ChangeDetectorRef} from 'angular2/core';
+import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
-import {DialogContainerComponent} from "./dialog-basics.component";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {DialogContainerComponent} from './dialog-basics.component';
 
-import {LayerService} from "../../services/layer.service";
+import {LayerService} from '../../services/layer.service';
 
-import {Layer} from "../../models/layer.model";
+import {Layer} from '../../models/layer.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 
-import d3 from "d3"; // necessary for dagreD3
-// import dagre from "dagre";
-import dagreD3 from "dagre-d3";
+import d3 from 'd3'; // necessary for dagreD3
+// import dagre from 'dagre';
+import dagreD3 from 'dagre-d3';
 
 const GRAPH_STYLE = {
     general: {
@@ -29,14 +29,14 @@ const GRAPH_STYLE = {
     surrounding: {
         margin: 40,
         detailComponentWidth: 200,
-    }
+    },
 };
 
 /**
  * The dialog window for displaying the operator graph.
  */
 @Component({
-    selector: "wave-operator-graph-dialog",
+    selector: 'wave-operator-graph-dialog',
     template: `
     <wave-dialog-container #container [title]="title" [overflow]="false" [layout]="'row'"
                            (close)="dialog.close()">
@@ -190,18 +190,18 @@ const GRAPH_STYLE = {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorGraphDialogComponent implements AfterViewInit {
-    @ViewChild("container") dialogContainer: DialogContainerComponent;
-    @ViewChild("graph") graphContainer: ElementRef;
+    @ViewChild('container') dialogContainer: DialogContainerComponent;
+    @ViewChild('graph') graphContainer: ElementRef;
 
     @Input() layerService: LayerService;
     @Input() selectedLayerOnly: boolean;
 
-    private title = "Workflow";
+    private title = 'Workflow';
 
     private width$: BehaviorSubject<number> = new BehaviorSubject(0);
     private height$: BehaviorSubject<number> = new BehaviorSubject(0);
 
-    private selectedOperatorName$: BehaviorSubject<string> = new BehaviorSubject("");
+    private selectedOperatorName$: BehaviorSubject<string> = new BehaviorSubject('');
     private parameters$: BehaviorSubject<Array<{key: string, value: string}>> =
         new BehaviorSubject([]);
 
@@ -209,7 +209,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 private dialog: MdDialogRef) {}
 
     ngAfterViewInit() {
-        let title = "Workflow";
+        let title = 'Workflow';
 
         let graph = new dagreD3.graphlib.Graph()
                         .setGraph({})
@@ -247,7 +247,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         // Set up an SVG group so that we can translate the final graph.
         console.log(this.graphContainer.nativeElement);
         let svg = d3.select(this.graphContainer.nativeElement);
-        let svgGroup = svg.append("g");
+        let svgGroup = svg.append('g');
 
         // Run the renderer. This is what draws the final graph.
         render(svgGroup, graph);
@@ -304,23 +304,6 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     private addOperatorsToGraph(graph: Dagre.Graph,
                       initialOperators: Array<Operator>,
                       layers: Array<Layer>): Array<number> {
-        // TODO: replace with proper icons
-        // from `http://stackoverflow.com/questions/3426404/
-        // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
-        const hashCode = (str: string) => { // java String#hashCode
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-               hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return hash;
-        };
-
-        const intToRGB = (i: number) => {
-            const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
-
-            return "00000".substring(0, 6 - c.length) + c;
-        };
-
         let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
@@ -333,23 +316,23 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             // add node to graph
             graph.setNode(`operator_${operator.id}`, {
                 operator: operator,
-                type: "operator",
+                type: 'operator',
                 class: `operator operator_${operator.id}`,
-                labelType: "html",
+                labelType: 'html',
                 label: `
-                <div class="header">
-                    <img src="${operator.operatorType.getIconUrl()}" class="icon">
+                <div class='header'>
+                    <img src='${operator.operatorType.getIconUrl()}' class='icon'>
                     </span>
                     ${operator.operatorType}
                 </div>
-                <div class="parameters">
+                <div class='parameters'>
                     <table>
                         <tr>
                         ${operator.operatorType.getParametersAsStrings()
                                                .map(([key, value]: [string, string]) => {
-                                                    return `<td class="key">${key}</td>
-                                                            <td class="value">${value}</td>`;
-                                             }).join("</tr><tr>")}
+                                                    return `<td class='key'>${key}</td>
+                                                            <td class='value'>${value}</td>`;
+                                             }).join('</tr><tr>')}
                         </tr>
                     </table>
                 </div>
@@ -389,10 +372,10 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 // add node
                 const hasAccent = layersToAccent.indexOf(layer) >= 0;
                 graph.setNode(`layer_${layer.operator.id}`, {
-                    class: hasAccent ? "layer accent" : "layer",
-                    type: "layer",
-                    labelType: "html",
-                    label: `<div class="header">${layer.name}</div>`,
+                    class: hasAccent ? 'layer accent' : 'layer',
+                    type: 'layer',
+                    labelType: 'html',
+                    label: `<div class='header'>${layer.name}</div>`,
                     padding: 0,
                     width: GRAPH_STYLE.general.width,
                     height: GRAPH_STYLE.general.headerHeight,
@@ -400,13 +383,13 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
                 // add edge
                 graph.setEdge(`operator_${layer.operator.id}`, `layer_${layer.operator.id}`, {
-                    class: "layer-edge",
+                    class: 'layer-edge',
                 });
             }
         }
     }
 
-    private addZoomSupport(svg: d3.Selection<any>, svgGroup: d3.Selection<any>,
+    private addZoomSupport(svg: d3.Selection<SVGSVGElement>, svgGroup: d3.Selection<SVGGElement>,
                            graph: Dagre.Graph,
                            svgWidth: number, svgHeight: number) {
         // calculate available space after subtracting the margin
@@ -432,19 +415,19 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         zoom.event(svgGroup.transition().duration(500));
 
         // add zoom handler
-        zoom.on("zoom", () => {
+        zoom.on('zoom', () => {
             svgGroup.attr(
-                "transform",
-                `translate(${d3.event["translate"]})scale(${d3.event["scale"]})`
+                'transform',
+                `translate(${d3.event['translate']})scale(${d3.event['scale']})`
             );
         });
         svg.call(zoom);
     }
 
-    private addClickHandler(svg: d3.Selection<any>, graph: Dagre.Graph) {
-        svg.selectAll(".node").on("click", (nodeId: string) => {
+    private addClickHandler(svg: d3.Selection<SVGSVGElement>, graph: Dagre.Graph) {
+        svg.selectAll('.node').on('click', (nodeId: string) => {
             const node = graph.node(nodeId);
-            if (node.type === "operator") {
+            if (node.type === 'operator') {
                 const operator: Operator = node.operator;
 
                 // update operator type
@@ -461,26 +444,26 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
                 );
 
                 // de-select all
-                svg.selectAll(".operator").classed("highlight", false);
+                svg.selectAll('.operator').classed('highlight', false);
                 // set highlight
-                svg.select(`.${nodeId}`).classed("highlight", true);
+                svg.select(`.${nodeId}`).classed('highlight', true);
             }
         });
     }
 
-    private fixLabelPosition(svg: d3.Selection<any>) {
+    private fixLabelPosition(svg: d3.Selection<SVGSVGElement>) {
         // HACK: move html label from center to top left
-        svg.selectAll(".operator > .label > g > foreignObject")
-           .attr("x", -GRAPH_STYLE.general.width / 2)
-           .attr("y", -GRAPH_STYLE.operator.height / 2)
-           .attr("width", GRAPH_STYLE.general.width)
-           .attr("height", GRAPH_STYLE.operator.height);
-        svg.selectAll(".layer > .label > g > foreignObject")
-           .attr("x", -GRAPH_STYLE.general.width / 2)
-           .attr("y", -GRAPH_STYLE.general.headerHeight / 2)
-           .attr("width", GRAPH_STYLE.general.width)
-           .attr("height", GRAPH_STYLE.general.headerHeight);
-        svg.selectAll(".label > g").attr("transform", undefined);
+        svg.selectAll('.operator > .label > g > foreignObject')
+           .attr('x', -GRAPH_STYLE.general.width / 2)
+           .attr('y', -GRAPH_STYLE.operator.height / 2)
+           .attr('width', GRAPH_STYLE.general.width)
+           .attr('height', GRAPH_STYLE.operator.height);
+        svg.selectAll('.layer > .label > g > foreignObject')
+           .attr('x', -GRAPH_STYLE.general.width / 2)
+           .attr('y', -GRAPH_STYLE.general.headerHeight / 2)
+           .attr('width', GRAPH_STYLE.general.width)
+           .attr('height', GRAPH_STYLE.general.headerHeight);
+        svg.selectAll('.label > g').attr('transform', undefined);
     }
 }
 
