@@ -100,8 +100,6 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
             this.tabIndex$.value + (event.deltaY > 0 ? 1 : -1)
         )));
 
-        console.log(this.tabIndex$.value + (event.deltaY > 0 ? 1 : -1), newTabIndex, 'of', maxTab);
-
         this.tabs.selected = newTabIndex;
         this.tabIndex$.next(newTabIndex);
     }
