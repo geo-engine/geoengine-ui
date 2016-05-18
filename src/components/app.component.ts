@@ -184,7 +184,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
 
-    private layersReverse$: Observable<Array<Layer>>;
+    private layersReverse$: Observable<Array<Layer<any>>>;
     private hasSelectedLayer$: Observable<boolean>;
 
     // for ng-switch

@@ -83,8 +83,8 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     private configForm: ControlGroup;
     private valueNamesControls: ControlArray;
 
-    private selectedPointLayer: Layer;
-    private selectedRasterLayers: Array<Layer>;
+    private selectedPointLayer: Layer<any>;
+    private selectedRasterLayers: Array<Layer<any>>;
 
     private resolutionX = 1024;
     private resolutionY = 1024;
@@ -109,7 +109,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         super.ngOnChanges(changes);
     }
 
-    private onSelectRasterLayers(layers: Array<Layer>) {
+    private onSelectRasterLayers(layers: Array<Layer<any>>) {
         let discrepancy = layers.length - this.valueNamesControls.length;
         if (discrepancy > 0) {
             for (let i = this.valueNamesControls.length; i < layers.length; i++) {

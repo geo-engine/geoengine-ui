@@ -49,17 +49,17 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     /**
      * An array of selectible layers.
      */
-    @Input() layers: Array<Layer>;
+    @Input() layers: Array<Layer<any>>;
 
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayer") selectedLayerEmitter = new EventEmitter<Layer>();
+    @Output("selectedLayer") selectedLayerEmitter = new EventEmitter<Layer<any>>();
 
-    private selectedLayer: Layer;
+    private selectedLayer: Layer<any>;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {
-        this.selectedLayerEmitter.subscribe((layer: Layer) => this.selectedLayer = layer);
+        this.selectedLayerEmitter.subscribe((layer: Layer<any>) => this.selectedLayer = layer);
     }
 
     ngAfterViewInit() {
@@ -138,7 +138,7 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * An array of possible layers.
      */
-    @Input("layers") inputLayers: Array<Layer>;
+    @Input("layers") inputLayers: Array<Layer<any>>;
 
     /**
      * The minimum number of elements to select.
@@ -165,17 +165,17 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayers") selectedLayersEmitter = new EventEmitter<Array<Layer>>();
+    @Output("selectedLayers") selectedLayersEmitter = new EventEmitter<Array<Layer<any>>>();
 
     private amountOfLayers: number = 1;
 
-    private layers: Array<Layer>;
+    private layers: Array<Layer<any>>;
     private ids: Array<string>;
 
-    private selectedLayers: Array<Layer> = [];
+    private selectedLayers: Array<Layer<any>> = [];
 
     constructor() {
-        this.selectedLayersEmitter.subscribe((layers: Array<Layer>) => {
+        this.selectedLayersEmitter.subscribe((layers: Array<Layer<any>>) => {
             this.selectedLayers = layers;
         });
     }
@@ -214,7 +214,7 @@ export class LayerMultiSelectComponent implements OnChanges {
         }
     }
 
-    private updateLayer(index: number, layer: Layer) {
+    private updateLayer(index: number, layer: Layer<any>) {
         this.selectedLayers[index] = layer;
         this.selectedLayersEmitter.emit(this.selectedLayers);
     }
@@ -277,7 +277,7 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     /**
      * An array of layers that is traversed to get all projections.
      */
-    @Input() layers: Array<Layer>;
+    @Input() layers: Array<Layer<any>>;
 
     /**
      * This output emits the selected layer.
@@ -400,7 +400,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     @Input() mappingColorizerService: MappingColorizerService;
     @Input() randomColorService: RandomColorService;
 
-    protected layers: Array<Layer> = [];
+    protected layers: Array<Layer<any>> = [];
 
     // types
     protected ResultTypes = ResultTypes;

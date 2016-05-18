@@ -85,7 +85,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     private attributes: Array<string> = [];
 
-    private selectedLayer: Layer;
+    private selectedLayer: Layer<any>;
     private boundsMin: number;
     private boundsMax: number;
 
@@ -144,7 +144,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         super.ngOnChanges(changes);
     }
 
-    private onSelectLayer(layer: Layer) {
+    private onSelectLayer(layer: Layer<any>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.attributes.filter(attribute => {

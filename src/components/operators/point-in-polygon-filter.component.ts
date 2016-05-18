@@ -63,8 +63,8 @@ import {SimplePointSymbology} from "../../models/symbology.model";
 export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent {
 
         private configForm: ControlGroup;
-        private pointLayer: Layer;
-        private polygonLayer: Layer;
+        private pointLayer: Layer<any>;
+        private polygonLayer: Layer<any>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();

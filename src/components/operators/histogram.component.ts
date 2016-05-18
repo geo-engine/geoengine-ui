@@ -97,7 +97,7 @@ import {HistogramType} from "../../models/operator-type.model";
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HistogramOperatorComponent extends OperatorBaseComponent {
-    private selectedLayer: Layer;
+    private selectedLayer: Layer<any>;
 
     private autoBuckets = true;
     private customRange = false;
@@ -125,7 +125,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
         });
     }
 
-    onSelectLayer(layer: Layer) {
+    onSelectLayer(layer: Layer<any>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.dataTypes

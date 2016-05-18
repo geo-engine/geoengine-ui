@@ -1,24 +1,23 @@
-import {Injectable} from "angular2/core";
-import {BehaviorSubject, Observable} from "rxjs/Rx";
+import {Injectable} from 'angular2/core';
+import {Observable} from 'rxjs/Rx';
 
-import {LayerService} from "./layer.service";
-import {ProjectService} from "./project.service";
-import {PlotService} from "../plots/plot.service";
-import {MappingQueryService} from "./mapping-query.service";
+import {LayerService} from './layer.service';
+import {ProjectService} from './project.service';
+import {PlotService} from '../plots/plot.service';
+import {MappingQueryService} from './mapping-query.service';
 
-import Config from "../models/config.model";
-import {Layer, LayerDict} from "../models/layer.model";
-import {Project} from "../models/project.model";
-import {Plot, PlotDict} from "../plots/plot.model";
-import {Operator} from "../models/operator.model";
-import {ResultTypes} from "../models/result-type.model";
-import {DataType, DataTypes} from "../models/datatype.model";
-import {Projections} from "../models/projection.model";
-import {Unit, Interpolation} from "../models/unit.model";
-import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
-    from "../models/symbology.model";
-import {RasterSourceType, GFBioSourceType, WKTSourceType}
-    from "../models/operator-type.model";
+import Config from '../models/config.model';
+import {Layer, LayerDict, VectorLayer, RasterLayer} from '../models/layer.model';
+import {Project} from '../models/project.model';
+import {Plot, PlotDict} from '../plots/plot.model';
+import {Operator} from '../models/operator.model';
+import {ResultTypes} from '../models/result-type.model';
+import {DataType, DataTypes} from '../models/datatype.model';
+import {Projections} from '../models/projection.model';
+import {Unit, Interpolation} from '../models/unit.model';
+import {SimplePointSymbology, SimpleVectorSymbology, RasterSymbology}
+    from '../models/symbology.model';
+import {RasterSourceType, GFBioSourceType, WKTSourceType} from '../models/operator-type.model';
 
 /**
  * This service allows persisting the current execution context.
@@ -49,7 +48,7 @@ export class StorageService {
     }
 
     private loadLayers() {
-        let layers = this.storageProvider.loadLayers();
+        let layers = this.storageProvider.loadLayers(this.mappingQueryService, this.projectService);
 
         if (layers === undefined) {
             // load default
@@ -172,13 +171,14 @@ interface StorageProvider {
      * Load the current layers.
      * @returns An array of layers.
      */
-    loadLayers(): Array<Layer>;
+    loadLayers(mappingQueryService: MappingQueryService,
+              projectService: ProjectService): Array<Layer<any>>;
 
     /**
      * Save the current layers.
      * @param layers An array of layers.
      */
-    saveLayers(layers: Array<Layer>): void;
+    saveLayers(layers: Array<Layer<any>>): void;
 
     /**
      * Load the current plots.
@@ -248,7 +248,7 @@ interface StorageProvider {
  */
 class BrowserStorageProvider implements StorageProvider {
     loadProject(): Project {
-        const projectJSON = localStorage.getItem("project");
+        const projectJSON = localStorage.getItem('project');
         if (projectJSON === null) {
             return undefined;
         } else {
@@ -258,38 +258,48 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveProject(project: Project) {
-        localStorage.setItem("project", project.toJSON());
+        localStorage.setItem('project', project.toJSON());
     }
 
-    loadLayers(): Array<Layer> {
-        const layersJSON = localStorage.getItem("layers");
+    loadLayers(mappingQueryService: MappingQueryService,
+              projectService: ProjectService): Array<Layer<any>> {
+        const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) {
             return undefined;
         } else {
-            const layers: Array<Layer> = [];
+            const layers: Array<Layer<any>> = [];
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
             for (const layerDict of layerDicts) {
-                layers.push(Layer.fromDict(layerDict));
+                layers.push(
+                    Layer.fromDict(
+                        layerDict,
+                        operator => mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                            operator,
+                            projectService.getTimeStream(),
+                            projectService.getMapProjectionStream()
+                        )
+                    )
+                );
             }
 
             return layers;
         }
     }
 
-    saveLayers(layers: Array<Layer>) {
+    saveLayers(layers: Array<Layer<any>>) {
         const layerDicts: Array<LayerDict> = [];
 
         for (const layer of layers) {
             layerDicts.push(layer.toDict());
         }
 
-        localStorage.setItem("layers", JSON.stringify(layerDicts));
+        localStorage.setItem('layers', JSON.stringify(layerDicts));
     }
 
     loadPlots(mappingQueryService: MappingQueryService,
               projectService: ProjectService): Array<Plot> {
-        const plotsJSON = localStorage.getItem("plots");
+        const plotsJSON = localStorage.getItem('plots');
         if (plotsJSON === null) {
             return undefined;
         } else {
@@ -318,11 +328,11 @@ class BrowserStorageProvider implements StorageProvider {
             plotDicts.push(plot.toDict());
         }
 
-        localStorage.setItem("plots", JSON.stringify(plotDicts));
+        localStorage.setItem('plots', JSON.stringify(plotDicts));
     }
 
     loadLayerListVisible(): boolean {
-        const layerListVisible = localStorage.getItem("layerListVisible");
+        const layerListVisible = localStorage.getItem('layerListVisible');
         if (layerListVisible === null) {
             return undefined;
         } else {
@@ -331,11 +341,11 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveLayerListVisible(visible: boolean) {
-        localStorage.setItem("layerListVisible", JSON.stringify(visible));
+        localStorage.setItem('layerListVisible', JSON.stringify(visible));
     }
 
     loadDataTableVisible(): boolean {
-        const dataTableVisible = localStorage.getItem("dataTableVisible");
+        const dataTableVisible = localStorage.getItem('dataTableVisible');
         if (dataTableVisible === null) {
             return undefined;
         } else {
@@ -344,11 +354,11 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveDataTableVisible(visible: boolean) {
-        localStorage.setItem("dataTableVisible", JSON.stringify(visible));
+        localStorage.setItem('dataTableVisible', JSON.stringify(visible));
     }
 
     loadPlotListVisibility(): boolean {
-        const plotListVisible = localStorage.getItem("plotListVisibility");
+        const plotListVisible = localStorage.getItem('plotListVisibility');
         if (plotListVisible === null) {
             return undefined;
         } else {
@@ -357,11 +367,11 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     savePlotListVisibility(visible: boolean) {
-        localStorage.setItem("plotListVisibility", JSON.stringify(visible));
+        localStorage.setItem('plotListVisibility', JSON.stringify(visible));
     }
 
     loadTabIndex(): number {
-        const tabIndex = localStorage.getItem("tabIndex");
+        const tabIndex = localStorage.getItem('tabIndex');
         if (tabIndex === null) {
             return undefined;
         } else {
@@ -370,7 +380,7 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     saveTabIndex(tabIndex: number) {
-        localStorage.setItem("tabIndex", JSON.stringify(tabIndex));
+        localStorage.setItem('tabIndex', JSON.stringify(tabIndex));
     }
 }
 
@@ -378,7 +388,7 @@ class BrowserStorageProvider implements StorageProvider {
  * Default values when the storage is empty.
  */
 class StorageDefaults {
-    getLayers(): Array<Layer> {
+    getLayers(): Array<Layer<any>> {
         return [];
     }
     getPlots(): Array<Plot> {
@@ -402,15 +412,15 @@ class StorageDefaults {
  * Default values for debugging the application.
  */
 class DeveloperDefaults extends StorageDefaults {
-    getLayers(): Array<Layer> {
+    getLayers(): Array<Layer<any>> {
         return [
-            new Layer({
-                name: "IUCN Puma Concolor",
+            new VectorLayer({
+                name: 'IUCN Puma Concolor',
                 symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: new Operator({
                     operatorType: new GFBioSourceType({
-                        datasource: "IUCN",
-                        query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
+                        datasource: 'IUCN',
+                        query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
                     }),
                     resultType: ResultTypes.POLYGONS,
                     projection: Projections.WGS_84,
@@ -419,8 +429,8 @@ class DeveloperDefaults extends StorageDefaults {
                     units: new Map<string, Unit>()
                 })
             }),
-            new Layer({
-                name: "WKT",
+            new VectorLayer({
+                name: 'WKT',
                 symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
                 operator: new Operator({
                     operatorType: new WKTSourceType({
@@ -434,13 +444,13 @@ class DeveloperDefaults extends StorageDefaults {
                     units: new Map<string, Unit>()
                 })
             }),
-            new Layer({
-                name: "Puma Concolor",
+            new VectorLayer({
+                name: 'Puma Concolor',
                 symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: new Operator({
                     operatorType: new GFBioSourceType({
-                        datasource: "GBIF",
-                        query: `{"globalAttributes":{"speciesName":"Puma concolor"},"localAttributes":{}}`,
+                        datasource: 'GBIF',
+                        query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
                     }),
                     resultType: ResultTypes.POINTS,
                     projection: Projections.WGS_84,
@@ -449,22 +459,22 @@ class DeveloperDefaults extends StorageDefaults {
                     units: new Map<string, Unit>()
                 })
             }),
-            new Layer({
-                name: "SRTM",
+            new RasterLayer({
+                name: 'SRTM',
                 symbology: new RasterSymbology({}),
                 operator: new Operator({
                     operatorType: new RasterSourceType({
                         channel: 0,
-                        sourcename: "srtm",
+                        sourcename: 'srtm',
                         transform: true,
                     }),
                     resultType: ResultTypes.RASTER,
                     projection: Projections.WGS_84,
-                    attributes: ["value"],
-                    dataTypes: new Map<string, DataType>().set("value", DataTypes.Int16),
-                    units: new Map<string, Unit>().set("value", new Unit({
-                        measurement: "elevation",
-                        unit: "m",
+                    attributes: ['value'],
+                    dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
+                    units: new Map<string, Unit>().set('value', new Unit({
+                        measurement: 'elevation',
+                        unit: 'm',
                         interpolation: Interpolation.Continuous
                     }))
                 })

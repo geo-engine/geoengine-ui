@@ -303,7 +303,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
     private addOperatorsToGraph(graph: Dagre.Graph,
                       initialOperators: Array<Operator>,
-                      layers: Array<Layer>): Array<number> {
+                      layers: Array<Layer<any>>): Array<number> {
         // TODO: replace with proper icons
         // from `http://stackoverflow.com/questions/3426404/
         // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
@@ -380,8 +380,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     }
 
     private addLayersToGraph(graph: Dagre.Graph,
-                             layers: Array<Layer>,
-                             layersToAccent: Array<Layer>,
+                             layers: Array<Layer<any>>,
+                             layersToAccent: Array<Layer<any>>,
                              operatorIdsInGraph: Array<number>) {
         for (let layer of layers) {
             // operator of layer is contained in graph

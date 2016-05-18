@@ -62,7 +62,7 @@ import {MappingColorizerService} from "../../services/mapping-colorizer.service"
 export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer>;
+    private rasterSources: Array<Layer<any>>;
 
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
@@ -163,7 +163,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
 export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer>;
+    private rasterSources: Array<Layer<any>>;
 
     // private forceSatellite: boolean = false;
     // private forceSatellteName: MeteosatSatelliteName;
@@ -268,7 +268,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer>;
+    private rasterSources: Array<Layer<any>>;
     private solarangleNames = ["zenith", "azimuth"];
 
     // private forceSatellite: boolean = false;
@@ -363,7 +363,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer>;
+    private rasterSources: Array<Layer<any>>;
 
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
@@ -446,7 +446,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private selectedRasterSources: Array<Layer>;
+    private selectedRasterSources: Array<Layer<any>>;
 
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
@@ -529,7 +529,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private selectedRasterSources: Array<Layer>;
+    private selectedRasterSources: Array<Layer<any>>;
 
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
