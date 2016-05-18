@@ -62,9 +62,9 @@ interface Column {
     //     </vaadin-grid>
     // `,
     providers: [],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTable implements OnInit, OnChanges {
+export class DataTableComponent implements OnInit, OnChanges {
     @Input()
     private height: number;
 

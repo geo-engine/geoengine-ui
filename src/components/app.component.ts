@@ -10,7 +10,7 @@ import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {LayerComponent} from '../components/layer.component';
-import {DataTable} from '../components/data-table.component';
+import {DataTableComponent} from '../components/data-table.component';
 import {OlMapComponent} from './openlayers/ol-map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
@@ -162,7 +162,7 @@ import {PlotService} from '../plots/plot.service';
     `],
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
-        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTable,
+        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTableComponent,
         RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent,
