@@ -25,55 +25,56 @@ export abstract class DataType {
 }
 
 class Byte extends DataType {
-    toString(): string { return "Byte"; }
-    getCode(): string { return "Byte"; }
+    toString(): string { return 'Byte'; }
+    getCode(): string { return 'Byte'; }
     getMin(): number { return 0; }
     getMax(): number { return 255; }
 }
 
 class Int16 extends DataType {
-    toString(): string { return "Int 16"; }
-    getCode(): string { return "Int16"; }
+    toString(): string { return 'Int 16'; }
+    getCode(): string { return 'Int16'; }
     getMin(): number { return -32768; }
     getMax(): number { return 32767; }
 }
 
 class UInt16 extends DataType {
-    toString(): string { return "Unsigned Int 16"; }
-    getCode(): string { return "UInt16"; }
+    toString(): string { return 'Unsigned Int 16'; }
+    getCode(): string { return 'UInt16'; }
     getMin(): number { return 0; }
     getMax(): number { return 65535; }
 }
 
 class Int32 extends DataType {
-    toString(): string { return "Int 32"; }
-    getCode(): string { return "Int32"; }
+    toString(): string { return 'Int 32'; }
+    getCode(): string { return 'Int32'; }
     getMin(): number { return -2147483648; }
     getMax(): number { return 2147483647; }
 }
 
 class UInt32 extends DataType {
-    toString(): string { return "Unsigned Int 32"; }
-    getCode(): string { return "UInt32"; }
+    toString(): string { return 'Unsigned Int 32'; }
+    getCode(): string { return 'UInt32'; }
     getMin(): number { return 0; }
     getMax(): number { return 4294967295; }
 }
 
 class Float32 extends DataType {
-    toString(): string { return "Float 32"; }
-    getCode(): string { return "Float32"; }
+    toString(): string { return 'Float 32'; }
+    getCode(): string { return 'Float32'; }
     getMin(): number { return Number.POSITIVE_INFINITY; }
     getMax(): number { return Number.NEGATIVE_INFINITY; }
 }
 
 class Float64 extends DataType {
-    toString(): string { return "Float 64"; }
-    getCode(): string { return "Float64"; }
+    toString(): string { return 'Float 64'; }
+    getCode(): string { return 'Float64'; }
     getMin(): number { return Number.POSITIVE_INFINITY; }
     getMax(): number { return Number.NEGATIVE_INFINITY; }
 }
 
 class DataTypeCollection {
+    // tslint:disable:variable-name
     Byte: DataType =  new Byte();
     Int16: DataType =  new Int16();
     UInt16: DataType =  new UInt16();
@@ -81,16 +82,17 @@ class DataTypeCollection {
     UInt32: DataType =  new UInt32();
     Float32: DataType =  new Float32();
     Float64: DataType = new Float64();
+    // tslint:enable
 
     ALL_DATATYPES: Array<DataType>;
     ALL_NUMERICS: Array<DataType>;
 
     constructor() {
         this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64
+            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
         ];
         this.ALL_NUMERICS = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64
+            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
         ];
     }
 
@@ -111,8 +113,8 @@ class DataTypeCollection {
             case this.Float64.getCode():
                 return this.Float64;
             default:
-                throw "Invalid Data Type";
+                throw 'Invalid Data Type';
         }
     }
 }
-export const DataTypes = new DataTypeCollection();
+export const DataTypes = new DataTypeCollection(); // tslint:disable-line:variable-name

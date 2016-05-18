@@ -2,18 +2,18 @@ import {Component, ChangeDetectionStrategy} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {LayerService} from "../services/layer.service";
 import {Layer} from "../models/layer.model";
-import {Operator} from "../models/operator.model";
-import {ResultTypes} from "../models/result-type.model";
-import {DataType, DataTypes} from "../models/datatype.model";
+import {Operator} from '../operators/operator.model';
+import {ResultTypes} from '../operators/result-type.model';
+import {DataType, DataTypes} from '../operators/datatype.model';
 import {MappingDataSourcesService} from "../services/mapping-data-sources.service";
 import {MappingSource, MappingSourceChannel} from "../models/mapping-source.model";
 import {MappingDataSourceFilter} from "../pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "../pipes/highlight.pipe";
-import {Projections} from "../models/projection.model";
-import {Unit, Interpolation, UnitConfig} from "../models/unit.model";
+import {Projections} from '../operators/projection.model';
+import {Unit, Interpolation, UnitConfig} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology, RasterSymbology} from "../models/symbology.model";
 import {MappingColorizerService} from "../services/mapping-colorizer.service";
-import {RasterSourceType} from "../models/operator-type.model";
+import {RasterSourceType} from '../operators/types/raster-source-type.model';
 
 
 @Component({

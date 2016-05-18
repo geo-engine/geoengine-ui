@@ -1,22 +1,27 @@
-import Immutable from "immutable";
+import Immutable from 'immutable';
 
-import {Projection, Projections} from "./projection.model";
-import {Unit, UnitDict} from "./unit.model";
-import {DataType, DataTypes} from "./datatype.model";
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict, ProjectionType}
-        from "./operator-type.model";
-import {ResultType, ResultTypes} from "./result-type.model";
+import {ResultType, ResultTypes} from './result-type.model';
+import {Projection, Projections} from './projection.model';
+import {Unit, UnitDict} from './unit.model';
+import {DataType, DataTypes} from './datatype.model';
+
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from './operator-type.model';
+import {OperatorTypeFactory} from './types/type-factory.service';
+import {ProjectionType} from './types/projection-type.model';
 
 type OperatorId = number;
 type AttributeName = string;
 
+/**
+ * Interface for Operator constructor.
+ */
 interface OperatorConfig {
     operatorType: OperatorType;
     resultType: ResultType;
     projection: Projection;
-    attributes: Immutable.List<AttributeName> | Array<AttributeName>;
-    dataTypes: Immutable.Map<AttributeName, DataType> | Map<AttributeName, DataType>;
-    units: Immutable.Map<AttributeName, Unit> | Map<AttributeName, Unit>;
+    attributes?: Immutable.List<AttributeName> | Array<AttributeName>;
+    dataTypes?: Immutable.Map<AttributeName, DataType> | Map<AttributeName, DataType>;
+    units?: Immutable.Map<AttributeName, Unit> | Map<AttributeName, Unit>;
     rasterSources?: Immutable.List<Operator> | Array<Operator>;
     pointSources?: Immutable.List<Operator> | Array<Operator>;
     lineSources?: Immutable.List<Operator> | Array<Operator>;
@@ -40,6 +45,9 @@ export interface OperatorDict {
     polygonSources: Array<OperatorDict>;
 }
 
+/**
+ * Serialization for mapping query.
+ */
 interface QueryDict {
     type: string;
     params: OperatorTypeMappingDict;
@@ -56,6 +64,8 @@ interface QueryDict {
  * It has several metadata fields for e.g. parameters and projection.
  */
 export class Operator {
+    private static _nextOperatorId = 1; // used for operator id generation
+
     private _id: OperatorId;
 
     private _resultType: ResultType;
@@ -71,8 +81,6 @@ export class Operator {
     private pointSources: Immutable.List<Operator>;
     private lineSources: Immutable.List<Operator>;
     private polygonSources: Immutable.List<Operator>;
-
-    private static _operatorId = 1;
 
     /**
      * Instantiate an operator.
@@ -90,30 +98,44 @@ export class Operator {
     constructor(config: OperatorConfig) {
         this._id = Operator.nextOperatorId;
 
-        this._operatorType = config.operatorType,
+        this._operatorType = config.operatorType;
         this._resultType = config.resultType;
 
         this._projection = config.projection;
 
-        this._attributes = config.attributes instanceof Immutable.List ?
-            <Immutable.List<AttributeName>> config.attributes :
-            Immutable.List(<Array<AttributeName>> config.attributes);
-        this._dataTypes = config.dataTypes instanceof Immutable.Map ?
-            <Immutable.Map<AttributeName, DataType>> config.dataTypes :
-            Immutable.Map<AttributeName, DataType>(
-                (<Map<AttributeName, DataType>> config.dataTypes).entries()
-            );
-        this._units = config.units instanceof Immutable.Map ?
-            <Immutable.Map<AttributeName, Unit>> config.units :
-            Immutable.Map<AttributeName, Unit>(
-                (<Map<AttributeName, Unit>> config.units).entries()
-            );
+        if (config.attributes) {
+            this._attributes = config.attributes instanceof Immutable.List ?
+                config.attributes as Immutable.List<AttributeName> :
+                Immutable.List(config.attributes as Array<AttributeName>);
+        } else {
+            this._attributes = Immutable.List<AttributeName>();
+        }
+
+        if (config.dataTypes) {
+            this._dataTypes = config.dataTypes instanceof Immutable.Map ?
+                config.dataTypes as Immutable.Map<AttributeName, DataType> :
+                Immutable.Map<AttributeName, DataType>(
+                    (config.dataTypes as Map<AttributeName, DataType>).entries()
+                );
+        } else {
+            this._dataTypes = Immutable.Map<AttributeName, DataType>();
+        }
+
+        if (config.units) {
+            this._units = config.units instanceof Immutable.Map ?
+                config.units as Immutable.Map<AttributeName, Unit> :
+                Immutable.Map<AttributeName, Unit>(
+                    (config.units as Map<AttributeName, Unit>).entries()
+                );
+        } else {
+            this._units = Immutable.Map<AttributeName, Unit>();
+        }
 
         const returnChecked = (source: Immutable.List<Operator> | Array<Operator>,
                                type: ResultType): Immutable.List<Operator> => {
             if (source) {
                 const list = source instanceof Immutable.List ?
-                    <Immutable.List<Operator>> source : Immutable.List(<Array<Operator>> source);
+                    source as Immutable.List<Operator> : Immutable.List(source as Array<Operator>);
 
                 if (list.filter(op => op.resultType !== type).size > 0) {
                     throw Error(`The Input Operator is not of type ${type.toString()}.`);
@@ -131,12 +153,45 @@ export class Operator {
         this.polygonSources = returnChecked(config.polygonSources, ResultTypes.POLYGONS);
     }
 
+    static fromJSON(json: string): Operator {
+      return this.fromDict(JSON.parse(json));
+    }
+
+    static fromDict(operatorDict: OperatorDict): Operator {
+        const operator = new Operator({
+            operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
+            resultType: ResultTypes.fromCode(operatorDict.resultType),
+            projection: Projections.fromCode(operatorDict.projection),
+            attributes: Immutable.List(operatorDict.attributes),
+            dataTypes: Immutable.Map<AttributeName, DataType>(
+                (operatorDict.dataTypes as Array<[string, string]>).map(
+                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
+                )
+            ),
+            units: Immutable.Map<AttributeName, Unit>(
+                (operatorDict.units as Array<[string, UnitDict]>).map(
+                    ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
+                )
+            ),
+            rasterSources: Immutable.List(operatorDict.rasterSources.map(Operator.fromDict)),
+            pointSources: Immutable.List(operatorDict.pointSources.map(Operator.fromDict)),
+            lineSources: Immutable.List(operatorDict.lineSources.map(Operator.fromDict)),
+            polygonSources: Immutable.List(operatorDict.polygonSources.map(Operator.fromDict)),
+        });
+
+        Operator._nextOperatorId = Math.max(Operator._nextOperatorId, operatorDict.id + 1);
+        operator._id = operatorDict.id;
+        // TODO: check for operator id clashes.
+
+        return operator;
+    }
+
     /**
      * Retrieve a new unique id.
      * @return operator id
      */
     private static get nextOperatorId(): OperatorId {
-        return this._operatorId++;
+        return this._nextOperatorId++;
     }
 
     /**
@@ -254,7 +309,7 @@ export class Operator {
             case ResultTypes.POLYGONS:
                 return this.polygonSources;
             default:
-                throw Error("Invalid Source Type");
+                throw Error('Invalid Source Type');
         }
     }
 
@@ -268,8 +323,6 @@ export class Operator {
         if (projection === this.projection) {
             return this;
         } else {
-            const emptyList = Immutable.List<Operator>();
-
             return new Operator({
                 operatorType: new ProjectionType({
                     srcProjection: this.projection,
@@ -293,38 +346,6 @@ export class Operator {
     }
 
     /**
-     * Dictionary reprensentation of the operator as query parameter.
-     */
-    private toQueryDict(): QueryDict {
-        const dict: QueryDict = {
-            type: this._operatorType.getMappingName(),
-            params: this._operatorType.toMappingDict(),
-        };
-
-        if (this.hasSources()) {
-            const sources: any = {};
-
-            const sourcesList: Array<[string, Immutable.List<Operator>]> = [
-                [ResultTypes.RASTER.getCode(), this.rasterSources],
-                [ResultTypes.POINTS.getCode(), this.pointSources],
-                [ResultTypes.LINES.getCode(), this.lineSources],
-                [ResultTypes.POLYGONS.getCode(), this.polygonSources]
-            ];
-            for (const [sourceString, source] of sourcesList) {
-                if (source.size > 0) {
-                    sources[sourceString] = source.map(
-                        (operator: Operator) => operator.toQueryDict()
-                    ).toArray();
-                }
-            }
-
-            dict["sources"] = sources;
-        }
-
-        return dict;
-    }
-
-    /**
      * String representation of the operator as query parameter in JSON format.
      */
     toQueryJSON(): string {
@@ -338,12 +359,12 @@ export class Operator {
         operatorType: this._operatorType.toDict(),
         projection: this._projection.getCode(),
         attributes: this._attributes.toArray(),
-        dataTypes: <Array<[string, string]>> this._dataTypes.map(
+        dataTypes: this._dataTypes.map(
             (datatype, attribute) => [attribute, datatype.getCode()]
-        ).toArray(),
-        units: <Array<[string, UnitDict]>> this._units.map(
+        ).toArray() as Array<[string, string]>,
+        units: this._units.map(
             (unit, attribute) => [attribute, unit.toDict()]
-        ).toArray(),
+        ).toArray() as Array<[string, UnitDict]>,
         rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
         pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
         lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
@@ -357,37 +378,36 @@ export class Operator {
       return JSON.stringify(this.toDict());
     }
 
-    static fromJSON(json: string): Operator {
-      return this.fromDict(JSON.parse(json));
-    }
+    /**
+     * Dictionary reprensentation of the operator as query parameter.
+     */
+    private toQueryDict(): QueryDict {
+        const dict: QueryDict = {
+            type: this._operatorType.getMappingName(),
+            params: this._operatorType.toMappingDict(),
+        };
 
-    static fromDict(operatorDict: OperatorDict): Operator {
-        const operator = new Operator({
-            operatorType: OperatorType.fromDict(operatorDict.operatorType),
-            resultType: ResultTypes.fromCode(operatorDict.resultType),
-            projection: Projections.fromCode(operatorDict.projection),
-            attributes: Immutable.List(operatorDict.attributes),
-            dataTypes: Immutable.Map<AttributeName, DataType>(
-                (<Array<[string, string]>> operatorDict.dataTypes).map(
-                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
-                )
-            ),
-            units: Immutable.Map<AttributeName, Unit>(
-                (<Array<[string, UnitDict]>> operatorDict.units).map(
-                    ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
-                )
-            ),
-            rasterSources: Immutable.List(operatorDict.rasterSources.map(Operator.fromDict)),
-            pointSources: Immutable.List(operatorDict.pointSources.map(Operator.fromDict)),
-            lineSources: Immutable.List(operatorDict.lineSources.map(Operator.fromDict)),
-            polygonSources: Immutable.List(operatorDict.polygonSources.map(Operator.fromDict)),
-        });
+        if (this.hasSources()) {
+            const sources = {};
 
-        Operator._operatorId = Math.max(Operator._operatorId, operatorDict.id + 1);
-        operator._id = operatorDict.id;
-        // TODO: check for operator id clashes.
+            const sourcesList: Array<[string, Immutable.List<Operator>]> = [
+                [ResultTypes.RASTER.getCode(), this.rasterSources],
+                [ResultTypes.POINTS.getCode(), this.pointSources],
+                [ResultTypes.LINES.getCode(), this.lineSources],
+                [ResultTypes.POLYGONS.getCode(), this.polygonSources],
+            ];
+            for (const [sourceString, source] of sourcesList) {
+                if (source.size > 0) {
+                    sources[sourceString] = source.map(
+                        (operator: Operator) => operator.toQueryDict()
+                    ).toArray();
+                }
+            }
 
-        return operator;
+            dict['sources'] = sources;
+        }
+
+        return dict;
     }
 
 }

@@ -19,7 +19,7 @@ import {
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
 import {Layer} from '../models/layer.model';
-import {ResultTypes} from '../models/result-type.model';
+import {ResultTypes} from '../operators/result-type.model';
 
 import {LayerService} from '../services/layer.service';
 import {StorageService} from '../services/storage.service';
@@ -129,6 +129,7 @@ import {PlotService} from '../plots/plot.service';
     .topContainer .infoArea {
         width: 200px;
         min-width: 200px;
+        height: 100%;
     }
     .middleContainer {
         position: absolute;

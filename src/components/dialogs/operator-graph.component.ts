@@ -9,8 +9,8 @@ import {DialogContainerComponent} from "./dialog-basics.component";
 import {LayerService} from "../../services/layer.service";
 
 import {Layer} from "../../models/layer.model";
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
+import {Operator} from '../../operators/operator.model';
+import {ResultTypes} from '../../operators/result-type.model';
 
 import d3 from "d3"; // necessary for dagreD3
 // import dagre from "dagre";

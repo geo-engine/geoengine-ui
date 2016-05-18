@@ -1,26 +1,24 @@
-import {Component, Input, ChangeDetectionStrategy} from "angular2/core";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
 
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
 
 import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
-    from "./operator.component";
+    from './operator.component';
 
-import {Layer} from "../../models/layer.model";
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {PointInPolygonFilterType} from "../../models/operator-type.model";
-import {SimplePointSymbology} from "../../models/symbology.model";
+import {Layer} from '../../models/layer.model';
+import {Operator} from '../operator.model';
+import {ResultTypes} from '../result-type.model';
+import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';
+import {SimplePointSymbology} from '../../models/symbology.model';
 
 /**
  * This component allows creating the point in polygon filter operator.
  */
 @Component({
-    selector: "wave-point-in-polygon-filter",
+    selector: 'wave-point-in-polygon-filter',
     template: `
     <wave-operator-container title="Point in Polygon Filter"
                              (add)="addLayer()" (cancel)="dialog.close()">
@@ -57,7 +55,10 @@ import {SimplePointSymbology} from "../../models/symbology.model";
         </form>
     </wave-operator-container>
     `,
-    directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, OperatorContainerComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        LayerMultiSelectComponent, OperatorContainerComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent {
@@ -69,18 +70,16 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
 
-        const attributeNameControl = formBuilder.control("", Validators.required);
-
         this.configForm = formBuilder.group({
-            name: ["Filtered Values", Validators.required],
+            name: ['Filtered Values', Validators.required],
         });
     }
 
-    private addLayer() {
+    addLayer() {
         const pointOperator = this.pointLayer.operator;
         const polygonOperator = this.polygonLayer.operator;
 
-        const name: string = this.configForm.controls["name"].value;
+        const name: string = this.configForm.controls['name'].value;
 
         const operator = new Operator({
             operatorType: new PointInPolygonFilterType({}),
@@ -96,7 +95,9 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
+            symbology: new SimplePointSymbology({
+                fill_rgba: this.randomColorService.getRandomColor(),
+            }),
         }));
 
         this.dialog.close();

@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
 import Config from "../models/config.model";
-import {ResultTypes} from "../models/result-type.model";
+import {ResultTypes} from '../operators/result-type.model';
 
 import {LayerService} from "../services/layer.service";
 import {ProjectService} from "../services/project.service";

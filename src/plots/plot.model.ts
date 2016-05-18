@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs/Rx';
 
-import {Operator, OperatorDict} from '../models/operator.model';
+import {Operator, OperatorDict} from '../operators/operator.model';
 
 /**
  * Schema for plot data.

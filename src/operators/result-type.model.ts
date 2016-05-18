@@ -18,37 +18,37 @@ export abstract class ResultType {
 
 class Raster extends ResultType {
     getCode(): string {
-        return "raster";
+        return 'raster';
     }
 }
 
 class Points extends ResultType {
     getCode(): string {
-        return "points";
+        return 'points';
     }
 }
 
 class Lines extends ResultType {
     getCode(): string {
-        return "lines";
+        return 'lines';
     }
 }
 
 class Polygons extends ResultType {
     getCode(): string {
-        return "polygons";
+        return 'polygons';
     }
 }
 
 class Plot extends ResultType {
     getCode(): string {
-        return "plot";
+        return 'plot';
     }
 }
 
 class Text extends ResultType {
     getCode(): string {
-        return "text";
+        return 'text';
     }
 }
 
@@ -117,9 +117,9 @@ class ResultTypeCollection {
             case this.TEXT.getCode():
                 return this.TEXT;
             default:
-                throw "Invalid Result Type";
+                throw 'Invalid Result Type';
         }
     }
 }
 
-export const ResultTypes = new ResultTypeCollection();
+export const ResultTypes = new ResultTypeCollection(); // tslint:disable-line:variable-name

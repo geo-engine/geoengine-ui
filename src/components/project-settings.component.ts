@@ -6,7 +6,7 @@ import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog
 import {ProjectService} from "../services/project.service";
 
 import {Project} from "../models/project.model";
-import {Projection, Projections} from "../models/projection.model";
+import {Projection, Projections} from '../operators/projection.model';
 
 import moment from "moment";
 

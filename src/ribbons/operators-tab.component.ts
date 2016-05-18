@@ -1,8 +1,14 @@
 import {
-    Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef,
+    Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, ViewChildren,
+    QueryList, AfterViewInit, ChangeDetectorRef,
 } from 'angular2/core';
 
+import {Observable} from 'rxjs/Rx';
+
 import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
+
+import {OperatorButtonComponent, OperatorSelectionGroupComponent}
+  from './operator-selection-group.component';
 
 import {LayerService} from '../services/layer.service';
 import {PlotService} from '../plots/plot.service';
@@ -11,21 +17,33 @@ import {MappingQueryService} from '../services/mapping-query.service';
 import {MappingColorizerService} from '../services/mapping-colorizer.service';
 import {RandomColorService} from '../services/random-color.service';
 
-import {OperatorBase, OperatorDialogConfig} from '../components/operators/operator.component';
-import {ExpressionOperatorComponent} from '../components/operators/expression-operator.component';
+import {RasterValueExtractionType} from '../operators/types/raster-value-extraction-type.model';
+import {NumericAttributeFilterType} from '../operators/types/numeric-attribute-filter-type.model';
+import {PointInPolygonFilterType} from '../operators/types/point-in-polygon-filter-type.model';
+import {ExpressionType} from '../operators/types/expression-type.model';
+import {HistogramType} from '../operators/types/histogram-type.model';
+import {RScriptType} from '../operators/types/r-script-type.model';
+import {
+    MsgRadianceType, MsgReflectanceType,
+    MsgSolarangleType, MsgTemperatureType,
+    MsgPansharpenType, MsgCo2CorrectionType,
+} from '../operators/types/msg-types.model';
+
+import {OperatorBase, OperatorDialogConfig} from '../operators/dialogs/operator.component';
 import {RasterValueExtractionOperatorComponent}
-  from '../components/operators/raster-value-extraction.component';
+  from '../operators/dialogs/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
-  from '../components/operators/numeric-attribute-filter.component';
+  from '../operators/dialogs/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
-  from '../components/operators/point-in-polygon-filter.component';
-import {HistogramOperatorComponent} from '../components/operators/histogram.component';
-import {ROperatorComponent} from '../components/operators/r-operator.component';
+  from '../operators/dialogs/point-in-polygon-filter.component';
+import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
+import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
+import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 import {
     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
     MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
-} from '../components/operators/msg-operators.component';
+} from '../operators/dialogs/msg-operators.component';
 
 /**
  * The operator tab of the ribbons component.
@@ -33,134 +51,80 @@ import {
 @Component({
     selector: 'wave-operators-tab',
     template: `
-    <md-content layout="row">
-        <fieldset>
-            <legend>Vector</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addRasterValueExtractionOperator()">
-                        <i md-icon>settings</i>
-                        <div>Raster Value Extraction</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addNumericAttributesFilterOperator()">
-                        <i md-icon>settings</i>
-                        <div>Numeric Attributes Filter</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addPointInPolygonFilterOperator()">
-                        <i md-icon>settings</i>
-                        <div>Point in Polygon Filter</div>
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>Raster</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addExpressionOperator()">
-                        <i md-icon>settings</i>
-                        <div>Expression</div>
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>Plots</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addHistogramOperator()">
-                        <i md-icon>settings</i>
-                        <div>Histogram</div>
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>Other</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addROperator()">
-                        <i md-icon>settings</i>
-                        <div>R Scripts</div>
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>MSG</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgRadianceOperator()">
-                        <i md-icon>satellite</i>
-                        <div>Radiance</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgReflectanceOperator()">
-                        <i md-icon>satellite</i>
-                        <div>Reflectance</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgSolarangleOperator()">
-                        <i md-icon>satellite</i>
-                        <div>Solarangle</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgTemperatureOperator()">
-                        <i md-icon>satellite</i>
-                        <div>Temperature</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgPansharpenOperator()">
-                        <i md-icon>satellite</i>
-                        <div>Pansharpen</div>
-                    </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
-                            (click)="addMsgCo2CorrectionOperator()">
-                        <i md-icon>satellite</i>
-                        <div>CO2 correction</div>
-                    </button>
-                </div>
-            </div>
-        </fieldset>
-    </md-content>
+    <div layout="row">
+        <wave-operator-selection-group groupName="Vector" [smallButtons]="smallButtons">
+            <wave-operator-button [small]="smallButtons"
+                [text]="RasterValueExtractionType.NAME"
+                [iconUrl]="RasterValueExtractionType.ICON_URL"
+                (click)="addRasterValueExtractionOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="NumericAttributeFilterType.NAME"
+                [iconUrl]="NumericAttributeFilterType.ICON_URL"
+                (click)="addNumericAttributesFilterOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="PointInPolygonFilterType.NAME"
+                [iconUrl]="PointInPolygonFilterType.ICON_URL"
+                (click)="addPointInPolygonFilterOperator()">
+            </wave-operator-button>
+        </wave-operator-selection-group>
+        <wave-operator-selection-group groupName="Raster" [smallButtons]="smallButtons">
+            <wave-operator-button [small]="smallButtons"
+                [text]="ExpressionType.NAME"
+                [iconUrl]="ExpressionType.ICON_URL"
+                (click)="addExpressionOperator()">
+            </wave-operator-button>
+        </wave-operator-selection-group>
+        <wave-operator-selection-group groupName="Plots" [smallButtons]="smallButtons">
+            <wave-operator-button [small]="smallButtons"
+                [text]="HistogramType.NAME"
+                [iconUrl]="HistogramType.ICON_URL"
+                (click)="addHistogramOperator()">
+            </wave-operator-button>
+        </wave-operator-selection-group>
+        <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons">
+            <wave-operator-button [small]="smallButtons"
+                [text]="RScriptType.NAME"
+                [iconUrl]="RScriptType.ICON_URL"
+                (click)="addROperator()">
+            </wave-operator-button>
+        </wave-operator-selection-group>
+        <wave-operator-selection-group groupName="MSG" [smallButtons]="smallButtons">
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgRadianceType.NAME"
+                [iconUrl]="MsgRadianceType.ICON_URL"
+                (click)="addMsgRadianceOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgReflectanceType.NAME"
+                [iconUrl]="MsgReflectanceType.ICON_URL"
+                (click)="addMsgReflectanceOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgSolarangleType.NAME"
+                [iconUrl]="MsgSolarangleType.ICON_URL"
+                (click)="addMsgSolarangleOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgTemperatureType.NAME"
+                [iconUrl]="MsgTemperatureType.ICON_URL"
+                (click)="addMsgTemperatureOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgPansharpenType.NAME"
+                [iconUrl]="MsgPansharpenType.ICON_URL"
+                (click)="addMsgPansharpenOperator()">
+            </wave-operator-button>
+            <wave-operator-button [small]="smallButtons"
+                [text]="MsgCo2CorrectionType.NAME"
+                [iconUrl]="MsgCo2CorrectionType.ICON_URL"
+                (click)="addMsgCo2CorrectionOperator()">
+            </wave-operator-button>
+        </wave-operator-selection-group>
+    </div>
     `,
     styles: [`
-    .selected {
-      background-color: #f5f5f5 !important;
-    }
     fieldset {
         border-style: solid;
         border-width: 1px;
@@ -179,16 +143,38 @@ import {
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, OperatorSelectionGroupComponent, OperatorButtonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OperatorsTabComponent {
+export class OperatorsTabComponent implements AfterViewInit {
+    @ViewChildren(OperatorSelectionGroupComponent)
+    groups: QueryList<OperatorSelectionGroupComponent>;
+
     @Input() maxWidth: number;
 
     @Output() showOperator = new EventEmitter<OperatorBase>();
 
+    smallButtons = false;
+
+    // make these types accessible in the view
+    // tslint:disable:variable-name
+    RasterValueExtractionType = RasterValueExtractionType;
+    NumericAttributeFilterType = NumericAttributeFilterType;
+    PointInPolygonFilterType = PointInPolygonFilterType;
+    ExpressionType = ExpressionType;
+    HistogramType = HistogramType;
+    RScriptType = RScriptType;
+    MsgRadianceType = MsgRadianceType;
+    MsgReflectanceType = MsgReflectanceType;
+    MsgSolarangleType = MsgSolarangleType;
+    MsgTemperatureType = MsgTemperatureType;
+    MsgPansharpenType = MsgPansharpenType;
+    MsgCo2CorrectionType = MsgCo2CorrectionType;
+    // tslint:enable
+
     constructor(
         private elementRef: ElementRef,
+        private changeDetectorRef: ChangeDetectorRef,
         private mdDialog: MdDialog,
         private layerService: LayerService,
         private plotService: PlotService,
@@ -197,6 +183,28 @@ export class OperatorsTabComponent {
         private mappingColorizerService: MappingColorizerService,
         private randomColorService: RandomColorService
     ) {}
+
+    ngAfterViewInit() {
+        this.groups.forEach(group => {
+            group.buttonsVisible = group.buttons.length;
+        });
+
+        const checkMaxSize = (windowWidth: number) => {
+            const maxGroupsSize = this.groups.reduce((acc, group) => acc + group.maxWidth(), 0);
+            this.smallButtons = maxGroupsSize > windowWidth;
+
+            this.changeDetectorRef.markForCheck();
+        };
+
+        Observable.fromEvent(window, 'resize')
+                  .map(_ => window.innerWidth)
+                  .subscribe(windowWidth => {
+            console.log('WINDOW RESIZE');
+            checkMaxSize(windowWidth);
+        });
+
+        setTimeout(() => checkMaxSize(window.innerWidth));
+    }
 
     addExpressionOperator() {
         this.showOperatorDialog(ExpressionOperatorComponent);

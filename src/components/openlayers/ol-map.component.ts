@@ -3,7 +3,7 @@ import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, On
 import ol from "openlayers";
 import {OlMapLayerComponent, OlPointLayerComponent, OlRasterLayerComponent} from "./ol-layer.component";
 
-import {Projection, Projections} from "../../models/projection.model";
+import {Projection, Projections} from '../../operators/projection.model';
 import {Symbology} from "../../models/symbology.model";
 
 /**
