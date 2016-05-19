@@ -10,7 +10,7 @@ import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "a
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
 
-import {Layer} from "../../models/layer.model";
+import {Layer, RasterLayer} from "../../models/layer.model";
 import {Operator} from "../../models/operator.model";
 import {ResultTypes} from "../../models/result-type.model";
 import {DataType, DataTypes} from "../../models/datatype.model";
@@ -90,7 +90,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -98,7 +98,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),
@@ -199,7 +199,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -207,7 +207,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),
@@ -302,7 +302,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -310,7 +310,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),
@@ -388,7 +388,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -396,7 +396,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),
@@ -471,7 +471,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -479,7 +479,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),
@@ -554,7 +554,7 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
         });
 
         this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new MappingColorizerRasterSymbology(x),
@@ -562,7 +562,7 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
             this.layerService.addLayer(layer);
         }).catch(ex => {
             console.log("_mappingColorizerService.getColorizer", ex);
-            let layer = new Layer({
+            let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
                 symbology: new RasterSymbology({}),

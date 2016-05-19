@@ -73,19 +73,25 @@ import {PlotService} from '../plots/plot.service';
                                     [operator]="layer.operator"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjectionStream() | async"
-                                    [time]="projectService.getTimeStream() | async">
+                                    [time]="projectService.getTimeStream() | async"
+                                    [data]="layer.getDataStream() | async"
+                                    >
                     </ol-point-layer>
                     <ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
                                    [operator]="layer.operator"
                                    [symbology]="layer.symbology"
                                    [projection]="projectService.getMapProjectionStream() | async"
-                                   [time]="projectService.getTimeStream() | async">
+                                   [time]="projectService.getTimeStream() | async"
+                                   [data]="layer.getDataStream() | async"
+                                   >
                     </ol-line-layer>
                     <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
                                       [operator]="layer.operator"
                                       [symbology]="layer.symbology"
                                       [projection]="projectService.getMapProjectionStream() | async"
-                                      [time]="projectService.getTimeStream() | async">
+                                      [time]="projectService.getTimeStream() | async"
+                                      [data]="layer.getDataStream() | async"
+                                      >
                     </ol-polygon-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                      [operator]="layer.operator"

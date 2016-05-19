@@ -1,4 +1,4 @@
-export interface GeoJsonFeatureCollection {
+export interface GeoJsonFeatureCollection extends JSON {
     type: string;
     features: [ GeoJsonFeature ];
 }
@@ -7,10 +7,10 @@ export interface GeoJsonFeature {
     id?: string;
     type: string;
     geometry: GeoJsonGeometry;
-    properties?: {};
+    properties?: { [key: string]: string | number } ;
 }
 
 export interface GeoJsonGeometry {
     type: string;
-    coordinates: any;
+    coordinates: [number, number] | Array<[number, number]>;
 }

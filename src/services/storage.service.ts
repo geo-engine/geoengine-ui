@@ -52,7 +52,7 @@ export class StorageService {
 
         if (layers === undefined) {
             // load default
-            layers = this.defaults.getLayers();
+            layers = this.defaults.getLayers(this.mappingQueryService, this.projectService);
         }
 
         this.layerService.setLayers(layers);
@@ -388,7 +388,7 @@ class BrowserStorageProvider implements StorageProvider {
  * Default values when the storage is empty.
  */
 class StorageDefaults {
-    getLayers(): Array<Layer<any>> {
+    getLayers(mappingQueryService: MappingQueryService, projectService: ProjectService): Array<Layer<any>> {
         return [];
     }
     getPlots(): Array<Plot> {
@@ -412,52 +412,74 @@ class StorageDefaults {
  * Default values for debugging the application.
  */
 class DeveloperDefaults extends StorageDefaults {
-    getLayers(): Array<Layer<any>> {
+    getLayers(mappingQueryService: MappingQueryService, projectService: ProjectService): Array<Layer<any>> {
+        const iucnPumaOperator = new Operator({
+            operatorType: new GFBioSourceType({
+                datasource: 'IUCN',
+                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
+                }),
+            resultType: ResultTypes.POLYGONS,
+            projection: Projections.WGS_84,
+            attributes: [],
+            dataTypes: new Map<string, DataType>(),
+            units: new Map<string, Unit>(),
+        });
+
+        const wktOperator = new Operator({
+            operatorType: new WKTSourceType({
+                type: ResultTypes.LINES,
+                wkt: `GEOMETRYCOLLECTION(LINESTRING(-65.3906249908975 24.046463996515854,47.812499993344474 57.04072983307594,55.8984374922189 -46.43785688998231,-65.3906249908975 24.046463996515854))`,
+            }),
+            resultType: ResultTypes.LINES,
+            projection: Projections.WGS_84,
+            attributes: [],
+            dataTypes: new Map<string, DataType>(),
+            units: new Map<string, Unit>(),
+        });
+
+        const gbifPumaOperator = new Operator({
+            operatorType: new GFBioSourceType({
+                datasource: 'GBIF',
+                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
+            }),
+            resultType: ResultTypes.POINTS,
+            projection: Projections.WGS_84,
+            attributes: [],
+            dataTypes: new Map<string, DataType>(),
+            units: new Map<string, Unit>(),
+        });
+
         return [
             new VectorLayer({
                 name: 'IUCN Puma Concolor',
                 symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
-                operator: new Operator({
-                    operatorType: new GFBioSourceType({
-                        datasource: 'IUCN',
-                        query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
-                    }),
-                    resultType: ResultTypes.POLYGONS,
-                    projection: Projections.WGS_84,
-                    attributes: [],
-                    dataTypes: new Map<string, DataType>(),
-                    units: new Map<string, Unit>()
-                })
+                operator: iucnPumaOperator,
+                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                    iucnPumaOperator,
+                    projectService.getTimeStream(),
+                    projectService.getMapProjectionStream()
+                ),
             }),
             new VectorLayer({
                 name: 'WKT',
                 symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
-                operator: new Operator({
-                    operatorType: new WKTSourceType({
-                        type: ResultTypes.LINES,
-                        wkt: `GEOMETRYCOLLECTION(LINESTRING(-65.3906249908975 24.046463996515854,47.812499993344474 57.04072983307594,55.8984374922189 -46.43785688998231,-65.3906249908975 24.046463996515854))`,
-                    }),
-                    resultType: ResultTypes.LINES,
-                    projection: Projections.WGS_84,
-                    attributes: [],
-                    dataTypes: new Map<string, DataType>(),
-                    units: new Map<string, Unit>()
-                })
+                operator:  wktOperator,
+                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                    wktOperator,
+                    projectService.getTimeStream(),
+                    projectService.getMapProjectionStream()
+                ),
+
             }),
             new VectorLayer({
                 name: 'Puma Concolor',
                 symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
-                operator: new Operator({
-                    operatorType: new GFBioSourceType({
-                        datasource: 'GBIF',
-                        query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
-                    }),
-                    resultType: ResultTypes.POINTS,
-                    projection: Projections.WGS_84,
-                    attributes: [],
-                    dataTypes: new Map<string, DataType>(),
-                    units: new Map<string, Unit>()
-                })
+                operator: gbifPumaOperator,
+                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                    gbifPumaOperator,
+                    projectService.getTimeStream(),
+                    projectService.getMapProjectionStream()
+                ),
             }),
             new RasterLayer({
                 name: 'SRTM',
@@ -476,8 +498,8 @@ class DeveloperDefaults extends StorageDefaults {
                         measurement: 'elevation',
                         unit: 'm',
                         interpolation: Interpolation.Continuous
-                    }))
-                })
+                    })),
+                }),
             }),
         ];
     }

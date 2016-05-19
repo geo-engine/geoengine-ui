@@ -15,6 +15,7 @@ import {MappingQueryService, WFSOutputFormats} from '../services/mapping-query.s
 
 interface Column {
     name: string;
+    type: 'string' | 'number' | '';
 }
 
 @Component({
@@ -25,13 +26,15 @@ interface Column {
         <thead>
           <tr [style.height.px]='scrollTop'></tr>
           <tr>
-            <th *ngFor='#column of columns'>{{column}} </th>
+            <th *ngFor='#column of columns'>{{column.name}} </th>
+            <th *ngFor='#column of propertyColumns'>{{column.name}} </th>
           </tr>
         </thead>
         <tbody>
           <template ngFor #row [ngForOf]='visibleRows' #idx='index'>
             <tr>
-              <td *ngFor='#column of columns'>{{row[column]}}</td>
+                <td *ngFor='#column of columns'>{{row[column.name]}}</td>
+                <td *ngFor='#column of propertyColumns'>{{row?.properties[column.name]}}</td>
             </tr>
           </template>
           <tr [style.height.px]='scrollBottom'></tr>
@@ -78,8 +81,9 @@ export class DataTableComponent implements OnInit, OnChanges {
 
     private visibleRows: Array<{}> = [];
     private rows: Array<{}> = [];
-    private columns: Array<string> = [];
-    private data$: Observable<Array<{}>>;
+    private columns: Array<Column> = [];
+    private propertyColumns:  Array<Column> = [];
+    private data$: Observable<Array<GeoJsonFeature>>;
 
     constructor(private http: Http,
                 private changeDetectorRef: ChangeDetectorRef,
@@ -96,19 +100,18 @@ export class DataTableComponent implements OnInit, OnChanges {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS:
-                    return layer.data$.map(data => {
+                    return layer.getDataStream().map(data => {
                         if (data) { // TODO: needed?
                             let geojson: GeoJsonFeatureCollection = data;
-                            console.log(geojson.features);
-                            return geojson.features.map(entry => ( entry.properties ) ? entry.properties : {} ); //TODO: add some more things like ids ...
+                            return geojson.features;
                         }
                       });
                 case ResultTypes.RASTER:
-                    return Observable.of([{
+                    return Observable.of([{properties: {
                         Attribute: 'Value',
                         Unit: layer.operator.getUnit('value').toString() || 'undefined',
                         Datatype: layer.operator.getDataType('value').toString() || 'undefined',
-                     }]);
+                    }}]);
                 default:
                     return Observable.of([]);
             };
@@ -117,6 +120,10 @@ export class DataTableComponent implements OnInit, OnChanges {
 
     ngOnInit() {
       this.data$.subscribe( (features: Array<GeoJsonFeature>) => {
+          this.columns = [];
+          this.propertyColumns = [];
+          this.rows = [];
+
           if (features.length > 0) {
             // let columns: Set<string> = new Set();
             /*
@@ -124,11 +131,15 @@ export class DataTableComponent implements OnInit, OnChanges {
                  console.log(Object.keys(feature));
             }
             */
-            this.columns = Object.keys(features[0]);
+            if ( features[0].id ) {
+                this.columns = [{name: 'id', type: 'string'}];
+            };
+            if (features[0].properties) {
+                this.propertyColumns = Object.keys(features[0].properties).map(x => {
+                     return {name: x, type: ''} as Column;
+                 });
+             }
             this.rows = features;
-        } else {
-            this.columns = [];
-            this.rows = [];
         }
 
         this.updateVirtualHeight();

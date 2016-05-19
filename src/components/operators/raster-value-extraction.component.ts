@@ -164,7 +164,8 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()})
+            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator, this.projectService.getTimeStream(), this.projectService.getMapProjectionStream()),
         }));
 
         this.dialog.close();

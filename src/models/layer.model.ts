@@ -41,7 +41,7 @@ export class Layer<D> {
         this.name = config.name;
         this._operator = config.operator;
         this.symbology = config.symbology;
-        this._data$ = config.data$;
+        this._data$ = (config.data$) ? config.data$ : Observable.of({} as D);
     }
 
     static fromDict<T>(dict: LayerDict,
@@ -55,7 +55,6 @@ export class Layer<D> {
             data$: dataCallback(operator),
         });
         layer.expanded = dict.expanded;
-        console.log(layer);
         return layer;
     }
 
@@ -74,6 +73,10 @@ export class Layer<D> {
         return this._data$;
     }
 
+    public getDataStream(): Observable<D> {
+        return this.data$;
+    }
+
     toDict(): LayerDict {
         return {
             name: this.name,
@@ -85,9 +88,13 @@ export class Layer<D> {
 }
 
 export class VectorLayer extends Layer<GeoJsonFeatureCollection> {
-
+    constructor(config: LayerConfig<GeoJsonFeatureCollection>) {
+        super(config);
+    }
 }
 
 export class RasterLayer extends Layer<any> {
-
+    constructor(config: LayerConfig<any>) {
+        super(config);
+    }
 }

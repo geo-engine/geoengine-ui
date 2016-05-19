@@ -4,7 +4,8 @@ import ol from 'openlayers';
 import Config from '../../models/config.model';
 import {Operator} from '../../models/operator.model';
 import {Projection} from '../../models/projection.model';
-import {Symbology, AbstractVectorSymbology, RasterSymbology} from '../../models/symbology.model';
+import {Symbology, AbstractVectorSymbology, RasterSymbology, SimplePointSymbology} from '../../models/symbology.model';
+import {GeoJsonFeatureCollection} from '../../models/geojson.model';
 
 import {MappingQueryService, WFSOutputFormats} from '../../services/mapping-query.service';
 
@@ -32,6 +33,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     @Input() projection: Projection;
     @Input() symbology: S;
     @Input() time: moment.Moment;
+    @Input() data: GeoJsonFeatureCollection; // FIXME: HACK: this should be inside OlVectorLayerComponent!!!
 
     protected _mapLayer: OlLayer;
     protected source: OlSource;
@@ -58,12 +60,17 @@ abstract class OlVectorLayerComponent
     extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector, AbstractVectorSymbology>
     implements OnChanges {
 
+    // @Input() data: GeoJsonFeatureCollection;
+    private format = new ol.format.GeoJSON();
+
     constructor(protected mappingQueryService: MappingQueryService) {
         super(mappingQueryService);
+        this.source = new ol.source.Vector();
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (changes['operator'] || changes['projection'] || changes['time']) {
+        /*
+        if (changes['operator'] || changes['projection'] || changes['time'] || changes['data']) {
             this.source = new ol.source.Vector({
                 format: new ol.format.GeoJSON(),
                 url: this.mappingQueryService.getWFSQueryUrl(
@@ -75,20 +82,29 @@ abstract class OlVectorLayerComponent
                 wrapX: false,
             });
         }
+        */
 
-        if (this.isFirstChange(changes)) {
-            this._mapLayer = new ol.layer.Vector({
-                source: this.source,
-                style: this.symbology.olStyle,
-            });
-        } else {
-            if (changes['operator'] || changes['projection'] || changes['time']) {
-                this.mapLayer.setSource(this.source);
+            if (this.isFirstChange(changes)) {
+                this._mapLayer = new ol.layer.Vector({
+                    source: this.source,
+                    style: this.symbology.olStyle,
+                });
             }
+
+            if (changes['operator'] || changes['projection'] || changes['time'] || changes['data']) {
+                this.mapLayer.getSource().clear();
+            }
+
+            if( changes['data'] ) {
+                if (this.data) {
+                    console.log('data', this.data);
+                    this.mapLayer.getSource().addFeatures(this.format.readFeatures(this.data));
+                }
+            }
+
             if (changes['symbology']) {
                 this.mapLayer.setStyle(this.symbology.olStyle);
             }
-        }
     }
 
     get extent() {

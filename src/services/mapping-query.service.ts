@@ -202,7 +202,17 @@ export class MappingQueryService {
             return Observable.fromPromise(
                 this.getWFSDataAsJson(operator, time, projection)
             );
-        }).switch().map(result => { return result as GeoJsonFeatureCollection; });
+        }).switch().map(result => {
+            let geojson = result as GeoJsonFeatureCollection;
+            let features = geojson.features;
+            for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
+                let feature = features[localRowId];
+                if (feature.id === undefined) {
+                    feature.id = 'lrid_' + localRowId;
+                }
+            }
+            return geojson;
+        }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
     }
 
     /**
