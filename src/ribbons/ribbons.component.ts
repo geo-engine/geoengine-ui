@@ -41,6 +41,10 @@ import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
     styles: [`
     md-tabs {
         height: 180px;
+        overflow: visible;
+    }
+    md-tabs >>> md-tabs-content-wrapper, md-tabs >>> md-tab-content {
+        overflow: visible;
     }
     `],
     directives: [
