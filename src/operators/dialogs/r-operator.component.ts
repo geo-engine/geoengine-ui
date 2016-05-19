@@ -140,7 +140,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
                         fill_rgba: this.randomColorService.getRandomColor(),
                     });
                     break;
-                case ResultTypes.POINTS:
+                case ResultTypes.RASTER:
                     symbology = new RasterSymbology({});
                     break;
                 default:
