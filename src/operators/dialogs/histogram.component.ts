@@ -1,26 +1,26 @@
-import {Component, Input, ChangeDetectionStrategy} from "angular2/core";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
 
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from 'angular2/common';
 
 import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
-    from "./operator.component";
+    from './operator.component';
 
-import {Layer} from "../../models/layer.model";
-import {Plot} from "../../plots/plot.model";
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {HistogramType} from "../../models/operator-type.model";
+import {Layer} from '../../models/layer.model';
+import {Plot} from '../../plots/plot.model';
+import {Operator} from '../operator.model';
+import {ResultTypes} from '../result-type.model';
+import {DataType, DataTypes} from '../datatype.model';
+import {Unit} from '../unit.model';
+import {HistogramType} from '../types/histogram-type.model';
 
 /**
  * This component allows creating the histogram operator.
  */
 @Component({
-    selector: "wave-operator-histogram",
+    selector: 'wave-operator-histogram',
     template: `
     <wave-operator-container title="Histogram Plot" (add)="addPlot()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
@@ -93,7 +93,10 @@ import {HistogramType} from "../../models/operator-type.model";
         </form>
     </wave-operator-container>
     `,
-    directives: [MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HistogramOperatorComponent extends OperatorBaseComponent {
@@ -104,23 +107,22 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
 
-    private rangeTypes = ["Custom", "Unit", "Data"];
+    private rangeTypes = ['Custom', 'Unit', 'Data'];
     private attributes: Array<string>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
 
         this.configForm = formBuilder.group({
-            "attributeName": [undefined, Validators.required],
-            "rangeType": [this.rangeTypes[2], Validators.required],
-            "rangeMin": [0, Validators.required],
-            "rangeMax": [0, Validators.required],
-            "specifyBuckets": [false, Validators.required],
-            "buckets": [20, Validators.required],
-            "name": ["Histogram", Validators.required],
+            'attributeName': [undefined, Validators.required],
+            'rangeType': [this.rangeTypes[2], Validators.required],
+            'rangeMin': [0, Validators.required],
+            'rangeMax': [0, Validators.required],
+            'buckets': [20, Validators.required],
+            'name': ['Histogram', Validators.required],
         });
 
-        this.configForm.controls["rangeType"].valueChanges.subscribe((rangeType: string) => {
+        this.configForm.controls['rangeType'].valueChanges.subscribe((rangeType: string) => {
             this.customRange = rangeType === this.rangeTypes[0];
         });
     }
@@ -129,36 +131,36 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.dataTypes
-                                        .filter((datatype, name) => {
+                                        .filter((datatype: DataType, name: string) => {
                                             return DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0;
                                         })
-                                        .map((datatype, name) => name)
+                                        .map((datatype: DataType, name: string) => name)
                                         .toArray();
 
         if (this.attributes.length > 0) {
-            (<Control> this.configForm.controls["attributeName"]).updateValue(this.attributes[0]);
+            (this.configForm.controls['attributeName'] as Control).updateValue(this.attributes[0]);
         }
     }
 
     addPlot() {
         const inputOperator = this.selectedLayer.operator;
 
-        const attributeName = this.configForm.controls["attributeName"].value;
+        const attributeName = this.configForm.controls['attributeName'].value;
         let range: { min: number, max: number } | string;
-        if (this.configForm.controls["rangeType"].value === this.rangeTypes[0]) {
+        if (this.configForm.controls['rangeType'].value === this.rangeTypes[0]) {
             range = {
-                min: parseFloat(this.configForm.controls["rangeMin"].value),
-                max: parseFloat(this.configForm.controls["rangeMax"].value),
+                min: parseFloat(this.configForm.controls['rangeMin'].value),
+                max: parseFloat(this.configForm.controls['rangeMax'].value),
             };
         } else {
-            range = this.configForm.controls["rangeType"].value.toLowerCase();
+            range = this.configForm.controls['rangeType'].value.toLowerCase();
         }
         let buckets: number = undefined;
-        if (this.configForm.controls["specifyBuckets"].value) {
-            buckets = parseInt(this.configForm.controls["buckets"].value);
+        if (!this.autoBuckets) {
+            buckets = parseInt(this.configForm.controls['buckets'].value, 10);
         }
 
-        const outputName: string = this.configForm.controls["name"].value;
+        const outputName: string = this.configForm.controls['name'].value;
 
         const operator = new Operator({
             operatorType: new HistogramType({

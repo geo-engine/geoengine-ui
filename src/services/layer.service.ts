@@ -3,8 +3,6 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {Layer} from "../models/layer.model";
 
-import {Operator} from "../models/operator.model";
-
 import {Symbology} from "../models/symbology.model";
 
 /**

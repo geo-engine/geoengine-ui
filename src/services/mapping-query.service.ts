@@ -4,9 +4,9 @@ import {Observable} from 'rxjs/Rx';
 
 import moment from 'moment';
 
-import {Operator} from '../models/operator.model';
-import {Projection} from '../models/projection.model';
-import {ResultTypes} from '../models/result-type.model';
+import {Operator} from '../operators/operator.model';
+import {Projection} from '../operators/projection.model';
+import {ResultTypes} from '../operators/result-type.model';
 
 import Config from '../models/config.model';
 import {PlotData} from '../plots/plot.model';

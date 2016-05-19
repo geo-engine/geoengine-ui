@@ -2,8 +2,8 @@ import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy} from
 import ol from 'openlayers';
 
 import Config from '../../models/config.model';
-import {Operator} from '../../models/operator.model';
-import {Projection} from '../../models/projection.model';
+import {Operator} from '../../operators/operator.model';
+import {Projection} from '../../operators/projection.model';
 import {Symbology, AbstractVectorSymbology, RasterSymbology, SimplePointSymbology} from '../../models/symbology.model';
 import {GeoJsonFeatureCollection} from '../../models/geojson.model';
 

@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs/Rx';
-import {Operator, OperatorDict} from './operator.model';
+
+import {Operator, OperatorDict} from '../operators/operator.model';
 import Config from './config.model';
 import {Symbology, SymbologyDict} from './symbology.model';
 import {GeoJsonFeatureCollection} from './geojson.model';

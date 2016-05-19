@@ -1,33 +1,29 @@
-import {Component, Input, Output, EventEmitter,
-        OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy} from "angular2/core";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
 
-import {MdPatternValidator, MdMinValueValidator, MdNumberRequiredValidator, MdMaxValueValidator,
-        MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder,
-        ControlGroup, Control, ControlArray} from "angular2/common";
+import {
+    FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray,
+} from 'angular2/common';
 
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
-        OperatorBaseComponent, toLetters, OperatorButtonsComponent} from "./operator.component";
+import {
+    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
+        OperatorBaseComponent, toLetters,
+} from './operator.component';
 
-import {LayerService} from "../../services/layer.service";
+import {Layer} from '../../models/layer.model';
+import {SimplePointSymbology} from '../../models/symbology.model';
 
-import {Layer} from "../../models/layer.model";
-import {SimplePointSymbology} from "../../models/symbology.model";
-
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {Projection} from "../../models/projection.model";
-import {RasterValueExtractionType} from "../../models/operator-type.model";
+import {Operator} from '../operator.model';
+import {ResultTypes} from '../result-type.model';
+import {RasterValueExtractionType} from '../types/raster-value-extraction-type.model';
 
 /**
  * This component allows creating the expression operator.
  */
 @Component({
-    selector: "wave-raster-value-extraction",
+    selector: 'wave-raster-value-extraction',
     template: `
     <wave-operator-container title="Extract a Raster Value and Add it to the Vector Layer"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -74,9 +70,11 @@ import {RasterValueExtractionType} from "../../models/operator-type.model";
         </form>
     </wave-operator-container>
     `,
-    directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 OperatorContainerComponent],
-    changeDetection: ChangeDetectionStrategy.Default
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
+    ],
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent {
 
@@ -89,24 +87,20 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     private resolutionX = 1024;
     private resolutionY = 1024;
 
-    private toLetters = toLetters;
+    private toLetters = toLetters; // tslint:disable-line:no-unused-variable
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
 
         this.valueNamesControls = formBuilder.array([]);
         this.configForm = formBuilder.group({
-            "valueNames": this.valueNamesControls,
-            "name": ["Points With Raster Values", Validators.required],
+            'valueNames': this.valueNamesControls,
+            'name': ['Points With Raster Values', Validators.required],
         });
     }
 
     ngOnInit() {
         super.ngOnInit();
-    }
-
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        super.ngOnChanges(changes);
     }
 
     private onSelectRasterLayers(layers: Array<Layer<any>>) {
@@ -126,7 +120,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.selectedRasterLayers = layers;
     }
 
-    private addLayer() {
+    addLayer() {
         const pointOperator = this.selectedPointLayer.operator;
         const rasterOperators = this.selectedRasterLayers.map(layer => layer.operator);
 
@@ -139,12 +133,12 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         const attributes = pointOperator.attributes.asMutable();
 
         for (let i = 0; i < rasterOperators.length; i++) {
-            units.set(valueNames[i], rasterOperators[i].getUnit("value"));
-            dataTypes.set(valueNames[i], rasterOperators[i].getDataType("value"));
+            units.set(valueNames[i], rasterOperators[i].getUnit('value'));
+            dataTypes.set(valueNames[i], rasterOperators[i].getDataType('value'));
             attributes.push(valueNames[i]);
         }
 
-        const name: string = this.configForm.controls["name"].value;
+        const name: string = this.configForm.controls['name'].value;
 
         const operator = new Operator({
             operatorType: new RasterValueExtractionType({

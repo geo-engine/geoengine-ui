@@ -65,8 +65,8 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
     constructor(config: IVectorSymbology) {
         super();
         this.fill_rgba = config.fill_rgba;
-        if (config.stroke_rgba) this.stroke_rgba = config.stroke_rgba;
-        if (config.stroke_width) this.stroke_width = config.stroke_width;
+        if (config.stroke_rgba) { this.stroke_rgba = config.stroke_rgba };
+        if (config.stroke_width) { this.stroke_width = config.stroke_width };
     }
 
 }
@@ -149,9 +149,9 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
 
     constructor(config: IRasterSymbology) {
         super();
-        if (config.opacity) this.opacity = config.opacity;
-        if (config.hue) this.hue = config.hue;
-        if (config.saturation) this.saturation = config.saturation;
+        if (config.opacity) { this.opacity = config.opacity };
+        if (config.hue) { this.hue = config.hue };
+        if (config.saturation) { this.saturation = config.saturation };
     }
 
     get symbologyType(): SymbologyType {

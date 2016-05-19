@@ -5,8 +5,9 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 
 import Config from '../models/config.model';
-import {ResultTypes} from '../models/result-type.model';
+import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
+import {Layer} from '../models/layer.model';
 
 import {LayerService} from '../services/layer.service';
 import {ProjectService} from '../services/project.service';
@@ -99,13 +100,15 @@ export class DataTableComponent implements OnInit, OnChanges {
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
-                case ResultTypes.POLYGONS:
-                    return layer.getDataStream().map(data => {
+                case ResultTypes.POLYGONS: {
+                    let vectorLayer = layer as Layer<GeoJsonFeatureCollection>;
+                    return vectorLayer.getDataStream().map(data => {
                         if (data) { // TODO: needed?
                             let geojson: GeoJsonFeatureCollection = data;
                             return geojson.features;
                         }
                       });
+                  }
                 case ResultTypes.RASTER:
                     return Observable.of([{properties: {
                         Attribute: 'Value',

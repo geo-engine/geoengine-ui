@@ -5,24 +5,28 @@ export const enum Interpolation {
 }
 
 function interpolationToName(interpolation: Interpolation): string {
+    'use strict';
     switch (interpolation) {
         case Interpolation.Unknown:
-            return "unknown";
+            return 'unknown';
         case Interpolation.Continuous:
-            return "continuous";
+            return 'continuous';
         case Interpolation.Discrete:
-            return "discrete";
+            return 'discrete';
+        default:
+            throw 'Unknown Unit Interpolation';
     }
 }
 
 export function nameToInterpolation(name: string): Interpolation {
-  if (name === interpolationToName(Interpolation.Continuous)) {
-    return Interpolation.Continuous;
-  }
-  if (name === interpolationToName(Interpolation.Discrete)) {
-    return Interpolation.Discrete;
-  }
-  return Interpolation.Unknown;
+    'use strict';
+    if (name === interpolationToName(Interpolation.Continuous)) {
+        return Interpolation.Continuous;
+    }
+    if (name === interpolationToName(Interpolation.Discrete)) {
+        return Interpolation.Discrete;
+    }
+    return Interpolation.Unknown;
 }
 
 type Class = string;
@@ -68,6 +72,12 @@ export interface UnitMappingDict {
  * Units can suggest a default colorization.
  */
 export class Unit {
+    private static _defaultUnit = new Unit({
+        measurement: 'raw',
+        unit: 'unknown',
+        interpolation: Interpolation.Continuous,
+    });
+
     private _measurement: string;
     private _unit: string;
     private _min: number;
@@ -82,6 +92,48 @@ export class Unit {
         this._max = config.max;
         this._interpolation = config.interpolation;
         this._classes = config.classes;
+    }
+
+    static fromDict(dict: UnitDict): Unit {
+        let classes = new Map<number, Class>();
+        if (dict.classes !== undefined) {
+            for (let className in dict.classes) {
+                classes.set(parseFloat(className), dict.classes[className]);
+            }
+        }
+        let config: UnitConfig = {
+            measurement: dict.measurement,
+            unit: dict.unit,
+            min: dict.min,
+            max: dict.max,
+            interpolation: dict.interpolation,
+            classes: classes,
+        };
+        return new Unit(config);
+    }
+
+    static fromMappingDict(dict: UnitMappingDict): Unit {
+      let interpolation = (dict.interpolation !== undefined) ?
+        nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
+      let classes = new Map<number, Class>();
+      if (dict.classes !== undefined) {
+          for (let className in dict.classes) {
+              classes.set(parseFloat(className), dict.classes[className]);
+          }
+      }
+      let config: UnitConfig = {
+          measurement: dict.measurement,
+          unit: dict.unit,
+          min: dict.min,
+          max: dict.max,
+          interpolation: interpolation,
+          classes: classes,
+      };
+      return new Unit(config);
+    }
+
+    static get defaultUnit(): Unit {
+        return Unit._defaultUnit;
     }
 
     get measurement(): string {
@@ -128,34 +180,6 @@ export class Unit {
         };
     }
 
-    static fromDict(dict: UnitDict): Unit {
-        let classes = new Map<number, Class>();
-        if (dict.classes !== undefined) {
-            for (let className in dict.classes) {
-                classes.set(parseFloat(className), dict.classes[className]);
-            }
-        }
-        let config: UnitConfig = {
-            measurement: dict.measurement,
-            unit: dict.unit,
-            min: dict.min,
-            max: dict.max,
-            interpolation: dict.interpolation,
-            classes: classes
-        };
-        return new Unit(config);
-    }
-
-    private static _defaultUnit = new Unit({
-        measurement: "raw",
-        unit: "unknown",
-        interpolation: Interpolation.Continuous,
-    });
-
-    static get defaultUnit(): Unit {
-        return Unit._defaultUnit;
-    }
-
     toMappingDict(): UnitMappingDict {
         let dict = {
             measurement: this._measurement,
@@ -164,39 +188,20 @@ export class Unit {
         };
 
         if (this._min !== undefined) {
-            dict["min"] = this._min;
+            dict['min'] = this._min;
         }
         if (this._max !== undefined) {
-            dict["max"] = this._max;
+            dict['max'] = this._max;
         }
-        if (this._unit === "classification") {
+        if (this._unit === 'classification') {
             let classes: {[index: number]: string} = {};
             for (let key in this._classes) {
                 classes[key] = this._classes[key];
             }
-            dict["classes"] = classes;
+            dict['classes'] = classes;
         }
 
         return dict;
     }
 
-    static fromMappingDict(dict: UnitMappingDict): Unit {
-      let interpolation = (dict.interpolation !== undefined) ?
-        nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
-      let classes = new Map<number, Class>();
-      if (dict.classes !== undefined) {
-          for (let className in dict.classes) {
-              classes.set(parseFloat(className), dict.classes[className]);
-          }
-      }
-      let config: UnitConfig = {
-          measurement: dict.measurement,
-          unit: dict.unit,
-          min: dict.min,
-          max: dict.max,
-          interpolation: interpolation,
-          classes: classes
-      };
-      return new Unit(config);
-    }
 }

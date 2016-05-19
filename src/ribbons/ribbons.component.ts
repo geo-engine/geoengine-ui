@@ -19,7 +19,7 @@ import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
 @Component({
     selector: 'wave-ribbons-component',
     template: `
-    <md-tabs md-border-bottom>
+    <md-tabs md-border-bottom (wheel)="onScroll($event)">
         <template md-tab label="Start">
             <wave-start-tab
                 (zoomIn)="zoomIn.emit()"
@@ -90,6 +90,18 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
         if (newTabIndex !== oldTabIndex) {
             this.tabIndex$.next(newTabIndex);
         }
+    }
+
+    onScroll(event: WheelEvent) {
+        const minTab = 0;
+        const maxTab = this.tabs.panes.length - 1;
+
+        const newTabIndex = Math.min(maxTab, Math.max(minTab, (
+            this.tabIndex$.value + (event.deltaY > 0 ? 1 : -1)
+        )));
+
+        this.tabs.selected = newTabIndex;
+        this.tabIndex$.next(newTabIndex);
     }
 
 }

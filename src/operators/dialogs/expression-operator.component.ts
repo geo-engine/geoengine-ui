@@ -1,33 +1,31 @@
-import {Component, Input, Output, EventEmitter,
-        OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy} from "angular2/core";
+import {
+    Component, OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy,
+} from 'angular2/core';
 
-import {MdPatternValidator, MdMinValueValidator, MdNumberRequiredValidator, MdMaxValueValidator,
-        MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from 'angular2/common';
 
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
+        OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
 
-import {LayerService} from "../../services/layer.service";
+import {Layer} from '../../models/layer.model';
+import {RasterSymbology} from '../../models/symbology.model';
 
-import {Layer} from "../../models/layer.model";
-import {RasterSymbology} from "../../models/symbology.model";
+import {Operator} from '../operator.model';
+import {ResultTypes} from '../result-type.model';
 
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {Projection} from "../../models/projection.model";
-import {ExpressionType} from "../../models/operator-type.model";
+import {DataType, DataTypes} from '../datatype.model';
+import {Unit} from '../unit.model';
+import {Projection} from '../projection.model';
+import {ExpressionType} from '../types/expression-type.model';
 
 /**
  * This component allows creating the expression operator.
  */
 @Component({
-    selector: "wave-operator-expression",
+    selector: 'wave-operator-expression',
     template: `
     <wave-operator-container title="Calculate Expression on Raster"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -116,9 +114,11 @@ import {ExpressionType} from "../../models/operator-type.model";
         </form>
     </wave-operator-container>
     `,
-    directives: [MATERIAL_DIRECTIVES, LayerMultiSelectComponent, ReprojectionSelectionComponent,
-                 OperatorContainerComponent],
-    changeDetection: ChangeDetectionStrategy.Default
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
+    ],
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent
                                          implements OnInit, OnChanges {
@@ -127,35 +127,36 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
     private selectedLayers: Array<Layer<any>>;
     private projection: Projection;
 
-    private outputDataTypes: Array<[DataType, string]> =
-        <Array<[DataType, string]>> DataTypes.ALL_NUMERICS.map(datatype => [datatype, ""]);
+    private outputDataTypes: Array<[DataType, string]> = DataTypes.ALL_NUMERICS.map(
+            (datatype: DataType) => [datatype, '']
+        ) as Array<[DataType, string]>;
 
     private outputUnits: Array<Unit>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
-        console.log("ExpressionOperatorComponent", "constructor", this.layerService);
+        console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
 
         this.configForm = formBuilder.group({
-            "expression": ["1 * A", Validators.compose([
+            'expression': ['1 * A', Validators.compose([
                 Validators.required,
-                Validators.pattern(".*A.*")
+                Validators.pattern('.*A.*'),
             ])],
-            "dataType": [-1, Validators.required],
-            "minValue": [0, Validators.compose([
-                Validators.required
+            'dataType': [-1, Validators.required],
+            'minValue': [0, Validators.compose([
+                Validators.required,
             ])],
-            "maxValue": [0, Validators.compose([
-                Validators.required
+            'maxValue': [0, Validators.compose([
+                Validators.required,
             ])],
-            "unit": [-1, Validators.required],
-            "name": ["Expression", Validators.required],
+            'unit': [-1, Validators.required],
+            'name': ['Expression', Validators.required],
         });
 
-        this.configForm.controls["dataType"].valueChanges.subscribe(() => {
-            let dataType: DataType = this.configForm.controls["dataType"].value;
-            let minValueControl: Control = <Control> this.configForm.controls["minValue"];
-            let maxValueControl: Control = <Control> this.configForm.controls["maxValue"];
+        this.configForm.controls['dataType'].valueChanges.subscribe(() => {
+            let dataType: DataType = this.configForm.controls['dataType'].value;
+            let minValueControl: Control = this.configForm.controls['minValue'] as Control;
+            let maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
             minValueControl.updateValue(dataType.getMin());
             maxValueControl.updateValue(dataType.getMax() - 1);
         });
@@ -169,7 +170,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         super.ngOnChanges(changes);
     }
 
-    private onSelectProjection(projection: Projection) {
+    onSelectProjection(projection: Projection) {
         this.projection = projection;
     }
 
@@ -180,66 +181,16 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.selectedLayers = layers;
     }
 
-    private calculateUnitList(layers: Array<Layer<any>>) {
-        this.outputUnits = [];
-        for (let layer of layers) {
-            let unit = layer.operator.getUnit("value");
-            if (this.outputUnits.indexOf(unit) === -1) {
-                this.outputUnits.push(unit);
-            }
-        }
-
-        if (this.outputUnits.indexOf(Unit.defaultUnit) === -1) {
-            this.outputUnits.push(Unit.defaultUnit);
-        }
-
-        let dataTypeControl: Control = <Control> this.configForm.controls["unit"];
-        if (dataTypeControl.value === -1) {
-            let dataType = this.outputUnits[0];
-            dataTypeControl.updateValue(dataType);
-        }
-    }
-
-    private calculateDataTypeList(layers: Array<Layer<any>>) {
-        let firstItemWithRefs: DataType = undefined;
-        for (let i = 0; i < this.outputDataTypes.length; i++) {
-            let dataType = this.outputDataTypes[i][0];
-            let refs: Array<string> = [];
-            for (let l = 0; l < layers.length; l++) {
-                if (dataType === layers[l].operator.getDataType("value")) {
-                    refs.push(toLetters(l + 1));
-                }
-                if (refs.length > 0) {
-                    this.outputDataTypes[i][1] = `(like ${refs.length > 1 ? "layers" : "layer"} ${refs.join(",")})`;
-                    if (firstItemWithRefs === undefined) {
-                        firstItemWithRefs = dataType;
-                    }
-                } else {
-                    this.outputDataTypes[i][1] = "";
-                }
-            }
-        }
-
-        let dataTypeControl: Control = <Control> this.configForm.controls["dataType"];
-        if (dataTypeControl.value === -1) {
-            dataTypeControl.updateValue(firstItemWithRefs);
-            let minValueControl: Control = <Control> this.configForm.controls["minValue"];
-            let maxValueControl: Control = <Control> this.configForm.controls["maxValue"];
-            minValueControl.updateValue(firstItemWithRefs.getMin());
-            maxValueControl.updateValue(firstItemWithRefs.getMax() - 1);
-        }
-    }
-
-    private addLayer() {
-        let name: string = this.configForm.controls["name"].value;
-        let dataType: DataType = this.configForm.controls["dataType"].value;
-        let expression: string = this.configForm.controls["expression"].value;
+    addLayer() {
+        let name: string = this.configForm.controls['name'].value;
+        let dataType: DataType = this.configForm.controls['dataType'].value;
+        let expression: string = this.configForm.controls['expression'].value;
         let rasterLayers = this.selectedLayers;
         let projection = this.projection;
-        let minValue = this.configForm.controls["minValue"].value;
-        let maxValue = this.configForm.controls["maxValue"].value;
+        let minValue = this.configForm.controls['minValue'].value;
+        let maxValue = this.configForm.controls['maxValue'].value;
 
-        let selectedUnit: Unit = this.configForm.controls["unit"].value;
+        let selectedUnit: Unit = this.configForm.controls['unit'].value;
         let unit = new Unit({
             measurement: selectedUnit.measurement,
             unit: selectedUnit.unit,
@@ -257,21 +208,72 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             }),
             resultType: ResultTypes.RASTER,
             projection: projection,
-            attributes: ["value"],
+            attributes: ['value'],
             dataTypes: new Map<string, DataType>()
-                        .set("value", dataType),
+                        .set('value', dataType),
             units: new Map<string, Unit>()
-                        .set("value", unit),
+                        .set('value', unit),
             rasterSources: rasterLayers.map(layer => layer.operator),
         });
 
         this.layerService.addLayer(new Layer({
             name: name,
             operator: operator,
-            symbology: new RasterSymbology({})
+            symbology: new RasterSymbology({}),
         }));
 
         this.dialog.close();
+    }
+
+    private calculateUnitList(layers: Array<Layer<any>>) {
+        this.outputUnits = [];
+        for (let layer of layers) {
+            let unit = layer.operator.getUnit('value');
+            if (this.outputUnits.indexOf(unit) === -1) {
+                this.outputUnits.push(unit);
+            }
+        }
+
+        if (this.outputUnits.indexOf(Unit.defaultUnit) === -1) {
+            this.outputUnits.push(Unit.defaultUnit);
+        }
+
+        let dataTypeControl: Control = this.configForm.controls['unit'] as Control;
+        if (dataTypeControl.value === -1) {
+            let dataType = this.outputUnits[0];
+            dataTypeControl.updateValue(dataType);
+        }
+    }
+
+    private calculateDataTypeList(layers: Array<Layer<any>>) {
+        let firstItemWithRefs: DataType = undefined;
+        for (let i = 0; i < this.outputDataTypes.length; i++) {
+            let dataType = this.outputDataTypes[i][0];
+            let refs: Array<string> = [];
+            for (let l = 0; l < layers.length; l++) {
+                if (dataType === layers[l].operator.getDataType('value')) {
+                    refs.push(toLetters(l + 1));
+                }
+                if (refs.length > 0) {
+                    this.outputDataTypes[i][1] =
+                        `(like ${refs.length > 1 ? 'layers' : 'layer'} ${refs.join(',')})`;
+                    if (firstItemWithRefs === undefined) {
+                        firstItemWithRefs = dataType;
+                    }
+                } else {
+                    this.outputDataTypes[i][1] = '';
+                }
+            }
+        }
+
+        let dataTypeControl: Control = this.configForm.controls['dataType'] as Control;
+        if (dataTypeControl.value === -1) {
+            dataTypeControl.updateValue(firstItemWithRefs);
+            let minValueControl: Control = this.configForm.controls['minValue'] as Control;
+            let maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
+            minValueControl.updateValue(firstItemWithRefs.getMin());
+            maxValueControl.updateValue(firstItemWithRefs.getMax() - 1);
+        }
     }
 
 }

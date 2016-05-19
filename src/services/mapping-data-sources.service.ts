@@ -2,7 +2,7 @@ import {Injectable} from "angular2/core";
 import {Http, Response} from "angular2/http";
 import {Observable} from "rxjs/Rx";
 import {MappingSource} from "../models/mapping-source.model";
-import {Unit} from "../models/unit.model";
+import {Unit} from '../operators/unit.model';
 
 @Injectable()
 export class MappingDataSourcesService {

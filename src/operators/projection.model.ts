@@ -1,5 +1,5 @@
-import ol from "openlayers";
-import proj4 from "proj4";
+import ol from 'openlayers';
+import proj4 from 'proj4';
 
 /**
  * A wrapper class around a projection string.
@@ -38,10 +38,10 @@ export abstract class Projection {
 
 export class WebMercator extends Projection {
     getCode(): string {
-        return "EPSG:3857";
+        return 'EPSG:3857';
     }
     getName(): string {
-        return "WGS84 Web Mercator";
+        return 'WGS84 Web Mercator';
     }
     getExtent(): [number, number, number, number] {
         return [-20037508.34, -20037508.34, 20037508.34, 20037508.34];
@@ -50,10 +50,10 @@ export class WebMercator extends Projection {
 
 export class WGS84 extends Projection {
     getCode(): string {
-        return "EPSG:4326";
+        return 'EPSG:4326';
     }
     getName(): string {
-        return "WGS 84";
+        return 'WGS 84';
     }
     getExtent(): [number, number, number, number] {
         return [-180, -90, 180, 90];
@@ -68,27 +68,17 @@ export class GEOS extends Projection {
         this.registerProjection();
     }
 
-    private registerProjection() {
-        if (!GEOS.isProjectionRegistered) {
-            // proj4.defs("SR-ORG:81", "+proj=geos +lon_0=0 +h=-0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs");
-            proj4.defs(this.getCode(),
-                       "+proj=stere +lat_0=90 +lat_ts=60 +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs");
-
-            GEOS.isProjectionRegistered = true;
-        }
-    }
-
     // TODO: remove when code is correct
     toString(): string {
         return `[SR-ORG:81] ${this.getName()}`;
     }
     getCode(): string {
         // TODO: rename?
-        // return "SR-ORG:81";
-        return "EPSG:40453";
+        // return 'SR-ORG:81';
+        return 'EPSG:40453';
     }
     getName(): string {
-        return "GEOS - GEOstationary Satellite";
+        return 'GEOS - GEOstationary Satellite';
     }
     getOpenlayersProjection() {
         let projection = ol.proj.get(this.getCode());
@@ -97,6 +87,18 @@ export class GEOS extends Projection {
     }
     getExtent(): [number, number, number, number] {
         return [-5568748.276, -5568748.276, 5568748.276, 5568748.276];
+    }
+
+    private registerProjection() {
+        if (!GEOS.isProjectionRegistered) {
+            // proj4.defs('SR-ORG:81', '+proj=geos +lon_0=0 +h=-0 +x_0=0 +y_0=0 '
+            //                         + '+ellps=WGS84 +units=m +no_defs');
+            proj4.defs(this.getCode(),
+                       '+proj=stere +lat_0=90 +lat_ts=60 +lon_0=0 +k=1 +x_0=0 +y_0=0 '
+                       + '+a=6378273 +b=6356889.449 +units=m +no_defs');
+
+            GEOS.isProjectionRegistered = true;
+        }
     }
 }
 
@@ -120,8 +122,8 @@ class ProjectionCollection {
             case this.GEOS.getCode():
                 return this.GEOS;
             default:
-                throw "Invalid Projection String";
+                throw 'Invalid Projection String';
         }
     }
 }
-export const Projections = new ProjectionCollection();
+export const Projections = new ProjectionCollection(); // tslint:disable-line:variable-name

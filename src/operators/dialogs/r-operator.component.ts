@@ -1,31 +1,30 @@
-import {Component, Input, Output, EventEmitter,
-        OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy} from "angular2/core";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
 
-import {MdPatternValidator, MdMinValueValidator, MdNumberRequiredValidator, MdMaxValueValidator,
-        MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
 
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
-import {CodeEditorComponent} from "../code-editor.component";
+import {
+    LayerMultiSelectComponent, OperatorBaseComponent, OperatorContainerComponent,
+} from './operator.component';
+import {CodeEditorComponent} from '../../components/code-editor.component';
 
-import {Layer} from "../../models/layer.model";
-import {Plot} from "../../plots/plot.model";
-import {Symbology, SimplePointSymbology, RasterSymbology} from "../../models/symbology.model";
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {Projection, Projections} from "../../models/projection.model";
-import {RType} from "../../models/operator-type.model";
+import {Layer} from '../../models/layer.model';
+import {Plot} from '../../plots/plot.model';
+import {Symbology, SimplePointSymbology, RasterSymbology} from '../../models/symbology.model';
+import {Operator} from '../operator.model';
+import {ResultTypes} from '../result-type.model';
+import {DataType} from '../datatype.model';
+import {Unit} from '../unit.model';
+import {Projections} from '../projection.model';
+import {RScriptType} from '../types/r-script-type.model';
 
 /**
  * This component allows creating the R operator.
  */
 @Component({
-    selector: "wave-r-operator",
+    selector: 'wave-r-operator',
     template: `
     <wave-operator-container title="Execute R Script (experimental)"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -93,21 +92,21 @@ export class ROperatorComponent extends OperatorBaseComponent {
         super();
 
         this.configForm = formBuilder.group({
-            "resultType": [ResultTypes.TEXT, Validators.required],
-            "name": ["R Output", Validators.required],
+            'resultType': [ResultTypes.TEXT, Validators.required],
+            'name': ['R Output', Validators.required],
         });
 
         this.code = `print("Hello world");\na <- 1:5;\nprint(a);`;
     }
 
-    private addLayer() {
+    addLayer() {
         const getAnySource = (index: number) => {
             const allSources = [...this.rasterSources, ...this.pointSources];
             return allSources[index];
         };
 
-        const outputName: string = this.configForm.controls["name"].value;
-        const resultType: DataType = this.configForm.controls["resultType"].value;
+        const outputName: string = this.configForm.controls['name'].value;
+        const resultType: DataType = this.configForm.controls['resultType'].value;
         const code = this.code;
 
         const rasterSources: Array<Operator> = this.rasterSources.map(layer => layer.operator);
@@ -118,7 +117,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
             Projections.WGS_84 : getAnySource(0).operator.projection;
 
         const operator = new Operator({
-            operatorType: new RType({
+            operatorType: new RScriptType({
                 code: code,
                 resultType: resultType,
             }),
@@ -137,13 +136,15 @@ export class ROperatorComponent extends OperatorBaseComponent {
             let symbology: Symbology;
             switch (resultType) {
                 case ResultTypes.POINTS:
-                    symbology = new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()});
+                    symbology = new SimplePointSymbology({
+                        fill_rgba: this.randomColorService.getRandomColor(),
+                    });
                     break;
                 case ResultTypes.POINTS:
                     symbology = new RasterSymbology({});
                     break;
                 default:
-                    throw "Unknown Symbology Error";
+                    throw 'Unknown Symbology Error';
             }
 
             this.layerService.addLayer(new Layer({

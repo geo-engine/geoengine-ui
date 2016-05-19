@@ -6,18 +6,20 @@ import {ProjectService} from './project.service';
 import {PlotService} from '../plots/plot.service';
 import {MappingQueryService} from './mapping-query.service';
 
-import Config from '../models/config.model';
-import {Layer, LayerDict, VectorLayer, RasterLayer} from '../models/layer.model';
-import {Project} from '../models/project.model';
-import {Plot, PlotDict} from '../plots/plot.model';
-import {Operator} from '../models/operator.model';
-import {ResultTypes} from '../models/result-type.model';
-import {DataType, DataTypes} from '../models/datatype.model';
-import {Projections} from '../models/projection.model';
-import {Unit, Interpolation} from '../models/unit.model';
-import {SimplePointSymbology, SimpleVectorSymbology, RasterSymbology}
-    from '../models/symbology.model';
-import {RasterSourceType, GFBioSourceType, WKTSourceType} from '../models/operator-type.model';
+import Config from "../models/config.model";
+import {Layer, LayerDict, VectorLayer, RasterLayer} from "../models/layer.model";
+import {Project} from "../models/project.model";
+import {Plot, PlotDict} from "../plots/plot.model";
+import {Operator} from '../operators/operator.model';
+import {ResultTypes} from '../operators/result-type.model';
+import {DataType, DataTypes} from '../operators/datatype.model';
+import {Projections} from '../operators/projection.model';
+import {Unit, Interpolation} from '../operators/unit.model';
+import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
+    from "../models/symbology.model";
+import {RasterSourceType} from '../operators/types/raster-source-type.model';
+import {GFBioSourceType} from '../operators/types/gfbio-source-type.model';
+import {WKTSourceType} from '../operators/types/wkt-source-type.model';
 
 /**
  * This service allows persisting the current execution context.

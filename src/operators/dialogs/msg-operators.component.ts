@@ -1,22 +1,20 @@
-import {Component, Input, Output, EventEmitter,
-        OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy} from "angular2/core";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
 
-import {MdPatternValidator, MdMinValueValidator, MdNumberRequiredValidator, MdMaxValueValidator,
-        MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from "angular2/common";
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
 
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorContainerComponent} from "./operator.component";
+import {LayerMultiSelectComponent, OperatorBaseComponent,  OperatorContainerComponent}
+  from './operator.component';
 
 import {Layer, RasterLayer} from "../../models/layer.model";
-import {Operator} from "../../models/operator.model";
-import {ResultTypes} from "../../models/result-type.model";
-import {DataType, DataTypes} from "../../models/datatype.model";
-import {Unit} from "../../models/unit.model";
-import {Projection, Projections} from "../../models/projection.model";
-import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName, MsgCo2CorrectionType, SolarangleName} from "../../models/operator-type.model";
+import {Operator} from "../operator.model";
+import {ResultTypes} from "../result-type.model";
+import {DataType, DataTypes} from "../datatype.model";
+import {Unit} from "../unit.model";
+import {Projection, Projections} from "../projection.model";
+import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName, MsgCo2CorrectionType, SolarangleName} from "../types/msg-types.model";
 import {Symbology, MappingColorizerRasterSymbology, RasterSymbology} from "../../models/symbology.model";
 import {MappingColorizerService} from "../../services/mapping-colorizer.service";
 
@@ -24,7 +22,7 @@ import {MappingColorizerService} from "../../services/mapping-colorizer.service"
  * This component allows creating the MSG radiance operator.
  */
 @Component({
-    selector: "wave-msg-radiance-operator",
+    selector: 'wave-msg-radiance-operator',
     template: `
     <wave-operator-container title="Convert raw data to radiances"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -56,7 +54,10 @@ import {MappingColorizerService} from "../../services/mapping-colorizer.service"
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
@@ -64,19 +65,18 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
     private rasterSources: Array<Layer<any>>;
 
-
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
 
         this.configForm = formBuilder.group({
-            // "resultType": [ResultTypes.RASTER, Validators.required],
-            "name": ["Radiance (MSG)", Validators.required],
+            // 'resultType': [ResultTypes.RASTER, Validators.required],
+            'name': ['Radiance (MSG)', Validators.required],
         });
 
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
         const rasterSource: Operator = this.rasterSources[0].operator;
 
         const operator = new Operator({
@@ -97,7 +97,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -111,12 +111,11 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
 
 }
 
-
 /**
  * This component allows creating the MSG reflectance operator.
  */
 @Component({
-    selector: "wave-msg-reflectance-operator",
+    selector: 'wave-msg-reflectance-operator',
     template: `
     <wave-operator-container title="Convert MSG radiance to reflectance"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -139,7 +138,8 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
                       </md-checkbox>
                     </div>
                     <div flex-xs="100" flex="50">
-                      <md-checkbox aria-label="solarCorrection checkbox" [(checked)]="solarCorrection">
+                      <md-checkbox aria-label="solarCorrection checkbox"
+                                   [(checked)]="solarCorrection">
                         apply solar correction
                       </md-checkbox>
                     </div>
@@ -157,7 +157,10 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
@@ -174,14 +177,14 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
         super();
 
         this.configForm = formBuilder.group({
-            // "resultType": [ResultTypes.RASTER, Validators.required],
-            "name": ["Reflectance (MSG)", Validators.required],
+            // 'resultType': [ResultTypes.RASTER, Validators.required],
+            'name': ['Reflectance (MSG)', Validators.required],
         });
 
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
         const rasterSource: Operator = this.rasterSources[0].operator;
 
         const operator = new Operator({
@@ -206,7 +209,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -224,7 +227,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
  * This component allows creating the MSG solarangle operator.
  */
 @Component({
-    selector: "wave-msg-solarangle-operator",
+    selector: 'wave-msg-solarangle-operator',
     template: `
     <wave-operator-container title="Solarangle for MSG raster"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -263,13 +266,16 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
     private rasterSources: Array<Layer<any>>;
-    private solarangleNames = ["zenith", "azimuth"];
+    private solarangleNames = ['zenith', 'azimuth'];
 
     // private forceSatellite: boolean = false;
     // private forceSatellteName: MeteosatSatelliteName;
@@ -278,14 +284,14 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
         this.configForm = formBuilder.group({
-            "solarangleName": [this.solarangleNames[0], Validators.required],
-            "name": ["Solarangle (MSG)", Validators.required],
+            'solarangleName': [this.solarangleNames[0], Validators.required],
+            'name': ['Solarangle (MSG)', Validators.required],
         });
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
-        const solarangle: SolarangleName = this.configForm.controls["solarangleName"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
+        const solarangle: SolarangleName = this.configForm.controls['solarangleName'].value;
 
         const rasterSource: Operator = this.rasterSources[0].operator;
 
@@ -309,7 +315,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -317,7 +323,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         });
-        console.log("blakekse", solarangle);
+        console.log('blakekse', solarangle);
         this.dialog.close();
     }
 
@@ -327,7 +333,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
  * This component allows creating the MSG temperature operator.
  */
 @Component({
-    selector: "wave-msg-temperature-operator",
+    selector: 'wave-msg-temperature-operator',
     template: `
     <wave-operator-container title="Convert radiance to temperature"
                             (add)="addLayer()" (cancel)="dialog.close()">
@@ -358,23 +364,25 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
     private rasterSources: Array<Layer<any>>;
 
-
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
         this.configForm = formBuilder.group({
-            "name": ["Temperature (MSG)", Validators.required],
+            'name': ['Temperature (MSG)', Validators.required],
         });
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
         const rasterSource: Operator = this.rasterSources[0].operator;
 
         const operator = new Operator({
@@ -395,7 +403,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -411,7 +419,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
  * This component allows creating the MSG pansharpening operator.
  */
 @Component({
-    selector: "wave-msg-pansharpen-operator",
+    selector: 'wave-msg-pansharpen-operator',
     template: `
     <wave-operator-container title="Pansharpen" (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
@@ -441,23 +449,25 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
     private selectedRasterSources: Array<Layer<any>>;
 
-
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
         this.configForm = formBuilder.group({
-            "name": ["Pansharpen (MSG)", Validators.required],
+            'name': ['Pansharpen (MSG)', Validators.required],
         });
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
         const rasterSources = this.selectedRasterSources.map(layer => layer.operator);
 
         const operator = new Operator({
@@ -478,7 +488,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -494,7 +504,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
  * This component allows creating the MSG pansharpening operator.
  */
 @Component({
-    selector: "wave-msg-co2correction-operator",
+    selector: 'wave-msg-co2correction-operator',
     template: `
     <wave-operator-container title="CO2 correction" (add)="addLayer()" (cancel)="dialog.close()">
         <form [ngFormModel]="configForm">
@@ -524,23 +534,25 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
         </form>
     </wave-operator-container>
     `,
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES, OperatorContainerComponent, LayerMultiSelectComponent],
+    directives: [
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorContainerComponent, LayerMultiSelectComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
     private selectedRasterSources: Array<Layer<any>>;
 
-
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
         this.configForm = formBuilder.group({
-            "name": ["Pansharpen (MSG)", Validators.required],
+            'name': ['Pansharpen (MSG)', Validators.required],
         });
     }
 
-    private addLayer() {
-        const outputName: string = this.configForm.controls["name"].value;
+    addLayer() {
+        const outputName: string = this.configForm.controls['name'].value;
         const rasterSources = this.selectedRasterSources.map(layer => layer.operator);
 
         const operator = new Operator({
@@ -561,7 +573,7 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log("_mappingColorizerService.getColorizer", ex);
+            console.log('_mappingColorizerService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,

@@ -1,4 +1,4 @@
-import {Projection, Projections} from "./projection.model";
+import {Projection, Projections} from '../operators/projection.model';
 import moment from "moment";
 
 export interface ProjectConfig {

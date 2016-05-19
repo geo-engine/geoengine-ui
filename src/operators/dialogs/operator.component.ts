@@ -1,43 +1,43 @@
 import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy,
-        OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from "angular2/core";
-import {NgModel, NgControl, FORM_PROVIDERS, ControlValueAccessor} from "angular2/common";
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
-import {DialogContainerComponent} from "../dialogs/dialog-basics.component";
+        OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from 'angular2/core';
+import {NgControl} from 'angular2/common';
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {DialogContainerComponent} from '../../components/dialogs/dialog-basics.component';
 
-import {BehaviorSubject, Observable} from "rxjs/Rx";
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {LayerService} from "../../services/layer.service";
-import {PlotService} from "../../plots/plot.service";
-import {ProjectService} from  "../../services/project.service";
-import {MappingQueryService} from "../../services/mapping-query.service";
-import {MappingColorizerService} from "../../services/mapping-colorizer.service";
-import {RandomColorService} from "../../services/random-color.service";
+import {LayerService} from '../../services/layer.service';
+import {PlotService} from '../../plots/plot.service';
+import {ProjectService} from  '../../services/project.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {MappingColorizerService} from '../../services/mapping-colorizer.service';
+import {RandomColorService} from '../../services/random-color.service';
 
-import {Layer} from "../../models/layer.model";
-import {Plot} from "../../plots/plot.model";
-import {Operator} from "../../models/operator.model";
-import {ResultType, ResultTypes} from "../../models/result-type.model";
-import {Projection} from "../../models/projection.model";
+import {Layer} from '../../models/layer.model';
+import {ResultType, ResultTypes} from '../result-type.model';
+import {Projection} from '../projection.model';
 
 /**
  * This component allows selecting an input operator by choosing a layer.
  */
 @Component({
-    selector: "wave-layer-selection",
+    selector: 'wave-layer-selection',
     template: `
     <md-input-container class="md-block md-input-has-value">
         <label>Input {{id}}</label>
-        <select [ngModel]="selectedLayer" (ngModelChange)="selectedLayerEmitter.emit($event)">
+        <select *ngIf="layers.length > 0"
+                [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
             <option *ngFor="#layer of layers" [ngValue]="layer">
                 {{layer.name}}
             </option>
         </select>
+        <p *ngIf="layers.length <= 0">No Input Available</p>
         <input md-input type="hidden" value="0"><!-- HACK -->
     </md-input-container>
     `,
     directives: [MATERIAL_DIRECTIVES],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerSelectionComponent implements AfterViewInit, OnChanges {
 
@@ -54,12 +54,12 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayer") selectedLayerEmitter = new EventEmitter<Layer<any>>();
+    @Output('selectedLayer') selectedLayer = new EventEmitter<Layer<any>>();
 
-    private selectedLayer: Layer<any>;
+    private _selectedLayer: Layer<any>;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {
-        this.selectedLayerEmitter.subscribe((layer: Layer<any>) => this.selectedLayer = layer);
+        this.selectedLayer.subscribe((layer: Layer<any>) => this._selectedLayer = layer);
     }
 
     ngAfterViewInit() {
@@ -72,11 +72,13 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
             switch (propName) {
-                case "layers":
-                    if (this.layers.length === 0) {
-                        // TODO: dummy entry
+                case 'layers':
+                    if (this.layers.length > 0) {
+                        this.selectedLayer.emit(this.layers[0]);
                     }
-                    this.selectedLayerEmitter.emit(this.layers[0]);
+                    break;
+                default:
+                    // do nothing
             }
         }
     }
@@ -87,7 +89,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
  * This component allows selecting multiple input operators.
  */
 @Component({
-    selector: "wave-multi-layer-selection",
+    selector: 'wave-multi-layer-selection',
     template: `
     <md-card>
         <md-card-header>
@@ -96,13 +98,13 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
                     <span flex="grow">{{title}}</span>
                     <span>
                         <button md-button class="md-icon-button md-primary amount-button"
-                                aria-label="Add"
-                                (click)="add()" [disabled]="amountOfLayers===max">
+                                aria-label="Add" (click)="add()"
+                                [disabled]="amountOfLayers>=max || _layers.length <= 0">
                             <i md-icon>add_circle_outline</i>
                         </button>
                         <button md-button class="md-icon-button md-primary amount-button"
-                                aria-label="Remove"
-                                (click)="remove()" [disabled]="amountOfLayers===min">
+                                aria-label="Remove" (click)="remove()"
+                                [disabled]="amountOfLayers<=min || _layers.length <= 0">
                             <i md-icon>remove_circle_outline</i>
                         </button>
                     </span>
@@ -112,7 +114,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
         </md-card-header>
         <md-card-content layout="row">
             <div *ngFor="#id of ids; #i = index" layout="row">
-                <wave-layer-selection [id]="id" [layers]="layers"
+                <wave-layer-selection [id]="id" [layers]="_layers"
                                       (selectedLayer)="updateLayer(i, $event)">
                 </wave-layer-selection>
             </div>
@@ -131,14 +133,14 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     }
     `],
     directives: [MATERIAL_DIRECTIVES, LayerSelectionComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerMultiSelectComponent implements OnChanges {
 
     /**
      * An array of possible layers.
      */
-    @Input("layers") inputLayers: Array<Layer<any>>;
+    @Input("layers") layers: Array<Layer<any>>;
 
     /**
      * The minimum number of elements to select.
@@ -165,46 +167,65 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayers") selectedLayersEmitter = new EventEmitter<Array<Layer<any>>>();
+    @Output("selectedLayers") selectedLayers = new EventEmitter<Array<Layer<any>>>();
 
     private amountOfLayers: number = 1;
 
-    private layers: Array<Layer<any>>;
+    private _layers: Array<Layer<any>>;
     private ids: Array<string>;
 
-    private selectedLayers: Array<Layer<any>> = [];
+    private _selectedLayers: Array<Layer<any>> = [];
 
     constructor() {
-        this.selectedLayersEmitter.subscribe((layers: Array<Layer<any>>) => {
-            this.selectedLayers = layers;
+        this.selectedLayers.subscribe((layers: Array<Layer<any>>) => {
+            this._selectedLayers = layers;
         });
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
             switch (propName) {
-                case "initialAmount":
-                    this.amountOfLayers = this.initialAmount;
-                    this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
-                case "inputLayers":
-                case "types":
-                    this.layers = this.inputLayers.filter(layer => {
+                case 'initialAmount':
+                    this.amountOfLayers = Math.max(this.initialAmount, this.min);
+                /* falls through */
+                case 'layers':
+                case 'types':
+                    this._layers = this.layers.filter((layer: Layer<any>) => {
                         return this.types.indexOf(layer.operator.resultType) >= 0;
                     });
                     if (this.title === undefined) {
                         this.title = this.types.map(type => type.toString())
-                                               .join(", ");
+                                               .join(', ');
                     }
                     break;
-                case "min":
+                case 'min':
                     this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
                     break;
-                case "max":
+                case 'max':
                     this.amountOfLayers = Math.min(this.amountOfLayers, this.max);
                     break;
+                default:
+                    // DO NOTHING
             }
         }
         this.recalculateIds();
+    }
+
+    updateLayer(index: number, layer: Layer<any>) {
+        this._selectedLayers[index] = layer;
+        this.selectedLayers.emit(this._selectedLayers);
+    }
+
+    private add() {
+        this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
+        this.recalculateIds();
+    }
+
+    remove() {
+        this.amountOfLayers = Math.max(this.amountOfLayers - 1, this.min);
+        this.recalculateIds();
+        this._selectedLayers.pop();
+        this.selectedLayers.emit(this._selectedLayers);
     }
 
     private recalculateIds() {
@@ -214,39 +235,24 @@ export class LayerMultiSelectComponent implements OnChanges {
         }
     }
 
-    private updateLayer(index: number, layer: Layer<any>) {
-        this.selectedLayers[index] = layer;
-        this.selectedLayersEmitter.emit(this.selectedLayers);
-    }
-
-    private add() {
-        this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
-        this.recalculateIds();
-    }
-
-    private remove() {
-        this.amountOfLayers = Math.max(this.amountOfLayers - 1, this.min);
-        this.recalculateIds();
-        this.selectedLayers.pop();
-        this.selectedLayersEmitter.emit(this.selectedLayers);
-    }
-
 }
 
 export function toLetters(num: number): string {
+    'use strict';
     let mod = num % 26;
     /* tslint:disable */
     let pow = num / 26 | 0;
     /* tslint:enable */
-    let out = mod ? String.fromCharCode(64 + mod) : (--pow, "Z");
+    let out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
     return pow ? this.toLetters(pow) + out : out;
 }
 
 export function fromLetters(str: string): number {
+    'use strict';
     let out = 0;
     let len = str.length;
     let pos = len;
-    while ((pos -= 1) > -1) {
+    while (--pos > -1) {
         out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - 1 - pos);
     }
     return out;
@@ -256,12 +262,12 @@ export function fromLetters(str: string): number {
  * This component allows selecting an output projection.
  */
 @Component({
-    selector: "wave-reprojetion-selection",
+    selector: 'wave-reprojetion-selection',
     template: `
     <md-input-container class="md-block md-input-has-value">
         <label>Output Projection</label>
         <select [ngModel]="selectedProjection"
-                (ngModelChange)="selectedProjectionEmitter.emit($event)">
+                (ngModelChange)="valueChange.emit($event)">
             <option *ngFor="#projection of projections" [ngValue]="projection">
                 {{projection}}
             </option>
@@ -282,14 +288,14 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     /**
      * This output emits the selected layer.
      */
-    @Output("valueChange") selectedProjectionEmitter = new EventEmitter<Projection>();
+    @Output() valueChange = new EventEmitter<Projection>();
 
     private projections: Array<Projection>;
     private selectedProjection: Projection;
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 @Optional() control: NgControl) {
-        this.selectedProjectionEmitter.subscribe((projection: Projection) => {
+        this.valueChange.subscribe((projection: Projection) => {
             this.selectedProjection = projection;
         });
     }
@@ -304,7 +310,7 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
             switch (propName) {
-                case "layers":
+                case 'layers':
                     if (this.layers.length === 0) {
                         // TODO: dummy entry
                     }
@@ -315,7 +321,10 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
                             this.projections.push(projeciton);
                         }
                     }
-                    this.selectedProjectionEmitter.emit(this.layers[0].operator.projection);
+                    this.valueChange.emit(this.layers[0].operator.projection);
+                    break;
+                default:
+                    // DO NOTHING
             }
         }
     }
@@ -323,7 +332,7 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
 }
 
 @Component({
-    selector: "wave-operator-buttons",
+    selector: 'wave-operator-buttons',
     template: `
     <md-dialog-actions>
         <button md-raised-button type="button" (click)="cancel.emit()">
@@ -342,7 +351,7 @@ export class OperatorButtonsComponent {
 }
 
 @Component({
-    selector: "wave-operator-container",
+    selector: 'wave-operator-container',
     template: `
     <wave-dialog-container [title]="title">
         <ng-content></ng-content>
@@ -371,12 +380,12 @@ export class OperatorContainerComponent {
 
     constructor() {
         this.windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, "resize")
+        Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerHeight)
                   .subscribe(this.windowHeight$);
 
         this.windowWidth$ = new BehaviorSubject(window.innerWidth);
-        Observable.fromEvent(window, "resize")
+        Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerWidth)
                   .subscribe(this.windowWidth$);
     }
@@ -386,10 +395,10 @@ export class OperatorContainerComponent {
  * This component is the base class for all operator types.
  */
 @Component({
-    selector: "wave-operator",
+    selector: 'wave-operator',
     template: ``,
     directives: [LayerMultiSelectComponent, ReprojectionSelectionComponent],
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnChanges {
 
@@ -403,7 +412,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     protected layers: Array<Layer<any>> = [];
 
     // types
-    protected ResultTypes = ResultTypes;
+    protected ResultTypes = ResultTypes; // tslint:disable-line:variable-name
 
     constructor() {}
 
@@ -416,9 +425,11 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
             switch (propName) {
-                case "layerService":
+                case 'layerService':
                     this.layers = this.layerService.getLayers();
                     break;
+                default:
+                    // DO NOTHING
             }
         }
     }

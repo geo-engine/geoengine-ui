@@ -1,7 +1,7 @@
 import {Injectable} from "angular2/core";
 import {BehaviorSubject, Observable} from "rxjs/Rx";
 
-import {Projections, Projection} from "../models/projection.model";
+import {Projections, Projection} from '../operators/projection.model';
 
 import {Project, ProjectConfig} from "../models/project.model";
 
