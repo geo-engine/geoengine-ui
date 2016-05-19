@@ -26,11 +26,13 @@ import {Projection} from '../projection.model';
     template: `
     <md-input-container class="md-block md-input-has-value">
         <label>Input {{id}}</label>
-        <select [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
+        <select *ngIf="layers.length > 0"
+                [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
             <option *ngFor="#layer of layers" [ngValue]="layer">
                 {{layer.name}}
             </option>
         </select>
+        <p *ngIf="layers.length <= 0">No Input Available</p>
         <input md-input type="hidden" value="0"><!-- HACK -->
     </md-input-container>
     `,
@@ -71,10 +73,9 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
         for (let propName in changes) {
             switch (propName) {
                 case 'layers':
-                    if (this.layers.length === 0) {
-                        // TODO: dummy entry
+                    if (this.layers.length > 0) {
+                        this.selectedLayer.emit(this.layers[0]);
                     }
-                    this.selectedLayer.emit(this.layers[0]);
                     break;
                 default:
                     // do nothing
@@ -97,13 +98,13 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
                     <span flex="grow">{{title}}</span>
                     <span>
                         <button md-button class="md-icon-button md-primary amount-button"
-                                aria-label="Add"
-                                (click)="add()" [disabled]="amountOfLayers===max">
+                                aria-label="Add" (click)="add()"
+                                [disabled]="amountOfLayers>=max || _layers.length <= 0">
                             <i md-icon>add_circle_outline</i>
                         </button>
                         <button md-button class="md-icon-button md-primary amount-button"
-                                aria-label="Remove"
-                                (click)="remove()" [disabled]="amountOfLayers===min">
+                                aria-label="Remove" (click)="remove()"
+                                [disabled]="amountOfLayers<=min || _layers.length <= 0">
                             <i md-icon>remove_circle_outline</i>
                         </button>
                     </span>
@@ -185,8 +186,7 @@ export class LayerMultiSelectComponent implements OnChanges {
         for (let propName in changes) {
             switch (propName) {
                 case 'initialAmount':
-                    this.amountOfLayers = this.initialAmount;
-                    this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
+                    this.amountOfLayers = Math.max(this.initialAmount, this.min);
                 /* falls through */
                 case 'layers':
                 case 'types':
