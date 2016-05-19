@@ -55,13 +55,13 @@ import {SymbologyDialogComponent, SymbologyDialogConfig}
                 <div layout="column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                            (click)="showRenameLayerDialog()">
+                            (click)="showRenameLayerDialog($event)">
                         <i md-icon>mode_edit</i>
                         Rename
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                      (click)="showSymbologyDialog()">
+                      (click)="showSymbologyDialog($event)">
                         <i md-icon>map</i>
                         Symbology
                     </button>
@@ -212,7 +212,7 @@ export class StartTabComponent {
     /**
      * Show rename dialog for the selected layer.
      */
-    showRenameLayerDialog() {
+    showRenameLayerDialog(event: Event) {
         const config = new RenameLayerDialogConfig()
             .layerService(this.layerService)
             .clickOutsideToClose(true)
@@ -224,7 +224,7 @@ export class StartTabComponent {
     /**
      * Show symbology dialog for the selected layer.
      */
-    showSymbologyDialog() {
+    showSymbologyDialog(event: Event) {
         const config = new SymbologyDialogConfig()
           .layerService(this.layerService)
           .clickOutsideToClose(true)
