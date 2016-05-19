@@ -282,9 +282,6 @@ export class OperatorsTabComponent implements AfterViewInit {
                 (acc, group) => acc + group.getGroupWidth(itemsPerGroup),
                 0
             );
-            console.log(
-                'items', itemsPerGroup, 'totalWidth', totalWidth, 'maxWidth', availableWidth
-            );
             itemsPerGroup--;
         } while (
             totalWidth > availableWidth && itemsPerGroup >= minItemsPerGroup
