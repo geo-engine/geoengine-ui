@@ -163,7 +163,8 @@ export class OperatorSelectionGroupComponent {
     }
 
     maxWidth(): number {
-        return SIZES.BUTTON.LARGE.WIDTH * this.buttons.length;
+        return SIZES.BUTTON.LARGE.WIDTH * this.buttons.length
+                + 2 * (SIZES.FIELDSET.PADDING + SIZES.FIELDSET.BORDER + SIZES.FIELDSET.MARGIN);
     }
 
 }

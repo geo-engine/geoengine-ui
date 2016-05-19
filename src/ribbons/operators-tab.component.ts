@@ -1,6 +1,6 @@
 import {
     Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, ViewChildren,
-    QueryList, AfterViewInit, ChangeDetectorRef,
+    QueryList, AfterViewInit, ChangeDetectorRef, ViewChild,
 } from 'angular2/core';
 
 import {Observable} from 'rxjs/Rx';
@@ -51,7 +51,7 @@ import {
 @Component({
     selector: 'wave-operators-tab',
     template: `
-    <div layout="row">
+    <div #container layout="row">
         <wave-operator-selection-group groupName="Vector" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
@@ -150,6 +150,8 @@ export class OperatorsTabComponent implements AfterViewInit {
     @ViewChildren(OperatorSelectionGroupComponent)
     groups: QueryList<OperatorSelectionGroupComponent>;
 
+    @ViewChild('container') container: ElementRef;
+
     @Input() maxWidth: number;
 
     @Output() showOperator = new EventEmitter<OperatorBase>();
@@ -197,13 +199,10 @@ export class OperatorsTabComponent implements AfterViewInit {
         };
 
         Observable.fromEvent(window, 'resize')
-                  .map(_ => window.innerWidth)
-                  .subscribe(windowWidth => {
-            console.log('WINDOW RESIZE');
-            checkMaxSize(windowWidth);
-        });
+                  .map(_ => this.container.nativeElement.clientWidth)
+                  .subscribe(checkMaxSize);
 
-        setTimeout(() => checkMaxSize(window.innerWidth));
+        setTimeout(() => checkMaxSize(this.container.nativeElement.clientWidth));
     }
 
     addExpressionOperator() {
