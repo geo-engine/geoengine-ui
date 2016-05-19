@@ -303,7 +303,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
     private addOperatorsToGraph(graph: Dagre.Graph,
                       initialOperators: Array<Operator>,
-                      layers: Array<Layer>): Array<number> {
+                      layers: Array<Layer<any>>): Array<number> {
         let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
@@ -363,8 +363,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     }
 
     private addLayersToGraph(graph: Dagre.Graph,
-                             layers: Array<Layer>,
-                             layersToAccent: Array<Layer>,
+                             layers: Array<Layer<any>>,
+                             layersToAccent: Array<Layer<any>>,
                              operatorIdsInGraph: Array<number>) {
         for (let layer of layers) {
             // operator of layer is contained in graph

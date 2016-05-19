@@ -42,7 +42,7 @@ export class RenameLayerComponent implements OnInit {
 
     @Input() layerService: LayerService;
 
-    private layer: Layer;
+    private layer: Layer<any>;
     private layerName: string;
 
     constructor(private dialog: MdDialogRef) {}

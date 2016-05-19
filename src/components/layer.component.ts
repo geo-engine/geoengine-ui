@@ -134,7 +134,7 @@ export class LayerComponent {
         });
     }
 
-    replaceContextMenu(event: MouseEvent, layer: Layer) {
+    replaceContextMenu(event: MouseEvent, layer: Layer<any>) { // TODO: wildcard?
         event.preventDefault();
         console.log('A context menu for ' + layer.name + ' will appear in future versions!');
     }

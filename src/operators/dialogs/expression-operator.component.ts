@@ -124,7 +124,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
                                          implements OnInit, OnChanges {
 
     private configForm: ControlGroup;
-    private selectedLayers: Array<Layer>;
+    private selectedLayers: Array<Layer<any>>;
     private projection: Projection;
 
     private outputDataTypes: Array<[DataType, string]> = DataTypes.ALL_NUMERICS.map(
@@ -174,7 +174,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.projection = projection;
     }
 
-    onSelectLayers(layers: Array<Layer>) {
+    private onSelectLayers(layers: Array<Layer<any>>) {
         this.calculateDataTypeList(layers);
         this.calculateUnitList(layers);
 
@@ -225,7 +225,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.dialog.close();
     }
 
-    private calculateUnitList(layers: Array<Layer>) {
+    private calculateUnitList(layers: Array<Layer<any>>) {
         this.outputUnits = [];
         for (let layer of layers) {
             let unit = layer.operator.getUnit('value');
@@ -245,7 +245,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         }
     }
 
-    private calculateDataTypeList(layers: Array<Layer>) {
+    private calculateDataTypeList(layers: Array<Layer<any>>) {
         let firstItemWithRefs: DataType = undefined;
         for (let i = 0; i < this.outputDataTypes.length; i++) {
             let dataType = this.outputDataTypes[i][0];

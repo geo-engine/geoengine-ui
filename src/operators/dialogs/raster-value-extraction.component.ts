@@ -12,7 +12,7 @@ import {
         OperatorBaseComponent, toLetters,
 } from './operator.component';
 
-import {Layer} from '../../models/layer.model';
+import {VectorLayer, Layer} from '../../models/layer.model';
 import {SimplePointSymbology} from '../../models/symbology.model';
 
 import {Operator} from '../operator.model';
@@ -81,8 +81,8 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     private configForm: ControlGroup;
     private valueNamesControls: ControlArray;
 
-    private selectedPointLayer: Layer;
-    private selectedRasterLayers: Array<Layer>;
+    private selectedPointLayer: Layer<any>;
+    private selectedRasterLayers: Array<Layer<any>>;
 
     private resolutionX = 1024;
     private resolutionY = 1024;
@@ -99,7 +99,11 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         });
     }
 
-    onSelectRasterLayers(layers: Array<Layer>) {
+    ngOnInit() {
+        super.ngOnInit();
+    }
+
+    private onSelectRasterLayers(layers: Array<Layer<any>>) {
         let discrepancy = layers.length - this.valueNamesControls.length;
         if (discrepancy > 0) {
             for (let i = this.valueNamesControls.length; i < layers.length; i++) {
@@ -151,12 +155,15 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             rasterSources: rasterOperators,
         });
 
-        this.layerService.addLayer(new Layer({
+        this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({
-                fill_rgba: this.randomColorService.getRandomColor(),
-            }),
+            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

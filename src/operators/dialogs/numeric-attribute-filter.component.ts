@@ -85,7 +85,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     private attributes: Array<string> = [];
 
-    private selectedLayer: Layer;
+    private selectedLayer: Layer<any>;
     private boundsMin: number;
     private boundsMax: number;
 
@@ -125,7 +125,11 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         });
     }
 
-    onSelectLayer(layer: Layer) {
+    ngOnInit() {
+        super.ngOnInit();
+    }
+
+    private onSelectLayer(layer: Layer<any>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.attributes.filter((attribute: string) => {
@@ -192,6 +196,11 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
             symbology: new SimplePointSymbology({
                 fill_rgba: this.randomColorService.getRandomColor(),
             }),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

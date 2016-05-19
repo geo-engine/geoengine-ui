@@ -1,17 +1,24 @@
-import {Injectable} from "angular2/core";
-import {Http, Response} from "angular2/http";
-import {Observable} from "rxjs/Rx";
+import {Injectable} from 'angular2/core';
+import {Http, Response} from 'angular2/http';
+import {Observable} from 'rxjs/Rx';
 
-import moment from "moment";
+import moment from 'moment';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import Config from "../models/config.model";
-import {PlotData} from "../plots/plot.model";
+import Config from '../models/config.model';
+import {PlotData} from '../plots/plot.model';
+
+import {GeoJsonFeatureCollection} from '../models/geojson.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
+
+export interface MappingColorizer {
+    interpolation: string;
+    breakpoints: Array<[number, string, string]>;
+}
 
 /**
  * WFS Output Formats
@@ -37,14 +44,14 @@ abstract class WFSOutputFormat {
  * JSON Output format
  */
 class JSONWFSOutputFormat extends WFSOutputFormat {
-    protected format = "application/json";
+    protected format = 'application/json';
 }
 
 /**
  * CSV Output format
  */
 class CSVWFSOutputFormat extends WFSOutputFormat {
-    protected format = "csv";
+    protected format = 'csv';
 }
 
 /**
@@ -70,19 +77,19 @@ export class MappingQueryService {
      */
     getPlotQueryUrl(operator: Operator, time: moment.Moment): string {
         const parameters: ParametersType = {
-            service: "plot",
+            service: 'plot',
             query: operator.toQueryJSON(),
             time: time.toISOString(),
             crs: operator.projection.getCode(),
         };
 
         if (operator.getSources(ResultTypes.RASTER).size > 0) {
-            parameters["height"] = 1024; // magic number
-            parameters["width"] = 1024; // magic number
+            parameters['height'] = 1024; // magic number
+            parameters['width'] = 1024; // magic number
         }
 
-        return Config.MAPPING_URL + "?" +
-               Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
+        return Config.MAPPING_URL + '?' +
+               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
     }
 
     /**
@@ -124,19 +131,19 @@ export class MappingQueryService {
         const projectedOperator = operator.getProjectedOperator(projection);
 
         const parameters: ParametersType = {
-            service: "WFS",
+            service: 'WFS',
             version: Config.WFS.VERSION,
-            request: "GetFeature",
+            request: 'GetFeature',
             typeNames: projectedOperator.resultType.getCode()
-                       + ":"
+                       + ':'
                        + projectedOperator.toQueryJSON(),
             srsname: projection.getCode(),
             time: time.toISOString(),
             outputFormat: outputFormat.getFormat(),
         };
 
-        return Config.MAPPING_URL + "?" +
-               Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
+        return Config.MAPPING_URL + '?' +
+               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
     }
 
     /**
@@ -154,6 +161,22 @@ export class MappingQueryService {
         return this.http.get(this.getWFSQueryUrl(operator, time, projection, outputFormat))
                         .toPromise()
                         .then(response => response.text());
+    }
+
+    /**
+     * Retrieve the WFS data as JSON by querying MAPPING.
+     * @param operator the operator graph
+     * @param time the point in time
+     * @param projection the desired projection
+     * @param outputFormat the output format
+     * @returns a Promise of JSON
+     */
+    getWFSDataAsJson(operator: Operator,
+               time: moment.Moment,
+               projection: Projection): Promise<GeoJsonFeatureCollection> {
+        return this.http.get(this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON))
+                        .toPromise()
+                        .then(response => response.json());
     }
 
     /**
@@ -177,6 +200,26 @@ export class MappingQueryService {
         }).switch();
     }
 
+    getWFSDataStreamAsGeoJsonFeatureCollection(operator: Operator,
+                     time$: Observable<moment.Moment>,
+                     projection$: Observable<Projection>): Observable<GeoJsonFeatureCollection> {
+        return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+            return Observable.fromPromise(
+                this.getWFSDataAsJson(operator, time, projection)
+            );
+        }).switch().map(result => {
+            let geojson = result as GeoJsonFeatureCollection;
+            let features = geojson.features;
+            for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
+                let feature = features[localRowId];
+                if (feature.id === undefined) {
+                    feature.id = 'lrid_' + localRowId;
+                }
+            }
+            return geojson;
+        }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+    }
+
     /**
      * Get MAPPING query parameters for the WMS request.
      * @param operator the operator graph
@@ -190,9 +233,9 @@ export class MappingQueryService {
         const projectedOperator = operator.getProjectedOperator(projection);
 
         return {
-            service: "WMS",
+            service: 'WMS',
             version: Config.WMS.VERSION,
-            request: "GetMap",
+            request: 'GetMap',
             format: Config.WMS.FORMAT,
             transparent: true,
             layers: projectedOperator.toQueryJSON(),
@@ -213,7 +256,21 @@ export class MappingQueryService {
                    projection: Projection): string {
         const parameters: ParametersType = this.getWMSQueryParameters(operator, time, projection);
 
-        return Config.MAPPING_URL + "?" +
-               Object.keys(parameters).map(key => key + "=" + parameters[key]).join("&");
+        return Config.MAPPING_URL + '?' +
+               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+    }
+
+    getColorizer(op: Operator): Promise<MappingColorizer> {
+        const requestType = 'GetColorizer';
+        const colorizerRequest = Config.MAPPING_URL
+            + '?' + 'SERVICE=WMS'
+            + '&' + 'VERSION=' + Config.WMS.VERSION
+            + '&' + 'REQUEST=' + requestType
+            + '&' + 'LAYERS=' + op.toQueryJSON()
+            + '&' + 'CRS=' + op.projection.getCode();
+        console.log('colorizerRequest', colorizerRequest);
+        return this.http.get(colorizerRequest)
+            .map((res: Response) => res.json())
+            .map((json: MappingColorizer) => { return json as MappingColorizer }).toPromise();
     }
 }

@@ -31,7 +31,7 @@ import {Layer} from "../../models/layer.model";
 })
 export class SymbologyDialogComponent implements OnInit {
     @Input() layerService: LayerService;
-    private _layer: Layer;
+    private _layer: Layer<any>;
     private _symbology: Symbology;
 
     // for ng-switch

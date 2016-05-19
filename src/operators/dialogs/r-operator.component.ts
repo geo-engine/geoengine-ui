@@ -85,8 +85,8 @@ export class ROperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
     private code: string;
-    private rasterSources: Array<Layer> = [];
-    private pointSources: Array<Layer> = [];
+    private rasterSources: Array<Layer<any>> = [];
+    private pointSources: Array<Layer<any>> = [];
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -140,7 +140,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
                         fill_rgba: this.randomColorService.getRandomColor(),
                     });
                     break;
-                case ResultTypes.POINTS:
+                case ResultTypes.RASTER:
                     symbology = new RasterSymbology({});
                     break;
                 default:

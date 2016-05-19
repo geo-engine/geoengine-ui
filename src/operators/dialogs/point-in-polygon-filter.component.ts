@@ -64,8 +64,8 @@ import {SimplePointSymbology} from '../../models/symbology.model';
 export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent {
 
         private configForm: ControlGroup;
-        private pointLayer: Layer;
-        private polygonLayer: Layer;
+        private pointLayer: Layer<any>;
+        private polygonLayer: Layer<any>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -98,6 +98,11 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             symbology: new SimplePointSymbology({
                 fill_rgba: this.randomColorService.getRandomColor(),
             }),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

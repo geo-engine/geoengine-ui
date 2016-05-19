@@ -10,7 +10,7 @@ import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {LayerComponent} from '../components/layer.component';
-import {DataTable} from '../components/data-table.component';
+import {DataTableComponent} from '../components/data-table.component';
 import {OlMapComponent} from './openlayers/ol-map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
@@ -26,7 +26,6 @@ import {StorageService} from '../services/storage.service';
 import {ProjectService} from '../services/project.service';
 import {UserService} from '../services/user.service';
 import {MappingQueryService} from '../services/mapping-query.service';
-import {MappingColorizerService} from '../services/mapping-colorizer.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {PlotListComponent} from '../plots/plot-list.component';
@@ -73,19 +72,25 @@ import {PlotService} from '../plots/plot.service';
                                     [operator]="layer.operator"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjectionStream() | async"
-                                    [time]="projectService.getTimeStream() | async">
+                                    [time]="projectService.getTimeStream() | async"
+                                    [data]="layer.getDataStream() | async"
+                                    >
                     </ol-point-layer>
                     <ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
                                    [operator]="layer.operator"
                                    [symbology]="layer.symbology"
                                    [projection]="projectService.getMapProjectionStream() | async"
-                                   [time]="projectService.getTimeStream() | async">
+                                   [time]="projectService.getTimeStream() | async"
+                                   [data]="layer.getDataStream() | async"
+                                   >
                     </ol-line-layer>
                     <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
                                       [operator]="layer.operator"
                                       [symbology]="layer.symbology"
                                       [projection]="projectService.getMapProjectionStream() | async"
-                                      [time]="projectService.getTimeStream() | async">
+                                      [time]="projectService.getTimeStream() | async"
+                                      [data]="layer.getDataStream() | async"
+                                      >
                     </ol-polygon-layer>
                     <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
                                      [operator]="layer.operator"
@@ -163,7 +168,7 @@ import {PlotService} from '../plots/plot.service';
     `],
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
-        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTable,
+        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTableComponent,
         RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent,
@@ -172,7 +177,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         HTTP_PROVIDERS, SidenavService, MdDialog,
         LayerService, PlotService, StorageService, ProjectService, UserService, MappingQueryService,
-        MappingColorizerService, RandomColorService,
+        RandomColorService,
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -185,7 +190,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
 
-    private layersReverse$: Observable<Array<Layer>>;
+    private layersReverse$: Observable<Array<Layer<any>>>;
     private hasSelectedLayer$: Observable<boolean>;
 
     // for ng-switch
@@ -201,7 +206,6 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef,
-                private mappingColorizerService: MappingColorizerService,
                 private randomColorService: RandomColorService) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());

@@ -11,7 +11,6 @@ import {LayerService} from '../../services/layer.service';
 import {PlotService} from '../../plots/plot.service';
 import {ProjectService} from  '../../services/project.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
-import {MappingColorizerService} from '../../services/mapping-colorizer.service';
 import {RandomColorService} from '../../services/random-color.service';
 
 import {Layer} from '../../models/layer.model';
@@ -49,17 +48,17 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     /**
      * An array of selectible layers.
      */
-    @Input() layers: Array<Layer>;
+    @Input() layers: Array<Layer<any>>;
 
     /**
      * This output emits the selected layer.
      */
-    @Output() selectedLayer = new EventEmitter<Layer>();
+    @Output('selectedLayer') selectedLayer = new EventEmitter<Layer<any>>();
 
-    private _selectedLayer: Layer;
+    private _selectedLayer: Layer<any>;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {
-        this.selectedLayer.subscribe((layer: Layer) => this._selectedLayer = layer);
+        this.selectedLayer.subscribe((layer: Layer<any>) => this._selectedLayer = layer);
     }
 
     ngAfterViewInit() {
@@ -140,7 +139,7 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer>;
+    @Input("layers") layers: Array<Layer<any>>;
 
     /**
      * The minimum number of elements to select.
@@ -167,17 +166,17 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output() selectedLayers = new EventEmitter<Array<Layer>>();
+    @Output("selectedLayers") selectedLayers = new EventEmitter<Array<Layer<any>>>();
 
     private amountOfLayers: number = 1;
 
-    private _layers: Array<Layer>;
+    private _layers: Array<Layer<any>>;
     private ids: Array<string>;
 
-    private _selectedLayers: Array<Layer> = [];
+    private _selectedLayers: Array<Layer<any>> = [];
 
     constructor() {
-        this.selectedLayers.subscribe((layers: Array<Layer>) => {
+        this.selectedLayers.subscribe((layers: Array<Layer<any>>) => {
             this._selectedLayers = layers;
         });
     }
@@ -190,7 +189,7 @@ export class LayerMultiSelectComponent implements OnChanges {
                 /* falls through */
                 case 'layers':
                 case 'types':
-                    this._layers = this.layers.filter((layer: Layer) => {
+                    this._layers = this.layers.filter((layer: Layer<any>) => {
                         return this.types.indexOf(layer.operator.resultType) >= 0;
                     });
                     if (this.title === undefined) {
@@ -211,12 +210,12 @@ export class LayerMultiSelectComponent implements OnChanges {
         this.recalculateIds();
     }
 
-    updateLayer(index: number, layer: Layer) {
+    updateLayer(index: number, layer: Layer<any>) {
         this._selectedLayers[index] = layer;
         this.selectedLayers.emit(this._selectedLayers);
     }
 
-    add() {
+    private add() {
         this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
         this.recalculateIds();
     }
@@ -283,7 +282,7 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     /**
      * An array of layers that is traversed to get all projections.
      */
-    @Input() layers: Array<Layer>;
+    @Input() layers: Array<Layer<any>>;
 
     /**
      * This output emits the selected layer.
@@ -406,10 +405,9 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     @Input() plotService: PlotService;
     @Input() projectService: ProjectService;
     @Input() mappingQueryService: MappingQueryService;
-    @Input() mappingColorizerService: MappingColorizerService;
     @Input() randomColorService: RandomColorService;
 
-    protected layers: Array<Layer> = [];
+    protected layers: Array<Layer<any>> = [];
 
     // types
     protected ResultTypes = ResultTypes; // tslint:disable-line:variable-name
@@ -461,10 +459,7 @@ export class OperatorDialogConfig extends MdDialogConfig {
         this.context.mappingQueryService = mappingQueryService;
         return this;
     }
-    mappingColorizerService(mappingcolorizerService: MappingColorizerService) {
-        this.context.mappingColorizerService = mappingcolorizerService;
-        return this;
-    }
+
     randomColorService(randomColorService: RandomColorService) {
         this.context.randomColorService = randomColorService;
         return this;
