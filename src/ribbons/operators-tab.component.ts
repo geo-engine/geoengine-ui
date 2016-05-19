@@ -14,7 +14,6 @@ import {LayerService} from '../services/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {ProjectService} from '../services/project.service';
 import {MappingQueryService} from '../services/mapping-query.service';
-import {MappingColorizerService} from '../services/mapping-colorizer.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {RasterValueExtractionType} from '../operators/types/raster-value-extraction-type.model';
@@ -182,7 +181,6 @@ export class OperatorsTabComponent implements AfterViewInit {
         private plotService: PlotService,
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
-        private mappingColorizerService: MappingColorizerService,
         private randomColorService: RandomColorService
     ) {}
 
@@ -261,7 +259,6 @@ export class OperatorsTabComponent implements AfterViewInit {
             .plotService(this.plotService)
             .projectService(this.projectService)
             .mappingQueryService(this.mappingQueryService)
-            .mappingColorizerService(this.mappingColorizerService)
             .randomColorService(this.randomColorService)
             .clickOutsideToClose(true);
 

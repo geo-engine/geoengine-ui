@@ -98,6 +98,11 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             symbology: new SimplePointSymbology({
                 fill_rgba: this.randomColorService.getRandomColor(),
             }),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

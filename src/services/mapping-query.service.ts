@@ -15,6 +15,11 @@ import {GeoJsonFeatureCollection} from '../models/geojson.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
 
+export interface MappingColorizer {
+    interpolation: string;
+    breakpoints: Array<[number, string, string]>;
+}
+
 /**
  * WFS Output Formats
  */
@@ -168,7 +173,7 @@ export class MappingQueryService {
      */
     getWFSDataAsJson(operator: Operator,
                time: moment.Moment,
-               projection: Projection): Promise<JSON> {
+               projection: Projection): Promise<GeoJsonFeatureCollection> {
         return this.http.get(this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON))
                         .toPromise()
                         .then(response => response.json());
@@ -253,5 +258,19 @@ export class MappingQueryService {
 
         return Config.MAPPING_URL + '?' +
                Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+    }
+
+    getColorizer(op: Operator): Promise<MappingColorizer> {
+        const requestType = 'GetColorizer';
+        const colorizerRequest = Config.MAPPING_URL
+            + '?' + 'SERVICE=WMS'
+            + '&' + 'VERSION=' + Config.WMS.VERSION
+            + '&' + 'REQUEST=' + requestType
+            + '&' + 'LAYERS=' + op.toQueryJSON()
+            + '&' + 'CRS=' + op.projection.getCode();
+        console.log('colorizerRequest', colorizerRequest);
+        return this.http.get(colorizerRequest)
+            .map((res: Response) => res.json())
+            .map((json: MappingColorizer) => { return json as MappingColorizer }).toPromise();
     }
 }

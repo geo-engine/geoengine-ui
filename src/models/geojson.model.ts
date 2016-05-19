@@ -1,4 +1,4 @@
-export interface GeoJsonFeatureCollection extends JSON {
+export interface GeoJsonFeatureCollection {
     type: string;
     features: [ GeoJsonFeature ];
 }

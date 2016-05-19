@@ -16,7 +16,7 @@ import {Unit} from "../unit.model";
 import {Projection, Projections} from "../projection.model";
 import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName, MsgCo2CorrectionType, SolarangleName} from "../types/msg-types.model";
 import {Symbology, MappingColorizerRasterSymbology, RasterSymbology} from "../../models/symbology.model";
-import {MappingColorizerService} from "../../services/mapping-colorizer.service";
+import {MappingQueryService} from "../../services/mapping-query.service";
 
 /**
  * This component allows creating the MSG radiance operator.
@@ -89,7 +89,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -97,7 +97,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -201,7 +201,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -209,7 +209,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -307,7 +307,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -315,7 +315,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -395,7 +395,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -403,7 +403,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -480,7 +480,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
             rasterSources: rasterSources,
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -488,7 +488,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -565,7 +565,7 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
             rasterSources: rasterSources,
         });
 
-        this.mappingColorizerService.getColorizer(operator).then(x => { // TODO: move to layer?
+        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,
@@ -573,7 +573,7 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
             });
             this.layerService.addLayer(layer);
         }).catch(ex => {
-            console.log('_mappingColorizerService.getColorizer', ex);
+            console.log('mappingQueryService.getColorizer', ex);
             let layer = new RasterLayer({
                 name: outputName,
                 operator: operator,

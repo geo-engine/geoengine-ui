@@ -12,7 +12,7 @@ import {HighlightPipe} from "../pipes/highlight.pipe";
 import {Projections} from '../operators/projection.model';
 import {Unit, Interpolation, UnitConfig} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology, RasterSymbology} from "../models/symbology.model";
-import {MappingColorizerService} from "../services/mapping-colorizer.service";
+import {MappingQueryService} from "../services/mapping-query.service";
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
 
 
@@ -76,7 +76,7 @@ import {RasterSourceType} from '../operators/types/raster-source-type.model';
       padding: 5px 5px 5px 0px;
     }
     `],
-    providers: [MappingDataSourcesService, MappingColorizerService],
+    providers: [MappingDataSourcesService, MappingQueryService],
     directives: [MATERIAL_DIRECTIVES],
     pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -87,7 +87,7 @@ export class RasterRepositoryComponent {
   private sources: Array<MappingSource> = [];
   private search_term: String = "";
   constructor(private _mappingDataSourcesService: MappingDataSourcesService,
-              private _mappingColorizerService: MappingColorizerService,
+              private _mappingQueryService: MappingQueryService,
               private _layerService: LayerService) {
     _mappingDataSourcesService.getSources().subscribe(x => this.sources = x);
   }
@@ -116,7 +116,7 @@ export class RasterRepositoryComponent {
         units: new Map<string, Unit>().set("value", unit)
     });
 
-    this._mappingColorizerService.getColorizer(op).then(x => { // TODO: move to layer?
+    this._mappingQueryService.getColorizer(op).then(x => { // TODO: move to layer?
         let layer = new Layer({
             name: channel.name,
             operator: op,
@@ -124,7 +124,7 @@ export class RasterRepositoryComponent {
         });
         this._layerService.addLayer(layer);
     }).catch(ex => {
-        console.log("_mappingColorizerService.getColorizer", ex);
+        console.log("mappingQueryService.getColorizer", ex);
         let layer = new Layer({
             name: channel.name,
             operator: op,

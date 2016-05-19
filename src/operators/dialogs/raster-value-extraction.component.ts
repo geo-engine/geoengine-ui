@@ -12,7 +12,7 @@ import {
         OperatorBaseComponent, toLetters,
 } from './operator.component';
 
-import {Layer} from '../../models/layer.model';
+import {VectorLayer, Layer} from '../../models/layer.model';
 import {SimplePointSymbology} from '../../models/symbology.model';
 
 import {Operator} from '../operator.model';
@@ -155,11 +155,15 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             rasterSources: rasterOperators,
         });
 
-        this.layerService.addLayer(new Layer({
+        this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
             symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
-            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator, this.projectService.getTimeStream(), this.projectService.getMapProjectionStream()),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

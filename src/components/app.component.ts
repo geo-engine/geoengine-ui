@@ -26,7 +26,6 @@ import {StorageService} from '../services/storage.service';
 import {ProjectService} from '../services/project.service';
 import {UserService} from '../services/user.service';
 import {MappingQueryService} from '../services/mapping-query.service';
-import {MappingColorizerService} from '../services/mapping-colorizer.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {PlotListComponent} from '../plots/plot-list.component';
@@ -178,7 +177,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         HTTP_PROVIDERS, SidenavService, MdDialog,
         LayerService, PlotService, StorageService, ProjectService, UserService, MappingQueryService,
-        MappingColorizerService, RandomColorService,
+        RandomColorService,
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -207,7 +206,6 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private mdDialog: MdDialog,
                 private elementRef: ElementRef,
-                private mappingColorizerService: MappingColorizerService,
                 private randomColorService: RandomColorService) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
