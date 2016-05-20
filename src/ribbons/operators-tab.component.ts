@@ -185,22 +185,17 @@ export class OperatorsTabComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit() {
-        this.groups.forEach(group => {
-            group.buttonsVisible = group.buttons.length;
-        });
-
-        const checkMaxSize = (windowWidth: number) => {
-            const maxGroupsSize = this.groups.reduce((acc, group) => acc + group.maxWidth(), 0);
-            this.smallButtons = maxGroupsSize > windowWidth;
-
-            this.changeDetectorRef.markForCheck();
-        };
-
+        // recalculate the button group sizing on window resize
         Observable.fromEvent(window, 'resize')
                   .map(_ => this.container.nativeElement.clientWidth)
-                  .subscribe(checkMaxSize);
+                  .subscribe(availabeWidth => {
+                      this.setGroupSizeBasedOnMaxWidth(availabeWidth);
+                  });
 
-        setTimeout(() => checkMaxSize(this.container.nativeElement.clientWidth));
+        // initially calculate the button group sizing
+        setTimeout(() => this.setGroupSizeBasedOnMaxWidth(
+            this.container.nativeElement.clientWidth)
+        );
     }
 
     addExpressionOperator() {
@@ -263,5 +258,55 @@ export class OperatorsTabComponent implements AfterViewInit {
             .clickOutsideToClose(true);
 
         this.mdDialog.open(OperatorComponent as Function, this.elementRef, config);
+    }
+
+    /**
+     * This functions tries to find the maximum number of buttons to show incrementally.
+     * It uses small buttons if a minimum value of visible buttons per group is reached.
+     */
+    private setGroupSizeBasedOnMaxWidth(availableWidth: number) {
+        const minItemsPerGroup = 2;
+        const maxItemsPerGroup = this.groups.reduce(
+            (acc, group) => Math.max(acc, group.buttons.length),
+            0
+        );
+
+        // try using large buttons
+        this.groups.forEach(group => group.smallButtons = false);
+        this.smallButtons = false;
+
+        let itemsPerGroup = maxItemsPerGroup;
+        let totalWidth: number;
+        do {
+            totalWidth = this.groups.reduce(
+                (acc, group) => acc + group.getGroupWidth(itemsPerGroup),
+                0
+            );
+            itemsPerGroup--;
+        } while (
+            totalWidth > availableWidth && itemsPerGroup >= minItemsPerGroup
+        );
+
+        if (totalWidth > availableWidth) {
+            // use small buttons now
+            this.groups.forEach(group => group.smallButtons = true);
+            this.smallButtons = true;
+
+            itemsPerGroup = maxItemsPerGroup; // reset to max
+            do {
+                totalWidth = this.groups.reduce(
+                    (acc, group) => acc + group.getGroupWidth(itemsPerGroup),
+                    0
+                );
+                itemsPerGroup--;
+            } while (
+                totalWidth > availableWidth && itemsPerGroup >= minItemsPerGroup
+            );
+        }
+
+        // set the buttons for each group. +1 because of decrease in loop.
+        this.groups.forEach(group => group.buttonsVisible = itemsPerGroup + 1);
+
+        this.changeDetectorRef.markForCheck();
     }
 }
