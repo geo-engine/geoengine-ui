@@ -2,20 +2,29 @@ import {Observable} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import Config from './config.model';
-import {Symbology, SymbologyDict} from './symbology.model';
+import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology}
+    from './symbology.model';
 import {GeoJsonFeatureCollection} from './geojson.model';
 
 interface Parameters {
     [key: string]: any;
 }
 
-
-interface LayerConfig<D> {
+interface LayerConfig<S extends Symbology> {
     name: string;
     operator: Operator;
-    symbology: Symbology;
-    data$?: Observable<D>;
+    symbology: S;
 }
+
+interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
+    data$: Observable<GeoJsonFeatureCollection>;
+}
+
+interface RasterLayerConfig<S extends RasterSymbology> extends LayerConfig<S> {
+
+}
+
+type LayerType = 'raster' | 'vector';
 
 /**
  * Dictionary for serialization.
@@ -25,36 +34,46 @@ export interface LayerDict {
     operator: OperatorDict;
     expanded: boolean;
     symbology: SymbologyDict;
+    type: LayerType;
 }
 
-export class Layer<D> {
+export abstract class Layer<S extends Symbology> {
     name: string;
     expanded: boolean = false;
-    symbology: Symbology;
+    symbology: S;
     private _operator: Operator;
 
-    /**
-     * A data observable that emits new data on time and projection changes.
-     */
-    private _data$: Observable<D>;
-
-    constructor(config: LayerConfig<D>) {
+    constructor(config: LayerConfig<S>) {
         this.name = config.name;
         this._operator = config.operator;
         this.symbology = config.symbology;
-        this._data$ = (config.data$) ? config.data$ : Observable.of({} as D);
     }
 
-    static fromDict<T>(dict: LayerDict,
-        dataCallback: (operator: Operator) => Observable<T>): Layer<T> {
+    static fromDict(dict: LayerDict, dataCallback:
+        (operator: Operator) => Observable<GeoJsonFeatureCollection>): Layer<Symbology> {
 
         const operator = Operator.fromDict(dict.operator);
-        let layer = new Layer({
-            name: dict.name,
-            operator: operator,
-            symbology: Symbology.fromDict(dict.symbology),
-            data$: dataCallback(operator),
-        });
+        let layer: Layer<Symbology>;
+        switch (dict.type) {
+            case('raster'):
+                layer = new RasterLayer({
+                    name: dict.name,
+                    operator: operator,
+                    symbology: Symbology.fromDict(dict.symbology) as RasterSymbology,
+                });
+                break;
+            case ('vector'):
+                layer = new VectorLayer({
+                    name: dict.name,
+                    operator: operator,
+                    symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
+                    data$: dataCallback(operator),
+                });
+                break;
+            default :
+                throw new TypeError('Layer.fromDict: Unknown LayerType -> ' + dict.type);
+        }
+
         layer.expanded = dict.expanded;
         return layer;
     }
@@ -67,16 +86,7 @@ export class Layer<D> {
       return this._operator;
     }
 
-    /**
-     * @returns the data observable.
-     */
-    get data$(): Observable<D> {
-        return this._data$;
-    }
-
-    public getDataStream(): Observable<D> {
-        return this.data$;
-    }
+    protected abstract get layerType(): LayerType;
 
     toDict(): LayerDict {
         return {
@@ -84,18 +94,41 @@ export class Layer<D> {
             operator: this._operator.toDict(),
             expanded: this.expanded,
             symbology: this.symbology.toDict(),
+            type: this.layerType,
         };
     }
 }
 
-export class VectorLayer extends Layer<GeoJsonFeatureCollection> {
-    constructor(config: LayerConfig<GeoJsonFeatureCollection>) {
+export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
+    private _data$: Observable<GeoJsonFeatureCollection>;
+
+    constructor(config: VectorLayerConfig<S>) {
         super(config);
+        this._data$ = config.data$;
+    }
+
+    /**
+     * @returns the data observable.
+     */
+    get data$(): Observable<GeoJsonFeatureCollection> {
+        return this._data$;
+    }
+
+    public getDataStream(): Observable<GeoJsonFeatureCollection> {
+        return this.data$;
+    }
+
+    get layerType(): LayerType {
+        return 'vector';
     }
 }
 
-export class RasterLayer extends Layer<any> {
-    constructor(config: LayerConfig<any>) {
+export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
+    constructor(config: RasterLayerConfig<S>) {
         super(config);
+    }
+
+    get layerType(): LayerType {
+        return 'raster';
     }
 }

@@ -7,7 +7,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 import Config from '../models/config.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
-import {Layer} from '../models/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../models/layer.model';
 
 import {LayerService} from '../services/layer.service';
 import {ProjectService} from '../services/project.service';
@@ -101,7 +101,7 @@ export class DataTableComponent implements OnInit, OnChanges {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS: {
-                    let vectorLayer = layer as Layer<GeoJsonFeatureCollection>;
+                    let vectorLayer = layer as VectorLayer<any>;
                     return vectorLayer.getDataStream().map(data => {
                         if (data) { // TODO: needed?
                             let geojson: GeoJsonFeatureCollection = data;

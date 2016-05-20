@@ -14,14 +14,14 @@ import {
 } from './operator.component';
 import {HistogramComponent, HistogramData} from '../../plots/histogram.component';
 
-import {Layer} from '../../models/layer.model';
+import {VectorLayer, Layer} from '../../models/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {NumericAttributeFilterType} from '../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../types/histogram-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
-import {SimplePointSymbology} from '../../models/symbology.model';
+import {SimplePointSymbology, Symbology} from '../../models/symbology.model';
 
 /**
  * This component allows creating the expression operator.
@@ -85,7 +85,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     private attributes: Array<string> = [];
 
-    private selectedLayer: Layer<any>;
+    private selectedLayer: Layer<Symbology>;
     private boundsMin: number;
     private boundsMax: number;
 
@@ -129,7 +129,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         super.ngOnInit();
     }
 
-    private onSelectLayer(layer: Layer<any>) {
+    private onSelectLayer(layer: Layer<Symbology>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.attributes.filter((attribute: string) => {
@@ -190,7 +190,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
         const operator = new Operator(dict);
 
-        this.layerService.addLayer(new Layer({
+        this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
             symbology: new SimplePointSymbology({

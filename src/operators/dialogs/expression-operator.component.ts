@@ -10,7 +10,7 @@ import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from 'a
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
 
-import {Layer} from '../../models/layer.model';
+import {RasterLayer} from '../../models/layer.model';
 import {RasterSymbology} from '../../models/symbology.model';
 
 import {Operator} from '../operator.model';
@@ -124,7 +124,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
                                          implements OnInit, OnChanges {
 
     private configForm: ControlGroup;
-    private selectedLayers: Array<Layer<any>>;
+    private selectedLayers: Array<RasterLayer<RasterSymbology>>;
     private projection: Projection;
 
     private outputDataTypes: Array<[DataType, string]> = DataTypes.ALL_NUMERICS.map(
@@ -174,7 +174,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.projection = projection;
     }
 
-    private onSelectLayers(layers: Array<Layer<any>>) {
+    private onSelectLayers(layers: Array<RasterLayer<RasterSymbology>>) {
         this.calculateDataTypeList(layers);
         this.calculateUnitList(layers);
 
@@ -216,7 +216,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             rasterSources: rasterLayers.map(layer => layer.operator),
         });
 
-        this.layerService.addLayer(new Layer({
+        this.layerService.addLayer(new RasterLayer({
             name: name,
             operator: operator,
             symbology: new RasterSymbology({}),
@@ -225,7 +225,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.dialog.close();
     }
 
-    private calculateUnitList(layers: Array<Layer<any>>) {
+    private calculateUnitList(layers: Array<RasterLayer<RasterSymbology>>) {
         this.outputUnits = [];
         for (let layer of layers) {
             let unit = layer.operator.getUnit('value');
@@ -245,7 +245,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         }
     }
 
-    private calculateDataTypeList(layers: Array<Layer<any>>) {
+    private calculateDataTypeList(layers: Array<RasterLayer<RasterSymbology>>) {
         let firstItemWithRefs: DataType = undefined;
         for (let i = 0; i < this.outputDataTypes.length; i++) {
             let dataType = this.outputDataTypes[i][0];

@@ -8,11 +8,11 @@ import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/c
 import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
     from './operator.component';
 
-import {Layer} from '../../models/layer.model';
+import {VectorLayer} from '../../models/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';
-import {SimplePointSymbology} from '../../models/symbology.model';
+import {SimplePointSymbology, AbstractVectorSymbology} from '../../models/symbology.model';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -64,8 +64,8 @@ import {SimplePointSymbology} from '../../models/symbology.model';
 export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent {
 
         private configForm: ControlGroup;
-        private pointLayer: Layer<any>;
-        private polygonLayer: Layer<any>;
+        private pointLayer: VectorLayer<AbstractVectorSymbology>;
+        private polygonLayer: VectorLayer<AbstractVectorSymbology>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -92,7 +92,7 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             polygonSources: [polygonOperator],
         });
 
-        this.layerService.addLayer(new Layer({
+        this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
             symbology: new SimplePointSymbology({
