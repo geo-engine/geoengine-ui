@@ -15,8 +15,8 @@ import {DataType, DataTypes} from '../operators/datatype.model';
 import {Projections} from '../operators/projection.model';
 import {Unit, Interpolation} from '../operators/unit.model';
 import {
-    SimplePointSymbology, SimpleVectorSymbology, RasterSymbology,
-} from '../models/symbology.model';
+    SimplePointSymbology, SimpleVectorSymbology, MappingColorizerRasterSymbology,
+} from '../symbology/symbology.model';
 
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
 import {GFBioSourceType} from '../operators/types/gfbio-source-type.model';
@@ -256,7 +256,13 @@ export class DebugTabComponent {
         this.layerService.addLayer(
             new RasterLayer({
                 name: 'SRTM',
-                symbology: new RasterSymbology({}),
+                symbology: new MappingColorizerRasterSymbology({},
+                     this.mappingQueryService.getColorizerStream(
+                        srtmOperator,
+                        this.projectService.getTimeStream(),
+                        this.projectService.getMapProjectionStream()
+                    )
+                ),
                 operator: srtmOperator,
             })
         );

@@ -382,7 +382,8 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
         let layer = new RasterLayer({
             name: outputName,
             operator: operator,
-            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(
+                    operator,
                     this.projectService.getTimeStream(),
                     this.projectService.getMapProjectionStream()
                 )

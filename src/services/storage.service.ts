@@ -35,11 +35,7 @@ export class StorageService {
                 private mappingQueryService: MappingQueryService) {
         this.storageProvider = new BrowserStorageProvider();
 
-        if (Config.DEBUG_MODE) {
-            this.defaults = new DeveloperDefaults();
-        } else {
-            this.defaults = new StorageDefaults();
-        }
+        this.defaults = new StorageDefaults();
 
         this.loadProject();
         this.loadLayers();
@@ -413,103 +409,5 @@ class StorageDefaults {
     }
     getTabIndex(): number {
         return 0;
-    }
-}
-
-/**
- * Default values for debugging the application.
- */
-class DeveloperDefaults extends StorageDefaults {
-    getLayers(mappingQueryService: MappingQueryService,
-        projectService: ProjectService): Array<Layer<Symbology>> {
-        const iucnPumaOperator = new Operator({
-            operatorType: new GFBioSourceType({
-                datasource: 'IUCN',
-                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
-                }),
-            resultType: ResultTypes.POLYGONS,
-            projection: Projections.WGS_84,
-            attributes: [],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
-        });
-
-        const wktOperator = new Operator({
-            operatorType: new WKTSourceType({
-                type: ResultTypes.LINES,
-                wkt: `GEOMETRYCOLLECTION(LINESTRING(-65.3906249908975 24.046463996515854,47.812499993344474 57.04072983307594,55.8984374922189 -46.43785688998231,-65.3906249908975 24.046463996515854))`,
-            }),
-            resultType: ResultTypes.LINES,
-            projection: Projections.WGS_84,
-            attributes: [],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
-        });
-
-        const gbifPumaOperator = new Operator({
-            operatorType: new GFBioSourceType({
-                datasource: 'GBIF',
-                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
-            }),
-            resultType: ResultTypes.POINTS,
-            projection: Projections.WGS_84,
-            attributes: [],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
-        });
-
-        return [
-            new VectorLayer({
-                name: 'IUCN Puma Concolor',
-                symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
-                operator: iucnPumaOperator,
-                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    iucnPumaOperator,
-                    projectService.getTimeStream(),
-                    projectService.getMapProjectionStream()
-                ),
-            }),
-            new VectorLayer({
-                name: 'WKT',
-                symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
-                operator:  wktOperator,
-                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    wktOperator,
-                    projectService.getTimeStream(),
-                    projectService.getMapProjectionStream()
-                ),
-
-            }),
-            new VectorLayer({
-                name: 'Puma Concolor',
-                symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
-                operator: gbifPumaOperator,
-                data$: mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    gbifPumaOperator,
-                    projectService.getTimeStream(),
-                    projectService.getMapProjectionStream()
-                ),
-            }),
-            new RasterLayer({
-                name: 'SRTM',
-                symbology: new RasterSymbology({}),
-                operator: new Operator({
-                    operatorType: new RasterSourceType({
-                        channel: 0,
-                        sourcename: 'srtm',
-                        transform: true,
-                    }),
-                    resultType: ResultTypes.RASTER,
-                    projection: Projections.WGS_84,
-                    attributes: ['value'],
-                    dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
-                    units: new Map<string, Unit>().set('value', new Unit({
-                        measurement: 'elevation',
-                        unit: 'm',
-                        interpolation: Interpolation.Continuous,
-                    })),
-                }),
-            }),
-        ];
     }
 }
