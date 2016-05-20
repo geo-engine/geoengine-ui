@@ -5,13 +5,16 @@ import {
 
 import {BehaviorSubject} from 'rxjs/Rx';
 
+import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
+
 import {StartTabComponent} from './start-tab.component';
 import {OperatorsTabComponent} from './operators-tab.component';
 import {ProjectTabComponent} from './project-tab.component';
+import {DebugTabComponent} from './debug-tab.component';
 
 import {StorageService} from '../services/storage.service';
 
-import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
+import Config from '../models/config.model';
 
 /**
  * The ribbons component.
@@ -36,6 +39,9 @@ import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
         <template md-tab label="Project">
             <wave-project-tab></wave-project-tab>
         </template>
+        <template *ngIf="DEBUG_MODE" md-tab label="Debug">
+            <wave-debug-tab></wave-debug-tab>
+        </template>
     </md-tabs>
     `,
     styles: [`
@@ -48,7 +54,8 @@ import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
     }
     `],
     directives: [
-        MATERIAL_DIRECTIVES, StartTabComponent, OperatorsTabComponent, ProjectTabComponent,
+        MATERIAL_DIRECTIVES,
+        StartTabComponent, OperatorsTabComponent, ProjectTabComponent, DebugTabComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -67,6 +74,8 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
     @Output() zoomMap = new EventEmitter<void>();
 
     @Output() addData = new EventEmitter<void>();
+
+    DEBUG_MODE: boolean = Config.DEBUG_MODE;
 
     private tabIndex$: BehaviorSubject<number>;
 
