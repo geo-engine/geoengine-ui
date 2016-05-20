@@ -98,7 +98,7 @@ abstract class OlVectorLayerComponent
 
             if (changes['data']) {
                 if (this.data) {
-                    console.log('data', this.data);
+                    // console.log('data', this.data);
                     this.mapLayer.getSource().addFeatures(this.format.readFeatures(this.data as any));
                 }
             }

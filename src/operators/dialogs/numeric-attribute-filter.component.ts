@@ -105,7 +105,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         });
 
         attributeNameControl.valueChanges.subscribe((attributeName: string) => {
-            console.log(attributeName, this.selectedLayer);
+            // console.log(attributeName, this.selectedLayer);
 
             const operator = new Operator({
                 operatorType: new HistogramType({

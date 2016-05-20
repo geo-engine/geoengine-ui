@@ -273,7 +273,7 @@ export class MappingQueryService {
             + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
             + '&' + 'CRS=' + projection.getCode()
             + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
-        console.log('colorizerRequest', colorizerRequest);
+        // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(colorizerRequest)
             .map((res: Response) => res.json())
             .map((json: MappingColorizer) => { return json; }).toPromise();

@@ -185,8 +185,6 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
                 colorizer$: Observable<MappingColorizer>) {
         super(config);
         this.colorizer$ = colorizer$;
-        console.log("new MappingColorizerRasterSymbology", this);
-        // if (config.fallback) { this.fallback = config.fallback };
     }
 
     get symbologyType(): SymbologyType {

@@ -188,7 +188,6 @@ export class DataTableComponent implements OnInit, OnChanges {
      * @param event The scroll event.
      */
     onScroll(event: any) {
-        console.log(event);
         this.scrollTop = Math.max(0, event.target.scrollTop);
         this.scrollBottom = Math.max(0, this.virtualHeight - event.target.scrollTop - this.height);
         // recalculate the first visible element!

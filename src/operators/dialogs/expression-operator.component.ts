@@ -135,7 +135,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
-        console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
+        // console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
 
         this.configForm = formBuilder.group({
             'expression': ['1 * A', Validators.compose([

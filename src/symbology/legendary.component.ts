@@ -185,9 +185,6 @@ export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizer
     ngOnInit() {
         this.symbology.colorizer$.subscribe(x => {
             this.colorizer = x;
-            console.log('s', this.colorizer);
         });
-        console.log('a', this.colorizer);
     }
-
 }
