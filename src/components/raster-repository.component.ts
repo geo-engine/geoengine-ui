@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {LayerService} from "../services/layer.service";
-import {Layer} from "../models/layer.model";
+import {RasterLayer} from "../models/layer.model";
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
@@ -85,7 +85,7 @@ import {RasterSourceType} from '../operators/types/raster-source-type.model';
 export class RasterRepositoryComponent {
 
   private sources: Array<MappingSource> = [];
-  private search_term: String = "";
+  private search_term: String = '';
   constructor(private _mappingDataSourcesService: MappingDataSourcesService,
               private _mappingQueryService: MappingQueryService,
               private _layerService: LayerService) {
@@ -108,24 +108,24 @@ export class RasterRepositoryComponent {
             transform: doTransform, // FIXME user selectable transform?
         }),
         resultType: ResultTypes.RASTER,
-        projection: Projections.fromCode("EPSG:" + source.coords.epsg),
-        attributes: ["value"],
+        projection: Projections.fromCode('EPSG:' + source.coords.epsg),
+        attributes: ['value'],
         dataTypes: new Map<string, DataType>().set(
-            "value", DataTypes.fromCode(dataType)
+            'value', DataTypes.fromCode(dataType)
         ),
-        units: new Map<string, Unit>().set("value", unit)
+        units: new Map<string, Unit>().set('value', unit),
     });
 
     this._mappingQueryService.getColorizer(op).then(x => { // TODO: move to layer?
-        let layer = new Layer({
+        let layer = new RasterLayer({
             name: channel.name,
             operator: op,
             symbology: new MappingColorizerRasterSymbology(x),
         });
         this._layerService.addLayer(layer);
     }).catch(ex => {
-        console.log("mappingQueryService.getColorizer", ex);
-        let layer = new Layer({
+        console.log('mappingQueryService.getColorizer', ex);
+        let layer = new RasterLayer({
             name: channel.name,
             operator: op,
             symbology: new RasterSymbology({}),

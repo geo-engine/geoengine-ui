@@ -10,9 +10,9 @@ import {
 } from './operator.component';
 import {CodeEditorComponent} from '../../components/code-editor.component';
 
-import {Layer} from '../../models/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../../models/layer.model';
 import {Plot} from '../../plots/plot.model';
-import {Symbology, SimplePointSymbology, RasterSymbology} from '../../models/symbology.model';
+import {Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology} from '../../models/symbology.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';
@@ -85,8 +85,8 @@ export class ROperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
     private code: string;
-    private rasterSources: Array<Layer<any>> = [];
-    private pointSources: Array<Layer<any>> = [];
+    private rasterSources: Array<RasterLayer<RasterSymbology>> = [];
+    private pointSources: Array<VectorLayer<AbstractVectorSymbology>> = [];
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -132,26 +132,33 @@ export class ROperatorComponent extends OperatorBaseComponent {
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
             // LAYER
-
-            let symbology: Symbology;
+            let layer: Layer<Symbology>;
             switch (resultType) {
                 case ResultTypes.POINTS:
-                    symbology = new SimplePointSymbology({
-                        fill_rgba: this.randomColorService.getRandomColor(),
+                    layer = new VectorLayer({
+                        name: outputName,
+                        operator: operator,
+                        symbology: new SimplePointSymbology({
+                            fill_rgba: this.randomColorService.getRandomColor(),
+                        }),
+                        data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                            operator,
+                            this.projectService.getTimeStream(),
+                            this.projectService.getMapProjectionStream()
+                        ),
                     });
                     break;
                 case ResultTypes.RASTER:
-                    symbology = new RasterSymbology({});
+                    layer = new RasterLayer({
+                        name: outputName,
+                        operator: operator,
+                        symbology: new RasterSymbology({}),
+                    });
                     break;
                 default:
                     throw 'Unknown Symbology Error';
             }
-
-            this.layerService.addLayer(new Layer({
-                name: outputName,
-                operator: operator,
-                symbology: symbology,
-            }));
+            this.layerService.addLayer(layer);
         } else {
             // PLOT
             const plot = new Plot({
