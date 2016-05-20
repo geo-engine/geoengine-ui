@@ -2,8 +2,8 @@ import {Observable} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import Config from './config.model';
-import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology}
-    from './symbology.model';
+import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer}
+    from '../symbology/symbology.model';
 import {GeoJsonFeatureCollection} from './geojson.model';
 
 interface Parameters {
@@ -50,7 +50,8 @@ export abstract class Layer<S extends Symbology> {
     }
 
     static fromDict(dict: LayerDict, dataCallback:
-        (operator: Operator) => Observable<GeoJsonFeatureCollection>): Layer<Symbology> {
+        (operator: Operator) => Observable<GeoJsonFeatureCollection>,
+        symbologyCallback: (operator: Operator) => Observable<MappingColorizer>): Layer<Symbology> {
 
         const operator = Operator.fromDict(dict.operator);
         let layer: Layer<Symbology>;
@@ -59,7 +60,7 @@ export abstract class Layer<S extends Symbology> {
                 layer = new RasterLayer({
                     name: dict.name,
                     operator: operator,
-                    symbology: Symbology.fromDict(dict.symbology) as RasterSymbology,
+                    symbology: Symbology.fromDict(dict.symbology, symbologyCallback(operator)) as RasterSymbology,
                 });
                 break;
             case ('vector'):

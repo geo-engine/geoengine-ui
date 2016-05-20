@@ -11,9 +11,10 @@ import {MappingDataSourceFilter} from "../pipes/mapping-data-sources.pipe";
 import {HighlightPipe} from "../pipes/highlight.pipe";
 import {Projections} from '../operators/projection.model';
 import {Unit, Interpolation, UnitConfig} from '../operators/unit.model';
-import {MappingColorizerRasterSymbology, RasterSymbology} from "../models/symbology.model";
+import {MappingColorizerRasterSymbology, RasterSymbology} from "../symbology/symbology.model";
 import {MappingQueryService} from "../services/mapping-query.service";
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
+import {ProjectService} from '../services/project.service';
 
 
 @Component({
@@ -27,8 +28,10 @@ import {RasterSourceType} from '../operators/types/raster-source-type.model';
 
     <md-content flex="grow">
       <md-list>
-        <template ngFor #source [ngForOf]="sources | waveMappingDataSourceFilter:search_term" #i="index">
-          <md-subheader><span [innerHtml] = "source.name | highlightPipe:search_term"></span></md-subheader>
+        <template ngFor #source [ngForOf]="sources | waveMappingDataSourceFilter:search_term">
+          <md-subheader>
+            <span [innerHtml] = "source.name | highlightPipe:search_term"></span>
+          </md-subheader>
           <template ngFor #channel [ngForOf]="source.channels">
             <md-divider></md-divider>
             <md-list-item *ngIf="!channel.hasTransform" class="md-3-line" style="cursor: pointer;" (click)="add(source, channel, channel.hasTransform)">
@@ -86,10 +89,11 @@ export class RasterRepositoryComponent {
 
   private sources: Array<MappingSource> = [];
   private search_term: String = '';
-  constructor(private _mappingDataSourcesService: MappingDataSourcesService,
-              private _mappingQueryService: MappingQueryService,
-              private _layerService: LayerService) {
-    _mappingDataSourcesService.getSources().subscribe(x => this.sources = x);
+  constructor(private mappingDataSourcesService: MappingDataSourcesService,
+              private mappingQueryService: MappingQueryService,
+              private layerService: LayerService,
+              private projectService: ProjectService) {
+    mappingDataSourcesService.getSources().subscribe(x => this.sources = x);
   }
 
   private add(source: MappingSource, channel: MappingSourceChannel, doTransform: boolean) {
@@ -101,7 +105,7 @@ export class RasterRepositoryComponent {
       dataType = channel.transform.datatype;
     }
 
-    let op = new Operator({
+    let operator = new Operator({
         operatorType: new RasterSourceType({
             channel: channel.id,
             sourcename: source.source,
@@ -116,21 +120,15 @@ export class RasterRepositoryComponent {
         units: new Map<string, Unit>().set('value', unit),
     });
 
-    this._mappingQueryService.getColorizer(op).then(x => { // TODO: move to layer?
-        let layer = new RasterLayer({
-            name: channel.name,
-            operator: op,
-            symbology: new MappingColorizerRasterSymbology(x),
-        });
-        this._layerService.addLayer(layer);
-    }).catch(ex => {
-        console.log('mappingQueryService.getColorizer', ex);
-        let layer = new RasterLayer({
-            name: channel.name,
-            operator: op,
-            symbology: new RasterSymbology({}),
-        }); // TODO: get info from server?
-        this._layerService.addLayer(layer);
+    let layer = new RasterLayer({
+        name: channel.name,
+        operator: operator,
+        symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            )
+        ),
     });
+    this.layerService.addLayer(layer);
   }
 }

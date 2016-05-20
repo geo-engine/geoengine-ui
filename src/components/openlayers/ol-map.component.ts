@@ -4,7 +4,7 @@ import ol from "openlayers";
 import {OlMapLayerComponent, OlPointLayerComponent, OlRasterLayerComponent} from "./ol-layer.component";
 
 import {Projection, Projections} from '../../operators/projection.model';
-import {Symbology} from "../../models/symbology.model";
+import {Symbology} from "../../symbology/symbology.model";
 
 /**
  * The `ol-map` component represents an openLayers 3 map component.

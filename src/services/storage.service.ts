@@ -6,17 +6,17 @@ import {ProjectService} from './project.service';
 import {PlotService} from '../plots/plot.service';
 import {MappingQueryService} from './mapping-query.service';
 
-import Config from "../models/config.model";
-import {Layer, LayerDict, VectorLayer, RasterLayer} from "../models/layer.model";
-import {Project} from "../models/project.model";
-import {Plot, PlotDict} from "../plots/plot.model";
+import Config from '../models/config.model';
+import {Layer, LayerDict, VectorLayer, RasterLayer} from '../models/layer.model';
+import {Project} from '../models/project.model';
+import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
 import {Projections} from '../operators/projection.model';
 import {Unit, Interpolation} from '../operators/unit.model';
-import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology, ISymbology}
-    from "../models/symbology.model";
+import {Symbology, SimplePointSymbology, SimpleVectorSymbology, RasterSymbology}
+    from '../symbology/symbology.model';
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
 import {GFBioSourceType} from '../operators/types/gfbio-source-type.model';
 import {WKTSourceType} from '../operators/types/wkt-source-type.model';
@@ -47,6 +47,48 @@ export class StorageService {
         this.storeProjectSetup();
         this.storeLayersSetup();
         this.storePlotsSetup();
+    }
+
+    addLayerListVisibleObservable(layerListVisible$: Observable<boolean>) {
+        layerListVisible$.subscribe(this.storageProvider.saveLayerListVisible);
+    }
+
+    getLayerListVisible(): boolean {
+        let layerListVisible = this.storageProvider.loadLayerListVisible();
+        if (layerListVisible === undefined) {
+            // default
+            layerListVisible = this.defaults.getLayerListVisible();
+        }
+
+        return layerListVisible;
+    }
+
+    addDataTableVisibleObservable(dataTableVisible$: Observable<boolean>) {
+        dataTableVisible$.subscribe(this.storageProvider.saveDataTableVisible);
+    }
+
+    getDataTableVisible(): boolean {
+        let dataTableVisible = this.storageProvider.loadDataTableVisible();
+        if (dataTableVisible === undefined) {
+            // default
+            dataTableVisible = this.defaults.getDataTableVisible();
+        }
+
+        return dataTableVisible;
+    }
+
+    addTabIndexObservable(tabIndex$: Observable<number>) {
+        tabIndex$.subscribe(this.storageProvider.saveTabIndex);
+    }
+
+    getTabIndex(): number {
+        let tabIndex = this.storageProvider.loadTabIndex();
+        if (tabIndex === undefined) {
+            // default
+            tabIndex = this.defaults.getTabIndex();
+        }
+
+        return tabIndex;
     }
 
     private loadLayers() {
@@ -108,48 +150,6 @@ export class StorageService {
     private storeProjectSetup() {
         this.projectService.getProjectStream().subscribe(this.storageProvider.saveProject);
     }
-
-    addLayerListVisibleObservable(layerListVisible$: Observable<boolean>) {
-        layerListVisible$.subscribe(this.storageProvider.saveLayerListVisible);
-    }
-
-    getLayerListVisible(): boolean {
-        let layerListVisible = this.storageProvider.loadLayerListVisible();
-        if (layerListVisible === undefined) {
-            // default
-            layerListVisible = this.defaults.getLayerListVisible();
-        }
-
-        return layerListVisible;
-    }
-
-    addDataTableVisibleObservable(dataTableVisible$: Observable<boolean>) {
-        dataTableVisible$.subscribe(this.storageProvider.saveDataTableVisible);
-    }
-
-    getDataTableVisible(): boolean {
-        let dataTableVisible = this.storageProvider.loadDataTableVisible();
-        if (dataTableVisible === undefined) {
-            // default
-            dataTableVisible = this.defaults.getDataTableVisible();
-        }
-
-        return dataTableVisible;
-    }
-
-    addTabIndexObservable(tabIndex$: Observable<number>) {
-        tabIndex$.subscribe(this.storageProvider.saveTabIndex);
-    }
-
-    getTabIndex(): number {
-        let tabIndex = this.storageProvider.loadTabIndex();
-        if (tabIndex === undefined) {
-            // default
-            tabIndex = this.defaults.getTabIndex();
-        }
-
-        return tabIndex;
-    }
 }
 
 /**
@@ -174,13 +174,13 @@ interface StorageProvider {
      * @returns An array of layers.
      */
     loadLayers(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Layer<any>>;
+              projectService: ProjectService): Array<Layer<Symbology>>;
 
     /**
      * Save the current layers.
      * @param layers An array of layers.
      */
-    saveLayers(layers: Array<Layer<any>>): void;
+    saveLayers(layers: Array<Layer<Symbology>>): void;
 
     /**
      * Load the current plots.
@@ -264,12 +264,12 @@ class BrowserStorageProvider implements StorageProvider {
     }
 
     loadLayers(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Layer<any>> {
+              projectService: ProjectService): Array<Layer<Symbology>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) {
             return undefined;
         } else {
-            const layers: Array<Layer<any>> = [];
+            const layers: Array<Layer<Symbology>> = [];
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
             for (const layerDict of layerDicts) {
@@ -277,6 +277,11 @@ class BrowserStorageProvider implements StorageProvider {
                     Layer.fromDict(
                         layerDict,
                         operator => mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                            operator,
+                            projectService.getTimeStream(),
+                            projectService.getMapProjectionStream()
+                        ),
+                        operator => mappingQueryService.getColorizerStream(
                             operator,
                             projectService.getTimeStream(),
                             projectService.getMapProjectionStream()
@@ -289,7 +294,7 @@ class BrowserStorageProvider implements StorageProvider {
         }
     }
 
-    saveLayers(layers: Array<Layer<any>>) {
+    saveLayers(layers: Array<Layer<Symbology>>) {
         const layerDicts: Array<LayerDict> = [];
 
         for (const layer of layers) {
@@ -390,7 +395,8 @@ class BrowserStorageProvider implements StorageProvider {
  * Default values when the storage is empty.
  */
 class StorageDefaults {
-    getLayers(mappingQueryService: MappingQueryService, projectService: ProjectService): Array<Layer<any>> {
+    getLayers(mappingQueryService: MappingQueryService,
+        projectService: ProjectService): Array<Layer<Symbology>> {
         return [];
     }
     getPlots(): Array<Plot> {
@@ -414,7 +420,8 @@ class StorageDefaults {
  * Default values for debugging the application.
  */
 class DeveloperDefaults extends StorageDefaults {
-    getLayers(mappingQueryService: MappingQueryService, projectService: ProjectService): Array<Layer<any>> {
+    getLayers(mappingQueryService: MappingQueryService,
+        projectService: ProjectService): Array<Layer<Symbology>> {
         const iucnPumaOperator = new Operator({
             operatorType: new GFBioSourceType({
                 datasource: 'IUCN',
@@ -499,7 +506,7 @@ class DeveloperDefaults extends StorageDefaults {
                     units: new Map<string, Unit>().set('value', new Unit({
                         measurement: 'elevation',
                         unit: 'm',
-                        interpolation: Interpolation.Continuous
+                        interpolation: Interpolation.Continuous,
                     })),
                 }),
             }),

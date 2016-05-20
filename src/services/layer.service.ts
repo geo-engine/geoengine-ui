@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from "rxjs/Rx";
 
 import {Layer} from "../models/layer.model";
 
-import {Symbology} from "../models/symbology.model";
+import {Symbology} from "../symbology/symbology.model";
 
 /**
  * A service that is responsible for managing the active layer array.

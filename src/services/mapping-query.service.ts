@@ -260,17 +260,32 @@ export class MappingQueryService {
                Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
     }
 
-    getColorizer(op: Operator): Promise<MappingColorizer> {
+    getColorizer(operator: Operator,
+                    time: moment.Moment,
+                    projection: Projection): Promise<MappingColorizer> {
+
+        const projectedOperator = operator.getProjectedOperator(projection);
         const requestType = 'GetColorizer';
         const colorizerRequest = Config.MAPPING_URL
             + '?' + 'SERVICE=WMS'
             + '&' + 'VERSION=' + Config.WMS.VERSION
             + '&' + 'REQUEST=' + requestType
-            + '&' + 'LAYERS=' + op.toQueryJSON()
-            + '&' + 'CRS=' + op.projection.getCode();
+            + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
+            + '&' + 'CRS=' + projection.getCode()
+            + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
         console.log('colorizerRequest', colorizerRequest);
         return this.http.get(colorizerRequest)
             .map((res: Response) => res.json())
-            .map((json: MappingColorizer) => { return json as MappingColorizer }).toPromise();
+            .map((json: MappingColorizer) => { return json; }).toPromise();
+    }
+
+    getColorizerStream(operator: Operator,
+                     time$: Observable<moment.Moment>,
+                     projection$: Observable<Projection>): Observable<MappingColorizer> {
+        return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+            return Observable.fromPromise(
+                this.getColorizer(operator, time, projection)
+            );
+        }).switch().publishReplay(1).refCount();
     }
 }

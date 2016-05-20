@@ -12,7 +12,7 @@ import {VectorLayer} from '../../models/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';
-import {SimplePointSymbology, AbstractVectorSymbology} from '../../models/symbology.model';
+import {SimplePointSymbology, AbstractVectorSymbology} from '../../symbology/symbology.model';
 
 /**
  * This component allows creating the point in polygon filter operator.

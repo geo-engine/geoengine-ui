@@ -11,7 +11,7 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
 
 import {RasterLayer} from '../../models/layer.model';
-import {RasterSymbology} from '../../models/symbology.model';
+import {RasterSymbology} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';

@@ -21,7 +21,7 @@ import {NumericAttributeFilterType} from '../types/numeric-attribute-filter-type
 import {HistogramType} from '../types/histogram-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
-import {SimplePointSymbology, Symbology} from '../../models/symbology.model';
+import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
 
 /**
  * This component allows creating the expression operator.

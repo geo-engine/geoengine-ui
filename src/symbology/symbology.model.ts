@@ -1,4 +1,5 @@
-import ol from "openlayers";
+import ol from 'openlayers';
+import {Observable} from 'rxjs/Rx';
 
 export enum SymbologyType {
     RASTER,
@@ -7,7 +8,6 @@ export enum SymbologyType {
     MAPPING_COLORIZER_RASTER,
     ICON_POINT,
 }
-
 
 /**
  * Serialization interface
@@ -38,13 +38,17 @@ export abstract class Symbology implements ISymbology {
         };
     }
 
-    static fromDict(dict: SymbologyDict): Symbology {
+    static fromDict(dict: SymbologyDict, colorizerObservable?: Observable<MappingColorizer>): Symbology {
         let symbologyType: SymbologyType = SymbologyType[dict.symbologyTypeId];
         switch (symbologyType) {
-            case SymbologyType.SIMPLE_POINT: return new SimplePointSymbology(<IVectorSymbology> dict.symbologyConfig);
-            case SymbologyType.SIMPLE_VECTOR: return new SimpleVectorSymbology(<IVectorSymbology> dict.symbologyConfig);
-            case SymbologyType.RASTER: return new RasterSymbology(dict.symbologyConfig);
-            case SymbologyType.MAPPING_COLORIZER_RASTER: return new MappingColorizerRasterSymbology(<IMappingColorizerRasterSymbology>(dict.symbologyConfig)); // cast needed here
+            case SymbologyType.SIMPLE_POINT:
+                return new SimplePointSymbology(<IVectorSymbology> dict.symbologyConfig);
+            case SymbologyType.SIMPLE_VECTOR:
+                return new SimpleVectorSymbology(<IVectorSymbology> dict.symbologyConfig);
+            case SymbologyType.RASTER:
+                return new RasterSymbology(dict.symbologyConfig);
+            case SymbologyType.MAPPING_COLORIZER_RASTER:
+                return new MappingColorizerRasterSymbology(dict.symbologyConfig, colorizerObservable);
         }
     }
 };
@@ -167,20 +171,22 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     }
 }
 
-export interface IMappingColorizerRasterSymbology extends IRasterSymbology {
+export interface MappingColorizer {
     interpolation: string;
     breakpoints: Array<[number, string, string]>;
 }
 
-export class MappingColorizerRasterSymbology extends RasterSymbology implements IMappingColorizerRasterSymbology {
-    interpolation: string; // TODO: is this the same as unit.interpolation ?
-    breakpoints: Array<[number, string, string]>;
+export class MappingColorizerRasterSymbology extends RasterSymbology
+    implements IRasterSymbology {
 
-    constructor(config: IMappingColorizerRasterSymbology) {
+    colorizer$: Observable<MappingColorizer>;
+
+    constructor(config: IRasterSymbology,
+                colorizer$: Observable<MappingColorizer>) {
         super(config);
-        this.interpolation = config.interpolation;
-        this.breakpoints = config.breakpoints;
+        this.colorizer$ = colorizer$;
         console.log("new MappingColorizerRasterSymbology", this);
+        // if (config.fallback) { this.fallback = config.fallback };
     }
 
     get symbologyType(): SymbologyType {
@@ -188,10 +194,11 @@ export class MappingColorizerRasterSymbology extends RasterSymbology implements 
     }
 
     toConfig(): IRasterSymbology {
-        return this.clone();
+        return super.clone() as IRasterSymbology;
     }
 
     clone(): MappingColorizerRasterSymbology {
-        return new MappingColorizerRasterSymbology(this);
+        return new MappingColorizerRasterSymbology(this, this.colorizer$);
     }
+
 }

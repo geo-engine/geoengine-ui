@@ -4,10 +4,11 @@ import ol from 'openlayers';
 import Config from '../../models/config.model';
 import {Operator} from '../../operators/operator.model';
 import {Projection} from '../../operators/projection.model';
-import {Symbology, AbstractVectorSymbology, RasterSymbology, SimplePointSymbology} from '../../models/symbology.model';
-import {GeoJsonFeatureCollection} from '../../models/geojson.model';
+import {Symbology, AbstractVectorSymbology, RasterSymbology}
+    from '../../symbology/symbology.model';
 
-import {MappingQueryService, WFSOutputFormats} from '../../services/mapping-query.service';
+import {GeoJsonFeatureCollection} from '../../models/geojson.model';
+import {MappingQueryService} from '../../services/mapping-query.service';
 
 import moment from 'moment';
 
@@ -95,7 +96,7 @@ abstract class OlVectorLayerComponent
                 this.mapLayer.getSource().clear();
             }
 
-            if( changes['data'] ) {
+            if (changes['data']) {
                 if (this.data) {
                     console.log('data', this.data);
                     this.mapLayer.getSource().addFeatures(this.format.readFeatures(this.data as any));
