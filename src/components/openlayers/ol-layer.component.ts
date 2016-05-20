@@ -89,6 +89,7 @@ abstract class OlVectorLayerComponent
                 this._mapLayer = new ol.layer.Vector({
                     source: this.source,
                     style: this.symbology.olStyle,
+                    updateWhileAnimating: true,
                 });
             }
 

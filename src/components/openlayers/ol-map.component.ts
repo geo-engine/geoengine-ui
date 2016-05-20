@@ -88,7 +88,9 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
                 zoom: 2
             }),
             controls: [],
-            logo: false
+            logo: false,
+            loadTilesWhileAnimating: true,  //TODO: check if moved to layer
+            loadTilesWhileInteracting: true, //TODO: check if moved to layer
         });
 
         // this.layers.forEach(layer => console.log("added", layer));
