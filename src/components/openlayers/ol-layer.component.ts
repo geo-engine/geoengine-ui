@@ -66,7 +66,7 @@ abstract class OlVectorLayerComponent
 
     constructor(protected mappingQueryService: MappingQueryService) {
         super(mappingQueryService);
-        this.source = new ol.source.Vector();
+        this.source = new ol.source.Vector({wrapX: false});
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
