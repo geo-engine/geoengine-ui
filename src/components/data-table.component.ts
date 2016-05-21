@@ -1,18 +1,16 @@
 import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
-        OnInit, AfterViewInit, ElementRef, OnChanges, SimpleChange} from 'angular2/core';
-import {Http, HTTP_PROVIDERS} from 'angular2/http';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+        OnInit, OnChanges, SimpleChange} from 'angular2/core';
+import {Http} from 'angular2/http';
+import {Observable} from 'rxjs/Rx';
 
-import Config from '../models/config.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
-import {Layer, VectorLayer, RasterLayer} from '../models/layer.model';
+import {VectorLayer} from '../models/layer.model';
+import {AbstractVectorSymbology} from '../symbology/symbology.model';
 
 import {LayerService} from '../services/layer.service';
 import {ProjectService} from '../services/project.service';
-import {MappingQueryService, WFSOutputFormats} from '../services/mapping-query.service';
-
+import {MappingQueryService} from '../services/mapping-query.service';
 
 interface Column {
     name: string;
@@ -20,7 +18,7 @@ interface Column {
 }
 
 @Component({
-    selector: 'wv-data-table',
+    selector: 'wave-data-table',
     template: `
     <md-content class='container' [style.height.px]='height' (scroll)='onScroll($event)'>
       <md-data-table>
@@ -80,6 +78,9 @@ export class DataTableComponent implements OnInit, OnChanges {
     private lastVisible: number = 0;
     private numberOfVisibleRows: number = 0;
 
+    private rowHeight = 32; // TODO: input or css?
+    private columnHeight = 42;
+
     private visibleRows: Array<{}> = [];
     private rows: Array<{}> = [];
     private columns: Array<Column> = [];
@@ -101,7 +102,7 @@ export class DataTableComponent implements OnInit, OnChanges {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS: {
-                    let vectorLayer = layer as VectorLayer<any>;
+                    let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
                     return vectorLayer.getDataStream().map(data => {
                         if (data) { // TODO: needed?
                             let geojson: GeoJsonFeatureCollection = data;
@@ -155,7 +156,10 @@ export class DataTableComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
       if (changes['height']) {
-        this.numberOfVisibleRows = Math.max(Math.ceil((this.height - 42) / 32), 0);  // FIXME: remove magic numbers (row height, column height)
+        this.numberOfVisibleRows = Math.max(
+            Math.ceil((this.height - this.columnHeight) / this.rowHeight),
+            0
+        );
         this.updateVisibleRows(this.firstVisible, false);
       }
     }
@@ -180,7 +184,8 @@ export class DataTableComponent implements OnInit, OnChanges {
      * Method to update/refresh the virtualHeight.
      */
     updateVirtualHeight() {
-      this.virtualHeight = this.rows.length * 32 + this.columns.length * 42; // FIXME: remove magic numbers (row height, column height)
+      this.virtualHeight = this.rows.length *  this.rowHeight
+        + this.columns.length * this.columnHeight;
     }
 
     /**
@@ -191,7 +196,7 @@ export class DataTableComponent implements OnInit, OnChanges {
         this.scrollTop = Math.max(0, event.target.scrollTop);
         this.scrollBottom = Math.max(0, this.virtualHeight - event.target.scrollTop - this.height);
         // recalculate the first visible element!
-        let newFirstVisible = (this.scrollTop / 32);
+        let newFirstVisible = (this.scrollTop / this.rowHeight);
         this.updateVisibleRows(newFirstVisible, false);
     }
 

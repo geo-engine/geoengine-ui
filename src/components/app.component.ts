@@ -113,8 +113,8 @@ import {PlotService} from '../plots/plot.service';
         </md-toolbar>
         <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40"
              *ngIf="dataTableVisible$ | async">
-            <wv-data-table [height]="(bottomContainerHeight$ | async) - 40">
-            </wv-data-table>
+            <wave-data-table [height]="(bottomContainerHeight$ | async) - 40">
+            </wave-data-table>
         </div>
     </div>
     <md-sidenav-container>
