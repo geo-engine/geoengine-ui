@@ -117,7 +117,7 @@ import {PlotService} from '../plots/plot.service';
     <md-sidenav-container>
         <md-sidenav name="right" align="right" layout="column"
                 style="over">
-            <raster-repository-component style="height:100%"></raster-repository-component>
+            <wave-raster-repository style='height:100%'></wave-raster-repository>
         </md-sidenav>
     </md-sidenav-container>
     `,

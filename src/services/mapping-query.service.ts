@@ -12,6 +12,8 @@ import Config from '../models/config.model';
 import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
+import {MappingSource, MappingSourceChannel} from '../models/mapping-source.model';
+import {Unit} from '../operators/unit.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
 
@@ -287,5 +289,46 @@ export class MappingQueryService {
                 this.getColorizer(operator, time, projection)
             );
         }).switch().publishReplay(1).refCount();
+    }
+
+    getRasterSourcesStream(): Observable<Array<MappingSource>> {
+      return this.http.get('assets/mapping-data-sources.json')
+                .map((res: Response) => res.json()).map((json: JSON) => {
+        let arr: Array<MappingSource> = [];
+
+        for (let sourceId in json['sourcelist']) {
+          let source = json['sourcelist'][sourceId];
+          arr.push({
+            source: sourceId,
+            name: source.name,
+            colorizer: source.colorizer,
+            coords: source.coords,
+            channels: source.channels.map((channel: any, index: number) => {
+              channel.id = index;
+              channel.name = channel.name || 'Channel #' + index;
+
+              // unit handling
+              if (channel.unit !== undefined) {
+                channel.unit = Unit.fromMappingDict(channel.unit);
+              } else {
+                channel.unit = Unit.defaultUnit;
+              }
+
+              // transform unit handling
+              channel.hasTransform = channel.transform !== undefined;
+              if (channel.hasTransform) {
+                if (channel.transform.unit !== undefined) {
+                    channel.transform.unit = Unit.fromMappingDict(channel.transform.unit);
+                } else {
+                  channel.transform.unit = Unit.defaultUnit;
+                }
+              }
+
+              return channel;
+          }),
+          });
+        }
+        return arr;
+      });
     }
 }
