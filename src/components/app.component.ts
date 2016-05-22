@@ -69,36 +69,33 @@ import {PlotService} from '../plots/plot.service';
                     [projection]="projectService.getMapProjectionStream() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.operator.resultType">
-                    <ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                                    [operator]="layer.operator"
+                    <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
+                                    [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjectionStream() | async"
                                     [time]="projectService.getTimeStream() | async"
-                                    [data]="layer.getDataStream() | async"
                                     >
-                    </ol-point-layer>
-                    <ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
-                                   [operator]="layer.operator"
-                                   [symbology]="layer.symbology"
-                                   [projection]="projectService.getMapProjectionStream() | async"
-                                   [time]="projectService.getTimeStream() | async"
-                                   [data]="layer.getDataStream() | async"
+                    </wave-ol-point-layer>
+                    <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async"
                                    >
-                    </ol-line-layer>
-                    <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                                      [operator]="layer.operator"
-                                      [symbology]="layer.symbology"
-                                      [projection]="projectService.getMapProjectionStream() | async"
-                                      [time]="projectService.getTimeStream() | async"
-                                      [data]="layer.getDataStream() | async"
+                    </wave-ol-line-layer>
+                    <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async"
                                       >
-                    </ol-polygon-layer>
-                    <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                                     [operator]="layer.operator"
-                                     [symbology]="layer.symbology"
-                                     [projection]="projectService.getMapProjectionStream() | async"
-                                     [time]="projectService.getTimeStream() | async">
-                    </ol-raster-layer>
+                    </wave-ol-polygon-layer>
+                    <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async">
+                    </wave-ol-raster-layer>
                 </div>
             </ol-map>
         </div>

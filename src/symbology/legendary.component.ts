@@ -1,5 +1,7 @@
-import {Component,  Input, OnInit} from 'angular2/core';
+import {Component,  Input, OnInit, OnDestroy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+
+import {Subscription} from 'rxjs/Rx';
 
 import {Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
     MappingColorizerRasterSymbology, MappingColorizer} from './symbology.model';
@@ -157,7 +159,9 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
-    extends LegendaryRasterComponent<S> implements OnInit {
+    extends LegendaryRasterComponent<S> implements OnInit, OnDestroy {
+
+    private colorizerSubscription: Subscription;
 
     private colorizer: MappingColorizer = {
         interpolation: '',
@@ -183,8 +187,14 @@ export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizer
     }
 
     ngOnInit() {
-        this.symbology.colorizer$.subscribe(x => {
+        this.colorizerSubscription = this.symbology.colorizer$.subscribe(x => {
             this.colorizer = x;
         });
+    }
+
+    ngOnDestroy() {
+        if (this.colorizerSubscription) {
+            this.colorizerSubscription.unsubscribe();
+        }
     }
 }

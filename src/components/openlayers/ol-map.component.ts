@@ -5,7 +5,7 @@ import {OlMapLayerComponent, OlPointLayerComponent, OlRasterLayerComponent} from
 
 import {Projection, Projections} from '../../operators/projection.model';
 import {Symbology} from "../../symbology/symbology.model";
-
+import {Layer} from '../../models/layer.model';
 /**
  * The `ol-map` component represents an openLayers 3 map component.
  * it supports `ol-layer` components as child components.
@@ -39,7 +39,8 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
     @Input() height: number;
 
     @ContentChildren("olLayer")
-    private layers: QueryList<OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology>>;
+    private layers: QueryList<
+        OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>>;
 
     private isSizeChanged = false;
     private isProjectionChanged = false;
