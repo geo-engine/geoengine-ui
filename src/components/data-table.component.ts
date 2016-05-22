@@ -1,5 +1,7 @@
 import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
         OnInit, OnChanges, SimpleChange} from 'angular2/core';
+
+import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material/all';
 import {Http} from 'angular2/http';
 import {Observable} from 'rxjs/Rx';
 
@@ -21,22 +23,22 @@ interface Column {
     selector: 'wave-data-table',
     template: `
     <md-content class='container' [style.height.px]='height' (scroll)='onScroll($event)'>
-      <md-data-table>
+      <md-data-table [selectable]='true' (onSelectableChange)='change($event)'>
         <thead>
           <tr [style.height.px]='scrollTop'></tr>
-          <tr>
+          <tr md-data-table-header-selectable-row (onChange)='change($event)'>
             <th *ngFor='#column of columns'>{{column.name}} </th>
             <th *ngFor='#column of propertyColumns'>{{column.name}} </th>
           </tr>
         </thead>
         <tbody>
-          <template ngFor #row [ngForOf]='visibleRows' #idx='index'>
-            <tr>
-                <td *ngFor='#column of columns'>{{row[column.name]}}</td>
-                <td *ngFor='#column of propertyColumns'>{{row?.properties[column.name]}}</td>
-            </tr>
-          </template>
-          <tr [style.height.px]='scrollBottom'></tr>
+            <template ngFor #row [ngForOf]='visibleRows' #idx='index'>
+              <tr md-data-table-selectable-row [selectable-value]='row.id' (onChange)='change($event)'>
+                    <td *ngFor='#column of columns'>{{row[column.name]}}</td>
+                    <td *ngFor='#column of propertyColumns'>{{row?.properties[column.name]}}</td>
+              </tr>
+            </template>
+            <tr [style.height.px]='scrollBottom'></tr>
         </tbody>
       </md-data-table>
     </md-content>
@@ -46,10 +48,10 @@ interface Column {
         overflow-y: auto;
         display: block;
       }
-      md-data-table thead tr, md-data-table thead td {
+      md-data-table thead tr, md-data-table thead th, md-data-table thead >>> .md-data-check-cell {
         height: 40px;
       }
-      md-data-table tbody tr, md-data-table tbody td {
+      md-data-table tbody tr, md-data-table tbody td, md-data-table tbody >>> .md-data-check-cell {
         height: 32px;
       }
     `],
@@ -64,6 +66,7 @@ interface Column {
     //     </vaadin-grid>
     // `,
     providers: [],
+    directives: [MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges {
@@ -198,6 +201,10 @@ export class DataTableComponent implements OnInit, OnChanges {
         // recalculate the first visible element!
         let newFirstVisible = (this.scrollTop / this.rowHeight);
         this.updateVisibleRows(newFirstVisible, false);
+    }
+
+    change(event: ITableSelectionChange) {
+        console.log('selectableChange', event);
     }
 
 }
