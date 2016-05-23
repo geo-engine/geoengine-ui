@@ -67,7 +67,7 @@ export class ProjectService {
     }
 
     changeProjectConfig(config: ProjectConfig) {
-        console.log("config changed:", config);
+        // console.log("config changed:", config);
 
         let project = this.project$.value;
         if (config.name) project.name = config.name;

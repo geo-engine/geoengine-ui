@@ -4,9 +4,10 @@ import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../models/layer.model';
 import {Project} from '../../models/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
+import {Symbology} from '../../symbology/symbology.model';
 
-import {ProjectService} from '../../services/project.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {LayerService} from '../../services/layer.service';
+import {PlotService} from '../../plots/plot.service';
 
 /**
  * StorageProvider implementation that uses the brower's localStorage
@@ -26,25 +27,17 @@ export class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem('project', project.toJSON());
     }
 
-    loadLayers(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Layer<any>> {
+    loadLayers(layerService: LayerService): Array<Layer<Symbology>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
             return undefined;
         } else {
-            const layers: Array<Layer<any>> = [];
+            const layers: Array<Layer<Symbology>> = [];
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
             for (const layerDict of layerDicts) {
                 layers.push(
-                    Layer.fromDict(
-                        layerDict,
-                        operator => mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                            operator,
-                            projectService.getTimeStream(),
-                            projectService.getMapProjectionStream()
-                        )
-                    )
+                    layerService.createLayerFromDict(layerDict)
                 );
             }
 
@@ -52,7 +45,7 @@ export class BrowserStorageProvider implements StorageProvider {
         }
     }
 
-    saveLayers(layers: Array<Layer<any>>) {
+    saveLayers(layers: Array<Layer<Symbology>>) {
         const layerDicts: Array<LayerDict> = [];
 
         for (const layer of layers) {
@@ -62,8 +55,7 @@ export class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem('layers', JSON.stringify(layerDicts));
     }
 
-    loadPlots(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Plot> {
+    loadPlots(plotService: PlotService): Array<Plot> {
         const plotsJSON = localStorage.getItem('plots');
         if (plotsJSON === null) { // tslint:disable-line:no-null-keyword
             return undefined;
@@ -73,12 +65,7 @@ export class BrowserStorageProvider implements StorageProvider {
 
             for (const plotDict of plotDicts) {
                 plots.push(
-                    Plot.fromDict(
-                        plotDict,
-                        operator => mappingQueryService.getPlotDataStream(
-                            operator, projectService.getTimeStream()
-                        )
-                    )
+                    plotService.createPlotFromDict(plotDict)
                 );
             }
 

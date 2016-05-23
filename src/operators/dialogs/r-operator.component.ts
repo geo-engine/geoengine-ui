@@ -12,7 +12,7 @@ import {CodeEditorComponent} from '../../components/code-editor.component';
 
 import {Layer, VectorLayer, RasterLayer} from '../../models/layer.model';
 import {Plot} from '../../plots/plot.model';
-import {Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology} from '../../models/symbology.model';
+import {Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology} from '../../symbology/symbology.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';

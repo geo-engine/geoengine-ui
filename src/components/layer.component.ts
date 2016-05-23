@@ -2,12 +2,12 @@ import {Component, ChangeDetectionStrategy} from 'angular2/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
-import {SymbologyType} from '../models/symbology.model';
+import {SymbologyType, Symbology} from '../symbology/symbology.model';
 import {Layer} from '../models/layer.model';
 
 import {LayerService} from '../services/layer.service';
 import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
-    LegendaryMappingColorizerRasterComponent} from './legendary/legendary.component';
+    LegendaryMappingColorizerRasterComponent} from '../symbology/legendary.component';
 
 @Component({
     selector: 'layer-component',
@@ -134,7 +134,7 @@ export class LayerComponent {
         });
     }
 
-    replaceContextMenu(event: MouseEvent, layer: Layer<any>) { // TODO: wildcard?
+    replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
         event.preventDefault();
         console.log('A context menu for ' + layer.name + ' will appear in future versions!');
     }

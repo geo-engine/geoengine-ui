@@ -19,6 +19,7 @@ import {
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
 import {Layer} from '../models/layer.model';
+import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
 import {LayerService} from '../services/layer.service';
@@ -63,42 +64,39 @@ import {PlotService} from '../plots/plot.service';
             </layer-component>
         </div>
         <div flex="grow">
-            <ol-map [height]="middleContainerHeight$ | async"
+            <wave-ol-map [height]="middleContainerHeight$ | async"
                     [projection]="projectService.getMapProjectionStream() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.operator.resultType">
-                    <ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                                    [operator]="layer.operator"
+                    <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
+                                    [layer]="layer"
                                     [symbology]="layer.symbology"
                                     [projection]="projectService.getMapProjectionStream() | async"
                                     [time]="projectService.getTimeStream() | async"
-                                    [data]="layer.getDataStream() | async"
                                     >
-                    </ol-point-layer>
-                    <ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
-                                   [operator]="layer.operator"
-                                   [symbology]="layer.symbology"
-                                   [projection]="projectService.getMapProjectionStream() | async"
-                                   [time]="projectService.getTimeStream() | async"
-                                   [data]="layer.getDataStream() | async"
+                    </wave-ol-point-layer>
+                    <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async"
                                    >
-                    </ol-line-layer>
-                    <ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                                      [operator]="layer.operator"
-                                      [symbology]="layer.symbology"
-                                      [projection]="projectService.getMapProjectionStream() | async"
-                                      [time]="projectService.getTimeStream() | async"
-                                      [data]="layer.getDataStream() | async"
+                    </wave-ol-line-layer>
+                    <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async"
                                       >
-                    </ol-polygon-layer>
-                    <ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                                     [operator]="layer.operator"
-                                     [symbology]="layer.symbology"
-                                     [projection]="projectService.getMapProjectionStream() | async"
-                                     [time]="projectService.getTimeStream() | async">
-                    </ol-raster-layer>
+                    </wave-ol-polygon-layer>
+                    <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
+                                    [layer]="layer"
+                                    [symbology]="layer.symbology"
+                                    [projection]="projectService.getMapProjectionStream() | async"
+                                    [time]="projectService.getTimeStream() | async">
+                    </wave-ol-raster-layer>
                 </div>
-            </ol-map>
+            </wave-ol-map>
         </div>
         <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"
                         (openDetailView)="showPlotDetailDialog($event)"></wave-plot-list>
@@ -108,14 +106,14 @@ import {PlotService} from '../plots/plot.service';
         <wave-info-bar></wave-info-bar>
         <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40"
              *ngIf="dataTableVisible$ | async">
-            <wv-data-table [height]="(bottomContainerHeight$ | async) - 40">
-            </wv-data-table>
+            <wave-data-table [height]="(bottomContainerHeight$ | async) - 40">
+            </wave-data-table>
         </div>
     </div>
     <md-sidenav-container>
         <md-sidenav name="right" align="right" layout="column"
                 style="over">
-            <raster-repository-component style="height:100%"></raster-repository-component>
+            <wave-raster-repository style='height:100%'></wave-raster-repository>
         </md-sidenav>
     </md-sidenav-container>
     `,
@@ -185,7 +183,7 @@ export class AppComponent implements OnInit {
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
 
-    private layersReverse$: Observable<Array<Layer<any>>>;
+    private layersReverse$: Observable<Array<Layer<Symbology>>>;
     private hasSelectedLayer$: Observable<boolean>;
 
     // for ng-switch

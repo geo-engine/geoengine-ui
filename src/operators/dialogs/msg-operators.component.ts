@@ -11,11 +11,14 @@ import {LayerMultiSelectComponent, OperatorBaseComponent,  OperatorContainerComp
 import {Layer, RasterLayer} from "../../models/layer.model";
 import {Operator} from "../operator.model";
 import {ResultTypes} from "../result-type.model";
-import {DataType, DataTypes} from "../datatype.model";
+import {DataType} from "../datatype.model";
 import {Unit} from "../unit.model";
-import {Projection, Projections} from "../projection.model";
-import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName, MsgCo2CorrectionType, SolarangleName} from "../types/msg-types.model";
-import {Symbology, MappingColorizerRasterSymbology, RasterSymbology} from "../../models/symbology.model";
+import {Projections} from "../projection.model";
+import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
+    MsgTemperatureType, MsgPansharpenType, MeteosatSatelliteName,
+    MsgCo2CorrectionType, SolarangleName} from "../types/msg-types.model";
+import {Symbology, MappingColorizerRasterSymbology, RasterSymbology}
+    from "../../symbology/symbology.model";
 import {MappingQueryService} from "../../services/mapping-query.service";
 
 /**
@@ -63,7 +66,7 @@ import {MappingQueryService} from "../../services/mapping-query.service";
 export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer<any>>;
+    private rasterSources: Array<Layer<Symbology>>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -89,23 +92,16 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
-
+        this.layerService.addLayer(layer);
         this.dialog.close();
     }
 
@@ -166,7 +162,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
 export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
 
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer<any>>;
+    private rasterSources: Array<Layer<Symbology>>;
 
     // private forceSatellite: boolean = false;
     // private forceSatellteName: MeteosatSatelliteName;
@@ -201,22 +197,16 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
+        this.layerService.addLayer(layer);
 
         this.dialog.close();
     }
@@ -274,7 +264,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer<any>>;
+    private rasterSources: Array<RasterLayer<RasterSymbology>>;
     private solarangleNames = ['zenith', 'azimuth'];
 
     // private forceSatellite: boolean = false;
@@ -307,23 +297,17 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
-        console.log('blakekse', solarangle);
+        this.layerService.addLayer(layer);
+
         this.dialog.close();
     }
 
@@ -372,7 +356,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private rasterSources: Array<Layer<any>>;
+    private rasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -395,22 +379,18 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
             rasterSources: [rasterSource],
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(
+                    operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
+        this.layerService.addLayer(layer);
+
         this.dialog.close();
     }
 }
@@ -457,7 +437,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private selectedRasterSources: Array<Layer<any>>;
+    private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -480,22 +460,17 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
             rasterSources: rasterSources,
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
+        this.layerService.addLayer(layer);
+
         this.dialog.close();
     }
 }
@@ -542,7 +517,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
 })
 export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
     private configForm: ControlGroup;
-    private selectedRasterSources: Array<Layer<any>>;
+    private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
@@ -565,22 +540,17 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
             rasterSources: rasterSources,
         });
 
-        this.mappingQueryService.getColorizer(operator).then(x => { // TODO: move to layer?
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new MappingColorizerRasterSymbology(x),
-            });
-            this.layerService.addLayer(layer);
-        }).catch(ex => {
-            console.log('mappingQueryService.getColorizer', ex);
-            let layer = new RasterLayer({
-                name: outputName,
-                operator: operator,
-                symbology: new RasterSymbology({}),
-            });
-            this.layerService.addLayer(layer);
+        let layer = new RasterLayer({
+            name: outputName,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({}, this.mappingQueryService.getColorizerStream(operator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                )
+            ),
         });
+        this.layerService.addLayer(layer);
+
         this.dialog.close();
     }
 }

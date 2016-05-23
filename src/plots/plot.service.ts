@@ -1,11 +1,22 @@
 import {Injectable} from 'angular2/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {Plot} from './plot.model';
+import {Plot, PlotDict} from './plot.model';
 
+import {MappingQueryService} from '../services/mapping-query.service';
+import {ProjectService} from '../services/project.service';
+
+/**
+ * A service for managing plots.
+ */
 @Injectable()
 export class PlotService {
     private plots$: BehaviorSubject<Array<Plot>> = new BehaviorSubject([]);
+
+    constructor(
+        private projectService: ProjectService,
+        private mappingQueryService: MappingQueryService
+    ) {}
 
     /**
      * @returns The plot list.
@@ -67,6 +78,18 @@ export class PlotService {
     changePlotName(plot: Plot, newName: string) {
       plot.name = newName;
       this.plots$.next(this.getPlots());
+    }
+
+    /**
+     * Create the plot type and initialize the callbacks.
+     */
+    createPlotFromDict(dict: PlotDict): Plot {
+        return Plot.fromDict(
+            dict,
+            operator => this.mappingQueryService.getPlotDataStream(
+                operator, this.projectService.getTimeStream()
+            )
+        );
     }
 
 }

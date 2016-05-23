@@ -245,7 +245,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
         let render = new dagreD3.render();
 
         // Set up an SVG group so that we can translate the final graph.
-        console.log(this.graphContainer.nativeElement);
+        // console.log(this.graphContainer.nativeElement);
         let svg = d3.select(this.graphContainer.nativeElement);
         let svgGroup = svg.append('g');
 
@@ -356,7 +356,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
             graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`);
         }
 
-        console.log(graph.edges(), graph);
+        // console.log(graph.edges(), graph);
 
         // return all operator ids that are contained in the graph
         return operatorIdsInGraph;

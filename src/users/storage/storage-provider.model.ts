@@ -2,9 +2,10 @@ import {LayoutDict} from '../../app/layout.service';
 import {Layer} from '../../models/layer.model';
 import {Project} from '../../models/project.model';
 import {Plot} from '../../plots/plot.model';
+import {Symbology} from '../../symbology/symbology.model';
 
-import {ProjectService} from '../../services/project.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {LayerService} from '../../services/layer.service';
+import {PlotService} from '../../plots/plot.service';
 
 /**
  * Storage Provider that allows saving and retrieval of WAVE settings and items.
@@ -27,22 +28,20 @@ export interface StorageProvider {
      * Load the current layers.
      * @returns An array of layers.
      */
-    loadLayers(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Layer<any>>;
+    loadLayers(layerService: LayerService): Array<Layer<Symbology>>;
 
     /**
      * Save the current layers.
      * @param layers An array of layers.
      */
-    saveLayers(layers: Array<Layer<any>>): void;
+    saveLayers(layers: Array<Layer<Symbology>>): void;
 
     /**
      * Load the current plots.
      * @param mappingQueryService Service to load the plot data.
      * @returns An array of plots.
      */
-    loadPlots(mappingQueryService: MappingQueryService,
-              projectService: ProjectService): Array<Plot>;
+    loadPlots(plotService: PlotService): Array<Plot>;
 
     /**
      * Save the current plots.

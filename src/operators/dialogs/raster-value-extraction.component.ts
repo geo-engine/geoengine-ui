@@ -13,7 +13,7 @@ import {
 } from './operator.component';
 
 import {VectorLayer, Layer} from '../../models/layer.model';
-import {SimplePointSymbology} from '../../models/symbology.model';
+import {SimplePointSymbology} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';

@@ -13,7 +13,7 @@ import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
 import {RenameLayerComponent, RenameLayerDialogConfig}
   from '../components/rename-layer.component';
 import {SymbologyDialogComponent, SymbologyDialogConfig}
-  from '../components/dialogs/symbology-dialog.component';
+  from '../symbology/symbology-dialog.component';
 
 /**
  * The start tab of the ribbons component.

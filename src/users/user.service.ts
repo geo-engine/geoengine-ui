@@ -109,16 +109,12 @@ export class UserService {
                 this.projectService.setProject(project);
             }
 
-            const layers = storageProvider.loadLayers(
-                this.mappingQueryService, this.projectService
-            );
+            const layers = storageProvider.loadLayers(this.layerService);
             if (layers) {
                 this.layerService.setLayers(layers);
             }
 
-            const plots = storageProvider.loadPlots(
-                this.mappingQueryService, this.projectService
-            );
+            const plots = storageProvider.loadPlots(this.plotService);
             if (plots) {
                 this.plotService.setPlots(plots);
             }

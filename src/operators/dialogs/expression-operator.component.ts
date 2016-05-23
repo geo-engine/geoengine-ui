@@ -11,7 +11,7 @@ import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
 
 import {RasterLayer} from '../../models/layer.model';
-import {RasterSymbology} from '../../models/symbology.model';
+import {RasterSymbology} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -135,7 +135,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
     constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
         super();
-        console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
+        // console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
 
         this.configForm = formBuilder.group({
             'expression': ['1 * A', Validators.compose([
