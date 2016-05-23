@@ -116,6 +116,11 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
             loadTilesWhileInteracting: true, // TODO: check if moved to layer
         });
 
+        // add the select interaction to the map
+        const select = new ol.interaction.Select();
+        this.map.addInteraction(select);
+        select.on(['select'], this.select);
+
         // this.layers.forEach(layer => console.log('added', layer));
 
         // initialize layers
@@ -167,6 +172,11 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
             this.map.updateSize();
             this.isSizeChanged = false;
         }
+    }
+
+    private select(event: any) { // ol.SelectEvent) {
+        const selectEvent = event as ol.SelectEvent;
+        console.log('select', selectEvent);
     }
 
     private createBackgroundLayer(projection: Projection): ol.layer.Image {

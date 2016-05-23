@@ -1,31 +1,31 @@
-import {Injectable} from "angular2/core";
-import {BehaviorSubject, Observable} from "rxjs/Rx";
+import {Injectable} from 'angular2/core';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {Layer} from "../models/layer.model";
+import {Layer} from '../models/layer.model';
 
-import {Symbology} from "../symbology/symbology.model";
+import {Symbology} from '../symbology/symbology.model';
 
 /**
  * A service that is responsible for managing the active layer array.
  */
 @Injectable()
 export class LayerService {
-    private layers$: BehaviorSubject<Array<Layer<any>>> = new BehaviorSubject([]);
-    private selectedLayer$: BehaviorSubject<Layer<any>> = new BehaviorSubject(undefined);
+    private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
+    private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
 
     constructor() {}
 
     /**
      * @returns The layer list.
      */
-    getLayers(): Array<Layer<any>> {
+    getLayers(): Array<Layer<Symbology>> {
         return this.layers$.getValue();
     }
 
     /**
      * @returns The stream of the layer list.
      */
-    getLayersStream(): Observable<Array<Layer<any>>> {
+    getLayersStream(): Observable<Array<Layer<Symbology>>> {
         return this.layers$;
     }
 
@@ -33,7 +33,7 @@ export class LayerService {
      * Insert a new array of layers. Resets the selected layer.
      * @param layers The layer list.
      */
-    setLayers(layers: Array<Layer<any>>) {
+    setLayers(layers: Array<Layer<Symbology>>) {
         if (layers.indexOf(this.selectedLayer$.getValue()) === -1) {
             this.setSelectedLayer(undefined);
         }
@@ -45,7 +45,7 @@ export class LayerService {
      * Adds a layer on top of the layer list.
      * @param layer The new layer.
      */
-    addLayer(layer: Layer<any>) {
+    addLayer(layer: Layer<Symbology>) {
        let layers = this.layers$.getValue();
        this.setLayers([layer, ...layers]);
     }
@@ -54,7 +54,7 @@ export class LayerService {
      * Removes a layer from the list.
      * @param layer The layer to remove.
      */
-    removeLayer(layer: Layer<any>) {
+    removeLayer(layer: Layer<Symbology>) {
         let layers = this.layers$.getValue();
         let index = layers.indexOf(layer);
 
@@ -69,19 +69,18 @@ export class LayerService {
      * @param layer The layer to modify
      * @param newName The new layer name
      */
-    changeLayerName(layer: Layer<any>, newName: string) {
+    changeLayerName(layer: Layer<Symbology>, newName: string) {
       layer.name = newName;
       this.layers$.next(this.getLayers());
     }
 
-
     /**
-    * Changes the symbology of a layer.
-    * @param layer The layer to modify
-    * @param symbology The new symbology
-    */
-    changeLayerSymbology(layer: Layer<any>, symbology: Symbology) {
-        // console.log("changeLayerSymbology", layer, symbology);
+     * Changes the symbology of a layer.
+     * @param layer The layer to modify
+     * @param symbology The new symbology
+     */
+    changeLayerSymbology(layer: Layer<Symbology>, symbology: Symbology) {
+        // console.log('changeLayerSymbology', layer, symbology);
         layer.symbology = symbology;
         this.layers$.next(this.getLayers());
     }
@@ -91,7 +90,7 @@ export class LayerService {
      * Does nothing if the layer is not within the list.
      * @param layer The layer to select.
      */
-    setSelectedLayer(layer: Layer<any>) {
+    setSelectedLayer(layer: Layer<Symbology>) {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
         }
