@@ -65,7 +65,7 @@ import {PlotService} from '../plots/plot.service';
             </layer-component>
         </div>
         <div flex="grow">
-            <ol-map [height]="middleContainerHeight$ | async"
+            <wave-ol-map [height]="middleContainerHeight$ | async"
                     [projection]="projectService.getMapProjectionStream() | async">
                 <div *ngFor="#layer of layersReverse$ | async; #index = index"
                      [ngSwitch]="layer.operator.resultType">
@@ -97,7 +97,7 @@ import {PlotService} from '../plots/plot.service';
                                     [time]="projectService.getTimeStream() | async">
                     </wave-ol-raster-layer>
                 </div>
-            </ol-map>
+            </wave-ol-map>
         </div>
         <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"
                         (openDetailView)="showPlotDetailDialog($event)"></wave-plot-list>
