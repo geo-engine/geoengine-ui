@@ -1,5 +1,5 @@
 import {
-    Component, ViewChild, ElementRef, AfterViewInit, NgZone, ChangeDetectionStrategy, OnInit,
+    Component, ViewChild, ElementRef, NgZone, ChangeDetectionStrategy, OnInit,
 } from 'angular2/core';
 import {COMMON_DIRECTIVES} from 'angular2/common';
 import {HTTP_PROVIDERS} from 'angular2/http';
@@ -22,9 +22,9 @@ import {Layer} from '../models/layer.model';
 import {ResultTypes} from '../operators/result-type.model';
 
 import {LayerService} from '../services/layer.service';
-import {StorageService} from '../services/storage.service';
+import {LayoutService} from '../app/layout.service';
 import {ProjectService} from '../services/project.service';
-import {UserService} from '../services/user.service';
+import {UserService} from '../users/user.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
@@ -37,8 +37,7 @@ import {PlotService} from '../plots/plot.service';
     template: `
     <div class="topContainer md-whiteframe-5dp" layout="row">
         <div class="infoArea">
-            <info-area-component [layerListVisible]="layerListVisible$">
-            </info-area-component>
+            <wave-info-area></wave-info-area>
         </div>
         <div flex="grow">
             <wave-ribbons-component
@@ -106,10 +105,7 @@ import {PlotService} from '../plots/plot.service';
     </div>
     <div class="bottomContainer md-whiteframe-5dp"
         [style.height.px]="bottomContainerHeight$ | async">
-        <md-toolbar class="infoBar">
-            <info-bar-component [dataTableVisible]="dataTableVisible$">
-            </info-bar-component>
-        </md-toolbar>
+        <wave-info-bar></wave-info-bar>
         <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40"
              *ngIf="dataTableVisible$ | async">
             <wv-data-table [height]="(bottomContainerHeight$ | async) - 40">
@@ -158,12 +154,12 @@ import {PlotService} from '../plots/plot.service';
         left: 0px;
         right: 0px;
     }
-    .bottomContainer .infoBar {
+    wave-info-bar {
         min-height: 40px;
         height: 40px;
     }
     .bottomContainer .dataTable {
-      overflow-y: auto;
+        overflow-y: auto;
     }
     `],
     directives: [
@@ -176,16 +172,15 @@ import {PlotService} from '../plots/plot.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         HTTP_PROVIDERS, SidenavService, MdDialog,
-        LayerService, PlotService, StorageService, ProjectService, UserService, MappingQueryService,
+        LayerService, PlotService, LayoutService, ProjectService, UserService, MappingQueryService,
         RandomColorService,
     ],
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
     @ViewChild(OlMapComponent) mapComponent: OlMapComponent;
 
-    private layerListVisible$: BehaviorSubject<boolean>;
-    private plotListVisible$: BehaviorSubject<boolean>;
-    private dataTableVisible$: BehaviorSubject<boolean>;
+    private layerListVisible$: Observable<boolean>;
+    private dataTableVisible$: Observable<boolean>;
 
     private middleContainerHeight$: Observable<number>;
     private bottomContainerHeight$: Observable<number>;
@@ -200,7 +195,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private layerService: LayerService,
                 private plotService: PlotService,
                 private sidenavService: SidenavService,
-                private storageService: StorageService,
+                private layoutService: LayoutService,
                 private projectService: ProjectService,
                 private mappingQueryService: MappingQueryService,
                 private userService: UserService,
@@ -213,59 +208,21 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.hasSelectedLayer$ = layerService.getSelectedLayerStream()
                                              .map(value => value !== undefined);
 
-        // attach layer list visibility to storage service
-        this.layerListVisible$ = new BehaviorSubject(this.storageService.getLayerListVisible());
-        this.storageService.addLayerListVisibleObservable(this.layerListVisible$);
-
-        // plot list visiblity
-        this.plotListVisible$ = new BehaviorSubject(false);
-        this.plotService.getPlotsStream()
-                        .map(plots => plots.length > 0)
-                        .subscribe(this.plotListVisible$);
-
-        // attach data table visibility to storage service
-        this.dataTableVisible$ = new BehaviorSubject(this.storageService.getDataTableVisible());
-        this.storageService.addDataTableVisibleObservable(this.dataTableVisible$);
+        this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
+        this.dataTableVisible$ = this.layoutService.getDataTableVisibilityStream();
     }
 
     ngOnInit() {
-        let windowHeight$ = new BehaviorSubject(window.innerHeight);
+        const windowHeight$ = new BehaviorSubject(window.innerHeight);
         Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerHeight)
                   .subscribe(windowHeight$);
-        this.layerListVisible$.map(() => window.innerHeight)
-                              .subscribe(windowHeight$);
-        this.dataTableVisible$.map(() => window.innerHeight)
-                              .subscribe(windowHeight$);
 
-        let remainingHeight$ = windowHeight$.map(height => height - 180)
-                                            .map(height => Math.max(height, 0));
+        const HEADER_HEIGHT = 180;
+        const remainingHeight$ = windowHeight$.map(height => Math.max(height - HEADER_HEIGHT), 0);
 
-        this.middleContainerHeight$ = remainingHeight$.map(height => {
-            if (this.dataTableVisible$.getValue()) {
-                return Math.ceil(3 / 5 * height);
-            } else {
-                return Math.max(height - 40, 0);
-            }
-        });
-
-        this.bottomContainerHeight$ = remainingHeight$.map(height => {
-            if (this.dataTableVisible$.getValue()) {
-                return Math.floor(2 / 5 * height);
-            } else {
-                return 40;
-            }
-        });
-    }
-
-    ngAfterViewInit() {
-        this.middleContainerHeight$.subscribe(() => {
-            // this.mapComponent.resize();
-        });
-
-        this.bottomContainerHeight$.subscribe(() => {
-            // this.mapComponent.resize();
-        });
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$);
+        this.bottomContainerHeight$ = this.layoutService.getDataTableHeightStream(remainingHeight$);
     }
 
     getMapIndexOfSelectedLayer() {

@@ -110,4 +110,5 @@ export class LayerService {
     getSelectedLayer() {
         return this.selectedLayer$.getValue();
     }
+
 }

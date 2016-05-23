@@ -2,8 +2,7 @@ interface UserConfig {
     id: number;
     name: string;
 
-    firstName: string;
-    lastName: string;
+    realName: string;
     email: string;
 
     passwordHash: string;
@@ -16,8 +15,7 @@ export class User {
     id: number;
     name: string;
 
-    firstName: string;
-    lastName: string;
+    realName: string;
     email: string;
 
     passwordHash: string;
@@ -25,8 +23,7 @@ export class User {
     constructor(config: UserConfig) {
         this.id = config.id;
         this.name = config.name;
-        this.firstName = config.firstName;
-        this.lastName = config.lastName;
+        this.realName = config.realName;
         this.email = config.email;
         this.passwordHash = config.passwordHash;
     }
@@ -43,11 +40,10 @@ export class Guest extends User {
     constructor() {
         super({
             id: -1,
-            name: "Guest",
-            firstName: "",
-            lastName: "",
-            email: "",
-            passwordHash: ""
+            name: 'Guest',
+            realName: '',
+            email: '',
+            passwordHash: '',
         });
     }
 }

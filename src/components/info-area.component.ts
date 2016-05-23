@@ -1,11 +1,15 @@
-import {Component, Input, ChangeDetectionStrategy} from "angular2/core";
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {BehaviorSubject} from "rxjs/Rx";
+import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Observable} from 'rxjs/Rx';
 
-import {UserService} from "../services/user.service";
+import {UserService} from '../users/user.service';
+import {LayoutService} from '../app/layout.service';
 
+/**
+ * The top left info area component for user info and layer list collapsing.
+ */
 @Component({
-    selector: "info-area-component",
+    selector: 'wave-info-area',
     template: `
     <md-toolbar class="md-accent" layout="column">
         <div layout="row" layout-align="space-between center">
@@ -26,7 +30,8 @@ import {UserService} from "../services/user.service";
             </button>
             Layers
             <button md-button class="md-icon-button" aria-label="Settings"
-                    (click)="toggleLayersVisible()" [ngSwitch]="layerListVisible$ | async">
+                    (click)="layoutService.toggleLayerListVisibility()"
+                    [ngSwitch]="layerListVisibility$ | async">
                 <i *ngSwitchWhen="true" md-icon>expand_less</i>
                 <i *ngSwitchWhen="false" md-icon>expand_more</i>
             </button>
@@ -46,24 +51,17 @@ import {UserService} from "../services/user.service";
     }
     `],
     directives: [MATERIAL_DIRECTIVES],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class InfoAreaComponent {
-    @Input("layerListVisible") layerListVisible$: BehaviorSubject<boolean>;
+    private layerListVisibility$: Observable<boolean>;
+    private username$: Observable<string>;
 
-    private username$: BehaviorSubject<string>;
-
-    constructor(private userService: UserService) {
-        this.username$ = new BehaviorSubject(this.userService.getUser().name);
-        this.userService.getUserStream().subscribe(user => {
-            if (this.username$.getValue() !== user.name) {
-                this.username$.next(user.name);
-            }
-        });
-    }
-
-    toggleLayersVisible() {
-        this.layerListVisible$.next(!this.layerListVisible$.getValue());
+    constructor(
+        private layoutService: LayoutService,
+        private userService: UserService
+    ) {
+        this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
+        this.username$ = this.userService.getUserStream().map(user =>  user.name);
     }
 }

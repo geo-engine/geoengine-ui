@@ -3,8 +3,6 @@ import {
     ChangeDetectorRef, AfterViewChecked, ViewChild,
 } from 'angular2/core';
 
-import {BehaviorSubject} from 'rxjs/Rx';
-
 import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
 
 import {StartTabComponent} from './start-tab.component';
@@ -12,7 +10,7 @@ import {OperatorsTabComponent} from './operators-tab.component';
 import {ProjectTabComponent} from './project-tab.component';
 import {DebugTabComponent} from './debug-tab.component';
 
-import {StorageService} from '../services/storage.service';
+import {LayoutService} from '../app/layout.service';
 
 import Config from '../models/config.model';
 
@@ -77,17 +75,14 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     DEBUG_MODE: boolean = Config.DEBUG_MODE;
 
-    private tabIndex$: BehaviorSubject<number>;
-
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-                private ngZone: NgZone,
-                private storageService: StorageService) {
-        this.tabIndex$ = new BehaviorSubject(this.storageService.getTabIndex());
-        this.storageService.addTabIndexObservable(this.tabIndex$);
-    }
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private ngZone: NgZone,
+        private layoutService: LayoutService
+    ) {}
 
     ngAfterViewInit() {
-        this.tabs.selected = this.tabIndex$.value;
+        this.tabs.selected = this.layoutService.getTabIndex();
         // do this one time for ngMaterial
         setTimeout(() => {
             this.changeDetectorRef.markForCheck();
@@ -98,11 +93,7 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
         // Remove this hack when the tabs component has a proper API.
 
         // publish tab index if changed
-        const newTabIndex = this.tabs.selected;
-        const oldTabIndex = this.tabIndex$.value;
-        if (newTabIndex !== oldTabIndex) {
-            this.tabIndex$.next(newTabIndex);
-        }
+        this.layoutService.setTabIndex(this.tabs.selected);
     }
 
     onScroll(event: WheelEvent) {
@@ -110,11 +101,11 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
         const maxTab = this.tabs.panes.length - 1;
 
         const newTabIndex = Math.min(maxTab, Math.max(minTab, (
-            this.tabIndex$.value + (event.deltaY > 0 ? 1 : -1)
+            this.layoutService.getTabIndex() + (event.deltaY > 0 ? 1 : -1)
         )));
 
         this.tabs.selected = newTabIndex;
-        this.tabIndex$.next(newTabIndex);
+        this.layoutService.setTabIndex(newTabIndex);
     }
 
 }

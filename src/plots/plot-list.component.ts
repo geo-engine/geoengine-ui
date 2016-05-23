@@ -1,5 +1,6 @@
 import {Component, ChangeDetectionStrategy, Input, ElementRef}
   from 'angular2/core';
+import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
 
@@ -9,19 +10,21 @@ import {PlotDetailsDialogComponent, PlotDetailsDialogConfig} from './plot-detail
 import {PlotService} from './plot.service';
 import {Plot} from './plot.model';
 
+import {LayoutService} from '../app/layout.service';
+
 /**
  * A component to list all plots.
  */
 @Component({
     selector: 'wave-plot-list',
     template: `
-    <div layout="column" *ngIf="plotService.getPlotsVisibleStream() | async"
+    <div layout="column" *ngIf="plotComponentVisible$ | async"
                          [style.max-height.px]="maxHeight">
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <button md-button class="md-icon-button" aria-label="Toggle"
                         (click)="plotService.togglePlotListVisibility()"
-                        [ngSwitch]="plotService.getPlotListVisibleStream() | async">
+                        [ngSwitch]="plotListVisible$ | async">
                     <i md-icon>
                         <template [ngSwitchWhen]="true">expand_less</template>
                         <template [ngSwitchWhen]="false">expand_more</template>
@@ -34,10 +37,10 @@ import {Plot} from './plot.model';
                 </button>
             </div>
         </md-toolbar>
-        <md-content *ngIf="plotService.getPlotListVisibleStream() | async"
+        <md-content *ngIf="plotListVisible$ | async"
                     [style.max-height.px]="maxHeight - 40">
             <md-list>
-                <md-list-item *ngFor="#plot of plotService.getPlotsStream() | async"
+                <md-list-item *ngFor="#plot of plots$ | async"
                               [ngSwitch]="(plot.data$ | async)?.type"
                               class="md-2-line">
                     <div class="md-list-item-text plot-header" layout="column">
@@ -115,11 +118,22 @@ import {Plot} from './plot.model';
 export class PlotListComponent {
     @Input() maxHeight: number;
 
+    private plotComponentVisible$: Observable<boolean>;
+    private plotListVisible$: Observable<boolean>;
+
+    private plots$: Observable<Array<Plot>>;
+
     constructor(
         private elementRef: ElementRef,
         private mdDialog: MdDialog,
-        private plotService: PlotService
-    ) {}
+        private plotService: PlotService,
+        private layoutService: LayoutService
+    ) {
+        this.plotComponentVisible$ = this.layoutService.getPlotComponentVisibilityStream();
+        this.plotListVisible$ = this.layoutService.getPlotListVisibilityStream();
+
+        this.plots$ = this.plotService.getPlotsStream();
+    }
 
     /**
      * Show the plot detail dialog
