@@ -10,23 +10,18 @@
 
     <!-- 1. Load libraries -->
     <!-- IE required polyfills, in this exact order -->
-    <script src="node_modules/es6-shim/es6-shim.min.js"></script>
-    <script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-    <script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+    <script src="node_modules/core-js/client/shim.min.js"></script>
 
     <!-- Angular -->
-    <script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
-    <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-    <script src="node_modules/angular2/bundles/http.dev.js"></script>
 
     <!-- Proj4 -->
     <script src="node_modules/proj4/dist/proj4.js"></script>
 
     <!-- Material -->
-    <link rel="stylesheet" href="node_modules/ng2-material/dist/ng2-material.css">
-    <link rel="stylesheet" href="node_modules/ng2-material/dist/font.css">
 
     <!-- Dragula -->
     <link rel="stylesheet" href="node_modules/dragula/dist/dragula.min.css">
@@ -35,49 +30,9 @@
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
 
     <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
     <script>
-        System.config({
-            packages: {
-                app: {
-                    format: 'register',
-                    defaultExtension: 'js'
-                },
-                'ng2-material': {
-                    defaultExtension: 'js'
-                },
-                'ng2-dragula': {
-                    defaultExtension: 'js'
-                },
-                'dragula': {
-                    defaultExtension: 'js'
-                },
-                "codemirror": {
-                    main: "lib/codemirror.js",
-                    defaultExtension: "js"
-                },
-                "moment": {
-                  defaultExtension: "js"
-                }
-            },
-            map: {
-                'ng2-material': 'node_modules/ng2-material',
-                'ng2-dragula': 'node_modules/ng2-dragula',
-                'openlayers': 'node_modules/openlayers/dist/ol.js',
-                'proj4': 'node_modules/proj4/dist/proj4.js',
-                'd3': 'node_modules/d3/d3.js',
-                'dagre': 'node_modules/dagre/dist/dagre.js',
-                'dagre-d3': 'node_modules/dagre-d3/dist/dagre-d3.js',
-                'dragula': 'node_modules/dragula/dist/dragula.min.js',
-                "codemirror": "node_modules/codemirror",
-                "immutable": "node_modules/immutable/dist/immutable.min.js",
-                "moment": "node_modules/moment/moment.js"
-            },
-            meta: {
-                'node_modules/proj4/dist/proj4.js': { format: 'global' }
-            }
-        });
-      System.import('app/main')
-            .then(null, console.error.bind(console));
+      System.import('app').catch(function(err){ console.error(err); });
     </script>
 
 </head>

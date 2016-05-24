@@ -1,13 +1,13 @@
 {
   "ambientDependencies": {
-    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "dagre": "github:DefinitelyTyped/DefinitelyTyped/dagre/dagre.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "dagre-d3": "github:DefinitelyTyped/DefinitelyTyped/dagre-d3/dagre-d3.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
-    "codemirror": "github:DefinitelyTyped/DefinitelyTyped/codemirror/codemirror.d.ts#6052959591c9bc6f8463c58220965c7030ba934d",
+    "core-js": "registry:dt/core-js#0.0.0+20160317120654",
+    "jasmine": "registry:dt/jasmine#2.2.0+20160412134438",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
+    "require": "github:DefinitelyTyped/DefinitelyTyped/requirejs/require.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
+    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
+    "dagre": "github:DefinitelyTyped/DefinitelyTyped/dagre/dagre.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
+    "dagre-d3": "github:DefinitelyTyped/DefinitelyTyped/dagre-d3/dagre-d3.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
+    "codemirror": "github:DefinitelyTyped/DefinitelyTyped/codemirror/codemirror.d.ts#e69daec7f79c0c25c4653f866e5cadb5bb7a01ca",
     "proj4": "file:custom_typings/proj4.d.ts"
   }
 }
