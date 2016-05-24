@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy}
-    from 'angular2/core';
+    from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 
 import ol from 'openlayers';

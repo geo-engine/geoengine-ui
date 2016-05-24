@@ -1,7 +1,7 @@
-import {Component, ChangeDetectionStrategy, Input, OnInit} from "angular2/core";
-import {COMMON_DIRECTIVES} from "angular2/common";
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {Component, ChangeDetectionStrategy, Input, OnInit} from "@angular/core";
+import {COMMON_DIRECTIVES} from "@angular/common";
+import {MATERIAL_DIRECTIVES} from "ng2-material";
+// // import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
 
 import {ProjectService} from "../services/project.service";
 
@@ -24,7 +24,7 @@ import moment from "moment";
         <md-input-container class="md-block md-input-has-value">
             <label>Working Projection</label>
             <select [(ngModel)]="workingProjection">
-                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
+                <option *ngFor="let projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
                     {{projection}}
                 </option>
             </select>
@@ -34,7 +34,7 @@ import moment from "moment";
         <md-input-container class="md-block md-input-has-value">
             <label>Map Projection</label>
             <select [(ngModel)]="mapProjection">
-                <option *ngFor="#projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
+                <option *ngFor="let projection of Projections.ALL_PROJECTIONS" [ngValue]="projection">
                     {{projection}}
                 </option>
             </select>

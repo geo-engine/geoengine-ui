@@ -1,9 +1,9 @@
 import {
     Component, AfterViewInit, NgZone, Output, EventEmitter, ChangeDetectionStrategy,
     ChangeDetectorRef, AfterViewChecked, ViewChild,
-} from 'angular2/core';
+} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material';
 
 import {StartTabComponent} from './start-tab.component';
 import {OperatorsTabComponent} from './operators-tab.component';

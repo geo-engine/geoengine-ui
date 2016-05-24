@@ -1,6 +1,6 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../services/layer.service';
 import {PlotService} from '../plots/plot.service';

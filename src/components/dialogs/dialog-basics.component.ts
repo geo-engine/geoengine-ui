@@ -1,28 +1,29 @@
 import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter,
-        ChangeDetectorRef} from "angular2/core";
-import {BehaviorSubject, Observable} from "rxjs/Rx";
+        ChangeDetectorRef} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef} from "ng2-material/components/dialog/dialog";
+import {MdToolbar} from '@angular2-material/toolbar';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
 /**
  * This component allows selecting an input operator by choosing a layer.
  */
 @Component({
-    selector: "wave-dialog-header",
+    selector: 'wave-dialog-header',
     template: `
-    <md-toolbar class="md-primary">
-        <h2 class="md-toolbar-tools" layout="column">
-            <span flex="grow">
+    <md-toolbar class='md-primary'>
+        <h2 class='md-toolbar-tools' layout='column'>
+            <span flex='grow'>
                 <ng-content></ng-content>
             </span>
-            <button md-button class="md-icon-button" aria-label="Close Dialog"
-                    (click)="close.emit()">
+            <button md-button class='md-icon-button' aria-label='Close Dialog'
+                    (click)='close.emit()'>
                 <i md-icon>close</i>
             </button>
         </h2>
     </md-toolbar>
-    <div class="placeholder"></div>
+    <div class='placeholder'></div>
     `,
     styles: [`
     md-toolbar {
@@ -35,8 +36,8 @@ import {MdDialogRef} from "ng2-material/components/dialog/dialog";
         height: 48px;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    directives: [MATERIAL_DIRECTIVES, MdToolbar],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogHeaderComponent {
     @Output() close = new EventEmitter<void>();
@@ -47,15 +48,15 @@ export class DialogHeaderComponent {
 }
 
 @Component({
-    selector: "wave-dialog-container",
+    selector: 'wave-dialog-container',
     template: `
-    <wave-dialog-header (close)="close.emit()">{{title}}</wave-dialog-header>
-    <md-content [style.maxHeight.px]="(windowHeight$ | async) - 48*4"
-                [style.maxWidth.px]="(windowWidth$ | async) - 48*2"
-                [class.no-overflow]="!overflow">
+    <wave-dialog-header (close)='close.emit()'>{{title}}</wave-dialog-header>
+    <md-content [style.maxHeight.px]='(windowHeight$ | async) - 48*4'
+                [style.maxWidth.px]='(windowWidth$ | async) - 48*2'
+                [class.no-overflow]='!overflow'>
         <ng-content></ng-content>
     </md-content>
-    <ng-content select="[actions]"></ng-content>
+    <ng-content select='[actions]'></ng-content>
     `,
     styles: [`
     md-content {
@@ -86,12 +87,12 @@ export class DialogContainerComponent {
 
     constructor() {
         this.windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, "resize")
+        Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerHeight)
                   .subscribe(this.windowHeight$);
 
         this.windowWidth$ = new BehaviorSubject(window.innerWidth);
-        Observable.fromEvent(window, "resize")
+        Observable.fromEvent(window, 'resize')
                   .map(_ => window.innerWidth)
                   .subscribe(this.windowWidth$);
 

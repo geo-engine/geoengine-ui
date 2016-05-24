@@ -1,5 +1,5 @@
-import {Component, OnInit, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {ProjectService} from '../services/project.service';
 

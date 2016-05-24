@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {PlotService} from '../plots/plot.service';

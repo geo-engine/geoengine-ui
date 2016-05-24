@@ -1,8 +1,8 @@
-import {Component, Output, EventEmitter, ChangeDetectionStrategy, ElementRef} from 'angular2/core';
+import {Component, Output, EventEmitter, ChangeDetectionStrategy, ElementRef} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {LayerService} from '../services/layer.service';
 

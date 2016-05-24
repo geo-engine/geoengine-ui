@@ -1,5 +1,5 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
@@ -14,7 +14,7 @@ import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorCompon
     template: `
     <md-content flex>
     <md-list [dragula]='layer-bag'>
-        <md-list-item *ngFor='#layer of layerService.getLayersStream() | async; #index = index'
+        <md-list-item *ngFor='let layer of layerService.getLayersStream() | async; #index = index'
                       md-ink (click)='layerService.setSelectedLayer(layer)'
                       [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
                       (contextmenu)='replaceContextMenu($event, layer)'>

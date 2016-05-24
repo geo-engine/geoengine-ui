@@ -1,6 +1,6 @@
-import {Component, ChangeDetectionStrategy, ElementRef} from 'angular2/core';
+import {Component, ChangeDetectionStrategy, ElementRef} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {ProjectService} from '../services/project.service';
 import {LayerService} from '../services/layer.service';

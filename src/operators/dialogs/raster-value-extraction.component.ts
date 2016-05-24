@@ -1,11 +1,11 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
 import {
     FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray,
-} from 'angular2/common';
+} from '@angular/common';
 
 import {
     LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
@@ -46,7 +46,7 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
                 <md-card-content>
                     <div layout="row" ngControlGroup="valueNames">
                         <md-input-container class="md-block"
-                                    *ngFor="#control of valueNamesControls.controls; #i = index">
+                                    *ngFor="let control of valueNamesControls.controls; #i = index">
                             <label>
                                 Value Name for Raster {{toLetters(i+1)}}
                             </label>

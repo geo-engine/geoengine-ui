@@ -1,9 +1,9 @@
 import {
     Component, Input, ChangeDetectionStrategy, ContentChildren, QueryList, Output, EventEmitter,
     ChangeDetectorRef, AfterViewInit,
-} from 'angular2/core';
+} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 /**
  * Sizes for the buttons and the groups to use within calculations and style settings.

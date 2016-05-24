@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/Rx';
 
 import {User, Guest} from './user.model';

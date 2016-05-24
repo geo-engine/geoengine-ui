@@ -1,7 +1,7 @@
 import {
     Component, ChangeDetectionStrategy, Input, Output, AfterViewInit, EventEmitter, ViewChild,
     ElementRef, OnChanges, SimpleChange,
-} from 'angular2/core';
+} from '@angular/core';
 
 import d3 from 'd3';
 

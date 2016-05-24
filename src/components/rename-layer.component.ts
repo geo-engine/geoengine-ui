@@ -1,7 +1,7 @@
-import {Component, ChangeDetectionStrategy, Input, OnInit} from "angular2/core";
-import {COMMON_DIRECTIVES} from "angular2/common";
-import {MATERIAL_DIRECTIVES} from "ng2-material/all";
-import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {Component, ChangeDetectionStrategy, Input, OnInit} from "@angular/core";
+import {COMMON_DIRECTIVES} from "@angular/common";
+import {MATERIAL_DIRECTIVES} from "ng2-material";
+// // import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
 
 import {LayerService} from "../services/layer.service";
 

@@ -1,7 +1,7 @@
-import {Component, OnInit, Input} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, OnInit, Input} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
-import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+// import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 import {DialogContainerComponent} from '../components/dialogs/dialog-basics.component';
 
 import {LayerService} from '../services/layer.service';

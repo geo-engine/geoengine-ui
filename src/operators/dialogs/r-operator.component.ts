@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
 
 import {
     LayerMultiSelectComponent, OperatorBaseComponent, OperatorContainerComponent,
@@ -50,7 +50,7 @@ import {RScriptType} from '../types/r-script-type.model';
                     <md-input-container class="md-block md-input-has-value">
                         <label for="dataType">Result Type</label>
                         <select ngControl="resultType">
-                            <option *ngFor="#resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
+                            <option *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
                                                             ResultTypes.PLOT, ResultTypes.TEXT]"
                                     [ngValue]="resultType">
                                 {{resultType}}

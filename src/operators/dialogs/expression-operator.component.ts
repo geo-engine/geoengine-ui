@@ -1,11 +1,11 @@
 import {
     Component, OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy,
-} from 'angular2/core';
+} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from 'angular2/common';
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
 import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
         OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
@@ -60,7 +60,7 @@ import {ExpressionType} from '../types/expression-type.model';
                         <md-input-container class="md-block md-input-has-value">
                             <label for="dataType">Output Data Type</label>
                             <select ngControl="dataType">
-                                <option *ngFor="#dataType of outputDataTypes"
+                                <option *ngFor="let dataType of outputDataTypes"
                                         [ngValue]="dataType[0]">
                                     {{dataType[0]}} {{dataType[1]}}
                                 </option>
@@ -90,7 +90,7 @@ import {ExpressionType} from '../types/expression-type.model';
                         <md-input-container class="md-block md-input-has-value">
                             <label for="unit">Output Unit</label>
                             <select ngControl="unit">
-                                <option *ngFor="#unit of outputUnits" [ngValue]="unit">
+                                <option *ngFor="let unit of outputUnits" [ngValue]="unit">
                                     {{unit}}
                                 </option>
                             </select>

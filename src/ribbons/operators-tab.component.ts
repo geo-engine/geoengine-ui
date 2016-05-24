@@ -1,11 +1,11 @@
 import {
     Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, ViewChildren,
     QueryList, AfterViewInit, ChangeDetectorRef, ViewChild,
-} from 'angular2/core';
+} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {OperatorButtonComponent, OperatorSelectionGroupComponent}
   from './operator-selection-group.component';

@@ -1,9 +1,9 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit,
-        Input, ViewChild, ElementRef, ChangeDetectorRef} from 'angular2/core';
+        Input, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// // import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 import {DialogContainerComponent} from './dialog-basics.component';
 
 import {LayerService} from '../../services/layer.service';

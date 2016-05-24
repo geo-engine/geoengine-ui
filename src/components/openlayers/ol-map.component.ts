@@ -1,5 +1,5 @@
 import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, OnChanges,
-        ContentChildren, QueryList, AfterViewChecked, ChangeDetectionStrategy} from 'angular2/core';
+        ContentChildren, QueryList, AfterViewChecked, ChangeDetectionStrategy} from '@angular/core';
 import ol from 'openlayers';
 
 import {OlMapLayerComponent} from './ol-layer.component';

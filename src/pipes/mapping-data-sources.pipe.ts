@@ -1,4 +1,4 @@
-import {Pipe, PipeTransform, Injectable} from 'angular2/core';
+import {Pipe, PipeTransform, Injectable} from '@angular/core';
 
 import {MappingSource} from '../models/mapping-source.model';
 

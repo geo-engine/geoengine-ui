@@ -1,7 +1,7 @@
-import {Component, ChangeDetectionStrategy, Input} from 'angular2/core';
-import {COMMON_DIRECTIVES} from 'angular2/common';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {COMMON_DIRECTIVES} from '@angular/common';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 
 import {DialogContainerComponent} from '../components/dialogs/dialog-basics.component';
 import {HistogramComponent} from './histogram.component';

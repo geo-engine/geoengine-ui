@@ -1,8 +1,8 @@
 import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy,
-        OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from 'angular2/core';
-import {NgControl} from 'angular2/common';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+        OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from '@angular/core';
+import {NgControl} from '@angular/common';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// // import {MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 import {DialogContainerComponent} from '../../components/dialogs/dialog-basics.component';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
@@ -27,7 +27,7 @@ import {Projection} from '../projection.model';
         <label>Input {{id}}</label>
         <select *ngIf="layers.length > 0"
                 [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
-            <option *ngFor="#layer of layers" [ngValue]="layer">
+            <option *ngFor="let layer of layers" [ngValue]="layer">
                 {{layer.name}}
             </option>
         </select>
@@ -112,7 +112,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
             </md-card-header-text>
         </md-card-header>
         <md-card-content layout="row">
-            <div *ngFor="#id of ids; #i = index" layout="row">
+            <div *ngFor="let id of ids; #i = index" layout="row">
                 <wave-layer-selection [id]="id" [layers]="_layers"
                                       (selectedLayer)="updateLayer(i, $event)">
                 </wave-layer-selection>
@@ -267,7 +267,7 @@ export function fromLetters(str: string): number {
         <label>Output Projection</label>
         <select [ngModel]="selectedProjection"
                 (ngModelChange)="valueChange.emit($event)">
-            <option *ngFor="#projection of projections" [ngValue]="projection">
+            <option *ngFor="let projection of projections" [ngValue]="projection">
                 {{projection}}
             </option>
         </select>

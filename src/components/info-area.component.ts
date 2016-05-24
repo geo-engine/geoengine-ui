@@ -1,5 +1,6 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {MdToolbar} from '@angular2-material/toolbar';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {Observable} from 'rxjs/Rx';
 
 import {UserService} from '../users/user.service';
@@ -50,7 +51,7 @@ import {LayoutService} from '../app/layout.service';
         vertical-align: middle;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InfoAreaComponent {

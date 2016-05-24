@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
 
 import {LayerMultiSelectComponent, OperatorBaseComponent,  OperatorContainerComponent}
   from './operator.component';
@@ -237,7 +237,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
                     <md-input-container class="md-block" flex-gt-sm>
                       <label>Solarangle</label>
                       <select ngControl="solarangleName">
-                        <option *ngFor="#name of solarangleNames" [ngValue]="name">
+                        <option *ngFor="let name of solarangleNames" [ngValue]="name">
                           {{name}}
                         </option>
                       </select>

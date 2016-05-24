@@ -1,5 +1,5 @@
-import {Component, OnDestroy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, OnDestroy} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {Subscription} from 'rxjs/Rx';
 

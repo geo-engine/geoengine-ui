@@ -1,5 +1,5 @@
 import {Component, Input, Output, ChangeDetectionStrategy, EventEmitter, ViewChild, AfterViewInit,
-        ElementRef, AfterViewChecked} from "angular2/core";
+        ElementRef, AfterViewChecked} from "@angular/core";
 
 import CodeMirror from "codemirror";
 

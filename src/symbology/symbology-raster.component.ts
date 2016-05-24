@@ -1,5 +1,5 @@
-import {Component, OnInit, Input, Output, EventEmitter} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {RasterSymbology} from './symbology.model';
 

@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from 'angular2/common';
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
 
 import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
     from './operator.component';

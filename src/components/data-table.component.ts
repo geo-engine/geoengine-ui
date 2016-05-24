@@ -1,8 +1,8 @@
 import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
-        OnInit, OnChanges, SimpleChange} from 'angular2/core';
+        OnInit, OnChanges, SimpleChange} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material/all';
-import {Http} from 'angular2/http';
+import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material';
+import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 import {ResultTypes} from '../operators/result-type.model';
@@ -27,15 +27,15 @@ interface Column {
         <thead>
           <tr [style.height.px]='scrollTop'></tr>
           <tr md-data-table-header-selectable-row (onChange)='change($event)'>
-            <th *ngFor='#column of columns'>{{column.name}} </th>
-            <th *ngFor='#column of propertyColumns'>{{column.name}} </th>
+            <th *ngFor='let column of columns'>{{column.name}} </th>
+            <th *ngFor='let column of propertyColumns'>{{column.name}} </th>
           </tr>
         </thead>
         <tbody>
             <template ngFor #row [ngForOf]='visibleRows' #idx='index'>
               <tr md-data-table-selectable-row [selectable-value]='row.id' (onChange)='change($event)'>
-                    <td *ngFor='#column of columns'>{{row[column.name]}}</td>
-                    <td *ngFor='#column of propertyColumns'>{{row?.properties[column.name]}}</td>
+                    <td *ngFor='let column of columns'>{{row[column.name]}}</td>
+                    <td *ngFor='let column of propertyColumns'>{{row?.properties[column.name]}}</td>
               </tr>
             </template>
             <tr [style.height.px]='scrollBottom'></tr>
@@ -56,7 +56,7 @@ interface Column {
       }
     `],
     // template: `
-    // <div *ngFor='#item of data'>{{item}}</div>
+    // <div *ngFor='let item of data'>{{item}}</div>
     // `,
     // template: `
     //     <vaadin-grid

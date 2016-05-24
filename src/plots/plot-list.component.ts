@@ -1,8 +1,9 @@
 import {Component, ChangeDetectionStrategy, Input, ElementRef}
-  from 'angular2/core';
+  from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material/all';
+import {MdToolbar} from '@angular2-material/toolbar';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {HistogramComponent} from './histogram.component';
 
@@ -40,7 +41,7 @@ import {LayoutService} from '../app/layout.service';
         <md-content *ngIf="plotListVisible$ | async"
                     [style.max-height.px]="maxHeight - 40">
             <md-list>
-                <md-list-item *ngFor="#plot of plots$ | async"
+                <md-list-item *ngFor="let plot of plots$ | async"
                               [ngSwitch]="(plot.data$ | async)?.type"
                               class="md-2-line">
                     <div class="md-list-item-text plot-header" layout="column">
@@ -112,7 +113,7 @@ import {LayoutService} from '../app/layout.service';
         }
         `,
     ],
-    directives: [MATERIAL_DIRECTIVES, HistogramComponent],
+    directives: [MATERIAL_DIRECTIVES, HistogramComponent, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {

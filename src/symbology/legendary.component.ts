@@ -1,5 +1,5 @@
-import {Component,  Input, OnInit, OnDestroy} from 'angular2/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {Component,  Input, OnInit, OnDestroy} from '@angular/core';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {Subscription} from 'rxjs/Rx';
 
@@ -111,7 +111,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     template: `
         <div class='legend' *ngIf='ready' [ngSwitch]='colorizer.interpolation'>
             <tbody *ngSwitchWhen='_linear'>
-                <tr *ngFor='#breakpoint of colorizer.breakpoints; #isFirst = first'>
+                <tr *ngFor='let breakpoint of colorizer.breakpoints; #isFirst = first'>
                     <td class='gradient'
                         *ngIf='isFirst'
                         [rowSpan]='colorizer.breakpoints.length'
@@ -123,7 +123,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
             </tbody>
 
             <tbody *ngSwitchDefault>
-                <tr *ngFor='#breakpoint of colorizer.breakpoints'>
+                <tr *ngFor='let breakpoint of colorizer.breakpoints'>
                     <td class='icon' [style.background-color]='breakpoint[1]'></td>
                     <td>{{breakpoint[0]}}</td>
                     <td>{{breakpoint[2]}}</td>

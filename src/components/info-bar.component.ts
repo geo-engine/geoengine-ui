@@ -1,7 +1,8 @@
-import {Component, Input, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {MdToolbar} from '@angular2-material/toolbar';
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayoutService} from '../app/layout.service';
 
@@ -38,7 +39,7 @@ import {LayoutService} from '../app/layout.service';
         border: 1px solid rgba(255, 255, 255, 0.87059);
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

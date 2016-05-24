@@ -1,13 +1,13 @@
 import {
     Component, ChangeDetectionStrategy,
-} from 'angular2/core';
-import {Http, HTTP_PROVIDERS} from 'angular2/http';
+} from '@angular/core';
+import {Http, HTTP_PROVIDERS} from '@angular/http';
 import {
     FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
-} from 'angular2/common';
+} from '@angular/common';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
 import {
     LayerMultiSelectComponent, OperatorContainerComponent, OperatorBaseComponent,
@@ -48,7 +48,7 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
                     <md-input-container class="md-block md-input-has-value">
                         <label>Attribute</label>
                         <select ngControl="attributeName">
-                            <option *ngFor="#attribute of attributes" [ngValue]="attribute">
+                            <option *ngFor="let attribute of attributes" [ngValue]="attribute">
                                 {{attribute}}
                             </option>
                         </select>

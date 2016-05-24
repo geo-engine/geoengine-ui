@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy} from 'angular2/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material/all';
-import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from 'angular2/common';
+import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
 import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
     from './operator.component';
@@ -40,7 +40,7 @@ import {HistogramType} from '../types/histogram-type.model';
                         *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
                         <label>Attribute</label>
                         <select ngControl="attributeName">
-                            <option *ngFor="#attribute of attributes" [ngValue]="attribute">
+                            <option *ngFor="let attribute of attributes" [ngValue]="attribute">
                                 {{attribute}}
                             </option>
                         </select>
@@ -49,7 +49,7 @@ import {HistogramType} from '../types/histogram-type.model';
                     <md-input-container class="md-block md-input-has-value">
                         <label>Range Type</label>
                         <select ngControl="rangeType">
-                            <option *ngFor="#rangeType of rangeTypes" [ngValue]="rangeType">
+                            <option *ngFor="let rangeType of rangeTypes" [ngValue]="rangeType">
                                 {{rangeType}}
                             </option>
                         </select>
