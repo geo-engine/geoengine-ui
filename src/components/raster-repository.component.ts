@@ -29,12 +29,12 @@ import {ProjectService} from '../services/project.service';
 
     <md-content flex='grow'>
       <md-list>
-        <template ngFor #source [ngForOf]='sources | waveMappingDataSourceFilter:_searchTerm'>
+        <template ngFor let-source [ngForOf]='sources | waveMappingDataSourceFilter:_searchTerm'>
           <md-subheader>
             <span [innerHtml] = 'source.name | highlightPipe:_searchTerm'></span>
           </md-subheader>
 
-          <template ngFor #channel [ngForOf]='source.channels'>
+          <template ngFor let-channel [ngForOf]='source.channels'>
             <md-divider></md-divider>
             <md-list-item   *ngIf='!channel.hasTransform'
                             class='md-3-line'

@@ -32,7 +32,7 @@ interface Column {
           </tr>
         </thead>
         <tbody>
-            <template ngFor #row [ngForOf]='visibleRows' #idx='index'>
+            <template ngFor let-row [ngForOf]='visibleRows' let-idx='index'>
               <tr md-data-table-selectable-row [selectable-value]='row.id' (onChange)='change($event)'>
                     <td *ngFor='let column of columns'>{{row[column.name]}}</td>
                     <td *ngFor='let column of propertyColumns'>{{row?.properties[column.name]}}</td>

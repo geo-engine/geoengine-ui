@@ -51,7 +51,7 @@ const GRAPH_STYLE = {
                     <md-divider></md-divider>
                     <md-subheader class="md-sticky md-primary">Parameters</md-subheader>
                         <md-list>
-                            <template ngFor #parameter [ngForOf]="parameters$ | async" #i="index">
+                            <template ngFor let-parameter [ngForOf]="parameters$ | async" let-i="index">
                                 <md-subheader class="md-no-sticky">{{parameter.key}}</md-subheader>
                                 <md-list-item>{{parameter.value}}</md-list-item>
                                 <md-divider></md-divider>
