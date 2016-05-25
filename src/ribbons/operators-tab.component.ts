@@ -198,67 +198,67 @@ export class OperatorsTabComponent implements AfterViewInit {
         );
     }
 
-    addExpressionOperator() {
-        this.showOperatorDialog(ExpressionOperatorComponent);
-    }
+    // addExpressionOperator() {
+    //     this.showOperatorDialog(ExpressionOperatorComponent);
+    // }
+    //
+    // addRasterValueExtractionOperator() {
+    //     this.showOperatorDialog(RasterValueExtractionOperatorComponent);
+    // }
+    //
+    // addNumericAttributesFilterOperator() {
+    //     this.showOperatorDialog(NumericAttributeFilterOperatorComponent);
+    // }
+    //
+    // addROperator() {
+    //     this.showOperatorDialog(ROperatorComponent);
+    // }
+    //
+    // addHistogramOperator() {
+    //     this.showOperatorDialog(HistogramOperatorComponent);
+    // }
+    //
+    // addPointInPolygonFilterOperator() {
+    //     this.showOperatorDialog(PointInPolygonFilterOperatorComponent);
+    // }
+    //
+    // addMsgRadianceOperator() {
+    //     this.showOperatorDialog(MsgRadianceOperatorComponent);
+    // }
+    //
+    // addMsgReflectanceOperator() {
+    //     this.showOperatorDialog(MsgReflectanceOperatorComponent);
+    // }
+    //
+    // addMsgSolarangleOperator() {
+    //     this.showOperatorDialog(MsgSolarangleOperatorComponent);
+    // }
+    //
+    // addMsgTemperatureOperator() {
+    //     this.showOperatorDialog(MsgTemperatureOperatorComponent);
+    // }
+    //
+    // addMsgPansharpenOperator() {
+    //     this.showOperatorDialog(MsgPansharpenOperatorComponent);
+    // }
+    //
+    // addMsgCo2CorrectionOperator() {
+    //     this.showOperatorDialog(MsgCo2CorrectionOperatorComponent);
+    // }
 
-    addRasterValueExtractionOperator() {
-        this.showOperatorDialog(RasterValueExtractionOperatorComponent);
-    }
-
-    addNumericAttributesFilterOperator() {
-        this.showOperatorDialog(NumericAttributeFilterOperatorComponent);
-    }
-
-    addROperator() {
-        this.showOperatorDialog(ROperatorComponent);
-    }
-
-    addHistogramOperator() {
-        this.showOperatorDialog(HistogramOperatorComponent);
-    }
-
-    addPointInPolygonFilterOperator() {
-        this.showOperatorDialog(PointInPolygonFilterOperatorComponent);
-    }
-
-    addMsgRadianceOperator() {
-        this.showOperatorDialog(MsgRadianceOperatorComponent);
-    }
-
-    addMsgReflectanceOperator() {
-        this.showOperatorDialog(MsgReflectanceOperatorComponent);
-    }
-
-    addMsgSolarangleOperator() {
-        this.showOperatorDialog(MsgSolarangleOperatorComponent);
-    }
-
-    addMsgTemperatureOperator() {
-        this.showOperatorDialog(MsgTemperatureOperatorComponent);
-    }
-
-    addMsgPansharpenOperator() {
-        this.showOperatorDialog(MsgPansharpenOperatorComponent);
-    }
-
-    addMsgCo2CorrectionOperator() {
-        this.showOperatorDialog(MsgCo2CorrectionOperatorComponent);
-    }
-
-    private showOperatorDialog(
-        OperatorComponent: OperatorBase // tslint:disable-line: variable-name
-    ) {
-        const config = new OperatorDialogConfig()
-            .layerService(this.layerService)
-            .plotService(this.plotService)
-            .projectService(this.projectService)
-            .mappingQueryService(this.mappingQueryService)
-            .randomColorService(this.randomColorService)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(OperatorComponent as Function, this.elementRef, config);
-    }
+    // private showOperatorDialog(
+    //     OperatorComponent: OperatorBase // tslint:disable-line: variable-name
+    // ) {
+    //     const config = new OperatorDialogConfig()
+    //         .layerService(this.layerService)
+    //         .plotService(this.plotService)
+    //         .projectService(this.projectService)
+    //         .mappingQueryService(this.mappingQueryService)
+    //         .randomColorService(this.randomColorService)
+    //         .clickOutsideToClose(true);
+    //
+    //     this.mdDialog.open(OperatorComponent as Function, this.elementRef, config);
+    // }
 
     /**
      * This functions tries to find the maximum number of buttons to show incrementally.

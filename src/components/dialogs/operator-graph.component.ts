@@ -3,7 +3,7 @@ import {Component, ChangeDetectionStrategy, AfterViewInit,
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// // import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {MdDialog} from 'ng2-material';
 import {DialogContainerComponent} from './dialog-basics.component';
 
 import {LayerService} from '../../services/layer.service';
@@ -11,6 +11,7 @@ import {LayerService} from '../../services/layer.service';
 import {Layer} from '../../models/layer.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
+import {Symbology} from '../../symbology/symbology.model';
 
 import d3 from 'd3'; // necessary for dagreD3
 // import dagre from 'dagre';
@@ -303,7 +304,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
     private addOperatorsToGraph(graph: Dagre.Graph,
                       initialOperators: Array<Operator>,
-                      layers: Array<Layer<any>>): Array<number> {
+                      layers: Array<Layer<Symbology>>): Array<number> {
         let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
@@ -467,28 +468,28 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     }
 }
 
-/**
- * Dialog config for the operator graph
- */
-export class OperatorGraphDialogConfig extends MdDialogConfig {
-    /**
-     * It is required to pass a LayerService instance.
-     * @param layerService a LayerService instance
-     * @returns the config object
-     */
-    layerService(layerService: LayerService): OperatorGraphDialogConfig {
-        this.context.layerService = layerService;
-        return this;
-    }
-
-    /**
-     * It is required to pass a boolean wether the operators of all layers should be displayed or
-     * only the operators of the selected one.
-     * @param selectedLayerOnly should only the selected layer's operators be displayed?
-     * @returns the config object
-     */
-    selectedLayerOnly(selectedLayerOnly: boolean): OperatorGraphDialogConfig {
-        this.context.selectedLayerOnly = selectedLayerOnly;
-        return this;
-    }
-}
+// /**
+//  * Dialog config for the operator graph
+//  */
+// export class OperatorGraphDialogConfig /* extends MdDialogConfig */ {
+//     /**
+//      * It is required to pass a LayerService instance.
+//      * @param layerService a LayerService instance
+//      * @returns the config object
+//      */
+//     layerService(layerService: LayerService): OperatorGraphDialogConfig {
+//         this.context.layerService = layerService;
+//         return this;
+//     }
+//
+//     /**
+//      * It is required to pass a boolean wether the operators of all layers should be displayed or
+//      * only the operators of the selected one.
+//      * @param selectedLayerOnly should only the selected layer's operators be displayed?
+//      * @returns the config object
+//      */
+//     selectedLayerOnly(selectedLayerOnly: boolean): OperatorGraphDialogConfig {
+//         this.context.selectedLayerOnly = selectedLayerOnly;
+//         return this;
+//     }
+// }

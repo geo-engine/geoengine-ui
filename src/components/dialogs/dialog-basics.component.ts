@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MdToolbar} from '@angular2-material/toolbar';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MdDialog} from 'ng2-material';
 
 /**
  * This component allows selecting an input operator by choosing a layer.

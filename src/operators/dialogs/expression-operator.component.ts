@@ -2,7 +2,7 @@ import {
     Component, OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy,
 } from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 // // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
 
 import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';

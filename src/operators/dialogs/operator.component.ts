@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetecti
         OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from '@angular/core';
 import {NgControl} from '@angular/common';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// // import {MdDialogConfig} from 'ng2-material/components/dialog/dialog';
+import {MdDialog} from 'ng2-material';
 import {DialogContainerComponent} from '../../components/dialogs/dialog-basics.component';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
@@ -13,6 +13,7 @@ import {ProjectService} from  '../../services/project.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {RandomColorService} from '../../services/random-color.service';
 
+import {Symbology} from '../../symbology/symbology.model';
 import {Layer} from '../../models/layer.model';
 import {ResultType, ResultTypes} from '../result-type.model';
 import {Projection} from '../projection.model';
@@ -48,17 +49,17 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
     /**
      * An array of selectible layers.
      */
-    @Input() layers: Array<Layer<any>>;
+    @Input() layers: Array<Layer<Symbology>>;
 
     /**
      * This output emits the selected layer.
      */
-    @Output('selectedLayer') selectedLayer = new EventEmitter<Layer<any>>();
+    @Output('selectedLayer') selectedLayer = new EventEmitter<Layer<Symbology>>();
 
-    private _selectedLayer: Layer<any>;
+    private _selectedLayer: Layer<Symbology>;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {
-        this.selectedLayer.subscribe((layer: Layer<any>) => this._selectedLayer = layer);
+        this.selectedLayer.subscribe((layer: Layer<Symbology>) => this._selectedLayer = layer);
     }
 
     ngAfterViewInit() {
@@ -139,7 +140,7 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * An array of possible layers.
      */
-    @Input("layers") layers: Array<Layer<any>>;
+    @Input("layers") layers: Array<Layer<Symbology>>;
 
     /**
      * The minimum number of elements to select.
@@ -166,17 +167,17 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayers") selectedLayers = new EventEmitter<Array<Layer<any>>>();
+    @Output("selectedLayers") selectedLayers = new EventEmitter<Array<Layer<Symbology>>>();
 
     private amountOfLayers: number = 1;
 
-    private _layers: Array<Layer<any>>;
+    private _layers: Array<Layer<Symbology>>;
     private ids: Array<string>;
 
-    private _selectedLayers: Array<Layer<any>> = [];
+    private _selectedLayers: Array<Layer<Symbology>> = [];
 
     constructor() {
-        this.selectedLayers.subscribe((layers: Array<Layer<any>>) => {
+        this.selectedLayers.subscribe((layers: Array<Layer<Symbology>>) => {
             this._selectedLayers = layers;
         });
     }
@@ -189,7 +190,7 @@ export class LayerMultiSelectComponent implements OnChanges {
                 /* falls through */
                 case 'layers':
                 case 'types':
-                    this._layers = this.layers.filter((layer: Layer<any>) => {
+                    this._layers = this.layers.filter((layer: Layer<Symbology>) => {
                         return this.types.indexOf(layer.operator.resultType) >= 0;
                     });
                     if (this.title === undefined) {
@@ -210,7 +211,7 @@ export class LayerMultiSelectComponent implements OnChanges {
         this.recalculateIds();
     }
 
-    updateLayer(index: number, layer: Layer<any>) {
+    updateLayer(index: number, layer: Layer<Symbology>) {
         this._selectedLayers[index] = layer;
         this.selectedLayers.emit(this._selectedLayers);
     }
@@ -282,7 +283,7 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     /**
      * An array of layers that is traversed to get all projections.
      */
-    @Input() layers: Array<Layer<any>>;
+    @Input() layers: Array<Layer<Symbology>>;
 
     /**
      * This output emits the selected layer.
@@ -407,7 +408,7 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
     @Input() mappingQueryService: MappingQueryService;
     @Input() randomColorService: RandomColorService;
 
-    protected layers: Array<Layer<any>> = [];
+    protected layers: Array<Layer<Symbology>> = [];
 
     // types
     protected ResultTypes = ResultTypes; // tslint:disable-line:variable-name
@@ -439,29 +440,29 @@ export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnC
  */
 export interface OperatorBase {}
 
-export class OperatorDialogConfig extends MdDialogConfig {
-    layerService(layerService: LayerService): OperatorDialogConfig {
-        this.context.layerService = layerService;
-        return this;
-    }
-
-    plotService(plotService: PlotService): OperatorDialogConfig {
-        this.context.plotService = plotService;
-        return this;
-    }
-
-    projectService(projectService: ProjectService): OperatorDialogConfig {
-        this.context.projectService = projectService;
-        return this;
-    }
-
-    mappingQueryService(mappingQueryService: MappingQueryService) {
-        this.context.mappingQueryService = mappingQueryService;
-        return this;
-    }
-
-    randomColorService(randomColorService: RandomColorService) {
-        this.context.randomColorService = randomColorService;
-        return this;
-    }
-}
+// export class OperatorDialogConfig /* extends MdDialogConfig */ {
+//     layerService(layerService: LayerService): OperatorDialogConfig {
+//         this.context.layerService = layerService;
+//         return this;
+//     }
+//
+//     plotService(plotService: PlotService): OperatorDialogConfig {
+//         this.context.plotService = plotService;
+//         return this;
+//     }
+//
+//     projectService(projectService: ProjectService): OperatorDialogConfig {
+//         this.context.projectService = projectService;
+//         return this;
+//     }
+//
+//     mappingQueryService(mappingQueryService: MappingQueryService) {
+//         this.context.mappingQueryService = mappingQueryService;
+//         return this;
+//     }
+//
+//     randomColorService(randomColorService: RandomColorService) {
+//         this.context.randomColorService = randomColorService;
+//         return this;
+//     }
+// }

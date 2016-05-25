@@ -66,7 +66,7 @@ export class SymbologyDialogComponent implements OnInit {
     }
 }
 
-export class SymbologyDialogConfig extends MdDialogConfig {
+export class SymbologyDialogConfig /* extends MdDialogConfig */ {
     layerService(layerService: LayerService): SymbologyDialogConfig {
         this.context.layerService = layerService;
         return this;

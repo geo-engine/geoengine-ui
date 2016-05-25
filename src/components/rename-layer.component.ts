@@ -1,11 +1,12 @@
 import {Component, ChangeDetectionStrategy, Input, OnInit} from "@angular/core";
 import {COMMON_DIRECTIVES} from "@angular/common";
 import {MATERIAL_DIRECTIVES} from "ng2-material";
-// // import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MdDialog} from 'ng2-material';
 
 import {LayerService} from "../services/layer.service";
 
 import {Layer} from "../models/layer.model";
+import {Symbology} from '../symbology/symbology.model';
 
 @Component({
     selector: "wave-rename-layer",
@@ -42,7 +43,7 @@ export class RenameLayerComponent implements OnInit {
 
     @Input() layerService: LayerService;
 
-    private layer: Layer<any>;
+    private layer: Layer<Symbology>;
     private layerName: string;
 
     constructor(private dialog: MdDialogRef) {}
@@ -61,9 +62,9 @@ export class RenameLayerComponent implements OnInit {
 
 }
 
-export class RenameLayerDialogConfig extends MdDialogConfig {
-    layerService(layerService: LayerService): RenameLayerDialogConfig {
-        this.context.layerService = layerService;
-        return this;
-    }
-}
+// export class RenameLayerDialogConfig /* extends MdDialogConfig */ {
+//     layerService(layerService: LayerService): RenameLayerDialogConfig {
+//         this.context.layerService = layerService;
+//         return this;
+//     }
+// }

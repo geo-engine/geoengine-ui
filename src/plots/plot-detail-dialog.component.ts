@@ -54,7 +54,7 @@ export class PlotDetailsDialogComponent {
     }
 }
 
-export class PlotDetailsDialogConfig extends MdDialogConfig {
+export class PlotDetailsDialogConfig /* extends MdDialogConfig */ {
     plot(plot: Plot): PlotDetailsDialogConfig {
         this.context.plot = plot;
         return this;

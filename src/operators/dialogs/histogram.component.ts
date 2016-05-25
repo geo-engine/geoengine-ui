@@ -1,7 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
@@ -9,6 +8,7 @@ import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerCompo
     from './operator.component';
 
 import {Layer} from '../../models/layer.model';
+import {Symbology} from '../../symbology/symbology.model'
 import {Plot} from '../../plots/plot.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -100,7 +100,7 @@ import {HistogramType} from '../types/histogram-type.model';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HistogramOperatorComponent extends OperatorBaseComponent {
-    private selectedLayer: Layer<any>;
+    private selectedLayer: Layer<Symbology>;
 
     private autoBuckets = true;
     private customRange = false;
@@ -127,7 +127,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
         });
     }
 
-    onSelectLayer(layer: Layer<any>) {
+    onSelectLayer(layer: Layer<Symbology>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.dataTypes

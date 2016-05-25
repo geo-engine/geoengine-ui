@@ -1,7 +1,6 @@
 import {Component, ChangeDetectionStrategy, Input, OnInit} from "@angular/core";
 import {COMMON_DIRECTIVES} from "@angular/common";
-import {MATERIAL_DIRECTIVES} from "ng2-material";
-// // import {MdDialogRef, MdDialogConfig} from "ng2-material/components/dialog/dialog";
+import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
 
 import {ProjectService} from "../services/project.service";
 
@@ -96,7 +95,7 @@ export class ProjectSettingsComponent implements OnInit {
                 name: this.projectName,
                 workingProjection: this.workingProjection,
                 mapProjection: this.mapProjection,
-                time: (useTime) ? newTime : this.project.time
+                time: (useTime) ? newTime : this.project.time,
             });
         }
         this.dialog.close();
@@ -104,9 +103,9 @@ export class ProjectSettingsComponent implements OnInit {
 
 }
 
-export class ProjectSettingsDialogConfig extends MdDialogConfig {
-    projectService(projectService: ProjectService): ProjectSettingsDialogConfig {
-        this.context.projectService = projectService;
-        return this;
-    }
-}
+// export class ProjectSettingsDialogConfig /* extends MdDialogConfig */ {
+//     projectService(projectService: ProjectService): ProjectSettingsDialogConfig {
+//         this.context.projectService = projectService;
+//         return this;
+//     }
+// }

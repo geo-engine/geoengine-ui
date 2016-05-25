@@ -197,41 +197,41 @@ export class StartTabComponent {
                                                  .map(layer => layer !== undefined);
     }
 
-    /**
-     * Show lineage information for the selected layer.
-     */
-    showLineage() {
-        const config = new OperatorGraphDialogConfig()
-            .layerService(this.layerService)
-            .selectedLayerOnly(true)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
-    }
-
-    /**
-     * Show rename dialog for the selected layer.
-     */
-    showRenameLayerDialog(event: Event) {
-        const config = new RenameLayerDialogConfig()
-            .layerService(this.layerService)
-            .clickOutsideToClose(true)
-            .targetEvent(event);
-
-        this.mdDialog.open(RenameLayerComponent, this.elementRef, config);
-    }
-
-    /**
-     * Show symbology dialog for the selected layer.
-     */
-    showSymbologyDialog(event: Event) {
-        const config = new SymbologyDialogConfig()
-          .layerService(this.layerService)
-          .clickOutsideToClose(true)
-          .targetEvent(event);
-
-        this.mdDialog.open(SymbologyDialogComponent, this.elementRef, config);
-    }
+    // /**
+    //  * Show lineage information for the selected layer.
+    //  */
+    // showLineage() {
+    //     const config = new OperatorGraphDialogConfig()
+    //         .layerService(this.layerService)
+    //         .selectedLayerOnly(true)
+    //         .clickOutsideToClose(true);
+    //
+    //     this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
+    // }
+    //
+    // /**
+    //  * Show rename dialog for the selected layer.
+    //  */
+    // showRenameLayerDialog(event: Event) {
+    //     const config = new RenameLayerDialogConfig()
+    //         .layerService(this.layerService)
+    //         .clickOutsideToClose(true)
+    //         .targetEvent(event);
+    //
+    //     this.mdDialog.open(RenameLayerComponent, this.elementRef, config);
+    // }
+    //
+    // /**
+    //  * Show symbology dialog for the selected layer.
+    //  */
+    // showSymbologyDialog(event: Event) {
+    //     const config = new SymbologyDialogConfig()
+    //       .layerService(this.layerService)
+    //       .clickOutsideToClose(true)
+    //       .targetEvent(event);
+    //
+    //     this.mdDialog.open(SymbologyDialogComponent, this.elementRef, config);
+    // }
 
     /**
      * Remove the selected layer from the list.

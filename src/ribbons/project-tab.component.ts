@@ -71,27 +71,27 @@ export class ProjectTabComponent {
         private layerService: LayerService
     ) {}
 
-    /**
-     * Show the project settings dialog for the current project.
-     */
-    showProjectSettingsDialog() {
-        const config = new ProjectSettingsDialogConfig()
-            .projectService(this.projectService)
-            .clickOutsideToClose(true)
-            .targetEvent(event);
-
-        this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
-    }
-
-    /**
-     * Show lineage information for the whole project.
-     */
-    showLineage() {
-        const config = new OperatorGraphDialogConfig()
-            .layerService(this.layerService)
-            .selectedLayerOnly(false)
-            .clickOutsideToClose(true);
-
-        this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
-    }
+    // /**
+    //  * Show the project settings dialog for the current project.
+    //  */
+    // showProjectSettingsDialog() {
+    //     const config = new ProjectSettingsDialogConfig()
+    //         .projectService(this.projectService)
+    //         .clickOutsideToClose(true)
+    //         .targetEvent(event);
+    //
+    //     this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
+    // }
+    //
+    // /**
+    //  * Show lineage information for the whole project.
+    //  */
+    // showLineage() {
+    //     const config = new OperatorGraphDialogConfig()
+    //         .layerService(this.layerService)
+    //         .selectedLayerOnly(false)
+    //         .clickOutsideToClose(true);
+    //
+    //     this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
+    // }
 }
