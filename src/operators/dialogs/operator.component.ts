@@ -113,7 +113,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
             </md-card-header-text>
         </md-card-header>
         <md-card-content layout="row">
-            <div *ngFor="let id of ids; #i = index" layout="row">
+            <div *ngFor="let id of ids; let i = index" layout="row">
                 <wave-layer-selection [id]="id" [layers]="_layers"
                                       (selectedLayer)="updateLayer(i, $event)">
                 </wave-layer-selection>

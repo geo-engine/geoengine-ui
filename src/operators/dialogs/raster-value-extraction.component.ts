@@ -46,7 +46,7 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
                 <md-card-content>
                     <div layout="row" ngControlGroup="valueNames">
                         <md-input-container class="md-block"
-                                    *ngFor="let control of valueNamesControls.controls; #i = index">
+                                    *ngFor="let control of valueNamesControls.controls; let i = index">
                             <label>
                                 Value Name for Raster {{toLetters(i+1)}}
                             </label>

@@ -14,7 +14,7 @@ import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorCompon
     template: `
     <md-content flex>
     <md-list [dragula]='layer-bag'>
-        <md-list-item *ngFor='let layer of layerService.getLayersStream() | async; #index = index'
+        <md-list-item *ngFor='let layer of layerService.getLayersStream() | async; let index = index'
                       md-ink (click)='layerService.setSelectedLayer(layer)'
                       [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
                       (contextmenu)='replaceContextMenu($event, layer)'>

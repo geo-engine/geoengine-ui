@@ -68,7 +68,7 @@ import {PlotService} from '../plots/plot.service';
             <div flex="grow">
                 <wave-ol-map [height]="middleContainerHeight$ | async"
                         [projection]="projectService.getMapProjectionStream() | async">
-                    <div *ngFor="let layer of layersReverse$ | async; #index = index"
+                    <div *ngFor="let layer of layersReverse$ | async; let index = index"
                          [ngSwitch]="layer.operator.resultType">
                         <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
                                         [layer]="layer"

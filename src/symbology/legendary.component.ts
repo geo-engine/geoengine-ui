@@ -111,7 +111,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     template: `
         <div class='legend' *ngIf='ready' [ngSwitch]='colorizer.interpolation'>
             <tbody *ngSwitchWhen='_linear'>
-                <tr *ngFor='let breakpoint of colorizer.breakpoints; #isFirst = first'>
+                <tr *ngFor='let breakpoint of colorizer.breakpoints; let isFirst = first'>
                     <td class='gradient'
                         *ngIf='isFirst'
                         [rowSpan]='colorizer.breakpoints.length'
