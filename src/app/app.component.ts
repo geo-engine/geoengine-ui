@@ -95,7 +95,7 @@ import {PlotService} from '../plots/plot.service';
             ></wave-plot-list>
         </div>
         <wave-info-bar class="md-whiteframe-5dp"
-            [citationString]="None"
+            [citationString]="''"
         ></wave-info-bar>
         <div class="bottomContainer "
             [style.height.px]="bottomContainerHeight$ | async">

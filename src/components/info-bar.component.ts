@@ -1,8 +1,10 @@
 import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
-import {MdToolbar} from '@angular2-material/toolbar';
+import {CORE_DIRECTIVES} from '@angular/common';
+
 import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MdToolbar} from '@angular2-material/toolbar';
 
 import {LayoutService} from '../app/layout.service';
 
@@ -17,8 +19,8 @@ import {LayoutService} from '../app/layout.service';
             <i *ngSwitchWhen="false" md-icon>expand_less</i>
         </button>
         <small>Data Table</small>
-        <md-divider></md-divider>
-        <small class="citation">Citation: {{citationString}}</small>
+        <md-divider *ngIf="citationString"></md-divider>
+        <small class="citation" *ngIf="citationString">Citation: {{citationString}}</small>
     </md-toolbar>
     `,
     styles: [`
@@ -38,12 +40,12 @@ import {LayoutService} from '../app/layout.service';
         width: 16px;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, MdToolbar],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class InfoBarComponent {
-    @Input() citationString: string = 'none';
+    @Input() citationString: string = '';
 
     private dataTableVisible$: Observable<boolean>;
 

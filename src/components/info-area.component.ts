@@ -1,7 +1,10 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
+
+import {Observable} from 'rxjs/Rx';
+
 import {MdToolbar} from '@angular2-material/toolbar';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {Observable} from 'rxjs/Rx';
 
 import {UserService} from '../users/user.service';
 import {LayoutService} from '../app/layout.service';
@@ -73,7 +76,7 @@ import {LayoutService} from '../app/layout.service';
         color: rgba(255, 255, 255, 0.870588);
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, MdToolbar],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InfoAreaComponent {
