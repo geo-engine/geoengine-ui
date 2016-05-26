@@ -111,7 +111,7 @@ import {
     ],
 })
 
-export class LayerComponent {
+export class LayerListComponent {
     // for ng-switch
     private _enumSymbologyType = SymbologyType;
 

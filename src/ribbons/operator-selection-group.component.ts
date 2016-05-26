@@ -119,8 +119,7 @@ export class OperatorButtonComponent {
             </div>
         </fieldset>
     </div>
-    <!--<md-backdrop class="overlay md-backdrop md-opaque md-active" [hidden]="!expanded"
-                 (click)="toggleExpand()"></md-backdrop>-->
+    <div class="overlay" [hidden]="!expanded" (click)="overlayClicked($event)"></div>
     `,
     styles: [`
     .container {
@@ -155,7 +154,12 @@ export class OperatorButtonComponent {
     }
     .overlay {
         z-index: 5;
-        opacity: .24 !important;
+        opacity: .0;
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
     }
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
@@ -254,6 +258,24 @@ export class OperatorSelectionGroupComponent implements AfterViewInit {
      */
     toggleExpand() {
         this.expanded = !this.expanded;
+    }
+
+    /**
+     * Propagates the click through the overlay to the lower element.
+     * Toggles then the expansion state.
+     */
+    overlayClicked(event: MouseEvent) {
+        const overlay = event.target as HTMLElement;
+        const oldDisplaySetting = overlay.style.display;
+        overlay.style.display = 'none';
+
+        this.toggleExpand();
+
+        const elementBelow = document.elementFromPoint(event.pageX, event.pageY) as HTMLElement;
+
+        overlay.style.display = oldDisplaySetting;
+
+        elementBelow.click();
     }
 
     /*
