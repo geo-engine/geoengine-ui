@@ -39,7 +39,7 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
     @Input() _width: string | number;
     */
 
-    @ContentChildren('olLayer')
+    @ContentChildren('olLayer', {descendants: true})
     private layers: QueryList<
         OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>>;
 
