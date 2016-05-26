@@ -1,9 +1,12 @@
-import {Component, Input, ChangeDetectionStrategy, ChangeDetectorRef,
-        OnInit, OnChanges, SimpleChange} from '@angular/core';
+import {
+    Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnChanges, SimpleChange,
+} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
+import {Http} from '@angular/http';
+
+import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material';
-import {Http} from '@angular/http';
-import {Observable} from 'rxjs/Rx';
 
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
@@ -33,7 +36,8 @@ interface Column {
         </thead>
         <tbody>
             <template ngFor let-row [ngForOf]='visibleRows' let-idx='index'>
-              <tr md-data-table-selectable-row [selectable-value]='row.id' (onChange)='change($event)'>
+              <tr md-data-table-selectable-row [selectable-value]='row.id'
+                                               (onChange)='change($event)'>
                     <td *ngFor='let column of columns'>{{row[column.name]}}</td>
                     <td *ngFor='let column of propertyColumns'>{{row?.properties[column.name]}}</td>
               </tr>
@@ -44,29 +48,25 @@ interface Column {
     </md-content>
     `,
     styles: [`
-      container{
+    :host {
+        display: block;
+    }
+    container{
         overflow-y: auto;
         display: block;
-      }
-      md-data-table thead tr, md-data-table thead th, md-data-table thead >>> .md-data-check-cell {
+    }
+    md-data-table thead tr,
+    md-data-table thead th,
+    md-data-table thead >>> .md-data-check-cell {
         height: 40px;
-      }
-      md-data-table tbody tr, md-data-table tbody td, md-data-table tbody >>> .md-data-check-cell {
+    }
+    md-data-table tbody tr,
+    md-data-table tbody td,
+    md-data-table tbody >>> .md-data-check-cell {
         height: 32px;
-      }
+    }
     `],
-    // template: `
-    // <div *ngFor='let item of data'>{{item}}</div>
-    // `,
-    // template: `
-    //     <vaadin-grid
-    //         [columns]='columns'
-    //         [items]='data'
-    //         [style.height.px]='height'>
-    //     </vaadin-grid>
-    // `,
-    providers: [],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges {
@@ -104,15 +104,14 @@ export class DataTableComponent implements OnInit, OnChanges {
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
-                case ResultTypes.POLYGONS: {
+                case ResultTypes.POLYGONS:
                     let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
                     return vectorLayer.getDataStream().map(data => {
                         if (data) { // TODO: needed?
                             let geojson: GeoJsonFeatureCollection = data;
                             return geojson.features;
                         }
-                      });
-                  }
+                    });
                 case ResultTypes.RASTER:
                     return Observable.of([{properties: {
                         Attribute: 'Value',
@@ -195,9 +194,10 @@ export class DataTableComponent implements OnInit, OnChanges {
      * Method to be called with the onScroll event.
      * @param event The scroll event.
      */
-    onScroll(event: any) {
-        this.scrollTop = Math.max(0, event.target.scrollTop);
-        this.scrollBottom = Math.max(0, this.virtualHeight - event.target.scrollTop - this.height);
+    onScroll(event: Event) {
+        const target = event.target as HTMLElement;
+        this.scrollTop = Math.max(0, target.scrollTop);
+        this.scrollBottom = Math.max(0, this.virtualHeight - target.scrollTop - this.height);
         // recalculate the first visible element!
         let newFirstVisible = (this.scrollTop / this.rowHeight);
         this.updateVisibleRows(newFirstVisible, false);

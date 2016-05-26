@@ -51,60 +51,60 @@ import {PlotService} from '../plots/plot.service';
                 ></wave-ribbons-component>
             </div>
         </div>
-        <div class="middleContainer md-whiteframe-5dp" layout="row"
-             [style.height.px]="middleContainerHeight$ | async">
-            <div class="layers" *ngIf="layerListVisible$ | async"
-                 [style.max-height.px]="middleContainerHeight$ | async">
-                <layer-component [layers]="layers">
-                </layer-component>
-            </div>
-            <div flex="grow">
-                <wave-ol-map [height]="middleContainerHeight$ | async"
-                        [projection]="projectService.getMapProjectionStream() | async">
-                    <div *ngFor="let layer of layersReverse$ | async; let index = index"
-                         [ngSwitch]="layer.operator.resultType">
-                        <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                            [layer]="layer"
-                            [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
-                            [time]="projectService.getTimeStream() | async"
-                        ></wave-ol-point-layer>
-                        <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
-                            [layer]="layer"
-                            [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
-                            [time]="projectService.getTimeStream() | async"
-                        ></wave-ol-line-layer>
-                        <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                            [layer]="layer"
-                            [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
-                            [time]="projectService.getTimeStream() | async"
-                        ></wave-ol-polygon-layer>
-                        <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                            [layer]="layer"
-                            [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
-                            [time]="projectService.getTimeStream() | async"
-                        ></wave-ol-raster-layer>
-                    </div>
-                </wave-ol-map>
-            </div>
-            <wave-plot-list class="plots"
+        <div
+            class="middleContainer md-whiteframe-5dp"
+            [style.height.px]="middleContainerHeight$ | async"
+        >
+            <wave-layer-list
+                class="md-whiteframe-5dp"
+                *ngIf="layerListVisible$ | async"
+                [layers]="layers"
+                [style.max-height.px]="middleContainerHeight$ | async"
+            ></wave-layer-list>
+            <wave-ol-map
+                [height]="middleContainerHeight$ | async"
+                [projection]="projectService.getMapProjectionStream() | async"
+            >
+                <div *ngFor="let layer of layersReverse$ | async; let index = index"
+                     [ngSwitch]="layer.operator.resultType">
+                    <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
+                        [layer]="layer"
+                        [symbology]="layer.symbology"
+                        [projection]="projectService.getMapProjectionStream() | async"
+                        [time]="projectService.getTimeStream() | async"
+                    ></wave-ol-point-layer>
+                    <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
+                        [layer]="layer"
+                        [symbology]="layer.symbology"
+                        [projection]="projectService.getMapProjectionStream() | async"
+                        [time]="projectService.getTimeStream() | async"
+                    ></wave-ol-line-layer>
+                    <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
+                        [layer]="layer"
+                        [symbology]="layer.symbology"
+                        [projection]="projectService.getMapProjectionStream() | async"
+                        [time]="projectService.getTimeStream() | async"
+                    ></wave-ol-polygon-layer>
+                    <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
+                        [layer]="layer"
+                        [symbology]="layer.symbology"
+                        [projection]="projectService.getMapProjectionStream() | async"
+                        [time]="projectService.getTimeStream() | async"
+                    ></wave-ol-raster-layer>
+                </div>
+            </wave-ol-map>
+            <wave-plot-list class="md-whiteframe-5dp"
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
         <wave-info-bar class="md-whiteframe-5dp"
             [citationString]="''"
         ></wave-info-bar>
-        <div class="bottomContainer "
-            [style.height.px]="bottomContainerHeight$ | async">
-            <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async)"
-                 *ngIf="dataTableVisible$ | async">
-                <wave-data-table [height]="(bottomContainerHeight$ | async)">
-                </wave-data-table>
-            </div>
-        </div>
+        <wave-data-table
+            *ngIf="dataTableVisible$ | async"
+            [style.height.px]="(bottomContainerHeight$ | async)"
+            [height]="(bottomContainerHeight$ | async)"
+        ></wave-data-table>
         <md-sidenav #rasterRepository layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
@@ -125,24 +125,28 @@ import {PlotService} from '../plots/plot.service';
     .middleContainer {
         width: 100%;
     }
-    .middleContainer .layers, .middleContainer .plots {
+    wave-ol-map {
+        width: 100%;
+    }
+    wave-layer-list,
+    wave-plot-list {
         width: 200px;
         position: absolute;
         z-index: 1;
         overflow-y: auto;
-        box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     }
-    .middleContainer .plots {
+    wave-layer-list {
+        left: 0px;
+    }
+    wave-plot-list {
         right: 0px;
-    }
-    .bottomContainer {
-        width: 100%;
     }
     wave-info-bar {
         min-height: 48px;
         height: 48px;
     }
-    .bottomContainer .dataTable {
+    wave-data-table {
+        width: 100%;
         overflow-y: auto;
     }
     `],

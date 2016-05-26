@@ -1,23 +1,30 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
+
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 import {Layer} from '../models/layer.model';
 
 import {LayerService} from '../services/layer.service';
-import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
-    LegendaryMappingColorizerRasterComponent} from '../symbology/legendary.component';
+import {
+    LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
+    LegendaryMappingColorizerRasterComponent,
+} from '../symbology/legendary.component';
 
 @Component({
-    selector: 'layer-component',
+    selector: 'wave-layer-list',
     template: `
     <md-content flex>
     <md-list [dragula]='layer-bag'>
-        <md-list-item *ngFor='let layer of layerService.getLayersStream() | async; let index = index'
-                      md-ink (click)='layerService.setSelectedLayer(layer)'
-                      [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
-                      (contextmenu)='replaceContextMenu($event, layer)'>
+        <md-list-item md-ink
+            *ngFor='let layer of layerService.getLayersStream() | async; let index = index'
+            (click)='layerService.setSelectedLayer(layer)'
+            [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
+            (contextmenu)='replaceContextMenu($event, layer)'
+        >
             <div layout='column'>
                 <div layout='row'>
                     <button md-button class='md-icon-button'
@@ -73,6 +80,9 @@ import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorCompon
     </md-content>
     `,
     styles: [`
+    :host {
+        display: block;
+    }
     .md-active {
         background: #f5f5f5;
     }
@@ -94,8 +104,9 @@ import {LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorCompon
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [MATERIAL_DIRECTIVES, Dragula, LegendaryPointComponent,
-        LegendaryRasterComponent, LegendaryVectorComponent,
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, Dragula,
+        LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent,
     ],
 })
@@ -104,8 +115,10 @@ export class LayerComponent {
     // for ng-switch
     private _enumSymbologyType = SymbologyType;
 
-    constructor(private dragulaService: DragulaService,
-                private layerService: LayerService) {
+    constructor(
+        private dragulaService: DragulaService,
+        private layerService: LayerService
+    ) {
         dragulaService.setOptions('layer-bag', {
             removeOnSpill: false,
             revertOnSpill: true,
@@ -118,17 +131,17 @@ export class LayerComponent {
         let dragIndex: number;
         let dropIndex: number;
 
-        this.dragulaService.drag.subscribe((value: any) => {
-            let [_, listItem, list] = value;
+        this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
+            const [_, listItem, list] = value;
             dragIndex = this.domIndexOf(listItem, list);
-//            console.log('drag', dragIndex);
+            // console.log('drag', dragIndex);
         });
-        this.dragulaService.drop.subscribe((value: any) => {
-            let [_, listItem, list] = value;
+        this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
+            const [_, listItem, list] = value;
             dropIndex = this.domIndexOf(listItem, list);
-//            console.log('drop', dropIndex);
+            // console.log('drop', dropIndex);
 
-            let layers = this.layerService.getLayers();
+            const layers = this.layerService.getLayers();
             layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
             this.layerService.setLayers(layers);
         });
@@ -136,10 +149,10 @@ export class LayerComponent {
 
     replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
         event.preventDefault();
-        console.log('A context menu for ' + layer.name + ' will appear in future versions!');
+        console.info(`A context menu for ${layer.name} will appear in future versions!`);
     }
 
-    private domIndexOf(child: any, parent: any) {
+    private domIndexOf(child: HTMLElement, parent: HTMLElement) {
         return Array.prototype.indexOf.call(parent.children, child);
     }
 }
