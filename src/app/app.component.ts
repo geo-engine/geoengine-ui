@@ -40,7 +40,7 @@ import {PlotService} from '../plots/plot.service';
     selector: 'wave-app',
     template: `
     <md-sidenav-layout fullscreen>
-        <div class="topContainer md-whiteframe-5dp" layout="row">
+        <div class="topContainer md-whiteframe-3dp" layout="row">
             <wave-info-area></wave-info-area>
             <div flex="grow">
                 <wave-ribbons-component
@@ -52,11 +52,12 @@ import {PlotService} from '../plots/plot.service';
             </div>
         </div>
         <div
-            class="middleContainer md-whiteframe-5dp"
+            class="middleContainer md-whiteframe-3dp"
             [style.height.px]="middleContainerHeight$ | async"
         >
-            <wave-layer-list
-                class="md-whiteframe-5dp"
+            <wave-layer-list #layerList
+                class="md-whiteframe-3dp"
+                (scroll)="console(layerList)"
                 *ngIf="layerListVisible$ | async"
                 [layers]="layers"
                 [style.max-height.px]="middleContainerHeight$ | async"
@@ -93,11 +94,11 @@ import {PlotService} from '../plots/plot.service';
                     ></wave-ol-raster-layer>
                 </div>
             </wave-ol-map>
-            <wave-plot-list class="md-whiteframe-5dp"
+            <wave-plot-list class="md-whiteframe-3dp"
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <wave-info-bar class="md-whiteframe-5dp"
+        <wave-info-bar class="md-whiteframe-3dp"
             [citationString]="''"
         ></wave-info-bar>
         <wave-data-table
@@ -142,6 +143,8 @@ import {PlotService} from '../plots/plot.service';
         right: 0px;
     }
     wave-info-bar {
+        position: relative;
+        z-index: 1;
         min-height: 48px;
         height: 48px;
     }
@@ -219,6 +222,10 @@ export class AppComponent implements OnInit {
         let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
+    }
+
+    console(a: HTMLElement) {
+        console.log(a, a.offsetHeight);
     }
 
 }
