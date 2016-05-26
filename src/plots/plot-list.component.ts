@@ -1,13 +1,13 @@
-import {Component, ChangeDetectionStrategy, Input, ElementRef}
+import {Component, ChangeDetectionStrategy, Input}
   from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 
 import {MdToolbar} from '@angular2-material/toolbar';
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {HistogramComponent} from './histogram.component';
 
-import {PlotDetailsDialogComponent, PlotDetailsDialogConfig} from './plot-detail-dialog.component';
+// import {PlotDetailsDialogComponent, PlotDetailsDialogConfig} from './plot-detail-dialog.component';
 import {PlotService} from './plot.service';
 import {Plot} from './plot.model';
 
@@ -125,8 +125,6 @@ export class PlotListComponent {
     private plots$: Observable<Array<Plot>>;
 
     constructor(
-        private elementRef: ElementRef,
-        private mdDialog: MdDialog,
         private plotService: PlotService,
         private layoutService: LayoutService
     ) {
@@ -141,10 +139,12 @@ export class PlotListComponent {
      * @param plot the plot to show
      */
     showPlotDetailDialog(plot: Plot) {
-        const config = new PlotDetailsDialogConfig()
-            .plot(plot)
-            .clickOutsideToClose(true);
+        // TODO: re-implement
 
-        this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
+        // const config = new PlotDetailsDialogConfig()
+        //     .plot(plot)
+        //     .clickOutsideToClose(true);
+        //
+        // this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
     }
 }

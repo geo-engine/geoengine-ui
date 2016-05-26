@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- 0. IE: Must be the first tag -->
-    <meta http-equiv="x-ua-compatible" content="IE=edge">
-
     <title>WAVE: Workflow, Analysis and Visualization Editor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- 1. Load libraries -->
-    <!-- IE required polyfills, in this exact order -->
+    <!-- 1. Load Libraries -->
+    <!-- Polyfill(s) for older browsers -->
     <script src="node_modules/core-js/client/shim.min.js"></script>
 
-    <!-- Angular -->
     <script src="node_modules/zone.js/dist/zone.js"></script>
     <script src="node_modules/reflect-metadata/Reflect.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
-    <script src="node_modules/rxjs/bundles/Rx.js"></script>
 
     <!-- Proj4 -->
     <script src="node_modules/proj4/dist/proj4.js"></script>
 
+    <!-- 2. Load Styles -->
+    <style type="text/css">
+    html, body {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-touch-callout: none;
+        min-height: 100%;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+
     <!-- Material -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="node_modules/ng2-material/ng2-material.css">
+    <link rel="stylesheet" type="text/css" href="node_modules/ng2-material/font/font.css">
 
     <!-- Dragula -->
     <link rel="stylesheet" href="node_modules/dragula/dist/dragula.min.css">
@@ -29,214 +42,224 @@
     <!-- Codemirror -->
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
 
-    <!-- 2. Configure SystemJS -->
+    <!-- 3. Configure SystemJS -->
     <script src="systemjs.config.js"></script>
     <script>
-      System.import('app').catch(function(err){ console.error(err); });
+        System.import('app').catch(console.error);
     </script>
 
 </head>
 
-<!-- 3. Display the application -->
-<body style="display: flex; align-items: center; justify-content: center;">
+<!-- 4. Display the application -->
+<body>
 
 <wave-app>
-<style type='text/css'> width: 100%;
-@-webkit-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-webkit-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-moz-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-ms-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-moz-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-webkit-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@-o-keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-@keyframes uil-ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0 0 0 0;
-  }
-  33% {
-    width: 44%;
-    height: 44%;
-    margin: -22% 0 0 -22%;
-    opacity: 1;
-  }
-  100% {
-    width: 88%;
-    height: 88%;
-    margin: -44% 0 0 -44%;
-    opacity: 0;
-  }
-}
-.uil-ripple-css {
-  background: none;
-  position: relative;
-  width: 200px;
-  height: 200px;
-}
-.uil-ripple-css div {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: 0;
-  width: 0;
-  height: 0;
-  opacity: 0;
-  border-radius: 50%;
-  border-width: 12px;
-  border-style: solid;
-  -ms-animation: uil-ripple 2s ease-out infinite;
-  -moz-animation: uil-ripple 2s ease-out infinite;
-  -webkit-animation: uil-ripple 2s ease-out infinite;
-  -o-animation: uil-ripple 2s ease-out infinite;
-  animation: uil-ripple 2s ease-out infinite;
-}
-.uil-ripple-css div:nth-of-type(1) {
-  border-color: #3f51b5;
-}
-.uil-ripple-css div:nth-of-type(2) {
-  border-color: #e91e63;
-  -ms-animation-delay: 1s;
-  -moz-animation-delay: 1s;
-  -webkit-animation-delay: 1s;
-  -o-animation-delay: 1s;
-  animation-delay: 1s;
-}
- </style> <div class='uil-ripple-css' style='transform:scale(0.93);'><div></div><div></div></div>
+    <style type="text/css"> width: 100%;
+    @-webkit-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-webkit-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-moz-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-ms-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-moz-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-webkit-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @-o-keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    @keyframes uil-ripple {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        margin: 0 0 0 0;
+      }
+      33% {
+        width: 44%;
+        height: 44%;
+        margin: -22% 0 0 -22%;
+        opacity: 1;
+      }
+      100% {
+        width: 88%;
+        height: 88%;
+        margin: -44% 0 0 -44%;
+        opacity: 0;
+      }
+    }
+    .uil-ripple-css {
+      background: none;
+      position: relative;
+      width: 50vh;
+      height: 50vh;
+      transform: scale(0.93);
+    }
+    .uil-ripple-container {
+        width: 50vh;
+        height: 75vh;
+        padding-top: 25vh;
+        margin: 0 auto;
+    }
+    .uil-ripple-css div {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: 0;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      border-radius: 50%;
+      border-width: 12px;
+      border-style: solid;
+      -ms-animation: uil-ripple 2s ease-out infinite;
+      -moz-animation: uil-ripple 2s ease-out infinite;
+      -webkit-animation: uil-ripple 2s ease-out infinite;
+      -o-animation: uil-ripple 2s ease-out infinite;
+      animation: uil-ripple 2s ease-out infinite;
+    }
+    .uil-ripple-css div:nth-of-type(1) {
+      border-color: #3f51b5;
+    }
+    .uil-ripple-css div:nth-of-type(2) {
+      border-color: #e91e63;
+      -ms-animation-delay: 1s;
+      -moz-animation-delay: 1s;
+      -webkit-animation-delay: 1s;
+      -o-animation-delay: 1s;
+      animation-delay: 1s;
+    }
+    </style>
+    <div class="uil-ripple-container">
+        <div class="uil-ripple-css"><div></div><div></div></div>
+    </div>
 </wave-app>
 </body>
 

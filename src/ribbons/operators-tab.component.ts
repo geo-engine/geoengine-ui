@@ -1,11 +1,11 @@
 import {
-    Component, Input, Output, EventEmitter, ChangeDetectionStrategy, ElementRef, ViewChildren,
+    Component, Input, ChangeDetectionStrategy, ElementRef, ViewChildren,
     QueryList, AfterViewInit, ChangeDetectorRef, ViewChild,
 } from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {OperatorButtonComponent, OperatorSelectionGroupComponent}
   from './operator-selection-group.component';
@@ -28,21 +28,21 @@ import {
     MsgPansharpenType, MsgCo2CorrectionType,
 } from '../operators/types/msg-types.model';
 
-import {OperatorBase, OperatorDialogConfig} from '../operators/dialogs/operator.component';
-import {RasterValueExtractionOperatorComponent}
-  from '../operators/dialogs/raster-value-extraction.component';
-import {NumericAttributeFilterOperatorComponent}
-  from '../operators/dialogs/numeric-attribute-filter.component';
-import {PointInPolygonFilterOperatorComponent}
-  from '../operators/dialogs/point-in-polygon-filter.component';
-import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
-import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
-import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
-import {
-    MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
-    MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
-    MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
-} from '../operators/dialogs/msg-operators.component';
+// import {OperatorBase, OperatorDialogConfig} from '../operators/dialogs/operator.component';
+// import {RasterValueExtractionOperatorComponent}
+//   from '../operators/dialogs/raster-value-extraction.component';
+// import {NumericAttributeFilterOperatorComponent}
+//   from '../operators/dialogs/numeric-attribute-filter.component';
+// import {PointInPolygonFilterOperatorComponent}
+//   from '../operators/dialogs/point-in-polygon-filter.component';
+// import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
+// import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
+// import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
+// import {
+//     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
+//     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
+//     MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
+// } from '../operators/dialogs/msg-operators.component';
 
 /**
  * The operator tab of the ribbons component.
@@ -153,8 +153,6 @@ export class OperatorsTabComponent implements AfterViewInit {
 
     @Input() maxWidth: number;
 
-    @Output() showOperator = new EventEmitter<OperatorBase>();
-
     smallButtons = false;
 
     // make these types accessible in the view
@@ -174,9 +172,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     // tslint:enable
 
     constructor(
-        private elementRef: ElementRef,
         private changeDetectorRef: ChangeDetectorRef,
-        private mdDialog: MdDialog,
         private layerService: LayerService,
         private plotService: PlotService,
         private projectService: ProjectService,

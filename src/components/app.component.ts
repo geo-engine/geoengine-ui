@@ -1,11 +1,13 @@
 import {
-    Component, ViewChild, ElementRef, NgZone, ChangeDetectionStrategy, OnInit,
+    Component, ViewChild, ChangeDetectionStrategy, OnInit,
 } from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
+import {CORE_DIRECTIVES} from '@angular/common';
 import {HTTP_PROVIDERS} from '@angular/http';
+
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
+
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
@@ -37,25 +39,16 @@ import {PlotService} from '../plots/plot.service';
 @Component({
     selector: 'wave-app',
     template: `
-    <md-sidenav-layout>
+    <md-sidenav-layout fullscreen>
         <div class="topContainer md-whiteframe-5dp" layout="row">
-            <div class="infoArea">
-                <wave-info-area></wave-info-area>
-            </div>
+            <wave-info-area></wave-info-area>
             <div flex="grow">
                 <wave-ribbons-component
-                    [layerSelected]="hasSelectedLayer$ | async"
-                    (renameLayer)="renameLayerDialog($event)"
-                    (removeLayer)="layerService.removeLayer(layerService.getSelectedLayer())"
-                    (lineage)="showLineage($event)"
                     (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                     (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                     (zoomMap)="mapComponent.zoomToMap()"
-                    (addData)="sidenavService.show('right')"
-                    (showOperator)="showAddOperatorDialog($event)"
-                    (projectSettings)="projectSettingsDialog($event)"
-                    (symbology)="symbologyDialog($event)">
-                </wave-ribbons-component>
+                    (addData)="rasterRepository.open()"
+                ></wave-ribbons-component>
             </div>
         </div>
         <div class="middleContainer md-whiteframe-5dp" layout="row"
@@ -71,37 +64,35 @@ import {PlotService} from '../plots/plot.service';
                     <div *ngFor="let layer of layersReverse$ | async; let index = index"
                          [ngSwitch]="layer.operator.resultType">
                         <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                                        [layer]="layer"
-                                        [symbology]="layer.symbology"
-                                        [projection]="projectService.getMapProjectionStream() | async"
-                                        [time]="projectService.getTimeStream() | async"
-                                        >
-                        </wave-ol-point-layer>
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-point-layer>
                         <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
-                                        [layer]="layer"
-                                        [symbology]="layer.symbology"
-                                        [projection]="projectService.getMapProjectionStream() | async"
-                                        [time]="projectService.getTimeStream() | async"
-                                       >
-                        </wave-ol-line-layer>
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-line-layer>
                         <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                                        [layer]="layer"
-                                        [symbology]="layer.symbology"
-                                        [projection]="projectService.getMapProjectionStream() | async"
-                                        [time]="projectService.getTimeStream() | async"
-                                          >
-                        </wave-ol-polygon-layer>
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-polygon-layer>
                         <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                                        [layer]="layer"
-                                        [symbology]="layer.symbology"
-                                        [projection]="projectService.getMapProjectionStream() | async"
-                                        [time]="projectService.getTimeStream() | async">
-                        </wave-ol-raster-layer>
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-raster-layer>
                     </div>
                 </wave-ol-map>
             </div>
-            <wave-plot-list class="plots" [maxHeight]="middleContainerHeight$ | async"
-                            (openDetailView)="showPlotDetailDialog($event)"></wave-plot-list>
+            <wave-plot-list class="plots"
+                [maxHeight]="middleContainerHeight$ | async"
+            ></wave-plot-list>
         </div>
         <div class="bottomContainer md-whiteframe-5dp"
             [style.height.px]="bottomContainerHeight$ | async">
@@ -112,29 +103,25 @@ import {PlotService} from '../plots/plot.service';
                 </wave-data-table>
             </div>
         </div>
-        <md-sidenav #right layout="column" mode="over">
-            <wave-raster-repository style='height:100%'></wave-raster-repository>
+        <md-sidenav #rasterRepository layout="column" mode="over">
+            <wave-raster-repository style='height:100%'
+                *ngIf="rasterRepository.opened"
+            ></wave-raster-repository>
         </md-sidenav>
     </md-sidenav-layout>
     `,
     styles: [`
     .topContainer {
-        position: absolute;
-        top: 0px;
         height: 180px;
-        left: 0px;
-        right: 0px;
+        width: 100%;
     }
-    .topContainer .infoArea {
+    .topContainer wave-info-area {
         width: 200px;
         min-width: 200px;
         height: 100%;
     }
     .middleContainer {
-        position: absolute;
-        top: 180px;
-        left: 0px;
-        right: 0px;
+        width: 100%;
     }
     .middleContainer .layers, .middleContainer .plots {
         width: 200px;
@@ -147,10 +134,7 @@ import {PlotService} from '../plots/plot.service';
         right: 0px;
     }
     .bottomContainer {
-        position: absolute;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
+        width: 100%;
     }
     wave-info-bar {
         min-height: 40px;
@@ -161,7 +145,7 @@ import {PlotService} from '../plots/plot.service';
     }
     `],
     directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES,
         InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTableComponent,
         RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
@@ -169,7 +153,7 @@ import {PlotService} from '../plots/plot.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        HTTP_PROVIDERS, MdDialog,
+        MATERIAL_BROWSER_PROVIDERS, HTTP_PROVIDERS,
         LayerService, PlotService, LayoutService, ProjectService, UserService, MappingQueryService,
         RandomColorService,
     ],
@@ -189,16 +173,15 @@ export class AppComponent implements OnInit {
     // for ng-switch
     private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
 
-    constructor(private zone: NgZone,
-                private layerService: LayerService,
-                private plotService: PlotService,
-                private layoutService: LayoutService,
-                private projectService: ProjectService,
-                private mappingQueryService: MappingQueryService,
-                private userService: UserService,
-                private mdDialog: MdDialog,
-                private elementRef: ElementRef,
-                private randomColorService: RandomColorService) {
+    constructor(
+        private layerService: LayerService,
+        private plotService: PlotService,
+        private layoutService: LayoutService,
+        private projectService: ProjectService,
+        private mappingQueryService: MappingQueryService,
+        private userService: UserService,
+        private randomColorService: RandomColorService
+    ) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
 

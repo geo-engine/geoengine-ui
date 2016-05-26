@@ -1,6 +1,5 @@
 /**
- * System configuration for Angular 2 samples
- * Adjust as necessary for your application needs.
+ * System configuration for WAVE.
  */
 (function(global) {
   // map tells the System loader where to look for things
@@ -27,7 +26,7 @@
     'app':                        { main: 'main.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
     'angular2-in-memory-web-api': { defaultExtension: 'js' },
-    'ng2-material':               { main: 'index'},
+    'ng2-material':               { main: 'index.js', defaultExtension: 'js' },
     'ng2-dragula':                { defaultExtension: 'js' },
     'dragula':                    { defaultExtension: 'js' },
     'codemirror':                 { main: "lib/codemirror.js", defaultExtension: 'js' },

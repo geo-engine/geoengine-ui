@@ -12,43 +12,65 @@ import {LayoutService} from '../app/layout.service';
 @Component({
     selector: 'wave-info-area',
     template: `
-    <md-toolbar class="md-accent" layout="column">
-        <div layout="row" layout-align="space-between center">
-            <button md-button aria-label="User">
-                <i md-icon>person</i>
-                {{username$ | async}}
-            </button>
-            <button md-button class="md-icon-button" aria-label="Help">
-                <i md-icon>help</i>
-            </button>
-        </div>
-        <md-divider></md-divider>
-        <h1 flex="grow" layout="row" layout-align="center center">WAVE</h1>
-        <md-divider></md-divider>
-        <div layout="row" layout-align="space-between center">
+    <md-toolbar class="md-accent">
+        <button md-button aria-label="User">
+            <i md-icon>person</i>
+            {{username$ | async}}
+        </button>
+        <span class="fill-remaining-space"></span>
+        <button md-button class="md-icon-button" aria-label="Help">
+            <i md-icon>help</i>
+        </button>
+        <md-toolbar-row class="title-bar">
+            <md-divider></md-divider>
+            <h1>WAVE</h1>
+            <md-divider></md-divider>
+        </md-toolbar-row>
+        <md-toolbar-row>
             <button md-button class="md-icon-button" aria-label="Settings">
                 <i md-icon>menu</i>
             </button>
-            Layers
+            <span class="fill-remaining-space">Layers</span>
             <button md-button class="md-icon-button" aria-label="Settings"
                     (click)="layoutService.toggleLayerListVisibility()"
                     [ngSwitch]="layerListVisibility$ | async">
                 <i *ngSwitchWhen="true" md-icon>expand_less</i>
                 <i *ngSwitchWhen="false" md-icon>expand_more</i>
             </button>
-        </div>
+        </md-toolbar-row>
     </md-toolbar>
     `,
     styles: [`
-    md-toolbar {
+    :host {
+        display: block;
+    }
+    md-toolbar, md-toolbar >>> .md-toolbar-layout {
         height: 100%;
+        padding: 0px;
+    }
+    md-toolbar >>> md-toolbar-row {
+        height: 48px;
+    }
+    .title-bar {
+        height: calc(100% - 96px);
+        flex-direction: column;
     }
     h1 {
         opacity: 0.5;
         font-size: 34px;
     }
+    md-divider {
+        width: 100%;
+    }
     .material-icons {
         vertical-align: middle;
+    }
+    .fill-remaining-space {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+    button {
+        color: rgba(255, 255, 255, 0.870588);
     }
     `],
     directives: [MATERIAL_DIRECTIVES, MdToolbar],

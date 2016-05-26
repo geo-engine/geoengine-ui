@@ -118,8 +118,8 @@ export class OperatorButtonComponent {
             </div>
         </fieldset>
     </div>
-    <md-backdrop class="overlay md-backdrop md-opaque md-active" [hidden]="!expanded"
-                 (click)="toggleExpand()"></md-backdrop>
+    <!--<md-backdrop class="overlay md-backdrop md-opaque md-active" [hidden]="!expanded"
+                 (click)="toggleExpand()"></md-backdrop>-->
     `,
     styles: [`
     .container {

@@ -1,7 +1,9 @@
 import {Component, OnDestroy} from '@angular/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Subscription} from 'rxjs/Rx';
+
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../services/layer.service';
 import {RasterLayer} from '../models/layer.model';
@@ -21,50 +23,50 @@ import {ProjectService} from '../services/project.service';
 @Component({
     selector: 'wave-raster-repository',
     template: `
-    <div style='height:100%' layout='column'>
-    <md-input-container class='md-block' style='margin-bottom: 0px; padding-bottom: 0px;'>
+    <div style="height:100%" layout="column">
+    <md-input-container class="md-block" style="margin-bottom: 0px; padding-bottom: 0px;">
       <label>Search term</label>
-      <input md-input (valueChange)='_searchTerm = $event'>
+      <input md-input (valueChange)="_searchTerm = $event">
     </md-input-container>
 
-    <md-content flex='grow'>
+    <md-content flex="grow">
       <md-list>
-        <template ngFor let-source [ngForOf]='sources | waveMappingDataSourceFilter:_searchTerm'>
+        <template ngFor let-source [ngForOf]="sources | waveMappingDataSourceFilter:_searchTerm">
           <md-subheader>
-            <span [innerHtml] = 'source.name | highlightPipe:_searchTerm'></span>
+            <span [innerHtml] = "source.name | highlightPipe:_searchTerm"></span>
           </md-subheader>
 
-          <template ngFor let-channel [ngForOf]='source.channels'>
+          <template ngFor let-channel [ngForOf]="source.channels">
             <md-divider></md-divider>
-            <md-list-item   *ngIf='!channel.hasTransform'
-                            class='md-3-line'
-                            style='cursor: pointer;'
-                            (click)='add(source, channel, channel.hasTransform)'>
+            <md-list-item   *ngIf="!channel.hasTransform"
+                            class="md-3-line"
+                            style="cursor: pointer;"
+                            (click)="add(source, channel, channel.hasTransform)">
 
-                <div class='md-list-item-text' layout='column'>
-                  <p bind-innerHtml = 'channel.name | highlightPipe:_searchTerm'></p>
+                <div class="md-list-item-text" layout="column">
+                  <p bind-innerHtml = "channel.name | highlightPipe:_searchTerm"></p>
                   <p>measurement: {{channel?.unit?.measurement}}</p>
                   <p>unit: {{channel?.unit?.unit}}</p>
                 </div>
             </md-list-item>
 
-          <template [ngIf]='channel.hasTransform'>
-            <md-list-item   class='md-3-line'
-                            style='cursor: pointer;'
-                            (click)='add(source, channel, channel.hasTransform)'>
+          <template [ngIf]="channel.hasTransform">
+            <md-list-item   class="md-3-line"
+                            style="cursor: pointer;"
+                            (click)="add(source, channel, channel.hasTransform)">
 
-                <div class='md-list-item-text' layout='column'>
-                    <p bind-innerHtml = 'channel.name | highlightPipe:_searchTerm'></p>
+                <div class="md-list-item-text" layout="column">
+                    <p bind-innerHtml = "channel.name | highlightPipe:_searchTerm"></p>
                     <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
                     <p>unit: {{channel?.transform?.unit?.unit}}</p>
                 </div>
             </md-list-item>
             <md-divider md-inset></md-divider>
-            <md-list-item   class='md-2-line'
-                            style='cursor: pointer;'
-                            (click)='add(source, channel, !channel.hasTransform)'>
+            <md-list-item   class="md-2-line"
+                            style="cursor: pointer;"
+                            (click)="add(source, channel, !channel.hasTransform)">
 
-                <div class='md-list-item-text' layout='column'>
+                <div class="md-list-item-text" layout="column">
                     <p>measurement: {{channel?.unit?.measurement}}</p>
                     <p>unit: {{channel?.unit?.unit}}</p>
                 </div>
@@ -94,8 +96,7 @@ import {ProjectService} from '../services/project.service';
       padding: 5px 5px 5px 0px;
     }
     `],
-    providers: [MappingQueryService],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })

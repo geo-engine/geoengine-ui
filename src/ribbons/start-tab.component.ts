@@ -1,19 +1,19 @@
-import {Component, Output, EventEmitter, ChangeDetectionStrategy, ElementRef} from '@angular/core';
+import {Component, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../services/layer.service';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 
-import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
-  from '../components/dialogs/operator-graph.component';
-import {RenameLayerComponent, RenameLayerDialogConfig}
-  from '../components/rename-layer.component';
-import {SymbologyDialogComponent, SymbologyDialogConfig}
-  from '../symbology/symbology-dialog.component';
+// import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
+//   from '../components/dialogs/operator-graph.component';
+// import {RenameLayerComponent, RenameLayerDialogConfig}
+//   from '../components/rename-layer.component';
+// import {SymbologyDialogComponent, SymbologyDialogConfig}
+//   from '../symbology/symbology-dialog.component';
 
 /**
  * The start tab of the ribbons component.
@@ -189,8 +189,6 @@ export class StartTabComponent {
     private isLayerSelected$: Observable<boolean>;
 
     constructor(
-        private elementRef: ElementRef,
-        private mdDialog: MdDialog,
         private layerService: LayerService
     ) {
         this.isLayerSelected$ = this.layerService.getSelectedLayerStream()

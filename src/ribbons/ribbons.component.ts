@@ -1,5 +1,5 @@
 import {
-    Component, AfterViewInit, NgZone, Output, EventEmitter, ChangeDetectionStrategy,
+    Component, AfterViewInit, Output, EventEmitter, ChangeDetectionStrategy,
     ChangeDetectorRef, AfterViewChecked, ViewChild,
 } from '@angular/core';
 
@@ -77,7 +77,6 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
-        private ngZone: NgZone,
         private layoutService: LayoutService
     ) {}
 

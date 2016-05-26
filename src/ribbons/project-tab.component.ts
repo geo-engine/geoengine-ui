@@ -1,14 +1,14 @@
-import {Component, ChangeDetectionStrategy, ElementRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {ProjectService} from '../services/project.service';
 import {LayerService} from '../services/layer.service';
 
-import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
-  from '../components/dialogs/operator-graph.component';
-import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
-  from '../components/project-settings.component';
+// import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
+//   from '../components/dialogs/operator-graph.component';
+// import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
+//   from '../components/project-settings.component';
 
 /**
  * The project tab of the ribbons component.
@@ -65,8 +65,6 @@ import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
 })
 export class ProjectTabComponent {
     constructor(
-        private elementRef: ElementRef,
-        private mdDialog: MdDialog,
         private projectService: ProjectService,
         private layerService: LayerService
     ) {}
