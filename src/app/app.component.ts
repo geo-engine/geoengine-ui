@@ -106,7 +106,7 @@ import {PlotService} from '../plots/plot.service';
             [style.height.px]="(bottomContainerHeight$ | async)"
             [height]="(bottomContainerHeight$ | async)"
         ></wave-data-table>
-        <md-sidenav #rasterRepository layout="column" mode="over">
+        <md-sidenav #rasterRepository align="end" layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
             ></wave-raster-repository>

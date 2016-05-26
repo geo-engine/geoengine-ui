@@ -4,6 +4,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../services/layer.service';
 import {RasterLayer} from '../models/layer.model';
@@ -24,46 +25,40 @@ import {ProjectService} from '../services/project.service';
     selector: 'wave-raster-repository',
     template: `
     <div style="height:100%" layout="column">
-    <md-input-container class="md-block" style="margin-bottom: 0px; padding-bottom: 0px;">
-      <label>Search term</label>
-      <input md-input (valueChange)="_searchTerm = $event">
-    </md-input-container>
-
+    <md-input placeholder="Search term" type="text" [(ngModel)]="_searchTerm"
+    ></md-input>
     <md-content flex="grow">
       <md-list>
         <template ngFor let-source [ngForOf]="sources | waveMappingDataSourceFilter:_searchTerm">
           <md-subheader>
-            <span [innerHtml] = "source.name | highlightPipe:_searchTerm"></span>
+            <span [innerHtml] = "source.name | waveHighlightPipe:_searchTerm"></span>
           </md-subheader>
 
           <template ngFor let-channel [ngForOf]="source.channels">
             <md-divider></md-divider>
-            <md-list-item   *ngIf="!channel.hasTransform"
+            <md-list-item md-clickable   *ngIf="!channel.hasTransform"
                             class="md-3-line"
-                            style="cursor: pointer;"
                             (click)="add(source, channel, channel.hasTransform)">
 
                 <div class="md-list-item-text" layout="column">
-                  <p bind-innerHtml = "channel.name | highlightPipe:_searchTerm"></p>
+                  <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
                   <p>measurement: {{channel?.unit?.measurement}}</p>
                   <p>unit: {{channel?.unit?.unit}}</p>
                 </div>
             </md-list-item>
 
           <template [ngIf]="channel.hasTransform">
-            <md-list-item   class="md-3-line"
-                            style="cursor: pointer;"
+            <md-list-item md-clickable   class="md-3-line"
                             (click)="add(source, channel, channel.hasTransform)">
 
                 <div class="md-list-item-text" layout="column">
-                    <p bind-innerHtml = "channel.name | highlightPipe:_searchTerm"></p>
+                    <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
                     <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
                     <p>unit: {{channel?.transform?.unit?.unit}}</p>
                 </div>
             </md-list-item>
             <md-divider md-inset></md-divider>
-            <md-list-item   class="md-2-line"
-                            style="cursor: pointer;"
+            <md-list-item md-clickable   class="md-2-line"
                             (click)="add(source, channel, !channel.hasTransform)">
 
                 <div class="md-list-item-text" layout="column">
@@ -81,30 +76,31 @@ import {ProjectService} from '../services/project.service';
     </div>
     `,
     styles: [`
-    md-subheader {
-      color:#ffffff;
-      background-color:#3f51b5;
-      font-weight: bold;
+
+    .searchInput {
+        width: 100%;
     }
     md-list-item {
-      cursor: pointer;
+        cursor: pointer;
     }
-    md-list-item:hover {
-      background-color: #f5f5f5;
+    md-list >>> md-subheader {
+        color: white;
+        background-color: #009688;
+        font-weight: bold;
     }
     img {
       padding: 5px 5px 5px 0px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     pipes: [MappingDataSourceFilter, HighlightPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class RasterRepositoryComponent implements OnDestroy {
 
+    private _searchTerm: String = '';
   private sources: Array<MappingSource> = [];
-  private _searchTerm: String = '';
   private rasterSourcesSubscription: Subscription;
 
   constructor(private mappingQueryService: MappingQueryService,
