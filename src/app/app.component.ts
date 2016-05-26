@@ -14,10 +14,10 @@ import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {LayerComponent} from '../components/layer.component';
 import {DataTableComponent} from '../components/data-table.component';
-import {OlMapComponent} from './openlayers/ol-map.component';
+import {OlMapComponent} from '../components/openlayers/ol-map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
-} from './openlayers/ol-layer.component';
+} from '../components/openlayers/ol-layer.component';
 
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
@@ -94,12 +94,14 @@ import {PlotService} from '../plots/plot.service';
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <div class="bottomContainer md-whiteframe-5dp"
+        <wave-info-bar class="md-whiteframe-5dp"
+            [citationString]="None"
+        ></wave-info-bar>
+        <div class="bottomContainer "
             [style.height.px]="bottomContainerHeight$ | async">
-            <wave-info-bar></wave-info-bar>
-            <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async) - 40"
+            <div class="dataTable" [style.height.px]="(bottomContainerHeight$ | async)"
                  *ngIf="dataTableVisible$ | async">
-                <wave-data-table [height]="(bottomContainerHeight$ | async) - 40">
+                <wave-data-table [height]="(bottomContainerHeight$ | async)">
                 </wave-data-table>
             </div>
         </div>
@@ -137,8 +139,8 @@ import {PlotService} from '../plots/plot.service';
         width: 100%;
     }
     wave-info-bar {
-        min-height: 40px;
-        height: 40px;
+        min-height: 48px;
+        height: 48px;
     }
     .bottomContainer .dataTable {
         overflow-y: auto;
@@ -199,7 +201,10 @@ export class AppComponent implements OnInit {
                   .subscribe(windowHeight$);
 
         const HEADER_HEIGHT = 180;
-        const remainingHeight$ = windowHeight$.map(height => Math.max(height - HEADER_HEIGHT), 0);
+        const INFO_BAR_HEIGHT = 48;
+        const remainingHeight$ = windowHeight$.map(
+            height => Math.max(height - HEADER_HEIGHT - INFO_BAR_HEIGHT), 0
+        );
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$);
         this.bottomContainerHeight$ = this.layoutService.getDataTableHeightStream(remainingHeight$);

@@ -24,8 +24,8 @@
     "!node_modules/**"
   ],
   "files": [
+    "src/app/app.component.ts",
     "src/app/layout.service.ts",
-    "src/components/app.component.ts",
     "src/components/code-editor.component.ts",
     "src/components/data-table.component.ts",
     "src/components/dialogs/dialog-basics.component.ts",

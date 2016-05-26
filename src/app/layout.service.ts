@@ -316,11 +316,7 @@ export class LayoutService {
     private calculateDataTableHeight(
         dataTableHeightPercentage: number, totalAvailabeHeight: number
     ): number {
-        const DATA_TABLE_COLLAPSED_HEIGHT = 40;
-        return Math.max(
-            Math.ceil(dataTableHeightPercentage * totalAvailabeHeight),
-            DATA_TABLE_COLLAPSED_HEIGHT
-        );
+        return Math.ceil(dataTableHeightPercentage * totalAvailabeHeight);
     }
 
     /**
