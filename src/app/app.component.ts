@@ -12,7 +12,7 @@ import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
-import {LayerComponent} from '../components/layer.component';
+import {LayerListComponent} from '../layers/layer-list.component';
 import {DataTableComponent} from '../components/data-table.component';
 import {OlMapComponent} from '../components/openlayers/ol-map.component';
 import {
@@ -163,8 +163,8 @@ import {PlotService} from '../plots/plot.service';
     `],
     directives: [
         CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES,
-        InfoAreaComponent, RibbonsComponent, LayerComponent, InfoBarComponent, DataTableComponent,
-        RasterRepositoryComponent, PlotListComponent,
+        InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
+        DataTableComponent, RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent,
     ],

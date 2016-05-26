@@ -11,8 +11,7 @@ import {TimeRibbonComponent} from './time-ribbon.component';
 
 // import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
 //   from '../components/dialogs/operator-graph.component';
-// import {RenameLayerComponent, RenameLayerDialogConfig}
-//   from '../components/rename-layer.component';
+import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 // import {SymbologyDialogComponent, SymbologyDialogConfig}
 //   from '../symbology/symbology-dialog.component';
 
@@ -56,7 +55,7 @@ import {TimeRibbonComponent} from './time-ribbon.component';
                 <div layout="column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                            (click)="showRenameLayerDialog($event)">
+                            (click)="renameLayerDialog.show()">
                         <i md-icon>mode_edit</i>
                         Rename
                     </button>
@@ -148,6 +147,7 @@ import {TimeRibbonComponent} from './time-ribbon.component';
         </fieldset>
 
     </md-content>
+    <wave-rename-layer-dialog #renameLayerDialog></wave-rename-layer-dialog>
     `,
     styles: [`
     .selected {
@@ -171,7 +171,10 @@ import {TimeRibbonComponent} from './time-ribbon.component';
         background-color: transparent;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, TimeRibbonComponent],
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, TimeRibbonComponent,
+        RenameLayerComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartTabComponent {
