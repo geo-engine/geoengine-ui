@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {COMMON_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {ProjectService} from '../services/project.service';
 
@@ -11,59 +12,47 @@ import moment from 'moment';
     selector: 'wave-time-ribbon',
     template: `
     <div layout="row">
-         <md-input-container class="md-block">
-           <label>year</label>
-           <input md-input type="number" maxLength="4"
-                  [value]="moment.year()" (valueChange)="updateYear($event)"
-                  (wheel)="$event.stopPropagation()">
-         </md-input-container>
-         <md-input-container class="md-block">
-           <label>month</label>
-           <input md-input type="number" maxLength="2"
-                  [value]="moment.month()" (valueChange)="updateMonth($event)"
-                  (wheel)="$event.stopPropagation()">
-         </md-input-container>
-         <md-input-container class="md-block">
-           <label>day</label>
-           <input md-input type="number" maxLength="2"
-                  [value]="moment.date()" (valueChange)="updateDate($event)"
-                  (wheel)="$event.stopPropagation()">
-         </md-input-container>
-       </div>
-       <div layout="row">
-            <md-input-container class="md-block">
-              <label>hour</label>
-              <input md-input type="number" maxLength="2"
-                     [value]="moment.hour()" (valueChange)="updateHour($event)"
-                     (wheel)="$event.stopPropagation()">
-            </md-input-container>
-            <md-input-container class="md-block">
-              <label>minute</label>
-              <input md-input type="number" maxLength="2"
-                     [value]="moment.minute()" (valueChange)="updateMinute($event)"
-                     (wheel)="$event.stopPropagation()">
-            </md-input-container>
-            <md-input-container class="md-block">
-              <label>second</label>
-              <input md-input type="number" maxLength="2"
-                     [value]="moment.second()" (valueChange)="updateSecond($event)"
-                     (wheel)="$event.stopPropagation()">
-            </md-input-container>
-          </div>
-      `,
+        <md-input placeholder="year" type="number" maxLength="4"
+            [ngModel]="moment.year()" (ngModelChange)="updateYear($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+        <md-input placeholder="month" type="number" maxLength="2"
+            [ngModel]="moment.month()" (ngModelChange)="updateMonth($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+        <md-input placeholder="day" type="number" maxLength="2"
+            [ngModel]="moment.date()" (ngModelChange)="updateDate($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+    </div>
+    <div layout="row">
+        <md-input placeholder="hour" type="number" maxLength="4"
+            [ngModel]="moment.hour()" (ngModelChange)="updateHour($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+        <md-input placeholder="minute" type="number" maxLength="2"
+            [ngModel]="moment.minute()" (ngModelChange)="updateMinute($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+        <md-input placeholder="second" type="number" maxLength="2"
+            [ngModel]="moment.second()" (ngModelChange)="updateSecond($event)"
+            (wheel)="$event.stopPropagation()"
+        ></md-input>
+    </div>
+    `,
     styles: [`
-        md-input-container {
-            margin-bottom: 2px;
-        }
-        md-input-container input {
-            width: 60px;
-        }
+    md-input {
+        margin-bottom: 2px;
+    }
+    md-input {
+        width: 60px;
+    }
 
-        md-input-container >>> .md-errors-spacer {
-            display: none;
-        }
-        `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES],
+    md-input >>> .md-errors-spacer {
+        display: none;
+    }
+    `],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeRibbonComponent implements OnInit {
