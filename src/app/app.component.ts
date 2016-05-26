@@ -95,6 +95,7 @@ import {PlotService} from '../plots/plot.service';
                 class="md-whiteframe-3dp"
                 *ngIf="plotComponentVisible$ | async"
                 [style.max-height.px]="middleContainerHeight$ | async"
+                [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
         <wave-info-bar class="md-whiteframe-3dp"

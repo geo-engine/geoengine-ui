@@ -36,8 +36,7 @@ import {LayoutService} from '../app/layout.service';
             <i md-icon>delete</i>
         </button>
     </md-toolbar>
-    <md-content *ngIf="plotListVisible$ | async"
-                [style.max-height.px]="maxHeight - 40">
+    <md-content *ngIf="plotListVisible$ | async" [style.max-height.px]="maxHeight - 48">
         <md-list>
             <md-list-item *ngFor="let plot of plots$ | async"
                           [ngSwitch]="(plot.data$ | async)?.type"
@@ -122,6 +121,8 @@ import {LayoutService} from '../app/layout.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {
+    @Input() maxHeight: number; // in px
+
     private plotListVisible$: Observable<boolean>;
 
     private plots$: Observable<Array<Plot>>;
