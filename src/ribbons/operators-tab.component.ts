@@ -2,6 +2,7 @@ import {
     Component, Input, ChangeDetectionStrategy, ElementRef, ViewChildren,
     QueryList, AfterViewInit, ChangeDetectorRef, ViewChild,
 } from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
@@ -142,7 +143,10 @@ import {
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, OperatorSelectionGroupComponent, OperatorButtonComponent],
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
+        OperatorSelectionGroupComponent, OperatorButtonComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorsTabComponent implements AfterViewInit {

@@ -2,6 +2,7 @@ import {
     Component, Input, ChangeDetectionStrategy, ContentChildren, QueryList, Output, EventEmitter,
     ChangeDetectorRef, AfterViewInit,
 } from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
@@ -80,7 +81,7 @@ const SIZES = {
         display: none;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorButtonComponent {
@@ -157,7 +158,7 @@ export class OperatorButtonComponent {
         opacity: .24 !important;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorSelectionGroupComponent implements AfterViewInit {

@@ -40,24 +40,21 @@ import {PlotService} from '../plots/plot.service';
     selector: 'wave-app',
     template: `
     <md-sidenav-layout fullscreen>
-        <div class="topContainer md-whiteframe-3dp" layout="row">
+        <div class="topContainer md-whiteframe-3dp">
             <wave-info-area></wave-info-area>
-            <div flex="grow">
-                <wave-ribbons-component
+            <wave-ribbons-component
                     (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                     (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                     (zoomMap)="mapComponent.zoomToMap()"
                     (addData)="rasterRepository.open()"
-                ></wave-ribbons-component>
-            </div>
+            ></wave-ribbons-component>
         </div>
         <div
             class="middleContainer md-whiteframe-3dp"
             [style.height.px]="middleContainerHeight$ | async"
         >
-            <wave-layer-list #layerList
+            <wave-layer-list
                 class="md-whiteframe-3dp"
-                (scroll)="console(layerList)"
                 *ngIf="layerListVisible$ | async"
                 [layers]="layers"
                 [style.max-height.px]="middleContainerHeight$ | async"
@@ -94,7 +91,10 @@ import {PlotService} from '../plots/plot.service';
                     ></wave-ol-raster-layer>
                 </div>
             </wave-ol-map>
-            <wave-plot-list class="md-whiteframe-3dp"
+            <wave-plot-list
+                class="md-whiteframe-3dp"
+                *ngIf="plotComponentVisible$ | async"
+                [style.max-height.px]="middleContainerHeight$ | async"
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
@@ -115,15 +115,22 @@ import {PlotService} from '../plots/plot.service';
     `,
     styles: [`
     .topContainer {
+        display: flex;
         height: 180px;
         width: 100%;
+        flex-direction: row;
     }
-    .topContainer wave-info-area {
+    wave-info-area {
         width: 200px;
         min-width: 200px;
         height: 100%;
     }
+    wave-ribbons-component {
+        height: 100%;
+        flex: 1 1 auto;
+    }
     .middleContainer {
+        position: relative;
         width: 100%;
     }
     wave-ol-map {
@@ -135,6 +142,7 @@ import {PlotService} from '../plots/plot.service';
         position: absolute;
         z-index: 1;
         overflow-y: auto;
+        top: 0px;
     }
     wave-layer-list {
         left: 0px;
@@ -171,6 +179,7 @@ export class AppComponent implements OnInit {
     @ViewChild(OlMapComponent) mapComponent: OlMapComponent;
 
     private layerListVisible$: Observable<boolean>;
+    private plotComponentVisible$: Observable<boolean>;
     private dataTableVisible$: Observable<boolean>;
 
     private middleContainerHeight$: Observable<number>;
@@ -198,6 +207,7 @@ export class AppComponent implements OnInit {
                                              .map(value => value !== undefined);
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
+        this.plotComponentVisible$ = this.layoutService.getPlotComponentVisibilityStream();
         this.dataTableVisible$ = this.layoutService.getDataTableVisibilityStream();
     }
 

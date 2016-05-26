@@ -1,4 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
@@ -138,7 +139,7 @@ import {RScriptType} from '../operators/types/r-script-type.model';
         margin: 0px;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DebugTabComponent {
@@ -307,7 +308,7 @@ export class DebugTabComponent {
         this.plotService.addPlot(
             new Plot({
                 name: 'SRTM Histogram',
-                operator: srtmOperator,
+                operator: srtmHistogram,
                 data$: this.mappingQueryService.getPlotDataStream(
                     srtmHistogram,
                     this.projectService.getTimeStream()

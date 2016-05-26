@@ -1,4 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
@@ -60,7 +61,7 @@ import {LayerService} from '../services/layer.service';
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectTabComponent {
