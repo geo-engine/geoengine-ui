@@ -1,4 +1,5 @@
 import {Component, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
@@ -170,7 +171,7 @@ import {TimeRibbonComponent} from './time-ribbon.component';
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, TimeRibbonComponent],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, TimeRibbonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartTabComponent {

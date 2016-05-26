@@ -2,6 +2,7 @@ import {
     Component, AfterViewInit, Output, EventEmitter, ChangeDetectionStrategy,
     ChangeDetectorRef, AfterViewChecked, ViewChild,
 } from '@angular/core';
+import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES, MdTabs} from 'ng2-material';
 
@@ -52,7 +53,7 @@ import Config from '../models/config.model';
     }
     `],
     directives: [
-        MATERIAL_DIRECTIVES,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
         StartTabComponent, OperatorsTabComponent, ProjectTabComponent, DebugTabComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,

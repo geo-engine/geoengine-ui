@@ -1,4 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {COMMON_DIRECTIVES} from '@angular/common';
+
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {ProjectService} from '../services/project.service';
@@ -61,7 +63,7 @@ import moment from 'moment';
             display: none;
         }
         `],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeRibbonComponent implements OnInit {
