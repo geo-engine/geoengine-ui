@@ -1,5 +1,6 @@
-import {Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy}
-    from '@angular/core';
+import {
+    Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy, provide,
+} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 
 import ol from 'openlayers';
@@ -103,6 +104,7 @@ abstract class OlVectorLayerComponent
 @Component({
     selector: 'wave-ol-point-layer',
     template: '',
+    providers: [provide(OlMapLayerComponent, {useExisting: OlPointLayerComponent})],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
@@ -114,6 +116,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-line-layer',
     template: '',
+    providers: [provide(OlMapLayerComponent, {useExisting: OlLineLayerComponent})],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
@@ -125,6 +128,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-polygon-layer',
     template: '',
+    providers: [provide(OlMapLayerComponent, {useExisting: OlPolygonLayerComponent})],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
@@ -136,6 +140,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-raster-layer',
     template: '',
+    providers: [provide(OlMapLayerComponent, {useExisting: OlRasterLayerComponent})],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlRasterLayerComponent

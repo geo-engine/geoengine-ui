@@ -64,32 +64,32 @@ import {PlotService} from '../plots/plot.service';
                 [projection]="projectService.getMapProjectionStream() | async"
             >
                 <template ngFor let-layer [ngForOf]='layersReverse$ | async'>
-                    <template [ngIf]="layer.operator.resultType == ResultTypes.POINTS" >
-                        <wave-ol-point-layer #olLayer
+                    <template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
+                        <wave-ol-point-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
                             [projection]="projectService.getMapProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-point-layer>
                     </template>
-                    <template [ngIf]="layer.operator.resultType == ResultTypes.LINES">
-                        <wave-ol-line-layer #olLayer
+                    <template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
+                        <wave-ol-line-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
                             [projection]="projectService.getMapProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-line-layer>
                     </template>
-                    <template [ngIf]="layer.operator.resultType == ResultTypes.POLYGONS">
-                        <wave-ol-polygon-layer #olLayer
+                    <template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
+                        <wave-ol-polygon-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
                             [projection]="projectService.getMapProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-polygon-layer>
                     </template>
-                    <template [ngIf]="layer.operator.resultType == ResultTypes.RASTER">
-                        <wave-ol-raster-layer #olLayer
+                    <template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
+                        <wave-ol-raster-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
                             [projection]="projectService.getMapProjectionStream() | async"

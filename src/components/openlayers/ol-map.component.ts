@@ -30,18 +30,13 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
 
     @Input() height: number;
 
+    @ViewChild('mapContainer') mapContainer: ElementRef;
+
+    @ContentChildren(OlMapLayerComponent) layers: QueryList<
+        OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>
+    >;
+
     private map: ol.Map;
-
-    @ViewChild('mapContainer')
-    private mapContainer: ElementRef;
-
-    /*
-    @Input() _width: string | number;
-    */
-
-    @ContentChildren('olLayer')
-    private layers: QueryList<
-        OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>>;
 
     private isSizeChanged = false;
     private isProjectionChanged = false;
@@ -131,6 +126,8 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
         this.layers.changes.subscribe(_ => {
             // react on changes by removing all layers and inserting them
             // in the correct order.
+
+            console.log('layers changed!!! in map');
 
             this.map.getLayers().clear();
             this.map.getLayers().push(this.createBackgroundLayer(this.projection));
