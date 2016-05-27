@@ -8,8 +8,7 @@ import {LayerService} from '../services/layer.service';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
-// import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
-//   from '../components/project-settings.component';
+import {ProjectSettingsComponent} from '../project/project-settings.component';
 
 /**
  * The project tab of the ribbons component.
@@ -24,7 +23,7 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
                 <div layout="column" layout-align="space-around center">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" layout="column"
-                            (click)="showProjectSettingsDialog()">
+                            (click)="projectSettingsDialog.show()">
                         <i md-icon>settings</i>
                         <div>Configuration</div>
                     </button>
@@ -44,6 +43,9 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
     <wave-dialog-loader #lineageDialog
         [type]="OperatorGraphDialogComponent"
         [config]="{selectedLayerOnly: false}"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #projectSettingsDialog
+        [type]="ProjectSettingsComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -66,14 +68,15 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
     }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
-        DialogLoaderComponent, OperatorGraphDialogComponent,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, DialogLoaderComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectTabComponent {
+    // make this available in the template
     // tslint:disable:variable-name
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    ProjectSettingsComponent = ProjectSettingsComponent;
     // tslint:enable
 
     constructor(
