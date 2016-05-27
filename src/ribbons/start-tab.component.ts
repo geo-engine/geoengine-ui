@@ -14,8 +14,7 @@ import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 // import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
 //   from '../components/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
-// import {SymbologyDialogComponent, SymbologyDialogConfig}
-//   from '../symbology/symbology-dialog.component';
+import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 
 /**
  * The start tab of the ribbons component.
@@ -63,7 +62,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                      (click)="showSymbologyDialog($event)">
+                      (click)="symbologyDialog.show()">
                         <i md-icon>map</i>
                         Symbology
                     </button>
@@ -150,6 +149,8 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 
     </md-content>
     <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
+    <wave-dialog-loader #symbologyDialog [type]="SymbologyDialogComponent"></wave-dialog-loader>
+
     `,
     styles: [`
     .selected {
@@ -193,6 +194,7 @@ export class StartTabComponent {
     @Output() addData = new EventEmitter<void>();
 
     RenameLayerComponent = RenameLayerComponent; // tslint:disable-line:variable-name
+    SymbologyDialogComponent = SymbologyDialogComponent; // tslint:disable-line:variable-name
 
     private isLayerSelected$: Observable<boolean>;
 

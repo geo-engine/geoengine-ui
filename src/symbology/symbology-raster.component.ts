@@ -1,32 +1,33 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {RasterSymbology} from './symbology.model';
 
 @Component({
     selector: 'wave-symbology-raster',
     template: `
-     <md-input-container class='md-block' flex-gt-sm>
+     <div class='md-block' flex-gt-sm>
          <label>Opacity</label>
-         <input md-input [(value)]='symbology.opacity' (valueChange)='update()'>
-      </md-input-container>
-      <md-input-container class='md-block' flex-gt-sm>
+         <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'></md-input>
+      </div>
+      <div class='md-block' flex-gt-sm>
           <label>Hue</label>
-          <input disabled='true'
-            md-input type='number'
-            [(value)]='symbology.hue'
-            (valueChange)='update()'>
-       </md-input-container>
-       <md-input-container class='md-block' flex-gt-sm>
+          <md-input disabled
+            type='number'
+            [(ngModel)]='symbology.hue'
+            (ngModelChange)='update()'></md-input>
+       </div>
+       <div class='md-block' flex-gt-sm>
            <label>Saturation</label>
-           <input disabled='true'
-            md-input type='number'
-            [(value)]='symbology.saturation'
-            (valueChange)='update()'>
-        </md-input-container>
+           <md-input disabled
+            type='number'
+            [(ngModel)]='symbology.saturation'
+            (ngModelChange)='update()'></md-input>
+        </div>
       `,
     styles: [``],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbologyRasterComponent implements OnInit {
