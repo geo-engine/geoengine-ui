@@ -1,10 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {COMMON_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MdDialog} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
+
+import {BasicDialog} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../services/layer.service';
 
@@ -14,14 +15,7 @@ import {Symbology} from '../../symbology/symbology.model';
 @Component({
     selector: 'wave-rename-layer-dialog',
     template: `
-    <md-dialog #dialog>
-        <md-dialog-title text="Rename the Current Layer"></md-dialog-title>
-        <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
-        <md-dialog-actions>
-            <button md-button type="button" (click)="dialog.close()">Cancel</button>
-            <button md-button class="md-primary" type="button" (click)="save()">Save</button>
-        </md-dialog-actions>
-    </md-dialog>
+    <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
     `,
     styles: [`
 
@@ -31,21 +25,25 @@ import {Symbology} from '../../symbology/symbology.model';
     pipes: [],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RenameLayerComponent implements OnInit {
-    @ViewChild('dialog') dialog: MdDialog;
+export class RenameLayerComponent extends BasicDialog implements OnInit {
+    title = 'Rename the Current Layer';
+    buttons = [
+        { title: 'Cancel', action: () => this.dialog.close() },
+        { title: 'Save', class: 'md-primary', action: () => this.save() },
+    ];
 
     private layer: Layer<Symbology>;
     private layerName: string;
 
     constructor(
         private layerService: LayerService
-    ) {}
+    ) {
+        super();
+    }
 
     ngOnInit() {
         this.layer = this.layerService.getSelectedLayer();
-        if (this.layer) {
-            this.layerName = this.layer.name;
-        }
+        this.layerName = this.layer.name;
     }
 
     /**
@@ -56,14 +54,6 @@ export class RenameLayerComponent implements OnInit {
             this.layerService.changeLayerName(this.layer, this.layerName);
         }
         this.dialog.close();
-    }
-
-    /**
-     * Display the dialog.
-     */
-    show() {
-        console.log('show it');
-        this.dialog.show();
     }
 
 }
