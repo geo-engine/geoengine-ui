@@ -10,7 +10,7 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 @Component({
     selector: 'wave-symbology-points',
     template: `
-        <div>
+        <div class='md-block' flex-gt-sm>
             <label>Fill color</label>
             <md-input
                 [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
@@ -18,7 +18,7 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
                 (ngModelChange)='updateFillRgba($event)'>
             </md-input>
         </div>
-        <div>
+        <div class='md-block' flex-gt-sm>
             <label>Stroke color</label>
             <md-input
                 [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
@@ -26,14 +26,14 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
                 (ngModelChange)='updateStrokeRgba($event)'>
             </md-input>
         </div>
-        <div>
+        <div class='md-block' flex-gt-sm>
             <label>Stroke width</label>
             <md-input type='number'
                 [(ngModel)]='symbology.stroke_width'
                 (ngModelChange)='update()'>
             </md-input>
         </div>
-        <div>
+        <div class='md-block' flex-gt-sm>
         <label>Radius</label>
         <md-input type='number'
             [(ngModel)]='symbology.radius'
@@ -90,7 +90,7 @@ export class SymbologyPointsComponent implements OnInit {
 @Component({
     selector: 'wave-symbology-vector',
     template: `
-    <div>
+    <div class='md-block' flex-gt-sm *ngIf='symbology.describesArea'>
         <label>Fill color</label>
         <md-input
             [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
@@ -98,7 +98,7 @@ export class SymbologyPointsComponent implements OnInit {
             (ngModelChange)='updateFillRgba($event)'>
         </md-input>
     </div>
-    <div>
+    <div class='md-block' flex-gt-sm>
         <label>Stroke color</label>
         <md-input
             [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
@@ -106,14 +106,13 @@ export class SymbologyPointsComponent implements OnInit {
             (ngModelChange)='updateStrokeRgba($event)'>
         </md-input>
     </div>
-    <div>
+    <div class='md-block' flex-gt-sm>
         <label>Stroke width</label>
         <md-input type='number'
             [(ngModel)]='symbology.stroke_width'
             (ngModelChange)='update()'>
         </md-input>
     </div>
-
      `,
     styles: [``],
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
@@ -124,7 +123,6 @@ export class SymbologyVectorComponent {
 
     static minStrokeWidth: number = 1;
 
-    // @Input() layer: Layer;
     @Input() symbology: SimpleVectorSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimpleVectorSymbology>();
 

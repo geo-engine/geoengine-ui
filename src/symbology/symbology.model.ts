@@ -21,6 +21,20 @@ export interface ISymbology {
 }
 
 export abstract class Symbology implements ISymbology {
+    static fromDict(dict: SymbologyDict, colorizerObservable?: Observable<MappingColorizer>): Symbology {
+        let symbologyType: SymbologyType = SymbologyType[dict.symbologyTypeId];
+        switch (symbologyType) {
+            case SymbologyType.SIMPLE_POINT:
+                return new SimplePointSymbology(dict.symbologyConfig as IVectorSymbology);
+            case SymbologyType.SIMPLE_VECTOR:
+                return new SimpleVectorSymbology(dict.symbologyConfig as IVectorSymbology);
+            case SymbologyType.RASTER:
+                return new RasterSymbology(dict.symbologyConfig);
+            case SymbologyType.MAPPING_COLORIZER_RASTER:
+                return new MappingColorizerRasterSymbology(dict.symbologyConfig, colorizerObservable);
+        }
+    }
+
     abstract get symbologyType(): SymbologyType;
 
     get symbologyTypeId(): string {
@@ -37,20 +51,6 @@ export abstract class Symbology implements ISymbology {
             symbologyConfig: this.toConfig(),
         };
     }
-
-    static fromDict(dict: SymbologyDict, colorizerObservable?: Observable<MappingColorizer>): Symbology {
-        let symbologyType: SymbologyType = SymbologyType[dict.symbologyTypeId];
-        switch (symbologyType) {
-            case SymbologyType.SIMPLE_POINT:
-                return new SimplePointSymbology(<IVectorSymbology> dict.symbologyConfig);
-            case SymbologyType.SIMPLE_VECTOR:
-                return new SimpleVectorSymbology(<IVectorSymbology> dict.symbologyConfig);
-            case SymbologyType.RASTER:
-                return new RasterSymbology(dict.symbologyConfig);
-            case SymbologyType.MAPPING_COLORIZER_RASTER:
-                return new MappingColorizerRasterSymbology(dict.symbologyConfig, colorizerObservable);
-        }
-    }
 };
 
 export interface IVectorSymbology extends ISymbology {
@@ -60,25 +60,30 @@ export interface IVectorSymbology extends ISymbology {
 }
 
 export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
-    fill_rgba: [number, number, number, number]; // TODO: maybe a new iterface rgba? or just [number]?
+    fill_rgba: [number, number, number, number];
     stroke_rgba: [number, number, number, number] = [0, 0, 0, 1];
     stroke_width: number = 1;
 
     abstract get olStyle(): ol.style.Style;
+    abstract get describesArea(): boolean;
+    abstract get describesRadius(): boolean;
 
     constructor(config: IVectorSymbology) {
         super();
         this.fill_rgba = config.fill_rgba;
-        if (config.stroke_rgba) { this.stroke_rgba = config.stroke_rgba };
-        if (config.stroke_width) { this.stroke_width = config.stroke_width };
+        if (config.stroke_rgba) { this.stroke_rgba = config.stroke_rgba; };
+        if (config.stroke_width) { this.stroke_width = config.stroke_width; };
     }
-
 }
 
 export class SimpleVectorSymbology extends AbstractVectorSymbology {
 
     constructor(config: IVectorSymbology) {
         super(config);
+    }
+
+    static fromConfig(config: IVectorSymbology) {
+        return new SimpleVectorSymbology(config);
     }
 
     get symbologyType(): SymbologyType {
@@ -93,15 +98,18 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
         return this.clone();
     }
 
-    static fromConfig(config: IVectorSymbology) {
-        return new SimpleVectorSymbology(config);
-    }
-
     get olStyle(): ol.style.Style {
         return new ol.style.Style({
             fill: new ol.style.Fill({ color: this.fill_rgba }),
-            stroke: new ol.style.Stroke({ color: this.stroke_rgba, width: this.stroke_width })
+            stroke: new ol.style.Stroke({ color: this.stroke_rgba, width: this.stroke_width }),
         });
+    }
+
+    get describesArea(): boolean {
+        return true;
+    }
+    get describesRadius(): boolean{
+        return false;
     }
 }
 
@@ -114,7 +122,7 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
 
   constructor(config: ISimplePointSymbology) {
       super(config);
-      if (config.radius) this.radius = config.radius;
+      if (config.radius) {this.radius = config.radius; }
   }
 
   get symbologyType(): SymbologyType {
@@ -134,9 +142,16 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
           image: new ol.style.Circle({
               radius: this.radius,
               fill: new ol.style.Fill({ color: this.fill_rgba }),
-              stroke: new ol.style.Stroke({ color: this.stroke_rgba, width: this.stroke_width })
-          })
+              stroke: new ol.style.Stroke({ color: this.stroke_rgba, width: this.stroke_width }),
+          }),
       });
+  }
+
+  get describesArea(): boolean {
+      return true;
+  }
+  get describesRadius(): boolean{
+      return true;
   }
 }
 
@@ -153,9 +168,9 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
 
     constructor(config: IRasterSymbology) {
         super();
-        if (config.opacity) { this.opacity = config.opacity };
-        if (config.hue) { this.hue = config.hue };
-        if (config.saturation) { this.saturation = config.saturation };
+        if (config.opacity) { this.opacity = config.opacity; };
+        if (config.hue) { this.hue = config.hue; };
+        if (config.saturation) { this.saturation = config.saturation; };
     }
 
     get symbologyType(): SymbologyType {
