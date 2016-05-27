@@ -15,7 +15,9 @@ import {Symbology} from '../../symbology/symbology.model';
 @Component({
     selector: 'wave-rename-layer-dialog',
     template: `
-    <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
+    <form>
+        <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
+    </form>
     `,
     styles: [`
 
