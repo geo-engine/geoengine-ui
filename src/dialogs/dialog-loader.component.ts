@@ -9,6 +9,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
 import {MdToolbar} from '@angular2-material/toolbar';
+import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
 import {DialogRef} from './dialog-ref.model';
 import {BasicDialog, ButtonDescription} from './basic-dialog.component';
@@ -66,6 +67,7 @@ import {BasicDialog, ButtonDescription} from './basic-dialog.component';
         overflow: hidden;
     }
     `],
+    providers: [OVERLAY_PROVIDERS],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MdToolbar],
     changeDetection: ChangeDetectionStrategy.Default,
 })
