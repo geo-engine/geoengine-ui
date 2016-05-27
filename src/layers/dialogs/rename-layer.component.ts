@@ -4,6 +4,7 @@ import {COMMON_DIRECTIVES} from '@angular/common';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
 import {LayerService} from '../../services/layer.service';
 
@@ -25,7 +26,7 @@ import {Symbology} from '../../symbology/symbology.model';
     styles: [`
 
     `],
-    providers: [],
+    providers: [OVERLAY_PROVIDERS],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     pipes: [],
     // changeDetection: ChangeDetectionStrategy.OnPush
