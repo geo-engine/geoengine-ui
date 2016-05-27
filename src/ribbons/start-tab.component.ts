@@ -9,6 +9,8 @@ import {LayerService} from '../services/layer.service';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+
 // import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
 //   from '../components/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
@@ -147,7 +149,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
         </fieldset>
 
     </md-content>
-    <wave-rename-layer-dialog #renameLayerDialog></wave-rename-layer-dialog>
+    <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
     `,
     styles: [`
     .selected {
@@ -173,7 +175,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
     `],
     directives: [
         CORE_DIRECTIVES, MATERIAL_DIRECTIVES, TimeRibbonComponent,
-        RenameLayerComponent,
+        DialogLoaderComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -189,6 +191,8 @@ export class StartTabComponent {
     @Output() zoomMap = new EventEmitter<void>();
 
     @Output() addData = new EventEmitter<void>();
+
+    RenameLayerComponent = RenameLayerComponent; // tslint:disable-line:variable-name
 
     private isLayerSelected$: Observable<boolean>;
 
