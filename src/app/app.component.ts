@@ -63,33 +63,40 @@ import {PlotService} from '../plots/plot.service';
                 [height]="middleContainerHeight$ | async"
                 [projection]="projectService.getMapProjectionStream() | async"
             >
-                <div *ngFor="let layer of layersReverse$ | async; let index = index"
-                     [ngSwitch]="layer.operator.resultType">
-                    <wave-ol-point-layer #olLayer *ngSwitchWhen="ResultTypes.POINTS"
-                        [layer]="layer"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getMapProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-point-layer>
-                    <wave-ol-line-layer #olLayer *ngSwitchWhen="ResultTypes.LINES"
-                        [layer]="layer"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getMapProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-line-layer>
-                    <wave-ol-polygon-layer #olLayer *ngSwitchWhen="ResultTypes.POLYGONS"
-                        [layer]="layer"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getMapProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-polygon-layer>
-                    <wave-ol-raster-layer #olLayer *ngSwitchWhen="ResultTypes.RASTER"
-                        [layer]="layer"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getMapProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-raster-layer>
-                </div>
+                <template ngFor let-layer [ngForOf]='layersReverse$ | async'>
+                    <template [ngIf]="layer.operator.resultType == ResultTypes.POINTS" >
+                        <wave-ol-point-layer #olLayer
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-point-layer>
+                    </template>
+                    <template [ngIf]="layer.operator.resultType == ResultTypes.LINES">
+                        <wave-ol-line-layer #olLayer
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-line-layer>
+                    </template>
+                    <template [ngIf]="layer.operator.resultType == ResultTypes.POLYGONS">
+                        <wave-ol-polygon-layer #olLayer
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-polygon-layer>
+                    </template>
+                    <template [ngIf]="layer.operator.resultType == ResultTypes.RASTER">
+                        <wave-ol-raster-layer #olLayer
+                            [layer]="layer"
+                            [symbology]="layer.symbology"
+                            [projection]="projectService.getMapProjectionStream() | async"
+                            [time]="projectService.getTimeStream() | async"
+                        ></wave-ol-raster-layer>
+                    </template>
+                </template>
             </wave-ol-map>
             <wave-plot-list
                 class="md-whiteframe-3dp"
@@ -106,7 +113,7 @@ import {PlotService} from '../plots/plot.service';
             [style.height.px]="(bottomContainerHeight$ | async)"
             [height]="(bottomContainerHeight$ | async)"
         ></wave-data-table>
-        <md-sidenav #rasterRepository layout="column" mode="over">
+        <md-sidenav #rasterRepository align="end" layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
             ></wave-raster-repository>
