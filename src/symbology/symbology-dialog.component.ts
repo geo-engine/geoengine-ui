@@ -1,8 +1,12 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {COMMON_DIRECTIVES} from '@angular/common';
+
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
 // import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
-import {DialogContainerComponent} from '../components/dialogs/dialog-basics.component';
+import {BasicDialog} from '../dialogs/basic-dialog.component';
 
 import {LayerService} from '../services/layer.service';
 
@@ -41,20 +45,27 @@ import {Layer} from '../models/layer.model';
     </wave-dialog-container>
     `,
     styles: [``],
-    directives: [MATERIAL_DIRECTIVES, DialogContainerComponent,
+    providers: [OVERLAY_PROVIDERS],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
         SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyDialogComponent implements OnInit {
-
+export class SymbologyDialogComponent extends BasicDialog implements OnInit {
+    title = 'Change the Symbology of the current Layer';
+    buttons = [
+        { title: 'Close', action: () => this.dialog.close() },
+    ];
     // for ng-switch
     public enumSymbologyType = SymbologyType;
 
-    @Input() layerService: LayerService;
     private _layer: Layer<Symbology>;
     private _symbology: Symbology;
 
-    constructor(private dialog: MdDialogRef) {}
+    constructor(
+        private layerService: LayerService
+    ) {
+        super();
+    }
 
     ngOnInit() {
             this._layer = this.layerService.getSelectedLayer();
@@ -63,12 +74,5 @@ export class SymbologyDialogComponent implements OnInit {
 
     update_symbology(symbology: Symbology) {
         this.layerService.changeLayerSymbology(this._layer, symbology);
-    }
-}
-
-export class SymbologyDialogConfig /* extends MdDialogConfig */ {
-    layerService(layerService: LayerService): SymbologyDialogConfig {
-        this.context.layerService = layerService;
-        return this;
     }
 }

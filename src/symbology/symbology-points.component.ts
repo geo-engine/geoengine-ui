@@ -1,5 +1,6 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
 
@@ -9,34 +10,39 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 @Component({
     selector: 'wave-symbology-points',
     template: `
-    <md-input-container class='md-block' flex-gt-sm>
-        <label>Fill color</label>
-        <input md-input
-            [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
-            [value]='symbology.fill_rgba | rgbaToCssStringPipe'
-            (valueChange)='updateFillRgba($event)'>
-    </md-input-container>
-    <md-input-container class='md-block' flex-gt-sm>
-        <label>Stroke color</label>
-        <input md-input
-            [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-            [value]='symbology.stroke_rgba | rgbaToCssStringPipe'
-            (valueChange)='updateStrokeRgba($event)'>
-    </md-input-container>
-    <md-input-container class='md-block' flex-gt-sm>
-        <label>Stroke width</label>
-        <input md-input type='number'
-            [(value)]='symbology.stroke_width'
-            (valueChange)='update()'>
-     </md-input-container>
-     <md-input-container class='md-block' flex-gt-sm>
-         <label>Radius</label>
-         <input md-input type='number'
-            [(value)]='symbology.radius'
-            (valueChange)='update()'>
-      </md-input-container>`,
-    styles: [``],
-    directives: [MATERIAL_DIRECTIVES],
+        <div>
+            <label>Fill color</label>
+            <md-input
+                [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
+                (ngModelChange)='updateFillRgba($event)'>
+            </md-input>
+        </div>
+        <div>
+            <label>Stroke color</label>
+            <md-input
+                [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                (ngModelChange)='updateStrokeRgba($event)'>
+            </md-input>
+        </div>
+        <div>
+            <label>Stroke width</label>
+            <md-input type='number'
+                [(ngModel)]='symbology.stroke_width'
+                (ngModelChange)='update()'>
+            </md-input>
+        </div>
+        <div>
+        <label>Radius</label>
+        <md-input type='number'
+            [(ngModel)]='symbology.radius'
+            (ngModelChange)='update()'>
+        </md-input>
+        </div>
+
+        `,
+    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     pipes: [RgbaToCssStringPipe, CssStringToRgbaPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -84,27 +90,33 @@ export class SymbologyPointsComponent implements OnInit {
 @Component({
     selector: 'wave-symbology-vector',
     template: `
-    <md-input-container class='md-block' flex-gt-sm>
+    <div>
         <label>Fill color</label>
-        <input md-input
+        <md-input
             [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
-            [value]='symbology.fill_rgba | rgbaToCssStringPipe'
-            (valueChange)='updateFillRgba($event)'>
-    </md-input-container>
-    <md-input-container class='md-block' flex-gt-sm>
+            [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
+            (ngModelChange)='updateFillRgba($event)'>
+        </md-input>
+    </div>
+    <div>
         <label>Stroke color</label>
-        <input md-input
+        <md-input
             [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-            [value]='symbology.stroke_rgba | rgbaToCssStringPipe'
-            (valueChange)='updateStrokeRgba($event)'>
-    </md-input-container>
-    <md-input-container class='md-block' flex-gt-sm>
+            [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
+            (ngModelChange)='updateStrokeRgba($event)'>
+        </md-input>
+    </div>
+    <div>
         <label>Stroke width</label>
-        <input md-input type='number' [(value)]='symbology.stroke_width' (valueChange)='update()'>
-     </md-input-container>
+        <md-input type='number'
+            [(ngModel)]='symbology.stroke_width'
+            (ngModelChange)='update()'>
+        </md-input>
+    </div>
+
      `,
     styles: [``],
-    directives: [MATERIAL_DIRECTIVES],
+    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     pipes: [RgbaToCssStringPipe, CssStringToRgbaPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
