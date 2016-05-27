@@ -1,12 +1,15 @@
-import {Component,  Input, OnInit, OnDestroy} from '@angular/core';
+import {Component,  Input, OnInit} from '@angular/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
-import {Subscription} from 'rxjs/Rx';
+import {Observable} from 'rxjs/Rx';
 
 import {Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
     MappingColorizerRasterSymbology, MappingColorizer} from './symbology.model';
 
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
+import {SafeStylePipe} from '../pipes/safe-style.pipe';
+
+import {MappingColorizerToGradientPipe} from './mapping-colorizer-to-gradient.pipe';
 
 @Component({
     selector: 'wave-legendary',
@@ -109,13 +112,13 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 @Component({
     selector: 'wave-legendary-mapping-colorizer-raster',
     template: `
-        <div class='legend' *ngIf='ready' [ngSwitch]='colorizer.interpolation'>
+        <div class='legend' [ngSwitch]='(colorizer$ | async)?.interpolation'>
             <tbody *ngSwitchWhen='_linear'>
-                <tr *ngFor='let breakpoint of colorizer.breakpoints; let isFirst = first'>
+                <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints; let isFirst = first'>
                     <td class='gradient'
                         *ngIf='isFirst'
-                        [rowSpan]='colorizer.breakpoints.length'
-                        [style.background]='colorsAsCssGradient()'>
+                        [rowSpan]='(colorizer$ | async)?.breakpoints.length'
+                        [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
                     </td>
                     <td>{{breakpoint[0]}}</td>
                     <td>{{breakpoint[2]}}</td>
@@ -123,7 +126,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
             </tbody>
 
             <tbody *ngSwitchDefault>
-                <tr *ngFor='let breakpoint of colorizer.breakpoints'>
+                <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints'>
                     <td class='icon' [style.background-color]='breakpoint[1]'></td>
                     <td>{{breakpoint[0]}}</td>
                     <td>{{breakpoint[2]}}</td>
@@ -156,45 +159,16 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 
         `],
     directives: [MATERIAL_DIRECTIVES],
+    pipes: [MappingColorizerToGradientPipe, SafeStylePipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
-    extends LegendaryRasterComponent<S> implements OnInit, OnDestroy {
+    extends LegendaryRasterComponent<S> implements OnInit {
 
-    private colorizerSubscription: Subscription;
-
-    private colorizer: MappingColorizer = {
-        interpolation: '',
-        breakpoints: [],
-    };
+    private colorizer$: Observable<MappingColorizer>;
     private _linear: string = 'linear';
 
-    get ready(): boolean {
-        return (this.colorizer !== undefined);
-    }
-
-    colorsAsCssGradient(): string {
-        const elementSize = 100.0 / this.colorizer.breakpoints.length;
-        const halfElementSize = elementSize / 2.0;
-        const breaks = this.colorizer.breakpoints;
-        let colorStr = '';
-        for (let i = 0; i < this.colorizer.breakpoints.length; i++) {
-            colorStr += ', ' + breaks[i][1] + ' ' + (i * elementSize + halfElementSize) + '%';
-        }
-
-        let cssStr = 'linear-gradient(to bottom' + colorStr + ')';
-        return cssStr;
-    }
-
     ngOnInit() {
-        this.colorizerSubscription = this.symbology.colorizer$.subscribe(x => {
-            this.colorizer = x;
-        });
-    }
-
-    ngOnDestroy() {
-        if (this.colorizerSubscription) {
-            this.colorizerSubscription.unsubscribe();
-        }
+        this.colorizer$ = this.symbology.colorizer$;
     }
 }
