@@ -6,7 +6,7 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
 // import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
-import {BasicDialog} from '../dialogs/basic-dialog.component';
+import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
 import {LayerService} from '../services/layer.service';
 
@@ -50,11 +50,7 @@ import {Layer} from '../models/layer.model';
         SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyDialogComponent extends BasicDialog implements OnInit {
-    title = 'Change the Symbology of the current Layer';
-    buttons = [
-        { title: 'Close', action: () => this.dialog.close() },
-    ];
+export class SymbologyDialogComponent extends DefaultBasicDialog implements OnInit {
     // for ng-switch
     public enumSymbologyType = SymbologyType;
 
@@ -65,11 +61,16 @@ export class SymbologyDialogComponent extends BasicDialog implements OnInit {
         private layerService: LayerService
     ) {
         super();
+
+        this._layer = this.layerService.getSelectedLayer();
+        this._symbology = this._layer.symbology.clone();
     }
 
     ngOnInit() {
-            this._layer = this.layerService.getSelectedLayer();
-            this._symbology = this._layer.symbology.clone();
+        this.dialog.setTitle('Change the Symbology of the current Layer');
+        this.dialog.setButtons([
+            { title: 'Close', action: () => this.dialog.close() },
+        ]);
     }
 
     update_symbology(symbology: Symbology) {

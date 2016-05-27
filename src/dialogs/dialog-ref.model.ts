@@ -9,5 +9,19 @@ export interface DialogRef {
     maxHeight: number;
     maxWidth: number;
 
+    setTitle: (title: string) => void;
+    setButtons: (buttons: Array<ButtonDescription>) => void;
+    setOverflows: (overflows: boolean) => void;
+    setSideMargins: (sideMargins: boolean) => void;
+
     close(): void;
+}
+
+/**
+ * A description interface for dialog buttons.
+ */
+export interface ButtonDescription {
+    title: string;
+    class?: string;
+    action: Function;
 }

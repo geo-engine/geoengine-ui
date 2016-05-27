@@ -4,20 +4,21 @@ import {DialogRef} from './dialog-ref.model';
  * The base class for each wave dialog.
  * Extends Function only for the purpose of letting the component resolver use it as a Type.
  */
-export abstract class BasicDialog extends Function {
+export abstract class BasicDialog<CustomDialogInput extends DialogInput> extends Function {
     // the following properties get injected by the dialog loader.
     dialog: DialogRef;
 
-    // the following properties get extracted by the dialog loader.
-    abstract title: string;
-    abstract buttons: Array<ButtonDescription>;
+    dialogInput: CustomDialogInput;
 }
 
 /**
- * A description interface for dialog buttons.
+ * A `BasicDialog` without (known) input.
  */
-export interface ButtonDescription {
-    title: string;
-    class?: string;
-    action: Function;
-}
+export abstract class DefaultBasicDialog extends BasicDialog<DialogInput> {}
+
+/**
+ * An input interface for dialog input.
+ */
+export interface DialogInput {
+    [index: string]: string | number | boolean | Object;
+};

@@ -6,8 +6,8 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {ProjectService} from '../services/project.service';
 import {LayerService} from '../services/layer.service';
 
-// import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
-//   from '../components/dialogs/operator-graph.component';
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 // import {ProjectSettingsComponent, ProjectSettingsDialogConfig}
 //   from '../components/project-settings.component';
 
@@ -32,7 +32,7 @@ import {LayerService} from '../services/layer.service';
                 <div layout="column" layout-align="space-around center">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" layout="column"
-                            (click)="showLineage()">
+                            (click)="lineageDialog.show()">
                         <i md-icon>merge_type</i>
                         <div>Lineage</div>
                     </button>
@@ -41,6 +41,10 @@ import {LayerService} from '../services/layer.service';
         </fieldset>
 
     </md-content>
+    <wave-dialog-loader #lineageDialog
+        [type]="OperatorGraphDialogComponent"
+        [config]="{selectedLayerOnly: false}"
+    ></wave-dialog-loader>
     `,
     styles: [`
     fieldset {
@@ -61,10 +65,17 @@ import {LayerService} from '../services/layer.service';
         background-color: transparent;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
+        DialogLoaderComponent, OperatorGraphDialogComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectTabComponent {
+    // tslint:disable:variable-name
+    OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    // tslint:enable
+
     constructor(
         private projectService: ProjectService,
         private layerService: LayerService
@@ -81,16 +92,5 @@ export class ProjectTabComponent {
     //
     //     this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
     // }
-    //
-    // /**
-    //  * Show lineage information for the whole project.
-    //  */
-    // showLineage() {
-    //     const config = new OperatorGraphDialogConfig()
-    //         .layerService(this.layerService)
-    //         .selectedLayerOnly(false)
-    //         .clickOutsideToClose(true);
-    //
-    //     this.mdDialog.open(OperatorGraphDialogComponent, this.elementRef, config);
-    // }
+
 }

@@ -11,8 +11,7 @@ import {TimeRibbonComponent} from './time-ribbon.component';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 
-// import {OperatorGraphDialogComponent, OperatorGraphDialogConfig}
-//   from '../components/dialogs/operator-graph.component';
+import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 
@@ -38,7 +37,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
                 <div layout="column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                            (click)="showLineage()">
+                            (click)="lineageDialog.show()">
                         <i md-icon>merge_type</i>
                         Lineage
                     </button>
@@ -150,7 +149,10 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
     </md-content>
     <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
     <wave-dialog-loader #symbologyDialog [type]="SymbologyDialogComponent"></wave-dialog-loader>
-
+    <wave-dialog-loader #lineageDialog
+        [type]="OperatorGraphDialogComponent"
+        [config]="{selectedLayerOnly: true}"
+    ></wave-dialog-loader>
     `,
     styles: [`
     .selected {
@@ -193,8 +195,11 @@ export class StartTabComponent {
 
     @Output() addData = new EventEmitter<void>();
 
-    RenameLayerComponent = RenameLayerComponent; // tslint:disable-line:variable-name
-    SymbologyDialogComponent = SymbologyDialogComponent; // tslint:disable-line:variable-name
+    // tslint:disable:variable-name
+    RenameLayerComponent = RenameLayerComponent;
+    SymbologyDialogComponent = SymbologyDialogComponent;
+    OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    // tslint:enable
 
     private isLayerSelected$: Observable<boolean>;
 

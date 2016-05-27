@@ -1,10 +1,9 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit,
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnInit,
         Input, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MdDialog} from 'ng2-material';
-import {DialogContainerComponent} from './dialog-basics.component';
+import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../services/layer.service';
 
@@ -16,6 +15,10 @@ import {Symbology} from '../../symbology/symbology.model';
 import d3 from 'd3'; // necessary for dagreD3
 // import dagre from 'dagre';
 import dagreD3 from 'dagre-d3';
+
+interface LineageDialogInput extends DialogInput {
+    selectedLayerOnly: boolean;
+}
 
 const GRAPH_STYLE = {
     general: {
@@ -39,28 +42,27 @@ const GRAPH_STYLE = {
 @Component({
     selector: 'wave-operator-graph-dialog',
     template: `
-    <wave-dialog-container #container [title]="title" [overflow]="false" [layout]="'row'"
-                           (close)="dialog.close()">
-        <div layout="row">
-            <svg #graph class="graph"
-                 [style.width.px]="width$ | async" [style.height.px]="height$ | async"></svg>
-            <md-content class="detailView" [style.height.px]="height$ | async">
-                <md-list>
-                    <md-subheader class="md-sticky md-primary">Type</md-subheader>
-                    <md-list-item class="md-2-line">{{selectedOperatorName$ | async}}</md-list-item>
-                    <md-divider></md-divider>
-                    <md-subheader class="md-sticky md-primary">Parameters</md-subheader>
-                        <md-list>
-                            <template ngFor let-parameter [ngForOf]="parameters$ | async" let-i="index">
-                                <md-subheader class="md-no-sticky">{{parameter.key}}</md-subheader>
-                                <md-list-item>{{parameter.value}}</md-list-item>
-                                <md-divider></md-divider>
-                            </template>
-                        </md-list>
-                </md-list>
-            </md-content>
-        </div>
-    </wave-dialog-container>
+    <div layout="row">
+        <svg #graph class="graph"
+             [style.width.px]="Math.max(1, width$ | async)"
+             [style.height.px]="Math.max(1, height$ | async)"
+        ></svg>
+        <md-content class="detailView" [style.height.px]="height$ | async">
+            <md-list>
+                <md-subheader class="md-sticky md-primary">Type</md-subheader>
+                <md-list-item class="md-2-line">{{selectedOperatorName$ | async}}</md-list-item>
+                <md-divider></md-divider>
+                <md-subheader class="md-sticky md-primary">Parameters</md-subheader>
+                    <md-list>
+                        <template ngFor let-parameter [ngForOf]="parameters$ | async" let-i="index">
+                            <md-subheader class="md-no-sticky">{{parameter.key}}</md-subheader>
+                            <md-list-item>{{parameter.value}}</md-list-item>
+                            <md-divider></md-divider>
+                        </template>
+                    </md-list>
+            </md-list>
+        </md-content>
+    </div>
     `,
     styles: [`
         .detailView {
@@ -74,6 +76,8 @@ const GRAPH_STYLE = {
 
         .graph {
             background-color: #f5f5f5;
+            height: 50px;
+            width: 50px;
         }
 
         /* node header */
@@ -187,17 +191,17 @@ const GRAPH_STYLE = {
             stroke-dasharray: 5, 5;
         }
     `],
-    directives: [MATERIAL_DIRECTIVES, DialogContainerComponent],
+    directives: [MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OperatorGraphDialogComponent implements AfterViewInit {
-    @ViewChild('container') dialogContainer: DialogContainerComponent;
+export class OperatorGraphDialogComponent extends BasicDialog<LineageDialogInput>
+                                          implements OnInit, AfterViewInit {
     @ViewChild('graph') graphContainer: ElementRef;
 
-    @Input() layerService: LayerService;
-    @Input() selectedLayerOnly: boolean;
+    @Input() selectedLayerOnly: boolean = true;
 
-    private title = 'Workflow';
+    // expose Math to template
+    Math = Math; // tslint:disable-line:variable-name
 
     private width$: BehaviorSubject<number> = new BehaviorSubject(0);
     private height$: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -206,8 +210,16 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     private parameters$: BehaviorSubject<Array<{key: string, value: string}>> =
         new BehaviorSubject([]);
 
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MdDialogRef) {}
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private layerService: LayerService
+    ) {
+        super();
+    }
+
+    ngOnInit() {
+        this.selectedLayerOnly = this.dialogInput.selectedLayerOnly;
+    }
 
     ngAfterViewInit() {
         let title = 'Workflow';
@@ -257,7 +269,7 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
         // do this asynchronously to start a new cycle of change detection
         setTimeout(() => {
-            this.title = title;
+            this.dialog.setTitle(title);
             const sizes = this.setupWidthObservables(graph);
             this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
             this.addClickHandler(svg, graph);
@@ -284,21 +296,21 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
 
         // combine the maximum window widths with the graph width
         Observable.zip(
-            this.dialogContainer.maxWidth$,
+            this.dialog.maxWidth$,
             graphWidth$,
             widthBound
         ).subscribe(this.width$);
 
         Observable.zip(
-            this.dialogContainer.maxHeight$,
+            this.dialog.maxHeight$,
             graphHeight$,
             heightBound
         ).subscribe(this.height$);
 
         // return the current width bounds
         return {
-            width: widthBound(this.dialogContainer.maxWidth$.getValue(), graph.graph().width),
-            height: heightBound(this.dialogContainer.maxHeight$.getValue(), graph.graph().height),
+            width: widthBound(this.dialog.maxWidth, graph.graph().width),
+            height: heightBound(this.dialog.maxHeight, graph.graph().height),
         };
     }
 
@@ -364,8 +376,8 @@ export class OperatorGraphDialogComponent implements AfterViewInit {
     }
 
     private addLayersToGraph(graph: Dagre.Graph,
-                             layers: Array<Layer<any>>,
-                             layersToAccent: Array<Layer<any>>,
+                             layers: Array<Layer<Symbology>>,
+                             layersToAccent: Array<Layer<Symbology>>,
                              operatorIdsInGraph: Array<number>) {
         for (let layer of layers) {
             // operator of layer is contained in graph

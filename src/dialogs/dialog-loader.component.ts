@@ -1,6 +1,6 @@
 import {
-    Component, ChangeDetectionStrategy, ViewChild, ComponentFactory,
-    ComponentRef, Input, ViewContainerRef, ComponentResolver,
+    Component, ChangeDetectionStrategy, ViewChild, ComponentFactory, AfterViewInit,
+    ComponentRef, Input, ViewContainerRef, ComponentResolver, ChangeDetectorRef,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
@@ -8,18 +8,18 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
-import {MdToolbar} from '@angular2-material/toolbar';
+import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
-import {DialogRef} from './dialog-ref.model';
-import {BasicDialog, ButtonDescription} from './basic-dialog.component';
+import {DialogRef, ButtonDescription} from './dialog-ref.model';
+import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
 
 @Component({
     selector: 'wave-dialog-loader',
     template: `
     <md-dialog>
-        <md-toolbar>
-            <span>{{title}}</span>
+        <md-toolbar class="md-primary">
+            <span>{{title | async}}</span>
             <button md-button class="md-icon-button" aria-label="Close Dialog" (click)="close()">
                 <i md-icon>close</i>
             </button>
@@ -27,13 +27,14 @@ import {BasicDialog, ButtonDescription} from './basic-dialog.component';
         <md-content
             [style.maxHeight.px]="maxHeight$ | async"
             [style.maxWidth.px]="maxWidth$ | async"
-            [class.no-overflow]="!overflow"
+            [class.no-overflow]="!(overflows | async)"
+            [class.no-side-margins]="!(sideMargins | async)"
         >
             <template #target></template>
         </md-content>
-        <md-dialog-actions *ngIf="buttons.length > 0">
+        <md-dialog-actions *ngIf="(buttons | async).length > 0">
             <button md-button type="button"
-                *ngFor="let buttonProperties of buttons"
+                *ngFor="let buttonProperties of buttons | async"
                 [class]="buttonProperties.class"
                 (click)="buttonProperties.action()"
                 [attr.aria-label]="buttonProperties.title"
@@ -66,25 +67,31 @@ import {BasicDialog, ButtonDescription} from './basic-dialog.component';
     md-content.no-overflow {
         overflow: hidden;
     }
+    md-content.no-side-margins {
+        padding-left: 0;
+        padding-right: 0;
+    }
     `],
     providers: [OVERLAY_PROVIDERS],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MdToolbar],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MD_TOOLBAR_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DialogLoaderComponent {
+export class DialogLoaderComponent implements AfterViewInit {
     @ViewChild(MdDialog) dialog: MdDialog;
-
     @ViewChild('target', {read: ViewContainerRef}) target: ViewContainerRef;
-    @Input() type: BasicDialog;
 
-    dialogChild: ComponentRef<BasicDialog>;
+    @Input() type: DefaultBasicDialog;
+    @Input() config: DialogInput = {}; // optional
 
-    dialogIsOpen: boolean = false;
+    dialogChild: ComponentRef<DefaultBasicDialog>;
 
-    // These properties get extracted from the child component.
-    overflow: boolean = true;
-    title: string = '';
-    buttons: Array<ButtonDescription> = [];
+    dialogIsOpen = new BehaviorSubject(false);
+
+    // These properties get changed from the child component.
+    title = new BehaviorSubject('');
+    buttons = new BehaviorSubject<Array<ButtonDescription>>([]);
+    overflows = new BehaviorSubject(true);
+    sideMargins = new BehaviorSubject(true);
 
     private dialogRef: DialogRef;
 
@@ -95,7 +102,8 @@ export class DialogLoaderComponent {
     private windowWidth$: BehaviorSubject<number>;
 
     constructor(
-        private componentResolver: ComponentResolver
+        private componentResolver: ComponentResolver,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
         this.windowHeight$ = new BehaviorSubject(window.innerHeight);
         Observable.fromEvent(window, 'resize')
@@ -108,15 +116,29 @@ export class DialogLoaderComponent {
                   .subscribe(this.windowWidth$);
 
         const MARGIN = 48;
+        const DIALOG_ACTIONS_HEIGHT = 54;
 
-        this.maxHeight$ = this.windowHeight$.map(height => height - 4 * MARGIN);
-        this.maxWidth$ = this.windowWidth$.map(width => width - 2 * MARGIN);
+        this.maxHeight$ = Observable.combineLatest(
+            this.windowHeight$,
+            Observable.from([4 * MARGIN]), // TODO: replace with `just`
+            this.buttons.map(buttons => buttons.length > 0 ? DIALOG_ACTIONS_HEIGHT : 0),
+            (windowHeight, margins, buttonsHeight) => windowHeight - margins - buttonsHeight
+        );
+        this.maxWidth$ = Observable.combineLatest(
+            this.windowWidth$,
+            this.sideMargins.map(sideMargins => sideMargins ? 2 * MARGIN : 0),
+            (windowWidth, margins) => windowWidth - margins
+        );
 
         this.dialogRef = {
             maxHeight$: this.maxHeight$,
             maxWidth$: this.maxWidth$,
             maxHeight: undefined,
             maxWidth: undefined,
+            setTitle: title => this.title.next(title),
+            setButtons: buttons => this.buttons.next(buttons),
+            setOverflows: overflows => this.overflows.next(overflows),
+            setSideMargins: sideMargins => this.sideMargins.next(sideMargins),
             close: () => this.close(),
         };
 
@@ -124,34 +146,47 @@ export class DialogLoaderComponent {
         this.maxWidth$.subscribe(maxWidth => this.dialogRef.maxWidth = maxWidth);
     }
 
-    show() {
-        if (this.type) {
-            if (this.dialogChild) {
-                this.dialogChild.destroy();
+    ngAfterViewInit() {
+        // make dialog behave according to this subject
+        this.dialogIsOpen.subscribe(isOpen => {
+            if (isOpen) {
+                this.createChildComponent().then(() => {
+                    this.dialog.show();
+                });
+            } else {
+                this.dialog.close();
+                this.destroyChildComponent();
             }
+        });
+    }
 
-            this.componentResolver.resolveComponent(
-                this.type
-            ).then((factory: ComponentFactory<BasicDialog>) => {
-                this.dialogChild = this.target.createComponent(factory);
-
-                // extract
-                this.title = this.dialogChild.instance.title;
-                this.buttons = this.dialogChild.instance.buttons;
-
-                // inject
-                this.dialogChild.instance.dialog = this.dialogRef;
-
-                this.dialogIsOpen = true;
-                this.dialog.show();
-            });
-        }
+    show() {
+        this.dialogIsOpen.next(true);
     }
 
     close() {
-        this.dialogIsOpen = false;
-        this.dialog.close();
+        this.dialogIsOpen.next(false);
+    }
 
+    private createChildComponent(): Promise<void> {
+        if (this.type) {
+            this.destroyChildComponent();
+
+            return this.componentResolver.resolveComponent(
+                this.type
+            ).then((factory: ComponentFactory<DefaultBasicDialog>) => {
+                this.dialogChild = this.target.createComponent(factory);
+
+                // inject
+                this.dialogChild.instance.dialog = this.dialogRef;
+                this.dialogChild.instance.dialogInput = this.config;
+            });
+        } else {
+            throw 'DialogLoader: There is no Component to load.';
+        }
+    }
+
+    private destroyChildComponent() {
         if (this.dialogChild) {
             this.dialogChild.destroy();
         }
