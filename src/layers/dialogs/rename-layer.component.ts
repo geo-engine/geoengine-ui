@@ -20,7 +20,9 @@ import {Symbology} from '../../symbology/symbology.model';
     </form>
     `,
     styles: [`
-
+    form {
+        padding-top: 16px;
+    }
     `],
     providers: [OVERLAY_PROVIDERS],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],

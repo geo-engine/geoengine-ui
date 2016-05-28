@@ -34,6 +34,9 @@ import moment from 'moment';
     </form>
     `,
     styles: [`
+    form {
+        padding-top: 16px;
+    }
     div.select {
         margin-top: 25px;
     }
