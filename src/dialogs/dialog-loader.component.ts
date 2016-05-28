@@ -6,7 +6,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MATERIAL_DIRECTIVES, MdBackdrop} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
 import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
@@ -41,6 +41,7 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
             >{{buttonProperties.title}}</button>
         </md-dialog-actions>
     </md-dialog>
+    <md-backdrop class="md-opaque" (click)="close()"></md-backdrop>
     `,
     styles: [`
     md-toolbar,
@@ -79,6 +80,7 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
 export class DialogLoaderComponent implements AfterViewInit {
     @ViewChild(MdDialog) dialog: MdDialog;
     @ViewChild('target', {read: ViewContainerRef}) target: ViewContainerRef;
+    @ViewChild(MdBackdrop) backdrop: MdBackdrop;
 
     @Input() type: DefaultBasicDialog;
     @Input() config: DialogInput = {}; // optional
@@ -151,10 +153,12 @@ export class DialogLoaderComponent implements AfterViewInit {
         this.dialogIsOpen.subscribe(isOpen => {
             if (isOpen) {
                 this.createChildComponent().then(() => {
+                    this.backdrop.show();
                     this.dialog.show();
                 });
             } else {
                 this.dialog.close();
+                this.backdrop.hide();
                 this.destroyChildComponent();
             }
         });

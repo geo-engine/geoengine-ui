@@ -15,10 +15,14 @@ import {Symbology} from '../../symbology/symbology.model';
 @Component({
     selector: 'wave-rename-layer-dialog',
     template: `
-    <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
+    <form>
+        <md-input placeholder="Name" [(ngModel)]="layerName"></md-input>
+    </form>
     `,
     styles: [`
-
+    form {
+        padding-top: 16px;
+    }
     `],
     providers: [OVERLAY_PROVIDERS],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
