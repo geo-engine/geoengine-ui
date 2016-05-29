@@ -174,7 +174,7 @@ export class OlRasterLayerComponent
         if (changes['projection'] || changes['time']) {
             // TODO: add these functions to the typings file.
             (this.source as any).updateParams(params);
-            (this.source as any).refresh();
+            // (this.source as any).refresh();
         }
         if (changes['symbology']) {
             this._mapLayer.setOpacity(this.symbology.opacity);
