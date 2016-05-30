@@ -29,13 +29,13 @@ import {
     MsgPansharpenType, MsgCo2CorrectionType,
 } from '../operators/types/msg-types.model';
 
-// import {OperatorBase, OperatorDialogConfig} from '../operators/dialogs/operator.component';
-// import {RasterValueExtractionOperatorComponent}
-//   from '../operators/dialogs/raster-value-extraction.component';
-// import {NumericAttributeFilterOperatorComponent}
-//   from '../operators/dialogs/numeric-attribute-filter.component';
-// import {PointInPolygonFilterOperatorComponent}
-//   from '../operators/dialogs/point-in-polygon-filter.component';
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {RasterValueExtractionOperatorComponent}
+  from '../operators/dialogs/raster-value-extraction.component';
+import {NumericAttributeFilterOperatorComponent}
+  from '../operators/dialogs/numeric-attribute-filter.component';
+import {PointInPolygonFilterOperatorComponent}
+  from '../operators/dialogs/point-in-polygon-filter.component';
 // import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 // import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 // import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
@@ -56,17 +56,17 @@ import {
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
                 [iconUrl]="RasterValueExtractionType.ICON_URL"
-                (click)="addRasterValueExtractionOperator()">
+                (click)="rasterValueExtractionOperatorDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="NumericAttributeFilterType.NAME"
                 [iconUrl]="NumericAttributeFilterType.ICON_URL"
-                (click)="addNumericAttributesFilterOperator()">
+                (click)="numericAttributeFilterOperatorDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="PointInPolygonFilterType.NAME"
                 [iconUrl]="PointInPolygonFilterType.ICON_URL"
-                (click)="addPointInPolygonFilterOperator()">
+                (click)="pointInPolygonFilterOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Raster" [smallButtons]="smallButtons">
@@ -123,6 +123,15 @@ import {
             </wave-operator-button>
         </wave-operator-selection-group>
     </div>
+    <wave-dialog-loader #rasterValueExtractionOperatorDialog
+        [type]="RasterValueExtractionOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #numericAttributeFilterOperatorDialog
+        [type]="NumericAttributeFilterOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #pointInPolygonFilterOperatorDialog
+        [type]="PointInPolygonFilterOperatorComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     fieldset {
@@ -144,7 +153,7 @@ import {
     }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, DialogLoaderComponent,
         OperatorSelectionGroupComponent, OperatorButtonComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -175,6 +184,13 @@ export class OperatorsTabComponent implements AfterViewInit {
     MsgCo2CorrectionType = MsgCo2CorrectionType;
     // tslint:enable
 
+    // make these dialogs accessible in the view
+    // tslint:disable:variable-name
+    RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
+    NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
+    PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
+    // tslint:enable
+
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
         private layerService: LayerService,
@@ -197,68 +213,6 @@ export class OperatorsTabComponent implements AfterViewInit {
             this.container.nativeElement.clientWidth)
         );
     }
-
-    // addExpressionOperator() {
-    //     this.showOperatorDialog(ExpressionOperatorComponent);
-    // }
-    //
-    // addRasterValueExtractionOperator() {
-    //     this.showOperatorDialog(RasterValueExtractionOperatorComponent);
-    // }
-    //
-    // addNumericAttributesFilterOperator() {
-    //     this.showOperatorDialog(NumericAttributeFilterOperatorComponent);
-    // }
-    //
-    // addROperator() {
-    //     this.showOperatorDialog(ROperatorComponent);
-    // }
-    //
-    // addHistogramOperator() {
-    //     this.showOperatorDialog(HistogramOperatorComponent);
-    // }
-    //
-    // addPointInPolygonFilterOperator() {
-    //     this.showOperatorDialog(PointInPolygonFilterOperatorComponent);
-    // }
-    //
-    // addMsgRadianceOperator() {
-    //     this.showOperatorDialog(MsgRadianceOperatorComponent);
-    // }
-    //
-    // addMsgReflectanceOperator() {
-    //     this.showOperatorDialog(MsgReflectanceOperatorComponent);
-    // }
-    //
-    // addMsgSolarangleOperator() {
-    //     this.showOperatorDialog(MsgSolarangleOperatorComponent);
-    // }
-    //
-    // addMsgTemperatureOperator() {
-    //     this.showOperatorDialog(MsgTemperatureOperatorComponent);
-    // }
-    //
-    // addMsgPansharpenOperator() {
-    //     this.showOperatorDialog(MsgPansharpenOperatorComponent);
-    // }
-    //
-    // addMsgCo2CorrectionOperator() {
-    //     this.showOperatorDialog(MsgCo2CorrectionOperatorComponent);
-    // }
-
-    // private showOperatorDialog(
-    //     OperatorComponent: OperatorBase // tslint:disable-line: variable-name
-    // ) {
-    //     const config = new OperatorDialogConfig()
-    //         .layerService(this.layerService)
-    //         .plotService(this.plotService)
-    //         .projectService(this.projectService)
-    //         .mappingQueryService(this.mappingQueryService)
-    //         .randomColorService(this.randomColorService)
-    //         .clickOutsideToClose(true);
-    //
-    //     this.mdDialog.open(OperatorComponent as Function, this.elementRef, config);
-    // }
 
     /**
      * This functions tries to find the maximum number of buttons to show incrementally.
