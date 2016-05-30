@@ -9,7 +9,9 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {HistogramComponent} from './histogram.component';
 
-// import {PlotDetailsDialogComponent, PlotDetailsDialogConfig} from './plot-detail-dialog.component';
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {PlotDetailsDialogComponent} from './plot-detail-dialog.component';
+
 import {PlotService} from './plot.service';
 import {Plot} from './plot.model';
 
@@ -45,7 +47,7 @@ import {LayoutService} from '../app/layout.service';
                     <div layout="row">
                         <h3 flex>{{plot.name}}</h3>
                         <button md-button class="md-icon-button" aria-label="Remove Output"
-                                (click)="showPlotDetailDialog(plot)">
+                                (click)="plotDetailsDialogDialog.show({plot: plot})">
                             <i md-icon>info</i>
                         </button>
                         <button md-button class="md-icon-button" aria-label="Remove Output"
@@ -73,6 +75,9 @@ import {LayoutService} from '../app/layout.service';
             </md-list-item>
         </md-list>
     </md-content>
+    <wave-dialog-loader #plotDetailsDialogDialog
+        [type]="PlotDetailsDialogComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     md-content {
@@ -117,15 +122,18 @@ import {LayoutService} from '../app/layout.service';
         overflow-y: hidden;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, HistogramComponent],
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, DialogLoaderComponent, HistogramComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {
     @Input() maxHeight: number; // in px
 
-    private plotListVisible$: Observable<boolean>;
+    PlotDetailsDialogComponent = PlotDetailsDialogComponent; // tslint:disable-line:variable-name
 
-    private plots$: Observable<Array<Plot>>;
+    plotListVisible$: Observable<boolean>;
+    plots$: Observable<Array<Plot>>;
 
     constructor(
         private plotService: PlotService,
@@ -136,17 +144,4 @@ export class PlotListComponent {
         this.plots$ = this.plotService.getPlotsStream();
     }
 
-    /**
-     * Show the plot detail dialog
-     * @param plot the plot to show
-     */
-    showPlotDetailDialog(plot: Plot) {
-        // TODO: re-implement
-
-        // const config = new PlotDetailsDialogConfig()
-        //     .plot(plot)
-        //     .clickOutsideToClose(true);
-        //
-        // this.mdDialog.open(PlotDetailsDialogComponent, this.elementRef, config);
-    }
 }

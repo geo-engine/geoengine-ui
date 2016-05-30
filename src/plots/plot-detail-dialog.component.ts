@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import {COMMON_DIRECTIVES} from '@angular/common';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 
-import {DialogContainerComponent} from '../components/dialogs/dialog-basics.component';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+
+import {BasicDialog} from '../dialogs/basic-dialog.component';
 import {HistogramComponent} from './histogram.component';
 
 import {Plot} from './plot.model';
@@ -18,45 +18,40 @@ import {Plot} from './plot.model';
             </template>
             <template ngSwitchWhen="png">
                 <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}" #plotImage
-                     [width]="getWidthBound(dialogContainer.maxWidth$ | async,
+                     [width]="getWidthBound(dialog.maxWidth$ | async,
                                             plotImage.naturalWidth)"
                      [alt]="plot.name">
             </template>
             <template ngSwitchWhen="histogram">
                 <wave-histogram [data]="plot.data$ | async"
-                                [width]="dialogContainer.maxWidth$ | async"
-                                [height]="dialogContainer.maxHeight$ | async"
+                                [width]="dialog.maxWidth$ | async"
+                                [height]="dialog.maxHeight$ | async"
                                 interactable="true">
                 </wave-histogram>
             </template>
         </div>
     </wave-dialog-container>
     `,
-    styles: [
-        `
+    styles: [`
 
-        `,
-    ],
+    `],
     providers: [],
     directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, DialogContainerComponent, HistogramComponent,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, HistogramComponent,
     ],
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class PlotDetailsDialogComponent {
-    @Input() plot: Plot;
+export class PlotDetailsDialogComponent extends BasicDialog<{plot: Plot}> implements OnInit {
+    plot: Plot;
 
-    constructor(private dialog: MdDialogRef) {}
+    ngOnInit() {
+        this.plot = this.dialogInput.plot;
+        this.dialog.setTitle(`${this.plot.operator.resultType}: ${this.plot.name}`);
+        this.dialog.setOverflows(false);
+    }
 
     getWidthBound(maxContentWidth: number, imageNaturalWidth: number) {
         return Math.min(maxContentWidth, imageNaturalWidth);
-    }
-}
-
-export class PlotDetailsDialogConfig /* extends MdDialogConfig */ {
-    plot(plot: Plot): PlotDetailsDialogConfig {
-        this.context.plot = plot;
-        return this;
     }
 }

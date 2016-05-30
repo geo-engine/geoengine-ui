@@ -1,18 +1,27 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup,
+} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
-
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
-    LayerMultiSelectComponent, OperatorBaseComponent, OperatorContainerComponent,
+    LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
 } from './operator.component';
 import {CodeEditorComponent} from '../../components/code-editor.component';
 
+import {LayerService} from '../../services/layer.service';
+import {PlotService} from '../../plots/plot.service';
+import {RandomColorService} from '../../services/random-color.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {ProjectService} from '../../services/project.service';
+
 import {Layer, VectorLayer, RasterLayer} from '../../models/layer.model';
 import {Plot} from '../../plots/plot.model';
-import {Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology} from '../../symbology/symbology.model';
+import {
+    Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology,
+} from '../../symbology/symbology.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';
@@ -26,80 +35,83 @@ import {RScriptType} from '../types/r-script-type.model';
 @Component({
     selector: 'wave-r-operator',
     template: `
-    <wave-operator-container title="Execute R Script (experimental)"
-                            (add)="addLayer()" (cancel)="dialog.close()">
-        <form [ngFormModel]="configForm">
-            <wave-multi-layer-selection [layers]="layers" [min]="0" [max]="5" initialAmount="0"
-                                        [types]="[ResultTypes.RASTER]"
-                                        (selectedLayers)="rasterSources = $event">
-            </wave-multi-layer-selection>
-            <wave-multi-layer-selection [layers]="layers" [min]="0" [max]="5" initialAmount="0"
-                                        [types]="[ResultTypes.POINTS]"
-                                        (selectedLayers)="pointSources = $event">
-            </wave-multi-layer-selection>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <p>Help?</p>
-                    <wave-code-editor language="r" [(code)]="code"></wave-code-editor>
-                    <md-input-container class="md-block md-input-has-value">
-                        <label for="dataType">Result Type</label>
-                        <select ngControl="resultType">
-                            <option *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
-                                                            ResultTypes.PLOT, ResultTypes.TEXT]"
-                                    [ngValue]="resultType">
-                                {{resultType}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label for="name">
-                            Output Name
-                        </label>
-                        <input md-input ngControl="name" [(value)]="name">
-                        <div md-messages="name">
-                            <div md-message="required">You must specify an output name.</div>
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-        </form>
-    </wave-operator-container>
+    <form [ngFormModel]="configForm">
+        <wave-multi-layer-selection [layers]="layers" [min]="0" [max]="5" initialAmount="0"
+                                    [types]="[ResultTypes.RASTER]"
+                                    (selectedLayers)="rasterSources = $event">
+        </wave-multi-layer-selection>
+        <wave-multi-layer-selection [layers]="layers" [min]="0" [max]="5" initialAmount="0"
+                                    [types]="[ResultTypes.POINTS]"
+                                    (selectedLayers)="pointSources = $event">
+        </wave-multi-layer-selection>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Configuration</span>
+                    <span class="md-subheader">Specify the operator</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <p>Help?</p>
+                <wave-code-editor language="r" ngControl="code"></wave-code-editor>
+                <div>
+                    <label for="dataType">Result Type</label>
+                    <select ngControl="resultType">
+                        <option
+                            *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
+                                                       ResultTypes.PLOT, ResultTypes.TEXT]"
+                            [ngValue]="resultType"
+                        >{{resultType}}</option>
+                    </select>
+                </div>
+            </md-card-content>
+        </md-card>
+        <wave-operator-output-name ngControl="name"></wave-operator-output-name>
+    </form>
     `,
     styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
     wave-code-editor {
         min-width: 400px;
     }
     `],
-    directives: [FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
-                 OperatorContainerComponent, LayerMultiSelectComponent, CodeEditorComponent],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+                 OperatorOutputNameComponent, LayerMultiSelectComponent, CodeEditorComponent],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ROperatorComponent extends OperatorBaseComponent {
+export class ROperatorComponent extends OperatorBaseComponent implements OnInit {
 
     private configForm: ControlGroup;
-    private code: string;
     private rasterSources: Array<RasterLayer<RasterSymbology>> = [];
     private pointSources: Array<VectorLayer<AbstractVectorSymbology>> = [];
 
-    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
-        super();
+    constructor(
+        layerService: LayerService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private plotService: PlotService,
+        private formBuilder: FormBuilder
+    ) {
+        super(layerService);
 
         this.configForm = formBuilder.group({
-            'resultType': [ResultTypes.TEXT, Validators.required],
-            'name': ['R Output', Validators.required],
+            code: [`print("Hello world");\na <- 1:5;\nprint(a);`, Validators.required],
+            resultType: [ResultTypes.TEXT, Validators.required],
+            name: ['R Output', Validators.required],
         });
-
-        this.code = `print("Hello world");\na <- 1:5;\nprint(a);`;
     }
 
-    addLayer() {
+    ngOnInit() {
+        super.ngOnInit();
+        this.dialog.setTitle('Execute R Script (experimental)');
+    }
+
+    add() {
         const getAnySource = (index: number) => {
             const allSources = [...this.rasterSources, ...this.pointSources];
             return allSources[index];
@@ -107,14 +119,18 @@ export class ROperatorComponent extends OperatorBaseComponent {
 
         const outputName: string = this.configForm.controls['name'].value;
         const resultType: DataType = this.configForm.controls['resultType'].value;
-        const code = this.code;
-
-        const rasterSources: Array<Operator> = this.rasterSources.map(layer => layer.operator);
-        const pointSources: Array<Operator> = this.pointSources.map(layer => layer.operator);
+        const code = this.configForm.controls['code'].value;
 
         // TODO: user input?
         const projection = getAnySource(0) === undefined ?
             Projections.WGS_84 : getAnySource(0).operator.projection;
+
+        const rasterSources: Array<Operator> = this.rasterSources.map(
+            layer => layer.operator.getProjectedOperator(projection)
+        );
+        const pointSources: Array<Operator> = this.pointSources.map(
+            layer => layer.operator.getProjectedOperator(projection)
+        );
 
         const operator = new Operator({
             operatorType: new RScriptType({
@@ -130,7 +146,8 @@ export class ROperatorComponent extends OperatorBaseComponent {
             pointSources: pointSources,
         });
 
-        const provenance$ = this.mappingQueryService.getProvenanceStream(operator,
+        const provenance$ = this.mappingQueryService.getProvenanceStream(
+            operator,
             this.projectService.getTimeStream(),
             this.projectService.getMapProjectionStream()
         );

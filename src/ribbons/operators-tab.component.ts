@@ -38,7 +38,7 @@ import {PointInPolygonFilterOperatorComponent}
   from '../operators/dialogs/point-in-polygon-filter.component';
 import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
-// import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
+import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 // import {
 //     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
 //     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
@@ -87,7 +87,7 @@ import {HistogramOperatorComponent} from '../operators/dialogs/histogram.compone
             <wave-operator-button [small]="smallButtons"
                 [text]="RScriptType.NAME"
                 [iconUrl]="RScriptType.ICON_URL"
-                (click)="addROperator()">
+                (click)="rOperatorComponentDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="MSG" [smallButtons]="smallButtons">
@@ -137,6 +137,9 @@ import {HistogramOperatorComponent} from '../operators/dialogs/histogram.compone
     ></wave-dialog-loader>
     <wave-dialog-loader #histogramOperatorDialog
         [type]="HistogramOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #rOperatorComponentDialog
+        [type]="ROperatorComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -197,6 +200,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
     ExpressionOperatorComponent = ExpressionOperatorComponent;
     HistogramOperatorComponent = HistogramOperatorComponent;
+    ROperatorComponent = ROperatorComponent;
     // tslint:enable
 
     constructor(
