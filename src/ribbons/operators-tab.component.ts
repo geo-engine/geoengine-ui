@@ -34,8 +34,8 @@ import {RasterValueExtractionOperatorComponent}
   from '../operators/dialogs/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
   from '../operators/dialogs/numeric-attribute-filter.component';
-// import {PointInPolygonFilterOperatorComponent}
-//   from '../operators/dialogs/point-in-polygon-filter.component';
+import {PointInPolygonFilterOperatorComponent}
+  from '../operators/dialogs/point-in-polygon-filter.component';
 // import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 // import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 // import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
@@ -66,7 +66,7 @@ import {NumericAttributeFilterOperatorComponent}
             <wave-operator-button [small]="smallButtons"
                 [text]="PointInPolygonFilterType.NAME"
                 [iconUrl]="PointInPolygonFilterType.ICON_URL"
-                (click)="addPointInPolygonFilterOperator()">
+                (click)="pointInPolygonFilterOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Raster" [smallButtons]="smallButtons">
@@ -129,6 +129,9 @@ import {NumericAttributeFilterOperatorComponent}
     <wave-dialog-loader #numericAttributeFilterOperatorDialog
         [type]="NumericAttributeFilterOperatorComponent"
     ></wave-dialog-loader>
+    <wave-dialog-loader #pointInPolygonFilterOperatorDialog
+        [type]="PointInPolygonFilterOperatorComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     fieldset {
@@ -185,6 +188,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     // tslint:disable:variable-name
     RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
+    PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
     // tslint:enable
 
     constructor(

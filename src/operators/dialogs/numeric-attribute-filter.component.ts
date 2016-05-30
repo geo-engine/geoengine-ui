@@ -10,7 +10,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
-    LayerMultiSelectComponent, OperatorBaseComponent,
+    LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
 } from './operator.component';
 import {HistogramComponent, HistogramData} from '../../plots/histogram.component';
 
@@ -62,20 +62,7 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
                 </wave-histogram>
             </md-card-content>
         </md-card>
-        <md-card>
-            <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Output Name</span>
-                    <span class="md-subheader">Specify the name of the operator result</span>
-                </md-card-header-text>
-            </md-card-header>
-            <md-card-content>
-                <md-input
-                    placeholder="Output Layer Name" minLength="1"
-                    ngControl="name" [(value)]="name"
-                ></md-input>
-            </md-card-content>
-        </md-card>
+        <wave-operator-output-name ngControl="name"></wave-operator-output-name>
     </form>
     `,
     styles: [`
@@ -87,7 +74,7 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
     `],
     directives: [
         FORM_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent,
+        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
     ],
     providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,

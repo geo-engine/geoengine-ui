@@ -8,7 +8,7 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
     LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
-    LetterNumberConverter,
+    LetterNumberConverter, OperatorOutputNameComponent,
 } from './operator.component';
 
 import {LayerService} from '../../services/layer.service';
@@ -63,25 +63,12 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
                 </div>
             </md-card-content>
         </md-card>
-        <md-card>
-            <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Output Name</span>
-                    <span class="md-subheader">Specify the name of the operator result</span>
-                </md-card-header-text>
-            </md-card-header>
-            <md-card-content>
-                <md-input
-                    placeholder="Output Layer Name" minLength="1"
-                    ngControl="name" [(value)]="name"
-                ></md-input>
-            </md-card-content>
-        </md-card>
+        <wave-operator-output-name ngControl="name"></wave-operator-output-name>
     </form>
     `,
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        LayerMultiSelectComponent, ReprojectionSelectionComponent,
+        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent,
     ],
     changeDetection: ChangeDetectionStrategy.Default,
 })

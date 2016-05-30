@@ -1,12 +1,13 @@
 import {
-    Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy,
+    Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy,
     OnChanges, SimpleChange, OnInit, AfterViewInit, Provider,
 } from '@angular/core';
 import {COMMON_DIRECTIVES, NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/common';
 
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
@@ -398,6 +399,77 @@ export class ReprojectionSelectionComponent
         this.onTouched = fn;
     }
 
+}
+
+@Component({
+    selector: 'wave-operator-output-name',
+    template: `
+    <md-card>
+        <md-card-header>
+            <md-card-header-text>
+                <span class="md-title">Output Name</span>
+                <span class="md-subheader">Specify the name of the operator result</span>
+            </md-card-header-text>
+        </md-card-header>
+        <md-card-content>
+            <md-input
+                placeholder="Output {{type}} Name"
+                [ngModel]="name$ | async" (ngModelChange)="name$.next($event)"
+                minLength="1"
+                (blur)="onBlur()"
+            ></md-input>
+        </md-card-content>
+    </md-card>
+    `,
+    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
+    providers: [
+        new Provider(
+            NG_VALUE_ACCESSOR, {
+              useExisting: OperatorOutputNameComponent,
+              multi: true,
+          }),
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class OperatorOutputNameComponent implements ControlValueAccessor, OnDestroy {
+    name$ = new BehaviorSubject<string>('');
+
+    @Input() type: string = 'Layer';
+
+    private onTouched: () => void;
+    private changeSubscription: Subscription;
+
+    ngOnDestroy() {
+        if (this.changeSubscription) {
+            this.changeSubscription.unsubscribe();
+        }
+    }
+
+    onBlur() {
+        if (this.onTouched) {
+            this.onTouched();
+        }
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    writeValue(value: string): void {
+        this.name$.next(value);
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    registerOnChange(fn: () => {}) {
+        if (this.changeSubscription) {
+          this.changeSubscription.unsubscribe();
+        }
+        this.changeSubscription = this.name$.subscribe(fn);
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    registerOnTouched(fn: () => {}) { // tslint:disable-line:no-any
+        if (this.onTouched) {
+            this.onTouched = fn;
+        }
+    }
 }
 
 /**
