@@ -8,10 +8,12 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, MdBackdrop} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
+
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
-import {DialogRef, ButtonDescription} from './dialog-ref.model';
+import {DialogRef, ButtonDescription, ActionInputDescription} from './dialog-ref.model';
 import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
 
 @Component({
@@ -38,6 +40,7 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
                 [class]="buttonProperties.class"
                 (click)="buttonProperties.action()"
                 [attr.aria-label]="buttonProperties.title"
+                [disabled]="buttonProperties.disabled | async"
             >{{buttonProperties.title}}</button>
         </md-dialog-actions>
     </md-dialog>
@@ -72,9 +75,15 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
         padding-left: 0;
         padding-right: 0;
     }
+    md-dialog-actions {
+        height: 52px;
+        padding-top: 8px;
+    }
     `],
     providers: [OVERLAY_PROVIDERS],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MD_TOOLBAR_DIRECTIVES],
+    directives: [
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MD_TOOLBAR_DIRECTIVES, MD_INPUT_DIRECTIVES,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DialogLoaderComponent implements AfterViewInit {
@@ -92,6 +101,7 @@ export class DialogLoaderComponent implements AfterViewInit {
     // These properties get changed from the child component.
     title = new BehaviorSubject('');
     buttons = new BehaviorSubject<Array<ButtonDescription>>([]);
+    actionInput = new BehaviorSubject<ActionInputDescription>(undefined);
     overflows = new BehaviorSubject(true);
     sideMargins = new BehaviorSubject(true);
 
@@ -118,11 +128,11 @@ export class DialogLoaderComponent implements AfterViewInit {
                   .subscribe(this.windowWidth$);
 
         const MARGIN = 48;
-        const DIALOG_ACTIONS_HEIGHT = 54;
+        const DIALOG_ACTIONS_HEIGHT = 52 + 8; // height + margin
 
         this.maxHeight$ = Observable.combineLatest(
             this.windowHeight$,
-            Observable.from([4 * MARGIN]), // TODO: replace with `just`
+            Observable.from([2 * MARGIN]), // TODO: replace with `just`
             this.buttons.map(buttons => buttons.length > 0 ? DIALOG_ACTIONS_HEIGHT : 0),
             (windowHeight, margins, buttonsHeight) => windowHeight - margins - buttonsHeight
         );
@@ -138,7 +148,14 @@ export class DialogLoaderComponent implements AfterViewInit {
             maxHeight: undefined,
             maxWidth: undefined,
             setTitle: title => this.title.next(title),
-            setButtons: buttons => this.buttons.next(buttons),
+            setButtons: buttons => this.buttons.next(
+                buttons.map(button => {
+                    if (!button.disabled) {
+                        button.disabled = new BehaviorSubject(false);
+                    }
+                    return button;
+                })
+            ),
             setOverflows: overflows => this.overflows.next(overflows),
             setSideMargins: sideMargins => this.sideMargins.next(sideMargins),
             close: () => this.close(),

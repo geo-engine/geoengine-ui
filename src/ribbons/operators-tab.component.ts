@@ -29,9 +29,9 @@ import {
     MsgPansharpenType, MsgCo2CorrectionType,
 } from '../operators/types/msg-types.model';
 
-// import {OperatorBase, OperatorDialogConfig} from '../operators/dialogs/operator.component';
-// import {RasterValueExtractionOperatorComponent}
-//   from '../operators/dialogs/raster-value-extraction.component';
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {RasterValueExtractionOperatorComponent}
+  from '../operators/dialogs/raster-value-extraction.component';
 // import {NumericAttributeFilterOperatorComponent}
 //   from '../operators/dialogs/numeric-attribute-filter.component';
 // import {PointInPolygonFilterOperatorComponent}
@@ -56,7 +56,7 @@ import {
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
                 [iconUrl]="RasterValueExtractionType.ICON_URL"
-                (click)="addRasterValueExtractionOperator()">
+                (click)="rasterValueExtractionOperatorDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="NumericAttributeFilterType.NAME"
@@ -123,6 +123,9 @@ import {
             </wave-operator-button>
         </wave-operator-selection-group>
     </div>
+    <wave-dialog-loader #rasterValueExtractionOperatorDialog
+        [type]="RasterValueExtractionOperatorComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     fieldset {
@@ -144,7 +147,7 @@ import {
     }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, DialogLoaderComponent,
         OperatorSelectionGroupComponent, OperatorButtonComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -173,6 +176,11 @@ export class OperatorsTabComponent implements AfterViewInit {
     MsgTemperatureType = MsgTemperatureType;
     MsgPansharpenType = MsgPansharpenType;
     MsgCo2CorrectionType = MsgCo2CorrectionType;
+    // tslint:enable
+
+    // make these dialogs accessible in the view
+    // tslint:disable:variable-name
+    RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
     // tslint:enable
 
     constructor(

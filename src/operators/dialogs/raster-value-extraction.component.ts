@@ -1,19 +1,23 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
-
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import {
-    FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray,
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray,
 } from '@angular/common';
 
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+
 import {
-    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
-        OperatorBaseComponent, toLetters,
+    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
+    LetterNumberConverter,
 } from './operator.component';
 
+import {LayerService} from '../../services/layer.service';
+import {RandomColorService} from '../../services/random-color.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {ProjectService} from '../../services/project.service';
+
 import {VectorLayer, Layer} from '../../models/layer.model';
-import {SimplePointSymbology} from '../../symbology/symbology.model';
+import {Symbology, SimplePointSymbology} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -25,74 +29,93 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
 @Component({
     selector: 'wave-raster-value-extraction',
     template: `
-    <wave-operator-container title="Extract a Raster Value and Add it to the Vector Layer"
-                            (add)="addLayer()" (cancel)="dialog.close()">
-        <form [ngFormModel]="configForm">
-            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
-                                        [types]="[ResultTypes.POINTS]"
-                                        (selectedLayers)="selectedPointLayer = $event[0]">
-            </wave-multi-layer-selection>
-            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="9"
-                                        [types]="[ResultTypes.RASTER]"
-                                        (selectedLayers)="onSelectRasterLayers($event)">
-            </wave-multi-layer-selection>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <div layout="row" ngControlGroup="valueNames">
-                        <md-input-container class="md-block"
-                                    *ngFor="let control of valueNamesControls.controls; let i = index">
-                            <label>
-                                Value Name for Raster {{toLetters(i+1)}}
-                            </label>
-                            <input md-input [ngFormControl]="control">
-                            <div md-messages="valueNames">
-                                <div md-message="required">You must specify a value name.</div>
-                            </div>
-                        </md-input-container>
-                    </div>
-                    <md-input-container class="md-block">
-                        <label for="name">
-                            Output Layer Name
-                        </label>
-                        <input md-input ngControl="name" [(value)]="name">
-                        <div md-messages="name">
-                            <div md-message="required">You must specify a layer name.</div>
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-        </form>
-    </wave-operator-container>
+    <form [ngFormModel]="configForm">
+        <wave-multi-layer-selection
+            [layers]="layers" [min]="1" [max]="1"
+            [types]="[ResultTypes.POINTS, ResultTypes.LINES, ResultTypes.POLYGONS]"
+            (selectedLayers)="onSelectVectorLayer($event[0])"
+        ></wave-multi-layer-selection>
+        <wave-multi-layer-selection
+            [layers]="layers" [min]="1" [max]="9"
+            [types]="[ResultTypes.RASTER]"
+            (selectedLayers)="onSelectRasterLayers($event)"
+        ></wave-multi-layer-selection>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Configuration</span>
+                    <span class="md-subheader">Specify the operator</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <div layout="row" ngControlGroup="valueNames">
+                    <md-input
+                        *ngFor="let control of valueNamesControls.controls; let i = index"
+                        placeholder="Value Name for Raster {{LetterNumberConverter.toLetters(i+1)}}"
+                        minLength="1"
+                        [ngFormControl]="control"
+                        #theInput
+                    >
+                        <md-hint align="end" style="color: #f44336"
+                            *ngIf="invalidAttributeName(theInput.value)"
+                        >attribute name is duplicate!</md-hint>
+                    </md-input>
+                </div>
+            </md-card-content>
+        </md-card>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Output Name</span>
+                    <span class="md-subheader">Specify the name of the operator result</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <md-input
+                    placeholder="Output Layer Name" minLength="1"
+                    ngControl="name" [(value)]="name"
+                ></md-input>
+            </md-card-content>
+        </md-card>
+    </form>
     `,
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
-        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        LayerMultiSelectComponent, ReprojectionSelectionComponent,
     ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent {
+export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent
+                                                    implements OnInit {
 
-    private configForm: ControlGroup;
-    private valueNamesControls: ControlArray;
+    configForm: ControlGroup;
+    valueNamesControls: ControlArray;
 
-    private selectedPointLayer: Layer<any>;
-    private selectedRasterLayers: Array<Layer<any>>;
+    selectedVectorLayer: Layer<Symbology>;
+    selectedRasterLayers: Array<Layer<Symbology>>;
 
+    disallowedValueNames: Array<string>;
+
+    LetterNumberConverter = LetterNumberConverter; // tslint:disable-line:variable-name
+
+    // TODO: magic numbers
     private resolutionX = 1024;
     private resolutionY = 1024;
 
-    private toLetters = toLetters; // tslint:disable-line:no-unused-variable
-
-    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
-        super();
+    constructor(
+        layerService: LayerService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private formBuilder: FormBuilder
+    ) {
+        super(layerService);
 
         this.valueNamesControls = formBuilder.array([]);
+        this.valueNamesControls.valueChanges.subscribe(attributeNameArray => {
+            this.checkForDisallowedAttributeNames(attributeNameArray);
+        });
+
         this.configForm = formBuilder.group({
             'valueNames': this.valueNamesControls,
             'name': ['Points With Raster Values', Validators.required],
@@ -101,9 +124,17 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
 
     ngOnInit() {
         super.ngOnInit();
+        this.dialog.setTitle('Extract a Raster Value and Add it to the Vector Layer');
     }
 
-    private onSelectRasterLayers(layers: Array<Layer<any>>) {
+    onSelectVectorLayer(layer: Layer<Symbology>) {
+        this.selectedVectorLayer = layer;
+        this.disallowedValueNames = layer.operator.attributes.toArray();
+
+        this.checkForDisallowedAttributeNames(this.valueNamesControls.value);
+    }
+
+    onSelectRasterLayers(layers: Array<Layer<Symbology>>) {
         let discrepancy = layers.length - this.valueNamesControls.length;
         if (discrepancy > 0) {
             for (let i = this.valueNamesControls.length; i < layers.length; i++) {
@@ -120,17 +151,22 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.selectedRasterLayers = layers;
     }
 
-    addLayer() {
-        const pointOperator = this.selectedPointLayer.operator;
-        const rasterOperators = this.selectedRasterLayers.map(layer => layer.operator);
+    add() {
+        const vectorOperator = this.selectedVectorLayer.operator;
+        const projection = vectorOperator.projection;
+        const resultType = vectorOperator.resultType;
+
+        const rasterOperators = this.selectedRasterLayers.map(
+            layer => layer.operator.getProjectedOperator(projection)
+        );
 
         const valueNames = this.valueNamesControls.controls.map(control => control.value);
 
         // ATTENTION: make the three mutable copies to loop just once over the rasters
         //            -> make them immutable to put them into the operator
-        const units = pointOperator.units.asMutable();
-        const dataTypes = pointOperator.dataTypes.asMutable();
-        const attributes = pointOperator.attributes.asMutable();
+        const units = vectorOperator.units.asMutable();
+        const dataTypes = vectorOperator.dataTypes.asMutable();
+        const attributes = vectorOperator.attributes.asMutable();
 
         for (let i = 0; i < rasterOperators.length; i++) {
             units.set(valueNames[i], rasterOperators[i].getUnit('value'));
@@ -146,19 +182,23 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
                 yResolution: this.resolutionY,
                 attributeNames: valueNames,
             }),
-            resultType: ResultTypes.POINTS,
-            projection: pointOperator.projection,
+            resultType: resultType,
+            projection: projection,
             attributes: attributes.asImmutable(),  // immutable!
             dataTypes: dataTypes.asImmutable(),  // immutable!
             units: units.asImmutable(), // immutable!
-            pointSources: [pointOperator],
+            pointSources: resultType === ResultTypes.POINTS ? [vectorOperator] : undefined,
+            lineSources: resultType === ResultTypes.LINES ? [vectorOperator] : undefined,
+            polygonSources: resultType === ResultTypes.POLYGONS ? [vectorOperator] : undefined,
             rasterSources: rasterOperators,
         });
 
         this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({fill_rgba: this.randomColorService.getRandomColor()}),
+            symbology: new SimplePointSymbology({
+                fill_rgba: this.randomColorService.getRandomColor(),
+            }),
             data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                 operator,
                 this.projectService.getTimeStream(),
@@ -167,6 +207,25 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         }));
 
         this.dialog.close();
+    }
+
+    private invalidAttributeName(
+        name: string,
+        attributeArray: Array<string> = this.valueNamesControls.value
+    ): boolean {
+        const inDisallowedNames = this.disallowedValueNames.indexOf(name) >= 0;
+        const duplicateName = attributeArray.indexOf(name) !== attributeArray.lastIndexOf(name);
+        return inDisallowedNames || duplicateName;
+    }
+
+    private checkForDisallowedAttributeNames(attributeArray: Array<string>) {
+        const nameCollision = attributeArray.map(
+            name => this.invalidAttributeName(name, attributeArray)
+        ).reduce(
+            (oldValue, newValue) => oldValue || newValue, false
+        );
+
+        this.addDisabled.next(nameCollision);
     }
 
 }

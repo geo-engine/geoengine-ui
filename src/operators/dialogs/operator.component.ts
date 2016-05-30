@@ -1,17 +1,16 @@
-import {Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy,
-        OnChanges, SimpleChange, OnInit, AfterViewInit, Optional} from '@angular/core';
-import {NgControl} from '@angular/common';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MdDialog} from 'ng2-material';
-import {DialogContainerComponent} from '../../components/dialogs/dialog-basics.component';
+import {
+    Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy,
+    OnChanges, SimpleChange, OnInit, AfterViewInit, Provider,
+} from '@angular/core';
+import {COMMON_DIRECTIVES, NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/common';
 
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs/Rx';
+
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+
+import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../services/layer.service';
-import {PlotService} from '../../plots/plot.service';
-import {ProjectService} from  '../../services/project.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
-import {RandomColorService} from '../../services/random-color.service';
 
 import {Symbology} from '../../symbology/symbology.model';
 import {Layer} from '../../models/layer.model';
@@ -24,19 +23,23 @@ import {Projection} from '../projection.model';
 @Component({
     selector: 'wave-layer-selection',
     template: `
-    <md-input-container class="md-block md-input-has-value">
+    <div [ngSwitch]="layers.length">
         <label>Input {{id}}</label>
-        <select *ngIf="layers.length > 0"
+        <select *ngSwitchDefault
                 [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
-            <option *ngFor="let layer of layers" [ngValue]="layer">
-                {{layer.name}}
-            </option>
+            <option *ngFor="let layer of layers" [ngValue]="layer">{{layer.name}}</option>
         </select>
-        <p *ngIf="layers.length <= 0">No Input Available</p>
-        <input md-input type="hidden" value="0"><!-- HACK -->
-    </md-input-container>
+        <p *ngSwitchWhen="0">No Input Available</p>
+    </div>
     `,
-    directives: [MATERIAL_DIRECTIVES],
+    styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
+    `],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerSelectionComponent implements AfterViewInit, OnChanges {
@@ -86,6 +89,35 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
 }
 
 /**
+ * Singleton for a letter to number converter for ids.
+ */
+export const LetterNumberConverter = { // tslint:disable-line:variable-name
+    /**
+     * Convert a numeric id to a alphanumeric one.
+     * Starting with `1`.
+     */
+    toLetters: (num: number) => {
+        let mod = num % 26;
+        let pow = num / 26 | 0; // tslint:disable-line:no-bitwise
+        let out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
+        return pow ? this.toLetters(pow) + out : out;
+    },
+    /**
+     * Convert an alphanumeric id to a numeric one.
+     * Starting with `A`.
+     */
+    fromLetters: (str: string) => {
+        let out = 0;
+        let len = str.length;
+        let pos = len;
+        while (--pos > -1) {
+            out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - 1 - pos);
+        }
+        return out;
+    },
+};
+
+/**
  * This component allows selecting multiple input operators.
  */
 @Component({
@@ -114,9 +146,11 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
         </md-card-header>
         <md-card-content layout="row">
             <div *ngFor="let id of ids; let i = index" layout="row">
-                <wave-layer-selection [id]="id" [layers]="_layers"
-                                      (selectedLayer)="updateLayer(i, $event)">
-                </wave-layer-selection>
+                <wave-layer-selection
+                    [id]="id"
+                    [layers]="_layers"
+                    (selectedLayer)="updateLayer(i, $event)"
+                ></wave-layer-selection>
             </div>
         </md-card-content>
     </md-card>
@@ -132,7 +166,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
         background-color: transparent;
     }
     `],
-    directives: [MATERIAL_DIRECTIVES, LayerSelectionComponent],
+    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, LayerSelectionComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerMultiSelectComponent implements OnChanges {
@@ -140,7 +174,7 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * An array of possible layers.
      */
-    @Input("layers") layers: Array<Layer<Symbology>>;
+    @Input() layers: Array<Layer<Symbology>>;
 
     /**
      * The minimum number of elements to select.
@@ -167,7 +201,7 @@ export class LayerMultiSelectComponent implements OnChanges {
     /**
      * This output emits the selected layer.
      */
-    @Output("selectedLayers") selectedLayers = new EventEmitter<Array<Layer<Symbology>>>();
+    @Output() selectedLayers = new EventEmitter<Array<Layer<Symbology>>>();
 
     private amountOfLayers: number = 1;
 
@@ -216,7 +250,7 @@ export class LayerMultiSelectComponent implements OnChanges {
         this.selectedLayers.emit(this._selectedLayers);
     }
 
-    private add() {
+    add() {
         this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
         this.recalculateIds();
     }
@@ -231,31 +265,10 @@ export class LayerMultiSelectComponent implements OnChanges {
     private recalculateIds() {
         this.ids = [];
         for (let i = 1; i <= this.amountOfLayers; i++) {
-            this.ids.push(toLetters(i));
+            this.ids.push(LetterNumberConverter.toLetters(i));
         }
     }
 
-}
-
-export function toLetters(num: number): string {
-    'use strict';
-    let mod = num % 26;
-    /* tslint:disable */
-    let pow = num / 26 | 0;
-    /* tslint:enable */
-    let out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
-    return pow ? this.toLetters(pow) + out : out;
-}
-
-export function fromLetters(str: string): number {
-    'use strict';
-    let out = 0;
-    let len = str.length;
-    let pos = len;
-    while (--pos > -1) {
-        out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - 1 - pos);
-    }
-    return out;
 }
 
 /**
@@ -264,21 +277,39 @@ export function fromLetters(str: string): number {
 @Component({
     selector: 'wave-reprojetion-selection',
     template: `
-    <md-input-container class="md-block md-input-has-value">
+    <div>
         <label>Output Projection</label>
-        <select [ngModel]="selectedProjection"
-                (ngModelChange)="valueChange.emit($event)">
-            <option *ngFor="let projection of projections" [ngValue]="projection">
-                {{projection}}
-            </option>
+        <select
+            [ngModel]="selectedProjection"
+            (ngModelChange)="valueChange.emit($event)"
+            (blur)="onBlur()"
+        >
+            <option
+                *ngFor="let projection of projections"
+                [ngValue]="projection"
+            >{{projection}}</option>
         </select>
-        <input md-input type="hidden" value="0"><!-- HACK -->
-    </md-input-container>
+    </div>
     `,
+    styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
+    `],
     directives: [MATERIAL_DIRECTIVES],
+    providers: [
+        new Provider(
+            NG_VALUE_ACCESSOR, {
+              useExisting: ReprojectionSelectionComponent,
+              multi: true,
+          }),
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges {
+export class ReprojectionSelectionComponent
+    implements AfterViewInit, OnChanges, ControlValueAccessor {
 
     /**
      * An array of layers that is traversed to get all projections.
@@ -293,11 +324,17 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
     private projections: Array<Projection>;
     private selectedProjection: Projection;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-                @Optional() control: NgControl) {
+    private onTouched: () => void;
+    private changeSubscription: { unsubscribe: () => {} } = undefined;
+
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef
+    ) {
         this.valueChange.subscribe((projection: Projection) => {
             this.selectedProjection = projection;
         });
+
+        this.onTouched = () => {};
     }
 
     ngAfterViewInit() {
@@ -329,140 +366,76 @@ export class ReprojectionSelectionComponent implements AfterViewInit, OnChanges 
         }
     }
 
-}
-
-@Component({
-    selector: 'wave-operator-buttons',
-    template: `
-    <md-dialog-actions>
-        <button md-raised-button type="button" (click)="cancel.emit()">
-            <span>Cancel</span>
-        </button>
-        <button md-raised-button class="md-primary" type="button" (click)="add.emit()">
-            <span>Add</span>
-        </button>
-    </md-dialog-actions>
-    `,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class OperatorButtonsComponent {
-    @Output() add = new EventEmitter<void>();
-    @Output() cancel = new EventEmitter<void>();
-}
-
-@Component({
-    selector: 'wave-operator-container',
-    template: `
-    <wave-dialog-container [title]="title">
-        <ng-content></ng-content>
-        <wave-operator-buttons actions (add)="add.emit()" (cancel)="cancel.emit()">
-        </wave-operator-buttons>
-    </wave-dialog-container>
-    `,
-    styles: [`
-    md-content {
-        margin-left: -24px;
-        padding-left: 24px;
-        margin-right: -24px;
-        padding-right: 24px;
+    /**
+     * Informs the component when we lose focus in order to style accordingly
+     * @internal
+     */
+    onBlur() {
+        this.onTouched();
     }
-    `],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [DialogContainerComponent, OperatorButtonsComponent],
-})
-export class OperatorContainerComponent {
-    @Input() title: string;
-    @Output() add = new EventEmitter<void>();
-    @Output() cancel = new EventEmitter<void>();
 
-    private windowHeight$: BehaviorSubject<number>;
-    private windowWidth$: BehaviorSubject<number>;
-
-    constructor() {
-        this.windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, 'resize')
-                  .map(_ => window.innerHeight)
-                  .subscribe(this.windowHeight$);
-
-        this.windowWidth$ = new BehaviorSubject(window.innerWidth);
-        Observable.fromEvent(window, 'resize')
-                  .map(_ => window.innerWidth)
-                  .subscribe(this.windowWidth$);
+    /**
+     * Implemented as part of ControlValueAccessor.
+     */
+    writeValue(value: Projection) {
+        this.valueChange.next(value);
     }
+
+    /**
+     * Implemented as part of ControlValueAccessor.
+     */
+    registerOnChange(fn: () => {}) {
+        if (this.changeSubscription) {
+          this.changeSubscription.unsubscribe();
+        }
+        this.changeSubscription = this.valueChange.subscribe(fn) as {unsubscribe: () => {}};
+    }
+
+    /**
+     * Implemented as part of ControlValueAccessor.
+     */
+    registerOnTouched(fn: () => {}) {
+        this.onTouched = fn;
+    }
+
 }
 
 /**
  * This component is the base class for all operator types.
  */
-@Component({
-    selector: 'wave-operator',
-    template: ``,
-    directives: [LayerMultiSelectComponent, ReprojectionSelectionComponent],
-    changeDetection: ChangeDetectionStrategy.Default,
-})
-export abstract class OperatorBaseComponent implements OperatorBase, OnInit, OnChanges {
-
-    @Input() layerService: LayerService;
-    @Input() plotService: PlotService;
-    @Input() projectService: ProjectService;
-    @Input() mappingQueryService: MappingQueryService;
-    @Input() randomColorService: RandomColorService;
+export abstract class OperatorBaseComponent extends BasicDialog<DialogInput> implements OnInit {
 
     protected layers: Array<Layer<Symbology>> = [];
+    protected addDisabled = new BehaviorSubject(false);
 
     // types
     protected ResultTypes = ResultTypes; // tslint:disable-line:variable-name
 
-    constructor() {}
+    constructor(
+        protected layerService: LayerService
+    ) {
+        super();
 
+        this.layers = this.layerService.getLayers();
+    }
+
+    /**
+     * Sets defaults for title and buttons.
+     * Call this with super if you override it!!!
+     */
     ngOnInit() {
-        if (this.layers) {
-            this.layers = this.layerService.getLayers();
-        }
+        this.dialog.setTitle('Operator'); // TODO: think about this to remove
+        this.dialog.setButtons([
+            { title: 'Cancel', action: () => this.dialog.close() },
+            {
+                title: 'Add',
+                class: 'md-primary',
+                action: () => this.add(),
+                disabled: this.addDisabled,
+            },
+        ]);
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        for (let propName in changes) {
-            switch (propName) {
-                case 'layerService':
-                    this.layers = this.layerService.getLayers();
-                    break;
-                default:
-                    // DO NOTHING
-            }
-        }
-    }
+    abstract add(): void;
 
 }
-
-/**
- * This interface allows passing class instances as parameter.
- */
-export interface OperatorBase {}
-
-// export class OperatorDialogConfig /* extends MdDialogConfig */ {
-//     layerService(layerService: LayerService): OperatorDialogConfig {
-//         this.context.layerService = layerService;
-//         return this;
-//     }
-//
-//     plotService(plotService: PlotService): OperatorDialogConfig {
-//         this.context.plotService = plotService;
-//         return this;
-//     }
-//
-//     projectService(projectService: ProjectService): OperatorDialogConfig {
-//         this.context.projectService = projectService;
-//         return this;
-//     }
-//
-//     mappingQueryService(mappingQueryService: MappingQueryService) {
-//         this.context.mappingQueryService = mappingQueryService;
-//         return this;
-//     }
-//
-//     randomColorService(randomColorService: RandomColorService) {
-//         this.context.randomColorService = randomColorService;
-//         return this;
-//     }
-// }
