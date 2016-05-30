@@ -14,8 +14,6 @@
   },
   "exclude": [
     "node_modules",
-    "typings/main",
-    "typings/main.d.ts",
     "custom_typings"
   ],
   "filesGlob": [
@@ -76,6 +74,7 @@
     "src/pipes/highlight.pipe.ts",
     "src/pipes/mapping-data-sources.pipe.ts",
     "src/pipes/rgba-to-css-string.pipe.ts",
+    "src/pipes/safe-style.pipe.ts",
     "src/plots/histogram.component.ts",
     "src/plots/plot-detail-dialog.component.ts",
     "src/plots/plot-list.component.ts",
@@ -94,6 +93,7 @@
     "src/services/project.service.ts",
     "src/services/random-color.service.ts",
     "src/symbology/legendary.component.ts",
+    "src/symbology/mapping-colorizer-to-gradient.pipe.ts",
     "src/symbology/symbology-dialog.component.ts",
     "src/symbology/symbology-points.component.ts",
     "src/symbology/symbology-raster.component.ts",
@@ -102,16 +102,17 @@
     "src/users/storage/storage-provider.model.ts",
     "src/users/user.model.ts",
     "src/users/user.service.ts",
-    "typings/browser.d.ts",
-    "typings/browser/ambient/codemirror/index.d.ts",
-    "typings/browser/ambient/core-js/index.d.ts",
-    "typings/browser/ambient/d3/index.d.ts",
-    "typings/browser/ambient/dagre-d3/index.d.ts",
-    "typings/browser/ambient/dagre/index.d.ts",
-    "typings/browser/ambient/jasmine/index.d.ts",
-    "typings/browser/ambient/openlayers/index.d.ts",
-    "typings/browser/ambient/proj4/index.d.ts",
-    "typings/browser/ambient/require/index.d.ts"
+    "typings/globals/codemirror/index.d.ts",
+    "typings/globals/core-js/index.d.ts",
+    "typings/globals/d3/index.d.ts",
+    "typings/globals/dagre-d3/index.d.ts",
+    "typings/globals/dagre/index.d.ts",
+    "typings/globals/jasmine/index.d.ts",
+    "typings/globals/node/index.d.ts",
+    "typings/globals/openlayers/index.d.ts",
+    "typings/globals/proj4/index.d.ts",
+    "typings/globals/require/index.d.ts",
+    "typings/index.d.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

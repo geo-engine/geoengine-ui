@@ -7,26 +7,31 @@ import {RasterSymbology} from './symbology.model';
 @Component({
     selector: 'wave-symbology-raster',
     template: `
-     <div class='md-block' flex-gt-sm>
-         <label>Opacity</label>
-         <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'></md-input>
-      </div>
-      <div class='md-block' flex-gt-sm>
-          <label>Hue</label>
-          <md-input disabled
+    <form>
+        <label>Opacity</label>
+        <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'>
+        </md-input>
+
+        <label>Hue</label>
+        <md-input disabled
             type='number'
             [(ngModel)]='symbology.hue'
-            (ngModelChange)='update()'></md-input>
-       </div>
-       <div class='md-block' flex-gt-sm>
-           <label>Saturation</label>
-           <md-input disabled
+            (ngModelChange)='update()'>
+        </md-input>
+
+        <label>Saturation</label>
+        <md-input disabled
             type='number'
             [(ngModel)]='symbology.saturation'
-            (ngModelChange)='update()'></md-input>
-        </div>
+            (ngModelChange)='update()'>
+        </md-input>
+    </form>
       `,
-    styles: [``],
+    styles: [`
+        form {
+            padding-top: 16px;
+        }
+        `],
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })

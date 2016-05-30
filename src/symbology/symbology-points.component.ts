@@ -10,36 +10,33 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 @Component({
     selector: 'wave-symbology-points',
     template: `
-        <div class='md-block' flex-gt-sm>
+        <form class='md-block' flex-gt-sm>
             <label>Fill color</label>
             <md-input
                 [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
                 [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
                 (ngModelChange)='updateFillRgba($event)'>
             </md-input>
-        </div>
-        <div class='md-block' flex-gt-sm>
+
             <label>Stroke color</label>
             <md-input
                 [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
                 [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
                 (ngModelChange)='updateStrokeRgba($event)'>
             </md-input>
-        </div>
-        <div class='md-block' flex-gt-sm>
+
             <label>Stroke width</label>
             <md-input type='number'
                 [(ngModel)]='symbology.stroke_width'
                 (ngModelChange)='update()'>
             </md-input>
-        </div>
-        <div class='md-block' flex-gt-sm>
-        <label>Radius</label>
-        <md-input type='number'
-            [(ngModel)]='symbology.radius'
-            (ngModelChange)='update()'>
-        </md-input>
-        </div>
+
+            <label>Radius</label>
+            <md-input type='number'
+                [(ngModel)]='symbology.radius'
+                (ngModelChange)='update()'>
+            </md-input>
+        </form>
 
         `,
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
@@ -90,29 +87,29 @@ export class SymbologyPointsComponent implements OnInit {
 @Component({
     selector: 'wave-symbology-vector',
     template: `
-    <div class='md-block' flex-gt-sm *ngIf='symbology.describesArea'>
-        <label>Fill color</label>
-        <md-input
-            [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
-            [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
-            (ngModelChange)='updateFillRgba($event)'>
-        </md-input>
-    </div>
-    <div class='md-block' flex-gt-sm>
+    <form>
+        <template [ngIf]='symbology.describesArea'>
+            <label>Fill color</label>
+            <md-input
+                [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
+                (ngModelChange)='updateFillRgba($event)'>
+            </md-input>
+        </template>
+
         <label>Stroke color</label>
         <md-input
             [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
             [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
             (ngModelChange)='updateStrokeRgba($event)'>
         </md-input>
-    </div>
-    <div class='md-block' flex-gt-sm>
+
         <label>Stroke width</label>
         <md-input type='number'
             [(ngModel)]='symbology.stroke_width'
             (ngModelChange)='update()'>
         </md-input>
-    </div>
+    </form>
      `,
     styles: [``],
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],

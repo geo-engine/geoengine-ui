@@ -28,6 +28,7 @@
     "@angular2-material/radio": "^2.0.0-alpha.5",
     "@angular2-material/sidenav": "^2.0.0-alpha.5",
     "@angular2-material/toolbar": "^2.0.0-alpha.5",
+    "angular2-in-memory-web-api": "0.0.10",
     "ace-editor-builds": "^1.2.0",
     "codemirror": "^5.15.2",
     "core-js": "^2.4.0",
@@ -35,6 +36,8 @@
     "dagre": "^0.7.4",
     "dagre-d3": "^0.4.17",
     "dragula": "^3.7.1",
+    "es6-promise": "^3.2.1",
+    "es6-shim": "^0.35.1",
     "immutable": "^3.8.1",
     "moment": "^2.13.0",
     "ng2-dragula": "^1.1.9",
@@ -48,12 +51,12 @@
   },
   "devDependencies": {
     "codelyzer": "0.0.19",
-    "concurrently": "^2.1.0",
+    "concurrently": "^2.0.0",
     "http-server": "^0.9.0",
     "systemjs-builder": "^0.15.17",
     "tslint": "^3.10.2",
     "typedoc": "^0.3.12",
     "typescript": "^1.8.10",
-    "typings": "^0.8.1"
+    "typings": "^1.0.4"
   }
 }
