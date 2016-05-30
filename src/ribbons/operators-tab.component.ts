@@ -37,7 +37,7 @@ import {NumericAttributeFilterOperatorComponent}
 import {PointInPolygonFilterOperatorComponent}
   from '../operators/dialogs/point-in-polygon-filter.component';
 import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
-// import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
+import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 // import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 // import {
 //     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
@@ -80,7 +80,7 @@ import {ExpressionOperatorComponent} from '../operators/dialogs/expression-opera
             <wave-operator-button [small]="smallButtons"
                 [text]="HistogramType.NAME"
                 [iconUrl]="HistogramType.ICON_URL"
-                (click)="addHistogramOperator()">
+                (click)="histogramOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons">
@@ -134,6 +134,9 @@ import {ExpressionOperatorComponent} from '../operators/dialogs/expression-opera
     ></wave-dialog-loader>
     <wave-dialog-loader #expressionOperatorDialog
         [type]="ExpressionOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #histogramOperatorDialog
+        [type]="HistogramOperatorComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -193,6 +196,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
     ExpressionOperatorComponent = ExpressionOperatorComponent;
+    HistogramOperatorComponent = HistogramOperatorComponent;
     // tslint:enable
 
     constructor(

@@ -1,7 +1,7 @@
 import {
     Component, OnInit, ChangeDetectionStrategy,
 } from '@angular/core';
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
+import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
@@ -102,7 +102,7 @@ import {ExpressionType} from '../types/expression-type.model';
     }
     `],
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
         LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent,
     ],
     changeDetection: ChangeDetectionStrategy.Default,
