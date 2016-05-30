@@ -36,7 +36,7 @@ import {NumericAttributeFilterOperatorComponent}
   from '../operators/dialogs/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
   from '../operators/dialogs/point-in-polygon-filter.component';
-// import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
+import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 // import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 // import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 // import {
@@ -73,7 +73,7 @@ import {PointInPolygonFilterOperatorComponent}
             <wave-operator-button [small]="smallButtons"
                 [text]="ExpressionType.NAME"
                 [iconUrl]="ExpressionType.ICON_URL"
-                (click)="addExpressionOperator()">
+                (click)="expressionOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Plots" [smallButtons]="smallButtons">
@@ -132,6 +132,9 @@ import {PointInPolygonFilterOperatorComponent}
     <wave-dialog-loader #pointInPolygonFilterOperatorDialog
         [type]="PointInPolygonFilterOperatorComponent"
     ></wave-dialog-loader>
+    <wave-dialog-loader #expressionOperatorDialog
+        [type]="ExpressionOperatorComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     fieldset {
@@ -189,6 +192,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
+    ExpressionOperatorComponent = ExpressionOperatorComponent;
     // tslint:enable
 
     constructor(
