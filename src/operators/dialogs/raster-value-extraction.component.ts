@@ -209,7 +209,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.dialog.close();
     }
 
-    private invalidAttributeName(
+    invalidAttributeName(
         name: string,
         attributeArray: Array<string> = this.valueNamesControls.value
     ): boolean {

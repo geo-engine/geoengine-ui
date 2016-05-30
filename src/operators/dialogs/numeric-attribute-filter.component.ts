@@ -1,18 +1,23 @@
 import {
-    Component, ChangeDetectionStrategy,
+    Component, ChangeDetectionStrategy, OnInit,
 } from '@angular/core';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
+import {HTTP_PROVIDERS} from '@angular/http';
 import {
     FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
 } from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
-// import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
-    LayerMultiSelectComponent, OperatorContainerComponent, OperatorBaseComponent,
+    LayerMultiSelectComponent, OperatorBaseComponent,
 } from './operator.component';
 import {HistogramComponent, HistogramData} from '../../plots/histogram.component';
+
+import {LayerService} from '../../services/layer.service';
+import {RandomColorService} from '../../services/random-color.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {ProjectService} from '../../services/project.service';
 
 import {VectorLayer, Layer} from '../../models/layer.model';
 import {Operator} from '../operator.model';
@@ -24,62 +29,71 @@ import {Unit} from '../unit.model';
 import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
 
 /**
- * This component allows creating the expression operator.
+ * This component allows creating the numeric attribute filter operator.
  */
 @Component({
     selector: 'wave-numeric-attribute-filter',
     template: `
-    <wave-operator-container title="Numeric Attribute Filter"
-                             (add)="addLayer()" (cancel)="dialog.close()">
-        <form [ngFormModel]="configForm">
-            <wave-multi-layer-selection
-                [layers]="layers" [min]="1" [max]="1"
-                [types]="ResultTypes.VECTOR_TYPES"
-                (selectedLayers)="onSelectLayer($event[0])">
-            </wave-multi-layer-selection>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <md-input-container class="md-block md-input-has-value">
-                        <label>Attribute</label>
-                        <select ngControl="attributeName">
-                            <option *ngFor="let attribute of attributes" [ngValue]="attribute">
-                                {{attribute}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
-                    <wave-histogram [height]="500" [width]="500" [selectable]="true"
-                                    *ngIf="data" [data]="data" interactable="true"
-                                    (minRange)="boundsMin = $event" (maxRange)="boundsMax = $event">
-                    </wave-histogram>
-                    <md-input-container class="md-block">
-                        <label for="name">
-                            Output Layer Name
-                        </label>
-                        <input md-input ngControl="name" [(value)]="name">
-                        <div md-messages="name">
-                            <div md-message="required">You must specify a layer name.</div>
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-        </form>
-    </wave-operator-container>
+    <form [ngFormModel]="configForm">
+        <wave-multi-layer-selection
+            [layers]="layers" [min]="1" [max]="1"
+            [types]="ResultTypes.VECTOR_TYPES"
+            (selectedLayers)="onSelectLayer($event[0])">
+        </wave-multi-layer-selection>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Configuration</span>
+                    <span class="md-subheader">Specify the operator</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <div>
+                    <label>Attribute</label>
+                    <select ngControl="attributeName">
+                        <option *ngFor="let attribute of attributes" [ngValue]="attribute">
+                            {{attribute}}
+                        </option>
+                    </select>
+                </div>
+                <wave-histogram [height]="500" [width]="500" [selectable]="true"
+                                *ngIf="data" [data]="data" interactable="true"
+                                (minRange)="boundsMin = $event" (maxRange)="boundsMax = $event">
+                </wave-histogram>
+            </md-card-content>
+        </md-card>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Output Name</span>
+                    <span class="md-subheader">Specify the name of the operator result</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <md-input
+                    placeholder="Output Layer Name" minLength="1"
+                    ngControl="name" [(value)]="name"
+                ></md-input>
+            </md-card-content>
+        </md-card>
+    </form>
     `,
+    styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
+    `],
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorContainerComponent,
+        FORM_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        LayerMultiSelectComponent, HistogramComponent,
     ],
     providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class NumericAttributeFilterOperatorComponent extends OperatorBaseComponent {
+export class NumericAttributeFilterOperatorComponent extends OperatorBaseComponent
+                                                     implements OnInit {
 
     private configForm: ControlGroup;
 
@@ -91,9 +105,14 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     private data: HistogramData;
 
-    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder,
-                private http: Http) {
-        super();
+    constructor(
+        layerService: LayerService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private formBuilder: FormBuilder
+    ) {
+        super(layerService);
 
         const attributeNameControl = formBuilder.control('', Validators.required);
 
@@ -127,9 +146,10 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     ngOnInit() {
         super.ngOnInit();
+        this.dialog.setTitle('Numeric Attribute Filter');
     }
 
-    private onSelectLayer(layer: Layer<Symbology>) {
+    onSelectLayer(layer: Layer<Symbology>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.attributes.filter((attribute: string) => {
@@ -146,7 +166,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         }
     }
 
-    addLayer() {
+    add() {
         const vectorOperator = this.selectedLayer.operator;
 
         const units = vectorOperator.units;
