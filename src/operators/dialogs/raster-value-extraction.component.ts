@@ -164,6 +164,11 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
                 this.projectService.getTimeStream(),
                 this.projectService.getMapProjectionStream()
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(
+                operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

@@ -128,12 +128,22 @@ export class LayerService {
                         operator,
                         this.projectService.getTimeStream(),
                         this.projectService.getMapProjectionStream()
+                    ),
+                    operator => this.mappingQueryService.getProvenanceStream(
+                        operator,
+                        this.projectService.getTimeStream(),
+                        this.projectService.getMapProjectionStream()
                     )
                 );
             case 'vector':
                 return VectorLayer.fromDict(
                     dict,
                     operator => this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                        operator,
+                        this.projectService.getTimeStream(),
+                        this.projectService.getMapProjectionStream()
+                    ),
+                    operator => this.mappingQueryService.getProvenanceStream(
                         operator,
                         this.projectService.getTimeStream(),
                         this.projectService.getMapProjectionStream()

@@ -220,6 +220,10 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             name: name,
             operator: operator,
             symbology: new RasterSymbology({}),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();

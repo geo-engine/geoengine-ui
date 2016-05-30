@@ -12,7 +12,8 @@ import Config from '../models/config.model';
 import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
-import {MappingSource, MappingSourceChannel} from '../models/mapping-source.model';
+import {Provenance} from '../provenance/provenance.model';
+import {MappingSource} from '../models/mapping-source.model';
 import {Unit} from '../operators/unit.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
@@ -289,6 +290,34 @@ export class MappingQueryService {
                 this.getColorizer(operator, time, projection)
             );
         }).switch().publishReplay(1).refCount();
+    }
+
+    getProvenance(operator: Operator
+                    // time: moment.Moment,
+                    // projection: Projection
+                ): Promise<Provenance> {
+
+        // const projectedOperator = operator.getProjectedOperator(projection);
+        const serviceType = 'provenance';
+        const provenanceRequest = Config.MAPPING_URL
+            + '?' + 'SERVICE=' + serviceType
+            + '&' + 'query=' + operator.toQueryJSON();
+            // + '&' + 'CRS=' + projection.getCode()
+            // + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
+        console.log('getProvenance', provenanceRequest);
+        return this.http.get(provenanceRequest)
+            .map((res: Response) => res.json())
+            .map((json: Provenance) => { return json; }).toPromise();
+    }
+
+    getProvenanceStream(operator: Operator,
+                     time$: Observable<moment.Moment>,
+                     projection$: Observable<Projection>): Observable<Provenance> {
+        // return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+            return Observable.fromPromise(
+                this.getProvenance(operator)
+            );
+        // }).switch().publishReplay(1).refCount();
     }
 
     getRasterSourcesStream(): Observable<Array<MappingSource>> {

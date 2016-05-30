@@ -130,6 +130,11 @@ export class ROperatorComponent extends OperatorBaseComponent {
             pointSources: pointSources,
         });
 
+        const provenance$ = this.mappingQueryService.getProvenanceStream(operator,
+            this.projectService.getTimeStream(),
+            this.projectService.getMapProjectionStream()
+        );
+
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
             // LAYER
             let layer: Layer<Symbology>;
@@ -146,6 +151,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
                             this.projectService.getTimeStream(),
                             this.projectService.getMapProjectionStream()
                         ),
+                        prov$: provenance$,
                     });
                     break;
                 case ResultTypes.RASTER:
@@ -153,6 +159,7 @@ export class ROperatorComponent extends OperatorBaseComponent {
                         name: outputName,
                         operator: operator,
                         symbology: new RasterSymbology({}),
+                        prov$: provenance$,
                     });
                     break;
                 default:
