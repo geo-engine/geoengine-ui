@@ -173,6 +173,10 @@ export class DebugTabComponent {
                     this.projectService.getTimeStream(),
                     this.projectService.getMapProjectionStream()
                 ),
+                prov$: this.mappingQueryService.getProvenanceStream(gbifPumaOperator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                ),
             })
         );
     }
@@ -205,6 +209,10 @@ export class DebugTabComponent {
                     this.projectService.getTimeStream(),
                     this.projectService.getMapProjectionStream()
                 ),
+                prov$: this.mappingQueryService.getProvenanceStream(wktOperator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                ),
             })
         );
     }
@@ -229,6 +237,10 @@ export class DebugTabComponent {
                 operator: iucnPumaOperator,
                 data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     iucnPumaOperator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                ),
+                prov$: this.mappingQueryService.getProvenanceStream(iucnPumaOperator,
                     this.projectService.getTimeStream(),
                     this.projectService.getMapProjectionStream()
                 ),
@@ -265,6 +277,10 @@ export class DebugTabComponent {
                     )
                 ),
                 operator: srtmOperator,
+                prov$: this.mappingQueryService.getProvenanceStream(srtmOperator,
+                    this.projectService.getTimeStream(),
+                    this.projectService.getMapProjectionStream()
+                ),
             })
         );
     }

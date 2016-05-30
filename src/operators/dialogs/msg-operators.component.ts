@@ -98,6 +98,10 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getMapProjectionStream()
                 )
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         });
         this.layerService.addLayer(layer);
         this.dialog.close();
@@ -203,6 +207,10 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getMapProjectionStream()
                 )
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         });
         this.layerService.addLayer(layer);
 
@@ -303,6 +311,10 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getMapProjectionStream()
                 )
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         });
         this.layerService.addLayer(layer);
 
@@ -386,6 +398,10 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getMapProjectionStream()
                 )
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         });
         this.layerService.addLayer(layer);
 
@@ -466,6 +482,10 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getMapProjectionStream()
                 )
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         });
         this.layerService.addLayer(layer);
 
@@ -545,6 +565,10 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent {
                     this.projectService.getTimeStream(),
                     this.projectService.getMapProjectionStream()
                 )
+            ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
             ),
         });
         this.layerService.addLayer(layer);

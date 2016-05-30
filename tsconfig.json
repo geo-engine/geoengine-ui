@@ -81,6 +81,7 @@
     "src/plots/plot.model.ts",
     "src/plots/plot.service.ts",
     "src/project/project-settings.component.ts",
+    "src/provenance/provenance.model.ts",
     "src/ribbons/debug-tab.component.ts",
     "src/ribbons/operator-selection-group.component.ts",
     "src/ribbons/operators-tab.component.ts",

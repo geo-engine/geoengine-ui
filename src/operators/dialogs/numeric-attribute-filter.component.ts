@@ -208,6 +208,10 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 this.projectService.getTimeStream(),
                 this.projectService.getMapProjectionStream()
             ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator,
+                this.projectService.getTimeStream(),
+                this.projectService.getMapProjectionStream()
+            ),
         }));
 
         this.dialog.close();
