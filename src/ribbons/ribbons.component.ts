@@ -13,7 +13,7 @@ import {DebugTabComponent} from './debug-tab.component';
 
 import {LayoutService} from '../app/layout.service';
 
-import Config from '../models/config.model';
+import Config from '../app/config.model';
 
 /**
  * The ribbons component.

@@ -19,7 +19,7 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../services/project.service';
 
-import {VectorLayer, Layer} from '../../models/layer.model';
+import {VectorLayer, Layer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {NumericAttributeFilterType} from '../types/numeric-attribute-filter-type.model';

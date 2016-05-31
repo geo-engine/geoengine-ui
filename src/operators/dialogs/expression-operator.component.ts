@@ -16,7 +16,7 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../services/project.service';
 
-import {RasterLayer} from '../../models/layer.model';
+import {RasterLayer} from '../../layers/layer.model';
 import {RasterSymbology} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';

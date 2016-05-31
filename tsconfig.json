@@ -23,6 +23,7 @@
   ],
   "files": [
     "src/app/app.component.ts",
+    "src/app/config.model.ts",
     "src/app/layout.service.ts",
     "src/components/code-editor.component.ts",
     "src/components/data-table.component.ts",
@@ -37,10 +38,9 @@
     "src/layers/dialogs/operator-graph.component.ts",
     "src/layers/dialogs/rename-layer.component.ts",
     "src/layers/layer-list.component.ts",
+    "src/layers/layer.model.ts",
     "src/main.ts",
-    "src/models/config.model.ts",
     "src/models/geojson.model.ts",
-    "src/models/layer.model.ts",
     "src/models/mapping-source.model.ts",
     "src/models/project.model.ts",
     "src/operators/datatype.model.ts",
@@ -112,7 +112,6 @@
     "typings/globals/node/index.d.ts",
     "typings/globals/openlayers/index.d.ts",
     "typings/globals/proj4/index.d.ts",
-    "typings/globals/require/index.d.ts",
     "typings/index.d.ts"
   ],
   "atom": {

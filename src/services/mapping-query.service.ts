@@ -8,7 +8,7 @@ import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import Config from '../models/config.model';
+import Config from '../app/config.model';
 import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';

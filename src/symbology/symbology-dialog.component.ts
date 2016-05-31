@@ -14,7 +14,7 @@ import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyType} from '.
 import {SymbologyRasterComponent} from './symbology-raster.component';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from './symbology-points.component';
 
-import {Layer} from '../models/layer.model';
+import {Layer} from '../layers/layer.model';
 
 @Component({
     selector: 'wave-layer-symbology-dialog',

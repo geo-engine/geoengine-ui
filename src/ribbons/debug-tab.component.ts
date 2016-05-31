@@ -8,7 +8,7 @@ import {PlotService} from '../plots/plot.service';
 import {ProjectService} from '../services/project.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 
-import {VectorLayer, RasterLayer} from '../models/layer.model';
+import {VectorLayer, RasterLayer} from '../layers/layer.model';
 import {Plot} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';

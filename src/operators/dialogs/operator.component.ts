@@ -14,7 +14,7 @@ import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 import {LayerService} from '../../services/layer.service';
 
 import {Symbology} from '../../symbology/symbology.model';
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {ResultType, ResultTypes} from '../result-type.model';
 import {Projection} from '../projection.model';
 

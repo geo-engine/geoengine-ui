@@ -6,7 +6,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
-import {Layer} from '../models/layer.model';
+import {Layer} from '../layers/layer.model';
 
 import {LayerService} from '../services/layer.service';
 import {

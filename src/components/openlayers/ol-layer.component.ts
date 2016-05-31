@@ -6,12 +6,12 @@ import {Subscription} from 'rxjs/Rx';
 import ol from 'openlayers';
 import moment from 'moment';
 
-import Config from '../../models/config.model';
+import Config from '../../app/config.model';
 import {Projection} from '../../operators/projection.model';
 import {Symbology, AbstractVectorSymbology, RasterSymbology}
     from '../../symbology/symbology.model';
 
-import {Layer, VectorLayer, RasterLayer} from '../../models/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {MappingQueryService} from '../../services/mapping-query.service';
 
 /**

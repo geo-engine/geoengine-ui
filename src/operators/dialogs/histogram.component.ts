@@ -17,7 +17,7 @@ import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../services/project.service';
 import {PlotService} from '../../plots/plot.service';
 
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../symbology/symbology.model';
 import {Plot} from '../../plots/plot.model';
 import {Operator} from '../operator.model';

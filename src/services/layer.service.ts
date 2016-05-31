@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {Layer, LayerDict, RasterLayer, VectorLayer} from '../models/layer.model';
+import {Layer, LayerDict, RasterLayer, VectorLayer} from '../layers/layer.model';
 
 import {Symbology, MappingColorizerRasterSymbology} from '../symbology/symbology.model';
 

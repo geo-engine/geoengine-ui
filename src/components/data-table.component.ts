@@ -10,7 +10,7 @@ import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material';
 
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
-import {VectorLayer} from '../models/layer.model';
+import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';
 
 import {LayerService} from '../services/layer.service';

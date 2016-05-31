@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
+
 import {BehaviorSubject} from 'rxjs/Rx';
 
 import {User, Guest} from './user.model';
@@ -24,7 +26,8 @@ export class UserService {
         private projectService: ProjectService,
         private plotService: PlotService,
         private mappingQueryService: MappingQueryService,
-        private layoutService: LayoutService
+        private layoutService: LayoutService,
+        private http: Http
     ) {
         this.user$ = new BehaviorSubject(new Guest());
 

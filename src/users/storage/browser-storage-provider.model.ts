@@ -1,7 +1,7 @@
 import {StorageProvider} from './storage-provider.model';
 
 import {LayoutDict} from '../../app/layout.service';
-import {Layer, LayerDict} from '../../models/layer.model';
+import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../models/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
@@ -13,6 +13,7 @@ import {PlotService} from '../../plots/plot.service';
  * StorageProvider implementation that uses the brower's localStorage
  */
 export class BrowserStorageProvider implements StorageProvider {
+
     loadProject(): Project {
         const projectJSON = localStorage.getItem('project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword

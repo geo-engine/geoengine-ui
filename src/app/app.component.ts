@@ -21,7 +21,7 @@ import {
 
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
-import {Layer} from '../models/layer.model';
+import {Layer} from '../layers/layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 

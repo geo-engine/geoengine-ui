@@ -1,5 +1,5 @@
 import {LayoutDict} from '../../app/layout.service';
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {Project} from '../../models/project.model';
 import {Plot} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';

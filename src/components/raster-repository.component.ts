@@ -7,7 +7,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../services/layer.service';
-import {RasterLayer} from '../models/layer.model';
+import {RasterLayer} from '../layers/layer.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';

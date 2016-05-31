@@ -13,7 +13,7 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../services/project.service';
 
-import {VectorLayer} from '../../models/layer.model';
+import {VectorLayer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';

@@ -7,7 +7,7 @@ import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../services/layer.service';
 
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {Symbology} from '../../symbology/symbology.model';

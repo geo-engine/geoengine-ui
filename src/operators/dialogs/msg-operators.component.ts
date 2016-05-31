@@ -8,7 +8,7 @@
 // import {LayerMultiSelectComponent, OperatorBaseComponent,  OperatorContainerComponent}
 //   from './operator.component';
 //
-// import {Layer, RasterLayer} from "../../models/layer.model";
+// import {Layer, RasterLayer} from "../../layers/layer.model";
 // import {Operator} from "../operator.model";
 // import {ResultTypes} from "../result-type.model";
 // import {DataType} from "../datatype.model";

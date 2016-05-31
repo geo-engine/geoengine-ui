@@ -9,7 +9,7 @@ import {DefaultBasicDialog} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../services/layer.service';
 
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../symbology/symbology.model';
 
 @Component({

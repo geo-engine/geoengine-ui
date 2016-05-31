@@ -17,7 +17,7 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../services/project.service';
 
-import {Layer, VectorLayer, RasterLayer} from '../../models/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {Plot} from '../../plots/plot.model';
 import {
     Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology,
