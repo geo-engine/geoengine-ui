@@ -25,7 +25,7 @@ import {Plot} from './plot.model';
             <template ngSwitchWhen="histogram">
                 <wave-histogram [data]="plot.data$ | async"
                                 [width]="dialog.maxWidth$ | async"
-                                [height]="dialog.maxHeight$ | async"
+                                [height]="(dialog.maxHeight$ | async) - 5"
                                 interactable="true">
                 </wave-histogram>
             </template>
@@ -48,7 +48,8 @@ export class PlotDetailsDialogComponent extends BasicDialog<{plot: Plot}> implem
     ngOnInit() {
         this.plot = this.dialogInput.plot;
         this.dialog.setTitle(`${this.plot.operator.resultType}: ${this.plot.name}`);
-        this.dialog.setOverflows(false);
+
+        console.log(this.dialog.maxHeight);
     }
 
     getWidthBound(maxContentWidth: number, imageNaturalWidth: number) {
