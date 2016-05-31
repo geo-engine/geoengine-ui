@@ -59,7 +59,8 @@
     'toolbar',
     'sidenav',
     'icon',
-    'input'
+    'input',
+    'tabs'
   ];
   mdPackageNames.forEach( function(pkgName) {
     packages['@angular2-material/' + pkgName] = {

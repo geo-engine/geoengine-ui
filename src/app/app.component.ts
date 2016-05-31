@@ -7,6 +7,8 @@ import {HTTP_PROVIDERS} from '@angular/http';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
+import {MD_TABS_DIRECTIVES} from '@angular2-material/tabs';
+
 import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
 import {InfoAreaComponent} from '../components/info-area.component';
@@ -105,14 +107,32 @@ import {PlotService} from '../plots/plot.service';
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <wave-info-bar class="md-whiteframe-3dp"
-            [citationString]="''"
-        ></wave-info-bar>
-        <wave-data-table
-            *ngIf="dataTableVisible$ | async"
-            [style.height.px]="(bottomContainerHeight$ | async)"
-            [height]="(bottomContainerHeight$ | async)"
-        ></wave-data-table>
+        <md-tab-group>
+            <md-tab>
+                <template md-tab-label md-default><span (click)="layoutService.toggleDataTableVisibility()">_</span></template>
+                <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
+            </md-tab>
+            <md-tab>
+                <template md-tab-label md-default>Data Table</template>
+                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                    <wave-data-table
+                        *ngIf="dataTableVisible$ | async"
+                        [style.height.px]="(bottomContainerHeight$ | async)"
+                        [height]="(bottomContainerHeight$ | async)">
+                    </wave-data-table>
+                </template>
+            </md-tab>
+            <md-tab>
+                <template md-tab-label md-default>Citation</template>
+                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                    <wave-data-table
+                        *ngIf="dataTableVisible$ | async"
+                        [style.height.px]="(bottomContainerHeight$ | async)"
+                        [height]="(bottomContainerHeight$ | async)"
+                    ></wave-data-table>
+                </template>
+            </md-tab>
+        </md-tab-group>
         <md-sidenav #rasterRepository align="end" layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
@@ -121,6 +141,14 @@ import {PlotService} from '../plots/plot.service';
     </md-sidenav-layout>
     `,
     styles: [`
+
+    md-tab-group, md-tab-group >>> .md-tab-body-wrapper {
+        min-height: 0 !important;
+    }
+    md-tab-group >>> .md-tab-header {
+        height: 47px;
+    }
+
     .topContainer {
         display: flex;
         height: 180px;
@@ -169,7 +197,7 @@ import {PlotService} from '../plots/plot.service';
     }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES, MD_TABS_DIRECTIVES,
         InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
         DataTableComponent, RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
