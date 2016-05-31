@@ -109,7 +109,9 @@ import {PlotService} from '../plots/plot.service';
         </div>
         <md-tab-group>
             <md-tab>
-                <template md-tab-label md-default><span (click)="layoutService.toggleDataTableVisibility()">_</span></template>
+                <template md-tab-label md-default>
+                    <span (click)="layoutService.toggleDataTableVisibility()">_</span>
+                </template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
             </md-tab>
             <md-tab>
