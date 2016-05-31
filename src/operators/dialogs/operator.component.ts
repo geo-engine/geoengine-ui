@@ -465,7 +465,7 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnDest
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => {}) { // tslint:disable-line:no-any
+    registerOnTouched(fn: () => {}) {
         if (this.onTouched) {
             this.onTouched = fn;
         }

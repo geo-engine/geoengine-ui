@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import {HTTP_PROVIDERS} from '@angular/http';
 import {
-    FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
 } from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
@@ -73,7 +73,7 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
     }
     `],
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
         LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
     ],
     providers: [HTTP_PROVIDERS],

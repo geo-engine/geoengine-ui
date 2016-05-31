@@ -1,14 +1,24 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
+} from '@angular/common';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
+import {
+    OperatorBaseComponent, LayerMultiSelectComponent, OperatorOutputNameComponent,
+} from './operator.component';
 
-import {OperatorBaseComponent, LayerMultiSelectComponent, OperatorContainerComponent}
-    from './operator.component';
+import {LayerService} from '../../services/layer.service';
+import {RandomColorService} from '../../services/random-color.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {ProjectService} from '../../services/project.service';
+import {PlotService} from '../../plots/plot.service';
 
 import {Layer} from '../../models/layer.model';
-import {Symbology} from '../../symbology/symbology.model'
+import {Symbology} from '../../symbology/symbology.model';
 import {Plot} from '../../plots/plot.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -22,87 +32,69 @@ import {HistogramType} from '../types/histogram-type.model';
 @Component({
     selector: 'wave-operator-histogram',
     template: `
-    <wave-operator-container title="Histogram Plot" (add)="addPlot()" (cancel)="dialog.close()">
-        <form [ngFormModel]="configForm">
-            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
-                                        [types]="ResultTypes.INPUT_TYPES"
-                                        (selectedLayers)="onSelectLayer($event[0])">
-            </wave-multi-layer-selection>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <md-input-container class="md-block md-input-has-value"
-                        *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
-                        <label>Attribute</label>
-                        <select ngControl="attributeName">
-                            <option *ngFor="let attribute of attributes" [ngValue]="attribute">
-                                {{attribute}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
-                    <md-input-container class="md-block md-input-has-value">
-                        <label>Range Type</label>
-                        <select ngControl="rangeType">
-                            <option *ngFor="let rangeType of rangeTypes" [ngValue]="rangeType">
-                                {{rangeType}}
-                            </option>
-                        </select>
-                        <input md-input type="hidden" value="0"><!-- HACK -->
-                    </md-input-container>
-                    <div *ngIf="customRange" layout="row">
-                        <md-input-container class="md-block">
-                            <label for="rangeMin">Min</label>
-                            <input md-input type="number" ngControl="rangeMin">
-                            <div md-messages="rangeMin">
-                                <div md-message="required">You must specify a number.</div>
-                            </div>
-                        </md-input-container>
-                        <md-input-container class="md-block">
-                            <label for="rangeMax">Max</label>
-                            <input md-input type="number" ngControl="rangeMax">
-                            <div md-messages="rangeMax">
-                                <div md-message="required">You must specify a number.</div>
-                            </div>
-                        </md-input-container>
-                    </div>
-                    <md-checkbox [(checked)]="autoBuckets">
-                        Choose number of buckets automatically
-                    </md-checkbox>
-                    <md-input-container class="md-block" *ngIf="!autoBuckets">
-                        <label for="buckets">Number of Buckets</label>
-                        <input md-input type="number" ngControl="buckets">
-                        <div md-messages="buckets">
-                            <div md-message="required">You must specify a number.</div>
-                        </div>
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label for="name">Output Plot Name</label>
-                        <input md-input ngControl="name" [(value)]="name">
-                        <div md-messages="name">
-                            <div md-message="required">You must specify a plot name.</div>
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-        </form>
-    </wave-operator-container>
+    <form [ngFormModel]="configForm">
+        <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="1"
+                                    [types]="ResultTypes.INPUT_TYPES"
+                                    (selectedLayers)="onSelectLayer($event[0])">
+        </wave-multi-layer-selection>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Configuration</span>
+                    <span class="md-subheader">Specify the operator</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <div *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
+                    <label>Attribute</label>
+                    <select ngControl="attributeName">
+                        <option *ngFor="let attribute of attributes" [ngValue]="attribute">
+                            {{attribute}}
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label>Range Type</label>
+                    <select ngControl="rangeType">
+                        <option *ngFor="let rangeType of rangeTypes" [ngValue]="rangeType">
+                            {{rangeType}}
+                        </option>
+                    </select>
+                </div>
+                <div *ngIf="customRange" layout="row">
+                    <md-input type="number" placeholder="Min" ngControl="rangeMin"></md-input>
+                    <md-input type="number" placeholder="Max" ngControl="rangeMax"></md-input>
+                </div>
+                <md-checkbox ngControl="autoBuckets" #autoBuckets>
+                    Choose number of buckets automatically
+                </md-checkbox>
+                <md-input
+                    *ngIf="!autoBuckets.checked"
+                    type="number"
+                    placeholder="Number of Buckets"
+                    ngControl="buckets"
+                ></md-input>
+            </md-card-content>
+        </md-card>
+        <wave-operator-output-name ngControl="name"></wave-operator-output-name>
+    </form>
     `,
+    styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
+    `],
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
-        OperatorContainerComponent, LayerMultiSelectComponent,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_CHECKBOX_DIRECTIVES,
+        LayerMultiSelectComponent, OperatorOutputNameComponent,
     ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class HistogramOperatorComponent extends OperatorBaseComponent {
+export class HistogramOperatorComponent extends OperatorBaseComponent implements OnInit {
     private selectedLayer: Layer<Symbology>;
 
-    private autoBuckets = true;
     private customRange = false;
 
     private configForm: ControlGroup;
@@ -110,14 +102,22 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
     private rangeTypes = ['Custom', 'Unit', 'Data'];
     private attributes: Array<string>;
 
-    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
-        super();
+    constructor(
+        layerService: LayerService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private plotService: PlotService,
+        private formBuilder: FormBuilder
+    ) {
+        super(layerService);
 
         this.configForm = formBuilder.group({
             'attributeName': [undefined, Validators.required],
             'rangeType': [this.rangeTypes[2], Validators.required],
             'rangeMin': [0, Validators.required],
             'rangeMax': [0, Validators.required],
+            autoBuckets: [true, Validators.required],
             'buckets': [20, Validators.required],
             'name': ['Histogram', Validators.required],
         });
@@ -125,6 +125,11 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
         this.configForm.controls['rangeType'].valueChanges.subscribe((rangeType: string) => {
             this.customRange = rangeType === this.rangeTypes[0];
         });
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        this.dialog.setTitle('Histogram Plot');
     }
 
     onSelectLayer(layer: Layer<Symbology>) {
@@ -142,7 +147,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
         }
     }
 
-    addPlot() {
+    add() {
         const inputOperator = this.selectedLayer.operator;
 
         const attributeName = this.configForm.controls['attributeName'].value;
@@ -156,7 +161,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent {
             range = this.configForm.controls['rangeType'].value.toLowerCase();
         }
         let buckets: number = undefined;
-        if (!this.autoBuckets) {
+        if (!this.configForm.controls['autoBuckets'].value) {
             buckets = parseInt(this.configForm.controls['buckets'].value, 10);
         }
 

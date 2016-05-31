@@ -1,14 +1,20 @@
 import {
-    Component, OnChanges, SimpleChange, OnInit, ChangeDetectionStrategy,
+    Component, OnInit, ChangeDetectionStrategy,
 } from '@angular/core';
+import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
-import {MATERIAL_DIRECTIVES, MdDialog} from 'ng2-material';
-// // import {MdDialogRef} from 'ng2-material/components/dialog/dialog';
+import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
-import {FORM_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
+import {
+    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
+    LetterNumberConverter, OperatorOutputNameComponent,
+} from './operator.component';
 
-import {LayerMultiSelectComponent, ReprojectionSelectionComponent,
-        OperatorBaseComponent, toLetters, OperatorContainerComponent} from './operator.component';
+import {LayerService} from '../../services/layer.service';
+import {RandomColorService} from '../../services/random-color.service';
+import {MappingQueryService} from '../../services/mapping-query.service';
+import {ProjectService} from '../../services/project.service';
 
 import {RasterLayer} from '../../models/layer.model';
 import {RasterSymbology} from '../../symbology/symbology.model';
@@ -18,7 +24,6 @@ import {ResultTypes} from '../result-type.model';
 
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
-import {Projection} from '../projection.model';
 import {ExpressionType} from '../types/expression-type.model';
 
 /**
@@ -27,105 +32,86 @@ import {ExpressionType} from '../types/expression-type.model';
 @Component({
     selector: 'wave-operator-expression',
     template: `
-    <wave-operator-container title="Calculate Expression on Raster"
-                            (add)="addLayer()" (cancel)="dialog.close()">
-        <form [ngFormModel]="configForm">
-            <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
-                                        [types]="[ResultTypes.RASTER]"
-                                        (selectedLayers)="onSelectLayers($event)">
-            </wave-multi-layer-selection>
-            <md-card>
-                <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <p>Use A to reference the existing pixel of the first raster,
-                    B for the second one, etc.</p>
-                    <md-input-container class="md-block">
-                        <label for="expression">
-                            Expression
-                        </label>
-                        <input md-input ngControl="expression" [(value)]="expression">
-                        <div md-messages="expression">
-                            <div md-message="required">This is required.</div>
-                            <div md-message="pattern">
-                                You need to specify at least Raster A here.
-                            </div>
-                        </div>
-                    </md-input-container>
-                    <div layout="row">
-                        <md-input-container class="md-block md-input-has-value">
-                            <label for="dataType">Output Data Type</label>
+    <form [ngFormModel]="configForm">
+        <wave-multi-layer-selection [layers]="layers" [min]="1" [max]="5"
+                                    [types]="[ResultTypes.RASTER]"
+                                    (selectedLayers)="onSelectLayers($event)">
+        </wave-multi-layer-selection>
+        <md-card>
+            <md-card-header>
+                <md-card-header-text>
+                    <span class="md-title">Configuration</span>
+                    <span class="md-subheader">Specify the operator</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <p>Use A to reference the existing pixel of the first raster,
+                B for the second one, etc.</p>
+                <md-input placeholder="Expression" ngControl="expression"></md-input>
+                <table>
+                    <tr>
+                        <td>
+                            <label>Output Data Type</label>
                             <select ngControl="dataType">
-                                <option *ngFor="let dataType of outputDataTypes"
-                                        [ngValue]="dataType[0]">
-                                    {{dataType[0]}} {{dataType[1]}}
-                                </option>
+                                <option
+                                    *ngFor="let dataType of outputDataTypes"
+                                    [ngValue]="dataType[0]"
+                                >{{dataType[0]}} {{dataType[1]}}</option>
                             </select>
-                            <input md-input type="hidden" value="0"><!-- HACK -->
-                        </md-input-container>
-                        <md-input-container class="md-block">
-                            <label for="minValue">
-                                Minimum Value
-                            </label>
-                            <input md-input type="number" ngControl="minValue" [(value)]="minValue">
-                            <div md-messages="expression">
-                                <div md-message="required">There must be a minimum value.</div>
-                            </div>
-                        </md-input-container>
-                        <md-input-container class="md-block">
-                            <label for="maxValue">
-                                Maximum Value
-                            </label>
-                            <input md-input type="number" ngControl="maxValue" [(value)]="maxValue">
-                            <div md-messages="expression">
-                                <div md-message="required">There must be a maximum value.</div>
-                            </div>
-                        </md-input-container>
-                    </div>
-                    <div layout="row">
-                        <md-input-container class="md-block md-input-has-value">
-                            <label for="unit">Output Unit</label>
+                        </td>
+                        <td>
+                            <md-input type="number" placeholder="Minimum Value" ngControl="minValue"
+                            ></md-input>
+                        </td>
+                        <td>
+                            <md-input type="number" placeholder="Maximum Value" ngControl="maxValue"
+                            ></md-input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Output Unit</label>
                             <select ngControl="unit">
-                                <option *ngFor="let unit of outputUnits" [ngValue]="unit">
-                                    {{unit}}
-                                </option>
+                                <option
+                                    *ngFor="let unit of outputUnits"
+                                    [ngValue]="unit"
+                                >{{unit}}</option>
                             </select>
-                            <input md-input type="hidden" value="0"><!-- HACK -->
-                        </md-input-container>
-                        <wave-reprojetion-selection [layers]="layers"
-                                                    (valueChange)="onSelectProjection($event)">
-                        </wave-reprojetion-selection>
-                    </div>
-                    <md-input-container class="md-block">
-                        <label for="name">
-                            Output Layer Name
-                        </label>
-                        <input md-input ngControl="name" [(value)]="name">
-                        <div md-messages="name">
-                            <div md-message="required">You must specify a layer name.</div>
-                        </div>
-                    </md-input-container>
-                </md-card-content>
-            </md-card>
-        </form>
-    </wave-operator-container>
+                        </td>
+                        <td>
+                            <wave-reprojetion-selection
+                                [layers]="layers"
+                                ngControl="projection">
+                            </wave-reprojetion-selection>
+                        </td>
+                    </tr>
+                </table>
+            </md-card-content>
+        </md-card>
+        <wave-operator-output-name ngControl="name"></wave-operator-output-name>
+    </form>
     `,
+    styles: [`
+    label {
+        display: block;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+    }
+    table tr td:nth-child(2) {
+        padding: 0 5px;
+    }
+    `],
     directives: [
-        FORM_DIRECTIVES, MATERIAL_DIRECTIVES,
-        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorContainerComponent,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent,
     ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent
-                                         implements OnInit, OnChanges {
+                                         implements OnInit {
 
     private configForm: ControlGroup;
     private selectedLayers: Array<RasterLayer<RasterSymbology>>;
-    private projection: Projection;
 
     private outputDataTypes: Array<[DataType, string]> = DataTypes.ALL_NUMERICS.map(
             (datatype: DataType) => [datatype, '']
@@ -133,9 +119,18 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
     private outputUnits: Array<Unit>;
 
-    constructor(private dialog: MdDialogRef, private formBuilder: FormBuilder) {
-        super();
-        // console.log('ExpressionOperatorComponent', 'constructor', this.layerService);
+    constructor(
+        layerService: LayerService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private formBuilder: FormBuilder
+    ) {
+        super(layerService);
+
+        const firstRasterLayer = this.layerService.getLayers().filter(
+            layer => layer.operator.resultType === ResultTypes.RASTER
+        )[0];
 
         this.configForm = formBuilder.group({
             'expression': ['1 * A', Validators.compose([
@@ -150,13 +145,17 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
                 Validators.required,
             ])],
             'unit': [-1, Validators.required],
+            projection: [
+                firstRasterLayer ? firstRasterLayer.operator.projection : undefined,
+                Validators.required,
+            ],
             'name': ['Expression', Validators.required],
         });
 
         this.configForm.controls['dataType'].valueChanges.subscribe(() => {
-            let dataType: DataType = this.configForm.controls['dataType'].value;
-            let minValueControl: Control = this.configForm.controls['minValue'] as Control;
-            let maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
+            const dataType: DataType = this.configForm.controls['dataType'].value;
+            const minValueControl: Control = this.configForm.controls['minValue'] as Control;
+            const maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
             minValueControl.updateValue(dataType.getMin());
             maxValueControl.updateValue(dataType.getMax() - 1);
         });
@@ -164,34 +163,27 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
     ngOnInit() {
         super.ngOnInit();
+        this.dialog.setTitle('Calculate Expression on Raster');
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        super.ngOnChanges(changes);
-    }
-
-    onSelectProjection(projection: Projection) {
-        this.projection = projection;
-    }
-
-    private onSelectLayers(layers: Array<RasterLayer<RasterSymbology>>) {
+    onSelectLayers(layers: Array<RasterLayer<RasterSymbology>>) {
         this.calculateDataTypeList(layers);
         this.calculateUnitList(layers);
 
         this.selectedLayers = layers;
     }
 
-    addLayer() {
-        let name: string = this.configForm.controls['name'].value;
-        let dataType: DataType = this.configForm.controls['dataType'].value;
-        let expression: string = this.configForm.controls['expression'].value;
-        let rasterLayers = this.selectedLayers;
-        let projection = this.projection;
-        let minValue = this.configForm.controls['minValue'].value;
-        let maxValue = this.configForm.controls['maxValue'].value;
+    add() {
+        const name: string = this.configForm.controls['name'].value;
+        const dataType: DataType = this.configForm.controls['dataType'].value;
+        const expression: string = this.configForm.controls['expression'].value;
+        const rasterLayers = this.selectedLayers;
+        const projection = this.configForm.controls['projection'].value;
+        const minValue = this.configForm.controls['minValue'].value;
+        const maxValue = this.configForm.controls['maxValue'].value;
 
-        let selectedUnit: Unit = this.configForm.controls['unit'].value;
-        let unit = new Unit({
+        const selectedUnit: Unit = this.configForm.controls['unit'].value;
+        const unit = new Unit({
             measurement: selectedUnit.measurement,
             unit: selectedUnit.unit,
             interpolation: selectedUnit.interpolation,
@@ -200,7 +192,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             max: maxValue,
         });
 
-        let operator = new Operator({
+        const operator = new Operator({
             operatorType: new ExpressionType({
                 expression: expression,
                 datatype: dataType,
@@ -213,7 +205,9 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
                         .set('value', dataType),
             units: new Map<string, Unit>()
                         .set('value', unit),
-            rasterSources: rasterLayers.map(layer => layer.operator),
+            rasterSources: rasterLayers.map(
+                layer => layer.operator.getProjectedOperator(projection)
+            ),
         });
 
         this.layerService.addLayer(new RasterLayer({
@@ -231,8 +225,8 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
     private calculateUnitList(layers: Array<RasterLayer<RasterSymbology>>) {
         this.outputUnits = [];
-        for (let layer of layers) {
-            let unit = layer.operator.getUnit('value');
+        for (const layer of layers) {
+            const unit = layer.operator.getUnit('value');
             if (this.outputUnits.indexOf(unit) === -1) {
                 this.outputUnits.push(unit);
             }
@@ -242,9 +236,9 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             this.outputUnits.push(Unit.defaultUnit);
         }
 
-        let dataTypeControl: Control = this.configForm.controls['unit'] as Control;
+        const dataTypeControl: Control = this.configForm.controls['unit'] as Control;
         if (dataTypeControl.value === -1) {
-            let dataType = this.outputUnits[0];
+            const dataType = this.outputUnits[0];
             dataTypeControl.updateValue(dataType);
         }
     }
@@ -252,11 +246,11 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
     private calculateDataTypeList(layers: Array<RasterLayer<RasterSymbology>>) {
         let firstItemWithRefs: DataType = undefined;
         for (let i = 0; i < this.outputDataTypes.length; i++) {
-            let dataType = this.outputDataTypes[i][0];
-            let refs: Array<string> = [];
+            const dataType = this.outputDataTypes[i][0];
+            const refs: Array<string> = [];
             for (let l = 0; l < layers.length; l++) {
                 if (dataType === layers[l].operator.getDataType('value')) {
-                    refs.push(toLetters(l + 1));
+                    refs.push(LetterNumberConverter.toLetters(l + 1));
                 }
                 if (refs.length > 0) {
                     this.outputDataTypes[i][1] =
@@ -270,11 +264,11 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             }
         }
 
-        let dataTypeControl: Control = this.configForm.controls['dataType'] as Control;
+        const dataTypeControl: Control = this.configForm.controls['dataType'] as Control;
         if (dataTypeControl.value === -1) {
             dataTypeControl.updateValue(firstItemWithRefs);
-            let minValueControl: Control = this.configForm.controls['minValue'] as Control;
-            let maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
+            const minValueControl: Control = this.configForm.controls['minValue'] as Control;
+            const maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
             minValueControl.updateValue(firstItemWithRefs.getMin());
             maxValueControl.updateValue(firstItemWithRefs.getMax() - 1);
         }

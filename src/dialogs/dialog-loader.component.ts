@@ -59,6 +59,9 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
         margin-right: -24px;
         width: calc(100% + 2*24px);
     }
+    i {
+        color: #fff;
+    }
     span {
         flex: 1 1 auto;
     }
@@ -181,7 +184,10 @@ export class DialogLoaderComponent implements AfterViewInit {
         });
     }
 
-    show() {
+    show(config: DialogInput = undefined) {
+        if (config) {
+            this.config = config; // TODO: separate input from parameter?
+        }
         this.dialogIsOpen.next(true);
     }
 

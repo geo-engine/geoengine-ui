@@ -1,18 +1,23 @@
-import {Component, Input, Output, ChangeDetectionStrategy, EventEmitter, ViewChild, AfterViewInit,
-        ElementRef, AfterViewChecked} from "@angular/core";
+import {
+    Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChange, ViewChild, AfterViewInit,
+    ElementRef, OnDestroy, Provider,
+} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/common';
 
-import CodeMirror from "codemirror";
+import {BehaviorSubject, Subscription} from 'rxjs/Rx';
+
+import CodeMirror from 'codemirror';
 
 // import all possible modes
-import "codemirror/mode/r/r";
+import 'codemirror/mode/r/r';
 
-const LANGUAGES = ["r"];
+const LANGUAGES = ['r'];
 
 /**
  * A wrapper for the code editor.
  */
 @Component({
-    selector: "wave-code-editor",
+    selector: 'wave-code-editor',
     template: `
     <textarea #editor></textarea>
     `,
@@ -25,19 +30,41 @@ const LANGUAGES = ["r"];
         width: 100%;
     }
     `],
+    providers: [
+        new Provider(
+            NG_VALUE_ACCESSOR, {
+              useExisting: CodeEditorComponent,
+              multi: true,
+          }),
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CodeEditorComponent implements AfterViewInit {
-    @ViewChild("editor") editorRef: ElementRef;
+export class CodeEditorComponent
+    implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+    @ViewChild('editor') editorRef: ElementRef;
 
     @Input() language: string;
 
-    @Input() code: string = "";
-    @Output() codeChange = new EventEmitter<string>();
+    private code$ = new BehaviorSubject('');
 
     private editor: CodeMirror.Editor;
 
-    private initializationState = 0;
+    private onTouched: () => void;
+    private changeSubscription: Subscription;
+
+    ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
+        if (this.editor) {
+            for (const attribute in changes) {
+                switch (attribute) {
+                    case 'language':
+                        this.editor.setOption('mode', this.language);
+                        break;
+                    default:
+                        // do nothing
+                }
+            }
+        }
+    }
 
     ngAfterViewInit() {
         if (LANGUAGES.indexOf(this.language)) {
@@ -52,19 +79,39 @@ export class CodeEditorComponent implements AfterViewInit {
             mode: this.language,
         });
 
-        // set initial code
-        if (this.code !== undefined) {
-            this.editor.setValue(this.code);
-            this.editor.scrollIntoView({ line: 0, ch: 0 });
-        }
+        // subscribe to data
+        // this.code$.subscribe(code => {
+        //     if (code !== this.getCode()) {
+        //         this.editor.setValue(code);
+        //         this.editor.scrollIntoView({ line: 0, ch: 0 });
+        //     }
+        // });
+        this.editor.setValue(this.code$.value);
+        this.editor.scrollIntoView({ line: 0, ch: 0 });
 
         // add value observer
-        CodeMirror.on(this.editor, "change", () => {
-            this.codeChange.emit(this.getCode());
+        CodeMirror.on(this.editor, 'change', () => {
+            this.code$.next(this.getCode());
+        });
+
+        // add touched observer
+        CodeMirror.on(this.editor, 'blur', () => {
+            if (this.onTouched) {
+                this.onTouched();
+            }
         });
 
         // TODO: find a better way to fix the viewport issue.
+        setTimeout(() => this.editor.refresh(), 100);
+        setTimeout(() => this.editor.refresh(), 500);
         setTimeout(() => this.editor.refresh(), 1000);
+    }
+
+    ngOnDestroy() {
+        if (this.changeSubscription) {
+            this.changeSubscription.unsubscribe();
+        }
+        this.code$.unsubscribe();
     }
 
     /**
@@ -72,6 +119,38 @@ export class CodeEditorComponent implements AfterViewInit {
      */
     getCode(): string {
         const code = this.editor.getValue();
-        return code.replace("\r\n", "\n");
+        return code.replace('\r\n', '\n');
+    }
+
+    /**
+     * Refresh the viewport.
+     */
+    refresh() {
+        this.editor.refresh();
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    writeValue(value: string): void {
+        if (this.editor) {
+            this.editor.setValue(value);
+            this.editor.scrollIntoView({ line: 0, ch: 0 });
+        } else {
+            this.code$.next(value);
+        }
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    registerOnChange(fn: () => {}) {
+        if (this.changeSubscription) {
+          this.changeSubscription.unsubscribe();
+        }
+        this.changeSubscription = this.code$.subscribe(fn);
+    }
+
+    /** Implemented as part of ControlValueAccessor. */
+    registerOnTouched(fn: () => {}) {
+        if (this.onTouched) {
+            this.onTouched = fn;
+        }
     }
 }

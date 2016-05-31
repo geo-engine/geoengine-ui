@@ -36,9 +36,9 @@ import {NumericAttributeFilterOperatorComponent}
   from '../operators/dialogs/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
   from '../operators/dialogs/point-in-polygon-filter.component';
-// import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
-// import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
-// import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
+import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
+import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
+import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 // import {
 //     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
 //     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
@@ -73,21 +73,21 @@ import {PointInPolygonFilterOperatorComponent}
             <wave-operator-button [small]="smallButtons"
                 [text]="ExpressionType.NAME"
                 [iconUrl]="ExpressionType.ICON_URL"
-                (click)="addExpressionOperator()">
+                (click)="expressionOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Plots" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="HistogramType.NAME"
                 [iconUrl]="HistogramType.ICON_URL"
-                (click)="addHistogramOperator()">
+                (click)="histogramOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="RScriptType.NAME"
                 [iconUrl]="RScriptType.ICON_URL"
-                (click)="addROperator()">
+                (click)="rOperatorComponentDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="MSG" [smallButtons]="smallButtons">
@@ -131,6 +131,15 @@ import {PointInPolygonFilterOperatorComponent}
     ></wave-dialog-loader>
     <wave-dialog-loader #pointInPolygonFilterOperatorDialog
         [type]="PointInPolygonFilterOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #expressionOperatorDialog
+        [type]="ExpressionOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #histogramOperatorDialog
+        [type]="HistogramOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #rOperatorComponentDialog
+        [type]="ROperatorComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -189,6 +198,9 @@ export class OperatorsTabComponent implements AfterViewInit {
     RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
+    ExpressionOperatorComponent = ExpressionOperatorComponent;
+    HistogramOperatorComponent = HistogramOperatorComponent;
+    ROperatorComponent = ROperatorComponent;
     // tslint:enable
 
     constructor(
