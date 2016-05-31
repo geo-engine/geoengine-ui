@@ -1,14 +1,13 @@
 {
-  "globalDependencies": {
-    "codemirror": "registry:dt/codemirror#0.0.0+20160521152226",
-    "core-js": "registry:dt/core-js#0.0.0+20160317120654",
-    "d3": "registry:dt/d3#0.0.0+20160514171929",
-    "dagre": "registry:dt/dagre#0.7.0+20160505164908",
-    "dagre-d3": "registry:dt/dagre-d3#0.0.0+20160523040821",
-    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
-    "node": "registry:dt/node#4.0.0+20160509154515",
-    "openlayers": "registry:dt/openlayers#3.6.0+20160506083408",
-    "proj4": "file:custom_typings/proj4.d.ts",
-    "require": "registry:dt/require#2.1.20+20160316155526"
-  }
+    "globalDependencies": {
+        "codemirror": "registry:dt/codemirror#0.0.0+20160521152226",
+        "core-js": "registry:dt/core-js#0.0.0+20160317120654",
+        "d3": "registry:dt/d3#0.0.0+20160514171929",
+        "dagre": "registry:dt/dagre#0.7.0+20160505164908",
+        "dagre-d3": "registry:dt/dagre-d3#0.0.0+20160523040821",
+        "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+        "node": "registry:dt/node#4.0.0+20160509154515",
+        "openlayers": "registry:dt/openlayers#3.6.0+20160506083408",
+        "proj4": "file:custom_typings/proj4.d.ts"
+    }
 }
