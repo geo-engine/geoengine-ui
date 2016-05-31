@@ -11,10 +11,10 @@ import {
     OperatorBaseComponent, LayerMultiSelectComponent, OperatorOutputNameComponent,
 } from './operator.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
-import {ProjectService} from '../../services/project.service';
+import {ProjectService} from '../../project/project.service';
 import {PlotService} from '../../plots/plot.service';
 
 import {Layer} from '../../layers/layer.model';
@@ -191,9 +191,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
         this.plotService.addPlot(new Plot({
             name: outputName,
             operator: operator,
-            data$: this.mappingQueryService.getPlotDataStream(
-                operator, this.projectService.getTimeStream()
-            ),
+            data$: this.mappingQueryService.getPlotDataStream(operator),
         }));
 
         this.dialog.close();

@@ -11,11 +11,11 @@ import {
 } from './operator.component';
 import {CodeEditorComponent} from '../../components/code-editor.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
-import {ProjectService} from '../../services/project.service';
+import {ProjectService} from '../../project/project.service';
 
 import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {Plot} from '../../plots/plot.model';
@@ -146,11 +146,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
             pointSources: pointSources,
         });
 
-        const provenance$ = this.mappingQueryService.getProvenanceStream(
-            operator,
-            this.projectService.getTimeStream(),
-            this.projectService.getMapProjectionStream()
-        );
+        const provenance$ = this.mappingQueryService.getProvenanceStream(operator);
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
             // LAYER
@@ -164,9 +160,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                             fill_rgba: this.randomColorService.getRandomColor(),
                         }),
                         data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                            operator,
-                            this.projectService.getTimeStream(),
-                            this.projectService.getMapProjectionStream()
+                            operator
                         ),
                         prov$: provenance$,
                     });
@@ -188,9 +182,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
             const plot = new Plot({
                 name: outputName,
                 operator: operator,
-                data$: this.mappingQueryService.getPlotDataStream(
-                    operator, this.projectService.getTimeStream()
-                ),
+                data$: this.mappingQueryService.getPlotDataStream(operator),
             });
             this.plotService.addPlot(plot);
         }

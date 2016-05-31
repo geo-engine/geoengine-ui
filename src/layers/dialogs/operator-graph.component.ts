@@ -5,7 +5,7 @@ import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 
 import {Layer} from '../../layers/layer.model';
 import {Operator} from '../../operators/operator.model';

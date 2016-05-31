@@ -11,10 +11,10 @@ import {
     LetterNumberConverter, OperatorOutputNameComponent,
 } from './operator.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
-import {ProjectService} from '../../services/project.service';
+import {ProjectService} from '../../project/project.service';
 
 import {RasterLayer} from '../../layers/layer.model';
 import {RasterSymbology} from '../../symbology/symbology.model';
@@ -214,10 +214,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             name: name,
             operator: operator,
             symbology: new RasterSymbology({}),
-            prov$: this.mappingQueryService.getProvenanceStream(operator,
-                this.projectService.getTimeStream(),
-                this.projectService.getMapProjectionStream()
-            ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
         this.dialog.close();

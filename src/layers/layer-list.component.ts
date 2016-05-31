@@ -8,7 +8,7 @@ import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 import {
     LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
     LegendaryMappingColorizerRasterComponent,

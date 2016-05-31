@@ -5,7 +5,7 @@ import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 

@@ -11,7 +11,7 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 
 import {Symbology} from '../../symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';

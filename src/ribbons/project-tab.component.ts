@@ -3,8 +3,8 @@ import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
-import {ProjectService} from '../services/project.service';
-import {LayerService} from '../services/layer.service';
+import {ProjectService} from '../project/project.service';
+import {LayerService} from '../layers/layer.service';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';

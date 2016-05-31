@@ -3,9 +3,9 @@ import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 
 import {VectorLayer, RasterLayer} from '../layers/layer.model';
@@ -169,14 +169,9 @@ export class DebugTabComponent {
                 symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: gbifPumaOperator,
                 data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    gbifPumaOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
+                    gbifPumaOperator
                 ),
-                prov$: this.mappingQueryService.getProvenanceStream(gbifPumaOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
-                ),
+                prov$: this.mappingQueryService.getProvenanceStream(gbifPumaOperator),
             })
         );
     }
@@ -205,14 +200,9 @@ export class DebugTabComponent {
                 symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
                 operator:  wktOperator,
                 data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    wktOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
+                    wktOperator
                 ),
-                prov$: this.mappingQueryService.getProvenanceStream(wktOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
-                ),
+                prov$: this.mappingQueryService.getProvenanceStream(wktOperator),
             })
         );
     }
@@ -236,14 +226,9 @@ export class DebugTabComponent {
                 symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: iucnPumaOperator,
                 data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    iucnPumaOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
+                    iucnPumaOperator
                 ),
-                prov$: this.mappingQueryService.getProvenanceStream(iucnPumaOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
-                ),
+                prov$: this.mappingQueryService.getProvenanceStream(iucnPumaOperator),
             })
         );
     }
@@ -270,17 +255,10 @@ export class DebugTabComponent {
             new RasterLayer({
                 name: 'SRTM',
                 symbology: new MappingColorizerRasterSymbology({},
-                     this.mappingQueryService.getColorizerStream(
-                        srtmOperator,
-                        this.projectService.getTimeStream(),
-                        this.projectService.getMapProjectionStream()
-                    )
+                     this.mappingQueryService.getColorizerStream(srtmOperator)
                 ),
                 operator: srtmOperator,
-                prov$: this.mappingQueryService.getProvenanceStream(srtmOperator,
-                    this.projectService.getTimeStream(),
-                    this.projectService.getMapProjectionStream()
-                ),
+                prov$: this.mappingQueryService.getProvenanceStream(srtmOperator),
             })
         );
     }
@@ -325,10 +303,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'SRTM Histogram',
                 operator: srtmHistogram,
-                data$: this.mappingQueryService.getPlotDataStream(
-                    srtmHistogram,
-                    this.projectService.getTimeStream()
-                ),
+                data$: this.mappingQueryService.getPlotDataStream(srtmHistogram),
             })
         );
     }
@@ -349,10 +324,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'R Plot',
                 operator: rPlotOperator,
-                data$: this.mappingQueryService.getPlotDataStream(
-                    rPlotOperator,
-                    this.projectService.getTimeStream()
-                ),
+                data$: this.mappingQueryService.getPlotDataStream(rPlotOperator),
             })
         );
     }
@@ -377,10 +349,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'R Text',
                 operator: rPlotOperator,
-                data$: this.mappingQueryService.getPlotDataStream(
-                    rPlotOperator,
-                    this.projectService.getTimeStream()
-                ),
+                data$: this.mappingQueryService.getPlotDataStream(rPlotOperator),
             })
         );
     }

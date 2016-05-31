@@ -8,10 +8,10 @@ import {
     OperatorBaseComponent, LayerMultiSelectComponent, OperatorOutputNameComponent,
 } from './operator.component';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
-import {ProjectService} from '../../services/project.service';
+import {ProjectService} from '../../project/project.service';
 
 import {VectorLayer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
@@ -94,15 +94,8 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             symbology: new SimplePointSymbology({
                 fill_rgba: this.randomColorService.getRandomColor(),
             }),
-            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                operator,
-                this.projectService.getTimeStream(),
-                this.projectService.getMapProjectionStream()
-            ),
-            prov$: this.mappingQueryService.getProvenanceStream(operator,
-                this.projectService.getTimeStream(),
-                this.projectService.getMapProjectionStream()
-            ),
+            data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator),
+            prov$: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
         this.dialog.close();

@@ -4,7 +4,7 @@ import {COMMON_DIRECTIVES} from '@angular/common';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 
 import moment from 'moment';
 

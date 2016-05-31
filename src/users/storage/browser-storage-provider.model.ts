@@ -2,11 +2,11 @@ import {StorageProvider} from './storage-provider.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
-import {Project} from '../../models/project.model';
+import {Project} from '../../project/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
 
 /**

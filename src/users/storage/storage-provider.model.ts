@@ -1,10 +1,10 @@
 import {LayoutDict} from '../../app/layout.service';
 import {Layer} from '../../layers/layer.model';
-import {Project} from '../../models/project.model';
+import {Project} from '../../project/project.model';
 import {Plot} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
 
-import {LayerService} from '../../services/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
 
 /**

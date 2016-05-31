@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Plot, PlotDict} from './plot.model';
 
 import {MappingQueryService} from '../services/mapping-query.service';
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 
 /**
  * A service for managing plots.
@@ -86,9 +86,7 @@ export class PlotService {
     createPlotFromDict(dict: PlotDict): Plot {
         return Plot.fromDict(
             dict,
-            operator => this.mappingQueryService.getPlotDataStream(
-                operator, this.projectService.getTimeStream()
-            )
+            operator => this.mappingQueryService.getPlotDataStream(operator)
         );
     }
 
