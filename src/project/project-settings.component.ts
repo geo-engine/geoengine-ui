@@ -6,9 +6,9 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 
-import {Project} from '../models/project.model';
+import {Project} from '../project/project.model';
 import {Projection, Projections} from '../operators/projection.model';
 
 import moment from 'moment';
@@ -19,14 +19,13 @@ import moment from 'moment';
     <form>
         <md-input placeholder="Name" [(ngModel)]="projectName"></md-input>
         <p>Set the projection for reviewing and exporting:</p>
-        <!--<md-input placeholder="Working Projection">-->
         <div class="select">
-            <select [(ngModel)]="workingProjection">
+            <label>Projection</label>
+            <select [(ngModel)]="projection">
                 <option *ngFor="let projection of Projections.ALL_PROJECTIONS"
                         [ngValue]="projection"
                 >{{projection}}</option>
             </select>
-            <label>Working Projection</label>
         </div>
         <!--</md-input>-->
         <p>This is the currently visible timestamp:</p>
@@ -43,7 +42,6 @@ import moment from 'moment';
     label {
         display: block;
         font-size: 12px;
-        transform: translateY(-300%);
         color: rgba(0, 0, 0, 0.38);
     }
     `],
@@ -58,8 +56,7 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
     private project: Project;
 
     private projectName: string;
-    private workingProjection: Projection;
-    private mapProjection: Projection;
+    private projection: Projection;
     private time: string;
 
     constructor(
@@ -68,8 +65,7 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
         super();
 
         this.project = this.projectService.getProject();
-        this.workingProjection = this.project.workingProjection;
-        this.mapProjection = this.project.mapProjection;
+        this.projection = this.project.projection;
         this.projectName = this.project.name;
         this.time = this.project.time.toISOString();
     }
@@ -87,14 +83,12 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
         const useTime: boolean = (newTime.isValid() && !this.project.time.isSame(newTime));
 
         if (this.project.name !== this.projectName
-            || this.project.workingProjection !== this.workingProjection
-            || this.project.mapProjection !== this.mapProjection
+            || this.project.projection !== this.projection
             || useTime
         ) {
             this.projectService.changeProjectConfig({
                 name: this.projectName,
-                workingProjection: this.workingProjection,
-                mapProjection: this.mapProjection,
+                projection: this.projection,
                 time: (useTime) ? newTime : this.project.time,
             });
         }

@@ -6,7 +6,7 @@ import {OlMapLayerComponent} from './ol-layer.component';
 
 import {Projection, Projections} from '../../operators/projection.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {Layer} from '../../models/layer.model';
+import {Layer} from '../../layers/layer.model';
 /**
  * The `ol-map` component represents an openLayers 3 map component.
  * it supports `ol-layer` components as child components.

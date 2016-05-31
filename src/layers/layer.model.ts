@@ -1,10 +1,10 @@
 import {Observable} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
-import Config from './config.model';
+import Config from '../app/config.model';
 import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer}
     from '../symbology/symbology.model';
-import {GeoJsonFeatureCollection} from './geojson.model';
+import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 
 interface Parameters {

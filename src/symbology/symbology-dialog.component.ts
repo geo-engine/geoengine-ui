@@ -8,13 +8,13 @@ import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 // import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 
 import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyType} from './symbology.model';
 import {SymbologyRasterComponent} from './symbology-raster.component';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from './symbology-points.component';
 
-import {Layer} from '../models/layer.model';
+import {Layer} from '../layers/layer.model';
 
 @Component({
     selector: 'wave-layer-symbology-dialog',

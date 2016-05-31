@@ -4,11 +4,13 @@ import {Observable} from 'rxjs/Rx';
 
 import moment from 'moment';
 
+import {ProjectService} from '../project/project.service';
+
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import Config from '../models/config.model';
+import Config from '../app/config.model';
 import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
@@ -60,6 +62,7 @@ class CSVWFSOutputFormat extends WFSOutputFormat {
 /**
  * Export WFSOutputFormat as singleton.
  */
+// tslint:disable-next-line:variable-name
 export const WFSOutputFormats = new WFSOutputFormatCollection();
 
 /**
@@ -70,7 +73,10 @@ export class MappingQueryService {
     /**
      * Inject the Http-Provider for asynchronous requests.
      */
-    constructor(private http: Http) {}
+    constructor(
+        private http: Http,
+        private projectService: ProjectService
+    ) {}
 
     /**
      * Get a MAPPING url for the plot operator and time.
@@ -110,13 +116,14 @@ export class MappingQueryService {
     /**
      * Create a stream of PlotData that emits data on every time change.
      * @param operator the operator graph
-     * @param time$ a time observable
      * @returns an Observable of PlotData
      */
-    getPlotDataStream(operator: Operator, time$: Observable<moment.Moment>): Observable<PlotData> {
+    getPlotDataStream(operator: Operator): Observable<PlotData> {
         // TODO: remove  `fromPromise` when new rxjs version is used
         // TODO: use flatMapLatest
-        return time$.map(time => Observable.fromPromise(this.getPlotData(operator, time))).switch();
+        return this.projectService.getTimeStream().map(
+            time => Observable.fromPromise(this.getPlotData(operator, time))
+        ).switch();
     }
 
     /**
@@ -175,8 +182,8 @@ export class MappingQueryService {
      * @returns a Promise of JSON
      */
     getWFSDataAsJson(operator: Operator,
-               time: moment.Moment,
-               projection: Projection): Promise<GeoJsonFeatureCollection> {
+                     time: moment.Moment,
+                     projection: Projection): Promise<GeoJsonFeatureCollection> {
         return this.http.get(this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON))
                         .toPromise()
                         .then(response => response.json());
@@ -185,36 +192,35 @@ export class MappingQueryService {
     /**
      * Create a stream of WFS data that emits data on every time change.
      * @param operator the operator graph
-     * @param time$ a time observable
-     * @param projection$ a projection stream
      * @param outputFormat the output format
      * @returns an Observable of features
      */
-    getWFSDataStream(operator: Operator,
-                     time$: Observable<moment.Moment>,
-                     projection$: Observable<Projection>,
-                     outputFormat: WFSOutputFormat): Observable<string> {
+    getWFSDataStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
         // TODO: remove  `fromPromise` when new rxjs version is used
         // TODO: use flatMapLatest
-        return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+        return Observable.combineLatest(
+            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        ).map(([time, projection]) => {
             return Observable.fromPromise(
                 this.getWFSData(operator, time, projection, outputFormat)
             );
         }).switch();
     }
 
-    getWFSDataStreamAsGeoJsonFeatureCollection(operator: Operator,
-                     time$: Observable<moment.Moment>,
-                     projection$: Observable<Projection>): Observable<GeoJsonFeatureCollection> {
-        return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+    getWFSDataStreamAsGeoJsonFeatureCollection(
+        operator: Operator
+    ): Observable<GeoJsonFeatureCollection> {
+        return Observable.combineLatest(
+            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        ).map(([time, projection]) => {
             return Observable.fromPromise(
                 this.getWFSDataAsJson(operator, time, projection)
             );
         }).switch().map(result => {
-            let geojson = result as GeoJsonFeatureCollection;
-            let features = geojson.features;
+            const geojson = result as GeoJsonFeatureCollection;
+            const features = geojson.features;
             for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
-                let feature = features[localRowId];
+                const feature = features[localRowId];
                 if (feature.id === undefined) {
                     feature.id = 'lrid_' + localRowId;
                 }
@@ -264,8 +270,8 @@ export class MappingQueryService {
     }
 
     getColorizer(operator: Operator,
-                    time: moment.Moment,
-                    projection: Projection): Promise<MappingColorizer> {
+                 time: moment.Moment,
+                 projection: Projection): Promise<MappingColorizer> {
 
         const projectedOperator = operator.getProjectedOperator(projection);
         const requestType = 'GetColorizer';
@@ -282,10 +288,10 @@ export class MappingQueryService {
             .map((json: MappingColorizer) => { return json; }).toPromise();
     }
 
-    getColorizerStream(operator: Operator,
-                     time$: Observable<moment.Moment>,
-                     projection$: Observable<Projection>): Observable<MappingColorizer> {
-        return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+    getColorizerStream(operator: Operator): Observable<MappingColorizer> {
+        return Observable.combineLatest(
+            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        ).map(([time, projection]) => {
             return Observable.fromPromise(
                 this.getColorizer(operator, time, projection)
             );
@@ -310,10 +316,10 @@ export class MappingQueryService {
             .map(json => json as [Provenance]).toPromise();
     }
 
-    getProvenanceStream(operator: Operator,
-                     time$: Observable<moment.Moment>,
-                     projection$: Observable<Projection>): Observable<Array<Provenance>> {
-        // return Observable.combineLatest(time$, projection$).map(([time, projection]) => {
+    getProvenanceStream(operator: Operator): Observable<Array<Provenance>> {
+        // return Observable.combineLatest(
+        //     this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        // ).map(([time, projection]) => {
             return Observable.fromPromise(
                 this.getProvenance(operator)
             );

@@ -24,13 +24,13 @@ import {
 
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
-import {Layer} from '../models/layer.model';
+import {Layer} from '../layers/layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 import {LayoutService} from '../app/layout.service';
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
@@ -64,14 +64,14 @@ import {PlotService} from '../plots/plot.service';
             ></wave-layer-list>
             <wave-ol-map
                 [height]="middleContainerHeight$ | async"
-                [projection]="projectService.getMapProjectionStream() | async"
+                [projection]="projectService.getProjectionStream() | async"
             >
                 <template ngFor let-layer [ngForOf]='layersReverse$ | async'>
                     <template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                         <wave-ol-point-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
+                            [projection]="projectService.getProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-point-layer>
                     </template>
@@ -79,7 +79,7 @@ import {PlotService} from '../plots/plot.service';
                         <wave-ol-line-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
+                            [projection]="projectService.getProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-line-layer>
                     </template>
@@ -87,7 +87,7 @@ import {PlotService} from '../plots/plot.service';
                         <wave-ol-polygon-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
+                            [projection]="projectService.getProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-polygon-layer>
                     </template>
@@ -95,7 +95,7 @@ import {PlotService} from '../plots/plot.service';
                         <wave-ol-raster-layer
                             [layer]="layer"
                             [symbology]="layer.symbology"
-                            [projection]="projectService.getMapProjectionStream() | async"
+                            [projection]="projectService.getProjectionStream() | async"
                             [time]="projectService.getTimeStream() | async"
                         ></wave-ol-raster-layer>
                     </template>

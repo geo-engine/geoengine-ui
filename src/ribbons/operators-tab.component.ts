@@ -11,9 +11,9 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {OperatorButtonComponent, OperatorSelectionGroupComponent}
   from './operator-selection-group.component';
 
-import {LayerService} from '../services/layer.service';
+import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 

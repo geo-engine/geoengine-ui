@@ -6,8 +6,8 @@ import {Subscription} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
-import {LayerService} from '../services/layer.service';
-import {RasterLayer} from '../models/layer.model';
+import {LayerService} from '../layers/layer.service';
+import {RasterLayer} from '../layers/layer.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
@@ -19,7 +19,7 @@ import {Unit} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
-import {ProjectService} from '../services/project.service';
+import {ProjectService} from '../project/project.service';
 
 @Component({
     selector: 'wave-raster-repository',
@@ -138,15 +138,9 @@ export class RasterRepositoryComponent implements OnDestroy {
         name: channel.name,
         operator: operator,
         symbology: new MappingColorizerRasterSymbology({},
-            this.mappingQueryService.getColorizerStream(operator,
-                this.projectService.getTimeStream(),
-                this.projectService.getMapProjectionStream()
-            )
+            this.mappingQueryService.getColorizerStream(operator)
         ),
-        prov$: this.mappingQueryService.getProvenanceStream(operator,
-            this.projectService.getTimeStream(),
-            this.projectService.getMapProjectionStream()
-        ),
+        prov$: this.mappingQueryService.getProvenanceStream(operator),
     });
     this.layerService.addLayer(layer);
   }

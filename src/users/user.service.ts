@@ -1,4 +1,6 @@
 import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
+
 import {BehaviorSubject} from 'rxjs/Rx';
 
 import {User, Guest} from './user.model';
@@ -6,8 +8,8 @@ import {StorageProvider} from './storage/storage-provider.model';
 import {BrowserStorageProvider} from './storage/browser-storage-provider.model';
 
 import {LayoutService} from '../app/layout.service';
-import {LayerService} from '../services/layer.service';
-import {ProjectService} from '../services/project.service';
+import {LayerService} from '../layers/layer.service';
+import {ProjectService} from '../project/project.service';
 import {PlotService} from '../plots/plot.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 
@@ -24,7 +26,8 @@ export class UserService {
         private projectService: ProjectService,
         private plotService: PlotService,
         private mappingQueryService: MappingQueryService,
-        private layoutService: LayoutService
+        private layoutService: LayoutService,
+        private http: Http
     ) {
         this.user$ = new BehaviorSubject(new Guest());
 
