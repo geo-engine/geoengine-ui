@@ -81,6 +81,7 @@
     "src/plots/plot.model.ts",
     "src/plots/plot.service.ts",
     "src/project/project-settings.component.ts",
+    "src/provenance/provenance.component.ts",
     "src/provenance/provenance.model.ts",
     "src/ribbons/debug-tab.component.ts",
     "src/ribbons/operator-selection-group.component.ts",
@@ -112,7 +113,6 @@
     "typings/globals/node/index.d.ts",
     "typings/globals/openlayers/index.d.ts",
     "typings/globals/proj4/index.d.ts",
-    "typings/globals/require/index.d.ts",
     "typings/index.d.ts"
   ],
   "atom": {

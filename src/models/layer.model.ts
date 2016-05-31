@@ -15,7 +15,7 @@ interface LayerConfig<S extends Symbology> {
     name: string;
     operator: Operator;
     symbology: S;
-    prov$: Observable<Provenance>;
+    prov$: Observable<Iterable<Provenance>>;
 }
 
 interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
@@ -44,7 +44,7 @@ export abstract class Layer<S extends Symbology> {
     expanded: boolean = false;
     symbology: S;
     private _operator: Operator;
-    private _prov$: Observable<Provenance>;
+    private _prov$: Observable<Iterable<Provenance>>;
 
     constructor(config: LayerConfig<S>) {
         this.name = config.name;
@@ -52,7 +52,7 @@ export abstract class Layer<S extends Symbology> {
         this.symbology = config.symbology;
         this._prov$ = config.prov$;
 
-        this._prov$.subscribe(x => console.log("_prov$", x));
+        // this._prov$.subscribe(x => console.log("_prov$", x));
     }
 
     get url() {
@@ -61,6 +61,10 @@ export abstract class Layer<S extends Symbology> {
 
     get operator() {
       return this._operator;
+    }
+
+    get provenanceStream(): Observable<Iterable<Provenance>> {
+        return this._prov$;
     }
 
     protected abstract get layerType(): LayerType;
@@ -87,7 +91,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     static fromDict(
         dict: LayerDict,
         dataCallback: (operator: Operator) => Observable<GeoJsonFeatureCollection>,
-        provenanceCallback: (operator: Operator) => Observable<Provenance>
+        provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
     ): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator);
 
@@ -128,7 +132,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     static fromDict(
         dict: LayerDict,
         symbologyCallback: (operator: Operator) => Observable<MappingColorizer>,
-        provenanceCallback: (operator: Operator) => Observable<Provenance>
+        provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
     ): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator);
 
