@@ -325,7 +325,7 @@ export class MappingQueryService {
     getProvenance(operator: Operator
                     // time: moment.Moment,
                     // projection: Projection
-                ): Promise<Provenance> {
+                ): Promise<Array<Provenance>> {
 
         // const projectedOperator = operator.getProjectedOperator(projection);
         const serviceType = 'provenance';
@@ -337,10 +337,10 @@ export class MappingQueryService {
         console.log('getProvenance', provenanceRequest);
         return this.http.get(provenanceRequest)
             .map((res: Response) => res.json())
-            .map((json: Provenance) => { return json; }).toPromise();
+            .map(json => json as [Provenance]).toPromise();
     }
 
-    getProvenanceStream(operator: Operator): Observable<Provenance> {
+    getProvenanceStream(operator: Operator): Observable<Array<Provenance>> {
         // return Observable.combineLatest(
         //     this.projectService.getTimeStream(), this.projectService.getProjectionStream()
         // ).switchMap(([time, projection]) => {

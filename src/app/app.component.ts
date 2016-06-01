@@ -14,6 +14,7 @@ import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {DataTableComponent} from '../components/data-table.component';
+import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {OlMapComponent} from '../components/openlayers/ol-map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
@@ -109,13 +110,11 @@ import {PlotService} from '../plots/plot.service';
         </div>
         <md-tab-group>
             <md-tab>
-                <template md-tab-label md-default>
-                    <span (click)="layoutService.toggleDataTableVisibility()">_</span>
-                </template>
+                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(false)">_</div></template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
             </md-tab>
             <md-tab>
-                <template md-tab-label md-default>Data Table</template>
+                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Data Table</div></template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async">
                     <wave-data-table
                         *ngIf="dataTableVisible$ | async"
@@ -125,13 +124,13 @@ import {PlotService} from '../plots/plot.service';
                 </template>
             </md-tab>
             <md-tab>
-                <template md-tab-label md-default>Citation</template>
+                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Citation</div></template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async">
-                    <wave-data-table
-                        *ngIf="dataTableVisible$ | async"
-                        [style.height.px]="(bottomContainerHeight$ | async)"
-                        [height]="(bottomContainerHeight$ | async)"
-                    ></wave-data-table>
+                    <wave-provenance-list
+                        *ngIf= "dataTableVisible$ | async"
+                        [style.height.px]= "(bottomContainerHeight$ | async)"
+                        [height]= "(bottomContainerHeight$ | async)"
+                    ></wave-provenance-list>
                 </template>
             </md-tab>
         </md-tab-group>
@@ -203,7 +202,7 @@ import {PlotService} from '../plots/plot.service';
         InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
         DataTableComponent, RasterRepositoryComponent, PlotListComponent,
         OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-        OlPolygonLayerComponent,
+        OlPolygonLayerComponent, ProvenanceListComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
