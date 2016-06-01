@@ -153,11 +153,9 @@ export class MappingQueryService {
      * @returns an Observable of PlotData
      */
     getPlotDataStream(operator: Operator): Observable<PlotData> {
-        // TODO: remove  `fromPromise` when new rxjs version is used
-        // TODO: use flatMapLatest
-        return this.projectService.getTimeStream().map(
-            time => Observable.fromPromise(this.getPlotData(operator, time))
-        ).switch();
+        return this.projectService.getTimeStream().switchMap(
+            time => this.getPlotData(operator, time)
+        );
     }
 
     /**
@@ -230,15 +228,11 @@ export class MappingQueryService {
      * @returns an Observable of features
      */
     getWFSDataStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
-        // TODO: remove  `fromPromise` when new rxjs version is used
-        // TODO: use flatMapLatest
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getWFSData(operator, time, projection, outputFormat)
-            );
-        }).switch();
+        ).switchMap(
+            ([time, projection]) => this.getWFSData(operator, time, projection, outputFormat)
+        );
     }
 
     getWFSDataStreamAsGeoJsonFeatureCollection(
@@ -246,11 +240,9 @@ export class MappingQueryService {
     ): Observable<GeoJsonFeatureCollection> {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getWFSDataAsJson(operator, time, projection)
-            );
-        }).switch().map(result => {
+        ).switchMap(
+            ([time, projection]) => this.getWFSDataAsJson(operator, time, projection)
+        ).map(result => {
             const geojson = result as GeoJsonFeatureCollection;
             const features = geojson.features;
             for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
@@ -325,11 +317,9 @@ export class MappingQueryService {
     getColorizerStream(operator: Operator): Observable<MappingColorizer> {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getColorizer(operator, time, projection)
-            );
-        }).switch().publishReplay(1).refCount();
+        ).switchMap(
+            ([time, projection]) => this.getColorizer(operator, time, projection)
+        ).publishReplay(1).refCount();
     }
 
     getProvenance(operator: Operator
@@ -353,11 +343,11 @@ export class MappingQueryService {
     getProvenanceStream(operator: Operator): Observable<Provenance> {
         // return Observable.combineLatest(
         //     this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        // ).map(([time, projection]) => {
+        // ).switchMap(([time, projection]) => {
             return Observable.fromPromise(
                 this.getProvenance(operator)
             );
-        // }).switch().publishReplay(1).refCount();
+        // }).publishReplay(1).refCount();
     }
 
 }

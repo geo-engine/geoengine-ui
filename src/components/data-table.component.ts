@@ -96,8 +96,7 @@ export class DataTableComponent implements OnInit, OnChanges {
                 private projectService: ProjectService,
                 private mappingQueryService: MappingQueryService) {
 
-        // TODO: use flatMapLatest on next rxjs version
-        this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
+        this.data$ = this.layerService.getSelectedLayerStream().switchMap(layer => {
             if (layer === undefined) {
                 return Observable.of([]);
             }
@@ -121,7 +120,7 @@ export class DataTableComponent implements OnInit, OnChanges {
                 default:
                     return Observable.of([]);
             };
-        }).switch();
+        });
     }
 
     ngOnInit() {
