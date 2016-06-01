@@ -115,13 +115,13 @@ import {PlotService} from '../plots/plot.service';
                 <template md-tab-label>
                     <div (click)="layoutService.setDataTableVisibility(false)">_</div>
                 </template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
+                <template md-tab-content *ngIf="dataTableVisible$ | async"><div></div></template>
             </md-tab>
             <md-tab>
                 <template md-tab-label>
                     <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
                 </template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                <template md-tab-content>
                     <wave-data-table
                         *ngIf="dataTableVisible$ | async"
                         [style.height.px]="(bottomContainerHeight$ | async)"
@@ -133,7 +133,7 @@ import {PlotService} from '../plots/plot.service';
                 <template md-tab-label>
                     <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
                 </template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                <template md-tab-content>
                     <wave-provenance-list
                         *ngIf= "dataTableVisible$ | async"
                         [style.height.px]= "(bottomContainerHeight$ | async)"
