@@ -45,6 +45,7 @@
     "src/models/mapping-source.model.ts",
     "src/operators/datatype.model.ts",
     "src/operators/dialogs/expression-operator.component.ts",
+    "src/operators/dialogs/gbif.component.ts",
     "src/operators/dialogs/histogram.component.ts",
     "src/operators/dialogs/msg-operators.component.ts",
     "src/operators/dialogs/numeric-attribute-filter.component.ts",

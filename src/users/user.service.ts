@@ -243,8 +243,6 @@ export class UserService {
                     });
                 }
 
-                console.log("sources", sources);
-
                 return sources;
             });
         });

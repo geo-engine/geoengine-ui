@@ -14,6 +14,7 @@ import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
+import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
 
 /**
  * The start tab of the ribbons component.
@@ -28,7 +29,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
             <div layout="row">
                 <div layout="column" layout-align="space-around center">
                     <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)"
+                            class="md-primary" [disabled]="true"
                             layout="column" layout-align="center center">
                         <i md-icon>info</i>
                         <div>Info</div>
@@ -47,7 +48,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
                         Export
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)">
+                            class="md-primary" [disabled]="true">
                         <i md-icon>share</i>
                         Share
                     </button>
@@ -122,18 +123,32 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
                     </button>
                 </div>
                 <div layout="column">
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>add_shopping_cart</i>
                         GFBio Search
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>file_upload</i>
                         Upload
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        (click)="gbifLoader.show()"
+                    >
+                        <i md-icon>search</i>
+                        GBIF Search
+                    </button>
+                    <button md-button
+                        *ngIf="false"
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>brush</i>
                         Draw
                     </button>
@@ -153,6 +168,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
         [type]="OperatorGraphDialogComponent"
         [config]="{selectedLayerOnly: true}"
     ></wave-dialog-loader>
+    <wave-dialog-loader #gbifLoader [type]="GBIFOperatorComponent"></wave-dialog-loader>
     `,
     styles: [`
     .selected {
@@ -174,6 +190,10 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
     }
     button[disabled] {
         background-color: transparent;
+    }
+    button.small {
+        text-align: left;
+        margin: 0px;
     }
     `],
     directives: [
@@ -199,6 +219,7 @@ export class StartTabComponent {
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    GBIFOperatorComponent = GBIFOperatorComponent;
     // tslint:enable
 
     private isLayerSelected$: Observable<boolean>;

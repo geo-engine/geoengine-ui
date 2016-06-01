@@ -51,7 +51,7 @@ export class StorageService {
         this.userService.getSessionStream().subscribe(session => {
             // check validity
             this.userService.isSessionValid(session).then(valid => {
-                console.log('valid?', valid);
+                // console.log('valid?', valid);
                 if (valid) {
                     this.resetStorageProvider(session);
                 } else {

@@ -350,4 +350,20 @@ export class MappingQueryService {
         // }).publishReplay(1).refCount();
     }
 
+    getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
+        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
+        const service = 'searchSpecies';
+        return this.http.get(serverURL + service + '?term=' + scientificName).toPromise().then(
+            response => response.json()
+        );
+    }
+
+    getGBIFDataSourceCounts(query: string): Promise<Array<{name: string, count: number}>> {
+        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
+        const service = 'queryDataSources';
+        return this.http.get(serverURL + service + '?query=' + encodeURI(query)).toPromise().then(
+            response => response.json()
+        );
+    }
+
 }
