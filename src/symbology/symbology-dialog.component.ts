@@ -20,7 +20,7 @@ import {Layer} from '../layers/layer.model';
     selector: 'wave-layer-symbology-dialog',
     template: `
     <wave-dialog-container [title]='_layer?.name' >
-        <div [ngSwitch]='_symbology.symbologyType'>
+        <div class='symbologyContainer' [ngSwitch]='_symbology.symbologyType'>
             <wave-symbology-points
                 *ngSwitchWhen='enumSymbologyType.SIMPLE_POINT'
                 [symbology]='_symbology'
@@ -44,7 +44,12 @@ import {Layer} from '../layers/layer.model';
         </div>
     </wave-dialog-container>
     `,
-    styles: [``],
+    styles: [`
+        .symbologyContainer {
+            min-height: 400px;
+            min-width: 20px;
+        }
+    `],
     providers: [OVERLAY_PROVIDERS],
     directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
         SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent],

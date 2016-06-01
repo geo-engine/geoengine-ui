@@ -10,6 +10,8 @@ import {MD_TABS_DIRECTIVES} from '@angular2-material/tabs';
 
 import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
+import {ColorPickerService} from 'ct-angular2-color-picker/component';
+
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
@@ -110,12 +112,16 @@ import {PlotService} from '../plots/plot.service';
         </div>
         <md-tab-group>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(false)">_</div></template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(false)">_</div>
+                </template>
+                <template md-tab-content *ngIf="dataTableVisible$ | async"><div></div></template>
             </md-tab>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Data Table</div></template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
+                </template>
+                <template md-tab-content>
                     <wave-data-table
                         *ngIf="dataTableVisible$ | async"
                         [style.height.px]="(bottomContainerHeight$ | async)"
@@ -124,8 +130,10 @@ import {PlotService} from '../plots/plot.service';
                 </template>
             </md-tab>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Citation</div></template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async">
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
+                </template>
+                <template md-tab-content>
                     <wave-provenance-list
                         *ngIf= "dataTableVisible$ | async"
                         [style.height.px]= "(bottomContainerHeight$ | async)"
@@ -208,7 +216,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         MATERIAL_BROWSER_PROVIDERS,
         UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
-        StorageService, RandomColorService,
+        StorageService, RandomColorService, ColorPickerService,
     ],
 })
 export class AppComponent implements OnInit {

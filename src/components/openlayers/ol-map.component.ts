@@ -47,6 +47,8 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
     private isSizeChanged = false;
     private isProjectionChanged = false;
 
+    private _layers: Array<Layer<Symbology>> = []; // HACK
+
     constructor(private layerService: LayerService) {
         this.initOpenlayersMap();
     }
@@ -123,7 +125,22 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
 
         // Hack: querylist ignores order changes
         this.layerService.getLayersStream().subscribe(x => {
-            this.contentChildren.setDirty();
+            console.log(this._layers, x);
+            if (this._layers === x) { return; };
+
+            let change = this._layers.length !== x.length;
+
+            for (let i = 0; i < this._layers.length; i++) {
+                if (this._layers[i] !== x[i]) {
+                    change = true;
+                    break;
+                }
+            }
+            if (change) {
+                this.contentChildren.setDirty();
+                this._layers = x.slice(0);
+            }
+
         });
     }
 

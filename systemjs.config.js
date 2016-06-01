@@ -19,7 +19,8 @@
     'dragula':                    'node_modules/dragula/dist/dragula.min.js',
     'codemirror':                 'node_modules/codemirror',
     'immutable':                  'node_modules/immutable/dist/immutable.min.js',
-    'moment':                     'node_modules/moment/moment.js'
+    'moment':                     'node_modules/moment/moment.js',
+    'ct-angular2-color-picker':   'node_modules/ct-angular2-color-picker'
   };
   // packages tells the System loader how to load when no filename and/or no extension
   var packages = {
@@ -30,7 +31,8 @@
     'ng2-dragula':                { defaultExtension: 'js' },
     'dragula':                    { defaultExtension: 'js' },
     'codemirror':                 { main: "lib/codemirror.js", defaultExtension: 'js' },
-    'moment':                     { defaultExtension: 'js' }
+    'moment':                     { defaultExtension: 'js' },
+    'ct-angular2-color-picker':   { defaultExtension: 'js' }
   };
   // Angular: package entries for angular packages
   var ngPackageNames = [
