@@ -6,6 +6,7 @@ import {Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../layers/layer.service';
+import {MappingQueryService, WFSOutputFormats} from '../services/mapping-query.service';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 
@@ -15,6 +16,8 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
+
+import {ResultTypes} from '../operators/result-type.model';
 
 /**
  * The start tab of the ribbons component.
@@ -42,11 +45,16 @@ import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
                         <i md-icon>merge_type</i>
                         Lineage
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)">
+                    <a md-button
+                        style="text-align: left; margin: 0px;"
+                        class="md-primary"
+                        [class.disabled]="!(isLayerSelected$ | async)
+                                            || (exportLayerUrl$ | async).length <= 0"
+                        [href]="exportLayerUrl$ | async"
+                    >
                         <i md-icon>file_download</i>
                         Export
-                    </button>
+                    </a>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="true">
                         <i md-icon>share</i>
@@ -174,6 +182,11 @@ import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
     .selected {
       background-color: #f5f5f5 !important;
     }
+    a.disabled, a.disabled >>> .md-button-wrapper {
+        pointer-events: none;
+        color: rgba(0, 0, 0, 0.26);
+        background-color: transparent;
+    }
     fieldset {
         border-style: solid;
         border-width: 1px;
@@ -222,13 +235,28 @@ export class StartTabComponent {
     GBIFOperatorComponent = GBIFOperatorComponent;
     // tslint:enable
 
+    exportLayerUrl$: Observable<string>;
+
     private isLayerSelected$: Observable<boolean>;
 
     constructor(
-        private layerService: LayerService
+        private layerService: LayerService,
+        private mappingQueryService: MappingQueryService
     ) {
         this.isLayerSelected$ = this.layerService.getSelectedLayerStream()
                                                  .map(layer => layer !== undefined);
+
+        this.exportLayerUrl$ = this.layerService.getSelectedLayerStream().filter(
+            layer => layer !== undefined
+        ).switchMap(layer => {
+            if (ResultTypes.VECTOR_TYPES.indexOf(layer.operator.resultType) >= 0) {
+                return this.mappingQueryService.getWFSQueryUrlStream(
+                    layer.operator, WFSOutputFormats.CSV_ZIP
+                );
+            } else {
+                return Observable.of('');
+            }
+        });
     }
 
     // /**

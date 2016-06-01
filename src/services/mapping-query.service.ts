@@ -64,8 +64,10 @@ class MappingRequestParameters {
 class WFSOutputFormatCollection {
     private _JSON = new JSONWFSOutputFormat();
     private _CSV = new CSVWFSOutputFormat();
+    private _CSV_ZIP = new ZipWFSOutputFormat(this._CSV);
     get JSON(): WFSOutputFormat { return this._JSON; };
     get CSV(): WFSOutputFormat { return this._CSV; };
+    get CSV_ZIP(): WFSOutputFormat { return this._CSV_ZIP; }
 }
 
 /**
@@ -90,6 +92,17 @@ class JSONWFSOutputFormat extends WFSOutputFormat {
  */
 class CSVWFSOutputFormat extends WFSOutputFormat {
     protected format = 'csv';
+}
+
+/**
+ * JSON Output format
+ */
+class ZipWFSOutputFormat extends WFSOutputFormat {
+    protected format = 'application/x-export;';
+    constructor(outputFormat: WFSOutputFormat) {
+        super();
+        this.format += outputFormat.getFormat();
+    }
 }
 
 /**
@@ -186,6 +199,20 @@ export class MappingQueryService {
 
         return Config.MAPPING_URL + '?' +
                Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+    }
+
+    /**
+     * Get a MAPPING url stream for the WFS request.
+     * @param operator the operator graph
+     * @param outputFormat the output format
+     * @returns the query url stream
+     */
+    getWFSQueryUrlStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
+        return Observable.combineLatest(
+            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        ).map(
+            ([time, projection]) => this.getWFSQueryUrl(operator, time, projection, outputFormat)
+        );
     }
 
     /**
