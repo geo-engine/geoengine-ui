@@ -12,14 +12,50 @@ import {Provenance} from './provenance.model';
     selector: 'wave-provenance-list',
     template: `
     <md-content class='container' [style.height.px]='height'>
-        <md-list>
-           <md-list-item *ngFor="let pro of prov$ | async">
-            <p md-line>{{pro.citation}}</p>
+        <md-list dense>
+           <md-list-item *ngFor="let p of prov$ | async">
+               <div class="md-list-item-text md-whiteframe-3dp box">
+               <dl>
+                 <dt>Citation</dt><dd> {{ p.citation }} </dd>
+                 <dt>License</dt><dd> {{ p.license }} </dd>
+                 <dt>URI</dt><dd><a [href]="p.uri" target="_blank">{{p.uri}}</a></dd>
+                </dl>
+               </div>
            </md-list-item>
         </md-list>
     </md-content>
     `,
     styles: [`
+    md-list-item {
+        margin-top: 4px;
+        font-size: 13px;
+    }
+
+    md-list-item .box {
+        padding: 4px;
+        width: 100%;
+    }
+
+    md-list-item dl, dt, dd{
+        margin: 0;
+        padding: 0;
+    }
+
+    md-list-item dt {
+        color: gray;
+        width: 60px;
+        clear: left;
+        float: left;
+    }
+
+    md-list-item dt:after {
+        content:":";
+    }
+
+    md-list-item dd {
+        float: left;
+    }
+
     :host {
         display: block;
     }
@@ -33,13 +69,18 @@ import {Provenance} from './provenance.model';
 })
 export class ProvenanceListComponent {
 
-    @Input()
-    private height: number;
+    @Input() height: number;
 
     private prov$: Observable<Iterable<Provenance>>;
 
     constructor(private layerService: LayerService) {
-        this.prov$ = layerService.getSelectedLayerStream().map(l => l.provenanceStream).switch();
+        this.prov$ = layerService.getSelectedLayerStream().map(l => {
+            if (l) {
+                return l.provenanceStream;
+            } else {
+                return Observable.of([]);
+            }
+        }).switch();
     }
 
 }
