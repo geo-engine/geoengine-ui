@@ -110,7 +110,7 @@ import {PlotService} from '../plots/plot.service';
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <div [style.height.px]="(bottomContainerHeight$ | async)"
+        <div [style.height.px]="(bottomContainerHeight$ | async) + 48"
              class="bottomContainer md-whiteframe-3dp"
         >
             <div class="bottomToggle">
@@ -126,11 +126,10 @@ import {PlotService} from '../plots/plot.service';
             <md-tab-group>
                 <md-tab>
                     <template md-tab-label>
-                        <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
+                        <div (click)="layoutService.setLayerListVisibility(true)">Data Table</div>
                     </template>
                     <template md-tab-content>
                         <wave-data-table
-                            *ngIf="dataTableVisible$ | async"
                             [style.height.px]="(bottomContainerHeight$ | async)"
                             [height]="(bottomContainerHeight$ | async)">
                         </wave-data-table>
@@ -142,7 +141,6 @@ import {PlotService} from '../plots/plot.service';
                     </template>
                     <template md-tab-content>
                         <wave-provenance-list
-                            *ngIf= "dataTableVisible$ | async"
                             [style.height.px]= "(bottomContainerHeight$ | async)"
                             [height]= "(bottomContainerHeight$ | async)"
                         ></wave-provenance-list>
@@ -308,10 +306,6 @@ export class AppComponent implements OnInit {
         let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
-    }
-
-    console(a: HTMLElement) {
-        console.log(a, a.offsetHeight);
     }
 
 }

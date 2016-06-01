@@ -33,7 +33,7 @@ import {LayoutService} from '../app/layout.service';
             <md-divider></md-divider>
         </md-toolbar-row>
         <md-toolbar-row>
-            <button md-button class="md-icon-button" aria-label="Settings">
+            <button md-button class="md-icon-button" aria-label="Settings" disabled="true">
                 <i md-icon>menu</i>
             </button>
             <span class="fill-remaining-space">Layers</span>
@@ -78,6 +78,9 @@ import {LayoutService} from '../app/layout.service';
     }
     button {
         color: rgba(255, 255, 255, 0.870588);
+    }
+    button[disabled] {
+        background-color: transparent;
     }
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, DialogLoaderComponent],

@@ -35,7 +35,7 @@ import {DataType} from '../datatype.model';
 @Component({
     selector: 'wave-gbif-loader',
     template: `
-    <form [ngFormModel]="form">
+    <form [ngFormModel]="form" autocomplete="off">
         <md-card>
             <md-card-header>
                 <md-card-header-text>
