@@ -114,7 +114,7 @@ import {PlotService} from '../plots/plot.service';
                 <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
             </md-tab>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Date Table</div></template>
+                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Data Table</div></template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async">
                     <wave-data-table
                         *ngIf="dataTableVisible$ | async"
