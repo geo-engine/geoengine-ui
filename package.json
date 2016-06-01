@@ -34,6 +34,7 @@
     "angular2-in-memory-web-api": "0.0.10",
     "codemirror": "^5.15.2",
     "core-js": "^2.4.0",
+    "ct-angular2-color-picker": "^1.0.3",
     "d3": "^3.5.17",
     "dagre": "^0.7.4",
     "dagre-d3": "^0.4.17",

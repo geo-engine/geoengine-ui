@@ -11,6 +11,8 @@ import {MD_TABS_DIRECTIVES} from '@angular2-material/tabs';
 
 import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
+import {ColorPickerService} from 'ct-angular2-color-picker/component';
+
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
@@ -110,11 +112,15 @@ import {PlotService} from '../plots/plot.service';
         </div>
         <md-tab-group>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(false)">_</div></template>
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(false)">_</div>
+                </template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async"></template>
             </md-tab>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Data Table</div></template>
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
+                </template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async">
                     <wave-data-table
                         *ngIf="dataTableVisible$ | async"
@@ -124,7 +130,9 @@ import {PlotService} from '../plots/plot.service';
                 </template>
             </md-tab>
             <md-tab>
-                <template md-tab-label><div (click)="layoutService.setDataTableVisibility(true)">Citation</div></template>
+                <template md-tab-label>
+                    <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
+                </template>
                 <template md-tab-content *ngIf="dataTableVisible$ | async">
                     <wave-provenance-list
                         *ngIf= "dataTableVisible$ | async"
@@ -208,7 +216,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         MATERIAL_BROWSER_PROVIDERS, HTTP_PROVIDERS,
         LayerService, PlotService, LayoutService, ProjectService, UserService, MappingQueryService,
-        RandomColorService,
+        RandomColorService, ColorPickerService,
     ],
 })
 export class AppComponent implements OnInit {
