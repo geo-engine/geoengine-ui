@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 import moment from 'moment';
 
 import {ProjectService} from '../project/project.service';
+import {UserService} from '../users/user.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
@@ -15,14 +16,46 @@ import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
-import {MappingSource} from '../models/mapping-source.model';
-import {Unit} from '../operators/unit.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
 
 export interface MappingColorizer {
     interpolation: string;
     breakpoints: Array<[number, string, string]>;
+}
+
+class MappingRequestParameters {
+    private parameters: {[index: string]: string | boolean | number};
+
+    constructor(config: {
+        service: string;
+        request: string,
+        sessionToken: string,
+        parameters?: {[index: string]: string | boolean | number}
+    }) {
+        this.parameters = {
+            service: config.service,
+            request: config.request,
+            sessiontoken: config.sessionToken,
+        };
+        if (config.parameters) {
+            Object.keys(config.parameters).forEach(
+                key => this.parameters[key] = config.parameters[key]
+            );
+        }
+    }
+
+    toMessageBody(): string {
+        return Object.keys(this.parameters).map(
+            key => [key, this.parameters[key]].join('=')
+        ).join('&');
+    }
+
+    getHeaders(): Headers {
+        return new Headers({
+           'Content-Type': 'application/x-www-form-urlencoded',
+        });
+    }
 }
 
 /**
@@ -75,6 +108,7 @@ export class MappingQueryService {
      */
     constructor(
         private http: Http,
+        private userService: UserService,
         private projectService: ProjectService
     ) {}
 
@@ -326,44 +360,4 @@ export class MappingQueryService {
         // }).switch().publishReplay(1).refCount();
     }
 
-    getRasterSourcesStream(): Observable<Array<MappingSource>> {
-      return this.http.get('assets/mapping-data-sources.json')
-                .map((res: Response) => res.json()).map((json: JSON) => {
-        let arr: Array<MappingSource> = [];
-
-        for (let sourceId in json['sourcelist']) {
-          let source = json['sourcelist'][sourceId];
-          arr.push({
-            source: sourceId,
-            name: source.name,
-            colorizer: source.colorizer,
-            coords: source.coords,
-            channels: source.channels.map((channel: any, index: number) => {
-              channel.id = index;
-              channel.name = channel.name || 'Channel #' + index;
-
-              // unit handling
-              if (channel.unit !== undefined) {
-                channel.unit = Unit.fromMappingDict(channel.unit);
-              } else {
-                channel.unit = Unit.defaultUnit;
-              }
-
-              // transform unit handling
-              channel.hasTransform = channel.transform !== undefined;
-              if (channel.hasTransform) {
-                if (channel.transform.unit !== undefined) {
-                    channel.transform.unit = Unit.fromMappingDict(channel.transform.unit);
-                } else {
-                  channel.transform.unit = Unit.defaultUnit;
-                }
-              }
-
-              return channel;
-          }),
-          });
-        }
-        return arr;
-      });
-    }
 }

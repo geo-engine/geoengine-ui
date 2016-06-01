@@ -1,10 +1,7 @@
-import {Injectable} from "@angular/core";
-import {Observable} from "rxjs/Rx";
-
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class RandomColorService {
-    private colorIndex: number = 0;
     private static colorWheel: Array<[number, number, number]> = [
         [255, 0, 0], // '#FF0000', // red
         [0, 255, 0], // '#00FF00', // green
@@ -19,8 +16,7 @@ export class RandomColorService {
         [255, 128, 0], // '#0080FF', // light blue
         [255, 128, 0], // '#8000FF', // purple
     ];
-
-    constructor() { }
+    private colorIndex: number = 0;
 
     getRandomColor(): [number, number, number, number] {
         let color = RandomColorService.colorWheel[this.colorIndex];

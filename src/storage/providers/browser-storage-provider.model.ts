@@ -1,4 +1,4 @@
-import {StorageProvider} from './storage-provider.model';
+import {StorageProvider} from '../storage-provider.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
@@ -6,13 +6,10 @@ import {Project} from '../../project/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
 
-import {LayerService} from '../../layers/layer.service';
-import {PlotService} from '../../plots/plot.service';
-
 /**
  * StorageProvider implementation that uses the brower's localStorage
  */
-export class BrowserStorageProvider implements StorageProvider {
+export class BrowserStorageProvider extends StorageProvider {
 
     loadProject(): Project {
         const projectJSON = localStorage.getItem('project');
@@ -28,7 +25,7 @@ export class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem('project', project.toJSON());
     }
 
-    loadLayers(layerService: LayerService): Array<Layer<Symbology>> {
+    loadLayers(): Array<Layer<Symbology>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
             return undefined;
@@ -38,7 +35,7 @@ export class BrowserStorageProvider implements StorageProvider {
 
             for (const layerDict of layerDicts) {
                 layers.push(
-                    layerService.createLayerFromDict(layerDict)
+                    this.layerService.createLayerFromDict(layerDict)
                 );
             }
 
@@ -56,7 +53,7 @@ export class BrowserStorageProvider implements StorageProvider {
         localStorage.setItem('layers', JSON.stringify(layerDicts));
     }
 
-    loadPlots(plotService: PlotService): Array<Plot> {
+    loadPlots(): Array<Plot> {
         const plotsJSON = localStorage.getItem('plots');
         if (plotsJSON === null) { // tslint:disable-line:no-null-keyword
             return undefined;
@@ -66,7 +63,7 @@ export class BrowserStorageProvider implements StorageProvider {
 
             for (const plotDict of plotDicts) {
                 plots.push(
-                    plotService.createPlotFromDict(plotDict)
+                    this.plotService.createPlotFromDict(plotDict)
                 );
             }
 

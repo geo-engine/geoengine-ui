@@ -4,7 +4,6 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Plot, PlotDict} from './plot.model';
 
 import {MappingQueryService} from '../services/mapping-query.service';
-import {ProjectService} from '../project/project.service';
 
 /**
  * A service for managing plots.
@@ -14,7 +13,6 @@ export class PlotService {
     private plots$: BehaviorSubject<Array<Plot>> = new BehaviorSubject([]);
 
     constructor(
-        private projectService: ProjectService,
         private mappingQueryService: MappingQueryService
     ) {}
 

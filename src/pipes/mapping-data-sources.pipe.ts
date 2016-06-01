@@ -8,6 +8,9 @@ import {MappingSource} from '../models/mapping-source.model';
 @Injectable()
 export class MappingDataSourceFilter implements PipeTransform {
     transform(items: Array<MappingSource>, term: string): Array<MappingSource> {
+        if (!items) {
+            return [];
+        }
 
         let resultSources: Array<MappingSource> = [];
         for (let source of items) {

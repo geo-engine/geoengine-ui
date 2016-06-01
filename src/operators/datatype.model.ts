@@ -97,6 +97,7 @@ class DataTypeCollection {
     }
 
     fromCode(code: string) {
+        console.log("code:", code);
         switch (code) {
             case this.Byte.getCode():
                 return this.Byte;

@@ -2,7 +2,6 @@ import {
     Component, ViewChild, ChangeDetectionStrategy, OnInit,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
-import {HTTP_PROVIDERS} from '@angular/http';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
@@ -14,7 +13,6 @@ import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
-import {LayerListComponent} from '../layers/layer-list.component';
 import {DataTableComponent} from '../components/data-table.component';
 import {OlMapComponent} from '../components/openlayers/ol-map.component';
 import {
@@ -23,19 +21,21 @@ import {
 
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
-import {Layer} from '../layers/layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import {LayerService} from '../layers/layer.service';
 import {LayoutService} from '../app/layout.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
+import {StorageService} from '../storage/storage.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
-import {PlotListComponent} from '../plots/plot-list.component';
+import {LayerListComponent} from '../layers/layer-list.component';
+import {Layer} from '../layers/layer.model';
+import {LayerService} from '../layers/layer.service';
 
+import {PlotListComponent} from '../plots/plot-list.component';
 import {PlotService} from '../plots/plot.service';
 
 @Component({
@@ -207,9 +207,9 @@ import {PlotService} from '../plots/plot.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        MATERIAL_BROWSER_PROVIDERS, HTTP_PROVIDERS,
-        LayerService, PlotService, LayoutService, ProjectService, UserService, MappingQueryService,
-        RandomColorService,
+        MATERIAL_BROWSER_PROVIDERS,
+        UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
+        StorageService, RandomColorService,
     ],
 })
 export class AppComponent implements OnInit {
@@ -235,7 +235,8 @@ export class AppComponent implements OnInit {
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
         private userService: UserService,
-        private randomColorService: RandomColorService
+        private randomColorService: RandomColorService,
+        private storageService: StorageService
     ) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());

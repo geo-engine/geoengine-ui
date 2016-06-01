@@ -11,26 +11,24 @@ import {Plot} from './plot.model';
 @Component({
     selector: 'wave-plot-detail-dialog',
     template: `
-    <wave-dialog-container #dialogContainer title="{{plot.operator.resultType}}: {{plot.name}}">
-        <div [ngSwitch]="(plot.data$ | async)?.type">
-            <template ngSwitchWhen="text">
-                <pre>{{(plot.data$ | async)?.data}}</pre>
-            </template>
-            <template ngSwitchWhen="png">
-                <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}" #plotImage
-                     [width]="getWidthBound(dialog.maxWidth$ | async,
-                                            plotImage.naturalWidth)"
-                     [alt]="plot.name">
-            </template>
-            <template ngSwitchWhen="histogram">
-                <wave-histogram [data]="plot.data$ | async"
-                                [width]="dialog.maxWidth$ | async"
-                                [height]="(dialog.maxHeight$ | async) - 5"
-                                interactable="true">
-                </wave-histogram>
-            </template>
-        </div>
-    </wave-dialog-container>
+    <div [ngSwitch]="(plot.data$ | async)?.type">
+        <template ngSwitchWhen="text">
+            <pre>{{(plot.data$ | async)?.data}}</pre>
+        </template>
+        <template ngSwitchWhen="png">
+            <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}" #plotImage
+                 [width]="getWidthBound(dialog.maxWidth$ | async,
+                                        plotImage.naturalWidth)"
+                 [alt]="plot.name">
+        </template>
+        <template ngSwitchWhen="histogram">
+            <wave-histogram [data]="plot.data$ | async"
+                            [width]="dialog.maxWidth$ | async"
+                            [height]="(dialog.maxHeight$ | async) - 5"
+                            interactable="true">
+            </wave-histogram>
+        </template>
+    </div>
     `,
     styles: [`
 
@@ -48,8 +46,6 @@ export class PlotDetailsDialogComponent extends BasicDialog<{plot: Plot}> implem
     ngOnInit() {
         this.plot = this.dialogInput.plot;
         this.dialog.setTitle(`${this.plot.operator.resultType}: ${this.plot.name}`);
-
-        console.log(this.dialog.maxHeight);
     }
 
     getWidthBound(maxContentWidth: number, imageNaturalWidth: number) {
