@@ -130,6 +130,7 @@ import {PlotService} from '../plots/plot.service';
                     </template>
                     <template md-tab-content>
                         <wave-data-table
+                            *ngIf= "dataTableVisible$ | async"
                             [style.height.px]="(bottomContainerHeight$ | async)"
                             [height]="(bottomContainerHeight$ | async)">
                         </wave-data-table>
@@ -141,6 +142,7 @@ import {PlotService} from '../plots/plot.service';
                     </template>
                     <template md-tab-content>
                         <wave-provenance-list
+                            *ngIf= "dataTableVisible$ | async"
                             [style.height.px]= "(bottomContainerHeight$ | async)"
                             [height]= "(bottomContainerHeight$ | async)"
                         ></wave-provenance-list>
