@@ -16,7 +16,7 @@ import {Provenance} from './provenance.model';
            <md-list-item *ngFor="let p of prov$ | async">
                <div class="md-list-item-text md-whiteframe-3dp box">
                <dl>
-                 <dt>Citation</dt><dd> {{ p.citation }} </dd>
+                 <dt>Citation</dt><dd [innerHtml]="p.citation"></dd>
                  <dt>License</dt><dd> {{ p.license }} </dd>
                  <dt>URI</dt><dd><a [href]="p.uri" target="_blank">{{p.uri}}</a></dd>
                 </dl>
