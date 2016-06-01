@@ -55,7 +55,7 @@ import {PlotService} from '../plots/plot.service';
             ></wave-ribbons-component>
         </div>
         <div
-            class="middleContainer md-whiteframe-3dp"
+            class="middleContainer"
             [style.height.px]="middleContainerHeight$ | async"
         >
             <wave-layer-list
@@ -110,38 +110,46 @@ import {PlotService} from '../plots/plot.service';
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <md-tab-group>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(false)">_</div>
-                </template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async"><div></div></template>
-            </md-tab>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
-                </template>
-                <template md-tab-content>
-                    <wave-data-table
-                        *ngIf="dataTableVisible$ | async"
-                        [style.height.px]="(bottomContainerHeight$ | async)"
-                        [height]="(bottomContainerHeight$ | async)">
-                    </wave-data-table>
-                </template>
-            </md-tab>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
-                </template>
-                <template md-tab-content>
-                    <wave-provenance-list
-                        *ngIf= "dataTableVisible$ | async"
-                        [style.height.px]= "(bottomContainerHeight$ | async)"
-                        [height]= "(bottomContainerHeight$ | async)"
-                    ></wave-provenance-list>
-                </template>
-            </md-tab>
-        </md-tab-group>
+        <div [style.height.px]="(bottomContainerHeight$ | async)"
+             class="bottomContainer md-whiteframe-3dp"
+        >
+            <div class="bottomToggle">
+                <button md-button class="md-icon-button" aria-label="Toggle Data Table"
+                        (click)="layoutService.toggleDataTableVisibility()"
+                        [ngSwitch]="dataTableVisible$ | async"
+                >
+                    <i *ngSwitchWhen="true" md-icon>expand_more</i>
+                    <i *ngSwitchWhen="false" md-icon>expand_less</i>
+                </button>
+                <md-divider></md-divider>
+            </div>
+            <md-tab-group>
+                <md-tab>
+                    <template md-tab-label>
+                        <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
+                    </template>
+                    <template md-tab-content>
+                        <wave-data-table
+                            *ngIf="dataTableVisible$ | async"
+                            [style.height.px]="(bottomContainerHeight$ | async)"
+                            [height]="(bottomContainerHeight$ | async)">
+                        </wave-data-table>
+                    </template>
+                </md-tab>
+                <md-tab>
+                    <template md-tab-label>
+                        <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
+                    </template>
+                    <template md-tab-content>
+                        <wave-provenance-list
+                            *ngIf= "dataTableVisible$ | async"
+                            [style.height.px]= "(bottomContainerHeight$ | async)"
+                            [height]= "(bottomContainerHeight$ | async)"
+                        ></wave-provenance-list>
+                    </template>
+                </md-tab>
+            </md-tab-group>
+        </div>
         <md-sidenav #rasterRepository align="end" layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
@@ -151,11 +159,32 @@ import {PlotService} from '../plots/plot.service';
     `,
     styles: [`
 
+    .bottomContainer {
+        background: whitesmoke;
+        min-height: 48px;
+        position: relative;
+        z-index: 1;
+    }
+    .bottomToggle {
+        width: 48px;
+        height: 41px;
+        float: left;
+        padding-top: 7px;
+    }
+    .bottomToggle button {
+        height: 40px;
+    }
+    md-tab-group {
+        float: left; width: calc(100% - 48px);
+    }
     md-tab-group, md-tab-group >>> .md-tab-body-wrapper {
         min-height: 0 !important;
     }
     md-tab-group >>> .md-tab-header {
         height: 47px;
+    }
+    md-tab-group >>> .md-tab-body-wrapper {
+        margin-left: -48px;
     }
 
     .topContainer {
@@ -163,6 +192,8 @@ import {PlotService} from '../plots/plot.service';
         height: 180px;
         width: 100%;
         flex-direction: row;
+        position: relative;
+        z-index: 1;
     }
     wave-info-area {
         width: 200px;
