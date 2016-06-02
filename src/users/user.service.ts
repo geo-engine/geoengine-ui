@@ -233,7 +233,7 @@ export class UserService {
                                 transform: channel.transform === undefined ?
                                     undefined : {
                                         unit: channel.transform.unit ?
-                                            Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                            Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
                                         datatype: channel.transform.datatype,
                                         offset: channel.transform.offset,
                                         scale: channel.transform.scale,
