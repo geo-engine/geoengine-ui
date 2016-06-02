@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, Pipe, PipeTransform} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
@@ -8,27 +8,35 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {LayerService} from '../layers/layer.service';
 import {Provenance} from './provenance.model';
 
+/**
+ * Return either the value or a non-breaking space point if it is empty.
+ */
+@Pipe({name: 'waveNbsp'})
+export class NbspPipe implements PipeTransform {
+    transform(value: string): string {
+        if (!value || value.length === 0) {
+            return '&nbsp;';
+        } else {
+            return value;
+        }
+    }
+}
+
 @Component({
     selector: 'wave-provenance-list',
     template: `
     <md-content class='container' [style.height.px]='height'>
         <md-list dense>
-            <md-list-item *ngFor="let p of prov$ | async">
-                <table>
-                    <tr>
-                        <td>Citation:</td>
-                        <td [innerHtml]="p.citation"></td>
-                    </tr>
-                    <tr>
-                        <td>License:</td>
-                        <td>{{p.license}}</td>
-                    </tr>
-                    <tr>
-                        <td>URI:</td>
-                        <td><a [href]="p.uri">{{p.uri}}</a></td>
-                    </tr>
-                </table>
-                <md-divider></md-divider>
+            <md-list-item *ngFor="let p of prov$ | async; let last = last">
+                <dl>
+                    <dt>Citation</dt>
+                    <dd [innerHtml]="p.citation | waveNbsp"></dd>
+                    <dt>License</dt>
+                    <dd [innerHtml]="p.license | waveNbsp"></dd>
+                    <dt>URI</dt>
+                    <dd><a [href]="p.uri" [innerHtml]="p.uri | waveNbsp"></a></dd>
+                </dl>
+                <md-divider *ngIf="!last"></md-divider>
             </md-list-item>
         </md-list>
     </md-content>
@@ -47,21 +55,25 @@ import {Provenance} from './provenance.model';
         font-size: 13px;
     }
 
-    table {
+    dl {
         margin: 16px 0px;
     }
-    table td {
-        padding: 0;
-        margin: 0;
-    }
-    table td:first-child {
+    dt {
         color: gray;
         width: 60px;
-        vertical-align: top;
+        float: left;
+        clear: left;
+    }
+    dt::after {
+        content: ":";
+    }
+    dd {
+        margin-left: 60px;
     }
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
-     changeDetection: ChangeDetectionStrategy.OnPush,
+    pipes: [NbspPipe],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProvenanceListComponent {
 
