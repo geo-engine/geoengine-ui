@@ -10,7 +10,7 @@ import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
 import {LayerService} from '../layers/layer.service';
 
-import {Symbology, SimplePointSymbology, RasterSymbology, SymbologyType} from './symbology.model';
+import {Symbology, SymbologyType} from './symbology.model';
 import {SymbologyRasterComponent} from './symbology-raster.component';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from './symbology-points.component';
 
