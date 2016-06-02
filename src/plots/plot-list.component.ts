@@ -25,7 +25,7 @@ import {LayoutService} from '../app/layout.service';
     template: `
     <md-toolbar>
         <button md-button class="md-icon-button" aria-label="Toggle List Visibility"
-                (click)="plotService.togglePlotListVisibility()"
+                (click)="layoutService.togglePlotListVisibility()"
                 [ngSwitch]="plotListVisible$ | async">
             <i md-icon>
                 <template [ngSwitchWhen]="true">expand_less</template>
@@ -45,7 +45,7 @@ import {LayoutService} from '../app/layout.service';
                           class="md-2-line">
                 <div class="md-list-item-text plot-header" layout="column">
                     <div layout="row">
-                        <h3 flex>{{plot.name}}</h3>
+                        <h3 flex [title]="plot.name">{{plot.name}}</h3>
                         <button md-button class="md-icon-button" aria-label="Remove Output"
                                 (click)="plotDetailsDialogDialog.show({plot: plot})">
                             <i md-icon>info</i>
