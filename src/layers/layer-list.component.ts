@@ -24,6 +24,7 @@ import {
             (click)='layerService.setSelectedLayer(layer)'
             [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
             (contextmenu)='replaceContextMenu($event, layer)'
+            [title]="layer.name"
         >
             <div layout='column'>
                 <div layout='row'>
@@ -35,7 +36,7 @@ import {
                         <i *ngIf='layer.expanded' md-icon>expand_less</i>
                     </button>
 
-                    <div class='md-list-item-text' style='padding-top: 10px'>
+                    <div #layerName class='md-list-item-text' style='padding-top: 10px'>
                         {{layer.name}}
                     </div>
 
@@ -43,7 +44,9 @@ import {
                             style='margin-right: -16px;'
                             aria-label='More'
                             *ngIf='layer === (layerService.getSelectedLayerStream() | async)'
-                            (click)='replaceContextMenu($event, layer)'>
+                            (click)='replaceContextMenu($event, layer)'
+                            disabled="true"
+                    >
                         <i md-icon>more_vert</i>
                     </button>
                 </div>
@@ -89,6 +92,9 @@ import {
     md-divider.md-active {
         border-top-color: #3f51b5;
     }
+    md-list-item {
+        cursor: pointer;
+    }
     .md-list-item-text {
         width: 110px;
         text-overflow: ellipsis;
@@ -100,6 +106,9 @@ import {
     }
     md-content {
         overflow-x: hidden;
+    }
+    button[disabled] {
+        background-color: transparent;
     }
     `],
     viewProviders: [DragulaService],
@@ -148,7 +157,7 @@ export class LayerListComponent {
     }
 
     replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
-        event.preventDefault();
+        // event.preventDefault();
         console.info(`A context menu for ${layer.name} will appear in future versions!`);
     }
 

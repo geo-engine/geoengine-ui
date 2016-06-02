@@ -6,6 +6,9 @@ import {Observable} from 'rxjs/Rx';
 import {MdToolbar} from '@angular2-material/toolbar';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
+import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {LoginDialogComponent} from '../users/login-dialog.component';
+
 import {UserService} from '../users/user.service';
 import {LayoutService} from '../app/layout.service';
 
@@ -16,7 +19,7 @@ import {LayoutService} from '../app/layout.service';
     selector: 'wave-info-area',
     template: `
     <md-toolbar class="md-accent">
-        <button md-button aria-label="User">
+        <button md-button aria-label="User" (click)="loginDialog.show()">
             <i md-icon>person</i>
             {{username$ | async}}
         </button>
@@ -30,7 +33,7 @@ import {LayoutService} from '../app/layout.service';
             <md-divider></md-divider>
         </md-toolbar-row>
         <md-toolbar-row>
-            <button md-button class="md-icon-button" aria-label="Settings">
+            <button md-button class="md-icon-button" aria-label="Settings" disabled="true">
                 <i md-icon>menu</i>
             </button>
             <span class="fill-remaining-space">Layers</span>
@@ -42,6 +45,7 @@ import {LayoutService} from '../app/layout.service';
             </button>
         </md-toolbar-row>
     </md-toolbar>
+    <wave-dialog-loader #loginDialog [type]="LoginDialogComponent"></wave-dialog-loader>
     `,
     styles: [`
     :host {
@@ -75,13 +79,18 @@ import {LayoutService} from '../app/layout.service';
     button {
         color: rgba(255, 255, 255, 0.870588);
     }
+    button[disabled] {
+        background-color: transparent;
+    }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, DialogLoaderComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InfoAreaComponent {
-    private layerListVisibility$: Observable<boolean>;
-    private username$: Observable<string>;
+    layerListVisibility$: Observable<boolean>;
+    username$: Observable<string>;
+
+    LoginDialogComponent = LoginDialogComponent; // tslint:disable-line:variable-name
 
     constructor(
         private layoutService: LayoutService,

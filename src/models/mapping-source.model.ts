@@ -20,10 +20,14 @@ export interface MappingSourceChannel {
 }
 
 export interface MappingSource {
-  source: string;
-  name: string;
-  channels: MappingSourceChannel[];
-  colorizer: string;
-  coords: any;
-
+    source: string;
+    name: string;
+    channels: MappingSourceChannel[];
+    colorizer: string;
+    coords: {
+        epsg: number,
+        origin: number[],
+        scale: number[],
+        size: number[],
+    };
 }

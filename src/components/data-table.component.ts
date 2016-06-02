@@ -95,9 +95,9 @@ export class DataTableComponent implements OnInit, OnChanges {
                 private layerService: LayerService,
                 private projectService: ProjectService,
                 private mappingQueryService: MappingQueryService) {
+        // console.log("DataTableComponent", "constructor");
 
-        // TODO: use flatMapLatest on next rxjs version
-        this.data$ = this.layerService.getSelectedLayerStream().map(layer => {
+        this.data$ = this.layerService.getSelectedLayerStream().switchMap(layer => {
             if (layer === undefined) {
                 return Observable.of([]);
             }
@@ -121,39 +121,40 @@ export class DataTableComponent implements OnInit, OnChanges {
                 default:
                     return Observable.of([]);
             };
-        }).switch();
+        });
     }
 
     ngOnInit() {
-      this.data$.subscribe( (features: Array<GeoJsonFeature>) => {
-          this.columns = [];
-          this.propertyColumns = [];
-          this.rows = [];
+        // console.log("DataTableComponent", "ngOnInit");
+        this.data$.subscribe( (features: Array<GeoJsonFeature>) => {
+            this.columns = [];
+            this.propertyColumns = [];
+            this.rows = [];
 
-          if (features.length > 0) {
-            // let columns: Set<string> = new Set();
-            /*
-            for (let feature of features) {
-                 console.log(Object.keys(feature));
+            if (features.length > 0) {
+                // let columns: Set<string> = new Set();
+                /*
+                for (let feature of features) {
+                     console.log(Object.keys(feature));
+                }
+                */
+                if ( features[0].id ) {
+                    this.columns = [{name: 'id', type: 'string'}];
+                };
+                if (features[0].properties) {
+                    this.propertyColumns = Object.keys(features[0].properties).map(x => {
+                         return {name: x, type: ''} as Column;
+                     });
+                 }
+                this.rows = features;
             }
-            */
-            if ( features[0].id ) {
-                this.columns = [{name: 'id', type: 'string'}];
-            };
-            if (features[0].properties) {
-                this.propertyColumns = Object.keys(features[0].properties).map(x => {
-                     return {name: x, type: ''} as Column;
-                 });
-             }
-            this.rows = features;
-        }
 
-        this.updateVirtualHeight();
-        this.updateVisibleRows(0, true);
-        this.scrollTop = 0;
-        this.scrollBottom = Math.max(0, this.virtualHeight - this.height);
-        this.changeDetectorRef.markForCheck();
-      });
+            this.updateVirtualHeight();
+            this.updateVisibleRows(0, true);
+            this.scrollTop = 0;
+            this.scrollBottom = Math.max(0, this.virtualHeight - this.height);
+            this.changeDetectorRef.markForCheck();
+        });
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {

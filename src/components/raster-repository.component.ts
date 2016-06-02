@@ -1,7 +1,7 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
-import {Subscription} from 'rxjs/Rx';
+import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
@@ -18,6 +18,7 @@ import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../services/mapping-query.service';
+import {UserService} from '../users/user.service';
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
 import {ProjectService} from '../project/project.service';
 
@@ -29,7 +30,10 @@ import {ProjectService} from '../project/project.service';
     ></md-input>
     <md-content flex="grow">
       <md-list>
-        <template ngFor let-source [ngForOf]="sources | waveMappingDataSourceFilter:_searchTerm">
+        <template
+            ngFor let-source
+            [ngForOf]="sources | async | waveMappingDataSourceFilter:_searchTerm"
+        >
           <md-subheader>
             <span [innerHtml] = "source.name | waveHighlightPipe:_searchTerm"></span>
           </md-subheader>
@@ -76,7 +80,6 @@ import {ProjectService} from '../project/project.service';
     </div>
     `,
     styles: [`
-
     .searchInput {
         width: 100%;
     }
@@ -97,57 +100,52 @@ import {ProjectService} from '../project/project.service';
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class RasterRepositoryComponent implements OnDestroy {
+export class RasterRepositoryComponent {
 
     private _searchTerm: String = '';
-  private sources: Array<MappingSource> = [];
-  private rasterSourcesSubscription: Subscription;
+    private sources: Observable<Array<MappingSource>>;
 
-  constructor(private mappingQueryService: MappingQueryService,
-              private layerService: LayerService,
-              private projectService: ProjectService) {
-                  this.rasterSourcesSubscription = mappingQueryService.getRasterSourcesStream()
-                    .subscribe(x => this.sources = x);
-  }
-
-  add(source: MappingSource, channel: MappingSourceChannel, doTransform: boolean) {
-    let dataType = channel.datatype;
-    let unit: Unit = channel.unit;
-
-    if (doTransform && channel.hasTransform) {
-      unit = channel.transform.unit;
-      dataType = channel.transform.datatype;
+    constructor(
+        private mappingQueryService: MappingQueryService,
+        private layerService: LayerService,
+        private projectService: ProjectService,
+        private userService: UserService
+    ) {
+        this.sources = this.userService.getRasterSourcesStream();
     }
 
-    let operator = new Operator({
-        operatorType: new RasterSourceType({
-            channel: channel.id,
-            sourcename: source.source,
-            transform: doTransform, // FIXME user selectable transform?
-        }),
-        resultType: ResultTypes.RASTER,
-        projection: Projections.fromCode('EPSG:' + source.coords.epsg),
-        attributes: ['value'],
-        dataTypes: new Map<string, DataType>().set(
-            'value', DataTypes.fromCode(dataType)
-        ),
-        units: new Map<string, Unit>().set('value', unit),
-    });
+    add(source: MappingSource, channel: MappingSourceChannel, doTransform: boolean) {
+        let dataType = channel.datatype;
+        let unit: Unit = channel.unit;
 
-    let layer = new RasterLayer({
-        name: channel.name,
-        operator: operator,
-        symbology: new MappingColorizerRasterSymbology({},
-            this.mappingQueryService.getColorizerStream(operator)
-        ),
-        prov$: this.mappingQueryService.getProvenanceStream(operator),
-    });
-    this.layerService.addLayer(layer);
-  }
+        if (doTransform && channel.hasTransform) {
+            unit = channel.transform.unit;
+            dataType = channel.transform.datatype;
+        }
 
-  ngOnDestroy() {
-      if (this.rasterSourcesSubscription) {
-          this.rasterSourcesSubscription.unsubscribe();
-      }
-  }
+        const operator = new Operator({
+            operatorType: new RasterSourceType({
+                channel: channel.id,
+                sourcename: source.source,
+                transform: doTransform, // FIXME user selectable transform?
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.fromCode('EPSG:' + source.coords.epsg),
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set(
+                'value', DataTypes.fromCode(dataType)
+            ),
+            units: new Map<string, Unit>().set('value', unit),
+        });
+
+        const layer = new RasterLayer({
+            name: channel.name,
+            operator: operator,
+            symbology: new MappingColorizerRasterSymbology({},
+                this.mappingQueryService.getColorizerStream(operator)
+            ),
+            prov$: this.mappingQueryService.getProvenanceStream(operator),
+        });
+        this.layerService.addLayer(layer);
+    }
 }

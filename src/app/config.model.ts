@@ -10,7 +10,7 @@ export default {
     },
     DEBUG_MODE: true,
     USER: {
-        DEFAULT: {
+        GUEST: {
             NAME: 'guest',
             PASSWORD: 'guest',
         },

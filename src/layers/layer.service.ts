@@ -1,12 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
-
-import {Symbology} from '../symbology/symbology.model';
-
 import {MappingQueryService} from '../services/mapping-query.service';
-import {ProjectService} from '../project/project.service';
+
+import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
+import {Symbology} from '../symbology/symbology.model';
 
 /**
  * A service that is responsible for managing the active layer array.
@@ -17,7 +15,6 @@ export class LayerService {
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
 
     constructor(
-        private projectService: ProjectService,
         private mappingQueryService: MappingQueryService
     ) {}
 

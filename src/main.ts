@@ -1,6 +1,8 @@
 import { bootstrap }    from '@angular/platform-browser-dynamic';
-import {AppComponent} from './app/app.component';
+import {HTTP_PROVIDERS} from '@angular/http';
 import {enableProdMode} from '@angular/core';
+
+import {AppComponent} from './app/app.component';
 
 import Config from './app/config.model';
 
@@ -10,7 +12,7 @@ if (!Config.DEBUG_MODE) {
 }
 
 bootstrap(
-    AppComponent
+    AppComponent, [HTTP_PROVIDERS]
 ).catch(
     console.error
 );

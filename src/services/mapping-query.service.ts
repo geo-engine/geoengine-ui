@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 import moment from 'moment';
 
 import {ProjectService} from '../project/project.service';
+import {UserService} from '../users/user.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
@@ -15,8 +16,6 @@ import {PlotData} from '../plots/plot.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
-import {MappingSource} from '../models/mapping-source.model';
-import {Unit} from '../operators/unit.model';
 
 type ParametersType = {[index: string]: string | number | boolean};
 
@@ -25,14 +24,50 @@ export interface MappingColorizer {
     breakpoints: Array<[number, string, string]>;
 }
 
+class MappingRequestParameters {
+    private parameters: {[index: string]: string | boolean | number};
+
+    constructor(config: {
+        service: string;
+        request: string,
+        sessionToken: string,
+        parameters?: {[index: string]: string | boolean | number}
+    }) {
+        this.parameters = {
+            service: config.service,
+            request: config.request,
+            sessiontoken: config.sessionToken,
+        };
+        if (config.parameters) {
+            Object.keys(config.parameters).forEach(
+                key => this.parameters[key] = config.parameters[key]
+            );
+        }
+    }
+
+    toMessageBody(): string {
+        return Object.keys(this.parameters).map(
+            key => [key, this.parameters[key]].join('=')
+        ).join('&');
+    }
+
+    getHeaders(): Headers {
+        return new Headers({
+           'Content-Type': 'application/x-www-form-urlencoded',
+        });
+    }
+}
+
 /**
  * WFS Output Formats
  */
 class WFSOutputFormatCollection {
     private _JSON = new JSONWFSOutputFormat();
     private _CSV = new CSVWFSOutputFormat();
+    private _CSV_ZIP = new ZipWFSOutputFormat(this._CSV);
     get JSON(): WFSOutputFormat { return this._JSON; };
     get CSV(): WFSOutputFormat { return this._CSV; };
+    get CSV_ZIP(): WFSOutputFormat { return this._CSV_ZIP; }
 }
 
 /**
@@ -60,6 +95,17 @@ class CSVWFSOutputFormat extends WFSOutputFormat {
 }
 
 /**
+ * JSON Output format
+ */
+class ZipWFSOutputFormat extends WFSOutputFormat {
+    protected format = 'application/x-export;';
+    constructor(outputFormat: WFSOutputFormat) {
+        super();
+        this.format += outputFormat.getFormat();
+    }
+}
+
+/**
  * Export WFSOutputFormat as singleton.
  */
 // tslint:disable-next-line:variable-name
@@ -75,6 +121,7 @@ export class MappingQueryService {
      */
     constructor(
         private http: Http,
+        private userService: UserService,
         private projectService: ProjectService
     ) {}
 
@@ -119,11 +166,9 @@ export class MappingQueryService {
      * @returns an Observable of PlotData
      */
     getPlotDataStream(operator: Operator): Observable<PlotData> {
-        // TODO: remove  `fromPromise` when new rxjs version is used
-        // TODO: use flatMapLatest
-        return this.projectService.getTimeStream().map(
-            time => Observable.fromPromise(this.getPlotData(operator, time))
-        ).switch();
+        return this.projectService.getTimeStream().switchMap(
+            time => this.getPlotData(operator, time)
+        );
     }
 
     /**
@@ -154,6 +199,20 @@ export class MappingQueryService {
 
         return Config.MAPPING_URL + '?' +
                Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+    }
+
+    /**
+     * Get a MAPPING url stream for the WFS request.
+     * @param operator the operator graph
+     * @param outputFormat the output format
+     * @returns the query url stream
+     */
+    getWFSQueryUrlStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
+        return Observable.combineLatest(
+            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+        ).map(
+            ([time, projection]) => this.getWFSQueryUrl(operator, time, projection, outputFormat)
+        );
     }
 
     /**
@@ -196,15 +255,11 @@ export class MappingQueryService {
      * @returns an Observable of features
      */
     getWFSDataStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
-        // TODO: remove  `fromPromise` when new rxjs version is used
-        // TODO: use flatMapLatest
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getWFSData(operator, time, projection, outputFormat)
-            );
-        }).switch();
+        ).switchMap(
+            ([time, projection]) => this.getWFSData(operator, time, projection, outputFormat)
+        );
     }
 
     getWFSDataStreamAsGeoJsonFeatureCollection(
@@ -212,11 +267,9 @@ export class MappingQueryService {
     ): Observable<GeoJsonFeatureCollection> {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getWFSDataAsJson(operator, time, projection)
-            );
-        }).switch().map(result => {
+        ).switchMap(
+            ([time, projection]) => this.getWFSDataAsJson(operator, time, projection)
+        ).map(result => {
             const geojson = result as GeoJsonFeatureCollection;
             const features = geojson.features;
             for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
@@ -291,11 +344,9 @@ export class MappingQueryService {
     getColorizerStream(operator: Operator): Observable<MappingColorizer> {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).map(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getColorizer(operator, time, projection)
-            );
-        }).switch().publishReplay(1).refCount();
+        ).switchMap(
+            ([time, projection]) => this.getColorizer(operator, time, projection)
+        ).publishReplay(1).refCount();
     }
 
     getProvenance(operator: Operator
@@ -319,51 +370,27 @@ export class MappingQueryService {
     getProvenanceStream(operator: Operator): Observable<Array<Provenance>> {
         // return Observable.combineLatest(
         //     this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        // ).map(([time, projection]) => {
+        // ).switchMap(([time, projection]) => {
             return Observable.fromPromise(
                 this.getProvenance(operator)
             );
-        // }).switch().publishReplay(1).refCount();
+        // }).publishReplay(1).refCount();
     }
 
-    getRasterSourcesStream(): Observable<Array<MappingSource>> {
-      return this.http.get('assets/mapping-data-sources.json')
-                .map((res: Response) => res.json()).map((json: JSON) => {
-        let arr: Array<MappingSource> = [];
-
-        for (let sourceId in json['sourcelist']) {
-          let source = json['sourcelist'][sourceId];
-          arr.push({
-            source: sourceId,
-            name: source.name,
-            colorizer: source.colorizer,
-            coords: source.coords,
-            channels: source.channels.map((channel: any, index: number) => {
-              channel.id = index;
-              channel.name = channel.name || 'Channel #' + index;
-
-              // unit handling
-              if (channel.unit !== undefined) {
-                channel.unit = Unit.fromMappingDict(channel.unit);
-              } else {
-                channel.unit = Unit.defaultUnit;
-              }
-
-              // transform unit handling
-              channel.hasTransform = channel.transform !== undefined;
-              if (channel.hasTransform) {
-                if (channel.transform.unit !== undefined) {
-                    channel.transform.unit = Unit.fromMappingDict(channel.transform.unit);
-                } else {
-                  channel.transform.unit = Unit.defaultUnit;
-                }
-              }
-
-              return channel;
-          }),
-          });
-        }
-        return arr;
-      });
+    getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
+        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
+        const service = 'searchSpecies';
+        return this.http.get(serverURL + service + '?term=' + scientificName).toPromise().then(
+            response => response.json()
+        );
     }
+
+    getGBIFDataSourceCounts(query: string): Promise<Array<{name: string, count: number}>> {
+        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
+        const service = 'queryDataSources';
+        return this.http.get(serverURL + service + '?query=' + encodeURI(query)).toPromise().then(
+            response => response.json()
+        );
+    }
+
 }

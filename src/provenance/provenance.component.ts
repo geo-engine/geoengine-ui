@@ -13,55 +13,51 @@ import {Provenance} from './provenance.model';
     template: `
     <md-content class='container' [style.height.px]='height'>
         <md-list dense>
-           <md-list-item *ngFor="let p of prov$ | async">
-               <div class="md-list-item-text md-whiteframe-3dp box">
-               <dl>
-                 <dt>Citation</dt><dd [innerHtml]="p.citation"></dd>
-                 <dt>License</dt><dd> {{ p.license }} </dd>
-                 <dt>URI</dt><dd><a [href]="p.uri" target="_blank">{{p.uri}}</a></dd>
-                </dl>
-               </div>
-           </md-list-item>
+            <md-list-item *ngFor="let p of prov$ | async">
+                <table>
+                    <tr>
+                        <td>Citation:</td>
+                        <td [innerHtml]="p.citation"></td>
+                    </tr>
+                    <tr>
+                        <td>License:</td>
+                        <td>{{p.license}}</td>
+                    </tr>
+                    <tr>
+                        <td>URI:</td>
+                        <td>{{p.uri}}</td>
+                    </tr>
+                </table>
+                <md-divider></md-divider>
+            </md-list-item>
         </md-list>
     </md-content>
     `,
     styles: [`
-    md-list-item {
-        margin-top: 4px;
-        font-size: 13px;
-    }
-
-    md-list-item .box {
-        padding: 4px;
-        width: 100%;
-    }
-
-    md-list-item dl, dt, dd{
-        margin: 0;
-        padding: 0;
-    }
-
-    md-list-item dt {
-        color: gray;
-        width: 60px;
-        clear: left;
-        float: left;
-    }
-
-    md-list-item dt:after {
-        content:":";
-    }
-
-    md-list-item dd {
-        float: left;
-    }
-
     :host {
         display: block;
     }
     container{
         overflow-y: auto;
         display: block;
+    }
+
+    md-list-item {
+        margin: 0;
+        font-size: 13px;
+    }
+
+    table {
+        margin: 16px 0px;
+    }
+    table td {
+        padding: 0;
+        margin: 0;
+    }
+    table td:first-child {
+        color: gray;
+        width: 60px;
+        vertical-align: top;
     }
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],

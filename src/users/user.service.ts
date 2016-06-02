@@ -1,17 +1,69 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Headers, Response} from '@angular/http';
 
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
+import Config from '../app/config.model';
 import {User, Guest} from './user.model';
-import {StorageProvider} from './storage/storage-provider.model';
-import {BrowserStorageProvider} from './storage/browser-storage-provider.model';
 
-import {LayoutService} from '../app/layout.service';
-import {LayerService} from '../layers/layer.service';
-import {ProjectService} from '../project/project.service';
-import {PlotService} from '../plots/plot.service';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {
+    MappingSource, MappingSourceChannel, MappingTransform,
+} from '../models/mapping-source.model';
+import {Unit, UnitMappingDict} from '../operators/unit.model';
+
+export interface Session {
+    user: string;
+    sessionToken: string;
+}
+
+class UserServiceRequestParameters {
+    private parameters: {[index: string]: string | boolean | number};
+
+    constructor(config: {
+        request: string,
+        sessionToken: string,
+        parameters?: {[index: string]: string | boolean | number}
+    }) {
+        this.parameters = {
+            service: 'USER',
+            request: config.request,
+            sessiontoken: config.sessionToken,
+        };
+        if (config.parameters) {
+            Object.keys(config.parameters).forEach(
+                key => this.parameters[key] = config.parameters[key]
+            );
+        }
+    }
+
+    toMessageBody(): string {
+        return Object.keys(this.parameters).map(
+            key => [key, this.parameters[key]].join('=')
+        ).join('&');
+    }
+
+    getHeaders(): Headers {
+        return new Headers({
+           'Content-Type': 'application/x-www-form-urlencoded',
+        });
+    }
+}
+
+class LoginRequestParameters extends UserServiceRequestParameters {
+    constructor(config: {
+        username: string;
+        password: string;
+    }) {
+        super({
+            request: 'login',
+            sessionToken: undefined,
+            parameters: {
+                username: config.username,
+                password: config.password,
+            },
+        });
+    }
+}
 
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
@@ -19,19 +71,23 @@ import {MappingQueryService} from '../services/mapping-query.service';
 @Injectable()
 export class UserService {
     private user$: BehaviorSubject<User>;
-    private storageProvider: StorageProvider;
+    private session$: BehaviorSubject<Session>;
 
     constructor(
-        private layerService: LayerService,
-        private projectService: ProjectService,
-        private plotService: PlotService,
-        private mappingQueryService: MappingQueryService,
-        private layoutService: LayoutService,
         private http: Http
     ) {
         this.user$ = new BehaviorSubject(new Guest());
 
-        this.storageSetup();
+        const session: Session = JSON.parse(localStorage.getItem('session'));
+        this.session$ = new BehaviorSubject(
+            // tslint:disable-next-line:no-null-keyword
+            session !== null ? session : {user: Config.USER.GUEST.NAME, sessionToken: ''}
+        );
+
+        // storage of the session
+        this.session$.subscribe(newSession =>
+            localStorage.setItem('session', JSON.stringify(newSession))
+        );
     }
 
     /**
@@ -44,8 +100,22 @@ export class UserService {
     /**
      * @returns Retrieve a stream that notifies about the current user.
      */
-    getUserStream() {
+    getUserStream(): Observable<User> {
         return this.user$;
+    }
+
+    /**
+     * @returns Retrieve the current session.
+     */
+    getSession() {
+        return this.session$.getValue();
+    }
+
+    /**
+     * @returns Retrieve a stream that notifies about the current session.
+     */
+    getSessionStream(): Observable<Session> {
+        return this.session$;
     }
 
     /**
@@ -54,9 +124,43 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    login(credentials: {user: string, password: string}): boolean {
-        // TODO: implement
-        throw 'Login not yet implemented!';
+    login(credentials: {user: string, password: string}): Promise<boolean> {
+        const parameters = new LoginRequestParameters({
+            username: credentials.user,
+            password: credentials.password,
+        });
+        return this.request(parameters).then(response => {
+            const result = response.json() as {result: string | boolean, session: string};
+            const success = typeof result.result === 'boolean' && result.result === true;
+
+            if (success) {
+                // TODO: get user information
+                this.session$.next({
+                    user: credentials.user,
+                    sessionToken: result.session,
+                });
+            }
+
+            return success;
+        });
+    }
+
+    /**
+     * Login using user credentials. If it was successful, set a new user.
+     * @param credentials.user The user name.
+     * @param credentials.password The user's password.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    isSessionValid(session: Session): Promise<boolean> {
+        const parameters = new UserServiceRequestParameters({
+            request: 'sourcelist',
+            sessionToken: session.sessionToken,
+        });
+        return this.request(parameters).then(response => {
+            const result = response.json() as {result: string | boolean};
+
+            return typeof result.result === 'boolean' && result.result;
+        });
     }
 
     /**
@@ -73,63 +177,84 @@ export class UserService {
         this.user$.next(user);
     }
 
-    private storageSetup() {
-        // setup storage
-        this.projectService.getProjectStream().subscribe(project => {
-            if (this.storageProvider) {
-                this.storageProvider.saveProject(project);
-            }
+    /**
+     * Get as stream of raster sources depending on the logged in user.
+     */
+    getRasterSourcesStream(): Observable<Array<MappingSource>> {
+        interface MappingSourceDict {
+            name: string;
+            colorizer: string;
+            coords: {
+                epsg: number,
+                origin: number[],
+                scale: number[],
+                size: number[],
+            };
+            channels: [{
+                datatype: string,
+                nodata: number,
+                name?: string,
+                unit?: UnitMappingDict,
+                transform?: {
+                    unit?: UnitMappingDict,
+                    datatype: string,
+                    scale: number,
+                    offset: number,
+                },
+            }];
+        };
+
+        return this.session$.switchMap(session => {
+            const parameters = new UserServiceRequestParameters({
+                request: 'sourcelist',
+                sessionToken: session.sessionToken,
+            });
+            return this.request(parameters).then(
+                response => response.json()
+            ).then((json: JSON) => {
+                const sources: Array<MappingSource> = [];
+
+                for (const sourceId in json['sourcelist']) {
+                    const source: MappingSourceDict = json['sourcelist'][sourceId];
+                    sources.push({
+                        source: sourceId,
+                        name: source.name,
+                        colorizer: source.colorizer,
+                        coords: source.coords,
+                        channels: source.channels.map((channel, index) => {
+                            return {
+                                id: index,
+                                name: channel.name || 'Channel #' + index,
+                                datatype: channel.datatype,
+                                nodata: channel.nodata,
+                                unit: channel.unit ?
+                                    Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                hasTransform: !!channel.transform,
+                                transform: channel.transform === undefined ?
+                                    undefined : {
+                                        unit: channel.transform.unit ?
+                                            Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                        datatype: channel.transform.datatype,
+                                        offset: channel.transform.offset,
+                                        scale: channel.transform.scale,
+                                    } as MappingTransform,
+                            } as MappingSourceChannel;
+                        }),
+                    });
+                }
+
+                return sources;
+            });
         });
-        this.layerService.getLayersStream().subscribe(layers => {
-            if (this.storageProvider) {
-                this.storageProvider.saveLayers(layers);
-            }
-        });
-        this.plotService.getPlotsStream().subscribe(plots => {
-            if (this.storageProvider) {
-                this.storageProvider.savePlots(plots);
-            }
-        });
-        this.layoutService.getLayoutDictStream().subscribe(layout => {
-            if (this.storageProvider) {
-                this.storageProvider.saveLayoutSettings(layout);
-            }
-        });
 
-        // load stored values on user change
-        this.user$.subscribe(user => {
-            this.storageProvider = undefined;
+    }
 
-            let storageProvider: StorageProvider;
-            if (user instanceof Guest) {
-                storageProvider = new BrowserStorageProvider();
-            } else {
-                throw 'Not yet implemented'; // TODO: implement
-            }
-
-            const project = storageProvider.loadProject();
-            if (project) {
-                this.projectService.setProject(project);
-            }
-
-            const layers = storageProvider.loadLayers(this.layerService);
-            if (layers) {
-                this.layerService.setLayers(layers);
-            }
-
-            const plots = storageProvider.loadPlots(this.plotService);
-            if (plots) {
-                this.plotService.setPlots(plots);
-            }
-
-            const layoutSettings = storageProvider.loadLayoutSettings();
-            if (layoutSettings) {
-                this.layoutService.setLayoutDict(layoutSettings);
-            }
-
-            this.storageProvider = storageProvider;
-        });
-
+    private request(requestParameters: UserServiceRequestParameters): Promise<Response> {
+        return this.http.post(
+            Config.MAPPING_URL,
+            requestParameters.toMessageBody(),
+            {headers: requestParameters.getHeaders()}
+        ).toPromise();
     }
 
 }

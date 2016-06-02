@@ -6,6 +6,7 @@ import {Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../layers/layer.service';
+import {MappingQueryService, WFSOutputFormats} from '../services/mapping-query.service';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 
@@ -14,6 +15,9 @@ import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
+import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
+
+import {ResultTypes} from '../operators/result-type.model';
 
 /**
  * The start tab of the ribbons component.
@@ -28,7 +32,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
             <div layout="row">
                 <div layout="column" layout-align="space-around center">
                     <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)"
+                            class="md-primary" [disabled]="true"
                             layout="column" layout-align="center center">
                         <i md-icon>info</i>
                         <div>Info</div>
@@ -41,13 +45,18 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
                         <i md-icon>merge_type</i>
                         Lineage
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)">
+                    <a md-button
+                        style="text-align: left; margin: 0px;"
+                        class="md-primary"
+                        [class.disabled]="!(isLayerSelected$ | async)
+                                            || (exportLayerUrl$ | async).length <= 0"
+                        [href]="exportLayerUrl$ | async"
+                    >
                         <i md-icon>file_download</i>
                         Export
-                    </button>
+                    </a>
                     <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary" [disabled]="!(isLayerSelected$ | async)">
+                            class="md-primary" [disabled]="true">
                         <i md-icon>share</i>
                         Share
                     </button>
@@ -122,18 +131,32 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
                     </button>
                 </div>
                 <div layout="column">
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>add_shopping_cart</i>
                         GFBio Search
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>file_upload</i>
                         Upload
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
-                            class="md-primary">
+                    <button md-button
+                        class="md-primary small"
+                        (click)="gbifLoader.show()"
+                    >
+                        <i md-icon>search</i>
+                        GBIF Search
+                    </button>
+                    <button md-button
+                        *ngIf="false"
+                        class="md-primary small"
+                        disabled="true"
+                    >
                         <i md-icon>brush</i>
                         Draw
                     </button>
@@ -153,10 +176,16 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
         [type]="OperatorGraphDialogComponent"
         [config]="{selectedLayerOnly: true}"
     ></wave-dialog-loader>
+    <wave-dialog-loader #gbifLoader [type]="GBIFOperatorComponent"></wave-dialog-loader>
     `,
     styles: [`
     .selected {
       background-color: #f5f5f5 !important;
+    }
+    a.disabled, a.disabled >>> .md-button-wrapper {
+        pointer-events: none;
+        color: rgba(0, 0, 0, 0.26);
+        background-color: transparent;
     }
     fieldset {
         border-style: solid;
@@ -174,6 +203,10 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
     }
     button[disabled] {
         background-color: transparent;
+    }
+    button.small {
+        text-align: left;
+        margin: 0px;
     }
     `],
     directives: [
@@ -199,15 +232,31 @@ export class StartTabComponent {
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    GBIFOperatorComponent = GBIFOperatorComponent;
     // tslint:enable
+
+    exportLayerUrl$: Observable<string>;
 
     private isLayerSelected$: Observable<boolean>;
 
     constructor(
-        private layerService: LayerService
+        private layerService: LayerService,
+        private mappingQueryService: MappingQueryService
     ) {
         this.isLayerSelected$ = this.layerService.getSelectedLayerStream()
                                                  .map(layer => layer !== undefined);
+
+        this.exportLayerUrl$ = this.layerService.getSelectedLayerStream().filter(
+            layer => layer !== undefined
+        ).switchMap(layer => {
+            if (ResultTypes.VECTOR_TYPES.indexOf(layer.operator.resultType) >= 0) {
+                return this.mappingQueryService.getWFSQueryUrlStream(
+                    layer.operator, WFSOutputFormats.CSV_ZIP
+                );
+            } else {
+                return Observable.of('');
+            }
+        });
     }
 
     // /**

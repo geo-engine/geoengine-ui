@@ -2,7 +2,6 @@ import {
     Component, ViewChild, ChangeDetectionStrategy, OnInit,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
-import {HTTP_PROVIDERS} from '@angular/http';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
@@ -16,7 +15,6 @@ import {ColorPickerService} from 'ct-angular2-color-picker/component';
 import {InfoAreaComponent} from '../components/info-area.component';
 import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
-import {LayerListComponent} from '../layers/layer-list.component';
 import {DataTableComponent} from '../components/data-table.component';
 import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {OlMapComponent} from '../components/openlayers/ol-map.component';
@@ -26,19 +24,21 @@ import {
 
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
-import {Layer} from '../layers/layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import {LayerService} from '../layers/layer.service';
 import {LayoutService} from '../app/layout.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
+import {StorageService} from '../storage/storage.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
-import {PlotListComponent} from '../plots/plot-list.component';
+import {LayerListComponent} from '../layers/layer-list.component';
+import {Layer} from '../layers/layer.model';
+import {LayerService} from '../layers/layer.service';
 
+import {PlotListComponent} from '../plots/plot-list.component';
 import {PlotService} from '../plots/plot.service';
 
 @Component({
@@ -55,7 +55,7 @@ import {PlotService} from '../plots/plot.service';
             ></wave-ribbons-component>
         </div>
         <div
-            class="middleContainer md-whiteframe-3dp"
+            class="middleContainer"
             [style.height.px]="middleContainerHeight$ | async"
         >
             <wave-layer-list
@@ -110,38 +110,46 @@ import {PlotService} from '../plots/plot.service';
                 [maxHeight]="middleContainerHeight$ | async"
             ></wave-plot-list>
         </div>
-        <md-tab-group>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(false)">_</div>
-                </template>
-                <template md-tab-content *ngIf="dataTableVisible$ | async"><div></div></template>
-            </md-tab>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
-                </template>
-                <template md-tab-content>
-                    <wave-data-table
-                        *ngIf="dataTableVisible$ | async"
-                        [style.height.px]="(bottomContainerHeight$ | async)"
-                        [height]="(bottomContainerHeight$ | async)">
-                    </wave-data-table>
-                </template>
-            </md-tab>
-            <md-tab>
-                <template md-tab-label>
-                    <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
-                </template>
-                <template md-tab-content>
-                    <wave-provenance-list
-                        *ngIf= "dataTableVisible$ | async"
-                        [style.height.px]= "(bottomContainerHeight$ | async)"
-                        [height]= "(bottomContainerHeight$ | async)"
-                    ></wave-provenance-list>
-                </template>
-            </md-tab>
-        </md-tab-group>
+        <div [style.height.px]="(bottomContainerHeight$ | async) + 48"
+             class="bottomContainer md-whiteframe-3dp"
+        >
+            <div class="bottomToggle">
+                <button md-button class="md-icon-button" aria-label="Toggle Data Table"
+                        (click)="layoutService.toggleDataTableVisibility()"
+                        [ngSwitch]="dataTableVisible$ | async"
+                >
+                    <i *ngSwitchWhen="true" md-icon>expand_more</i>
+                    <i *ngSwitchWhen="false" md-icon>expand_less</i>
+                </button>
+                <md-divider></md-divider>
+            </div>
+            <md-tab-group>
+                <md-tab>
+                    <template md-tab-label>
+                        <div (click)="layoutService.setLayerListVisibility(true)">Data Table</div>
+                    </template>
+                    <template md-tab-content>
+                        <wave-data-table
+                            *ngIf= "dataTableVisible$ | async"
+                            [style.height.px]="(bottomContainerHeight$ | async)"
+                            [height]="(bottomContainerHeight$ | async)">
+                        </wave-data-table>
+                    </template>
+                </md-tab>
+                <md-tab>
+                    <template md-tab-label>
+                        <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
+                    </template>
+                    <template md-tab-content>
+                        <wave-provenance-list
+                            *ngIf= "dataTableVisible$ | async"
+                            [style.height.px]= "(bottomContainerHeight$ | async)"
+                            [height]= "(bottomContainerHeight$ | async)"
+                        ></wave-provenance-list>
+                    </template>
+                </md-tab>
+            </md-tab-group>
+        </div>
         <md-sidenav #rasterRepository align="end" layout="column" mode="over">
             <wave-raster-repository style='height:100%'
                 *ngIf="rasterRepository.opened"
@@ -151,11 +159,32 @@ import {PlotService} from '../plots/plot.service';
     `,
     styles: [`
 
+    .bottomContainer {
+        background: whitesmoke;
+        min-height: 48px;
+        position: relative;
+        z-index: 1;
+    }
+    .bottomToggle {
+        width: 48px;
+        height: 41px;
+        float: left;
+        padding-top: 7px;
+    }
+    .bottomToggle button {
+        height: 40px;
+    }
+    md-tab-group {
+        float: left; width: calc(100% - 48px);
+    }
     md-tab-group, md-tab-group >>> .md-tab-body-wrapper {
         min-height: 0 !important;
     }
     md-tab-group >>> .md-tab-header {
         height: 47px;
+    }
+    md-tab-group >>> .md-tab-body-wrapper {
+        margin-left: -48px;
     }
 
     .topContainer {
@@ -163,6 +192,8 @@ import {PlotService} from '../plots/plot.service';
         height: 180px;
         width: 100%;
         flex-direction: row;
+        position: relative;
+        z-index: 1;
     }
     wave-info-area {
         width: 200px;
@@ -214,9 +245,9 @@ import {PlotService} from '../plots/plot.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        MATERIAL_BROWSER_PROVIDERS, HTTP_PROVIDERS,
-        LayerService, PlotService, LayoutService, ProjectService, UserService, MappingQueryService,
-        RandomColorService, ColorPickerService,
+        MATERIAL_BROWSER_PROVIDERS,
+        UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
+        StorageService, RandomColorService, ColorPickerService,
     ],
 })
 export class AppComponent implements OnInit {
@@ -242,7 +273,8 @@ export class AppComponent implements OnInit {
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
         private userService: UserService,
-        private randomColorService: RandomColorService
+        private randomColorService: RandomColorService,
+        private storageService: StorageService
     ) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
@@ -276,10 +308,6 @@ export class AppComponent implements OnInit {
         let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
-    }
-
-    console(a: HTMLElement) {
-        console.log(a, a.offsetHeight);
     }
 
 }
