@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
@@ -56,7 +56,7 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
     pipes: [RgbaToCssStringPipe, CssStringToRgbaPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyPointsComponent implements OnInit {
+export class SymbologyPointsComponent {
 
     static minStrokeWidth: number = 1;
     static minRadius: number = 1;
@@ -94,10 +94,6 @@ export class SymbologyPointsComponent implements OnInit {
             this.symbology.stroke_rgba = this._cssStringToRgbaTransformer.transform(rgba);
             this.update();
         }
-    }
-
-    ngOnInit() {
-        // console.log('wave-symbology-points', this.symbology);
     }
 }
 
