@@ -25,7 +25,7 @@ import {Provenance} from './provenance.model';
                     </tr>
                     <tr>
                         <td>URI:</td>
-                        <td>{{p.uri}}</td>
+                        <td><a [href]="p.uri">{{p.uri}}</a></td>
                     </tr>
                 </table>
                 <md-divider></md-divider>
