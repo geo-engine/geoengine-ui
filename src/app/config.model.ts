@@ -8,7 +8,8 @@ export default {
         VERSION: '2.0.0',
         FORMAT: 'application/json',
     },
-    DEBUG_MODE: true,
+    DEVELOPER_MODE: true,
+    MAPPING_DEBUG_MODE: true,
     USER: {
         GUEST: {
             NAME: 'guest',

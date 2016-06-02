@@ -38,7 +38,7 @@ import Config from '../app/config.model';
         <template md-tab label="Project">
             <wave-project-tab></wave-project-tab>
         </template>
-        <template *ngIf="DEBUG_MODE" md-tab label="Debug">
+        <template *ngIf="DEVELOPER_MODE" md-tab label="Debug">
             <wave-debug-tab></wave-debug-tab>
         </template>
     </md-tabs>
@@ -74,7 +74,7 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     @Output() addData = new EventEmitter<void>();
 
-    DEBUG_MODE: boolean = Config.DEBUG_MODE;
+    DEVELOPER_MODE: boolean = Config.DEVELOPER_MODE;
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,

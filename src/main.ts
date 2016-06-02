@@ -7,7 +7,7 @@ import {AppComponent} from './app/app.component';
 import Config from './app/config.model';
 
 // disable dev mode when not in debug mode
-if (!Config.DEBUG_MODE) {
+if (!Config.DEVELOPER_MODE) {
     enableProdMode();
 }
 

@@ -301,7 +301,7 @@ export class MappingQueryService {
             format: Config.WMS.FORMAT,
             transparent: true,
             layers: projectedOperator.toQueryJSON(),
-            debug: (Config.DEBUG_MODE ? 1 : 0),
+            debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
             time: time.toISOString(),
         };
     }
