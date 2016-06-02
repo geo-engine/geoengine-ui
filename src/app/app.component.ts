@@ -126,7 +126,7 @@ import {PlotService} from '../plots/plot.service';
             <md-tab-group>
                 <md-tab>
                     <template md-tab-label>
-                        <div (click)="layoutService.setLayerListVisibility(true)">Data Table</div>
+                        <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
                     </template>
                     <template md-tab-content>
                         <wave-data-table
