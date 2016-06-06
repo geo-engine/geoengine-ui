@@ -40,38 +40,28 @@ import {ProjectService} from '../project/project.service';
 
           <template ngFor let-channel [ngForOf]="source.channels">
             <md-divider></md-divider>
-            <md-list-item md-clickable   *ngIf="!channel.hasTransform"
-                            class="md-3-line"
-                            (click)="add(source, channel, channel.hasTransform)">
+              <md-list-item md-clickable class="md-3-line">
+                  <md-switch #t
+                            [checked]="channel.hasTransform"
+                            aria-label="transform raw data"
+                            [disabled]="!channel.hasTransform">
+                  </md-switch>
+                  <div class="md-list-item-text"
+                        layout="column"
+                        (click)="add(source, channel, t.checked)">
 
-                <div class="md-list-item-text" layout="column">
-                  <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
-                  <p>measurement: {{channel?.unit?.measurement}}</p>
-                  <p>unit: {{channel?.unit?.unit}}</p>
-                </div>
-            </md-list-item>
-
-          <template [ngIf]="channel.hasTransform">
-            <md-list-item md-clickable   class="md-3-line"
-                            (click)="add(source, channel, channel.hasTransform)">
-
-                <div class="md-list-item-text" layout="column">
-                    <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
-                    <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                    <p>unit: {{channel?.transform?.unit?.unit}}</p>
-                </div>
-            </md-list-item>
-            <md-divider md-inset></md-divider>
-            <md-list-item md-clickable   class="md-2-line"
-                            (click)="add(source, channel, !channel.hasTransform)">
-
-                <div class="md-list-item-text" layout="column">
-                    <p>measurement: {{channel?.unit?.measurement}}</p>
-                    <p>unit: {{channel?.unit?.unit}}</p>
-                </div>
-            </md-list-item>
-            </template>
-
+                      <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
+                      <template [ngIf]="t.checked">
+                          <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
+                          <p>unit: {{channel?.transform?.unit?.unit}}</p>
+                      </template>
+                      <template [ngIf]="!t.checked">
+                          <p>measurement: {{channel?.unit?.measurement}}</p>
+                          <p>unit: {{channel?.unit?.unit}}</p>
+                      </template>
+                      
+                  </div>
+              </md-list-item>
           </template>
 
       </template>
