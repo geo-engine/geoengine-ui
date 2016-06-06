@@ -112,22 +112,19 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 @Component({
     selector: 'wave-legendary-mapping-colorizer-raster',
     template: `
-        <div class='legend' [ngSwitch]='(colorizer$ | async)?.interpolation'>
-            <tbody *ngSwitchWhen='_linear'>
+        <div class='legend'>
+            <tbody>
                 <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints; let isFirst = first'>
-                    <td class='gradient'
-                        *ngIf='isFirst'
-                        [rowSpan]='(colorizer$ | async)?.breakpoints.length'
-                        [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
-                    </td>
-                    <td>{{breakpoint[0]}}</td>
-                    <td>{{breakpoint[2]}}</td>
-                </tr>
-            </tbody>
-
-            <tbody *ngSwitchDefault>
-                <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints'>
-                    <td class='icon' [style.background-color]='breakpoint[1]'></td>
+                    <template [ngIf]='(colorizer$ | async)?.interpolation === _linear'>
+                        <td class='gradient'
+                            *ngIf='isFirst'
+                            [rowSpan]='(colorizer$ | async)?.breakpoints.length'
+                            [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
+                        </td>
+                    </template>
+                    <template [ngIf]='(colorizer$ | async)?.interpolation !== _linear'>
+                        <td class='icon' [style.background-color]='breakpoint[1]'></td>
+                    </template>
                     <td>{{breakpoint[0]}}</td>
                     <td>{{breakpoint[2]}}</td>
                 </tr>
