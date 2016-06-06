@@ -127,6 +127,9 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     constructor(config: RasterLayerConfig<S>) {
         super(config);
+        if (!config.symbology.unit) {
+            config.symbology.unit = config.operator.units.get('value');
+        }
     }
 
     static fromDict(

@@ -59,7 +59,7 @@ import {ProjectService} from '../project/project.service';
                           <p>measurement: {{channel?.unit?.measurement}}</p>
                           <p>unit: {{channel?.unit?.unit}}</p>
                       </template>
-                      
+
                   </div>
               </md-list-item>
           </template>
@@ -131,7 +131,7 @@ export class RasterRepositoryComponent {
         const layer = new RasterLayer({
             name: channel.name,
             operator: operator,
-            symbology: new MappingColorizerRasterSymbology({},
+            symbology: new MappingColorizerRasterSymbology({unit: unit},
                 this.mappingQueryService.getColorizerStream(operator)
             ),
             prov$: this.mappingQueryService.getProvenanceStream(operator),

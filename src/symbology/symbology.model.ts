@@ -1,5 +1,6 @@
 import ol from 'openlayers';
 import {Observable} from 'rxjs/Rx';
+import {Unit, Interpolation} from '../operators/unit.model';
 
 export enum SymbologyType {
     RASTER,
@@ -29,9 +30,11 @@ export abstract class Symbology implements ISymbology {
             case SymbologyType.SIMPLE_VECTOR:
                 return new SimpleVectorSymbology(dict.symbologyConfig as IVectorSymbology);
             case SymbologyType.RASTER:
-                return new RasterSymbology(dict.symbologyConfig);
+                return new RasterSymbology(dict.symbologyConfig as IRasterSymbology);
             case SymbologyType.MAPPING_COLORIZER_RASTER:
-                return new MappingColorizerRasterSymbology(dict.symbologyConfig, colorizerObservable);
+                return new MappingColorizerRasterSymbology(
+                    dict.symbologyConfig as IRasterSymbology,
+                    colorizerObservable);
         }
     }
 
@@ -159,6 +162,7 @@ export interface IRasterSymbology extends ISymbology {
     opacity?: number;
     hue?: number;
     saturation?: number;
+    unit: Unit;
 }
 
 export class RasterSymbology extends Symbology implements IRasterSymbology {
@@ -166,11 +170,18 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     hue: number = 0;
     saturation: number = 0;
 
+    unit: Unit;
+
     constructor(config: IRasterSymbology) {
         super();
+        this.unit = config.unit;
         if (config.opacity) { this.opacity = config.opacity; };
         if (config.hue) { this.hue = config.hue; };
         if (config.saturation) { this.saturation = config.saturation; };
+    }
+
+    isContinuous() {
+        return this.unit.interpolation === Interpolation.Continuous;
     }
 
     get symbologyType(): SymbologyType {
