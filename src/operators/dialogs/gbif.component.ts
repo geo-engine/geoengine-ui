@@ -281,7 +281,7 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
-                data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     operator
                 ),
                 prov$: this.mappingQueryService.getProvenanceStream(operator),

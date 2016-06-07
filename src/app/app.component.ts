@@ -1,12 +1,12 @@
 import {
-    Component, ViewChild, ChangeDetectionStrategy, OnInit,
+    Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
-import {MD_TABS_DIRECTIVES} from '@angular2-material/tabs';
+import {MD_TABS_DIRECTIVES, MdTabGroup} from '@angular2-material/tabs';
 
 import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
@@ -250,8 +250,9 @@ import {PlotService} from '../plots/plot.service';
         StorageService, RandomColorService, ColorPickerService,
     ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(OlMapComponent) mapComponent: OlMapComponent;
+    @ViewChild(MdTabGroup) bottomTabs: MdTabGroup;
 
     private layerListVisible$: Observable<boolean>;
     private plotComponentVisible$: Observable<boolean>;
@@ -274,7 +275,8 @@ export class AppComponent implements OnInit {
         private mappingQueryService: MappingQueryService,
         private userService: UserService,
         private randomColorService: RandomColorService,
-        private storageService: StorageService
+        private storageService: StorageService,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
         this.layersReverse$ = layerService.getLayersStream()
                                          .map(layers => layers.slice(0).reverse());
@@ -301,6 +303,11 @@ export class AppComponent implements OnInit {
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$);
         this.bottomContainerHeight$ = this.layoutService.getDataTableHeightStream(remainingHeight$);
+    }
+
+    ngAfterViewInit() {
+        this.bottomTabs.selectedIndex = this.layoutService.getFooterTabIndex();
+        this.changeDetectorRef.markForCheck();
     }
 
     getMapIndexOfSelectedLayer() {

@@ -7,8 +7,9 @@ import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, Mapp
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 
-interface Parameters {
-    [key: string]: any;
+export interface VectorLayerDataStream {
+    data$: Observable<GeoJsonFeatureCollection>;
+    loading$: Observable<boolean>;
 }
 
 interface LayerConfig<S extends Symbology> {
@@ -19,7 +20,7 @@ interface LayerConfig<S extends Symbology> {
 }
 
 interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
-    data$: Observable<GeoJsonFeatureCollection>;
+    data: VectorLayerDataStream;
 }
 
 interface RasterLayerConfig<S extends RasterSymbology> extends LayerConfig<S> {
@@ -81,16 +82,16 @@ export abstract class Layer<S extends Symbology> {
 }
 
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
-    private _data$: Observable<GeoJsonFeatureCollection>;
+    private _data: VectorLayerDataStream;
 
     constructor(config: VectorLayerConfig<S>) {
         super(config);
-        this._data$ = config.data$;
+        this._data = config.data;
     }
 
     static fromDict(
         dict: LayerDict,
-        dataCallback: (operator: Operator) => Observable<GeoJsonFeatureCollection>,
+        dataCallback: (operator: Operator) => VectorLayerDataStream,
         provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
     ): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator);
@@ -99,7 +100,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
             name: dict.name,
             operator: operator,
             symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
-            data$: dataCallback(operator),
+            data: dataCallback(operator),
             prov$: provenanceCallback(operator),
         });
 
@@ -111,17 +112,14 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     /**
      * @returns the data observable.
      */
-    get data$(): Observable<GeoJsonFeatureCollection> {
-        return this._data$;
+    get data(): VectorLayerDataStream {
+        return this._data;
     }
 
     get layerType(): LayerType {
         return 'vector';
     }
 
-    public getDataStream(): Observable<GeoJsonFeatureCollection> {
-        return this.data$;
-    }
 }
 
 export class RasterLayer<S extends RasterSymbology> extends Layer<S> {

@@ -7,6 +7,9 @@ import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
+
+import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
@@ -25,26 +28,38 @@ interface Column {
 @Component({
     selector: 'wave-data-table',
     template: `
-    <md-content class='container' [style.height.px]='height' (scroll)='onScroll($event)'>
-      <md-data-table [selectable]='true' (onSelectableChange)='change($event)'>
-        <thead>
-          <tr [style.height.px]='scrollTop'></tr>
-          <tr md-data-table-header-selectable-row (onChange)='change($event)'>
-            <th *ngFor='let column of columns'>{{column.name}} </th>
-            <th *ngFor='let column of propertyColumns'>{{column.name}} </th>
-          </tr>
-        </thead>
-        <tbody>
-            <template ngFor let-row [ngForOf]='visibleRows' let-idx='index'>
-              <tr md-data-table-selectable-row [selectable-value]='row.id'
-                                               (onChange)='change($event)'>
-                    <td *ngFor='let column of columns'>{{row[column.name]}}</td>
-                    <td *ngFor='let column of propertyColumns'>{{row?.properties[column.name]}}</td>
-              </tr>
-            </template>
-            <tr [style.height.px]='scrollBottom'></tr>
-        </tbody>
-      </md-data-table>
+    <md-content class="container" [style.height.px]="height" (scroll)="onScroll($event)">
+        <md-data-table [selectable]="true" (onSelectableChange)="change($event)">
+            <thead>
+                <tr [style.height.px]="scrollTop"></tr>
+                <tr md-data-table-header-selectable-row (onChange)="change($event)">
+                    <th *ngFor="let column of columns">{{column.name}} </th>
+                    <th *ngFor="let column of propertyColumns">{{column.name}} </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template ngFor let-row [ngForOf]="visibleRows" let-idx="index">
+                    <tr md-data-table-selectable-row
+                        [selectable-value]="row.id"
+                        (onChange)="change($event)"
+                    >
+                        <td *ngFor="let column of columns">{{row[column.name]}}</td>
+                        <td
+                            *ngFor="let column of propertyColumns"
+                        >{{row?.properties[column.name]}}</td>
+                    </tr>
+                </template>
+                <tr [style.height.px]="scrollBottom"></tr>
+            </tbody>
+        </md-data-table>
+        <md-progress-circle
+            mode="indeterminate"
+            *ngIf="loading$ | async"
+            [style.height.px]="height / 2"
+            [style.width.px]="height / 2"
+            [style.top.px]="height / 4"
+            [style.left]="'calc(50% - ' + height / 2 + 'px)' | waveSafeStyle"
+        ></md-progress-circle>
     </md-content>
     `,
     styles: [`
@@ -65,8 +80,12 @@ interface Column {
     md-data-table tbody >>> .md-data-check-cell {
         height: 32px;
     }
+    md-progress-circle {
+        position: absolute;
+    }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES],
+    pipes: [SafeStylePipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges {
@@ -89,39 +108,51 @@ export class DataTableComponent implements OnInit, OnChanges {
     private columns: Array<Column> = [];
     private propertyColumns:  Array<Column> = [];
     private data$: Observable<Array<GeoJsonFeature>>;
+    private loading$: Observable<boolean>;
 
-    constructor(private http: Http,
-                private changeDetectorRef: ChangeDetectorRef,
-                private layerService: LayerService,
-                private projectService: ProjectService,
-                private mappingQueryService: MappingQueryService) {
+    constructor(
+        private http: Http,
+        private changeDetectorRef: ChangeDetectorRef,
+        private layerService: LayerService,
+        private projectService: ProjectService,
+        private mappingQueryService: MappingQueryService
+    ) {
         // console.log("DataTableComponent", "constructor");
 
-        this.data$ = this.layerService.getSelectedLayerStream().switchMap(layer => {
+        const dataStream = layerService.getSelectedLayerStream().map(layer => {
             if (layer === undefined) {
-                return Observable.of([]);
+                return { data$: Observable.of([]), loading$: Observable.of(false)};
             }
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS:
                     let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
-                    return vectorLayer.getDataStream().map(data => {
-                        if (data) { // TODO: needed?
-                            let geojson: GeoJsonFeatureCollection = data;
-                            return geojson.features;
-                        }
-                    });
+                    return {
+                        data$: vectorLayer.data.data$.map(data => {
+                            if (data) { // TODO: needed?
+                                let geojson: GeoJsonFeatureCollection = data;
+                                return geojson.features;
+                            }
+                        }),
+                        loading$: vectorLayer.data.loading$,
+                    };
                 case ResultTypes.RASTER:
-                    return Observable.of([{properties: {
-                        Attribute: 'Value',
-                        Unit: layer.operator.getUnit('value').toString() || 'undefined',
-                        Datatype: layer.operator.getDataType('value').toString() || 'undefined',
-                    }}]);
+                    return {
+                        data$: Observable.of([{properties: {
+                            Attribute: 'Value',
+                            Unit: layer.operator.getUnit('value').toString() || 'undefined',
+                            Datatype: layer.operator.getDataType('value').toString() || 'undefined',
+                        }}]),
+                        loading$: Observable.of(false),
+                    };
                 default:
-                    return Observable.of([]);
+                    return { data$: Observable.of([]), loading$: Observable.of(false)};
             };
         });
+
+        this.data$ = dataStream.switchMap(stream => stream.data$);
+        this.loading$ = dataStream.switchMap(stream => stream.loading$);
     }
 
     ngOnInit() {

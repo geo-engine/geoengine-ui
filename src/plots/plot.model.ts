@@ -17,10 +17,15 @@ export interface PlotData {
    };
 }
 
+export interface PlotDataStream {
+    data$: Observable<PlotData>;
+    loading$: Observable<boolean>;
+}
+
 interface PlotConfig {
     name: string;
     operator: Operator;
-    data$: Observable<PlotData>;
+    data: PlotDataStream;
 }
 
 /**
@@ -39,26 +44,26 @@ export class Plot {
     private _operator: Operator;
 
     /**
-     * A data observable that emits new data on time changes.
+     * A data stream object that contains observables for data.
      */
-    private _data$: Observable<PlotData>;
+    private _data: PlotDataStream;
 
     constructor(config: PlotConfig) {
         this.name = config.name;
         this._operator = config.operator;
-        this._data$ = config.data$;
+        this._data = config.data;
     }
 
     /**
      * De-Serialization
      */
     static fromDict(dict: PlotDict,
-                    dataCallback: (operator: Operator) => Observable<PlotData>): Plot {
+                    dataCallback: (operator: Operator) => PlotDataStream): Plot {
         const operator = Operator.fromDict(dict.operator);
         return new Plot({
             name: dict.name,
             operator: operator,
-            data$: dataCallback(operator),
+            data: dataCallback(operator),
         });
     }
 
@@ -72,8 +77,8 @@ export class Plot {
     /**
      * @returns the data observable.
      */
-    get data$(): Observable<PlotData> {
-        return this._data$;
+    get data(): PlotDataStream {
+        return this._data;
     }
 
     /**

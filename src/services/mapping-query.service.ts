@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers, Response} from '@angular/http';
-import {Observable} from 'rxjs/Rx';
+import {Observable, ReplaySubject} from 'rxjs/Rx';
 
 import moment from 'moment';
 
@@ -12,7 +12,8 @@ import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
 
 import Config from '../app/config.model';
-import {PlotData} from '../plots/plot.model';
+import {PlotData, PlotDataStream} from '../plots/plot.model';
+import {VectorLayerDataStream} from '../layers/layer.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -165,10 +166,18 @@ export class MappingQueryService {
      * @param operator the operator graph
      * @returns an Observable of PlotData
      */
-    getPlotDataStream(operator: Operator): Observable<PlotData> {
-        return this.projectService.getTimeStream().switchMap(
-            time => this.getPlotData(operator, time)
-        );
+    getPlotDataStream(operator: Operator): PlotDataStream {
+        const loading$ = new ReplaySubject<boolean>(1);
+        const data$ = this.projectService.getTimeStream().switchMap(time => {
+            loading$.next(true);
+            const promise = this.getPlotData(operator, time);
+            promise.then(_ => loading$.next(false), _ => loading$.next(false));
+            return promise;
+        });
+        return {
+            data$: data$,
+            loading$: loading$,
+        };
     }
 
     /**
@@ -264,12 +273,16 @@ export class MappingQueryService {
 
     getWFSDataStreamAsGeoJsonFeatureCollection(
         operator: Operator
-    ): Observable<GeoJsonFeatureCollection> {
-        return Observable.combineLatest(
+    ): VectorLayerDataStream {
+        const loading$ = new ReplaySubject<boolean>(1);
+        const data$ = Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).switchMap(
-            ([time, projection]) => this.getWFSDataAsJson(operator, time, projection)
-        ).map(result => {
+        ).switchMap(([time, projection]) => {
+            loading$.next(true);
+            const promise = this.getWFSDataAsJson(operator, time, projection);
+            promise.then(_ => loading$.next(false), _ => loading$.next(false));
+            return promise;
+        }).map(result => {
             const geojson = result as GeoJsonFeatureCollection;
             const features = geojson.features;
             for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
@@ -280,6 +293,11 @@ export class MappingQueryService {
             }
             return geojson;
         }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+
+        return {
+            data$: data$,
+            loading$: loading$,
+        };
     }
 
     /**

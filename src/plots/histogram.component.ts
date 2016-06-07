@@ -297,19 +297,23 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             rightSlider.pointer.call(rightDrag);
 
             // zoom
-            zoom = d3.behavior.zoom()
-                              .scaleExtent([1, 10])
-                              .x(x)
-                              .on(
-                                  'zoom',
-                                  this.sliderZoomed(svg, container, xAxis, height, width,
-                                                    leftSlider, rightSlider)
-                              );
+            if (this.interactable) {
+                zoom = d3.behavior.zoom()
+                                  .scaleExtent([1, 10])
+                                  .x(x)
+                                  .on(
+                                      'zoom',
+                                      this.sliderZoomed(svg, container, xAxis, height, width,
+                                                        leftSlider, rightSlider)
+                                  );
+            }
         } else {
-            zoom = d3.behavior.zoom()
-                              .scaleExtent([1, 10])
-                              .x(x)
-                              .on('zoom', this.zoomed(svg, container, xAxis));
+            if (this.interactable) {
+                zoom = d3.behavior.zoom()
+                                  .scaleExtent([1, 10])
+                                  .x(x)
+                                  .on('zoom', this.zoomed(svg, container, xAxis));
+            }
         }
 
         const chartbg = svg.append('rect')

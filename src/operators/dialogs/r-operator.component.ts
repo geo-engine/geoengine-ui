@@ -159,7 +159,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                         symbology: new SimplePointSymbology({
                             fill_rgba: this.randomColorService.getRandomColor(),
                         }),
-                        data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                        data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                             operator
                         ),
                         prov$: provenance$,
@@ -182,7 +182,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
             const plot = new Plot({
                 name: outputName,
                 operator: operator,
-                data$: this.mappingQueryService.getPlotDataStream(operator),
+                data: this.mappingQueryService.getPlotDataStream(operator),
             });
             this.plotService.addPlot(plot);
         }

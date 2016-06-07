@@ -5,6 +5,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {Observable} from 'rxjs/Rx';
 
 import {MdToolbar} from '@angular2-material/toolbar';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {HistogramComponent} from './histogram.component';
@@ -41,7 +42,7 @@ import {LayoutService} from '../app/layout.service';
     <md-content *ngIf="plotListVisible$ | async" [style.max-height.px]="maxHeight - 48">
         <md-list>
             <md-list-item *ngFor="let plot of plots$ | async"
-                          [ngSwitch]="(plot.data$ | async)?.type"
+                          [ngSwitch]="(plot.data.data$ | async)?.type"
                           class="md-2-line">
                 <div class="md-list-item-text plot-header" layout="column">
                     <div layout="row">
@@ -57,18 +58,22 @@ import {LayoutService} from '../app/layout.service';
                     </div>
                     <div class="plot-content">
                         <template ngSwitchWhen="text">
-                            <pre>{{(plot.data$ | async)?.data}}</pre>
+                            <pre>{{(plot.data.data$ | async)?.data}}</pre>
                         </template>
                         <template ngSwitchWhen="png">
-                            <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}"
+                            <img src="data:image/png;base64,{{(plot.data.data$ | async)?.data}}"
                                  width="150" height="150" alt="{{plot.name}}">
                         </template>
                         <template ngSwitchWhen="histogram">
-                            <wave-histogram [data]="plot.data$ | async"
+                            <wave-histogram [data]="plot.data.data$ | async"
                                             width="150" height="150"
                                             viewBoxRatio="3">
                             </wave-histogram>
                         </template>
+                        <md-progress-circle
+                            mode="indeterminate"
+                            *ngIf="plot.data.loading$ | async"
+                        ></md-progress-circle>
                     </div>
                 </div>
                 <md-divider></md-divider>
@@ -100,6 +105,7 @@ import {LayoutService} from '../app/layout.service';
     }
     .plot-header {
         width: 100%;
+        min-width: 0;
     }
     .plot-header h3 {
         line-height: 40px !important;
@@ -121,9 +127,15 @@ import {LayoutService} from '../app/layout.service';
         max-height: 200px; /* TODO: reasonable value */
         overflow-y: hidden;
     }
+    md-progress-circle {
+        position: absolute;
+        top: 48px;
+        left: calc(50% - 100px/2);
+    }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, DialogLoaderComponent, HistogramComponent,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, MD_PROGRESS_CIRCLE_DIRECTIVES,
+        DialogLoaderComponent, HistogramComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

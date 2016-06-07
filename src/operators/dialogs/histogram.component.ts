@@ -191,7 +191,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
         this.plotService.addPlot(new Plot({
             name: outputName,
             operator: operator,
-            data$: this.mappingQueryService.getPlotDataStream(operator),
+            data: this.mappingQueryService.getPlotDataStream(operator),
         }));
 
         this.dialog.close();

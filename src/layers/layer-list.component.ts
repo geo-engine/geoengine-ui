@@ -2,6 +2,7 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
@@ -49,6 +50,10 @@ import {
                     >
                         <i md-icon>more_vert</i>
                     </button>
+                    <md-progress-circle
+                        mode="indeterminate"
+                        *ngIf="layer?.data?.loading$ | async"
+                    ></md-progress-circle>
                 </div>
                 <div *ngIf='layer.expanded' [ngSwitch]='layer.symbology.symbologyType'>
 
@@ -110,11 +115,18 @@ import {
     button[disabled] {
         background-color: transparent;
     }
+    md-progress-circle {
+        position: absolute;
+        height: 36px !important;
+        width: 36px !important;
+        left: calc(50% - 36px/2);
+        top: 6px;
+    }
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, Dragula,
+        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES, Dragula,
         LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent,
     ],
