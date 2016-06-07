@@ -117,6 +117,9 @@ export class Unit {
         nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
       let classes = new Map<number, Class>();
       if (dict.classes !== undefined) {
+          if (interpolation === Interpolation.Unknown) {
+              interpolation = Interpolation.Discrete;
+          }
           for (let className in dict.classes) {
               classes.set(parseFloat(className), dict.classes[className]);
           }

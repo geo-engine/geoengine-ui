@@ -234,6 +234,12 @@ export class DebugTabComponent {
     }
 
     addRasterLayer() {
+        const unit =  new Unit({
+            measurement: 'elevation',
+            unit: 'm',
+            interpolation: Interpolation.Continuous,
+        });
+
         const srtmOperator = new Operator({
             operatorType: new RasterSourceType({
                 channel: 0,
@@ -244,17 +250,13 @@ export class DebugTabComponent {
             projection: Projections.WGS_84,
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
-            units: new Map<string, Unit>().set('value', new Unit({
-                measurement: 'elevation',
-                unit: 'm',
-                interpolation: Interpolation.Continuous,
-            })),
+            units: new Map<string, Unit>().set('value', unit),
         });
 
         this.layerService.addLayer(
             new RasterLayer({
                 name: 'SRTM',
-                symbology: new MappingColorizerRasterSymbology({},
+                symbology: new MappingColorizerRasterSymbology({unit: unit},
                      this.mappingQueryService.getColorizerStream(srtmOperator)
                 ),
                 operator: srtmOperator,
