@@ -79,9 +79,9 @@ abstract class OlVectorLayerComponent
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
             if ( this.isFirstChange(changes) ) {
-                this.dataSubscription = this.layer.data$.subscribe(data => {
+                this.dataSubscription = this.layer.data.data$.subscribe(data => {
                     this.source.clear(); // TODO: check if this is needed always...
-                    this.source.addFeatures(this.format.readFeatures(data as any));
+                    this.source.addFeatures(this.format.readFeatures(data));
                 });
             }
 

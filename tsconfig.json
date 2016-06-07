@@ -25,6 +25,7 @@
     "src/app/app.component.ts",
     "src/app/config.model.ts",
     "src/app/layout.service.ts",
+    "src/app/safe-template.pipe.ts",
     "src/components/code-editor.component.ts",
     "src/components/data-table.component.ts",
     "src/components/info-area.component.ts",

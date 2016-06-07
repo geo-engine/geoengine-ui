@@ -11,18 +11,18 @@ import {Plot} from './plot.model';
 @Component({
     selector: 'wave-plot-detail-dialog',
     template: `
-    <div [ngSwitch]="(plot.data$ | async)?.type">
+    <div [ngSwitch]="(plot.data.data$ | async)?.type">
         <template ngSwitchWhen="text">
-            <pre>{{(plot.data$ | async)?.data}}</pre>
+            <pre>{{(plot.data.data$ | async)?.data}}</pre>
         </template>
         <template ngSwitchWhen="png">
-            <img src="data:image/png;base64,{{(plot.data$ | async)?.data}}" #plotImage
+            <img src="data:image/png;base64,{{(plot.data.data$ | async)?.data}}" #plotImage
                  [width]="getWidthBound(dialog.maxWidth$ | async,
                                         plotImage.naturalWidth)"
                  [alt]="plot.name">
         </template>
         <template ngSwitchWhen="histogram">
-            <wave-histogram [data]="plot.data$ | async"
+            <wave-histogram [data]="plot.data.data$ | async"
                             [width]="dialog.maxWidth$ | async"
                             [height]="(dialog.maxHeight$ | async) - 5"
                             interactable="true">

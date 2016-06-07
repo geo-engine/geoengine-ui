@@ -10,7 +10,8 @@ export interface LayoutDict {
     layerListVisible: boolean;
     plotListVisible: boolean;
     dataTableVisible: boolean;
-    tabIndex: number;
+    headerTabIndex: number;
+    footerTabIndex: number;
     dataTableHeightPercentage: number;
 }
 
@@ -43,7 +44,12 @@ export class LayoutService {
     /**
      * What is the currently visible tab?
      */
-    private tabIndex$: BehaviorSubject<number> = new BehaviorSubject(0);
+    private headerTabIndex$: BehaviorSubject<number> = new BehaviorSubject(0);
+
+    /**
+     * What is the currently visible tab?
+     */
+    private footerTabIndex$: BehaviorSubject<number> = new BehaviorSubject(0);
 
     /**
      * What is the height of the data table as a percentage of the available space.
@@ -168,23 +174,23 @@ export class LayoutService {
     /**
      * What is the curent tab index?
      */
-    getTabIndexStream(): Observable<number> {
-        return this.tabIndex$;
+    getHeaderTabIndexStream(): Observable<number> {
+        return this.headerTabIndex$;
     }
 
     /**
      * What is the curent tab index?
      */
-    getTabIndex(): number {
-        return this.tabIndex$.value;
+    getHeaderTabIndex(): number {
+        return this.headerTabIndex$.value;
     }
 
     /**
      * Set the current tab index.
      */
-    setTabIndex(index: number) {
+    setHeaderTabIndex(index: number) {
         // ignore call if it is the same index.
-        if (this.tabIndex$.value === index) {
+        if (this.headerTabIndex$.value === index) {
             return;
         }
 
@@ -192,7 +198,37 @@ export class LayoutService {
             index = 0; // repair index
         }
 
-        this.tabIndex$.next(index);
+        this.headerTabIndex$.next(index);
+    }
+
+    /**
+     * What is the curent tab index?
+     */
+    getFooterTabIndexStream(): Observable<number> {
+        return this.footerTabIndex$;
+    }
+
+    /**
+     * What is the curent tab index?
+     */
+    getFooterTabIndex(): number {
+        return this.footerTabIndex$.value;
+    }
+
+    /**
+     * Set the current tab index.
+     */
+    setFooterTabIndex(index: number) {
+        // ignore call if it is the same index.
+        if (this.footerTabIndex$.value === index) {
+            return;
+        }
+
+        if (index < 0) {
+            index = 0; // repair index
+        }
+
+        this.footerTabIndex$.next(index);
     }
 
     /**
@@ -272,7 +308,8 @@ export class LayoutService {
             layerListVisible: this.getLayerListVisibility(),
             plotListVisible: this.getPlotListVisibility(),
             dataTableVisible: this.getDataTableVisibility(),
-            tabIndex: this.getTabIndex(),
+            headerTabIndex: this.getHeaderTabIndex(),
+            footerTabIndex: this.getFooterTabIndex(),
             dataTableHeightPercentage: this.dataTableHeightPercentage$.value,
         };
     }
@@ -282,20 +319,23 @@ export class LayoutService {
             this.layerListVisible$,
             this.plotListVisible$,
             this.dataTableVisible$,
-            this.tabIndex$,
+            this.headerTabIndex$,
+            this.footerTabIndex$,
             this.dataTableHeightPercentage$,
             (
                 layerListVisible,
                 plotListVisible,
                 dataTableVisible,
-                tabIndex,
+                headerTabIndex,
+                footerTabIndex,
                 dataTableHeightPercentage
             ) => {
                 return {
                     layerListVisible: layerListVisible,
                     plotListVisible: plotListVisible,
                     dataTableVisible: dataTableVisible,
-                    tabIndex: tabIndex,
+                    headerTabIndex: headerTabIndex,
+                    footerTabIndex: footerTabIndex,
                     dataTableHeightPercentage: dataTableHeightPercentage,
                 };
             }
@@ -306,7 +346,8 @@ export class LayoutService {
         this.setLayerListVisibility(dict.layerListVisible);
         this.setPlotListVisibility(dict.plotListVisible);
         this.setDataTableVisibility(dict.dataTableVisible);
-        this.setTabIndex(dict.tabIndex);
+        this.setHeaderTabIndex(dict.headerTabIndex);
+        this.setFooterTabIndex(dict.footerTabIndex);
         this.setDataTableHeightPercentage(dict.dataTableHeightPercentage);
     }
 

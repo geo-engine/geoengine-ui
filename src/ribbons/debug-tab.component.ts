@@ -168,7 +168,7 @@ export class DebugTabComponent {
                 name: 'Puma Concolor',
                 symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
                 operator: gbifPumaOperator,
-                data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     gbifPumaOperator
                 ),
                 prov$: this.mappingQueryService.getProvenanceStream(gbifPumaOperator),
@@ -199,7 +199,7 @@ export class DebugTabComponent {
                 name: 'WKT',
                 symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
                 operator:  wktOperator,
-                data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     wktOperator
                 ),
                 prov$: this.mappingQueryService.getProvenanceStream(wktOperator),
@@ -225,7 +225,7 @@ export class DebugTabComponent {
                 name: 'IUCN Puma Concolor',
                 symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
                 operator: iucnPumaOperator,
-                data$: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     iucnPumaOperator
                 ),
                 prov$: this.mappingQueryService.getProvenanceStream(iucnPumaOperator),
@@ -303,7 +303,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'SRTM Histogram',
                 operator: srtmHistogram,
-                data$: this.mappingQueryService.getPlotDataStream(srtmHistogram),
+                data: this.mappingQueryService.getPlotDataStream(srtmHistogram),
             })
         );
     }
@@ -324,7 +324,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'R Plot',
                 operator: rPlotOperator,
-                data$: this.mappingQueryService.getPlotDataStream(rPlotOperator),
+                data: this.mappingQueryService.getPlotDataStream(rPlotOperator),
             })
         );
     }
@@ -349,7 +349,7 @@ export class DebugTabComponent {
             new Plot({
                 name: 'R Text',
                 operator: rPlotOperator,
-                data$: this.mappingQueryService.getPlotDataStream(rPlotOperator),
+                data: this.mappingQueryService.getPlotDataStream(rPlotOperator),
             })
         );
     }
