@@ -112,23 +112,21 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 @Component({
     selector: 'wave-legendary-mapping-colorizer-raster',
     template: `
-        <div class='legend' [ngSwitch]='(colorizer$ | async)?.interpolation'>
-            <tbody *ngSwitchWhen='_linear'>
+        <div class='legend'>
+            <tbody>
                 <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints; let isFirst = first'>
-                    <td class='gradient'
-                        *ngIf='isFirst'
-                        [rowSpan]='(colorizer$ | async)?.breakpoints.length'
-                        [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
-                    </td>
-                    <td>{{breakpoint[0]}}</td>
-                    <td>{{breakpoint[2]}}</td>
-                </tr>
-            </tbody>
-
-            <tbody *ngSwitchDefault>
-                <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints'>
-                    <td class='icon' [style.background-color]='breakpoint[1]'></td>
-                    <td>{{breakpoint[0]}}</td>
+                    <template [ngIf]='symbology.isContinuous()'>
+                        <td class='gradient'
+                            *ngIf='isFirst'
+                            [rowSpan]='(colorizer$ | async)?.breakpoints.length'
+                            [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
+                        </td>
+                        <td>{{breakpoint[0]}}</td>
+                    </template>
+                    <template [ngIf]='!symbology.isContinuous()'>
+                        <td class='icon' [style.background-color]='breakpoint[1]'></td>
+                        <td>{{symbology.unit.classes.get(breakpoint[0])}} <span></span></td>
+                    </template>
                     <td>{{breakpoint[2]}}</td>
                 </tr>
             </tbody>
@@ -140,6 +138,10 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
             margin-top: 2px;
             margin-bottom: 5px;
             display: table;
+            font-size: 13px;
+        }
+        tr {
+            min-height: 20px;
         }
 
         td {
@@ -166,7 +168,6 @@ export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizer
     extends LegendaryRasterComponent<S> implements OnInit {
 
     private colorizer$: Observable<MappingColorizer>;
-    private _linear: string = 'linear';
 
     ngOnInit() {
         this.colorizer$ = this.symbology.colorizer$;
