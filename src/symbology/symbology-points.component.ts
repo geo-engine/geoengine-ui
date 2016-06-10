@@ -74,8 +74,8 @@ export class SymbologyPointsComponent {
         if (this.symbology.radius < SymbologyPointsComponent.minRadius) {
             this.symbology.radius = SymbologyPointsComponent.minRadius;
         }
-        if (this.symbology.stroke_width < SymbologyPointsComponent.minStrokeWidth) {
-            this.symbology.stroke_width = SymbologyPointsComponent.minStrokeWidth;
+        if (this.symbology.strokeWidth < SymbologyPointsComponent.minStrokeWidth) {
+            this.symbology.strokeWidth = SymbologyPointsComponent.minStrokeWidth;
         }
 
         // return a clone (immutablility)
@@ -84,14 +84,14 @@ export class SymbologyPointsComponent {
 
     updateFillRgba(rgba: string) {
         if (rgba) {
-            this.symbology.fill_rgba = this._cssStringToRgbaTransformer.transform(rgba);
+            this.symbology.fillRGBA = this._cssStringToRgbaTransformer.transform(rgba);
             this.update();
         }
     }
 
     updateStrokeRgba(rgba: string) {
         if (rgba) {
-            this.symbology.stroke_rgba = this._cssStringToRgbaTransformer.transform(rgba);
+            this.symbology.strokeRGBA = this._cssStringToRgbaTransformer.transform(rgba);
             this.update();
         }
     }
@@ -152,8 +152,8 @@ export class SymbologyVectorComponent {
         // console.log('wave-symbology-points', 'update', this.symbology);
 
         // guard against negative values
-        if (this.symbology.stroke_width < SymbologyPointsComponent.minStrokeWidth) {
-            this.symbology.stroke_width = SymbologyPointsComponent.minStrokeWidth;
+        if (this.symbology.strokeWidth < SymbologyPointsComponent.minStrokeWidth) {
+            this.symbology.strokeWidth = SymbologyPointsComponent.minStrokeWidth;
         }
 
         // return a clone (immutablility)
@@ -162,14 +162,14 @@ export class SymbologyVectorComponent {
 
     updateFillRgba(rgba: string) {
         if (rgba) {
-            this.symbology.fill_rgba = this._cssStringToRgbaTransformer.transform(rgba);
+            this.symbology.fillRGBA = this._cssStringToRgbaTransformer.transform(rgba);
             this.update();
         }
     }
 
     updateStrokeRgba(rgba: string) {
         if (rgba) {
-            this.symbology.stroke_rgba = this._cssStringToRgbaTransformer.transform(rgba);
+            this.symbology.strokeRGBA = this._cssStringToRgbaTransformer.transform(rgba);
             this.update();
         }
     }

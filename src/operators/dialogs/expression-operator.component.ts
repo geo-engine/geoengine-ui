@@ -213,7 +213,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         this.layerService.addLayer(new RasterLayer({
             name: name,
             operator: operator,
-            symbology: new RasterSymbology({}),
+            symbology: new RasterSymbology({ unit: unit }),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
         }));
 

@@ -51,6 +51,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         [class.disabled]="!(isLayerSelected$ | async)
                                             || (exportLayerUrl$ | async).length <= 0"
                         [href]="exportLayerUrl$ | async"
+                        download
                     >
                         <i md-icon>file_download</i>
                         Export

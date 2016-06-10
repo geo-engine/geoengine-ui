@@ -17,7 +17,9 @@ import {VectorLayer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';
-import {SimplePointSymbology, AbstractVectorSymbology} from '../../symbology/symbology.model';
+import {
+    SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
+} from '../../symbology/symbology.model';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -88,14 +90,22 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             polygonSources: [polygonOperator],
         });
 
+        const clustered = this.pointLayer.clustered;
         this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({
-                fill_rgba: this.randomColorService.getRandomColor(),
-            }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator),
+            symbology: clustered ?
+                new ClusteredPointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }) :
+                new SimplePointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }),
+            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator, clustered
+            ),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
+            clustered: clustered,
         }));
 
         this.dialog.close();

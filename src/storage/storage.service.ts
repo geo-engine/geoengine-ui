@@ -77,27 +77,31 @@ export class StorageService {
             throw 'Not yet implemented'; // TODO: implement
         }
 
-        const project = storageProvider.loadProject();
-        if (project) {
-            this.projectService.setProject(project);
-        }
+        storageProvider.loadProject().then(project => {
+            if (project) {
+                this.projectService.setProject(project);
+            }
+        });
 
-        const layers = storageProvider.loadLayers();
-        if (layers) {
-            this.layerService.setLayers(layers);
-        }
+        storageProvider.loadLayers().then(layers => {
+            if (layers) {
+                this.layerService.setLayers(layers);
+            }
+        });
 
-        const plots = storageProvider.loadPlots();
-        if (plots) {
-            this.plotService.setPlots(plots);
-        }
+        storageProvider.loadPlots().then(plots => {
+            if (plots) {
+                this.plotService.setPlots(plots);
+            }
+        });
 
-        const layoutSettings = storageProvider.loadLayoutSettings();
-        if (layoutSettings) {
-            this.layoutService.setLayoutDict(layoutSettings);
-        }
+        storageProvider.loadLayoutSettings().then(layoutSettings => {
+            if (layoutSettings) {
+                this.layoutService.setLayoutDict(layoutSettings);
+            }
 
-        this.storageProvider = storageProvider;
+            this.storageProvider = storageProvider;
+        });
     }
 
 }

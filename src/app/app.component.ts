@@ -17,11 +17,6 @@ import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {DataTableComponent} from '../components/data-table.component';
 import {ProvenanceListComponent} from '../provenance/provenance.component';
-import {OlMapComponent} from '../components/openlayers/ol-map.component';
-import {
-    OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
-} from '../components/openlayers/ol-layer.component';
-
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 
 import {Symbology} from '../symbology/symbology.model';
@@ -33,6 +28,12 @@ import {UserService} from '../users/user.service';
 import {StorageService} from '../storage/storage.service';
 import {MappingQueryService} from '../services/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
+
+import {MapComponent} from '../map/map.component';
+import {MapService} from '../map/map.service';
+import {
+    OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
+} from '../map/map-layer.component';
 
 import {LayerListComponent} from '../layers/layer-list.component';
 import {Layer} from '../layers/layer.model';
@@ -126,7 +127,7 @@ import {PlotService} from '../plots/plot.service';
             <md-tab-group>
                 <md-tab>
                     <template md-tab-label>
-                        <div (click)="layoutService.setDataTableVisibility(true)">Data Table</div>
+                        <div (click)="setTabIndex(0)">Data Table</div>
                     </template>
                     <template md-tab-content>
                         <wave-data-table
@@ -138,7 +139,7 @@ import {PlotService} from '../plots/plot.service';
                 </md-tab>
                 <md-tab>
                     <template md-tab-label>
-                        <div (click)="layoutService.setDataTableVisibility(true)">Citation</div>
+                        <div (click)="setTabIndex(1)">Citation</div>
                     </template>
                     <template md-tab-content>
                         <wave-provenance-list
@@ -240,18 +241,18 @@ import {PlotService} from '../plots/plot.service';
         CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES, MD_TABS_DIRECTIVES,
         InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
         DataTableComponent, RasterRepositoryComponent, PlotListComponent,
-        OlMapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
+        MapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent, ProvenanceListComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         MATERIAL_BROWSER_PROVIDERS,
         UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
-        StorageService, RandomColorService, ColorPickerService,
+        StorageService, RandomColorService, ColorPickerService, MapService,
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(OlMapComponent) mapComponent: OlMapComponent;
+    @ViewChild(MapComponent) mapComponent: MapComponent;
     @ViewChild(MdTabGroup) bottomTabs: MdTabGroup;
 
     private layerListVisible$: Observable<boolean>;
@@ -306,8 +307,18 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.bottomTabs.selectedIndex = this.layoutService.getFooterTabIndex();
-        this.changeDetectorRef.markForCheck();
+        // set the stored tab index
+        this.layoutService.getFooterTabIndexStream().subscribe(tabIndex => {
+            if (this.bottomTabs.selectedIndex !== tabIndex) {
+                this.bottomTabs.selectedIndex = tabIndex;
+                setTimeout(() => this.changeDetectorRef.markForCheck());
+            }
+        });
+    }
+
+    setTabIndex(index: number) {
+        this.layoutService.setFooterTabIndex(index);
+        this.layoutService.setDataTableVisibility(true);
     }
 
     getMapIndexOfSelectedLayer() {

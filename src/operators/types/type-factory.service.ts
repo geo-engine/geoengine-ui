@@ -10,6 +10,8 @@ import {ProjectionType, ProjectionTypeDict}
   from './projection-type.model';
 import {GFBioSourceType, GFBioSourceTypeDict}
   from './gfbio-source-type.model';
+import {GBIFSourceType, GBIFSourceTypeDict}
+  from './gbif-source-type.model';
 import {RasterSourceType, RasterSourceTypeDict}
   from './raster-source-type.model';
 import {HistogramType, HistogramTypeDict}
@@ -48,6 +50,8 @@ export abstract class OperatorTypeFactory {
                 return ProjectionType.fromDict(dict as ProjectionTypeDict);
             case GFBioSourceType.TYPE:
                 return GFBioSourceType.fromDict(dict as GFBioSourceTypeDict);
+            case GBIFSourceType.TYPE:
+                return GBIFSourceType.fromDict(dict as GBIFSourceTypeDict);
             case RasterSourceType.TYPE:
                 return RasterSourceType.fromDict(dict as RasterSourceTypeDict);
             case HistogramType.TYPE:

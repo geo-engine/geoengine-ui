@@ -11,24 +11,25 @@ import {Symbology} from '../../symbology/symbology.model';
  */
 export class BrowserStorageProvider extends StorageProvider {
 
-    loadProject(): Project {
+    loadProject(): Promise<Project> {
         const projectJSON = localStorage.getItem('project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
             const project = Project.fromJSON(projectJSON);
-            return project;
+            return Promise.resolve(project);
         }
     }
 
-    saveProject(project: Project) {
+    saveProject(project: Project): Promise<void> {
         localStorage.setItem('project', project.toJSON());
+        return Promise.resolve();
     }
 
-    loadLayers(): Array<Layer<Symbology>> {
+    loadLayers(): Promise<Array<Layer<Symbology>>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
             const layers: Array<Layer<Symbology>> = [];
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
@@ -39,11 +40,11 @@ export class BrowserStorageProvider extends StorageProvider {
                 );
             }
 
-            return layers;
+            return Promise.resolve(layers);
         }
     }
 
-    saveLayers(layers: Array<Layer<Symbology>>) {
+    saveLayers(layers: Array<Layer<Symbology>>): Promise<void> {
         const layerDicts: Array<LayerDict> = [];
 
         for (const layer of layers) {
@@ -51,12 +52,13 @@ export class BrowserStorageProvider extends StorageProvider {
         }
 
         localStorage.setItem('layers', JSON.stringify(layerDicts));
+        return Promise.resolve();
     }
 
-    loadPlots(): Array<Plot> {
+    loadPlots(): Promise<Array<Plot>> {
         const plotsJSON = localStorage.getItem('plots');
         if (plotsJSON === null) { // tslint:disable-line:no-null-keyword
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
             const plots: Array<Plot> = [];
             const plotDicts: Array<PlotDict> = JSON.parse(plotsJSON);
@@ -67,11 +69,11 @@ export class BrowserStorageProvider extends StorageProvider {
                 );
             }
 
-            return plots;
+            return Promise.resolve(plots);
         }
     }
 
-    savePlots(plots: Array<Plot>) {
+    savePlots(plots: Array<Plot>): Promise<void> {
         const plotDicts: Array<PlotDict> = [];
 
         for (const plot of plots) {
@@ -79,19 +81,21 @@ export class BrowserStorageProvider extends StorageProvider {
         }
 
         localStorage.setItem('plots', JSON.stringify(plotDicts));
+        return Promise.resolve();
     }
 
-    loadLayoutSettings(): LayoutDict {
+    loadLayoutSettings(): Promise<LayoutDict> {
         const layoutSettings = localStorage.getItem('layoutSettings');
         if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
-            return JSON.parse(layoutSettings);
+            return Promise.resolve(JSON.parse(layoutSettings));
         }
     };
 
-    saveLayoutSettings(dict: LayoutDict): void {
+    saveLayoutSettings(dict: LayoutDict): Promise<void> {
         localStorage.setItem('layoutSettings', JSON.stringify(dict));
+        return Promise.resolve();
     };
 
 }

@@ -3,8 +3,10 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {Observable} from 'rxjs/Rx';
 
-import {Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
-    MappingColorizerRasterSymbology, MappingColorizer} from './symbology.model';
+import {
+    Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
+    MappingColorizerRasterSymbology, MappingColorizer, ClusteredPointSymbology,
+} from './symbology.model';
 
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
@@ -34,11 +36,11 @@ export class LegendaryComponent<S extends Symbology> {
                 <i md-icon class='circle'
                     [style.width.px]='symbology.radius*2'
                     [style.height.px]='symbology.radius*2'
-                    [style.border-width.px]='symbology.stroke_width'
-                    [style.border-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-                    [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'>
+                    [style.border-width.px]='symbology.strokeWidth'
+                    [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
                 </i>
-                <p class='md-list-item-text'></p>
+                <p class='md-list-item-text'>Point</p>
             </md-list-item>
         </md-list>
         `,
@@ -64,16 +66,53 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
 }
 
 @Component({
+    selector: 'wave-legendary-clustered-points',
+    template: `
+        <md-list>
+            <md-list-item>
+                <i md-icon class='circle'
+                    [style.width.px]='10'
+                    [style.height.px]='10'
+                    [style.border-width.px]='symbology.strokeWidth'
+                    [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
+                </i>
+                <p class='md-list-item-text'>Point</p>
+            </md-list-item>
+        </md-list>
+        `,
+    styles: [`
+        wave-legendary-points {
+            overflow: hidden;
+        }
+        .circle {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            max-width: 50px;
+            max-height: 50px;
+            border: 1.5px solid #fff;
+            color: white;
+        }`,
+    ],
+    directives: [MATERIAL_DIRECTIVES],
+    pipes: [RgbaToCssStringPipe],
+    // changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
+    extends LegendaryComponent<S> {}
+
+@Component({
     selector: 'wave-legendary-vector',
     template: `
         <md-list>
             <md-list-item>
                 <i md-icon class='vector'
-                    [style.border-width.px]='symbology.stroke_width'
-                    [style.border-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-                    [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'>
+                    [style.border-width.px]='symbology.strokeWidth'
+                    [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
                 </i>
-                <p class='md-list-item-text'></p>
+                <p class='md-list-item-text'>Vector</p>
             </md-list-item>
         </md-list>
         `,
@@ -114,13 +153,17 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     template: `
         <div class='legend'>
             <tbody>
-                <tr *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints; let isFirst = first'>
+                <tr
+                    *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints;
+                            let isFirst = first'
+                >
                     <template [ngIf]='symbology.isContinuous()'>
                         <td class='gradient'
                             *ngIf='isFirst'
                             [rowSpan]='(colorizer$ | async)?.breakpoints.length'
-                            [style.background]='colorizer$ | async | waveWappingColorizerToGradient | waveSafeStyle'>
-                        </td>
+                            [style.background]='colorizer$ | async | waveWappingColorizerToGradient
+                                                | waveSafeStyle'
+                        ></td>
                         <td>{{breakpoint[0]}}</td>
                     </template>
                     <template [ngIf]='!symbology.isContinuous()'>

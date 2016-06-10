@@ -375,7 +375,7 @@ export class Operator {
     }
 
     toJSON(): string {
-      return JSON.stringify(this.toDict());
+        return JSON.stringify(this.toDict());
     }
 
     /**

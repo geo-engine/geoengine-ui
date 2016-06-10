@@ -26,6 +26,11 @@ import {Layer} from '../layers/layer.model';
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-points>
+            <wave-symbology-points
+                *ngSwitchWhen='enumSymbologyType.CLUSTERED_POINT'
+                [symbology]='_symbology'
+                (symbologyChanged)='update_symbology($event)'>
+            </wave-symbology-points>
             <wave-symbology-vector
                 *ngSwitchWhen='enumSymbologyType.SIMPLE_VECTOR'
                 [symbology]='_symbology'

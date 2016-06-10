@@ -21,6 +21,7 @@ interface LayerConfig<S extends Symbology> {
 
 interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
     data: VectorLayerDataStream;
+    clustered?: boolean;
 }
 
 interface RasterLayerConfig<S extends RasterSymbology> extends LayerConfig<S> {
@@ -28,6 +29,12 @@ interface RasterLayerConfig<S extends RasterSymbology> extends LayerConfig<S> {
 }
 
 type LayerType = 'raster' | 'vector';
+
+interface LayerTypeOptionsDict {}
+
+interface VectorLayerTypeOptionsDict extends LayerTypeOptionsDict {
+    clustered: boolean;
+}
 
 /**
  * Dictionary for serialization.
@@ -38,6 +45,7 @@ export interface LayerDict {
     expanded: boolean;
     symbology: SymbologyDict;
     type: LayerType;
+    typeOptions?: LayerTypeOptionsDict;
 }
 
 export abstract class Layer<S extends Symbology> {
@@ -77,31 +85,43 @@ export abstract class Layer<S extends Symbology> {
             expanded: this.expanded,
             symbology: this.symbology.toDict(),
             type: this.layerType,
+            typeOptions: this.typeOptions,
         };
     }
+
+    protected get typeOptions(): LayerTypeOptionsDict {
+        return {};
+    };
 }
 
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
+    clustered = false;
+
     private _data: VectorLayerDataStream;
 
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this._data = config.data;
+        this.clustered = !!config.clustered;
     }
 
     static fromDict(
         dict: LayerDict,
-        dataCallback: (operator: Operator) => VectorLayerDataStream,
+        dataCallback: (operator: Operator, clustered: boolean) => VectorLayerDataStream,
         provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
     ): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator);
+        const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
+
+        const clustered = (typeOptions && typeOptions.clustered) ? typeOptions.clustered : false;
 
         const layer = new VectorLayer({
             name: dict.name,
             operator: operator,
             symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
-            data: dataCallback(operator),
+            data: dataCallback(operator, clustered),
             prov$: provenanceCallback(operator),
+            clustered: clustered,
         });
 
         layer.expanded = dict.expanded;
@@ -118,6 +138,13 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
     get layerType(): LayerType {
         return 'vector';
+    }
+
+    protected get typeOptions(): VectorLayerTypeOptionsDict {
+        console.log('called');
+        return {
+            clustered: this.clustered,
+        };
     }
 
 }

@@ -20,48 +20,48 @@ export abstract class StorageProvider {
      * Load the current project.
      * @returns A project instance.
      */
-    abstract loadProject(): Project;
+    abstract loadProject(): Promise<Project>;
 
     /**
      * Save the current project.
      * @param project A project instance.
      */
-    abstract saveProject(project: Project): void;
+    abstract saveProject(project: Project): Promise<void>;
 
     /**
      * Load the current layers.
      * @returns An array of layers.
      */
-    abstract loadLayers(): Array<Layer<Symbology>>;
+    abstract loadLayers(): Promise<Array<Layer<Symbology>>>;
 
     /**
      * Save the current layers.
      * @param layers An array of layers.
      */
-    abstract saveLayers(layers: Array<Layer<Symbology>>): void;
+    abstract saveLayers(layers: Array<Layer<Symbology>>): Promise<void>;
 
     /**
      * Load the current plots.
      * @param mappingQueryService Service to load the plot data.
      * @returns An array of plots.
      */
-    abstract loadPlots(): Array<Plot>;
+    abstract loadPlots(): Promise<Array<Plot>>;
 
     /**
      * Save the current plots.
      * @param plots An array of plots.
      */
-    abstract savePlots(plots: Array<Plot>): void;
+    abstract savePlots(plots: Array<Plot>): Promise<void>;
 
     /**
      * Load layout settings.
      */
-    abstract loadLayoutSettings(): LayoutDict;
+    abstract loadLayoutSettings(): Promise<LayoutDict>;
 
     /**
      * Save layout settings.
      * @param dict a serializable layout dictionary.
      */
-    abstract saveLayoutSettings(dict: LayoutDict): void;
+    abstract saveLayoutSettings(dict: LayoutDict): Promise<void>;
 
 }

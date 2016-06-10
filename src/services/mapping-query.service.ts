@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
+import {MapService, ViewportSize} from '../map/map.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
@@ -46,9 +47,16 @@ class MappingRequestParameters {
         }
     }
 
+    setParameter(key: string, value: string | boolean | number) {
+        if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
+            throw 'You must not reset "service", "request" or "sessionToken"';
+        }
+        this.parameters[key] = value;
+    }
+
     toMessageBody(): string {
         return Object.keys(this.parameters).map(
-            key => [key, this.parameters[key]].join('=')
+            key => [key, /*encodeURIComponent(*/this.parameters[key].toString()/*)*/].join('=')
         ).join('&');
     }
 
@@ -123,7 +131,8 @@ export class MappingQueryService {
     constructor(
         private http: Http,
         private userService: UserService,
-        private projectService: ProjectService
+        private projectService: ProjectService,
+        private mapService: MapService
     ) {}
 
     /**
@@ -135,7 +144,7 @@ export class MappingQueryService {
     getPlotQueryUrl(operator: Operator, time: moment.Moment): string {
         const parameters: ParametersType = {
             service: 'plot',
-            query: operator.toQueryJSON(),
+            query: encodeURIComponent(operator.toQueryJSON()),
             time: time.toISOString(),
             crs: operator.projection.getCode(),
         };
@@ -188,23 +197,41 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns the query url
      */
-    getWFSQueryUrl(operator: Operator,
-                   time: moment.Moment,
-                   projection: Projection,
-                   outputFormat: WFSOutputFormat): string {
+    getWFSQueryUrl(
+        operator: Operator,
+        time: moment.Moment,
+        projection: Projection,
+        outputFormat: WFSOutputFormat,
+        viewportSize: boolean | ViewportSize = false
+    ): string {
         const projectedOperator = operator.getProjectedOperator(projection);
 
         const parameters: ParametersType = {
             service: 'WFS',
             version: Config.WFS.VERSION,
             request: 'GetFeature',
-            typeNames: projectedOperator.resultType.getCode()
+            typeNames: encodeURIComponent(projectedOperator.resultType.getCode()
                        + ':'
-                       + projectedOperator.toQueryJSON(),
+                       + projectedOperator.toQueryJSON()),
             srsname: projection.getCode(),
             time: time.toISOString(),
             outputFormat: outputFormat.getFormat(),
         };
+
+        if (viewportSize) {
+            const extent = (viewportSize as ViewportSize).extent;
+            const resolution = (viewportSize as ViewportSize).resolution;
+
+            parameters['clustered'] = true;
+            parameters['bbox'] = extent.join(',');
+            parameters['height'] = Math.max(1, resolution);
+            parameters['width'] = Math.max(1, resolution);
+        }
+
+        // console.log(
+        //     Config.MAPPING_URL + '?' +
+        //            Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&')
+        // );
 
         return Config.MAPPING_URL + '?' +
                Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
@@ -249,12 +276,15 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns a Promise of JSON
      */
-    getWFSDataAsJson(operator: Operator,
-                     time: moment.Moment,
-                     projection: Projection): Promise<GeoJsonFeatureCollection> {
-        return this.http.get(this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON))
-                        .toPromise()
-                        .then(response => response.json());
+    getWFSDataAsJson(
+        operator: Operator,
+        time: moment.Moment,
+        projection: Projection,
+        viewportSize: (boolean | ViewportSize) = false
+    ): Promise<GeoJsonFeatureCollection> {
+        return this.http.get(
+            this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON, viewportSize)
+        ).toPromise().then(response => response.json());
     }
 
     /**
@@ -272,14 +302,20 @@ export class MappingQueryService {
     }
 
     getWFSDataStreamAsGeoJsonFeatureCollection(
-        operator: Operator
+        operator: Operator,
+        clustered = false
     ): VectorLayerDataStream {
+        const viewportSize$: Observable<boolean | ViewportSize> =
+            clustered ? this.mapService.getViewportSizeStream() : Observable.of(false);
+
         const loading$ = new ReplaySubject<boolean>(1);
         const data$ = Observable.combineLatest(
-            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        ).switchMap(([time, projection]) => {
+            this.projectService.getTimeStream(),
+            this.projectService.getProjectionStream(),
+            viewportSize$
+        ).switchMap(([time, projection, optionalViewport]) => {
             loading$.next(true);
-            const promise = this.getWFSDataAsJson(operator, time, projection);
+            const promise = this.getWFSDataAsJson(operator, time, projection, optionalViewport);
             promise.then(_ => loading$.next(false), _ => loading$.next(false));
             return promise;
         }).map(result => {
@@ -376,7 +412,7 @@ export class MappingQueryService {
         const serviceType = 'provenance';
         const provenanceRequest = Config.MAPPING_URL
             + '?' + 'SERVICE=' + serviceType
-            + '&' + 'query=' + operator.toQueryJSON();
+            + '&' + 'query=' + encodeURIComponent(operator.toQueryJSON());
             // + '&' + 'CRS=' + projection.getCode()
             // + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
         console.log('getProvenance', provenanceRequest);

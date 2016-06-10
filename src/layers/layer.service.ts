@@ -127,9 +127,10 @@ export class LayerService {
             case 'vector':
                 return VectorLayer.fromDict(
                     dict,
-                    operator => this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                        operator
-                    ),
+                    (operator, clustered) =>
+                        this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                            operator, clustered
+                        ),
                     operator => this.mappingQueryService.getProvenanceStream(operator)
                 );
             default:

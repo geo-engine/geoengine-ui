@@ -82,11 +82,15 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
     ) {}
 
     ngAfterViewInit() {
-        this.tabs.selected = this.layoutService.getHeaderTabIndex();
-        // do this one time for ngMaterial
-        setTimeout(() => {
-            this.changeDetectorRef.markForCheck();
-        }, 0);
+        this.layoutService.getHeaderTabIndexStream().subscribe(tabIndex => {
+            if (this.tabs.selected !== tabIndex) {
+                this.tabs.selected = tabIndex;
+                setTimeout(() => this.changeDetectorRef.markForCheck());
+            }
+        });
+
+        // one time for material components
+        setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
     ngAfterViewChecked() {

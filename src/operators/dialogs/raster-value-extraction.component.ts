@@ -17,7 +17,9 @@ import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
 import {VectorLayer, Layer} from '../../layers/layer.model';
-import {Symbology, SimplePointSymbology} from '../../symbology/symbology.model';
+import {
+    Symbology, SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
+} from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -78,7 +80,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     configForm: ControlGroup;
     valueNamesControls: ControlArray;
 
-    selectedVectorLayer: Layer<Symbology>;
+    selectedVectorLayer: VectorLayer<AbstractVectorSymbology>;
     selectedRasterLayers: Array<Layer<Symbology>>;
 
     disallowedValueNames: Array<string>;
@@ -114,7 +116,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.dialog.setTitle('Extract a Raster Value and Add it to the Vector Layer');
     }
 
-    onSelectVectorLayer(layer: Layer<Symbology>) {
+    onSelectVectorLayer(layer: VectorLayer<AbstractVectorSymbology>) {
         this.selectedVectorLayer = layer;
         this.disallowedValueNames = layer.operator.attributes.toArray();
 
@@ -180,14 +182,22 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
             rasterSources: rasterOperators,
         });
 
+        const clustered = this.selectedVectorLayer.clustered;
         this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({
-                fill_rgba: this.randomColorService.getRandomColor(),
-            }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator),
+            symbology: clustered ?
+                new ClusteredPointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }) :
+                new SimplePointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }),
+            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator, clustered
+            ),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
+            clustered: clustered,
         }));
 
         this.dialog.close();

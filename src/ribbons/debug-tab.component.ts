@@ -166,7 +166,7 @@ export class DebugTabComponent {
         this.layerService.addLayer(
             new VectorLayer({
                 name: 'Puma Concolor',
-                symbology: new SimplePointSymbology({fill_rgba: [244, 67, 54, 0.8]}),
+                symbology: new SimplePointSymbology({fillRGBA: [244, 67, 54, 0.8]}),
                 operator: gbifPumaOperator,
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     gbifPumaOperator
@@ -197,7 +197,7 @@ export class DebugTabComponent {
         this.layerService.addLayer(
             new VectorLayer({
                 name: 'WKT',
-                symbology: new SimpleVectorSymbology({fill_rgba: [50, 50, 50, 0.8]}),
+                symbology: new SimpleVectorSymbology({fillRGBA: [50, 50, 50, 0.8]}),
                 operator:  wktOperator,
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     wktOperator
@@ -223,7 +223,7 @@ export class DebugTabComponent {
         this.layerService.addLayer(
             new VectorLayer({
                 name: 'IUCN Puma Concolor',
-                symbology: new SimpleVectorSymbology({fill_rgba: [253, 216, 53, 0.8]}),
+                symbology: new SimpleVectorSymbology({fillRGBA: [253, 216, 53, 0.8]}),
                 operator: iucnPumaOperator,
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                     iucnPumaOperator
@@ -234,6 +234,12 @@ export class DebugTabComponent {
     }
 
     addRasterLayer() {
+        const unit = new Unit({
+            measurement: 'elevation',
+            unit: 'm',
+            interpolation: Interpolation.Continuous,
+        });
+
         const srtmOperator = new Operator({
             operatorType: new RasterSourceType({
                 channel: 0,
@@ -244,18 +250,15 @@ export class DebugTabComponent {
             projection: Projections.WGS_84,
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
-            units: new Map<string, Unit>().set('value', new Unit({
-                measurement: 'elevation',
-                unit: 'm',
-                interpolation: Interpolation.Continuous,
-            })),
+            units: new Map<string, Unit>().set('value', unit),
         });
 
         this.layerService.addLayer(
             new RasterLayer({
                 name: 'SRTM',
-                symbology: new MappingColorizerRasterSymbology({},
-                     this.mappingQueryService.getColorizerStream(srtmOperator)
+                symbology: new MappingColorizerRasterSymbology(
+                    { unit: unit },
+                    this.mappingQueryService.getColorizerStream(srtmOperator)
                 ),
                 operator: srtmOperator,
                 prov$: this.mappingQueryService.getProvenanceStream(srtmOperator),

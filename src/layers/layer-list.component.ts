@@ -12,7 +12,7 @@ import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {
     LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
-    LegendaryMappingColorizerRasterComponent,
+    LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
 } from '../symbology/legendary.component';
 
 @Component({
@@ -61,6 +61,11 @@ import {
                         *ngSwitchWhen='_enumSymbologyType.SIMPLE_POINT'
                         [symbology]='layer.symbology'>
                     </wave-legendary-points>
+
+                    <wave-legendary-clustered-points
+                        *ngSwitchWhen='_enumSymbologyType.CLUSTERED_POINT'
+                        [symbology]='layer.symbology'>
+                    </wave-legendary-clustered-points>
 
                     <wave-legendary-vector
                         *ngSwitchWhen='_enumSymbologyType.SIMPLE_VECTOR'
@@ -128,7 +133,7 @@ import {
     directives: [
         CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES, Dragula,
         LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
-        LegendaryMappingColorizerRasterComponent,
+        LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
     ],
 })
 

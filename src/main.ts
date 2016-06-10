@@ -14,5 +14,5 @@ if (!Config.DEVELOPER_MODE) {
 bootstrap(
     AppComponent, [HTTP_PROVIDERS]
 ).catch(
-    console.error
+    error => console.error(error)
 );

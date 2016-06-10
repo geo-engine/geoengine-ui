@@ -1,5 +1,5 @@
 import {
-    Component, ChangeDetectionStrategy, OnInit,
+    Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef,
 } from '@angular/core';
 import {HTTP_PROVIDERS} from '@angular/http';
 import {
@@ -8,6 +8,7 @@ import {
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {
     LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
@@ -19,14 +20,16 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../services/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
-import {VectorLayer, Layer} from '../../layers/layer.model';
+import {VectorLayer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {NumericAttributeFilterType} from '../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../types/histogram-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
-import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
+import {
+    SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
+} from '../../symbology/symbology.model';
 
 /**
  * This component allows creating the numeric attribute filter operator.
@@ -56,6 +59,7 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
                         </option>
                     </select>
                 </div>
+                <md-progress-circle mode="indeterminate" *ngIf="dataLoading"></md-progress-circle>
                 <wave-histogram [height]="500" [width]="500" [selectable]="true"
                                 *ngIf="data" [data]="data" interactable="true"
                                 (minRange)="boundsMin = $event" (maxRange)="boundsMax = $event">
@@ -71,9 +75,13 @@ import {SimplePointSymbology, Symbology} from '../../symbology/symbology.model';
         font-size: 12px;
         color: rgba(0, 0, 0, 0.38);
     }
+    md-progress-circle {
+        position: relative;
+        left: calc(50% - 50px);
+    }
     `],
     directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
         LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
     ],
     providers: [HTTP_PROVIDERS],
@@ -86,18 +94,20 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
     private attributes: Array<string> = [];
 
-    private selectedLayer: Layer<Symbology>;
+    private selectedLayer: VectorLayer<AbstractVectorSymbology>;
     private boundsMin: number;
     private boundsMax: number;
 
     private data: HistogramData;
+    private dataLoading: boolean = false;
 
     constructor(
         layerService: LayerService,
         private randomColorService: RandomColorService,
         private mappingQueryService: MappingQueryService,
         private projectService: ProjectService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
         super(layerService);
 
@@ -126,8 +136,12 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 pointSources: [this.selectedLayer.operator],
             });
 
+            this.dataLoading = true;
             this.mappingQueryService.getPlotData(operator, this.projectService.getTime())
-                                    .then(data => this.data = data as HistogramData);
+                                    .then(data => this.data = data as HistogramData)
+                                    .then(_ => this.dataLoading = false);
+
+            this.changeDetectorRef.markForCheck();
         });
     }
 
@@ -136,7 +150,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         this.dialog.setTitle('Numeric Attribute Filter');
     }
 
-    onSelectLayer(layer: Layer<Symbology>) {
+    onSelectLayer(layer: VectorLayer<AbstractVectorSymbology>) {
         this.selectedLayer = layer;
 
         this.attributes = layer.operator.attributes.filter((attribute: string) => {
@@ -197,14 +211,22 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
         const operator = new Operator(dict);
 
+        const clustered = this.selectedLayer.clustered;
         this.layerService.addLayer(new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({
-                fill_rgba: this.randomColorService.getRandomColor(),
-            }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(operator),
+            symbology: clustered ?
+                new ClusteredPointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }) :
+                new SimplePointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }),
+            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
+                operator, clustered
+            ),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
+            clustered: clustered,
         }));
 
         this.dialog.close();

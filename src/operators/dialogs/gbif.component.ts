@@ -3,7 +3,7 @@ import {
     COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
 } from '@angular/common';
 
-import {Observable} from 'rxjs/Rx';
+import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
@@ -19,12 +19,14 @@ import {MappingQueryService} from '../../services/mapping-query.service';
 
 import {VectorLayer} from '../../layers/layer.model';
 import {
-    AbstractVectorSymbology, SimplePointSymbology, SimpleVectorSymbology,
+    AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology,
 } from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes, ResultType} from '../result-type.model';
+import {OperatorType} from '../operator-type.model';
 import {GFBioSourceType} from '../types/gfbio-source-type.model';
+import {GBIFSourceType} from '../types/gbif-source-type.model';
 import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
 import {DataType} from '../datatype.model';
@@ -48,14 +50,20 @@ import {DataType} from '../datatype.model';
                     ngControl="autocompleteString"
                     placeholder="Scientific Name"
                     autocomplete="off"
+                    [disabled]="mode === 2"
                 ></md-input>
+                <md-progress-circle
+                    mode="indeterminate"
+                    *ngIf="autoCompleteLoading$ | async"
+                ></md-progress-circle>
                 <md-radio-group
                     ngControl="searchString"
                     layout="column"
                     [style.max-height.px]="(dialog.maxHeight$ | async) / 3"
+                    [disabled]="mode === 2"
                 >
                     <md-radio-button
-                        *ngFor="let name of autoCompleteResults | async"
+                        *ngFor="let name of autoCompleteResults$ | async"
                         [value]="name"
                     >{{name}}</md-radio-button>
                 </md-radio-group>
@@ -119,7 +127,8 @@ import {DataType} from '../datatype.model';
 export class GBIFOperatorComponent extends OperatorBaseComponent implements OnInit, AfterViewInit {
 
     form: ControlGroup;
-    autoCompleteResults: Observable<Array<string>>;
+    autoCompleteResults$: Observable<Array<string>>;
+    autoCompleteLoading$ = new BehaviorSubject<boolean>(false);
 
     mode = 1;
     loading = false;
@@ -159,15 +168,25 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
             _ => this.nameCustomChanged = true
         );
 
-        this.autoCompleteResults = this.form.controls['autocompleteString'].valueChanges.switchMap(
-            (autocompleteString: string) => {
-                if (autocompleteString.length > 3) {
-                    return this.mappingQueryService.getGBIFAutoCompleteResults(autocompleteString);
-                } else {
-                    return Observable.of([]);
+        this.autoCompleteResults$ = this.form.controls['autocompleteString'].valueChanges
+            .debounceTime(400)
+            .switchMap(
+                (autocompleteString: string) => {
+                    if (autocompleteString.length > 3) {
+                        this.autoCompleteLoading$.next(true);
+                        const promise = this.mappingQueryService.getGBIFAutoCompleteResults(
+                            autocompleteString
+                        );
+                        promise.then(
+                            _ => this.autoCompleteLoading$.next(false),
+                            _ => this.autoCompleteLoading$.next(false)
+                        );
+                        return promise;
+                    } else {
+                        return Observable.of([]);
+                    }
                 }
-            }
-        );
+            );
 
         this.form.controls['selectGBIF'].valueChanges.subscribe(_ => this.addAllowCheck());
         this.form.controls['selectIUCN'].valueChanges.subscribe(_ => this.addAllowCheck());
@@ -240,20 +259,33 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
             localAttributes: {},
         });
 
-        const sources: Array<{name: string, resultType: ResultType}> = [];
+        const sources: Array<{
+            name: string, operatorType: OperatorType, resultType: ResultType
+        }> = [];
         if (this.form.controls['selectGBIF'].value) {
-            sources.push({name: 'GBIF', resultType: ResultTypes.POINTS});
+            sources.push({
+                name: 'GBIF',
+                operatorType: new GBIFSourceType({
+                    scientificName: searchString,
+                    includeMetadata: false,
+                }),
+                resultType: ResultTypes.POINTS,
+            });
         }
         if (this.form.controls['selectIUCN'].value) {
-            sources.push({name: 'IUCN', resultType: ResultTypes.POLYGONS});
+            sources.push({
+                name: 'IUCN',
+                operatorType: new GFBioSourceType({
+                    datasource: 'IUCN',
+                    query: query,
+                }),
+                resultType: ResultTypes.POLYGONS,
+            });
         }
 
         for (const source of sources) {
             const operator = new Operator({
-                operatorType: new GFBioSourceType({
-                    datasource: source.name,
-                    query: query,
-                }),
+                operatorType: source.operatorType,
                 resultType: source.resultType,
                 projection: Projections.WGS_84,
                 attributes: [],
@@ -264,27 +296,29 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
             let symbology: AbstractVectorSymbology;
             switch (source.resultType) {
                 case ResultTypes.POINTS:
-                    symbology = new SimplePointSymbology({
-                        fill_rgba: this.randomColorService.getRandomColor(),
+                    symbology = new ClusteredPointSymbology({
+                        fillRGBA: this.randomColorService.getRandomColor(),
                     });
                     break;
                 case ResultTypes.POLYGONS:
                     symbology = new SimpleVectorSymbology({
-                        fill_rgba: this.randomColorService.getRandomColor(),
+                        fillRGBA: this.randomColorService.getRandomColor(),
                     });
                     break;
                 default:
                     throw 'Unexpected Result Type';
             }
 
+            const clustered = source.resultType === ResultTypes.POINTS;
             this.layerService.addLayer(new VectorLayer({
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    operator
+                    operator, clustered
                 ),
                 prov$: this.mappingQueryService.getProvenanceStream(operator),
+                clustered: clustered,
             }));
         }
 

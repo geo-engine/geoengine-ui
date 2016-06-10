@@ -3,12 +3,13 @@ import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, On
     } from '@angular/core';
 import ol from 'openlayers';
 
-import {OlMapLayerComponent} from './ol-layer.component';
+import {OlMapLayerComponent} from './map-layer.component';
 
-import {Projection, Projections} from '../../operators/projection.model';
-import {Symbology} from '../../symbology/symbology.model';
-import {Layer} from '../../layers/layer.model';
-import {LayerService} from '../../layers/layer.service';
+import {Projection, Projections} from '../operators/projection.model';
+import {Symbology} from '../symbology/symbology.model';
+import {Layer} from '../layers/layer.model';
+import {LayerService} from '../layers/layer.service';
+import {MapService} from './map.service';
 
 /**
  * The `ol-map` component represents an openLayers 3 map component.
@@ -30,7 +31,7 @@ import {LayerService} from '../../layers/layer.service';
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChanges, AfterContentInit {
+export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges, AfterContentInit {
 
     @Input() projection: Projection;
 
@@ -49,7 +50,10 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
 
     private _layers: Array<Layer<Symbology>> = []; // HACK
 
-    constructor(private layerService: LayerService) {
+    constructor(
+        private mapService: MapService,
+        private layerService: LayerService
+    ) {
         this.initOpenlayersMap();
     }
 
@@ -150,12 +154,29 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
         this.map.setTarget(this.mapContainer.nativeElement);
         // initialize layers
         this.map.set('layers', [this.createBackgroundLayer(this.projection)]);
-        this.map.setView(new ol.View({
+
+        const view = new ol.View({
             projection: this.projection.getOpenlayersProjection(),
             center: [0, 0],
             zoom: 2,
-            })
-        );
+        });
+
+        this.map.setView(view);
+
+        // get resolution changes
+        this.mapService.setViewportSize({
+            // extent: view.calculateExtent(this.map.getSize()),
+            extent: this.projection.getExtent(),
+            resolution: view.getResolution(),
+        });
+
+        view.on('change:resolution', () => {
+            this.mapService.setViewportSize({
+                // extent: view.calculateExtent(this.map.getSize()),
+                extent: this.projection.getExtent(),
+                resolution: view.getResolution(),
+            });
+        });
     }
 
     ngAfterViewChecked() {
@@ -172,11 +193,27 @@ export class OlMapComponent implements AfterViewInit, AfterViewChecked, OnChange
             //     'newcenter:', newCenterPoint.getCoordinates()
             // );
 
-            this.map.setView(new ol.View({
+            const view = new ol.View({
                 projection: this.projection.getOpenlayersProjection(),
                 center: newCenterPoint.getCoordinates(),
                 zoom: this.map.getView().getZoom(),
-            }));
+            });
+            this.map.setView(view);
+
+            // get resolution changes
+            this.mapService.setViewportSize({
+                // extent: view.calculateExtent(this.map.getSize()),
+                extent: this.projection.getExtent(),
+                resolution: view.getResolution(),
+            });
+
+            view.on('change:resolution', () => {
+                this.mapService.setViewportSize({
+                    // extent: view.calculateExtent(this.map.getSize()),
+                    extent: this.projection.getExtent(),
+                    resolution: view.getResolution(),
+                });
+            });
 
             this.map.getLayers().clear();
             this.map.getLayers().push(this.createBackgroundLayer(this.projection));

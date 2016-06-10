@@ -157,7 +157,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                         name: outputName,
                         operator: operator,
                         symbology: new SimplePointSymbology({
-                            fill_rgba: this.randomColorService.getRandomColor(),
+                            fillRGBA: this.randomColorService.getRandomColor(),
                         }),
                         data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
                             operator
@@ -169,7 +169,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                     layer = new RasterLayer({
                         name: outputName,
                         operator: operator,
-                        symbology: new RasterSymbology({}),
+                        symbology: new RasterSymbology({ unit: Unit.defaultUnit }), // TODO: def??
                         prov$: provenance$,
                     });
                     break;

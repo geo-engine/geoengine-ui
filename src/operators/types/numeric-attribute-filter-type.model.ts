@@ -4,22 +4,22 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
 interface NumericAttributeFilterTypeMappingDict extends OperatorTypeMappingDict {
     name: string;
     includeNoData: boolean;
-    rangeMin: number;
-    rangeMax: number;
+    rangeMin?: number;
+    rangeMax?: number;
 }
 
 export interface NumericAttributeFilterTypeDict extends OperatorTypeDict  {
     attributeName: string;
     includeNoData: boolean;
-    rangeMin: number;
-    rangeMax: number;
+    rangeMin?: number;
+    rangeMax?: number;
 }
 
 interface NumericAttributeFilterTypeConfig {
     attributeName: string;
     includeNoData: boolean;
-    rangeMin: number;
-    rangeMax: number;
+    rangeMin?: number;
+    rangeMax?: number;
 }
 
 /**
@@ -42,7 +42,7 @@ export class NumericAttributeFilterType extends OperatorType {
     constructor(config: NumericAttributeFilterTypeConfig) {
         super();
         this.name = config.attributeName;
-        this.includeNoData = config.includeNoData;
+        this.includeNoData = !!config.includeNoData; // defaults to false on undefined
         this.rangeMin = config.rangeMin;
         this.rangeMax = config.rangeMax;
     }
@@ -64,11 +64,16 @@ export class NumericAttributeFilterType extends OperatorType {
     }
 
     getParametersAsStrings(): Array<[string, string]> {
-        return [
+        const parameters: Array<[string, string]> = [
             ['includeNoData', this.includeNoData.toString()],
-            ['rangeMin', this.rangeMin.toString()],
-            ['rangeMax', this.rangeMax.toString()],
         ];
+        if (this.rangeMin) {
+            parameters.push(['rangeMin', this.rangeMin.toString()]);
+        }
+        if (this.rangeMax) {
+            parameters.push(['rangeMax', this.rangeMax.toString()]);
+        }
+        return parameters;
     }
 
     toMappingDict(): NumericAttributeFilterTypeMappingDict {
