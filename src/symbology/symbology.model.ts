@@ -307,7 +307,6 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     opacity: number = 1;
     hue: number = 0;
     saturation: number = 0;
-
     unit: Unit;
 
     constructor(config: IRasterSymbology) {
@@ -320,6 +319,10 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
 
     isContinuous() {
         return this.unit.interpolation === Interpolation.Continuous;
+    }
+
+    isDiscrete() {
+        return this.unit.interpolation === Interpolation.Discrete;
     }
 
     get symbologyType(): SymbologyType {

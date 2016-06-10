@@ -9,7 +9,7 @@ export default {
         FORMAT: 'application/json',
     },
     DEVELOPER_MODE: true,
-    MAPPING_DEBUG_MODE: true,
+    MAPPING_DEBUG_MODE: false,
     USER: {
         GUEST: {
             NAME: 'guest',

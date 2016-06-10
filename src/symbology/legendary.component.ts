@@ -166,11 +166,13 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                         ></td>
                         <td>{{breakpoint[0]}}</td>
                     </template>
-                    <template [ngIf]='!symbology.isContinuous()'>
-                        <td class='icon' [style.background-color]='breakpoint[1]'></td>
-                        <td>{{symbology.unit.classes.get(breakpoint[0])}} <span></span></td>
+                    <template [ngIf]='symbology.isDiscrete()'>
+                        <td class ='classes'><div
+                            class='icon'
+                            [style.background-color]='breakpoint[1]'
+                        ></div></td>
+                        <td>{{symbology.unit.classes.get(breakpoint[0])}}</td>
                     </template>
-                    <td>{{breakpoint[2]}}</td>
                 </tr>
             </tbody>
         </div>
@@ -193,6 +195,11 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 
         .gradient {
             min-width: 20px;
+            border: #000 solid 1px;
+        }
+
+        .classes {
+            vertical-align:top;
         }
 
         .icon {
@@ -200,6 +207,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
             margin-top: 1px !important;
             min-height: 20px !important;
             min-width: 20px !important;
+            border: #000 solid 1px;
         }
 
         `],

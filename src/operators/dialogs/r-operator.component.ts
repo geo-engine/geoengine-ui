@@ -169,7 +169,8 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                     layer = new RasterLayer({
                         name: outputName,
                         operator: operator,
-                        symbology: new RasterSymbology({ unit: Unit.defaultUnit }), // TODO: def??
+                         // TODO: read out of operator if specified
+                        symbology: new RasterSymbology({unit: Unit.defaultUnit}),
                         prov$: provenance$,
                     });
                     break;
