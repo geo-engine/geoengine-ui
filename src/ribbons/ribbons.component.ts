@@ -46,6 +46,7 @@ import Config from '../app/config.model';
     styles: [`
     md-tabs {
         height: 180px;
+        min-height: 180px !important;
         overflow: visible;
     }
     md-tabs >>> md-tabs-content-wrapper, md-tabs >>> md-tab-content {

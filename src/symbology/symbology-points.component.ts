@@ -16,21 +16,21 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
         <div>
             <label>Fill color</label>
             <md-input
-                [colorPicker]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
                 (colorPickerChange)='updateFillRgba($event)'
-                [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
-                [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
                 (ngModelChange)='updateFillRgba($event)'>
             </md-input>
         </div>
         <div>
             <label>Stroke color</label>
             <md-input
-                [colorPicker]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 (colorPickerChange)='updateStrokeRgba($event)'
                 [cpOutputFormat]="'rgba'"
-                [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-                [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 (ngModelChange)='updateStrokeRgba($event)'>
             </md-input>
         </div>
@@ -38,7 +38,7 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
             <label>Stroke width</label>
             <md-input type='number'
                 min=0
-                [(ngModel)]='symbology.stroke_width'
+                [(ngModel)]='symbology.strokeWidth'
                 (ngModelChange)='update()'>
             </md-input>
         </div>
@@ -105,10 +105,10 @@ export class SymbologyPointsComponent {
         <div>
             <label>Fill color</label>
             <md-input
-                [colorPicker]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
                 (colorPickerChange)='updateFillRgba($event)'
-                [style.background-color]='symbology.fill_rgba | rgbaToCssStringPipe'
-                [ngModel]='symbology.fill_rgba | rgbaToCssStringPipe'
+                [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
                 (ngModelChange)='updateFillRgba($event)'>
             </md-input>
         </div>
@@ -116,11 +116,11 @@ export class SymbologyPointsComponent {
         <div>
             <label>Stroke color</label>
             <md-input
-                [colorPicker]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 (colorPickerChange)='updateStrokeRgba($event)'
                 [cpOutputFormat]="'rgba'"
-                [style.background-color]='symbology.stroke_rgba | rgbaToCssStringPipe'
-                [ngModel]='symbology.stroke_rgba | rgbaToCssStringPipe'
+                [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 (ngModelChange)='updateStrokeRgba($event)'>
             </md-input>
         </div>
@@ -128,7 +128,7 @@ export class SymbologyPointsComponent {
         <label>Stroke width</label>
         <md-input type='number'
             min=0
-            [(ngModel)]='symbology.stroke_width'
+            [(ngModel)]='symbology.strokeWidth'
             (ngModelChange)='update()'>
         </md-input>
         </div>
