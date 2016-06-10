@@ -65,7 +65,7 @@ export class LayoutService {
         );
 
         // if plots are empty, reset visibility to true (for the next time plots are inserted)
-        this.plotListVisible$.filter(visible => visible === false)
+        this.plotComponentVisible$.filter(visible => visible === false)
                              .map(() => true)
                              .subscribe(this.plotListVisible$);
     }
