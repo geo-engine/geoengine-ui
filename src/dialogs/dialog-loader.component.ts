@@ -11,7 +11,6 @@ import {MdDialog} from 'ng2-material';
 
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
-import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
 
 import {DialogRef, ButtonDescription, ActionInputDescription} from './dialog-ref.model';
 import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
@@ -83,7 +82,6 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
         padding-top: 8px;
     }
     `],
-    providers: [OVERLAY_PROVIDERS],
     directives: [
         CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MD_TOOLBAR_DIRECTIVES, MD_INPUT_DIRECTIVES,
     ],

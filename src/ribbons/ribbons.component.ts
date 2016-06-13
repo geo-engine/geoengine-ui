@@ -96,7 +96,6 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
         private layoutService: LayoutService
     ) {}
 
-    
     ngAfterViewInit() {
         this.layoutService.getHeaderTabIndexStream().subscribe(tabIndex => {
             if (this.tabs.selectedIndex !== tabIndex) {
@@ -118,7 +117,7 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     onScroll(event: WheelEvent) {
         const minTab = 0;
-        const maxTab = 4; // this.tabs.labels.length - 1;
+        const maxTab = (Config.DEVELOPER_MODE) ? 4 : 3; // this.tabs.labels.length - 1;
 
         const newTabIndex = Math.min(maxTab, Math.max(minTab, (
             this.layoutService.getHeaderTabIndex() + (event.deltaY > 0 ? 1 : -1)
