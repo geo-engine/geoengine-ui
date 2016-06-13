@@ -6,7 +6,6 @@
   var map = {
     'app':                        'app',
     '@angular':                   'node_modules/@angular',
-    'angular2-in-memory-web-api': 'node_modules/angular2-in-memory-web-api',
     'rxjs':                       'node_modules/rxjs',
     '@angular2-material':         'node_modules/@angular2-material',
     'ng2-material':               'node_modules/ng2-material',
@@ -42,9 +41,7 @@
     'http',
     'platform-browser',
     'platform-browser-dynamic',
-    'router',
-    'router-deprecated',
-    'upgrade'
+    'router'
   ];
   // Add package entries for angular packages
   ngPackageNames.forEach( function(pkgName) {
