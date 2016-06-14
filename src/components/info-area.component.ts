@@ -97,6 +97,7 @@ export class InfoAreaComponent {
         private userService: UserService
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
-        this.username$ = this.userService.getUserStream().map(user =>  user.name);
+        // this.username$ = this.userService.getUserStream().map(user =>  user.name);
+        this.username$ = this.userService.getSessionStream().map(session =>  session.user);
     }
 }
