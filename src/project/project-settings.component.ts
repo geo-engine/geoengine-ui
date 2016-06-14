@@ -17,7 +17,7 @@ import moment from 'moment';
     selector: 'wave-project-settings',
     template: `
     <form>
-        <md-input placeholder="Name" [(ngModel)]="projectName"></md-input>
+        <md-input placeholder="Name" disabled [(ngModel)]="project.name"></md-input>
         <p>Set the projection for reviewing and exporting:</p>
         <div class="select">
             <label>Projection</label>
@@ -55,7 +55,6 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
 
     private project: Project;
 
-    private projectName: string;
     private projection: Projection;
     private time: string;
 
@@ -66,7 +65,6 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
 
         this.project = this.projectService.getProject();
         this.projection = this.project.projection;
-        this.projectName = this.project.name;
         this.time = this.project.time.toISOString();
     }
 
@@ -82,12 +80,8 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
         const newTime: moment.Moment = moment(this.time);
         const useTime: boolean = (newTime.isValid() && !this.project.time.isSame(newTime));
 
-        if (this.project.name !== this.projectName
-            || this.project.projection !== this.projection
-            || useTime
-        ) {
+        if (this.project.projection !== this.projection || useTime) {
             this.projectService.changeProjectConfig({
-                name: this.projectName,
                 projection: this.projection,
                 time: (useTime) ? newTime : this.project.time,
             });

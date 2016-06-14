@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Projections, Projection} from '../operators/projection.model';
 
-import {Project, ProjectConfig} from './project.model';
+import {Project} from './project.model';
 
 import moment from 'moment';
 
@@ -15,13 +15,7 @@ export class ProjectService {
     private time$: BehaviorSubject<moment.Moment>;
 
     constructor() {
-        this.project$ = new BehaviorSubject(
-            new Project({
-                name: 'Default',
-                projection: Projections.WGS_84,
-                time: moment('2010-06-06T18:00:00.000Z'),
-            })
-        );
+        this.project$ = new BehaviorSubject(this.createDefaultProject());
 
         this.projection$ = new BehaviorSubject(this.project$.value.projection);
         this.time$ = new BehaviorSubject(this.project$.value.time);
@@ -36,6 +30,14 @@ export class ProjectService {
             }
         });
 
+    }
+
+    createDefaultProject(): Project {
+        return new Project({
+            name: 'Default',
+            projection: Projections.WGS_84,
+            time: moment('2010-06-06T18:00:00.000Z'),
+        });
     }
 
     getProjectStream() {
@@ -55,17 +57,13 @@ export class ProjectService {
 
         this.changeProjectConfig({
             time: time,
-            name: value.name,
             projection: value.projection,
         });
     }
 
-    changeProjectConfig(config: ProjectConfig) {
+    changeProjectConfig(config: {projection?: Projection, time?: moment.Moment}) {
         const project = this.project$.value;
 
-        if (config.name) {
-            project.name = config.name;
-        }
         if (config.projection) {
             project.projection = config.projection;
         }
