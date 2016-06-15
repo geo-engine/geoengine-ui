@@ -74,6 +74,17 @@ export class ProjectService {
         this.project$.next(project);
     }
 
+    renameProject(newName: string) {
+        const oldProject = this.project$.value;
+        const newProject = new Project({
+            name: newName,
+            projection: oldProject.projection,
+            time: oldProject.time,
+        });
+
+        this.project$.next(newProject);
+    }
+
     getProjectionStream(): Observable<Projection> {
         return this.projection$;
     }

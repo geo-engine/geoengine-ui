@@ -1,12 +1,16 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
+import {Observable} from 'rxjs/Rx';
+
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {ProjectService} from '../project/project.service';
 import {LayerService} from '../layers/layer.service';
+import {UserService} from '../users/user.service';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+import {SaveAsDialogComponent} from '../storage/save-as.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {ProjectSettingsComponent} from '../project/project-settings.component';
 
@@ -18,28 +22,52 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
     template: `
     <md-content layout="row">
         <fieldset>
+            <legend>Storage</legend>
+            <div layout="row" layout-align="center">
+                <button md-button
+                    class="md-primary" layout="column space-around"
+                    disabled>
+                    <i md-icon>save</i>
+                    <div>Save (autosave)</div>
+                </button>
+                <button md-button
+                    class="md-primary" layout="column space-around"
+                    [disabled]="isGuestUser$ | async"
+                    (click)="saveAsDialog.show()"
+                >
+                    <i md-icon>archive</i>
+                    <div>Save as...</div>
+                </button>
+                <button md-button
+                    class="md-primary" layout="column space-around"
+                    [disabled]="isGuestUser$ | async"
+                >
+                    <i md-icon>unarchive</i>
+                    <div>Load</div>
+                </button>
+            </div>
+        </fieldset>
+        <fieldset>
             <legend>Project</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
+            <div layout="row" layout-align="center">
+                    <button md-button
+                            class="md-primary" layout="column space-around"
                             (click)="projectSettingsDialog.show()">
                         <i md-icon>settings</i>
                         <div>Configuration</div>
                     </button>
-                </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
+                    <button md-button
+                            class="md-primary" layout="column space-around"
                             (click)="lineageDialog.show()">
                         <i md-icon>merge_type</i>
                         <div>Lineage</div>
                     </button>
-                </div>
             </div>
         </fieldset>
-
     </md-content>
+    <wave-dialog-loader #saveAsDialog
+        [type]="SaveAsDialogComponent"
+    ></wave-dialog-loader>
     <wave-dialog-loader #lineageDialog
         [type]="OperatorGraphDialogComponent"
         [config]="{selectedLayerOnly: false}"
@@ -53,6 +81,10 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
         border-style: solid;
         border-width: 1px;
         padding: 0px;
+        height: 125px;
+    }
+    fieldset > div {
+        height: 105px;
     }
     fieldset .material-icons {
         vertical-align: middle;
@@ -62,6 +94,8 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
     }
     button {
         height: 36px;
+        margin: 0px;
+        height: auto;
     }
     button[disabled] {
         background-color: transparent;
@@ -75,25 +109,19 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
 export class ProjectTabComponent {
     // make this available in the template
     // tslint:disable:variable-name
+    SaveAsDialogComponent = SaveAsDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     ProjectSettingsComponent = ProjectSettingsComponent;
     // tslint:enable
 
+    isGuestUser$: Observable<boolean>;
+
     constructor(
         private projectService: ProjectService,
-        private layerService: LayerService
-    ) {}
-
-    // /**
-    //  * Show the project settings dialog for the current project.
-    //  */
-    // showProjectSettingsDialog() {
-    //     const config = new ProjectSettingsDialogConfig()
-    //         .projectService(this.projectService)
-    //         .clickOutsideToClose(true)
-    //         .targetEvent(event);
-    //
-    //     this.mdDialog.open(ProjectSettingsComponent, this.elementRef, config);
-    // }
+        private layerService: LayerService,
+        private userService: UserService
+    ) {
+        this.isGuestUser$ = this.userService.isGuestUserStream();
+    }
 
 }

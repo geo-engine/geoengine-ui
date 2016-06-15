@@ -16,4 +16,10 @@ export default {
             PASSWORD: 'guest',
         },
     },
+    COLORS: {
+        DEFAULT: 'whitesmoke',
+        PRIMARY: '#009688',
+        ACCENT: '#9c27b0',
+        WARN: '#f44336',
+    },
 };
