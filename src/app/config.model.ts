@@ -22,4 +22,10 @@ export default {
         ACCENT: '#9c27b0',
         WARN: '#f44336',
     },
+    DELAYS: {
+        LOADING: {
+            MIN: 500,
+        },
+        DEBOUNCE: 400,
+    },
 };

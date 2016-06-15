@@ -133,4 +133,8 @@ export class BrowserStorageProvider extends StorageProvider {
         return Promise.resolve(false);
     }
 
+    getProjects(): Promise<Array<string>> {
+        return Promise.resolve([]);
+    }
+
 }

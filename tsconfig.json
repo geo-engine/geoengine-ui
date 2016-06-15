@@ -98,6 +98,7 @@
     "src/ribbons/time-ribbon.component.ts",
     "src/services/mapping-query.service.ts",
     "src/services/random-color.service.ts",
+    "src/storage/load.component.ts",
     "src/storage/providers/browser-storage-provider.model.ts",
     "src/storage/providers/mapping-storage-provider.model.ts",
     "src/storage/save-as.component.ts",

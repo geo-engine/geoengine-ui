@@ -63,4 +63,9 @@ export abstract class StorageProvider {
      */
     abstract projectExists(name: string): Promise<boolean>;
 
+    /**
+     * Retrieve all projects.
+     */
+    abstract getProjects(): Promise<Array<string>>;
+
 }

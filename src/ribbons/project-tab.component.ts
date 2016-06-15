@@ -11,6 +11,7 @@ import {UserService} from '../users/user.service';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {SaveAsDialogComponent} from '../storage/save-as.component';
+import {LoadDialogComponent} from '../storage/load.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {ProjectSettingsComponent} from '../project/project-settings.component';
 
@@ -41,6 +42,7 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
                 <button md-button
                     class="md-primary" layout="column space-around"
                     [disabled]="isGuestUser$ | async"
+                    (click)="loadDialog.show()"
                 >
                     <i md-icon>unarchive</i>
                     <div>Load</div>
@@ -67,6 +69,9 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
     </md-content>
     <wave-dialog-loader #saveAsDialog
         [type]="SaveAsDialogComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #loadDialog
+        [type]="LoadDialogComponent"
     ></wave-dialog-loader>
     <wave-dialog-loader #lineageDialog
         [type]="OperatorGraphDialogComponent"
@@ -110,6 +115,7 @@ export class ProjectTabComponent {
     // make this available in the template
     // tslint:disable:variable-name
     SaveAsDialogComponent = SaveAsDialogComponent;
+    LoadDialogComponent = LoadDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     ProjectSettingsComponent = ProjectSettingsComponent;
     // tslint:enable

@@ -69,27 +69,42 @@ export class StorageService {
         });
     }
 
-    projectExists(name: string) {
+    /**
+     * Checks if a project exists with this name.
+     */
+    projectExists(name: string): Promise<boolean> {
         return this.storageProvider.projectExists(name);
+    }
+
+    /**
+     * Retrieve all projects for a user.
+     */
+    getProjects(): Promise<Array<string>> {
+        return this.storageProvider.getProjects();
+    }
+
+    loadProjectByName(name: string) {
+        return this.resetStorageProvider(this.userService.getSession(), name);
     }
 
     /**
      * Remove the old provider, create a new one and load saved data.
      */
-    private resetStorageProvider(session: Session) {
+    private resetStorageProvider(session: Session, projectName: string = undefined) {
         this.storageProvider = undefined;
 
         let storageProvider: StorageProvider;
         if (session.user === Config.USER.GUEST.NAME) {
             storageProvider = new BrowserStorageProvider(this.layerService, this.plotService);
         } else {
-            storageProvider = new MappingStorageProvider(
-                this.layerService,
-                this.plotService,
-                this.http,
-                this.userService.getSession(),
-                this.projectService.createDefaultProject
-            );
+            storageProvider = new MappingStorageProvider({
+                layerService: this.layerService,
+                plotService: this.plotService,
+                http: this.http,
+                session: this.userService.getSession(),
+                createDefaultProject: this.projectService.createDefaultProject,
+                artifactName: projectName,
+            });
         }
 
         storageProvider.loadWorkspace().then(workspace => {

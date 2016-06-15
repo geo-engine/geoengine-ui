@@ -46,6 +46,8 @@ class ArtifactServiceRequestParameters {
     }
 }
 
+type ArtifactDefinition = {name: string, type: string, user: string};
+
 /**
  * StorageProvider implementation that uses the mapping's artifact service.
  */
@@ -55,18 +57,31 @@ export class MappingStorageProvider extends StorageProvider {
     private ARTIFACT_TYPE = 'project';
     private LAYOUT_SETTINGS_STORAGE_NAME = 'layoutSettings';
 
+    private http: Http;
+    private session: Session;
+    private createDefaultProject: () => Project;
+
     private artifactName: string;
 
-    constructor(
-        protected layerService: LayerService,
-        protected plotService: PlotService,
-        protected http: Http,
-        protected session: Session,
-        protected createDefaultProject: () => Project
-    ) {
-        super(layerService, plotService);
+    constructor(config: {
+        layerService: LayerService,
+        plotService: PlotService,
+        http: Http,
+        session: Session,
+        createDefaultProject: () => Project,
+        artifactName?: string,
+    }) {
+        super(config.layerService, config.plotService);
+        this.http = config.http;
 
-        this.artifactName = this.getCurrentArtifactName();
+        this.session = config.session;
+        this.createDefaultProject = config.createDefaultProject;
+
+        if (config.artifactName) {
+            this.artifactName = config.artifactName;
+        } else {
+            this.artifactName = this.getCurrentArtifactName();
+        }
     }
 
     loadWorkspace(): Promise<Workspace> {
@@ -170,11 +185,38 @@ export class MappingStorageProvider extends StorageProvider {
             Config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).toPromise().then(response => {
-            const mappingResponse = response.json();
-            const result = typeof mappingResponse.result === 'boolean' && mappingResponse.result;
-            return result;
+            return this.mappingResultToBoolean(response.json().result);
         });
     }
+
+    getProjects(): Promise<Array<string>> {
+        const request = new ArtifactServiceRequestParameters({
+            request: 'list',
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                type: this.ARTIFACT_TYPE,
+            },
+        });
+        return this.http.get(
+            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            {headers: request.getHeaders()}
+        ).toPromise().then(response => {
+            const mappingResponse = response.json();
+            if (this.mappingResultToBoolean(mappingResponse.result)) {
+                const artifacts: Array<ArtifactDefinition> = mappingResponse.artifacts;
+                return artifacts.filter(
+                    artifact => artifact.user === this.session.user // TODO: refactor for sharing
+                ).filter(
+                    artifact => artifact.name !== this.artifactName
+                ).map(
+                    artifact => artifact.name
+                );
+            } else {
+                // TODO: handle error
+                return [];
+            }
+        });
+    };
 
     private setCurrentArtifactName(name: string) {
         this.artifactName = name;
@@ -188,6 +230,10 @@ export class MappingStorageProvider extends StorageProvider {
         } else {
             return artifactName;
         }
+    }
+
+    private mappingResultToBoolean(mappingResult: boolean | string) {
+        return typeof mappingResult === 'boolean' && mappingResult;
     }
 
 }

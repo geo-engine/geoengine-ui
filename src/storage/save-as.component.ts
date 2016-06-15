@@ -36,9 +36,6 @@ import {Project} from '../project/project.model';
             mode="indeterminate"
             *ngIf="loading$ | async"
         ></md-progress-circle>
-        <md-progress-circle style="width: 0; height: 0;"
-            mode="indeterminate"
-        ></md-progress-circle>
     </form>
     `,
     styles: [`
@@ -96,7 +93,7 @@ export class SaveAsDialogComponent extends DefaultBasicDialog implements OnInit,
             this.invalidNewName$,
             (value, invalid) => invalid ? '' : value as string
         ).debounceTime(
-            400
+            Config.DELAYS.DEBOUNCE
         ).filter(
             value => value.length > 0
         ).switchMap(value => {
@@ -104,7 +101,7 @@ export class SaveAsDialogComponent extends DefaultBasicDialog implements OnInit,
             const promise = this.storageService.projectExists(value);
             Observable.merge(
                 promise,
-                Observable.timer(500)
+                Observable.timer(Config.DELAYS.LOADING.MIN)
             ).last().subscribe(
                 _ => this.loading$.next(false)
             );
