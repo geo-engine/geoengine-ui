@@ -16,7 +16,7 @@ import {ProjectService} from '../project/project.service';
 import {Project} from '../project/project.model';
 
 @Component({
-    selector: 'wave-plot-detail-dialog',
+    selector: 'wave-save-as-dialog',
     template: `
     <form [ngFormModel]="form" layout="column">
         <md-input
