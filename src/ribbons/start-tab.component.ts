@@ -246,9 +246,7 @@ export class StartTabComponent {
         private layerService: LayerService,
         private mappingQueryService: MappingQueryService
     ) {
-        this.isLayerSelected$ = this.layerService.getSelectedLayerStream()
-                                                 .map(layer => layer !== undefined);
-
+        this.isLayerSelected$ = this.layerService.getIsAnyLayerSelectedStream();
         this.exportLayerUrl$ = this.layerService.getSelectedLayerStream().filter(
             layer => layer !== undefined
         ).switchMap(layer => {

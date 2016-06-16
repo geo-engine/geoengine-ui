@@ -26,26 +26,33 @@ export class NbspPipe implements PipeTransform {
     selector: 'wave-provenance-list',
     template: `
     <div class='container' [style.height.px]='height'>
-        <md-list dense>
-            <md-list-item *ngFor="let p of prov$ | async; let last = last">
-                <dl>
-                    <dt>Citation</dt>
-                    <dd [innerHtml]="p.citation | waveNbsp"></dd>
-                    <dt>License</dt>
-                    <dd [innerHtml]="p.license | waveNbsp"></dd>
-                    <dt>URI</dt>
-                    <dd><a [href]="p.uri" [innerHtml]="p.uri | waveNbsp"></a></dd>
-                </dl>
-                <md-divider *ngIf="!last"></md-divider>
-            </md-list-item>
-        </md-list>
+        <template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
+            <md-list dense>
+                <md-list-item *ngFor="let p of prov$ | async; let last = last">
+                    <dl>
+                        <dt>Citation</dt>
+                        <dd [innerHtml]="p.citation | waveNbsp"></dd>
+                        <dt>License</dt>
+                        <dd [innerHtml]="p.license | waveNbsp"></dd>
+                        <dt>URI</dt>
+                        <dd><a [href]="p.uri" [innerHtml]="p.uri | waveNbsp"></a></dd>
+                    </dl>
+                    <md-divider *ngIf="!last"></md-divider>
+                </md-list-item>
+            </md-list>
+        </template>
+        <template [ngIf]="!(layerService.getIsAnyLayerSelectedStream() | async)">
+            <div class="backdrop">
+              <span>no layer selected</span>
+            </div>
+        </template>
     </div>
     `,
     styles: [`
     :host {
         display: block;
     }
-    container{
+    .container {
         overflow-y: auto;
         display: block;
     }
@@ -53,6 +60,7 @@ export class NbspPipe implements PipeTransform {
     md-list-item {
         margin: 0;
         font-size: 13px;
+        background-color: white;
     }
 
     dl {
@@ -70,6 +78,20 @@ export class NbspPipe implements PipeTransform {
     dd {
         margin-left: 60px;
     }
+
+    .backdrop {
+        display: table;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        color: darkgray;
+    }
+
+    .backdrop span {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     pipes: [NbspPipe],

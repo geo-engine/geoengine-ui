@@ -15,10 +15,13 @@ export class LayerService {
     private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
     private selectedFeatures$: BehaviorSubject<Array<FeatureID>> = new BehaviorSubject([]);
+    private isAnyLayerSelected$: Observable<boolean>;
 
     constructor(
         private mappingQueryService: MappingQueryService
-    ) {}
+    ) {
+        this.isAnyLayerSelected$ = this.getSelectedLayerStream().map(layer => layer !== undefined);
+    }
 
     /**
      * @returns The layer list.
@@ -114,6 +117,10 @@ export class LayerService {
      */
     getSelectedLayer() {
         return this.selectedLayer$.getValue();
+    }
+
+    getIsAnyLayerSelectedStream(): Observable<boolean> {
+        return this.isAnyLayerSelected$;
     }
 
     /**

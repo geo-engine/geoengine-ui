@@ -30,29 +30,36 @@ interface Column {
     selector: 'wave-data-table',
     template: `
     <div class="container" [style.height.px]="height" (scroll)="onScroll($event)">
-        <md-data-table [selectable]="true" (onSelectableChange)="change($event)">
-            <thead>
-                <tr [style.height.px]="scrollTop"></tr>
-                <tr md-data-table-header-selectable-row (onChange)="change($event)">
-                    <th *ngFor="let column of columns">{{column.name}} </th>
-                    <th *ngFor="let column of propertyColumns">{{column.name}} </th>
-                </tr>
-            </thead>
-            <tbody>
-                <template ngFor let-row [ngForOf]="visibleRows" let-idx="index">
-                    <tr md-data-table-selectable-row
-                        [selectable-value]="row.id"
-                        (onChange)="change($event)"
-                    >
-                        <td *ngFor="let column of columns">{{row[column.name]}}</td>
-                        <td
-                            *ngFor="let column of propertyColumns"
-                        >{{row?.properties[column.name]}}</td>
+        <template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
+            <md-data-table [selectable]="true" (onSelectableChange)="change($event)">
+                <thead>
+                    <tr [style.height.px]="scrollTop"></tr>
+                    <tr md-data-table-header-selectable-row (onChange)="change($event)">
+                        <th *ngFor="let column of columns">{{column.name}} </th>
+                        <th *ngFor="let column of propertyColumns">{{column.name}} </th>
                     </tr>
-                </template>
-                <tr [style.height.px]="scrollBottom"></tr>
-            </tbody>
-        </md-data-table>
+                </thead>
+                <tbody>
+                    <template ngFor let-row [ngForOf]="visibleRows" let-idx="index">
+                        <tr md-data-table-selectable-row
+                            [selectable-value]="row.id"
+                            (onChange)="change($event)"
+                        >
+                            <td *ngFor="let column of columns">{{row[column.name]}}</td>
+                            <td
+                                *ngFor="let column of propertyColumns"
+                            >{{row?.properties[column.name]}}</td>
+                        </tr>
+                    </template>
+                    <tr [style.height.px]="scrollBottom"></tr>
+                </tbody>
+            </md-data-table>
+        </template>
+        <template [ngIf]="!(layerService.getIsAnyLayerSelectedStream() | async)">
+            <div class="backdrop">
+              <span>no layer selected</span>
+            </div>
+        </template>
         <md-progress-circle
             mode="indeterminate"
             *ngIf="loading$ | async"
@@ -67,10 +74,17 @@ interface Column {
     :host {
         display: block;
     }
-    container{
+    .container {
+        position: relative;
         overflow-y: auto;
         display: block;
     }
+
+    md-data-table thead,
+    md-data-table tbody {
+        background-color: white;
+    }
+
     md-data-table thead tr,
     md-data-table thead th,
     md-data-table thead >>> .md-data-check-cell {
@@ -84,6 +98,20 @@ interface Column {
     md-progress-circle {
         position: absolute;
     }
+
+    .backdrop {
+        display: table;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        color: darkgray;
+    }
+
+    .backdrop span {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
     `],
     queries: {
         datatable: new ViewChild(MdDataTable),
