@@ -123,6 +123,7 @@
     "typings/globals/d3/index.d.ts",
     "typings/globals/dagre-d3/index.d.ts",
     "typings/globals/dagre/index.d.ts",
+    "typings/globals/hammerjs/index.d.ts",
     "typings/globals/jasmine/index.d.ts",
     "typings/globals/node/index.d.ts",
     "typings/globals/openlayers/index.d.ts",

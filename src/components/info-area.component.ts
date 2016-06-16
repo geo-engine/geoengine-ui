@@ -40,8 +40,8 @@ import {LayoutService} from '../app/layout.service';
             <button md-button class="md-icon-button" aria-label="Settings"
                     (click)="layoutService.toggleLayerListVisibility()"
                     [ngSwitch]="layerListVisibility$ | async">
-                <i *ngSwitchWhen="true" md-icon>expand_less</i>
-                <i *ngSwitchWhen="false" md-icon>expand_more</i>
+                <i *ngSwitchCase="true" md-icon>expand_less</i>
+                <i *ngSwitchCase="false" md-icon>expand_more</i>
             </button>
         </md-toolbar-row>
     </md-toolbar>

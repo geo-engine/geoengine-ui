@@ -25,6 +25,12 @@ export default {
         PRIMARY: '#009688',
         ACCENT: '#9c27b0',
         WARN: '#f44336',
+        TEXT: {
+            DEFAULT: 'rgba(0, 0, 0, 0.87)',
+            PRIMARY: 'rgba(255, 255, 255, 0.870588)',
+            ACCENT: 'rgba(255, 255, 255, 0.870588)',
+            WARN: 'rgba(255, 255, 255, 0.870588)',
+        },
     },
     DELAYS: {
         LOADING: {
