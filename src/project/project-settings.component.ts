@@ -71,8 +71,8 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
     ngOnInit() {
         this.dialog.setTitle('Project Settings');
         this.dialog.setButtons([
-            { title: 'Cancel', action: () => this.dialog.close() },
             { title: 'Save', class: 'md-primary', action: () => this.save() },
+            { title: 'Cancel', action: () => this.dialog.close() },
         ]);
     }
 
