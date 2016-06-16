@@ -58,10 +58,14 @@ import Config from '../app/config.model';
     </md-tab-group>
     `,
     styles: [`
-    md-tabs {
+    md-tab-group {
         height: 180px;
         min-height: 180px !important;
         overflow: visible;
+    }
+    md-tab-group >>> .md-tab-header {
+        height: 47px;
+        border-bottom-width: 1px;
     }
     md-tabs >>> md-tabs-content-wrapper, md-tabs >>> md-tab-content {
         overflow: visible;
@@ -112,7 +116,10 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
         // Remove this hack when the tabs component has a proper API.
 
         // publish tab index if changed
-        this.layoutService.setHeaderTabIndex(this.tabs.selectedIndex);
+        if (this.tabs.selectedIndex !== this.layoutService.getHeaderTabIndex()) {
+            this.layoutService.setHeaderTabIndex(this.tabs.selectedIndex);
+            setTimeout(() => this.changeDetectorRef.markForCheck());
+        }
     }
 
     onScroll(event: WheelEvent) {
@@ -125,6 +132,9 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
         this.tabs.selectedIndex = newTabIndex;
         this.layoutService.setHeaderTabIndex(newTabIndex);
+
+        // fix for content to appear directly
+        setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
 }
