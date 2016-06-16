@@ -172,7 +172,9 @@ export class DialogLoaderComponent implements AfterViewInit {
             if (isOpen) {
                 this.createChildComponent().then(() => {
                     this.backdrop.show();
-                    this.dialog.show();
+                    this.dialog.show().then(dialog => {
+                        setTimeout(() => this.changeDetectorRef.markForCheck());
+                    });
                 });
             } else {
                 this.dialog.close();

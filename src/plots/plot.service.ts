@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Plot, PlotDict} from './plot.model';
 
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 /**
  * A service for managing plots.

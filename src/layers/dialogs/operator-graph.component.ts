@@ -429,9 +429,11 @@ export class OperatorGraphDialogComponent extends BasicDialog<LineageDialogInput
 
         // add zoom handler
         zoom.on('zoom', () => {
+            const zoomTranslate = isNaN(d3.event['translate'][0]) ? [0, 0] : d3.event['translate'];
+            const zoomScale = isNaN(d3.event['scale']) ? 0 : d3.event['scale'];
             svgGroup.attr(
                 'transform',
-                `translate(${d3.event['translate']})scale(${d3.event['scale']})`
+                `translate(${zoomTranslate})scale(${zoomScale})`
             );
         });
         svg.call(zoom);

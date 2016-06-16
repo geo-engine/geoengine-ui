@@ -26,7 +26,7 @@ import {LayoutService} from '../app/layout.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {StorageService} from '../storage/storage.service';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {MapComponent} from '../map/map.component';

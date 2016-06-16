@@ -1,9 +1,12 @@
 import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
+import {Observable} from 'rxjs/Rx';
 
 import Config from '../app/config.model';
 
 import {StorageProvider} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
+import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
 
 import {LayoutService} from '../app/layout.service';
 import {LayerService} from '../layers/layer.service';
@@ -23,22 +26,24 @@ export class StorageService {
         private projectService: ProjectService,
         private plotService: PlotService,
         private layoutService: LayoutService,
-        private userService: UserService
+        private userService: UserService,
+        private http: Http
     ) {
         // setup storage
-        this.projectService.getProjectStream().subscribe(project => {
+        const debounceTime = 2000; // ms
+        Observable.combineLatest(
+            this.projectService.getProjectStream(),
+            this.layerService.getLayersStream(),
+            this.plotService.getPlotsStream()
+        ).debounceTime(
+            debounceTime
+        ).subscribe(([project, layers, plots]) => {
             if (this.storageProvider) {
-                this.storageProvider.saveProject(project);
-            }
-        });
-        this.layerService.getLayersStream().subscribe(layers => {
-            if (this.storageProvider) {
-                this.storageProvider.saveLayers(layers);
-            }
-        });
-        this.plotService.getPlotsStream().subscribe(plots => {
-            if (this.storageProvider) {
-                this.storageProvider.savePlots(plots);
+                this.storageProvider.saveWorkspace({
+                    project: project,
+                    layers: layers,
+                    plots: plots,
+                });
             }
         });
         this.layoutService.getLayoutDictStream().subscribe(layout => {
@@ -65,33 +70,52 @@ export class StorageService {
     }
 
     /**
+     * Checks if a project exists with this name.
+     */
+    projectExists(name: string): Promise<boolean> {
+        return this.storageProvider.projectExists(name);
+    }
+
+    /**
+     * Retrieve all projects for a user.
+     */
+    getProjects(): Promise<Array<string>> {
+        return this.storageProvider.getProjects();
+    }
+
+    loadProjectByName(name: string) {
+        return this.resetStorageProvider(this.userService.getSession(), name);
+    }
+
+    /**
      * Remove the old provider, create a new one and load saved data.
      */
-    private resetStorageProvider(session: Session) {
+    private resetStorageProvider(session: Session, projectName: string = undefined) {
         this.storageProvider = undefined;
 
         let storageProvider: StorageProvider;
         if (session.user === Config.USER.GUEST.NAME) {
             storageProvider = new BrowserStorageProvider(this.layerService, this.plotService);
         } else {
-            throw 'Not yet implemented'; // TODO: implement
+            storageProvider = new MappingStorageProvider({
+                layerService: this.layerService,
+                plotService: this.plotService,
+                http: this.http,
+                session: this.userService.getSession(),
+                createDefaultProject: this.projectService.createDefaultProject,
+                artifactName: projectName,
+            });
         }
 
-        storageProvider.loadProject().then(project => {
-            if (project) {
-                this.projectService.setProject(project);
+        storageProvider.loadWorkspace().then(workspace => {
+            if (workspace.project) {
+                this.projectService.setProject(workspace.project);
             }
-        });
-
-        storageProvider.loadLayers().then(layers => {
-            if (layers) {
-                this.layerService.setLayers(layers);
+            if (workspace.layers) {
+                this.layerService.setLayers(workspace.layers);
             }
-        });
-
-        storageProvider.loadPlots().then(plots => {
-            if (plots) {
-                this.plotService.setPlots(plots);
+            if (workspace.plots) {
+                this.plotService.setPlots(workspace.plots);
             }
         });
 

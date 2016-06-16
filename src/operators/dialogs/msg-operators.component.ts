@@ -19,7 +19,7 @@
 //     MsgCo2CorrectionType, SolarangleName} from "../types/msg-types.model";
 // import {Symbology, MappingColorizerRasterSymbology, RasterSymbology}
 //     from "../../symbology/symbology.model";
-// import {MappingQueryService} from "../../services/mapping-query.service";
+// import {MappingQueryService} from "../../queries/mapping-query.service";
 //
 // /**
 //  * This component allows creating the MSG radiance operator.

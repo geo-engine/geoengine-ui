@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
 import {FeatureID} from '../models/geojson.model';
@@ -131,9 +131,9 @@ export class LayerService {
                 return VectorLayer.fromDict(
                     dict,
                     (operator, clustered) =>
-                        this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                            operator, clustered
-                        ),
+                        this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                            operator, clustered,
+                        }),
                     operator => this.mappingQueryService.getProvenanceStream(operator)
                 );
             default:

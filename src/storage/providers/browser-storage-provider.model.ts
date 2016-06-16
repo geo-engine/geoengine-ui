@@ -1,4 +1,4 @@
-import {StorageProvider} from '../storage-provider.model';
+import {StorageProvider, Workspace} from '../storage-provider.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
@@ -10,6 +10,37 @@ import {Symbology} from '../../symbology/symbology.model';
  * StorageProvider implementation that uses the brower's localStorage
  */
 export class BrowserStorageProvider extends StorageProvider {
+
+    loadWorkspace(): Promise<Workspace> {
+        const promises: [
+            Promise<Project>,
+            Promise<Array<Layer<Symbology>>>,
+            Promise<Array<Plot>>
+        ] = [
+            this.loadProject(),
+            this.loadLayers(),
+            this.loadPlots(),
+        ];
+        return Promise.all(
+            promises as [Promise<{}>]
+        ).then(([project, layers, plots]: [Project, Array<Layer<Symbology>>, Array<Plot>]) => {
+            return {
+                project: project,
+                layers: layers,
+                plots: plots,
+            };
+        });
+    };
+
+    saveWorkspace(workspace: Workspace): Promise<void> {
+        return Promise.all([
+            this.saveProject(workspace.project),
+            this.saveLayers(workspace.layers),
+            this.savePlots(workspace.plots),
+        ]).then(
+            _ => undefined
+        );
+    }
 
     loadProject(): Promise<Project> {
         const projectJSON = localStorage.getItem('project');
@@ -97,5 +128,13 @@ export class BrowserStorageProvider extends StorageProvider {
         localStorage.setItem('layoutSettings', JSON.stringify(dict));
         return Promise.resolve();
     };
+
+    projectExists(name: string): Promise<boolean> {
+        return Promise.resolve(false);
+    }
+
+    getProjects(): Promise<Array<string>> {
+        return Promise.resolve([]);
+    }
 
 }

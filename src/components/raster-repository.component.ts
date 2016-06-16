@@ -17,7 +17,7 @@ import {HighlightPipe} from '../pipes/highlight.pipe';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 import {UserService} from '../users/user.service';
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
 import {ProjectService} from '../project/project.service';

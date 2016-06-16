@@ -1,8 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
+import {Http, Response} from '@angular/http';
 import {Observable, ReplaySubject} from 'rxjs/Rx';
 
 import moment from 'moment';
+
+import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-format.model';
+import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
+import {MappingRequestParameters} from './request-parameters.model';
 
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
@@ -19,106 +23,10 @@ import {VectorLayerDataStream} from '../layers/layer.model';
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 
-type ParametersType = {[index: string]: string | number | boolean};
-
 export interface MappingColorizer {
     interpolation: string;
     breakpoints: Array<[number, string, string]>;
 }
-
-class MappingRequestParameters {
-    private parameters: {[index: string]: string | boolean | number};
-
-    constructor(config: {
-        service: string;
-        request: string,
-        sessionToken: string,
-        parameters?: {[index: string]: string | boolean | number}
-    }) {
-        this.parameters = {
-            service: config.service,
-            request: config.request,
-            sessiontoken: config.sessionToken,
-        };
-        if (config.parameters) {
-            Object.keys(config.parameters).forEach(
-                key => this.parameters[key] = config.parameters[key]
-            );
-        }
-    }
-
-    setParameter(key: string, value: string | boolean | number) {
-        if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
-            throw 'You must not reset "service", "request" or "sessionToken"';
-        }
-        this.parameters[key] = value;
-    }
-
-    toMessageBody(): string {
-        return Object.keys(this.parameters).map(
-            key => [key, /*encodeURIComponent(*/this.parameters[key].toString()/*)*/].join('=')
-        ).join('&');
-    }
-
-    getHeaders(): Headers {
-        return new Headers({
-           'Content-Type': 'application/x-www-form-urlencoded',
-        });
-    }
-}
-
-/**
- * WFS Output Formats
- */
-class WFSOutputFormatCollection {
-    private _JSON = new JSONWFSOutputFormat();
-    private _CSV = new CSVWFSOutputFormat();
-    private _CSV_ZIP = new ZipWFSOutputFormat(this._CSV);
-    get JSON(): WFSOutputFormat { return this._JSON; };
-    get CSV(): WFSOutputFormat { return this._CSV; };
-    get CSV_ZIP(): WFSOutputFormat { return this._CSV_ZIP; }
-}
-
-/**
- * Base class for WFS Output Formats
- */
-abstract class WFSOutputFormat {
-    protected abstract format: string;
-    getFormat(): string {
-        return this.format;
-    }
-}
-
-/**
- * JSON Output format
- */
-class JSONWFSOutputFormat extends WFSOutputFormat {
-    protected format = 'application/json';
-}
-
-/**
- * CSV Output format
- */
-class CSVWFSOutputFormat extends WFSOutputFormat {
-    protected format = 'csv';
-}
-
-/**
- * JSON Output format
- */
-class ZipWFSOutputFormat extends WFSOutputFormat {
-    protected format = 'application/x-export;';
-    constructor(outputFormat: WFSOutputFormat) {
-        super();
-        this.format += outputFormat.getFormat();
-    }
-}
-
-/**
- * Export WFSOutputFormat as singleton.
- */
-// tslint:disable-next-line:variable-name
-export const WFSOutputFormats = new WFSOutputFormatCollection();
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -141,21 +49,30 @@ export class MappingQueryService {
      * @param time the point in time
      * @returns the query url
      */
-    getPlotQueryUrl(operator: Operator, time: moment.Moment): string {
-        const parameters: ParametersType = {
+    getPlotQueryUrl(config: {
+        operator: Operator,
+        time?: moment.Moment,
+    }): string {
+        if (!config.time) {
+            config.time = this.projectService.getTime();
+        }
+        const parameters = new MappingRequestParameters({
             service: 'plot',
-            query: encodeURIComponent(operator.toQueryJSON()),
-            time: time.toISOString(),
-            crs: operator.projection.getCode(),
-        };
+            request: '',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                query: encodeURIComponent(config.operator.toQueryJSON()),
+                time: config.time.toISOString(),
+                crs: config.operator.projection.getCode(),
+            },
+        });
 
-        if (operator.getSources(ResultTypes.RASTER).size > 0) {
-            parameters['height'] = 1024; // magic number
-            parameters['width'] = 1024; // magic number
+        if (config.operator.getSources(ResultTypes.RASTER).size > 0) {
+            parameters.setParameter('height', 1024); // magic number
+            parameters.setParameter('width', 1024); // magic number
         }
 
-        return Config.MAPPING_URL + '?' +
-               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     /**
@@ -164,8 +81,8 @@ export class MappingQueryService {
      * @param time the point in time
      * @returns a Promise of PlotData
      */
-    getPlotData(operator: Operator, time: moment.Moment): Promise<PlotData> {
-        return this.http.get(this.getPlotQueryUrl(operator, time))
+    getPlotData(config: {operator: Operator, time?: moment.Moment}): Promise<PlotData> {
+        return this.http.get(this.getPlotQueryUrl(config))
                         .toPromise()
                         .then(response => response.json());
     }
@@ -179,7 +96,7 @@ export class MappingQueryService {
         const loading$ = new ReplaySubject<boolean>(1);
         const data$ = this.projectService.getTimeStream().switchMap(time => {
             loading$.next(true);
-            const promise = this.getPlotData(operator, time);
+            const promise = this.getPlotData({operator, time});
             promise.then(_ => loading$.next(false), _ => loading$.next(false));
             return promise;
         });
@@ -197,44 +114,48 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns the query url
      */
-    getWFSQueryUrl(
+    getWFSQueryUrl(config: {
         operator: Operator,
-        time: moment.Moment,
-        projection: Projection,
+        time?: moment.Moment,
+        projection?: Projection,
         outputFormat: WFSOutputFormat,
-        viewportSize: boolean | ViewportSize = false
-    ): string {
-        const projectedOperator = operator.getProjectedOperator(projection);
-
-        const parameters: ParametersType = {
-            service: 'WFS',
-            version: Config.WFS.VERSION,
-            request: 'GetFeature',
-            typeNames: encodeURIComponent(projectedOperator.resultType.getCode()
-                       + ':'
-                       + projectedOperator.toQueryJSON()),
-            srsname: projection.getCode(),
-            time: time.toISOString(),
-            outputFormat: outputFormat.getFormat(),
-        };
-
-        if (viewportSize) {
-            const extent = (viewportSize as ViewportSize).extent;
-            const resolution = (viewportSize as ViewportSize).resolution;
-
-            parameters['clustered'] = true;
-            parameters['bbox'] = extent.join(',');
-            parameters['height'] = Math.max(1, resolution);
-            parameters['width'] = Math.max(1, resolution);
+        viewportSize?: boolean | ViewportSize
+    }): string {
+        if (!config.time) {
+            config.time = this.projectService.getTime();
+        }
+        if (!config.projection) {
+            config.projection = this.projectService.getProject().projection;
         }
 
-        // console.log(
-        //     Config.MAPPING_URL + '?' +
-        //            Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&')
-        // );
+        const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
-        return Config.MAPPING_URL + '?' +
-               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+        const parameters = new MappingRequestParameters({
+            service: 'WFS',
+            request: 'GetFeature',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                version: Config.WFS.VERSION,
+                typeNames: encodeURIComponent(projectedOperator.resultType.getCode()
+                           + ':'
+                           + projectedOperator.toQueryJSON()),
+                srsname: config.projection.getCode(),
+                time: config.time.toISOString(),
+                outputFormat: config.outputFormat.getFormat(),
+            },
+        });
+
+        if (config.viewportSize) {
+            const extent = (config.viewportSize as ViewportSize).extent;
+            const resolution = (config.viewportSize as ViewportSize).resolution;
+
+            parameters.setParameter('clustered', true);
+            parameters.setParameter('bbox', extent.join(','));
+            parameters.setParameter('height', Math.max(1, resolution));
+            parameters.setParameter('width', Math.max(1, resolution));
+        }
+
+        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     /**
@@ -247,7 +168,7 @@ export class MappingQueryService {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
         ).map(
-            ([time, projection]) => this.getWFSQueryUrl(operator, time, projection, outputFormat)
+            ([time, projection]) => this.getWFSQueryUrl({operator, time, projection, outputFormat})
         );
     }
 
@@ -259,11 +180,13 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns a Promise of features
      */
-    getWFSData(operator: Operator,
-               time: moment.Moment,
-               projection: Projection,
-               outputFormat: WFSOutputFormat): Promise<string> {
-        return this.http.get(this.getWFSQueryUrl(operator, time, projection, outputFormat))
+    getWFSData(config: {
+        operator: Operator,
+        time?: moment.Moment,
+        projection?: Projection,
+        outputFormat: WFSOutputFormat,
+    }): Promise<string> {
+        return this.http.get(this.getWFSQueryUrl(config))
                         .toPromise()
                         .then(response => response.text());
     }
@@ -276,14 +199,20 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns a Promise of JSON
      */
-    getWFSDataAsJson(
+    getWFSDataAsJson(config: {
         operator: Operator,
         time: moment.Moment,
         projection: Projection,
-        viewportSize: (boolean | ViewportSize) = false
-    ): Promise<GeoJsonFeatureCollection> {
+        viewportSize?: (boolean | ViewportSize)
+    }): Promise<GeoJsonFeatureCollection> {
         return this.http.get(
-            this.getWFSQueryUrl(operator, time, projection, WFSOutputFormats.JSON, viewportSize)
+            this.getWFSQueryUrl({
+                operator: config.operator,
+                time: config.time,
+                projection: config.projection,
+                outputFormat: WFSOutputFormats.JSON,
+                viewportSize: config.viewportSize,
+            })
         ).toPromise().then(response => response.json());
     }
 
@@ -293,20 +222,28 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns an Observable of features
      */
-    getWFSDataStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
+    getWFSDataStream(config: {
+        operator: Operator,
+        outputFormat: WFSOutputFormat
+    }): Observable<string> {
         return Observable.combineLatest(
             this.projectService.getTimeStream(), this.projectService.getProjectionStream()
         ).switchMap(
-            ([time, projection]) => this.getWFSData(operator, time, projection, outputFormat)
+            ([time, projection]) => this.getWFSData({
+                operator: config.operator,
+                time: time,
+                projection: projection,
+                outputFormat: config.outputFormat,
+            })
         );
     }
 
-    getWFSDataStreamAsGeoJsonFeatureCollection(
+    getWFSDataStreamAsGeoJsonFeatureCollection(config: {
         operator: Operator,
-        clustered = false
-    ): VectorLayerDataStream {
+        clustered?: boolean
+    }): VectorLayerDataStream {
         const viewportSize$: Observable<boolean | ViewportSize> =
-            clustered ? this.mapService.getViewportSizeStream() : Observable.of(false);
+            config.clustered ? this.mapService.getViewportSizeStream() : Observable.of(false);
 
         const loading$ = new ReplaySubject<boolean>(1);
         const data$ = Observable.combineLatest(
@@ -315,7 +252,12 @@ export class MappingQueryService {
             viewportSize$
         ).switchMap(([time, projection, optionalViewport]) => {
             loading$.next(true);
-            const promise = this.getWFSDataAsJson(operator, time, projection, optionalViewport);
+            const promise = this.getWFSDataAsJson({
+                operator: config.operator,
+                time: time,
+                projection: projection,
+                viewportSize: optionalViewport,
+            });
             promise.then(_ => loading$.next(false), _ => loading$.next(false));
             return promise;
         }).map(result => {
@@ -343,21 +285,33 @@ export class MappingQueryService {
      * @param projection the desired projection
      * @returns the query parameters
      */
-    getWMSQueryParameters(operator: Operator,
-                          time: moment.Moment,
-                          projection: Projection): ParametersType {
-        const projectedOperator = operator.getProjectedOperator(projection);
+    getWMSQueryParameters(config: {
+        operator: Operator,
+        time?: moment.Moment,
+        projection?: Projection,
+    }): MappingRequestParameters {
+        if (!config.time) {
+            config.time = this.projectService.getTime();
+        }
+        if (!config.projection) {
+            config.projection = this.projectService.getProject().projection;
+        }
 
-        return {
+        const projectedOperator = config.operator.getProjectedOperator(config.projection);
+
+        return new MappingRequestParameters({
             service: 'WMS',
-            version: Config.WMS.VERSION,
             request: 'GetMap',
-            format: Config.WMS.FORMAT,
-            transparent: true,
-            layers: projectedOperator.toQueryJSON(),
-            debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
-            time: time.toISOString(),
-        };
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                version: Config.WMS.VERSION,
+                format: Config.WMS.FORMAT,
+                transparent: true,
+                layers: projectedOperator.toQueryJSON(),
+                debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
+                time: config.time.toISOString(),
+            },
+        });
     }
 
     /**
@@ -367,13 +321,52 @@ export class MappingQueryService {
      * @param projection the desired projection
      * @returns the query url
      */
-    getWMSQueryUrl(operator: Operator,
-                   time: moment.Moment,
-                   projection: Projection): string {
-        const parameters: ParametersType = this.getWMSQueryParameters(operator, time, projection);
+    getWMSQueryUrl(config: {
+        operator: Operator,
+        time?: moment.Moment,
+        projection?: Projection
+    }): string {
+        const parameters = this.getWMSQueryParameters(config);
 
-        return Config.MAPPING_URL + '?' +
-               Object.keys(parameters).map(key => key + '=' + parameters[key]).join('&');
+        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
+    }
+
+    getWCSQueryUrl(config: {
+        operator: Operator,
+        time?: moment.Moment,
+        projection?: Projection,
+        outputFormat: WCSOutputFormat,
+    }): string {
+        if (!config.time) {
+            config.time = this.projectService.getTime();
+        }
+        if (!config.projection) {
+            config.projection = this.projectService.getProject().projection;
+        }
+
+        const projectedOperator = config.operator.getProjectedOperator(config.projection);
+
+        const extent = this.projectService.getProjection().getExtent();
+
+        const parameters = new MappingRequestParameters({
+            service: Config.WCS.SERVICE,
+            request: 'getcoverage',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                version: Config.WCS.VERSION,
+                format: config.outputFormat.getFormat(),
+                coverageid: encodeURIComponent(projectedOperator.toQueryJSON()),
+                subset_x: `(${extent[0]},${extent[2]})`,
+                subset_y: `(${extent[1]},${extent[3]})`,
+                outputcrs: this.projectService.getProjection().getCrsURI(),
+                size_x: 1024, // magic number
+                size_y: 1024, // magic number
+                debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
+                time: config.time.toISOString(),
+            },
+        });
+
+        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     getColorizer(operator: Operator,

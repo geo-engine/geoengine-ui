@@ -73,6 +73,8 @@ export class UserService {
     private user$: BehaviorSubject<User>;
     private session$: BehaviorSubject<Session>;
 
+    private isGuestUser$: Observable<boolean>;
+
     constructor(
         private http: Http
     ) {
@@ -83,6 +85,8 @@ export class UserService {
             // tslint:disable-next-line:no-null-keyword
             session !== null ? session : {user: Config.USER.GUEST.NAME, sessionToken: ''}
         );
+
+        this.isGuestUser$ = this.session$.map(s => s.user === Config.USER.GUEST.NAME);
 
         // storage of the session
         this.session$.subscribe(newSession =>
@@ -116,6 +120,10 @@ export class UserService {
      */
     getSessionStream(): Observable<Session> {
         return this.session$;
+    }
+
+    isGuestUserStream(): Observable<boolean> {
+        return this.isGuestUser$;
     }
 
     /**
@@ -233,7 +241,8 @@ export class UserService {
                                 transform: channel.transform === undefined ?
                                     undefined : {
                                         unit: channel.transform.unit ?
-                                            Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
+                                            Unit.fromMappingDict(channel.transform.unit)
+                                            : Unit.defaultUnit,
                                         datatype: channel.transform.datatype,
                                         offset: channel.transform.offset,
                                         scale: channel.transform.scale,

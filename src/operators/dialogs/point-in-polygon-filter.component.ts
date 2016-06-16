@@ -10,7 +10,7 @@ import {
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
 import {VectorLayer} from '../../layers/layer.model';
@@ -101,9 +101,9 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
                 new SimplePointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                operator, clustered
-            ),
+            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                operator, clustered,
+            }),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         }));

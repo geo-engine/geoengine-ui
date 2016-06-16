@@ -6,7 +6,8 @@ import {Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../layers/layer.service';
-import {MappingQueryService, WFSOutputFormats} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
+import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
 
 import {TimeRibbonComponent} from './time-ribbon.component';
 
@@ -15,6 +16,7 @@ import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
+import {ExportDialogComponent} from '../layers/dialogs/export.component';
 import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
 
 import {ResultTypes} from '../operators/result-type.model';
@@ -45,17 +47,15 @@ import {ResultTypes} from '../operators/result-type.model';
                         <i md-icon>merge_type</i>
                         Lineage
                     </button>
-                    <a md-button
+                    <button md-button
                         style="text-align: left; margin: 0px;"
                         class="md-primary"
-                        [class.disabled]="!(isLayerSelected$ | async)
-                                            || (exportLayerUrl$ | async).length <= 0"
-                        [href]="exportLayerUrl$ | async"
-                        download
+                        [disabled]="!(isLayerSelected$ | async)"
+                        (click)="exportDialog.show()"
                     >
                         <i md-icon>file_download</i>
                         Export
-                    </a>
+                    </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="true">
                         <i md-icon>share</i>
@@ -173,6 +173,7 @@ import {ResultTypes} from '../operators/result-type.model';
     </md-content>
     <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
     <wave-dialog-loader #symbologyDialog [type]="SymbologyDialogComponent"></wave-dialog-loader>
+    <wave-dialog-loader #exportDialog [type]="ExportDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #lineageDialog
         [type]="OperatorGraphDialogComponent"
         [config]="{selectedLayerOnly: true}"
@@ -232,6 +233,7 @@ export class StartTabComponent {
     // tslint:disable:variable-name
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
+    ExportDialogComponent = ExportDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     GBIFOperatorComponent = GBIFOperatorComponent;
     // tslint:enable

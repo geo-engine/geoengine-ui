@@ -14,7 +14,7 @@ import {CodeEditorComponent} from '../../components/code-editor.component';
 import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
 import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
 import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
@@ -159,9 +159,9 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                         symbology: new SimplePointSymbology({
                             fillRGBA: this.randomColorService.getRandomColor(),
                         }),
-                        data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                            operator
-                        ),
+                        data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                            operator,
+                        }),
                         prov$: provenance$,
                     });
                     break;
