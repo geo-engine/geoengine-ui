@@ -72,7 +72,7 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                       (click)="symbologyDialog.show()">
-                        <i md-icon>map</i>
+                        <i md-icon>format_paint</i>
                         Symbology
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
