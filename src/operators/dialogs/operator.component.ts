@@ -498,13 +498,13 @@ export abstract class OperatorBaseComponent extends BasicDialog<DialogInput> imp
     ngOnInit() {
         this.dialog.setTitle('Operator'); // TODO: think about this to remove
         this.dialog.setButtons([
-            { title: 'Cancel', action: () => this.dialog.close() },
             {
                 title: 'Add',
                 class: 'md-primary',
                 action: () => this.add(),
                 disabled: this.addDisabled,
             },
+            { title: 'Cancel', action: () => this.dialog.close() },
         ]);
     }
 

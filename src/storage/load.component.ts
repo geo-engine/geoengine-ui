@@ -43,6 +43,7 @@ import {StorageService} from '../storage/storage.service';
     }
     md-radio-group {
         overflow-y: auto;
+        padding: 0px 16px;
     }
     md-radio-button >>> .md-radio-label-content {
         float: none;
@@ -89,6 +90,7 @@ export class LoadDialogComponent extends DefaultBasicDialog implements OnInit, O
 
     ngOnInit() {
         this.dialog.setTitle('Load');
+        this.dialog.setSideMargins(false);
 
         const loadButtonDisabled$ = new BehaviorSubject(true);
         this.loadButtonSubscription = this.form.controls['projectName'].valueChanges.map(

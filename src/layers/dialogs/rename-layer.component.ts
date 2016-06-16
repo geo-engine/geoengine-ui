@@ -45,8 +45,8 @@ export class RenameLayerComponent extends DefaultBasicDialog implements OnInit {
     ngOnInit() {
         this.dialog.setTitle('Rename the Current Layer');
         this.dialog.setButtons([
-            { title: 'Cancel', action: () => this.dialog.close() },
             { title: 'Save', class: 'md-primary', action: () => this.save() },
+            { title: 'Cancel', action: () => this.dialog.close() },
         ]);
     }
 
