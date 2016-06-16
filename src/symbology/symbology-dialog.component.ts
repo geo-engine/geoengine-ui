@@ -22,27 +22,27 @@ import {Layer} from '../layers/layer.model';
     <wave-dialog-container [title]='_layer?.name' >
         <div class='symbologyContainer' [ngSwitch]='_symbology.symbologyType'>
             <wave-symbology-points
-                *ngSwitchWhen='enumSymbologyType.SIMPLE_POINT'
+                *ngSwitchCase='enumSymbologyType.SIMPLE_POINT'
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-points>
             <wave-symbology-points
-                *ngSwitchWhen='enumSymbologyType.CLUSTERED_POINT'
+                *ngSwitchCase='enumSymbologyType.CLUSTERED_POINT'
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-points>
             <wave-symbology-vector
-                *ngSwitchWhen='enumSymbologyType.SIMPLE_VECTOR'
+                *ngSwitchCase='enumSymbologyType.SIMPLE_VECTOR'
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-vector>
             <wave-symbology-raster
-                *ngSwitchWhen='enumSymbologyType.RASTER'
+                *ngSwitchCase='enumSymbologyType.RASTER'
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-raster>
             <wave-symbology-raster
-                *ngSwitchWhen='enumSymbologyType.MAPPING_COLORIZER_RASTER'
+                *ngSwitchCase='enumSymbologyType.MAPPING_COLORIZER_RASTER'
                 [symbology]='_symbology'
                 (symbologyChanged)='update_symbology($event)'>
             </wave-symbology-raster>

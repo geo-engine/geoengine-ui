@@ -113,8 +113,8 @@ export class OperatorButtonComponent {
                 <div class="selector"
                      [hidden]="buttonsVisible >= buttons.length"
                      [ngSwitch]="expanded" (click)="toggleExpand()">
-                    <i md-icon *ngSwitchWhen="true">expand_less</i>
-                    <i md-icon *ngSwitchWhen="false">expand_more</i>
+                    <i md-icon *ngSwitchCase="true">expand_less</i>
+                    <i md-icon *ngSwitchCase="false">expand_more</i>
                 </div>
             </div>
         </fieldset>

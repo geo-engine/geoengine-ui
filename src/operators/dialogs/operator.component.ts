@@ -30,7 +30,7 @@ import {Projection} from '../projection.model';
                 [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
             <option *ngFor="let layer of layers" [ngValue]="layer">{{layer.name}}</option>
         </select>
-        <p *ngSwitchWhen="0">No Input Available</p>
+        <p *ngSwitchCase="0">No Input Available</p>
     </div>
     `,
     styles: [`

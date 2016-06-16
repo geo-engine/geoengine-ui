@@ -25,7 +25,6 @@
   var packages = {
     'app':                        { main: 'main.js',  defaultExtension: 'js' },
     'rxjs':                       { defaultExtension: 'js' },
-    'angular2-in-memory-web-api': { defaultExtension: 'js' },
     'ng2-material':               { main: 'index.js', defaultExtension: 'js' },
     'ng2-dragula':                { defaultExtension: 'js' },
     'dragula':                    { defaultExtension: 'js' },
@@ -33,6 +32,7 @@
     'moment':                     { defaultExtension: 'js' },
     'ct-angular2-color-picker':   { defaultExtension: 'js' }
   };
+
   // Angular: package entries for angular packages
   var ngPackageNames = [
     'common',
@@ -43,10 +43,18 @@
     'platform-browser-dynamic',
     'router'
   ];
+  // Individual files (~300 requests):
+  function packIndex(pkgName) {
+    packages['@angular/'+pkgName] = { main: 'index.js', defaultExtension: 'js' };
+  }
+  // Bundled (~40 requests):
+  function packUmd(pkgName) {
+    packages['@angular/'+pkgName] = { main: '/bundles/' + pkgName + '.umd.js', defaultExtension: 'js' };
+  }
+  // Most environments should use UMD; some (Karma) need the individual index files
+  var setPackageConfig = System.packageWithIndex ? packIndex : packUmd;
   // Add package entries for angular packages
-  ngPackageNames.forEach( function(pkgName) {
-    packages['@angular/'+pkgName] = { main: pkgName + '.umd.js', defaultExtension: 'js' };
-  });
+  ngPackageNames.forEach(setPackageConfig);
 
   // Material2 specific barrels.
   var mdPackageNames = [

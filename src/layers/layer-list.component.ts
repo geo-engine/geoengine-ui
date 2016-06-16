@@ -58,27 +58,27 @@ import {
                 <div *ngIf='layer.expanded' [ngSwitch]='layer.symbology.symbologyType'>
 
                     <wave-legendary-points
-                        *ngSwitchWhen='_enumSymbologyType.SIMPLE_POINT'
+                        *ngSwitchCase='_enumSymbologyType.SIMPLE_POINT'
                         [symbology]='layer.symbology'>
                     </wave-legendary-points>
 
                     <wave-legendary-clustered-points
-                        *ngSwitchWhen='_enumSymbologyType.CLUSTERED_POINT'
+                        *ngSwitchCase='_enumSymbologyType.CLUSTERED_POINT'
                         [symbology]='layer.symbology'>
                     </wave-legendary-clustered-points>
 
                     <wave-legendary-vector
-                        *ngSwitchWhen='_enumSymbologyType.SIMPLE_VECTOR'
+                        *ngSwitchCase='_enumSymbologyType.SIMPLE_VECTOR'
                         [symbology]='layer.symbology'>
                     </wave-legendary-vector>
 
                     <wave-legendary-raster
-                        *ngSwitchWhen='_enumSymbologyType.RASTER'
+                        *ngSwitchCase='_enumSymbologyType.RASTER'
                         [symbology]='layer.symbology'>
                     </wave-legendary-raster>
 
                     <wave-legendary-mapping-colorizer-raster
-                        *ngSwitchWhen='_enumSymbologyType.MAPPING_COLORIZER_RASTER'
+                        *ngSwitchCase='_enumSymbologyType.MAPPING_COLORIZER_RASTER'
                         [symbology]='layer.symbology'>
                     </wave-legendary-mapping-colorizer-raster>
 

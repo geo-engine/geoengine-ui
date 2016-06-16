@@ -119,8 +119,8 @@ import {PlotService} from '../plots/plot.service';
                         (click)="layoutService.toggleDataTableVisibility()"
                         [ngSwitch]="dataTableVisible$ | async"
                 >
-                    <i *ngSwitchWhen="true" md-icon>expand_more</i>
-                    <i *ngSwitchWhen="false" md-icon>expand_less</i>
+                    <i *ngSwitchCase="true" md-icon>expand_more</i>
+                    <i *ngSwitchCase="false" md-icon>expand_less</i>
                 </button>
                 <md-divider></md-divider>
             </div>

@@ -12,16 +12,16 @@ import {Plot} from './plot.model';
     selector: 'wave-plot-detail-dialog',
     template: `
     <div [ngSwitch]="(plot.data.data$ | async)?.type">
-        <template ngSwitchWhen="text">
+        <template ngSwitchCase="text">
             <pre>{{(plot.data.data$ | async)?.data}}</pre>
         </template>
-        <template ngSwitchWhen="png">
+        <template ngSwitchCase="png">
             <img src="data:image/png;base64,{{(plot.data.data$ | async)?.data}}" #plotImage
                  [width]="getWidthBound(dialog.maxWidth$ | async,
                                         plotImage.naturalWidth)"
                  [alt]="plot.name">
         </template>
-        <template ngSwitchWhen="histogram">
+        <template ngSwitchCase="histogram">
             <wave-histogram [data]="plot.data.data$ | async"
                             [width]="dialog.maxWidth$ | async"
                             [height]="(dialog.maxHeight$ | async) - 5"

@@ -29,8 +29,8 @@ import {LayoutService} from '../app/layout.service';
                 (click)="layoutService.togglePlotListVisibility()"
                 [ngSwitch]="plotListVisible$ | async">
             <i md-icon>
-                <template [ngSwitchWhen]="true">expand_less</template>
-                <template [ngSwitchWhen]="false">expand_more</template>
+                <template [ngSwitchCase]="true">expand_less</template>
+                <template [ngSwitchCase]="false">expand_more</template>
             </i>
         </button>
         <span>Output</span>
@@ -57,14 +57,14 @@ import {LayoutService} from '../app/layout.service';
                         </button>
                     </div>
                     <div class="plot-content">
-                        <template ngSwitchWhen="text">
+                        <template ngSwitchCase="text">
                             <pre>{{(plot.data.data$ | async)?.data}}</pre>
                         </template>
-                        <template ngSwitchWhen="png">
+                        <template ngSwitchCase="png">
                             <img src="data:image/png;base64,{{(plot.data.data$ | async)?.data}}"
                                  width="150" height="150" alt="{{plot.name}}">
                         </template>
-                        <template ngSwitchWhen="histogram">
+                        <template ngSwitchCase="histogram">
                             <wave-histogram [data]="plot.data.data$ | async"
                                             width="150" height="150"
                                             viewBoxRatio="3">
