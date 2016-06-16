@@ -6,7 +6,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {ProjectService} from '../project/project.service';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {VectorLayer, RasterLayer} from '../layers/layer.model';
 import {Plot} from '../plots/plot.model';
@@ -168,9 +168,9 @@ export class DebugTabComponent {
                 name: 'Puma Concolor',
                 symbology: new SimplePointSymbology({fillRGBA: [244, 67, 54, 0.8]}),
                 operator: gbifPumaOperator,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    gbifPumaOperator
-                ),
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    operator: gbifPumaOperator,
+                }),
                 prov$: this.mappingQueryService.getProvenanceStream(gbifPumaOperator),
             })
         );
@@ -199,9 +199,9 @@ export class DebugTabComponent {
                 name: 'WKT',
                 symbology: new SimpleVectorSymbology({fillRGBA: [50, 50, 50, 0.8]}),
                 operator:  wktOperator,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    wktOperator
-                ),
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    operator: wktOperator,
+                }),
                 prov$: this.mappingQueryService.getProvenanceStream(wktOperator),
             })
         );
@@ -225,9 +225,9 @@ export class DebugTabComponent {
                 name: 'IUCN Puma Concolor',
                 symbology: new SimpleVectorSymbology({fillRGBA: [253, 216, 53, 0.8]}),
                 operator: iucnPumaOperator,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    iucnPumaOperator
-                ),
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    operator: iucnPumaOperator,
+                }),
                 prov$: this.mappingQueryService.getProvenanceStream(iucnPumaOperator),
             })
         );

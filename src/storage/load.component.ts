@@ -11,6 +11,7 @@ import Config from '../app/config.model';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
+import {ProjectService} from '../project/project.service';
 import {StorageService} from '../storage/storage.service';
 
 @Component({
@@ -43,6 +44,9 @@ import {StorageService} from '../storage/storage.service';
     md-radio-group {
         overflow-y: auto;
     }
+    md-radio-button >>> .md-radio-label-content {
+        float: none;
+    }
     md-progress-circle {
         margin: 0 auto;
     }
@@ -63,13 +67,14 @@ export class LoadDialogComponent extends DefaultBasicDialog implements OnInit, O
     private loadButtonSubscription: Subscription;
 
     constructor(
+        private projectService: ProjectService,
         private storageService: StorageService,
         private formBuilder: FormBuilder
     ) {
         super();
 
         this.form = this.formBuilder.group({
-            projectName: ['', Validators.required],
+            projectName: [this.projectService.getProject().name, Validators.required],
         });
 
         this.projects$ = this.storageService.getProjects();

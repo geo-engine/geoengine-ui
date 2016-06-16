@@ -26,14 +26,19 @@ export abstract class Projection {
     /**
      * @return The `ol.proj.Projection` for openlayers.
      */
-     getOpenlayersProjection(): ol.proj.Projection {
-         return ol.proj.get(this.getCode());
-     }
+    getOpenlayersProjection(): ol.proj.Projection {
+        return ol.proj.get(this.getCode());
+    }
 
-     /**
-      * @return The maximal extent of the projection.
-      */
-     abstract getExtent(): [number, number, number, number];
+    /**
+     * @return The maximal extent of the projection.
+     */
+    abstract getExtent(): [number, number, number, number];
+
+    /**
+     * @return the crs uri.
+     */
+    abstract getCrsURI(): string;
 }
 
 export class WebMercator extends Projection {
@@ -46,6 +51,9 @@ export class WebMercator extends Projection {
     getExtent(): [number, number, number, number] {
         return [-20037508.34, -20037508.34, 20037508.34, 20037508.34];
     }
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/3857';
+    }
 }
 
 export class WGS84 extends Projection {
@@ -57,6 +65,9 @@ export class WGS84 extends Projection {
     }
     getExtent(): [number, number, number, number] {
         return [-180, -90, 180, 90];
+    }
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/4326';
     }
 }
 
@@ -87,6 +98,9 @@ export class GEOS extends Projection {
     }
     getExtent(): [number, number, number, number] {
         return [-5568748.276, -5568748.276, 5568748.276, 5568748.276];
+    }
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/40453';
     }
 
     private registerProjection() {

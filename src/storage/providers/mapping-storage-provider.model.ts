@@ -206,8 +206,6 @@ export class MappingStorageProvider extends StorageProvider {
                 const artifacts: Array<ArtifactDefinition> = mappingResponse.artifacts;
                 return artifacts.filter(
                     artifact => artifact.user === this.session.user // TODO: refactor for sharing
-                ).filter(
-                    artifact => artifact.name !== this.artifactName
                 ).map(
                     artifact => artifact.name
                 );

@@ -12,7 +12,7 @@ import {Symbology, AbstractVectorSymbology, RasterSymbology}
     from '../symbology/symbology.model';
 
 import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -158,15 +158,16 @@ export class OlRasterLayerComponent
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
 
-        const params = this.mappingQueryService.getWMSQueryParameters(
-            this.layer.operator,
-            this.time,
-            this.projection
-        );
+        const params = this.mappingQueryService.getWMSQueryParameters({
+            operator: this.layer.operator,
+            time: this.time,
+            projection: this.projection,
+        });
         if (this.isFirstChange(changes)) {
+            console.log('map', params.asObject());
             this.source = new ol.source.TileWMS({
                 url: Config.MAPPING_URL,
-                params: params,
+                params: params.asObject(),
                 wrapX: false,
             });
             this._mapLayer = new ol.layer.Tile({
@@ -177,7 +178,7 @@ export class OlRasterLayerComponent
 
         if (changes['projection'] || changes['time']) {
             // TODO: add these functions to the typings file.
-            (this.source as any).updateParams(params);
+            (this.source as any).updateParams(params.asObject());
             // (this.source as any).refresh();
         }
         if (changes['symbology']) {

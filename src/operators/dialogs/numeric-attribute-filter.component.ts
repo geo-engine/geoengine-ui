@@ -17,7 +17,7 @@ import {HistogramComponent, HistogramData} from '../../plots/histogram.component
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
 import {VectorLayer} from '../../layers/layer.model';
@@ -137,9 +137,14 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
             });
 
             this.dataLoading = true;
-            this.mappingQueryService.getPlotData(operator, this.projectService.getTime())
-                                    .then(data => this.data = data as HistogramData)
-                                    .then(_ => this.dataLoading = false);
+            this.mappingQueryService.getPlotData({
+                operator: operator,
+                time: this.projectService.getTime(),
+            }).then(
+                data => this.data = data as HistogramData
+            ).then(
+                _ => this.dataLoading = false
+            );
 
             this.changeDetectorRef.markForCheck();
         });
@@ -222,9 +227,9 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 new SimplePointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                operator, clustered
-            ),
+            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                operator, clustered,
+            }),
             prov$: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         }));

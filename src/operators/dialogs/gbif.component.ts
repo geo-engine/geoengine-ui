@@ -15,7 +15,7 @@ import {OperatorBaseComponent, OperatorOutputNameComponent} from './operator.com
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../services/mapping-query.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 
 import {VectorLayer} from '../../layers/layer.model';
 import {
@@ -104,6 +104,9 @@ import {DataType} from '../datatype.model';
     styles: [`
     md-radio-group {
         overflow-y: auto;
+    }
+    md-radio-button >>> .md-radio-label-content {
+        float: none;
     }
     button {
         margin: 0 auto;
@@ -314,9 +317,9 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection(
-                    operator, clustered
-                ),
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    operator, clustered,
+                }),
                 prov$: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
             }));

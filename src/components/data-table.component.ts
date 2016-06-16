@@ -18,7 +18,7 @@ import {AbstractVectorSymbology} from '../symbology/symbology.model';
 
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 interface Column {
     name: string;

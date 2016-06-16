@@ -14,7 +14,7 @@ import {OperatorButtonComponent, OperatorSelectionGroupComponent}
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {ProjectService} from '../project/project.service';
-import {MappingQueryService} from '../services/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {RasterValueExtractionType} from '../operators/types/raster-value-extraction-type.model';

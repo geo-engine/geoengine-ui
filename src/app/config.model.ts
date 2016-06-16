@@ -8,6 +8,10 @@ export default {
         VERSION: '2.0.0',
         FORMAT: 'application/json',
     },
+    WCS: {
+        SERVICE: 'WCS',
+        VERSION: '2.0.1',
+    },
     DEVELOPER_MODE: true,
     MAPPING_DEBUG_MODE: false,
     USER: {

@@ -85,6 +85,10 @@ export class ProjectService {
         this.project$.next(newProject);
     }
 
+    getProjection(): Projection {
+        return this.projection$.value;
+    }
+
     getProjectionStream(): Observable<Projection> {
         return this.projection$;
     }
