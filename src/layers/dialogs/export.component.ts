@@ -8,9 +8,13 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
+import Config from '../../app/config.model';
+
 import {DefaultBasicDialog} from '../../dialogs/basic-dialog.component';
 
+import {ProjectService} from '../../project/project.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
+
 import {WFSOutputFormats} from '../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../queries/output-formats/wcs-output-format.model';
 import {ResultTypes} from '../../operators/result-type.model';
@@ -29,6 +33,19 @@ import {Symbology} from '../../symbology/symbology.model';
             value="export"
             [disabled]="true"
         ></md-input>
+        <div *ngIf="isRaster" ngControlGroup="resolution">
+            <md-input
+                type="number"
+                placeholder="Resolution Width"
+                ngControl="width"
+            ></md-input>
+            <md-input
+                type="number"
+                placeholder="Resolution Height"
+                ngControl="height"
+                [disabled]="true"
+            ></md-input>
+        </div>
         <p>Data Output Type:</p>
         <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isVector">
             <md-radio-button
@@ -78,11 +95,12 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
     isRaster: boolean;
     isVector: boolean;
 
-    private saveButtonSubscription: Subscription;
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         private mappingQueryService: MappingQueryService,
         private layerService: LayerService,
+        private projectService: ProjectService,
         private formBuilder: FormBuilder
     ) {
         super();
@@ -97,16 +115,59 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
                 Validators.required,
             ],
         });
+
+        if (this.isRaster) {
+            const DEFAULT_WIDTH = 1024;
+            const extent = this.projectService.getProjection().getExtent();
+            const quotient = Math.abs(extent[3] - extent[1]) / Math.abs(extent[2] - extent[0]);
+
+            const minResolutionControl = this.formBuilder.control(
+                DEFAULT_WIDTH,
+                Validators.required
+            );
+            const maxResolutionControl = this.formBuilder.control(
+                Math.round(DEFAULT_WIDTH * quotient),
+                Validators.required
+            );
+
+            this.subscriptions.push(
+                minResolutionControl.valueChanges.map(
+                    value => Math.round(value * quotient)
+                ).subscribe(
+                    value => maxResolutionControl.updateValue(value)
+                )
+            );
+
+            this.subscriptions.push(
+                minResolutionControl.valueChanges.debounceTime(
+                    Config.DELAYS.DEBOUNCE
+                ).filter(
+                    value => isNaN(value)
+                ).subscribe(
+                    _ => minResolutionControl.updateValue(DEFAULT_WIDTH)
+                )
+            );
+
+            this.form.addControl(
+                'resolution',
+                this.formBuilder.group({
+                    width: minResolutionControl,
+                    height: maxResolutionControl,
+                })
+            );
+        }
     }
 
     ngOnInit() {
         this.dialog.setTitle('Export');
 
         const saveButtonDisabled$ = new BehaviorSubject(false);
-        this.saveButtonSubscription = this.form.valueChanges.map(_ => {
-            return !!this.form.errors && Object.keys(this.form.errors).length > 0;
-        }).subscribe(
-            saveButtonDisabled$
+        this.subscriptions.push(
+            this.form.valueChanges.map(_ => {
+                return !!this.form.errors && Object.keys(this.form.errors).length > 0;
+            }).subscribe(
+                saveButtonDisabled$
+            )
         );
         this.dialog.setButtons([
             {
@@ -122,7 +183,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
     }
 
     ngOnDestroy() {
-        this.saveButtonSubscription.unsubscribe();
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     download() {
@@ -137,6 +198,10 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
             location.href = this.mappingQueryService.getWCSQueryUrl({
                 operator: this.layer.operator,
                 outputFormat: this.form.controls['dataOutputType'].value,
+                size: {
+                    x: this.form.controls['resolution'].value.width,
+                    y: this.form.controls['resolution'].value.height,
+                },
             });
         }
 

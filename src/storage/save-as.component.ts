@@ -40,8 +40,8 @@ import {Project} from '../project/project.model';
     `,
     styles: [`
     form {
-        margin-top: 8px;
-        margin-bottom: 8px;
+        margin-top: 16px;
+        margin-bottom: 16px;
     }
     md-hint {
         color: ${Config.COLORS.WARN};

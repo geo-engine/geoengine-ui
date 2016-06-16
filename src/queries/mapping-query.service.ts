@@ -336,6 +336,10 @@ export class MappingQueryService {
         time?: moment.Moment,
         projection?: Projection,
         outputFormat: WCSOutputFormat,
+        size: {
+            x: number,
+            y: number,
+        },
     }): string {
         if (!config.time) {
             config.time = this.projectService.getTime();
@@ -359,8 +363,8 @@ export class MappingQueryService {
                 subset_x: `(${extent[0]},${extent[2]})`,
                 subset_y: `(${extent[1]},${extent[3]})`,
                 outputcrs: this.projectService.getProjection().getCrsURI(),
-                size_x: 1024, // magic number
-                size_y: 1024, // magic number
+                size_x: config.size.x,
+                size_y: config.size.y,
                 debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
                 time: config.time.toISOString(),
             },
