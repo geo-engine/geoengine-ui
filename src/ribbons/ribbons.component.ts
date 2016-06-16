@@ -124,13 +124,13 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     onScroll(event: WheelEvent) {
         const minTab = 0;
-        const maxTab = (Config.DEVELOPER_MODE) ? 4 : 3; // this.tabs.labels.length - 1;
+        const maxTab = (Config.DEVELOPER_MODE) ? 4 - 1 : 3 - 1; // this.tabs.labels.length - 1;
 
         const newTabIndex = Math.min(maxTab, Math.max(minTab, (
             this.layoutService.getHeaderTabIndex() + (event.deltaY > 0 ? 1 : -1)
         )));
 
-        this.tabs.selectedIndex = newTabIndex;
+        // this.tabs.selectedIndex = newTabIndex;
         this.layoutService.setHeaderTabIndex(newTabIndex);
 
         // fix for content to appear directly
