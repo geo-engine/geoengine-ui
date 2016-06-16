@@ -25,7 +25,7 @@ export class NbspPipe implements PipeTransform {
 @Component({
     selector: 'wave-provenance-list',
     template: `
-    <md-content class='container' [style.height.px]='height'>
+    <div class='container' [style.height.px]='height'>
         <md-list dense>
             <md-list-item *ngFor="let p of prov$ | async; let last = last">
                 <dl>
@@ -39,7 +39,7 @@ export class NbspPipe implements PipeTransform {
                 <md-divider *ngIf="!last"></md-divider>
             </md-list-item>
         </md-list>
-    </md-content>
+    </div>
     `,
     styles: [`
     :host {

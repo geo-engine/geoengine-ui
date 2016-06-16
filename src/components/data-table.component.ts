@@ -1,12 +1,13 @@
 import {
     Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnChanges, SimpleChange,
+    ViewChild,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 import {Http} from '@angular/http';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, ITableSelectionChange} from 'ng2-material';
+import {MATERIAL_DIRECTIVES, ITableSelectionChange, MdDataTable} from 'ng2-material';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {SafeStylePipe} from '../app/safe-template.pipe';
@@ -28,7 +29,7 @@ interface Column {
 @Component({
     selector: 'wave-data-table',
     template: `
-    <md-content class="container" [style.height.px]="height" (scroll)="onScroll($event)">
+    <div class="container" [style.height.px]="height" (scroll)="onScroll($event)">
         <md-data-table [selectable]="true" (onSelectableChange)="change($event)">
             <thead>
                 <tr [style.height.px]="scrollTop"></tr>
@@ -60,7 +61,7 @@ interface Column {
             [style.top.px]="height / 4"
             [style.left]="'calc(50% - ' + height / 2 + 'px)' | waveSafeStyle"
         ></md-progress-circle>
-    </md-content>
+    </div>
     `,
     styles: [`
     :host {
@@ -84,13 +85,19 @@ interface Column {
         position: absolute;
     }
     `],
+    queries: {
+        datatable: new ViewChild(MdDataTable),
+    },
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES],
     pipes: [SafeStylePipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges {
+
     @Input()
     private height: number;
+    @ViewChild(MdDataTable)
+    private datatable: MdDataTable;
 
     private virtualHeight: number = 0;
     private scrollTop: number = 0;
@@ -237,6 +244,7 @@ export class DataTableComponent implements OnInit, OnChanges {
 
     change(event: ITableSelectionChange) {
         console.log('selectableChange', event);
+        console.log('datatable', this.datatable);
     }
 
 }

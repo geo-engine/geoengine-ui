@@ -231,7 +231,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
     private initOpenlayersMap() {
         this.map = new ol.Map({
-
             controls: [],
             logo: false,
             loadTilesWhileAnimating: true,  // TODO: check if moved to layer
@@ -241,12 +240,16 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         // add the select interaction to the map
         const select = new ol.interaction.Select();
         this.map.addInteraction(select);
-        select.on(['select'], this.onSelect);
-    }
-
-    private onSelect(event: any) { // ol.SelectEvent) {
-        const selectEvent = event as ol.SelectEvent;
-        console.log('select', selectEvent);
+        select.on(['select'], (event: any) => {
+            const selectEvent = event as ol.SelectEvent;
+            console.log('select', selectEvent);
+            this.layerService.removeFeaturesFromSelection(selectEvent.deselected.map(
+                feature => feature.getId()
+            ));
+            this.layerService.addFeaturesToSelection(selectEvent.selected.map(
+                feature => feature.getId()
+            ));
+        });
     }
 
     private createBackgroundLayer(projection: Projection): ol.layer.Image {

@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MappingQueryService} from '../services/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
+import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
 
 /**
@@ -13,6 +14,7 @@ import {Symbology} from '../symbology/symbology.model';
 export class LayerService {
     private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
+    private selectedFeatures$: BehaviorSubject<Array<FeatureID>> = new BehaviorSubject([]);
 
     constructor(
         private mappingQueryService: MappingQueryService
@@ -96,6 +98,7 @@ export class LayerService {
     setSelectedLayer(layer: Layer<Symbology>) {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
+            this.selectedFeatures$.next([]);
         }
     }
 
@@ -138,4 +141,15 @@ export class LayerService {
         }
     }
 
+    addFeaturesToSelection(featureIds: Array<FeatureID>): void {
+        console.log('add featureIds', featureIds);
+        const selected = this.selectedFeatures$.value.slice(0);
+        let concat = selected.concat(featureIds); // TODO: dedublicate?
+        this.selectedFeatures$.next(concat);
+    }
+
+    removeFeaturesFromSelection(featureIds: Array<FeatureID>): void {
+        console.log('remove featureIds', featureIds);
+        this.selectedFeatures$.next([]);
+    }
 }
