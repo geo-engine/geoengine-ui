@@ -1,114 +1,195 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
+import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
+import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
+
+import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import Config from '../app/config.model';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
-import {User, Guest} from './user.model';
+// import {User, Guest} from './user.model';
 import {UserService} from './user.service';
 
+enum FormStatus { LoggedOut, LoggedIn, Loading }
+
 @Component({
-    selector: 'wave-plot-detail-dialog',
+    selector: 'wave-login-dialog',
     template: `
-    <form *ngIf="!loggedIn" [ngFormModel]="loginForm" layout="column">
+    <form
+        *ngIf="isLoggedOut$ | async"
+        [ngFormModel]="form"
+        layout="column"
+    >
         <md-input type="text" placeholder="Username" ngControl="username"></md-input>
-        <div ngControlGroup="password" class="password" layout="column">
-            <md-input
-                type="password"
-                placeholder="Password"
-                ngControl="value"
-            ></md-input>
-            <md-input
-                type="password"
-                placeholder="Confirmation"
-                ngControl="confirmation"
-            >
-                <md-hint align="end" style="color: #f44336"
-                    *ngIf="!passwordConfirmed()"
-                >Passwords differ</md-hint>
-            </md-input>
-        </div>
-        <button md-button
-            class="md-primary"
-            [disabled]="!validForLogin()"
-            (click)="login()"
-        >Login</button>
-    <template [ngIf]="loggedIn">
-    </template>
+        <md-input type="password" placeholder="Password" ngControl="password"></md-input>
+        <span *ngIf="invalidCredentials">Invalid Credentials</span>
+    </form>
+    <div *ngIf="isLoggedIn$ | async" class="logged-in">
+        <md-input
+            type="text"
+            placeholder="Username"
+            [ngModel]="form.controls.username.value"
+            [disabled]="true"
+        ></md-input>
+        <button md-raised-button (click)="logout()">Logout</button>
+    </div>
+    <div *ngIf="isLoading$ | async" class="loading">
+        <md-progress-circle mode="indeterminate"></md-progress-circle>
+    </div>
     `,
     styles: [`
     form {
-        display: block;
-        padding-top: 8px;
+        padding: 16px 0;
+    }
+    span {
+        color: ${Config.COLORS.WARN};
     }
     .password {
         width: 90%;
     }
+    div.logged-in {
+        margin: 16px 0;
+    }
+    .logged-in button {
+        width: 90%;
+        margin-left: calc(10%/2);
+    }
+    div.loading {
+        padding: 32px calc(50% - 100px/2);
+    }
+    md-progress-circle {
+        width: 100px;
+        height: 100px;
+    }
     `],
     providers: [],
     directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
     ],
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class LoginDialogComponent extends DefaultBasicDialog implements OnInit {
-    loggedIn: boolean;
-    user: User;
+export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+    formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
+    isLoggedIn$ = this.formStatus$.map(status => status === FormStatus.LoggedIn);
+    isLoggedOut$ = this.formStatus$.map(status => status === FormStatus.LoggedOut);
+    isLoading$ = this.formStatus$.map(status => status === FormStatus.Loading);
+    invalidCredentials = false;
+    // user: User;
 
-    loginForm: ControlGroup;
+    form: ControlGroup;
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         private userService: UserService,
         private formBuilder: FormBuilder
     ) {
         super();
-        this.userService.isSessionValid(this.userService.getSession()).then(valid => {
-            this.user = this.userService.getUser();
-            this.loggedIn = valid && !(this.user instanceof Guest);
 
-            if (!(this.user instanceof Guest)) {
-                this.loginForm.controls['username'].value = this.user.name;
-            }
+        this.form = this.formBuilder.group({
+            username: ['', Validators.required],
+            password: ['', Validators.required],
         });
 
-        this.loginForm = this.formBuilder.group({
-            username: ['', Validators.required],
-            password: this.formBuilder.group({
-                value: ['', Validators.required],
-                confirmation: ['', Validators.required],
-            }),
+        this.userService.isSessionValid(this.userService.getSession()).then(valid => {
+            // this.user = this.userService.getUser();
+            // this.loggedIn = valid && !(this.user instanceof Guest);
+            const isNoGuest = this.userService.getSession().user !== Config.USER.GUEST.NAME;
+            this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
+
+            // if (!(this.user instanceof Guest)) {
+            //     this.form.controls['username'].value = this.user.name;
+            // }
+            if (isNoGuest) {
+                (this.form.controls['username'] as Control).updateValue(
+                    this.userService.getSession().user
+                );
+            }
         });
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Login');
-    }
+        this.dialog.setTitle('User Info');
 
-    login() {
-        this.userService.login({
-            user: this.loginForm.controls['username'].value,
-            password: this.loginForm.controls['password']['value'].value,
-        }).then(valid =>
-            console.log('login valid', valid)
+        this.subscriptions.push(
+            this.formStatus$.subscribe(status => {
+                switch (status) {
+                    case FormStatus.LoggedIn:
+                        this.removeLoginButtons();
+                    break;
+                    case FormStatus.LoggedOut:
+                        this.createLoginButtons();
+                    break;
+                    case FormStatus.Loading:
+                    /* falls through */
+                    default:
+                        this.removeLoginButtons();
+                    break;
+                }
+            })
         );
     }
 
-    passwordConfirmed(): boolean {
-        const value = this.loginForm.controls['password'].value['value'];
-        const confirmation = this.loginForm.controls['password'].value['confirmation'];
-        return value === confirmation;
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    validForLogin(): boolean {
-        const username = this.loginForm.controls['username'].value;
-        const password = this.loginForm.controls['password'].value['value'];
-        return username.length > 0 && username !== Config.USER.GUEST.NAME
-                && password.length > 0 && this.passwordConfirmed();
+    login() {
+        this.formStatus$.next(FormStatus.Loading);
+        this.userService.login({
+            user: this.form.controls['username'].value,
+            password: this.form.controls['password'].value,
+        }).then(valid => {
+            if (valid) {
+                this.invalidCredentials = false;
+                this.formStatus$.next(FormStatus.LoggedIn);
+            } else {
+                this.invalidCredentials = true;
+                (this.form.controls['password'].value as Control).updateValue('');
+                this.formStatus$.next(FormStatus.LoggedOut);
+            }
+        });
+    }
+
+    logout() {
+        this.formStatus$.next(FormStatus.Loading);
+        this.userService.guestLogin().then(success => {
+            // TODO: what to do if this is not successful?
+            (this.form.controls['password'].value as Control).updateValue('');
+            this.formStatus$.next(FormStatus.LoggedOut);
+        });
+    }
+
+    private createLoginButtons() {
+        const loginButtonDisabled$ = new BehaviorSubject(true);
+        this.subscriptions.push(
+            this.form.statusChanges.map(status => {
+                return status === 'INVALID';
+            }).subscribe(
+                loginButtonDisabled$
+            )
+        );
+
+        this.dialog.setButtons([
+            {
+                title: 'Login',
+                action: () => this.login(),
+                disabled: loginButtonDisabled$,
+            },
+            {
+                title: 'Cancel',
+                action: () => this.dialog.close(),
+            },
+        ]);
+    }
+
+    private removeLoginButtons() {
+        this.dialog.setButtons([]);
     }
 
 }

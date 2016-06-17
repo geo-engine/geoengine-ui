@@ -60,10 +60,8 @@ export class StorageService {
                 if (valid) {
                     this.resetStorageProvider(session);
                 } else {
-                    this.userService.login({
-                        user: Config.USER.GUEST.NAME,
-                        password: Config.USER.GUEST.PASSWORD,
-                    });
+                    // TODO: think about this
+                    this.userService.guestLogin();
                 }
             });
         });
