@@ -265,16 +265,6 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         const sources: Array<{
             name: string, operatorType: OperatorType, resultType: ResultType
         }> = [];
-        if (this.form.controls['selectGBIF'].value) {
-            sources.push({
-                name: 'GBIF',
-                operatorType: new GBIFSourceType({
-                    scientificName: searchString,
-                    includeMetadata: false,
-                }),
-                resultType: ResultTypes.POINTS,
-            });
-        }
         if (this.form.controls['selectIUCN'].value) {
             sources.push({
                 name: 'IUCN',
@@ -283,6 +273,16 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                     query: query,
                 }),
                 resultType: ResultTypes.POLYGONS,
+            });
+        }
+        if (this.form.controls['selectGBIF'].value) {
+            sources.push({
+                name: 'GBIF',
+                operatorType: new GBIFSourceType({
+                    scientificName: searchString,
+                    includeMetadata: false,
+                }),
+                resultType: ResultTypes.POINTS,
             });
         }
 
