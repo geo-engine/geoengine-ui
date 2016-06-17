@@ -6,6 +6,8 @@ import {Observable} from 'rxjs/Rx';
 import {MdToolbar} from '@angular2-material/toolbar';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
+import Config from '../app/config.model';
+
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {LoginDialogComponent} from '../users/login-dialog.component';
 
@@ -77,7 +79,7 @@ import {LayoutService} from '../app/layout.service';
         text-align: center;
     }
     button {
-        color: rgba(255, 255, 255, 0.870588);
+        color: ${Config.COLORS.TEXT.ACCENT};
     }
     button[disabled] {
         background-color: transparent;
@@ -98,6 +100,8 @@ export class InfoAreaComponent {
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
         // this.username$ = this.userService.getUserStream().map(user =>  user.name);
-        this.username$ = this.userService.getSessionStream().map(session =>  session.user);
+        this.username$ = this.userService.getSessionStream().map(
+            session =>  session.user === Config.USER.GUEST.NAME ? 'login' : session.user
+        );
     }
 }

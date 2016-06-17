@@ -153,6 +153,13 @@ export class UserService {
         });
     }
 
+    guestLogin(): Promise<boolean> {
+        return this.login({
+            user: Config.USER.GUEST.NAME,
+            password: Config.USER.GUEST.PASSWORD,
+        });
+    }
+
     /**
      * Login using user credentials. If it was successful, set a new user.
      * @param credentials.user The user name.
