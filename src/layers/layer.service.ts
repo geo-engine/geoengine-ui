@@ -119,6 +119,9 @@ export class LayerService {
         return this.selectedLayer$.getValue();
     }
 
+    /**
+     * @returns a stream indicating if any layer is selected.
+     */
     getIsAnyLayerSelectedStream(): Observable<boolean> {
         return this.isAnyLayerSelected$;
     }
@@ -148,15 +151,23 @@ export class LayerService {
         }
     }
 
+    /**
+     * @returns The currently selected features as stream.
+     */
+    getSelectedFeaturesStream() {
+        return this.selectedFeatures$.asObservable();
+    }
+
     addFeaturesToSelection(featureIds: Array<FeatureID>): void {
         console.log('add featureIds', featureIds);
-        const selected = this.selectedFeatures$.value.slice(0);
+        const selected = this.selectedFeatures$.value.slice();
         let concat = selected.concat(featureIds); // TODO: dedublicate?
         this.selectedFeatures$.next(concat);
     }
 
     removeFeaturesFromSelection(featureIds: Array<FeatureID>): void {
         console.log('remove featureIds', featureIds);
-        this.selectedFeatures$.next([]);
+        let selected = this.selectedFeatures$.value.filter(item => featureIds.indexOf(item) === -1);
+        this.selectedFeatures$.next(selected);
     }
 }
