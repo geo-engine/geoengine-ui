@@ -92,7 +92,13 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
         super();
 
         this.form = this.formBuilder.group({
-            username: ['', Validators.required],
+            username: ['', Validators.compose([
+                Validators.required,
+                (control: Control) => {
+                    // tslint:disable-next-line:no-null-keyword
+                    return control.value === Config.USER.GUEST.NAME ? {'keyword': true} : null;
+                },
+            ])],
             password: ['', Validators.required],
         });
 
@@ -150,7 +156,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
                 this.formStatus$.next(FormStatus.LoggedIn);
             } else {
                 this.invalidCredentials = true;
-                (this.form.controls['password'].value as Control).updateValue('');
+                (this.form.controls['password'] as Control).updateValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             }
         });
@@ -160,7 +166,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
         this.formStatus$.next(FormStatus.Loading);
         this.userService.guestLogin().then(success => {
             // TODO: what to do if this is not successful?
-            (this.form.controls['password'].value as Control).updateValue('');
+            (this.form.controls['password'] as Control).updateValue('');
             this.formStatus$.next(FormStatus.LoggedOut);
         });
     }
