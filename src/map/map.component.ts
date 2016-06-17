@@ -44,6 +44,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     >;
 
     private map: ol.Map;
+    private selectionInteraction: ol.interaction.Select;
 
     private isSizeChanged = false;
     private isProjectionChanged = false;
@@ -239,7 +240,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         // add the select interaction to the map
         const select = new ol.interaction.Select();
-        this.map.addInteraction(select);
+        // this.map.addInteraction(select);
         select.on(['select'], (event: any) => {
             const selectEvent = event as ol.SelectEvent;
             console.log('select', selectEvent);
@@ -249,6 +250,22 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
             this.layerService.addFeaturesToSelection(selectEvent.selected.map(
                 feature => feature.getId()
             ));
+        });
+
+        this.layerService.getSelectedLayerStream().subscribe(layer => {
+            select.getFeatures().clear();
+            if (layer && select) {
+                const selectOlLayer = this.contentChildren.filter(
+                    olLayerComponent => olLayerComponent.layer === layer
+                ).map(
+                    olLayerComponent => olLayerComponent.mapLayer
+                );
+                select.set('layers', selectOlLayer);
+                this.map.addInteraction(select);
+            } else {
+                this.map.removeInteraction(select);
+                select.unset('layers');
+            }
         });
     }
 
