@@ -92,6 +92,10 @@ abstract class OlVectorLayerComponent
                     this.mapLayer.setStyle(this.symbology.olStyle as ol.style.StyleFunction);
                 }
             }
+
+            if (changes['projection'] || changes['time']) {
+                this.source.clear(); // TODO: check if this is needed always...
+            }
     }
 
     ngOnDestroy() {
@@ -179,7 +183,7 @@ export class OlRasterLayerComponent
         if (changes['projection'] || changes['time']) {
             // TODO: add these functions to the typings file.
             (this.source as any).updateParams(params.asObject());
-            // (this.source as any).refresh();
+            (this.source as any).refresh();
         }
         if (changes['symbology']) {
             this._mapLayer.setOpacity(this.symbology.opacity);
