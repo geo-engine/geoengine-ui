@@ -44,7 +44,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     >;
 
     private map: ol.Map;
-    private selectionInteraction: ol.interaction.Select;
 
     private isSizeChanged = false;
     private isProjectionChanged = false;
@@ -238,12 +237,16 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
             loadTilesWhileInteracting: true, // TODO: check if moved to layer
         });
 
+        let selectedOlLayers: Array<ol.layer.Layer> = undefined;
+
         // add the select interaction to the map
-        const select = new ol.interaction.Select();
-        // this.map.addInteraction(select);
-        select.on(['select'], (event: any) => {
+        const select = new ol.interaction.Select({
+            layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
+        });
+        select.setActive(false);
+        this.map.addInteraction(select);
+        select.on(['select'], (event: ol.SelectEvent) => {
             const selectEvent = event as ol.SelectEvent;
-            console.log('select', selectEvent);
             this.layerService.removeFeaturesFromSelection(selectEvent.deselected.map(
                 feature => feature.getId()
             ));
@@ -255,16 +258,14 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         this.layerService.getSelectedLayerStream().subscribe(layer => {
             select.getFeatures().clear();
             if (layer && select) {
-                const selectOlLayer = this.contentChildren.filter(
+                selectedOlLayers = this.contentChildren.filter(
                     olLayerComponent => olLayerComponent.layer === layer
                 ).map(
                     olLayerComponent => olLayerComponent.mapLayer
                 );
-                select.set('layers', selectOlLayer);
-                this.map.addInteraction(select);
+                select.setActive(true);
             } else {
-                this.map.removeInteraction(select);
-                select.unset('layers');
+                select.setActive(false);
             }
         });
     }
