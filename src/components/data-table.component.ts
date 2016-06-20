@@ -1,6 +1,6 @@
 import {
     Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnChanges, SimpleChange,
-    ViewChild,
+    ViewChild, ElementRef, AfterViewChecked,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 import {Http} from '@angular/http';
@@ -13,7 +13,7 @@ import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle'
 import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
-import {GeoJsonFeatureCollection, GeoJsonFeature} from '../models/geojson.model';
+import {GeoJsonFeatureCollection, GeoJsonFeature, FeatureID} from '../models/geojson.model';
 import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';
 
@@ -29,9 +29,9 @@ interface Column {
 @Component({
     selector: 'wave-data-table',
     template: `
-    <div class="container" [style.height.px]="height" (scroll)="onScroll($event)">
+    <div #container class="container" [style.height.px]="height" (scroll)="onScroll($event)">
         <template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
-            <md-data-table [selectable]="true" (onSelectableChange)="change($event)">
+            <md-data-table [selectable]="selectable$ | async" (onSelectableChange)="change($event)">
                 <thead>
                     <tr [style.height.px]="scrollTop"></tr>
                     <tr md-data-table-header-selectable-row (onChange)="change($event)">
@@ -115,17 +115,22 @@ interface Column {
     `],
     queries: {
         datatable: new ViewChild(MdDataTable),
+        container: new ViewChild('container'),
     },
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES],
     pipes: [SafeStylePipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTableComponent implements OnInit, OnChanges {
+export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
+
+    selectable$: Observable<boolean>;
 
     @Input()
     private height: number;
     @ViewChild(MdDataTable)
     private datatable: MdDataTable;
+    @ViewChild('container')
+    private container: ElementRef;
 
     private virtualHeight: number = 0;
     private scrollTop: number = 0;
@@ -156,7 +161,10 @@ export class DataTableComponent implements OnInit, OnChanges {
 
         const dataStream = layerService.getSelectedLayerStream().map(layer => {
             if (layer === undefined) {
-                return { data$: Observable.of([]), loading$: Observable.of(false)};
+                return { data$: Observable.of([]),
+                    loading$: Observable.of(false),
+                    selectable: false,
+                };
             }
             switch (layer.operator.resultType) {
                 case ResultTypes.POINTS:
@@ -171,6 +179,7 @@ export class DataTableComponent implements OnInit, OnChanges {
                             }
                         }),
                         loading$: vectorLayer.data.loading$,
+                        selectable: true,
                     };
                 case ResultTypes.RASTER:
                     return {
@@ -180,14 +189,20 @@ export class DataTableComponent implements OnInit, OnChanges {
                             Datatype: layer.operator.getDataType('value').toString() || 'undefined',
                         }}]),
                         loading$: Observable.of(false),
+                        selectable: false,
                     };
                 default:
-                    return { data$: Observable.of([]), loading$: Observable.of(false)};
+                    return {
+                        data$: Observable.of([]),
+                        loading$: Observable.of(false),
+                        selectable: false,
+                    };
             };
         });
 
         this.data$ = dataStream.switchMap(stream => stream.data$);
         this.loading$ = dataStream.switchMap(stream => stream.loading$);
+        this.selectable$ = dataStream.map(stream => stream.selectable);
     }
 
     ngOnInit() {
@@ -221,6 +236,15 @@ export class DataTableComponent implements OnInit, OnChanges {
             this.scrollBottom = Math.max(0, this.virtualHeight - this.height);
             this.changeDetectorRef.markForCheck();
         });
+
+        this.selectable$.subscribe(x => console.log('selecatble', x));
+    }
+
+    ngAfterViewChecked() {
+        this.layerService.getSelectedFeaturesStream().subscribe(x => {
+            console.log('dt selected features:', x);
+            this.updateSelectedRows(x);
+        });
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
@@ -249,6 +273,14 @@ export class DataTableComponent implements OnInit, OnChanges {
       }
     }
 
+    updateScrollPosition(scrollTop: number) {
+        this.scrollTop = Math.max(0, scrollTop);
+        this.scrollBottom = Math.max(0, this.virtualHeight - scrollTop - this.height);
+        console.log('container', this.container, this.container.nativeElement.scrollTop);
+        this.container.nativeElement.scrollTop = scrollTop;
+        console.log('container', this.container, this.container.nativeElement.scrollTop);
+    }
+
     /**
      * Method to update/refresh the virtualHeight.
      */
@@ -257,16 +289,34 @@ export class DataTableComponent implements OnInit, OnChanges {
         + this.columns.length * this.columnHeight;
     }
 
+    updateSelectedRows(featureIds: Array<FeatureID>) {
+        let row = -1;
+        const lookupId = featureIds[featureIds.length - 1];
+        for (let i = 0; i < this.rows.length; i++) {
+            if (this.rows[i]['id'] === lookupId) {
+                row = i;
+                break;
+            }
+        }
+        const scrollTop = this.rowHeight * row;
+        console.log('updateSelectedRows', 'lookupId=', lookupId, 'row=', row, 'scrollTop=', scrollTop);
+        if (row !== -1) {
+            this.updateScrollPosition(scrollTop);
+            this.updateVisibleRows(row, true);
+            this.changeDetectorRef.markForCheck();
+        }
+    }
+
     /**
      * Method to be called with the onScroll event.
      * @param event The scroll event.
      */
     onScroll(event: Event) {
         const target = event.target as HTMLElement;
-        this.scrollTop = Math.max(0, target.scrollTop);
-        this.scrollBottom = Math.max(0, this.virtualHeight - target.scrollTop - this.height);
-        // recalculate the first visible element!
-        let newFirstVisible = (this.scrollTop / this.rowHeight);
+        const scrollTop = target.scrollTop;
+        const newFirstVisible = (this.scrollTop / this.rowHeight);
+        console.log('onScroll', 'newFirstVisible=', newFirstVisible, 'scrollTop=', scrollTop);
+        this.updateScrollPosition(scrollTop);
         this.updateVisibleRows(newFirstVisible, false);
     }
 
