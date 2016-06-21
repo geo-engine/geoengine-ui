@@ -1,6 +1,6 @@
 import {
     Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnChanges, SimpleChange,
-    ViewChild, ElementRef, AfterViewChecked,
+    ViewChild, ElementRef, AfterViewInit, OnDestroy,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 import {Http} from '@angular/http';
@@ -122,7 +122,7 @@ interface Column {
     pipes: [SafeStylePipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
+export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     // make visible in template
     LoadingState = LoadingState; // tslint:disable-line:variable-name
 
@@ -134,6 +134,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
     private datatable: MdDataTable;
     @ViewChild('container')
     private container: ElementRef;
+
+    private selectedFeatureIds: Array<FeatureID>;
 
     private virtualHeight: number = 0;
     private scrollTop: number = 0;
@@ -216,12 +218,6 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
             this.rows = [];
 
             if (features.length > 0) {
-                // let columns: Set<string> = new Set();
-                /*
-                for (let feature of features) {
-                     console.log(Object.keys(feature));
-                }
-                */
                 if ( features[0].id ) {
                     this.columns = [{name: 'id', type: 'string'}];
                 };
@@ -240,14 +236,14 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
             this.changeDetectorRef.markForCheck();
         });
 
-        this.selectable$.subscribe(x => console.log('selecatble', x));
+        // this.selectable$.subscribe(x => console.log('selecatble', x));
     }
 
-    ngAfterViewChecked() {
-        this.layerService.getSelectedFeaturesStream().subscribe(x => {
-            console.log('dt selected features:', x);
-            this.updateSelectedRows(x);
-        });
+    ngAfterViewInit() {
+            this.layerService.getSelectedFeaturesStream().subscribe(x => {
+                this.selectedFeatureIds = x;
+                this.updateSelectedRows();
+            });
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
@@ -259,6 +255,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
         this.updateVisibleRows(this.firstVisible, false);
       }
     }
+
+    ngOnDestroy() {}
 
     /**
      * Method to update/refresh the visible elements of the table.
@@ -274,14 +272,17 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
             Math.floor(this.firstVisible), Math.ceil(this.lastVisible)
         );
       }
+      if (this.datatable) {
+          this.datatable._rows.filter(
+              row => !row.isActive && this.selectedFeatureIds.indexOf(row.selectableValue) !== -1
+          ).forEach(row => row.change());
+      }
     }
 
     updateScrollPosition(scrollTop: number) {
         this.scrollTop = Math.max(0, scrollTop);
         this.scrollBottom = Math.max(0, this.virtualHeight - scrollTop - this.height);
-        console.log('container', this.container, this.container.nativeElement.scrollTop);
         this.container.nativeElement.scrollTop = scrollTop;
-        console.log('container', this.container, this.container.nativeElement.scrollTop);
     }
 
     /**
@@ -292,9 +293,9 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
         + this.columns.length * this.columnHeight;
     }
 
-    updateSelectedRows(featureIds: Array<FeatureID>) {
+    updateSelectedRows() {
         let row = -1;
-        const lookupId = featureIds[featureIds.length - 1];
+        const lookupId = this.selectedFeatureIds[this.selectedFeatureIds.length - 1];
         for (let i = 0; i < this.rows.length; i++) {
             if (this.rows[i]['id'] === lookupId) {
                 row = i;
@@ -302,12 +303,20 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
             }
         }
         const scrollTop = this.rowHeight * row;
-        console.log('updateSelectedRows', 'lookupId=', lookupId, 'row=', row, 'scrollTop=', scrollTop);
+        if (this.datatable) {
+            this.deselectRows();
+        }
         if (row !== -1) {
             this.updateScrollPosition(scrollTop);
             this.updateVisibleRows(row, true);
             this.changeDetectorRef.markForCheck();
         }
+    }
+
+    deselectRows() {
+        this.datatable._rows.filter(
+            row => row.isActive && this.selectedFeatureIds.indexOf(row.selectableValue) === -1
+        ).forEach(row => row.change());
     }
 
     /**
@@ -318,14 +327,14 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
         const target = event.target as HTMLElement;
         const scrollTop = target.scrollTop;
         const newFirstVisible = (this.scrollTop / this.rowHeight);
-        console.log('onScroll', 'newFirstVisible=', newFirstVisible, 'scrollTop=', scrollTop);
         this.updateScrollPosition(scrollTop);
         this.updateVisibleRows(newFirstVisible, false);
     }
 
     change(event: ITableSelectionChange) {
-        console.log('selectableChange', event);
-        console.log('datatable', this.datatable);
+        // TODO: hande selections
+        // console.log('selectableChange', event);
+        // console.log('datatable', this.datatable);
     }
 
 }
