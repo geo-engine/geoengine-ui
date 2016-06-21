@@ -228,8 +228,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
             this.updateVirtualHeight();
             this.updateVisibleRows(0, true);
-            this.scrollTop = 0;
-            this.scrollBottom = Math.max(0, this.virtualHeight - this.height);
+            this.updateScrollPosition(0);
             this.changeDetectorRef.markForCheck();
         });
 
