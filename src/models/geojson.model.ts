@@ -2,7 +2,7 @@ export type FeatureID = string | number;
 
 export interface GeoJsonFeatureCollection extends JSON {
     type: string;
-    features: [ GeoJsonFeature ];
+    features: Array<GeoJsonFeature>;
 }
 
 export interface GeoJsonFeature {

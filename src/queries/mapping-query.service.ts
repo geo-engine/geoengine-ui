@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
-import {Observable, ReplaySubject} from 'rxjs/Rx';
+import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
 import moment from 'moment';
 
@@ -11,6 +11,7 @@ import {MappingRequestParameters} from './request-parameters.model';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
+import {NotificationService} from '../app/notification.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
@@ -18,7 +19,8 @@ import {ResultTypes} from '../operators/result-type.model';
 
 import Config from '../app/config.model';
 import {PlotData, PlotDataStream} from '../plots/plot.model';
-import {VectorLayerDataStream} from '../layers/layer.model';
+import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
+import {LoadingState} from '../shared/loading-state.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -40,7 +42,8 @@ export class MappingQueryService {
         private http: Http,
         private userService: UserService,
         private projectService: ProjectService,
-        private mapService: MapService
+        private mapService: MapService,
+        private notificationService: NotificationService
     ) {}
 
     /**
@@ -93,16 +96,31 @@ export class MappingQueryService {
      * @returns an Observable of PlotData
      */
     getPlotDataStream(operator: Operator): PlotDataStream {
-        const loading$ = new ReplaySubject<boolean>(1);
-        const data$ = this.projectService.getTimeStream().switchMap(time => {
-            loading$.next(true);
+        const reload$ = new BehaviorSubject<void>(undefined);
+        const state$ = new ReplaySubject<LoadingState>(1);
+        const data$ = Observable.combineLatest(
+            this.projectService.getTimeStream(),
+            reload$,
+            (time, _) => time
+        ).switchMap(time => {
+            state$.next(LoadingState.LOADING);
             const promise = this.getPlotData({operator, time});
-            promise.then(_ => loading$.next(false), _ => loading$.next(false));
-            return promise;
+            return promise.then(
+                result => {
+                    state$.next(LoadingState.OK);
+                    return result;
+                },
+                (reason: Response) => {
+                    state$.next(LoadingState.ERROR);
+                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
+                    return undefined;
+                }
+            );
         });
         return {
-            data$: data$,
-            loading$: loading$,
+            data$: data$.publishReplay(1).refCount(),
+            state$: state$,
+            reload$: reload$,
         };
     }
 
@@ -241,40 +259,59 @@ export class MappingQueryService {
     getWFSDataStreamAsGeoJsonFeatureCollection(config: {
         operator: Operator,
         clustered?: boolean
-    }): VectorLayerDataStream {
+    }): VectorLayerData {
         const viewportSize$: Observable<boolean | ViewportSize> =
             config.clustered ? this.mapService.getViewportSizeStream() : Observable.of(false);
 
-        const loading$ = new ReplaySubject<boolean>(1);
+        const reload$ = new BehaviorSubject<void>(undefined);
+        const state$ = new ReplaySubject<LoadingState>(1);
         const data$ = Observable.combineLatest(
             this.projectService.getTimeStream(),
             this.projectService.getProjectionStream(),
-            viewportSize$
+            viewportSize$,
+            reload$
         ).switchMap(([time, projection, optionalViewport]) => {
-            loading$.next(true);
+            state$.next(LoadingState.LOADING);
             const promise = this.getWFSDataAsJson({
                 operator: config.operator,
                 time: time,
                 projection: projection,
                 viewportSize: optionalViewport,
             });
-            promise.then(_ => loading$.next(false), _ => loading$.next(false));
-            return promise;
-        }).map(result => {
-            const geojson = result as GeoJsonFeatureCollection;
-            const features = geojson.features;
-            for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
-                const feature = features[localRowId];
-                if (feature.id === undefined) {
-                    feature.id = 'lrid_' + localRowId;
+            return promise.then(
+                result => {
+                    state$.next(LoadingState.OK);
+                    return result;
+                },
+                (reason: Response) => {
+                    state$.next(LoadingState.ERROR);
+                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
+                    return undefined;
                 }
+            );
+        }).map(result => {
+            if (result) {
+                const geojson = result as GeoJsonFeatureCollection;
+                const features = geojson.features;
+                for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
+                    const feature = features[localRowId];
+                    if (feature.id === undefined) {
+                        feature.id = 'lrid_' + localRowId;
+                    }
+                }
+                return geojson;
+            } else {
+                return {
+                    type: '',
+                    features: [],
+                } as GeoJsonFeatureCollection;
             }
-            return geojson;
         }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
 
         return {
             data$: data$,
-            loading$: loading$,
+            state$: state$,
+            reload$: reload$,
         };
     }
 
@@ -400,32 +437,62 @@ export class MappingQueryService {
         ).publishReplay(1).refCount();
     }
 
-    getProvenance(operator: Operator
-                    // time: moment.Moment,
-                    // projection: Projection
-                ): Promise<Array<Provenance>> {
+    getProvenance(config: {
+        operator: Operator,
+        time?: moment.Moment,
+        projection?: Projection
+    }): Promise<Array<Provenance>> {
+        // TODO: incorporate time and projection
 
         // const projectedOperator = operator.getProjectedOperator(projection);
-        const serviceType = 'provenance';
-        const provenanceRequest = Config.MAPPING_URL
-            + '?' + 'SERVICE=' + serviceType
-            + '&' + 'query=' + encodeURIComponent(operator.toQueryJSON());
-            // + '&' + 'CRS=' + projection.getCode()
-            // + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
-        console.log('getProvenance', provenanceRequest);
-        return this.http.get(provenanceRequest)
-            .map((res: Response) => res.json())
-            .map(json => json as [Provenance]).toPromise();
+
+        const request = new MappingRequestParameters({
+            service: 'provenance',
+            request: '',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                query: encodeURIComponent(config.operator.toQueryJSON()),
+                // crs: projection.getCode(),
+                // time: time.toISOString(),
+            },
+        });
+        return this.http.get(
+            Config.MAPPING_URL + '?' + request.toMessageBody()
+        ).map(
+            (res: Response) => res.json()
+        ).map(
+            json => json as [Provenance]
+        ).toPromise();
     }
 
-    getProvenanceStream(operator: Operator): Observable<Array<Provenance>> {
-        // return Observable.combineLatest(
-        //     this.projectService.getTimeStream(), this.projectService.getProjectionStream()
-        // ).switchMap(([time, projection]) => {
-            return Observable.fromPromise(
-                this.getProvenance(operator)
+    getProvenanceStream(operator: Operator): LayerProvenance {
+        // TODO: incorporate time and projection streams
+
+        const state$ = new BehaviorSubject<LoadingState>(LoadingState.OK); // TODO: good default?
+        const reload$ = new BehaviorSubject<void>(undefined);
+        const provenanceStream = Observable.combineLatest(
+            reload$
+        ).switchMap(([]) => {
+            state$.next(LoadingState.LOADING);
+            return this.getProvenance({
+                operator: operator,
+            }).then(
+                result => {
+                    state$.next(LoadingState.OK);
+                    return result;
+                },
+                reason => {
+                    state$.next(LoadingState.ERROR);
+                    return [];
+                }
             );
-        // }).publishReplay(1).refCount();
+        });
+
+        return {
+            provenance$: provenanceStream.publishReplay(1).refCount(),
+            state$: state$,
+            reload$: reload$,
+        };
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {

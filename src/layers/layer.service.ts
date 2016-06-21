@@ -94,6 +94,15 @@ export class LayerService {
     }
 
     /**
+     * Toggle the layer (extension).
+     * @param layer The layer to modify
+     */
+    toggleLayer(layer: Layer<Symbology>) {
+        layer.expanded = !layer.expanded;
+        this.layers$.next(this.getLayers());
+    }
+
+    /**
      * Set a new selected layer.
      * Does nothing if the layer is not within the list.
      * @param layer The layer to select.

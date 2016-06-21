@@ -16,6 +16,7 @@ import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeatureCollection, GeoJsonFeature, FeatureID} from '../models/geojson.model';
 import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';
+import {LoadingState} from '../shared/loading-state.model';
 
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
@@ -62,7 +63,7 @@ interface Column {
         </template>
         <md-progress-circle
             mode="indeterminate"
-            *ngIf="loading$ | async"
+            *ngIf="(state$ | async) === LoadingState.LOADING"
             [style.height.px]="height / 2"
             [style.width.px]="height / 2"
             [style.top.px]="height / 4"
@@ -122,6 +123,8 @@ interface Column {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
+    // make visible in template
+    LoadingState = LoadingState; // tslint:disable-line:variable-name
 
     selectable$: Observable<boolean>;
 
@@ -148,7 +151,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
     private columns: Array<Column> = [];
     private propertyColumns:  Array<Column> = [];
     private data$: Observable<Array<GeoJsonFeature>>;
-    private loading$: Observable<boolean>;
+    private state$: Observable<LoadingState>;
 
     constructor(
         private http: Http,
@@ -162,7 +165,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
         const dataStream = layerService.getSelectedLayerStream().map(layer => {
             if (layer === undefined) {
                 return { data$: Observable.of([]),
-                    loading$: Observable.of(false),
+                    state$: Observable.of(LoadingState.OK),
                     selectable: false,
                 };
             }
@@ -178,7 +181,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
                                 return geojson.features;
                             }
                         }),
-                        loading$: vectorLayer.data.loading$,
+                        state$: vectorLayer.data.state$,
                         selectable: true,
                     };
                 case ResultTypes.RASTER:
@@ -188,20 +191,20 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewChecked {
                             Unit: layer.operator.getUnit('value').toString() || 'undefined',
                             Datatype: layer.operator.getDataType('value').toString() || 'undefined',
                         }}]),
-                        loading$: Observable.of(false),
+                        state$: Observable.of(LoadingState.OK),
                         selectable: false,
                     };
                 default:
                     return {
                         data$: Observable.of([]),
-                        loading$: Observable.of(false),
+                        state$: Observable.of(LoadingState.OK),
                         selectable: false,
                     };
             };
         });
 
         this.data$ = dataStream.switchMap(stream => stream.data$);
-        this.loading$ = dataStream.switchMap(stream => stream.loading$);
+        this.state$ = dataStream.switchMap(stream => stream.state$);
         this.selectable$ = dataStream.map(stream => stream.selectable);
     }
 
