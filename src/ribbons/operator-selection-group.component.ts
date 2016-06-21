@@ -1,6 +1,6 @@
 import {
     Component, Input, ChangeDetectionStrategy, ContentChildren, QueryList, Output, EventEmitter,
-    ChangeDetectorRef, AfterViewInit,
+    ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
@@ -101,7 +101,7 @@ export class OperatorButtonComponent {
 @Component({
     selector: 'wave-operator-selection-group',
     template: `
-    <div class="container" [class.expanded]="expanded"
+    <div class="container" #container [class.expanded]="expanded"
          [style.height.px]="getGroupHeight() + ${SIZES.FIELDSET.LEGEND.HEIGHT}">
         <fieldset [style.height.px]="getGroupHeight() + ${SIZES.FIELDSET.LEGEND.HEIGHT}">
             <legend>{{groupName}}</legend>
@@ -166,6 +166,7 @@ export class OperatorButtonComponent {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorSelectionGroupComponent implements AfterViewInit {
+    @ViewChild('container') container: ElementRef;
     @ContentChildren(OperatorButtonComponent) buttons: QueryList<OperatorButtonComponent>;
 
     @Input() groupName: string;
@@ -284,6 +285,14 @@ export class OperatorSelectionGroupComponent implements AfterViewInit {
     maxWidth(): number {
         return SIZES.BUTTON.LARGE.WIDTH * this.buttons.length
                 + 2 * (SIZES.FIELDSET.PADDING + SIZES.FIELDSET.BORDER + SIZES.FIELDSET.MARGIN);
+    }
+
+    /**
+     * Toggle the visibility of the whole component
+     */
+    setVisibility(visible: boolean) {
+        const div = (this.container.nativeElement as HTMLDivElement);
+        div.style.display = visible ? 'block' : 'none';
     }
 
 }

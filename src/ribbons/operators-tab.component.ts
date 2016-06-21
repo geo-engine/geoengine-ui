@@ -214,11 +214,17 @@ export class OperatorsTabComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         // recalculate the button group sizing on window resize
-        Observable.fromEvent(window, 'resize')
-                  .map(_ => this.container.nativeElement.clientWidth)
-                  .subscribe(availabeWidth => {
-                      this.setGroupSizeBasedOnMaxWidth(availabeWidth);
-                  });
+        Observable.fromEvent(
+            window, 'resize'
+        ).map(_ => {
+            // TODO: remove this hack
+            this.groups.forEach(group => group.setVisibility(false));
+            const width = this.container.nativeElement.clientWidth;
+            this.groups.forEach(group => group.setVisibility(true));
+            return width;
+        }).subscribe(
+            availabeWidth => this.setGroupSizeBasedOnMaxWidth(availabeWidth)
+        );
 
         // initially calculate the button group sizing
         setTimeout(() => this.setGroupSizeBasedOnMaxWidth(
