@@ -8,6 +8,7 @@ import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
+import {LoadingState} from '../shared/loading-state.model';
 
 import {LayerService} from '../layers/layer.service';
 import {
@@ -32,7 +33,7 @@ import {
                     <button md-button class='md-icon-button'
                             style='margin-left: -16px;'
                             aria-label='Settings'
-                            (click)='layer.expanded=!layer.expanded'>
+                            (click)='toggleLayer(layer)'>
                         <i *ngIf='!layer.expanded' md-icon>expand_more</i>
                         <i *ngIf='layer.expanded' md-icon>expand_less</i>
                     </button>
@@ -52,8 +53,15 @@ import {
                     </button>
                     <md-progress-circle
                         mode="indeterminate"
-                        *ngIf="layer?.data?.loading$ | async"
+                        *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
                     ></md-progress-circle>
+                    <button
+                        md-button class='md-icon-button md-warn error-button' aria-label='Reload'
+                        *ngIf='(layer.loadingState| async) === LoadingState.ERROR'
+                        (click)='layer.reload()'
+                    >
+                        <i md-icon>replay</i>
+                    </button>
                 </div>
                 <div *ngIf='layer.expanded' [ngSwitch]='layer.symbology.symbologyType'>
 
@@ -127,6 +135,10 @@ import {
         left: calc(50% - 36px/2);
         top: 6px;
     }
+    button.error-button {
+        position: absolute;
+        left: calc(50% - 40px/2);
+    }
     `],
     viewProviders: [DragulaService],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -138,8 +150,11 @@ import {
 })
 
 export class LayerListComponent {
-    // for ng-switch
-    private _enumSymbologyType = SymbologyType;
+    // make visible in template
+    // tslint:disable:variable-name
+    LoadingState = LoadingState;
+    _enumSymbologyType = SymbologyType;
+    // tslint:enable
 
     constructor(
         private dragulaService: DragulaService,
@@ -176,6 +191,10 @@ export class LayerListComponent {
     replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
         // event.preventDefault();
         console.info(`A context menu for ${layer.name} will appear in future versions!`);
+    }
+
+    toggleLayer(layer: Layer<Symbology>) {
+        this.layerService.toggleLayer(layer);
     }
 
     private domIndexOf(child: HTMLElement, parent: HTMLElement) {

@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs/Rx';
+import {Observable, Observer} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import Config from '../app/config.model';
@@ -6,21 +6,29 @@ import {Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, Mapp
     from '../symbology/symbology.model';
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
+import {LoadingState} from '../shared/loading-state.model';
 
-export interface VectorLayerDataStream {
+export interface VectorLayerData {
     data$: Observable<GeoJsonFeatureCollection>;
-    loading$: Observable<boolean>;
+    state$: Observable<LoadingState>;
+    reload$: Observer<void>;
+}
+
+export interface LayerProvenance {
+    provenance$: Observable<Iterable<Provenance>>;
+    state$: Observable<LoadingState>;
+    reload$: Observer<void>;
 }
 
 interface LayerConfig<S extends Symbology> {
     name: string;
     operator: Operator;
     symbology: S;
-    prov$: Observable<Iterable<Provenance>>;
+    provenance: LayerProvenance;
 }
 
 interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
-    data: VectorLayerDataStream;
+    data: VectorLayerData;
     clustered?: boolean;
 }
 
@@ -52,16 +60,17 @@ export abstract class Layer<S extends Symbology> {
     name: string;
     expanded: boolean = false;
     symbology: S;
-    private _operator: Operator;
-    private _prov$: Observable<Iterable<Provenance>>;
+    protected _operator: Operator;
+    protected _provenance: LayerProvenance;
+    protected _state$: Observable<LoadingState>;
 
     constructor(config: LayerConfig<S>) {
         this.name = config.name;
         this._operator = config.operator;
         this.symbology = config.symbology;
-        this._prov$ = config.prov$;
+        this._provenance = config.provenance;
 
-        // this._prov$.subscribe(x => console.log("_prov$", x));
+        this._state$ = this._provenance.state$;
     }
 
     get url() {
@@ -73,10 +82,24 @@ export abstract class Layer<S extends Symbology> {
     }
 
     get provenanceStream(): Observable<Iterable<Provenance>> {
-        return this._prov$;
+        return this._provenance.provenance$;
     }
 
     protected abstract get layerType(): LayerType;
+
+    /**
+     * Retrieve the loading state of the layer.
+     */
+    get loadingState(): Observable<LoadingState> {
+        return this._state$;
+    }
+
+    /**
+     * Reload the async data.
+     */
+    reload() {
+        this._provenance.reload$.next(undefined);
+    }
 
     toDict(): LayerDict {
         return {
@@ -97,18 +120,32 @@ export abstract class Layer<S extends Symbology> {
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     clustered = false;
 
-    private _data: VectorLayerDataStream;
+    private _data: VectorLayerData;
 
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this._data = config.data;
         this.clustered = !!config.clustered;
+
+        this._state$ = Observable.combineLatest(
+            this._provenance.state$,
+            this._data.state$,
+            (state1, state2) => {
+                if (state1 === LoadingState.LOADING || state2 === LoadingState.LOADING) {
+                    return LoadingState.LOADING;
+                } else if (state1 === LoadingState.ERROR || state2 === LoadingState.ERROR) {
+                    return LoadingState.ERROR;
+                } else {
+                    return LoadingState.OK;
+                }
+            }
+        );
     }
 
     static fromDict(
         dict: LayerDict,
-        dataCallback: (operator: Operator, clustered: boolean) => VectorLayerDataStream,
-        provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
+        dataCallback: (operator: Operator, clustered: boolean) => VectorLayerData,
+        provenanceCallback: (operator: Operator) => LayerProvenance
     ): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator);
         const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
@@ -120,7 +157,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
             operator: operator,
             symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
             data: dataCallback(operator, clustered),
-            prov$: provenanceCallback(operator),
+            provenance: provenanceCallback(operator),
             clustered: clustered,
         });
 
@@ -132,7 +169,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     /**
      * @returns the data observable.
      */
-    get data(): VectorLayerDataStream {
+    get data(): VectorLayerData {
         return this._data;
     }
 
@@ -140,8 +177,12 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
         return 'vector';
     }
 
+    reload() {
+        super.reload();
+        this._data.reload$.next(undefined);
+    }
+
     protected get typeOptions(): VectorLayerTypeOptionsDict {
-        console.log('called');
         return {
             clustered: this.clustered,
         };
@@ -160,7 +201,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     static fromDict(
         dict: LayerDict,
         symbologyCallback: (operator: Operator) => Observable<MappingColorizer>,
-        provenanceCallback: (operator: Operator) => Observable<Iterable<Provenance>>
+        provenanceCallback: (operator: Operator) => LayerProvenance
     ): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator);
 
@@ -170,7 +211,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
             symbology: Symbology.fromDict(
                 dict.symbology, symbologyCallback(operator)
             ) as RasterSymbology,
-            prov$: provenanceCallback(operator),
+            provenance: provenanceCallback(operator),
         });
 
         layer.expanded = dict.expanded;

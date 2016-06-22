@@ -61,13 +61,14 @@ import Config from '../app/config.model';
     md-tab-group {
         height: 180px;
         min-height: 180px !important;
-        overflow: visible;
     }
     md-tab-group >>> .md-tab-header {
         height: 47px;
         border-bottom-width: 1px;
     }
-    md-tabs >>> md-tabs-content-wrapper, md-tabs >>> md-tab-content {
+    md-tab-group,
+    md-tab-group >>> .md-tab-body-wrapper,
+    md-tab-group >>> .md-tab-body {
         overflow: visible;
     }
     `],

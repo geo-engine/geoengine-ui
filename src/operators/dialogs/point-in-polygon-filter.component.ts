@@ -104,7 +104,7 @@ export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
             data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                 operator, clustered,
             }),
-            prov$: this.mappingQueryService.getProvenanceStream(operator),
+            provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         }));
 

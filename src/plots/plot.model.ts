@@ -1,6 +1,7 @@
-import {Observable} from 'rxjs/Rx';
+import {Observable, Observer} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
+import {LoadingState} from '../shared/loading-state.model';
 
 /**
  * Schema for plot data.
@@ -19,7 +20,8 @@ export interface PlotData {
 
 export interface PlotDataStream {
     data$: Observable<PlotData>;
-    loading$: Observable<boolean>;
+    state$: Observable<LoadingState>;
+    reload$: Observer<void>;
 }
 
 interface PlotConfig {
@@ -79,6 +81,13 @@ export class Plot {
      */
     get data(): PlotDataStream {
         return this._data;
+    }
+
+    /**
+     * Reload the data.
+     */
+    reload() {
+        this.data.reload$.next(undefined);
     }
 
     /**

@@ -320,7 +320,7 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                     operator, clustered,
                 }),
-                prov$: this.mappingQueryService.getProvenanceStream(operator),
+                provenance: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
             }));
         }

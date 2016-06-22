@@ -162,7 +162,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                         data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                             operator,
                         }),
-                        prov$: provenance$,
+                        provenance: provenance$,
                     });
                     break;
                 case ResultTypes.RASTER:
@@ -171,7 +171,7 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
                         operator: operator,
                          // TODO: read out of operator if specified
                         symbology: new RasterSymbology({unit: Unit.defaultUnit}),
-                        prov$: provenance$,
+                        provenance: provenance$,
                     });
                     break;
                 default:

@@ -23,6 +23,8 @@ import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
 import {LayoutService} from '../app/layout.service';
+import {NotificationService, NotificationType} from '../app/notification.service';
+
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {StorageService} from '../storage/storage.service';
@@ -248,7 +250,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         MATERIAL_BROWSER_PROVIDERS,
         UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
-        StorageService, RandomColorService, ColorPickerService, MapService,
+        StorageService, RandomColorService, ColorPickerService, MapService, NotificationService,
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -272,6 +274,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private layerService: LayerService,
         private plotService: PlotService,
         private layoutService: LayoutService,
+        private notificationService: NotificationService,
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
         private userService: UserService,
@@ -288,6 +291,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.plotComponentVisible$ = this.layoutService.getPlotComponentVisibilityStream();
         this.dataTableVisible$ = this.layoutService.getDataTableVisibilityStream();
+
+        // TODO: toasts for notifications
+        this.notificationService.getNotificationStream().subscribe(notification => {
+            switch (notification.type) {
+                case NotificationType.Info:
+                    console.info(NotificationType[notification.type], notification);
+                    break;
+                case NotificationType.Error:
+                    console.error(NotificationType[notification.type], notification);
+                    break;
+                default:
+                    // do nothing
+            }
+        });
     }
 
     ngOnInit() {

@@ -20,11 +20,14 @@ import {Project} from '../project/project.model';
     template: `
     <form [ngFormModel]="form" layout="column">
         <md-input
-            type="text" placeholder="Current Project Name"
+            type="text"
+            placeholder="Current Project Name"
             [ngModel]="project.name"
+            [disabled]="true"
         ></md-input>
         <md-input
-            type="text" placeholder="New Project Name"
+            type="text"
+            placeholder="New Project Name"
             ngControl="name"
         >
             <md-hint align="end" *ngIf="invalidNewName$ | async"

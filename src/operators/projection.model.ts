@@ -64,7 +64,7 @@ export class WGS84 extends Projection {
         return 'WGS 84';
     }
     getExtent(): [number, number, number, number] {
-        return [-180, -90, 180, 90];
+        return [-90, -180, 90, 180];
     }
     getCrsURI(): string {
         return 'http://www.opengis.net/def/crs/EPSG/0/4326';

@@ -8,6 +8,8 @@ import {MdToolbar} from '@angular2-material/toolbar';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
+import Config from '../app/config.model';
+
 import {HistogramComponent} from './histogram.component';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
@@ -17,6 +19,7 @@ import {PlotService} from './plot.service';
 import {Plot} from './plot.model';
 
 import {LayoutService} from '../app/layout.service';
+import {LoadingState} from '../shared/loading-state.model';
 
 /**
  * A component to list all plots.
@@ -47,9 +50,19 @@ import {LayoutService} from '../app/layout.service';
                 <div class="md-list-item-text plot-header" layout="column">
                     <div layout="row">
                         <h3 flex [title]="plot.name">{{plot.name}}</h3>
-                        <button md-button class="md-icon-button" aria-label="Remove Output"
-                                (click)="plotDetailsDialogDialog.show({plot: plot})">
+                        <button
+                            md-button class="md-icon-button" aria-label="Detail"
+                            *ngIf="(plot.data.state$ | async) === LoadingState.OK"
+                            (click)="plotDetailsDialogDialog.show({plot: plot})"
+                        >
                             <i md-icon>info</i>
+                        </button>
+                        <button
+                            md-button class="md-icon-button error-button" aria-label="Error"
+                            *ngIf="(plot.data.state$ | async) === LoadingState.ERROR"
+                            (click)="plot.reload()"
+                        >
+                            <i md-icon>replay</i>
                         </button>
                         <button md-button class="md-icon-button" aria-label="Remove Output"
                                 (click)="plotService.removePlot(plot)">
@@ -72,7 +85,7 @@ import {LayoutService} from '../app/layout.service';
                         </template>
                         <md-progress-circle
                             mode="indeterminate"
-                            *ngIf="plot.data.loading$ | async"
+                            *ngIf="(plot.data.state$ | async) === LoadingState.LOADING"
                         ></md-progress-circle>
                     </div>
                 </div>
@@ -106,6 +119,7 @@ import {LayoutService} from '../app/layout.service';
     .plot-header {
         width: 100%;
         min-width: 0;
+        margin: 0 !important;
     }
     .plot-header h3 {
         line-height: 40px !important;
@@ -118,6 +132,9 @@ import {LayoutService} from '../app/layout.service';
         margin-left: 0px;
         margin-right: 0px;
     }
+    .plot-header .error-button {
+        color: ${Config.COLORS.WARN};
+    }
     .plot-content {
         padding-right: 16px;
     }
@@ -129,8 +146,10 @@ import {LayoutService} from '../app/layout.service';
     }
     md-progress-circle {
         position: absolute;
-        top: 48px;
-        left: calc(50% - 100px/2);
+        top: 0px;
+        left: calc(50% - 36px/2);
+        width: 36px;
+        height: 36px;
     }
     `],
     directives: [
@@ -140,6 +159,9 @@ import {LayoutService} from '../app/layout.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {
+    // make visible in template
+    LoadingState = LoadingState; // tslint:disable-line:variable-name
+
     @Input() maxHeight: number; // in px
 
     PlotDetailsDialogComponent = PlotDetailsDialogComponent; // tslint:disable-line:variable-name

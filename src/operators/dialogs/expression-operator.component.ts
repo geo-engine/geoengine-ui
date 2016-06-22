@@ -214,7 +214,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             name: name,
             operator: operator,
             symbology: new RasterSymbology({ unit: unit }),
-            prov$: this.mappingQueryService.getProvenanceStream(operator),
+            provenance: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
         this.dialog.close();
