@@ -2,8 +2,8 @@ import {Headers} from '@angular/http';
 
 import Immutable from 'immutable';
 
-type ParameterType = string | number | boolean;
-type ParametersType = {[index: string]: ParameterType};
+export type ParameterType = string | number | boolean;
+export type ParametersType = {[index: string]: ParameterType};
 
 export class MappingRequestParameters {
     private immutable = false;
