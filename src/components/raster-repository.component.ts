@@ -134,7 +134,7 @@ export class RasterRepositoryComponent {
             symbology: new MappingColorizerRasterSymbology({unit: unit},
                 this.mappingQueryService.getColorizerStream(operator)
             ),
-            prov$: this.mappingQueryService.getProvenanceStream(operator),
+            provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
         this.layerService.addLayer(layer);
     }
