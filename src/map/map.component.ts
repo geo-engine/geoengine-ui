@@ -129,7 +129,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         // Hack: querylist ignores order changes
         this.layerService.getLayersStream().subscribe(x => {
-            console.log(this._layers, x);
             if (this._layers === x) { return; };
 
             let change = this._layers.length !== x.length;
@@ -239,7 +238,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         let selectedOlLayers: Array<ol.layer.Layer> = undefined;
 
-        // add the select interaction to the map
+        // add the select interaction to the map // pull request: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/9753
         const select = new ol.interaction.Select({
             layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
         });

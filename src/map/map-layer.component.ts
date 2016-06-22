@@ -168,7 +168,6 @@ export class OlRasterLayerComponent
             projection: this.projection,
         });
         if (this.isFirstChange(changes)) {
-            console.log('map', params.asObject());
             this.source = new ol.source.TileWMS({
                 url: Config.MAPPING_URL,
                 params: params.asObject(),
@@ -181,7 +180,7 @@ export class OlRasterLayerComponent
         }
 
         if (changes['projection'] || changes['time']) {
-            // TODO: add these functions to the typings file.
+            // TODO: pull request: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/9753
             (this.source as any).updateParams(params.asObject());
             (this.source as any).refresh();
         }
