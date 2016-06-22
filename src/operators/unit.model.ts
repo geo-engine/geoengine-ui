@@ -184,24 +184,24 @@ export class Unit {
     }
 
     toMappingDict(): UnitMappingDict {
-        let dict = {
+        let dict: UnitMappingDict = {
             measurement: this._measurement,
             unit: this._unit,
             interpolation: interpolationToName(this._interpolation),
         };
 
         if (this._min !== undefined) {
-            dict['min'] = this._min;
+            dict.min = this._min;
         }
         if (this._max !== undefined) {
-            dict['max'] = this._max;
+            dict.max = this._max;
         }
         if (this._unit === 'classification') {
             let classes: {[index: number]: string} = {};
             for (let key in this._classes) {
                 classes[key] = this._classes[key];
             }
-            dict['classes'] = classes;
+            dict.classes = classes;
         }
 
         return dict;
