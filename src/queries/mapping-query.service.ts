@@ -169,8 +169,9 @@ export class MappingQueryService {
 
             parameters.setParameter('clustered', true);
             parameters.setParameter('bbox', extent.join(','));
-            parameters.setParameter('height', Math.max(1, resolution));
-            parameters.setParameter('width', Math.max(1, resolution));
+            parameters.setParameter('resolution', resolution);
+            // parameters.setParameter('height', Math.max(1, resolution));
+            // parameters.setParameter('width', Math.max(1, resolution));
         }
 
         return Config.MAPPING_URL + '?' + parameters.toMessageBody();
