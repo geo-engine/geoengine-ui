@@ -196,6 +196,10 @@ export class UserService {
      * Get as stream of raster sources depending on the logged in user.
      */
     getRasterSourcesStream(): Observable<Array<MappingSource>> {
+        interface MappingSourceResponse {
+            sourcelist: {[key: string]: MappingSourceDict};
+        }
+
         interface MappingSourceDict {
             name: string;
             colorizer: string;
@@ -226,11 +230,10 @@ export class UserService {
             });
             return this.request(parameters).then(
                 response => response.json()
-            ).then((json: JSON) => {
+            ).then((json: MappingSourceResponse) => {
                 const sources: Array<MappingSource> = [];
-
-                for (const sourceId in json['sourcelist']) {
-                    const source: MappingSourceDict = json['sourcelist'][sourceId];
+                for (const sourceId in json.sourcelist) {
+                    const source: MappingSourceDict = json.sourcelist[sourceId];
                     sources.push({
                         source: sourceId,
                         name: source.name,
