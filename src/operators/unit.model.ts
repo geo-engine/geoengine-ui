@@ -184,7 +184,7 @@ export class Unit {
     }
 
     toMappingDict(): UnitMappingDict {
-        let dict = {
+        let dict: UnitMappingDict = {
             measurement: this._measurement,
             unit: this._unit,
             interpolation: interpolationToName(this._interpolation),
