@@ -388,7 +388,7 @@ export class Operator {
         };
 
         if (this.hasSources()) {
-            const sources = {};
+            const sources: { [index: string]: Array<QueryDict> } = {};
 
             const sourcesList: Array<[string, Immutable.List<Operator>]> = [
                 [ResultTypes.RASTER.getCode(), this.rasterSources],
