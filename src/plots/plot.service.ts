@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Plot, PlotDict} from './plot.model';
+import {Operator} from '../operators/operator.model';
 
 import {MappingQueryService} from '../queries/mapping-query.service';
 
@@ -81,10 +82,11 @@ export class PlotService {
     /**
      * Create the plot type and initialize the callbacks.
      */
-    createPlotFromDict(dict: PlotDict): Plot {
+    createPlotFromDict(dict: PlotDict, operatorMap = new Map<number, Operator>()): Plot {
         return Plot.fromDict(
             dict,
-            operator => this.mappingQueryService.getPlotDataStream(operator)
+            operator => this.mappingQueryService.getPlotDataStream(operator),
+            operatorMap
         );
     }
 

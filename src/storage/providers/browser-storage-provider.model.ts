@@ -5,6 +5,7 @@ import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../project/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
+import {Operator} from '../../operators/operator.model';
 
 /**
  * StorageProvider implementation that uses the brower's localStorage
@@ -12,14 +13,16 @@ import {Symbology} from '../../symbology/symbology.model';
 export class BrowserStorageProvider extends StorageProvider {
 
     loadWorkspace(): Promise<Workspace> {
+        const operatorMap = new Map<number, Operator>();
+
         const promises: [
             Promise<Project>,
             Promise<Array<Layer<Symbology>>>,
             Promise<Array<Plot>>
         ] = [
             this.loadProject(),
-            this.loadLayers(),
-            this.loadPlots(),
+            this.loadLayers(operatorMap),
+            this.loadPlots(operatorMap),
         ];
         return Promise.all(
             promises
@@ -57,7 +60,7 @@ export class BrowserStorageProvider extends StorageProvider {
         return Promise.resolve();
     }
 
-    loadLayers(): Promise<Array<Layer<Symbology>>> {
+    loadLayers(operatorMap: Map<number, Operator>): Promise<Array<Layer<Symbology>>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
             return Promise.resolve(undefined);
@@ -67,7 +70,7 @@ export class BrowserStorageProvider extends StorageProvider {
 
             for (const layerDict of layerDicts) {
                 layers.push(
-                    this.layerService.createLayerFromDict(layerDict)
+                    this.layerService.createLayerFromDict(layerDict, operatorMap)
                 );
             }
 
@@ -86,7 +89,7 @@ export class BrowserStorageProvider extends StorageProvider {
         return Promise.resolve();
     }
 
-    loadPlots(): Promise<Array<Plot>> {
+    loadPlots(operatorMap: Map<number, Operator>): Promise<Array<Plot>> {
         const plotsJSON = localStorage.getItem('plots');
         if (plotsJSON === null) { // tslint:disable-line:no-null-keyword
             return Promise.resolve(undefined);
@@ -96,7 +99,7 @@ export class BrowserStorageProvider extends StorageProvider {
 
             for (const plotDict of plotDicts) {
                 plots.push(
-                    this.plotService.createPlotFromDict(plotDict)
+                    this.plotService.createPlotFromDict(plotDict, operatorMap)
                 );
             }
 

@@ -59,9 +59,12 @@ export class Plot {
     /**
      * De-Serialization
      */
-    static fromDict(dict: PlotDict,
-                    dataCallback: (operator: Operator) => PlotDataStream): Plot {
-        const operator = Operator.fromDict(dict.operator);
+    static fromDict(
+        dict: PlotDict,
+        dataCallback: (operator: Operator) => PlotDataStream,
+        operatorMap = new Map<number, Operator>()
+    ): Plot {
+        const operator = Operator.fromDict(dict.operator, operatorMap);
         return new Plot({
             name: dict.name,
             operator: operator,

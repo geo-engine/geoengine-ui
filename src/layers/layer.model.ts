@@ -145,9 +145,10 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     static fromDict(
         dict: LayerDict,
         dataCallback: (operator: Operator, clustered: boolean) => VectorLayerData,
-        provenanceCallback: (operator: Operator) => LayerProvenance
+        provenanceCallback: (operator: Operator) => LayerProvenance,
+        operatorMap = new Map<number, Operator>()
     ): Layer<AbstractVectorSymbology> {
-        const operator = Operator.fromDict(dict.operator);
+        const operator = Operator.fromDict(dict.operator, operatorMap);
         const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
 
         const clustered = (typeOptions && typeOptions.clustered) ? typeOptions.clustered : false;
@@ -201,9 +202,10 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     static fromDict(
         dict: LayerDict,
         symbologyCallback: (operator: Operator) => Observable<MappingColorizer>,
-        provenanceCallback: (operator: Operator) => LayerProvenance
+        provenanceCallback: (operator: Operator) => LayerProvenance,
+        operatorMap = new Map<number, Operator>()
     ): Layer<RasterSymbology> {
-        const operator = Operator.fromDict(dict.operator);
+        const operator = Operator.fromDict(dict.operator, operatorMap);
 
         const layer = new RasterLayer({
             name: dict.name,
