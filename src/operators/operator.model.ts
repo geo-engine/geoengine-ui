@@ -404,7 +404,7 @@ export class Operator {
                 }
             }
 
-            dict['sources'] = sources;
+            dict.sources = sources;
         }
 
         return dict;

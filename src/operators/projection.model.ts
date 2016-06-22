@@ -93,7 +93,7 @@ export class GEOS extends Projection {
     }
     getOpenlayersProjection() {
         let projection = ol.proj.get(this.getCode());
-        projection.setExtent(this.getExtent());
+        projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
     }
     getExtent(): [number, number, number, number] {

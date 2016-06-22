@@ -27,6 +27,11 @@ interface Column {
     type: 'string' | 'number' | '';
 }
 
+interface Row {
+    id?: string | number;
+    properties?: {[key: string]: number | string};
+}
+
 @Component({
     selector: 'wave-data-table',
     template: `
@@ -148,8 +153,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     private rowHeight = 32; // TODO: input or css?
     private columnHeight = 42;
 
-    private visibleRows: Array<{}> = [];
-    private rows: Array<{}> = [];
+    private visibleRows: Array<Row> = [];
+    private rows: Array<Row> = [];
     private columns: Array<Column> = [];
     private propertyColumns:  Array<Column> = [];
     private data$: Observable<Array<GeoJsonFeature>>;
@@ -231,8 +236,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
             this.updateVirtualHeight();
             this.updateVisibleRows(0, true);
-            this.scrollTop = 0;
-            this.scrollBottom = Math.max(0, this.virtualHeight - this.height);
+            this.updateScrollPosition(0);
             this.changeDetectorRef.markForCheck();
         });
 

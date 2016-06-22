@@ -198,10 +198,10 @@ export class Unit {
         };
 
         if (this._min !== undefined) {
-            dict['min'] = this._min;
+            dict.min = this._min;
         }
         if (this._max !== undefined) {
-            dict['max'] = this._max;
+            dict.max = this._max;
         }
         if (this._unit === 'classification') {
             dict['classes'] = this._classes.toJS() as {[index: number]: string};
