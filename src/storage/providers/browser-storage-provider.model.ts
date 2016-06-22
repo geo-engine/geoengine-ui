@@ -22,7 +22,7 @@ export class BrowserStorageProvider extends StorageProvider {
             this.loadPlots(),
         ];
         return Promise.all(
-            promises as [Promise<{}>]
+            promises
         ).then(([project, layers, plots]: [Project, Array<Layer<Symbology>>, Array<Plot>]) => {
             return {
                 project: project,
