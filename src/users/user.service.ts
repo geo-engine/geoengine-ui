@@ -226,11 +226,11 @@ export class UserService {
             });
             return this.request(parameters).then(
                 response => response.json()
-            ).then((json: JSON) => {
+            ).then((json: {sourcelist: {[index: string]: MappingSourceDict}}) => {
                 const sources: Array<MappingSource> = [];
 
-                for (const sourceId in json['sourcelist']) {
-                    const source: MappingSourceDict = json['sourcelist'][sourceId];
+                for (const sourceId in json.sourcelist) {
+                    const source: MappingSourceDict = json.sourcelist[sourceId];
                     sources.push({
                         source: sourceId,
                         name: source.name,
