@@ -15,7 +15,7 @@ type AttributeName = string;
 /**
  * Interface for Operator constructor.
  */
-interface OperatorConfig {
+export interface OperatorConfig {
     operatorType: OperatorType;
     resultType: ResultType;
     projection: Projection;
