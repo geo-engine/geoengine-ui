@@ -59,13 +59,17 @@ export class HistogramType extends OperatorType {
     }
 
     getParametersAsStrings(): Array<[string, string]> {
+        let range: string;
+        if (typeof this.range === 'string') {
+            range = this.range;
+        } else {
+            const rangeStruct = this.range as { min: number, max: number };
+            range = `min: ${rangeStruct.min}, max: ${rangeStruct.max}`;
+        }
+
         return [
             ['attribute', this.attribute.toString()],
-            [
-                'range',
-                typeof this.range === 'string' ?
-                    this.range.toString() : `min: ${this.range.min}, max: ${this.range.max}`,
-            ],
+            ['range', range],
             ['buckets', this.buckets.toString()],
         ];
     }
@@ -75,7 +79,8 @@ export class HistogramType extends OperatorType {
         if (typeof this.range === 'string') {
             range = this.range;
         } else {
-            range = [this.range.min, this.range.max];
+            const rangeStruct = this.range as { min: number, max: number };
+            range = [rangeStruct.min, rangeStruct.max];
         }
 
         return {
