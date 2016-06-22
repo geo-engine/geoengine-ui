@@ -198,17 +198,20 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
             attributes: attributes,
             dataTypes: dataTypes,
             units: units,
+            pointSources: new Array<Operator>(),
+            lineSources: new Array<Operator>(),
+            polygonSources: new Array<Operator>(),
         };
 
         switch (vectorOperator.resultType) {
             case ResultTypes.POINTS:
-                dict['pointSources'] = [vectorOperator];
+                dict.pointSources.push(vectorOperator);
                 break;
             case ResultTypes.LINES:
-                dict['lineSources'] = [vectorOperator];
+                dict.lineSources.push(vectorOperator);
                 break;
             case ResultTypes.POLYGONS:
-                dict['polygonSources'] = [vectorOperator];
+                dict.polygonSources.push(vectorOperator);
                 break;
             default:
                 throw 'Incompatible Input Type';
