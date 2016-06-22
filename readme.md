@@ -17,6 +17,9 @@ npm install
 npm run tsc
 ```
 
+## Expected Errors
+* "'abstract' modifier can only appear on a class or method declaration": this is a [TypeScript problem](https://github.com/Microsoft/TypeScript/issues/4669) and will be fixed in [2.0](https://github.com/Microsoft/TypeScript/milestones)
+
 *Future work:*
 ```
 npm install
