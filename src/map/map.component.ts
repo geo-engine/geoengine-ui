@@ -238,20 +238,22 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         let selectedOlLayers: Array<ol.layer.Layer> = undefined;
 
-        // add the select interaction to the map // pull request: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/9753
+        // add the select interaction to the map
         const select = new ol.interaction.Select({
             layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
         });
-        select.setActive(false);
+        (select as any).setActive(false);
         this.map.addInteraction(select);
-        select.on(['select'], (event: ol.SelectEvent) => {
+        select.on(['select'], (event: any) => {
             const selectEvent = event as ol.SelectEvent;
-            this.layerService.removeFeaturesFromSelection(selectEvent.deselected.map(
-                feature => feature.getId()
-            ));
-            this.layerService.addFeaturesToSelection(selectEvent.selected.map(
-                feature => feature.getId()
-            ));
+            this.layerService.updateSelectedFeatures(
+                selectEvent.selected.map(
+                    feature => feature.getId()
+                ),
+                selectEvent.deselected.map(
+                    feature => feature.getId()
+                )
+            );
         });
 
         this.layerService.getSelectedLayerStream().subscribe(layer => {
@@ -262,9 +264,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 ).map(
                     olLayerComponent => olLayerComponent.mapLayer
                 );
-                select.setActive(true);
+                (select as any).setActive(true);
             } else {
-                select.setActive(false);
+                (select as any).setActive(false);
             }
         });
     }

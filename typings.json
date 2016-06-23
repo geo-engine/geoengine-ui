@@ -8,7 +8,7 @@
         "hammerjs": "registry:dt/hammerjs#2.0.4+20160417130828",
         "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
         "node": "registry:dt/node#4.0.0+20160509154515",
-        "openlayers": "registry:dt/openlayers#3.6.0+20160506083408",
+        "openlayers": "registry:dt/openlayers#3.6.0+20160622085735",
         "proj4": "file:custom_typings/proj4.d.ts"
     }
 }
