@@ -1,7 +1,9 @@
-import {Http, Headers} from '@angular/http';
+import {Http} from '@angular/http';
 
 import {StorageProvider, Workspace, WorkspaceDict} from '../storage-provider.model';
 import Config from '../../app/config.model';
+import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
+import {Operator} from '../../operators/operator.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Project} from '../../project/project.model';
@@ -10,38 +12,17 @@ import {Session} from '../../users/user.service';
 import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
 
-class ArtifactServiceRequestParameters {
-    private parameters: {[index: string]: string | boolean | number};
-
+class ArtifactServiceRequestParameters extends MappingRequestParameters {
     constructor(config: {
         request: string,
         sessionToken: string,
-        parameters?: {[index: string]: string | boolean | number}
+        parameters?: ParametersType
     }) {
-        this.parameters = {
+        super({
             service: 'artifact',
             request: config.request,
-            sessiontoken: config.sessionToken,
-        };
-        if (config.parameters) {
-            Object.keys(config.parameters).forEach(
-                key => this.parameters[key] = config.parameters[key]
-            );
-        }
-    }
-
-    toMessageBody(encode = false): string {
-        return Object.keys(this.parameters).map(
-            key => [
-                key,
-                encode ? encodeURIComponent(this.parameters[key].toString()) : this.parameters[key],
-            ].join('=')
-        ).join('&');
-    }
-
-    getHeaders(): Headers {
-        return new Headers({
-           'Content-Type': 'application/x-www-form-urlencoded',
+            sessionToken: config.sessionToken,
+            parameters: config.parameters,
         });
     }
 }
@@ -107,13 +88,16 @@ export class MappingStorageProvider extends StorageProvider {
             ).toPromise().then(response => {
                 const mappingResponse = response.json();
                 const workspace: WorkspaceDict = JSON.parse(mappingResponse.value);
+
+                const operatorMap = new Map<number, Operator>();
+
                 return {
                     project: Project.fromDict(workspace.project),
                     layers: workspace.layers.map(
-                        layer => this.layerService.createLayerFromDict(layer)
+                        layer => this.layerService.createLayerFromDict(layer, operatorMap)
                     ),
                     plots: workspace.plots.map(
-                        plot => this.plotService.createPlotFromDict(plot)
+                        plot => this.plotService.createPlotFromDict(plot, operatorMap)
                     ),
                 };
             });

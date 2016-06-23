@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
+import {Operator} from '../operators/operator.model';
 import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
 
@@ -149,13 +150,17 @@ export class LayerService {
     /**
      * Create the suitable layer type and initialize the callbacks.
      */
-    createLayerFromDict(dict: LayerDict): Layer<Symbology> {
+    createLayerFromDict(
+        dict: LayerDict,
+        operatorMap = new Map<number, Operator>()
+    ): Layer<Symbology> {
         switch (dict.type) {
             case 'raster':
                 return RasterLayer.fromDict(
                     dict,
                     operator => this.mappingQueryService.getColorizerStream(operator),
-                    operator => this.mappingQueryService.getProvenanceStream(operator)
+                    operator => this.mappingQueryService.getProvenanceStream(operator),
+                    operatorMap
                 );
             case 'vector':
                 return VectorLayer.fromDict(
@@ -164,7 +169,8 @@ export class LayerService {
                         this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                             operator, clustered,
                         }),
-                    operator => this.mappingQueryService.getProvenanceStream(operator)
+                    operator => this.mappingQueryService.getProvenanceStream(operator),
+                    operatorMap
                 );
             default:
                 throw `LayerService.createLayerFromDict: Unknown LayerType -> ${dict.type}.`;

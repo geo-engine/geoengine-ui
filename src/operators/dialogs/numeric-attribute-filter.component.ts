@@ -21,7 +21,7 @@ import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 
 import {VectorLayer} from '../../layers/layer.model';
-import {Operator, OperatorConfig} from '../operator.model';
+import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {NumericAttributeFilterType} from '../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../types/histogram-type.model';
@@ -186,7 +186,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
 
         const name: string = this.configForm.controls['name'].value;
 
-        const dict: OperatorConfig = {
+        const dict = {
             operatorType: new NumericAttributeFilterType({
                 attributeName: attributeName,
                 includeNoData: nodata,
@@ -198,17 +198,20 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
             attributes: attributes,
             dataTypes: dataTypes,
             units: units,
+            pointSources: new Array<Operator>(),
+            lineSources: new Array<Operator>(),
+            polygonSources: new Array<Operator>(),
         };
 
         switch (vectorOperator.resultType) {
             case ResultTypes.POINTS:
-                dict.pointSources = [vectorOperator];
+                dict.pointSources.push(vectorOperator);
                 break;
             case ResultTypes.LINES:
-                dict.lineSources = [vectorOperator];
+                dict.lineSources.push(vectorOperator);
                 break;
             case ResultTypes.POLYGONS:
-                dict.polygonSources = [vectorOperator];
+                dict.polygonSources.push(vectorOperator);
                 break;
             default:
                 throw 'Incompatible Input Type';

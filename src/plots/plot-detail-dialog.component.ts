@@ -8,6 +8,8 @@ import {HistogramComponent} from './histogram.component';
 
 import {Plot} from './plot.model';
 
+type PlotDetailsDialogType = {plot: Plot, [index: string]: Plot};
+
 @Component({
     selector: 'wave-plot-detail-dialog',
     template: `
@@ -40,7 +42,8 @@ import {Plot} from './plot.model';
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class PlotDetailsDialogComponent extends BasicDialog<{plot: Plot}> implements OnInit {
+export class PlotDetailsDialogComponent extends BasicDialog<PlotDetailsDialogType>
+                                        implements OnInit {
     plot: Plot;
 
     ngOnInit() {

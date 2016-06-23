@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
 import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
 
-import {BehaviorSubject, Subscription} from 'rxjs/Rx';
+import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
@@ -11,7 +11,7 @@ import Config from '../app/config.model';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
-// import {User, Guest} from './user.model';
+import {User} from './user.model';
 import {UserService} from './user.service';
 
 enum FormStatus { LoggedOut, LoggedIn, Loading }
@@ -28,11 +28,23 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
         <md-input type="password" placeholder="Password" ngControl="password"></md-input>
         <span *ngIf="invalidCredentials">Invalid Credentials</span>
     </form>
-    <div *ngIf="isLoggedIn$ | async" class="logged-in">
+    <div *ngIf="isLoggedIn$ | async" class="logged-in" layout="column">
         <md-input
             type="text"
             placeholder="Username"
-            [ngModel]="form.controls.username.value"
+            [ngModel]="(user | async).name"
+            [disabled]="true"
+        ></md-input>
+        <md-input
+            type="text"
+            placeholder="Real Name"
+            [ngModel]="(user | async).realName"
+            [disabled]="true"
+        ></md-input>
+        <md-input
+            type="text"
+            placeholder="E-Mail"
+            [ngModel]="(user | async).email"
             [disabled]="true"
         ></md-input>
         <button md-raised-button (click)="logout()">Logout</button>
@@ -79,7 +91,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
     isLoggedOut$ = this.formStatus$.map(status => status === FormStatus.LoggedOut);
     isLoading$ = this.formStatus$.map(status => status === FormStatus.Loading);
     invalidCredentials = false;
-    // user: User;
+    user: Observable<User>;
 
     form: ControlGroup;
 
@@ -117,6 +129,8 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
                 );
             }
         });
+
+        this.user = this.userService.getUserStream();
     }
 
     ngOnInit() {

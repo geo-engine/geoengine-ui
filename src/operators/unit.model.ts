@@ -1,3 +1,5 @@
+import Immutable from 'immutable';
+
 export const enum Interpolation {
     Unknown = 0,
     Continuous = 1,
@@ -37,7 +39,7 @@ export interface UnitConfig {
     min?: number;
     max?: number;
     interpolation: Interpolation;
-    classes?: Map<number, Class>;
+    classes?: Map<number, Class> | Immutable.Map<number, Class>;
 }
 
 export interface UnitDict {
@@ -83,7 +85,7 @@ export class Unit {
     private _min: number;
     private _max: number;
     private _interpolation: Interpolation;
-    private _classes: Map<number, Class>;
+    private _classes: Immutable.Map<number, Class>;
 
     constructor(config: UnitConfig) {
         this._measurement = config.measurement;
@@ -91,7 +93,13 @@ export class Unit {
         this._min = config.min;
         this._max = config.max;
         this._interpolation = config.interpolation;
-        this._classes = config.classes;
+        if (config.classes) {
+            if (config.classes instanceof Immutable.Map) {
+                this._classes = config.classes as Immutable.Map<number, Class>;
+            } else {
+                this._classes = Immutable.Map<number, Class>(config.classes as Map<number, Class>);
+            }
+        }
     }
 
     static fromDict(dict: UnitDict): Unit {
@@ -159,7 +167,7 @@ export class Unit {
         return this._interpolation;
     }
 
-    get classes(): Map<number, Class> {
+    get classes(): Immutable.Map<number, Class> {
         return this._classes;
     }
 
@@ -168,10 +176,9 @@ export class Unit {
     }
 
     toDict(): UnitDict {
-        let classes: {[index: number]: string} = {};
-        if (this._classes !== undefined) {
-            Array.from(this._classes.entries()).forEach(([n, name]) => classes[n] = name);
-        }
+        let classes: {
+            [index: number]: string
+        } = this._classes === undefined ? {} : this._classes.toJS() as {[index: number]: string};
 
         return {
             measurement: this._measurement,
@@ -197,11 +204,7 @@ export class Unit {
             dict.max = this._max;
         }
         if (this._unit === 'classification') {
-            let classes: {[index: number]: string} = {};
-            for (let key in this._classes) {
-                classes[key] = this._classes[key];
-            }
-            dict.classes = classes;
+            dict['classes'] = this._classes.toJS() as {[index: number]: string};
         }
 
         return dict;

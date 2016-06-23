@@ -331,9 +331,10 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                    container: d3.Selection<SVGGElement>,
                    xAxis: d3.svg.Axis): () => void {
         return () => {
+            const zoomEvent = d3.event as d3.ZoomEvent;
             container.attr(
                 'transform',
-                `translate(${d3.event['translate'][0]},0)scale(${d3.event['scale']},1)`
+                `translate(${zoomEvent.translate[0]},0)scale(${zoomEvent.scale},1)`
             );
             svg.select('.x.axis').call(xAxis);
         };
@@ -422,7 +423,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             const maxX = this.data.metadata.max;
             const bins = this.data.metadata.numberOfBuckets;
 
-            const eventX = d3.event['x'];
+            const dragEvent = d3.event as d3.DragEvent;
+            const eventX = dragEvent.x;
 
             let lowerbound: number;
             let upperbound: number;

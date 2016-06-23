@@ -100,12 +100,12 @@ export class MsgReflectanceType extends OperatorType {
     getParametersAsStrings(): Array<[string, string]> { return []; }
 
     toMappingDict(): MsgReflectanceTypeMappingDict {
-        let config = {
+        const config: MsgReflectanceTypeMappingDict = {
             isHrv: this.isHrv,
             solarCorrection: this.solarCorrection,
         };
         if (this.forceSatellite && this.forceSatelliteName) {
-            config['forceSatellite'] = this.forceSatelliteName;
+            config.forceSatellite = this.forceSatelliteName;
         }
         return config;
     }

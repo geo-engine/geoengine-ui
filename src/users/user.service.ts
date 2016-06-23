@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
+import {Http, Response} from '@angular/http';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import Config from '../app/config.model';
 import {User, Guest} from './user.model';
+
+import {MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
 
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
@@ -16,35 +18,17 @@ export interface Session {
     sessionToken: string;
 }
 
-class UserServiceRequestParameters {
-    private parameters: {[index: string]: string | boolean | number};
-
+class UserServiceRequestParameters extends MappingRequestParameters {
     constructor(config: {
         request: string,
         sessionToken: string,
-        parameters?: {[index: string]: string | boolean | number}
+        parameters?: ParametersType
     }) {
-        this.parameters = {
+        super({
             service: 'USER',
             request: config.request,
-            sessiontoken: config.sessionToken,
-        };
-        if (config.parameters) {
-            Object.keys(config.parameters).forEach(
-                key => this.parameters[key] = config.parameters[key]
-            );
-        }
-    }
-
-    toMessageBody(): string {
-        return Object.keys(this.parameters).map(
-            key => [key, this.parameters[key]].join('=')
-        ).join('&');
-    }
-
-    getHeaders(): Headers {
-        return new Headers({
-           'Content-Type': 'application/x-www-form-urlencoded',
+            sessionToken: config.sessionToken,
+            parameters: config.parameters,
         });
     }
 }
@@ -78,12 +62,13 @@ export class UserService {
     constructor(
         private http: Http
     ) {
-        this.user$ = new BehaviorSubject(new Guest());
-
-        const session: Session = JSON.parse(localStorage.getItem('session'));
+        const storedSession: Session = JSON.parse(localStorage.getItem('session'));
         this.session$ = new BehaviorSubject(
             // tslint:disable-next-line:no-null-keyword
-            session !== null ? session : {user: Config.USER.GUEST.NAME, sessionToken: ''}
+            storedSession !== null ? storedSession : {
+                user: Config.USER.GUEST.NAME,
+                sessionToken: '',
+            }
         );
 
         this.isGuestUser$ = this.session$.map(s => s.user === Config.USER.GUEST.NAME);
@@ -91,6 +76,14 @@ export class UserService {
         // storage of the session
         this.session$.subscribe(newSession =>
             localStorage.setItem('session', JSON.stringify(newSession))
+        );
+
+        // user info
+        this.user$ = new BehaviorSubject(new Guest());
+        this.session$.subscribe(
+            session => this.getUserDetails(session).then(
+                user => user ? this.user$.next(user) : new Guest()
+            )
         );
     }
 
@@ -142,7 +135,6 @@ export class UserService {
             const success = typeof result.result === 'boolean' && result.result === true;
 
             if (success) {
-                // TODO: get user information
                 this.session$.next({
                     user: credentials.user,
                     sessionToken: result.session,
@@ -162,19 +154,48 @@ export class UserService {
 
     /**
      * Login using user credentials. If it was successful, set a new user.
-     * @param credentials.user The user name.
-     * @param credentials.password The user's password.
+     * @param session.user The user name.
+     * @param session.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
     isSessionValid(session: Session): Promise<boolean> {
+        return this.getUserDetails(session).then(user => !!user);
+    }
+
+    /**
+     * Retrieve the user details.
+     * @param session.user The user name.
+     * @param session.password The user's password.
+     * @returns the user details.
+     */
+    getUserDetails(session: Session): Promise<User> {
+        if (session.user === Config.USER.GUEST.NAME) {
+            return Promise.resolve(new Guest());
+        }
+
         const parameters = new UserServiceRequestParameters({
-            request: 'sourcelist',
+            request: 'info',
             sessionToken: session.sessionToken,
         });
         return this.request(parameters).then(response => {
             const result = response.json() as {result: string | boolean};
+            const valid = typeof result.result === 'boolean' && result.result;
 
-            return typeof result.result === 'boolean' && result.result;
+            if (valid) {
+                const userResult = result as {
+                    result: string | boolean,
+                    username: string,
+                    realname: string,
+                    email: string,
+                };
+                return new User({
+                    name: userResult.username,
+                    realName: userResult.realname,
+                    email: userResult.email,
+                });
+            } else {
+                return undefined;
+            }
         });
     }
 
@@ -197,7 +218,7 @@ export class UserService {
      */
     getRasterSourcesStream(): Observable<Array<MappingSource>> {
         interface MappingSourceResponse {
-            sourcelist: {[key: string]: MappingSourceDict};
+            sourcelist: {[index: string]: MappingSourceDict};
         }
 
         interface MappingSourceDict {
@@ -232,6 +253,7 @@ export class UserService {
                 response => response.json()
             ).then((json: MappingSourceResponse) => {
                 const sources: Array<MappingSource> = [];
+
                 for (const sourceId in json.sourcelist) {
                     const source: MappingSourceDict = json.sourcelist[sourceId];
                     sources.push({
