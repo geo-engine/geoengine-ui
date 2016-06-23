@@ -7,6 +7,13 @@ import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
 import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
 
+export interface SelectedFeatures {
+    selected: Array<FeatureID>;
+    add?: Array<FeatureID>;
+    remove?: Array<FeatureID>;
+    focus?: FeatureID;
+}
+
 /**
  * A service that is responsible for managing the active layer array.
  */
@@ -14,7 +21,9 @@ import {Symbology} from '../symbology/symbology.model';
 export class LayerService {
     private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
-    private selectedFeatures$: BehaviorSubject<Array<FeatureID>> = new BehaviorSubject([]);
+    private selectedFeatures$: BehaviorSubject<SelectedFeatures> = new BehaviorSubject({
+        selected: [],
+    });
     private isAnyLayerSelected$: Observable<boolean>;
 
     constructor(
@@ -110,7 +119,9 @@ export class LayerService {
     setSelectedLayer(layer: Layer<Symbology>) {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
-            this.selectedFeatures$.next([]);
+            this.selectedFeatures$.next({
+                selected: [],
+            });
         }
     }
 
@@ -167,16 +178,22 @@ export class LayerService {
         return this.selectedFeatures$.asObservable();
     }
 
-    addFeaturesToSelection(featureIds: Array<FeatureID>): void {
-        console.log('add featureIds', featureIds);
-        const selected = this.selectedFeatures$.value.slice();
-        let concat = selected.concat(featureIds); // TODO: dedublicate?
-        this.selectedFeatures$.next(concat);
-    }
-
-    removeFeaturesFromSelection(featureIds: Array<FeatureID>): void {
-        console.log('remove featureIds', featureIds);
-        let selected = this.selectedFeatures$.value.filter(item => featureIds.indexOf(item) === -1);
-        this.selectedFeatures$.next(selected);
+    updateSelectedFeatures(add: Array<FeatureID>, remove: Array<FeatureID>): void {
+        const currentSelected = this.selectedFeatures$.value.selected;
+        const actualRemove = remove.filter(x => currentSelected.indexOf(x) !== -1);
+        const actualSelected = currentSelected.filter(x => actualRemove.indexOf(x) === -1);
+        const actualAdd = add.filter(x => actualSelected.indexOf(x) === -1);
+        if (actualAdd.length > 0 || actualRemove.length > 0) {
+            let next: SelectedFeatures = {
+                selected: actualSelected.concat(actualAdd),
+                add: actualAdd,
+                remove: actualRemove,
+            };
+            if (actualAdd.length > 0) {
+                next.focus = actualAdd[actualAdd.length - 1];
+            }
+            this.selectedFeatures$.next(next);
+            console.log('featureIds next', this.selectedFeatures$.value);
+        }
     }
 }
