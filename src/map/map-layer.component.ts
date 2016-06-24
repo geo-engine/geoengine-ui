@@ -180,9 +180,8 @@ export class OlRasterLayerComponent
         }
 
         if (changes['projection'] || changes['time']) {
-            // TODO: pull request: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/9753
-            (this.source as any).updateParams(params.asObject());
-            (this.source as any).refresh();
+            this.source.updateParams(params.asObject());
+            this.source.refresh();
         }
         if (changes['symbology']) {
             this._mapLayer.setOpacity(this.symbology.opacity);

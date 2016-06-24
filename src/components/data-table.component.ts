@@ -7,18 +7,19 @@ import {Http} from '@angular/http';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, ITableSelectionChange, MdDataTable} from 'ng2-material';
+import {MATERIAL_DIRECTIVES, ITableSelectionChange, ITableSelectableRowSelectionChange,
+    MdDataTable} from 'ng2-material';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
-import {GeoJsonFeatureCollection, GeoJsonFeature, FeatureID} from '../models/geojson.model';
+import {GeoJsonFeature} from '../models/geojson.model';
 import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';
 import {LoadingState} from '../shared/loading-state.model';
 
-import {LayerService} from '../layers/layer.service';
+import {LayerService, SelectedFeatures} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 
@@ -49,7 +50,7 @@ interface Row {
                     <template ngFor let-row [ngForOf]="visibleRows" let-idx="index">
                         <tr md-data-table-selectable-row
                             [selectable-value]="row.id"
-                            (onChange)="change($event)"
+                            (onChange)="onRowSelectionChange($event)"
                         >
                             <td *ngFor="let column of columns">{{row[column.name]}}</td>
                             <td
@@ -140,7 +141,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     @ViewChild('container')
     private container: ElementRef;
 
-    private selectedFeatureIds: Array<FeatureID>;
+    private selectedFeatures: SelectedFeatures;
 
     private virtualHeight: number = 0;
     private scrollTop: number = 0;
@@ -182,12 +183,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
                 case ResultTypes.POLYGONS:
                     let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
                     return {
-                        data$: vectorLayer.data.data$.map(data => {
-                            if (data) { // TODO: needed?
-                                let geojson: GeoJsonFeatureCollection = data;
-                                return geojson.features;
-                            }
-                        }),
+                        data$: vectorLayer.data.data$.map(data => data.features),
                         state$: vectorLayer.data.state$,
                         selectable: true,
                     };
@@ -234,9 +230,10 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
                 this.rows = features;
             }
 
+            // only needs to be called once for each "data"
             this.updateVirtualHeight();
+
             this.updateVisibleRows(0, true);
-            this.updateScrollPosition(0);
             this.changeDetectorRef.markForCheck();
         });
 
@@ -245,8 +242,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
     ngAfterViewInit() {
             this.layerService.getSelectedFeaturesStream().subscribe(x => {
-                this.selectedFeatureIds = x;
-                this.updateSelectedRows();
+                this.updateSelectedRows(x);
             });
     }
 
@@ -256,7 +252,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
             Math.ceil((this.height - this.columnHeight) / this.rowHeight),
             0
         );
-        this.updateVisibleRows(this.firstVisible, false);
+        this.updateVisibleRows(this.firstVisible, true);
       }
     }
 
@@ -267,60 +263,27 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
      * @param newFirstVisible The new first visible element (table top row).
      * @param force Force the update (even if nothing may have changed).
      */
-    updateVisibleRows(newFirstVisible: number, force: boolean) {
-      if ( force || newFirstVisible !== this.firstVisible
+    updateVisibleRows(newVisible: number, force: boolean) {
+      if ( force || newVisible < this.firstVisible || newVisible > this.lastVisible
           || this.lastVisible - this.firstVisible < this.numberOfVisibleRows ) {
-        this.firstVisible = newFirstVisible;
-        this.lastVisible = this.firstVisible + this.numberOfVisibleRows;
-        this.visibleRows = this.rows.slice(
-            Math.floor(this.firstVisible), Math.ceil(this.lastVisible)
-        );
+              // don't scroll outside of the table.
+          this.firstVisible = Math.min(newVisible, this.rows.length - this.numberOfVisibleRows + 1);
+          this.lastVisible = this.firstVisible + this.numberOfVisibleRows;
+          this.visibleRows = this.rows.slice(
+              Math.floor(this.firstVisible), Math.ceil(this.lastVisible)
+          );
+          this.updateScrollPosition(this.firstVisible * this.rowHeight);
       }
+
       if (this.datatable) {
           this.datatable._rows.filter(
-              row => !row.isActive && this.selectedFeatureIds.indexOf(row.selectableValue) !== -1
+              row => {
+                  const index = this.selectedFeatures.selected.indexOf(row.selectableValue);
+                  return (!row.isActive && index !== -1) || (row.isActive && index === -1);
+              }
           ).forEach(row => row.change());
       }
-    }
-
-    updateScrollPosition(scrollTop: number) {
-        this.scrollTop = Math.max(0, scrollTop);
-        this.scrollBottom = Math.max(0, this.virtualHeight - scrollTop - this.height);
-        this.container.nativeElement.scrollTop = scrollTop;
-    }
-
-    /**
-     * Method to update/refresh the virtualHeight.
-     */
-    updateVirtualHeight() {
-      this.virtualHeight = this.rows.length *  this.rowHeight
-        + this.columns.length * this.columnHeight;
-    }
-
-    updateSelectedRows() {
-        let row = -1;
-        const lookupId = this.selectedFeatureIds[this.selectedFeatureIds.length - 1];
-        for (let i = 0; i < this.rows.length; i++) {
-            if (this.rows[i]['id'] === lookupId) {
-                row = i;
-                break;
-            }
-        }
-        const scrollTop = this.rowHeight * row;
-        if (this.datatable) {
-            this.deselectRows();
-        }
-        if (row !== -1) {
-            this.updateScrollPosition(scrollTop);
-            this.updateVisibleRows(row, true);
-            this.changeDetectorRef.markForCheck();
-        }
-    }
-
-    deselectRows() {
-        this.datatable._rows.filter(
-            row => row.isActive && this.selectedFeatureIds.indexOf(row.selectableValue) === -1
-        ).forEach(row => row.change());
+      this.changeDetectorRef.markForCheck();
     }
 
     /**
@@ -330,15 +293,61 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     onScroll(event: Event) {
         const target = event.target as HTMLElement;
         const scrollTop = target.scrollTop;
-        const newFirstVisible = (this.scrollTop / this.rowHeight);
-        this.updateScrollPosition(scrollTop);
-        this.updateVisibleRows(newFirstVisible, false);
+        const newFirstVisible = Math.max(0, Math.min(this.rows.length, scrollTop / this.rowHeight));
+        this.updateVisibleRows(newFirstVisible, true);
     }
 
     change(event: ITableSelectionChange) {
-        // TODO: hande selections
-        // console.log('selectableChange', event);
-        // console.log('datatable', this.datatable);
+        const trueRemove = this.datatable._rows.filter(
+            x => !x.isActive && this.selectedFeatures.selected.indexOf(x.selectableValue) !== -1
+        ).map(x => x.selectableValue);
+        const trueAdd =  event.values.filter(
+            x => this.selectedFeatures.selected.indexOf(x) === -1
+        );
+
+        console.log('ITableSelectionChange trueAdd', trueAdd, "trueRemove", trueRemove);
+        // this.layerService.updateSelectedFeatures(trueAdd, trueRemove); // FIXME: scroll down + game of life :(
     }
 
+    onRowSelectionChange(event: ITableSelectableRowSelectionChange ) {
+        // if (event.isActive) {
+        //     this.layerService.updateSelectedFeatures([event.selectableValue], []);
+        // } else {
+        //     this.layerService.updateSelectedFeatures([], [event.selectableValue]);
+        // }
+    }
+
+    private updateScrollPosition(scrollTop: number) {
+        this.scrollTop = Math.max(0, scrollTop);
+        this.scrollBottom = Math.max(0, this.virtualHeight - scrollTop - this.height);
+        this.container.nativeElement.scrollTop = scrollTop;
+    }
+
+    /**
+     * Method to update/refresh the virtualHeight.
+     */
+    private updateVirtualHeight() {
+      this.virtualHeight = this.rows.length *  this.rowHeight
+        + this.columns.length * this.columnHeight;
+    }
+
+    private updateSelectedRows(selectionUpdate: SelectedFeatures) {
+        console.log("selectionUpdate", selectionUpdate, "this.selectedFeatures", this.selectedFeatures);
+        if (selectionUpdate !== this.selectedFeatures) {
+            this.selectedFeatures = selectionUpdate;
+
+            let row = -1;
+            if (selectionUpdate.focus) {
+                for (let i = 0; i < this.rows.length; i++) {
+                    if (this.rows[i].id === selectionUpdate.focus) {
+                        row = i;
+                        break;
+                    }
+                }
+            }
+            this.updateVisibleRows((row !== -1) ? row : this.firstVisible, false);
+        } else {
+            // console.log("nop");
+        }
+    }
 }
