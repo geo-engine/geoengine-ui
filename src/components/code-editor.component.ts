@@ -102,9 +102,9 @@ export class CodeEditorComponent
         });
 
         // TODO: find a better way to fix the viewport issue.
-        setTimeout(() => this.editor.refresh(), 100);
-        setTimeout(() => this.editor.refresh(), 500);
-        setTimeout(() => this.editor.refresh(), 1000);
+        for (const timeOffset of [0, 100, 500, 1000]) {
+            setTimeout(() => this.editor.refresh(), timeOffset);
+        }
     }
 
     ngOnDestroy() {

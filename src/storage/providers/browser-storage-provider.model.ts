@@ -1,4 +1,6 @@
-import {StorageProvider, Workspace} from '../storage-provider.model';
+import {
+    StorageProvider, Workspace, RScript, RScriptDict,
+} from '../storage-provider.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
@@ -6,6 +8,7 @@ import {Project} from '../../project/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
 import {Operator} from '../../operators/operator.model';
+import {ResultTypes} from '../../operators/result-type.model';
 
 /**
  * StorageProvider implementation that uses the brower's localStorage
@@ -139,5 +142,38 @@ export class BrowserStorageProvider extends StorageProvider {
     getProjects(): Promise<Array<string>> {
         return Promise.resolve([]);
     }
+
+    saveRScript(name: string, script: RScript): Promise<void> {
+        const itemName = 'r_scripts';
+        const scriptDict: RScriptDict = {
+            code: script.code,
+            resultType: script.resultType.getCode(),
+        };
+        const scriptString = localStorage.getItem(itemName);
+        const scripts: {
+            [index: string]: RScriptDict
+        } = scriptString ? JSON.parse(scriptString) : {};
+        scripts[name] = scriptDict;
+        localStorage.setItem(itemName, JSON.stringify(scripts));
+
+        return Promise.resolve();
+    }
+
+    loadRScript(name: string): Promise<RScript> {
+        const scripts: {
+            [index: string]: RScriptDict
+        } = JSON.parse(localStorage.getItem('r_scripts'));
+        return Promise.resolve({
+            code: scripts[name].code,
+            resultType: ResultTypes.fromCode(scripts[name].resultType),
+        });
+    };
+
+    getRScripts(): Promise<Array<string>> {
+        const scripts: {
+            [index: string]: RScriptDict
+        } = JSON.parse(localStorage.getItem('r_scripts'));
+        return Promise.resolve(Object.keys(scripts));
+    };
 
 }

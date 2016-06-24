@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Rx';
 
 import Config from '../app/config.model';
 
-import {StorageProvider} from './storage-provider.model';
+import {StorageProvider, RScript} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
 import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
 
@@ -83,6 +83,18 @@ export class StorageService {
 
     loadProjectByName(name: string) {
         return this.resetStorageProvider(this.userService.getSession(), name);
+    }
+
+    saveRScript(name: string, script: RScript): Promise<void> {
+        return this.storageProvider.saveRScript(name, script);
+    }
+
+    loadRScriptByName(name: string): Promise<RScript> {
+        return this.storageProvider.loadRScript(name);
+    }
+
+    getRScripts(): Promise<Array<string>> {
+        return this.storageProvider.getRScripts();
     }
 
     /**

@@ -1,7 +1,11 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup,
+    Component, ChangeDetectionStrategy, OnInit, ViewChild, AfterViewInit, OnDestroy,
+} from '@angular/core';
+import {
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
 } from '@angular/common';
+
+import {BehaviorSubject, Subject, Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
@@ -29,13 +33,18 @@ import {Unit} from '../unit.model';
 import {Projections} from '../projection.model';
 import {RScriptType} from '../types/r-script-type.model';
 
+import {DialogLoaderComponent} from '../../dialogs/dialog-loader.component';
+import {RScriptLoadDialogComponent} from './r/r-script-load-dialog.component';
+import {RScriptSaveDialogComponent} from './r/r-script-save-dialog.component';
+import {RScript} from '../../storage/storage-provider.model';
+
 /**
  * This component allows creating the R operator.
  */
 @Component({
     selector: 'wave-r-operator',
     template: `
-    <form [ngFormModel]="configForm">
+    <form [ngFormModel]="form">
         <wave-multi-layer-selection [layers]="layers" [min]="0" [max]="5" initialAmount="0"
                                     [types]="[ResultTypes.RASTER]"
                                     (selectedLayers)="rasterSources = $event">
@@ -54,20 +63,52 @@ import {RScriptType} from '../types/r-script-type.model';
             <md-card-content>
                 <p>Help?</p>
                 <wave-code-editor language="r" ngControl="code"></wave-code-editor>
-                <div>
-                    <label for="dataType">Result Type</label>
-                    <select ngControl="resultType">
-                        <option
-                            *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
-                                                       ResultTypes.PLOT, ResultTypes.TEXT]"
-                            [ngValue]="resultType"
-                        >{{resultType}}</option>
-                    </select>
+                <div layout="row">
+                    <div>
+                        <label for="dataType">Result Type</label>
+                        <select ngControl="resultType">
+                            <option
+                                *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
+                                                           ResultTypes.PLOT, ResultTypes.TEXT]"
+                                [ngValue]="resultType"
+                            >{{resultType}}</option>
+                        </select>
+                    </div>
+                    <span flex></span>
+                    <button md-button class='md-button'
+                            aria-label='Save'
+                            (click)='scriptSaveDialog.show({
+                                initialName: currentScriptName$.value,
+                                newName$: currentScriptName$,
+                                script: {
+                                    code: form.controls.code.value,
+                                    resultType: form.controls.resultType.value
+                                }
+                            })'>
+                        <i md-icon>archive</i>
+                        Save
+                    </button>
+                    <button md-button class='md-button'
+                            style='margin-left: -16px;'
+                            (click)='scriptLoadDialog.show({
+                                script$: scriptLoaded$,
+                                currentName: currentScriptName$.value,
+                                newCurrentName$: currentScriptName$
+                            })'>
+                        <i md-icon>unarchive</i>
+                        Load
+                    </button>
                 </div>
             </md-card-content>
         </md-card>
         <wave-operator-output-name ngControl="name"></wave-operator-output-name>
     </form>
+    <wave-dialog-loader #scriptSaveDialog
+        [type]="RScriptSaveDialogComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #scriptLoadDialog
+        [type]="RScriptLoadDialogComponent"
+    ></wave-dialog-loader>
     `,
     styles: [`
     label {
@@ -77,17 +118,37 @@ import {RScriptType} from '../types/r-script-type.model';
     }
     wave-code-editor {
         min-width: 400px;
+        margin-right: 4px;
+    }
+    button i {
+        vertical-align: middle;
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-                 OperatorOutputNameComponent, LayerMultiSelectComponent, CodeEditorComponent],
+    directives: [
+        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
+        OperatorOutputNameComponent, LayerMultiSelectComponent, CodeEditorComponent,
+        DialogLoaderComponent,
+    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ROperatorComponent extends OperatorBaseComponent implements OnInit {
+export class ROperatorComponent extends OperatorBaseComponent
+                                implements OnInit, AfterViewInit, OnDestroy {
+    // make this available in the template
+    // tslint:disable:variable-name
+    RScriptSaveDialogComponent = RScriptSaveDialogComponent;
+    RScriptLoadDialogComponent = RScriptLoadDialogComponent;
+    // tslint:enable
 
-    private configForm: ControlGroup;
-    private rasterSources: Array<RasterLayer<RasterSymbology>> = [];
-    private pointSources: Array<VectorLayer<AbstractVectorSymbology>> = [];
+    @ViewChild(CodeEditorComponent) codeEditor: CodeEditorComponent;
+
+    form: ControlGroup;
+    rasterSources: Array<RasterLayer<RasterSymbology>> = [];
+    pointSources: Array<VectorLayer<AbstractVectorSymbology>> = [];
+
+    currentScriptName$ = new BehaviorSubject<string>('');
+    scriptLoaded$ = new Subject<RScript>();
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         layerService: LayerService,
@@ -99,16 +160,33 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
     ) {
         super(layerService);
 
-        this.configForm = formBuilder.group({
+        this.form = formBuilder.group({
             code: [`print("Hello world");\na <- 1:5;\nprint(a);`, Validators.required],
             resultType: [ResultTypes.TEXT, Validators.required],
             name: ['R Output', Validators.required],
         });
+
+        this.subscriptions.push(
+            this.scriptLoaded$.subscribe(script => {
+                (this.form.controls['resultType'] as Control).updateValue(script.resultType);
+                (this.form.controls['code'] as Control).updateValue(script.code);
+            })
+        );
     }
 
     ngOnInit() {
         super.ngOnInit();
         this.dialog.setTitle('Execute R Script (experimental)');
+    }
+
+    ngAfterViewInit() {
+        this.codeEditor.refresh();
+    }
+
+    ngOnDestroy() {
+        for (const subscription of this.subscriptions) {
+            subscription.unsubscribe();
+        }
     }
 
     add() {
@@ -117,9 +195,9 @@ export class ROperatorComponent extends OperatorBaseComponent implements OnInit 
             return allSources[index];
         };
 
-        const outputName: string = this.configForm.controls['name'].value;
-        const resultType: DataType = this.configForm.controls['resultType'].value;
-        const code = this.configForm.controls['code'].value;
+        const outputName: string = this.form.controls['name'].value;
+        const resultType: DataType = this.form.controls['resultType'].value;
+        const code = this.form.controls['code'].value;
 
         // TODO: user input?
         const projection = getAnySource(0) === undefined ?

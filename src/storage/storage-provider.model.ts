@@ -3,6 +3,7 @@ import {Layer, LayerDict} from '../layers/layer.model';
 import {Project, ProjectDict} from '../project/project.model';
 import {Plot, PlotDict} from '../plots/plot.model';
 import {Symbology} from '../symbology/symbology.model';
+import {ResultType} from '../operators/result-type.model';
 
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
@@ -23,6 +24,22 @@ export interface WorkspaceDict {
     project: ProjectDict;
     layers: Array<LayerDict>;
     plots: Array<PlotDict>;
+}
+
+/**
+ * An R-Script
+ */
+export interface RScript {
+    code: string;
+    resultType: ResultType;
+}
+
+/**
+ * An R-Script dictionary
+ */
+export interface RScriptDict {
+    code: string;
+    resultType: string;
 }
 
 /**
@@ -67,5 +84,23 @@ export abstract class StorageProvider {
      * Retrieve all projects.
      */
     abstract getProjects(): Promise<Array<string>>;
+
+    /**
+     * Save an R script.
+     * @param name the name of the script
+     * @paran scrpipt the script itself
+     */
+    abstract saveRScript(name: string, script: RScript): Promise<void>;
+
+    /**
+     * Load an R script.
+     * @param name the name of the script
+     */
+    abstract loadRScript(name: string): Promise<RScript>;
+
+    /**
+     * Retrieve all R scripts.
+     */
+    abstract getRScripts(): Promise<Array<string>>;
 
 }
