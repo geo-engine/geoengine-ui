@@ -269,6 +269,28 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 (select as any).setActive(false);
             }
         });
+
+        this.layerService.getSelectedFeaturesStream().subscribe(selected => {
+            select.getFeatures().forEach(feature => {
+                if (selected.remove && selected.remove.contains(feature.getId())) {
+                    select.getFeatures().remove(feature);
+                }
+            });
+            if ( selectedOlLayers ) {
+                selectedOlLayers.forEach(layer => {
+                    if (layer instanceof ol.layer.Vector) {
+                        const vectorLayer = layer as ol.layer.Vector;
+                        vectorLayer.getSource().getFeatures().forEach(feature => {
+                            if (selected.add && selected.add.contains(feature.getId())) {
+                                if ( select.getFeatures().getArray().indexOf(feature) === -1) {
+                                    select.getFeatures().push(feature);
+                                }
+                            }
+                        });
+                    };
+                });
+            };
+        });
     }
 
     private createBackgroundLayer(projection: Projection): ol.layer.Image {

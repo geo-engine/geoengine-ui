@@ -11,6 +11,8 @@ import {MATERIAL_DIRECTIVES, ITableSelectionChange, ITableSelectableRowSelection
     MdDataTable} from 'ng2-material';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
+import Immutable from 'immutable';
+
 import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
@@ -278,8 +280,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
       if (this.datatable) {
           this.datatable._rows.filter(
               row => {
-                  const index = this.selectedFeatures.selected.indexOf(row.selectableValue);
-                  return (!row.isActive && index !== -1) || (row.isActive && index === -1);
+                  const contains = this.selectedFeatures.selected.contains(row.selectableValue);
+                  return (!row.isActive && contains) || (row.isActive && !contains);
               }
           ).forEach(row => row.change());
       }
@@ -298,23 +300,23 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     }
 
     change(event: ITableSelectionChange) {
-        const trueRemove = this.datatable._rows.filter(
-            x => !x.isActive && this.selectedFeatures.selected.indexOf(x.selectableValue) !== -1
-        ).map(x => x.selectableValue);
-        const trueAdd =  event.values.filter(
-            x => this.selectedFeatures.selected.indexOf(x) === -1
-        );
+        // const trueRemove = this.datatable._rows.filter(
+        //     x => !x.isActive && this.selectedFeatures.selected.indexOf(x.selectableValue) !== -1
+        // ).map(x => x.selectableValue);
+        // const trueAdd =  event.values.filter(
+        //     x => this.selectedFeatures.selected.indexOf(x) === -1
+        // );
 
-        console.log('ITableSelectionChange trueAdd', trueAdd, "trueRemove", trueRemove);
-        // this.layerService.updateSelectedFeatures(trueAdd, trueRemove); // FIXME: scroll down + game of life :(
+        // console.log("ITableSelectionChange trueAdd", trueAdd, "trueRemove", trueRemove);
+        // this.layerService.updateSelectedFeatures(trueAdd, trueRemove); // FIXME: game of life :(
     }
 
     onRowSelectionChange(event: ITableSelectableRowSelectionChange ) {
-        // if (event.isActive) {
-        //     this.layerService.updateSelectedFeatures([event.selectableValue], []);
-        // } else {
-        //     this.layerService.updateSelectedFeatures([], [event.selectableValue]);
-        // }
+        if (event.isActive) {
+             this.layerService.updateSelectedFeatures([event.selectableValue], []);
+        } else {
+             this.layerService.updateSelectedFeatures([], [event.selectableValue]);
+        }
     }
 
     private updateScrollPosition(scrollTop: number) {
@@ -331,23 +333,20 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
         + this.columns.length * this.columnHeight;
     }
 
-    private updateSelectedRows(selectionUpdate: SelectedFeatures) {
-        console.log("selectionUpdate", selectionUpdate, "this.selectedFeatures", this.selectedFeatures);
-        if (selectionUpdate !== this.selectedFeatures) {
-            this.selectedFeatures = selectionUpdate;
+    private updateSelectedRows(selection: SelectedFeatures) {
+        if ( !(this.selectedFeatures) || selection.selected !== this.selectedFeatures.selected) {
+            this.selectedFeatures = selection;
 
             let row = -1;
-            if (selectionUpdate.focus) {
+            if (selection.focus) {
                 for (let i = 0; i < this.rows.length; i++) {
-                    if (this.rows[i].id === selectionUpdate.focus) {
+                    if (this.rows[i].id === selection.focus) {
                         row = i;
                         break;
                     }
                 }
             }
             this.updateVisibleRows((row !== -1) ? row : this.firstVisible, false);
-        } else {
-            // console.log("nop");
         }
     }
 }
