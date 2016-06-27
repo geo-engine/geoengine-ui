@@ -241,6 +241,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         // add the select interaction to the map
         const select = new ol.interaction.Select({
             layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
+            wrapX: false,
         });
         (select as any).setActive(false);
         this.map.addInteraction(select);
