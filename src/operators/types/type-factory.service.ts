@@ -22,6 +22,8 @@ import {PointInPolygonFilterType, PointInPolygonFilterTypeDict}
   from './point-in-polygon-filter-type.model';
 import {WKTSourceType, WKTSourceTypeDict}
   from './wkt-source-type.model';
+import {ABCDSourceType, ABCDSourceTypeDict}
+    from './abcd-source-type.model';
 import {
     MsgRadianceType,
     MsgReflectanceType, MsgReflectanceTypeDict,
@@ -74,6 +76,8 @@ export abstract class OperatorTypeFactory {
                 return MsgPansharpenType.fromDict(dict as MsgPansharpenTypeDict);
             case MsgCo2CorrectionType.TYPE:
                 return MsgCo2CorrectionType.fromDict(dict);
+            case ABCDSourceType.TYPE:
+                return ABCDSourceType.fromDict(dict as ABCDSourceTypeDict);
             default:
                 throw 'There is not factory method defined for this operator.';
         }
