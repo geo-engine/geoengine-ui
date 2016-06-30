@@ -47,7 +47,7 @@ interface Group<T> {
                     layout="column"
                     (click)="add(archive)">
                     <p>{{archive.dataset}}</p>
-                    <p>link: {{archive.link}}</p>
+                    <a href={{archive.link}}>{{archive.link}}</a>
                   </div>
               </md-list-item>
               <md-divider></md-divider>
@@ -101,7 +101,15 @@ export class AbcdRepositoryComponent {
                 groups[a.provider].group.push(a);
             }
 
-            return Object.values(groups);
+            const iterableGroups: Array<Group<AbcdArchive>> = new Array();
+            const keys = Object.keys(groups).sort();
+            for (let key of keys) {
+                const value = groups[key];
+                value.group = value.group.sort((x, y) => (x.dataset < y.dataset) ? 0 : 1);
+                iterableGroups.push(value);
+            }
+
+            return iterableGroups;
         });
     }
 
