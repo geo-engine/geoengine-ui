@@ -290,7 +290,7 @@ export class UserService {
 
     }
 
-    private request(requestParameters: UserServiceRequestParameters): Promise<Response> {
+    protected request(requestParameters: MappingRequestParameters): Promise<Response> {
         return this.http.post(
             Config.MAPPING_URL,
             requestParameters.toMessageBody(),

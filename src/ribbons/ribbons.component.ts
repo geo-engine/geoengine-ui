@@ -34,6 +34,7 @@ import Config from '../app/config.model';
                     (zoomProject)="zoomProject.emit()"
                     (zoomMap)="zoomMap.emit()"
                     (addData)="addData.emit()"
+                    (gfbio)="gfbio.emit()"
                 ></wave-start-tab>
             </template>
         </md-tab>
@@ -93,6 +94,8 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
     @Output() zoomMap = new EventEmitter<void>();
 
     @Output() addData = new EventEmitter<void>();
+
+    @Output() gfbio = new EventEmitter<void>();
 
     DEVELOPER_MODE: boolean = Config.DEVELOPER_MODE;
 

@@ -134,7 +134,7 @@ import {ResultTypes} from '../operators/result-type.model';
                 <div layout="column">
                     <button md-button
                         class="md-primary small"
-                        disabled="true"
+                        (click)="gfbio.emit()"
                     >
                         <i md-icon>add_shopping_cart</i>
                         GFBio Search
@@ -229,6 +229,8 @@ export class StartTabComponent {
     @Output() zoomMap = new EventEmitter<void>();
 
     @Output() addData = new EventEmitter<void>();
+
+    @Output() gfbio = new EventEmitter<void>();
 
     // tslint:disable:variable-name
     RenameLayerComponent = RenameLayerComponent;

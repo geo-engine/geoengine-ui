@@ -1,5 +1,6 @@
 import {
     Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef,
+    provide,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
@@ -18,15 +19,18 @@ import {InfoBarComponent} from '../components/info-bar.component';
 import {DataTableComponent} from '../components/data-table.component';
 import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
+import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
 
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
 import {LayoutService} from '../app/layout.service';
 import {NotificationService, NotificationType} from '../app/notification.service';
+import {SidenavContainerComponent} from './sidenav-container.component';
 
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
+import {GfbioService} from '../gfbio/gfbio.service';
 import {StorageService} from '../storage/storage.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
@@ -54,7 +58,8 @@ import {PlotService} from '../plots/plot.service';
                     (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                     (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                     (zoomMap)="mapComponent.zoomToMap()"
-                    (addData)="rasterRepository.open()"
+                    (addData)="sidenavRight.open(); sidenavContainer.load(RRC);"
+                    (gfbio)="sidenavRight.open(); sidenavContainer.load(ARC);"
             ></wave-ribbons-component>
         </div>
         <div
@@ -153,10 +158,8 @@ import {PlotService} from '../plots/plot.service';
                 </md-tab>
             </md-tab-group>
         </div>
-        <md-sidenav #rasterRepository align="end" layout="column" mode="over">
-            <wave-raster-repository style='height:100%'
-                *ngIf="rasterRepository.opened"
-            ></wave-raster-repository>
+        <md-sidenav #sidenavRight align="end" layout="column" mode="over">
+            <wave-sidenav-container #sidenavContainer style='height:100%'></wave-sidenav-container>
         </md-sidenav>
     </md-sidenav-layout>
     `,
@@ -244,14 +247,20 @@ import {PlotService} from '../plots/plot.service';
         InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
         DataTableComponent, RasterRepositoryComponent, PlotListComponent,
         MapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-        OlPolygonLayerComponent, ProvenanceListComponent,
+        OlPolygonLayerComponent, ProvenanceListComponent, SidenavContainerComponent,
+        AbcdRepositoryComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         MATERIAL_BROWSER_PROVIDERS,
-        UserService, ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
+        ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
         StorageService, RandomColorService, ColorPickerService, MapService, NotificationService,
+        provide(UserService, {useClass: GfbioService}),
+        provide(GfbioService, {useClass: GfbioService}),
     ],
+    queries: {
+        rightSidenavContainer: new ViewChild(SidenavContainerComponent),
+    },
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent) mapComponent: MapComponent;
@@ -269,6 +278,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     // for ng-switch
     private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
+    private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
 
     constructor(
         private layerService: LayerService,
@@ -277,7 +288,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private notificationService: NotificationService,
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
-        private userService: UserService,
+        private userService: GfbioService,
         private randomColorService: RandomColorService,
         private storageService: StorageService,
         private changeDetectorRef: ChangeDetectorRef

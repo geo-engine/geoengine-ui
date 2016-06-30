@@ -241,6 +241,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         // add the select interaction to the map
         const select = new ol.interaction.Select({
             layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
+            wrapX: false,
         });
         (select as any).setActive(false);
         this.map.addInteraction(select);
@@ -268,6 +269,28 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
             } else {
                 (select as any).setActive(false);
             }
+        });
+
+        this.layerService.getSelectedFeaturesStream().subscribe(selected => {
+            select.getFeatures().forEach(feature => {
+                if (selected.remove && selected.remove.contains(feature.getId())) {
+                    select.getFeatures().remove(feature);
+                }
+            });
+            if ( selectedOlLayers ) {
+                selectedOlLayers.forEach(layer => {
+                    if (layer instanceof ol.layer.Vector) {
+                        const vectorLayer = layer as ol.layer.Vector;
+                        vectorLayer.getSource().getFeatures().forEach(feature => {
+                            if (selected.add && selected.add.contains(feature.getId())) {
+                                if ( select.getFeatures().getArray().indexOf(feature) === -1) {
+                                    select.getFeatures().push(feature);
+                                }
+                            }
+                        });
+                    };
+                });
+            };
         });
     }
 

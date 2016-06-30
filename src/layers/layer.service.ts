@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
+import Immutable from 'immutable';
+
 import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
@@ -9,9 +11,9 @@ import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
 
 export interface SelectedFeatures {
-    selected: Array<FeatureID>;
-    add?: Array<FeatureID>;
-    remove?: Array<FeatureID>;
+    selected: Immutable.Set<FeatureID>;
+    add?: Immutable.Set<FeatureID>;
+    remove?: Immutable.Set<FeatureID>;
     focus?: FeatureID;
 }
 
@@ -23,7 +25,7 @@ export class LayerService {
     private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
     private selectedFeatures$: BehaviorSubject<SelectedFeatures> = new BehaviorSubject({
-        selected: [],
+        selected: Immutable.Set<FeatureID>(),
     });
     private isAnyLayerSelected$: Observable<boolean>;
 
@@ -121,7 +123,7 @@ export class LayerService {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
             this.selectedFeatures$.next({
-                selected: [],
+                selected: Immutable.Set<FeatureID>(),
             });
         }
     }
@@ -186,20 +188,21 @@ export class LayerService {
 
     updateSelectedFeatures(add: Array<FeatureID>, remove: Array<FeatureID>): void {
         const currentSelected = this.selectedFeatures$.value.selected;
-        const actualRemove = remove.filter(x => currentSelected.indexOf(x) !== -1);
-        const actualSelected = currentSelected.filter(x => actualRemove.indexOf(x) === -1);
-        const actualAdd = add.filter(x => actualSelected.indexOf(x) === -1);
-        if (actualAdd.length > 0 || actualRemove.length > 0) {
+        const actualRemove = Immutable.Set(remove).intersect(currentSelected);
+        const actualSelected = currentSelected.subtract(remove);
+        const actualAdd = Immutable.Set(add).subtract(actualSelected);
+        if (actualAdd.size > 0 || actualRemove.size > 0) {
             let next: SelectedFeatures = {
-                selected: actualSelected.concat(actualAdd),
+                selected: actualSelected.union(actualAdd),
                 add: actualAdd,
                 remove: actualRemove,
             };
-            if (actualAdd.length > 0) {
-                next.focus = actualAdd[actualAdd.length - 1];
+            if (actualAdd.size > 0) {
+                next.focus = add[add.length - 1];
             }
             this.selectedFeatures$.next(next);
             console.log('featureIds next', this.selectedFeatures$.value);
         }
     }
+
 }
