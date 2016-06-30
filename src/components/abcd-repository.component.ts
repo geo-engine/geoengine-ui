@@ -21,6 +21,13 @@ import {GfbioService} from '../gfbio/gfbio.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
 
+type Grouped<T> = Iterable<Group<T>>;
+
+interface Group<T> {
+        group: Array<T>;
+        name: string;
+    };
+
 @Component({
     selector: 'wave-abcd-repository',
     template: `
@@ -28,20 +35,23 @@ import {RandomColorService} from '../services/random-color.service';
     <md-content flex="grow">
       <md-list>
         <template
-            ngFor let-archive
-            [ngForOf]="archives | async"
+            ngFor let-group
+            [ngForOf]="groups | async"
         >
             <md-subheader>
-                <span>{{archive.provider}}</span>
+                <span>{{group.name}}</span>
             </md-subheader>
-            <md-divider></md-divider>
-            <md-list-item md-clickable class="md-2-line">
-              <div class="md-list-item-text"
-                layout="column"
-                (click)="add(archive)">
-                <p>{{archive.dataset}}</p>
-              </div>
-          </md-list-item>
+            <template ngFor let-archive [ngForOf]="group.group" >
+                <md-list-item md-clickable class="md-2-line">
+                  <div class="md-list-item-text"
+                    layout="column"
+                    (click)="add(archive)">
+                    <p>{{archive.dataset}}</p>
+                    <p>link: {{archive.link}}</p>
+                  </div>
+              </md-list-item>
+              <md-divider></md-divider>
+          </template>
       </template>
       </md-list>
     </md-content>
@@ -69,7 +79,7 @@ import {RandomColorService} from '../services/random-color.service';
 
 export class AbcdRepositoryComponent {
 
-    private archives: Observable<Array<AbcdArchive>>;
+    private groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
         private mappingQueryService: MappingQueryService,
@@ -78,7 +88,21 @@ export class AbcdRepositoryComponent {
         private gfbioService: GfbioService,
         private randomColorService: RandomColorService
     ) {
-        this.archives = this.gfbioService.getAbcdArchivesStream();
+        this.groups = this.gfbioService.getAbcdArchivesStream().map(archives => {
+            let groups: {[groupname: string]: Group<AbcdArchive>} = {};
+
+            for (let a of archives) {
+                if ( !groups[a.provider] ) {
+                    groups[a.provider] = {
+                        group: new Array<AbcdArchive>(),
+                        name: a.provider,
+                    };
+                }
+                groups[a.provider].group.push(a);
+            }
+
+            return Object.values(groups);
+        });
     }
 
     add(archive: AbcdArchive) {
