@@ -359,7 +359,9 @@ export class ReprojectionSelectionComponent
                             this.projections.push(projeciton);
                         }
                     }
-                    this.valueChange.emit(this.layers[0].operator.projection);
+                    if (this.layers.length > 0) {
+                        this.valueChange.emit(this.layers[0].operator.projection);
+                    }
                     break;
                 default:
                     // DO NOTHING
