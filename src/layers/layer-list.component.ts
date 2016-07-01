@@ -23,6 +23,10 @@ import {
     template: `
     <md-content flex>
     <md-list [dragula]='layer-bag'>
+        <md-list-item
+            *ngIf="(layerService.getLayersStream() | async).length === 0"
+            class="no-layer"
+        >no layer available</md-list-item>
         <md-list-item md-ink
             *ngFor='let layer of layerService.getLayersStream() | async; let index = index'
             (click)='layerService.setSelectedLayer(layer)'
@@ -105,6 +109,19 @@ import {
     styles: [`
     :host {
         display: block;
+    }
+    .no-layer {
+        height: 24px;
+        min-height: 24px;
+        cursor: auto;
+    }
+    .no-layer >>> .md-list-item-inner {
+        height: 24px;
+        min-height: 24px;
+        color: ${Config.COLORS.TEXT.DEFAULT};
+        opacity: 0.5;
+        justify-content: center;
+        font-style: oblique;
     }
     .md-active {
         background: ${Config.COLORS.DEFAULT};
