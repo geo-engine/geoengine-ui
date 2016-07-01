@@ -64,6 +64,7 @@ export class MappingStorageProvider extends StorageProvider {
 
         if (config.artifactName) {
             this.artifactName = config.artifactName;
+            this.setCurrentArtifactName(this.artifactName);
         } else {
             this.artifactName = this.getCurrentArtifactName();
         }
