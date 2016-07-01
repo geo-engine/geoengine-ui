@@ -14,6 +14,7 @@ import {SaveAsDialogComponent} from '../storage/save-as.component';
 import {LoadDialogComponent} from '../storage/load.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {ProjectSettingsComponent} from '../project/project-settings.component';
+import {NewProjectDialogComponent} from '../project/new-project.component';
 
 /**
  * The project tab of the ribbons component.
@@ -52,18 +53,26 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
         <fieldset>
             <legend>Project</legend>
             <div layout="row" layout-align="center">
-                    <button md-button
-                            class="md-primary" layout="column space-around"
-                            (click)="projectSettingsDialog.show()">
-                        <i md-icon>settings</i>
-                        <div>Configuration</div>
-                    </button>
-                    <button md-button
-                            class="md-primary" layout="column space-around"
-                            (click)="lineageDialog.show()">
-                        <i md-icon>merge_type</i>
-                        <div>Lineage</div>
-                    </button>
+                <button md-button
+                    class="md-primary" layout="column space-around"
+                    [disabled]="isGuestUser$ | async"
+                    (click)="newProjectDialog.show()"
+                >
+                    <i md-icon>create_new_folder</i>
+                    <div>New</div>
+                </button>
+                <button md-button
+                        class="md-primary" layout="column space-around"
+                        (click)="projectSettingsDialog.show()">
+                    <i md-icon>settings</i>
+                    <div>Configuration</div>
+                </button>
+                <button md-button
+                        class="md-primary" layout="column space-around"
+                        (click)="lineageDialog.show()">
+                    <i md-icon>merge_type</i>
+                    <div>Lineage</div>
+                </button>
             </div>
         </fieldset>
     </md-content>
@@ -79,6 +88,9 @@ import {ProjectSettingsComponent} from '../project/project-settings.component';
     ></wave-dialog-loader>
     <wave-dialog-loader #projectSettingsDialog
         [type]="ProjectSettingsComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #newProjectDialog
+        [type]="NewProjectDialogComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -118,6 +130,7 @@ export class ProjectTabComponent {
     LoadDialogComponent = LoadDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     ProjectSettingsComponent = ProjectSettingsComponent;
+    NewProjectDialogComponent = NewProjectDialogComponent;
     // tslint:enable
 
     isGuestUser$: Observable<boolean>;

@@ -93,6 +93,7 @@
     "src/plots/plot-list.component.ts",
     "src/plots/plot.model.ts",
     "src/plots/plot.service.ts",
+    "src/project/new-project.component.ts",
     "src/project/project-settings.component.ts",
     "src/project/project.model.ts",
     "src/project/project.service.ts",
