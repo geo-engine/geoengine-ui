@@ -44,7 +44,7 @@ import {HistogramType} from '../types/histogram-type.model';
                     <span class="md-subheader">Specify the operator</span>
                 </md-card-header-text>
             </md-card-header>
-            <md-card-content>
+            <md-card-content layout="column">
                 <div *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
                     <label>Attribute</label>
                     <select ngControl="attributeName">
@@ -61,7 +61,7 @@ import {HistogramType} from '../types/histogram-type.model';
                         </option>
                     </select>
                 </div>
-                <div *ngIf="customRange" layout="row">
+                <div *ngIf="customRange" layout="row" class="custom-range">
                     <md-input type="number" placeholder="Min" ngControl="rangeMin"></md-input>
                     <md-input type="number" placeholder="Max" ngControl="rangeMax"></md-input>
                 </div>
@@ -71,6 +71,7 @@ import {HistogramType} from '../types/histogram-type.model';
                 <md-input
                     *ngIf="!autoBuckets.checked"
                     type="number"
+                    class="choose-buckets"
                     placeholder="Number of Buckets"
                     ngControl="buckets"
                 ></md-input>
@@ -84,6 +85,16 @@ import {HistogramType} from '../types/histogram-type.model';
         display: block;
         font-size: 12px;
         color: rgba(0, 0, 0, 0.38);
+    }
+    .custom-range md-input {
+        width: 40%;
+        margin-right: 10%;
+    }
+    md-input.choose-buckets {
+        width: 50%;
+    }
+    md-card-content > div, md-card-content > md-checkbox, md-card-content > md-input {
+        margin: 8px 0;
     }
     `],
     directives: [

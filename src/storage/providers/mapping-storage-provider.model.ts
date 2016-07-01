@@ -1,9 +1,12 @@
 import {Http} from '@angular/http';
 
-import {StorageProvider, Workspace, WorkspaceDict} from '../storage-provider.model';
+import {
+    StorageProvider, Workspace, WorkspaceDict, RScript, RScriptDict,
+} from '../storage-provider.model';
 import Config from '../../app/config.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
 import {Operator} from '../../operators/operator.model';
+import {ResultTypes} from '../../operators/result-type.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Project} from '../../project/project.model';
@@ -37,6 +40,7 @@ export class MappingStorageProvider extends StorageProvider {
     // constants
     private ARTIFACT_TYPE = 'project';
     private LAYOUT_SETTINGS_STORAGE_NAME = 'layoutSettings';
+    private R_SCRIPT_ARTIFACT_TYPE = 'r_script';
 
     private http: Http;
     private session: Session;
@@ -60,6 +64,7 @@ export class MappingStorageProvider extends StorageProvider {
 
         if (config.artifactName) {
             this.artifactName = config.artifactName;
+            this.setCurrentArtifactName(this.artifactName);
         } else {
             this.artifactName = this.getCurrentArtifactName();
         }
@@ -179,6 +184,105 @@ export class MappingStorageProvider extends StorageProvider {
             sessionToken: this.session.sessionToken,
             parameters: {
                 type: this.ARTIFACT_TYPE,
+            },
+        });
+        return this.http.get(
+            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            {headers: request.getHeaders()}
+        ).toPromise().then(response => {
+            const mappingResponse = response.json();
+            if (this.mappingResultToBoolean(mappingResponse.result)) {
+                const artifacts: Array<ArtifactDefinition> = mappingResponse.artifacts;
+                return artifacts.filter(
+                    artifact => artifact.user === this.session.user // TODO: refactor for sharing
+                ).map(
+                    artifact => artifact.name
+                );
+            } else {
+                // TODO: handle error
+                return [];
+            }
+        });
+    };
+
+    saveRScript(name: string, script: RScript): Promise<void> {
+        const scriptDict: RScriptDict = {
+            resultType: script.resultType.getCode(),
+            code: script.code,
+        };
+
+        const updateRequest = new ArtifactServiceRequestParameters({
+            request: 'update',
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                type: this.R_SCRIPT_ARTIFACT_TYPE,
+                name: name,
+                value: JSON.stringify(scriptDict),
+            },
+        });
+
+        return this.http.post(
+            Config.MAPPING_URL,
+            updateRequest.toMessageBody(),
+            {headers: updateRequest.getHeaders()}
+        ).toPromise().then(responseString => {
+            const response = responseString.json();
+            if (typeof response.result !== 'boolean') {
+                // `create` on error
+                const createRequest = new ArtifactServiceRequestParameters({
+                    request: 'create',
+                    sessionToken: this.session.sessionToken,
+                    parameters: {
+                        type: this.R_SCRIPT_ARTIFACT_TYPE,
+                        name: name,
+                        value: JSON.stringify(scriptDict),
+                    },
+                });
+
+                return this.http.post(
+                    Config.MAPPING_URL,
+                    createRequest.toMessageBody(),
+                    {headers: createRequest.getHeaders()}
+                ).toPromise().then(newResponseString => {
+                    const newResponse = newResponseString.json();
+                    if (typeof newResponse.result !== 'boolean') {
+                        // TODO: error handling
+                    }
+                });
+            }
+        });
+    }
+
+    loadRScript(name: string): Promise<RScript> {
+        const request = new ArtifactServiceRequestParameters({
+            request: 'get',
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                username: this.session.user,
+                type: this.R_SCRIPT_ARTIFACT_TYPE,
+                name: name,
+            },
+        });
+        return this.http.get(
+            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            {headers: request.getHeaders()}
+        ).toPromise().then(response => {
+            const mappingResponse = response.json();
+            const rScriptDict: RScriptDict = JSON.parse(mappingResponse.value);
+
+            return {
+                resultType: ResultTypes.fromCode(rScriptDict.resultType),
+                code: rScriptDict.code,
+            };
+        });
+    };
+
+    getRScripts(): Promise<Array<string>> {
+        const request = new ArtifactServiceRequestParameters({
+            request: 'list',
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                type: this.R_SCRIPT_ARTIFACT_TYPE,
             },
         });
         return this.http.get(

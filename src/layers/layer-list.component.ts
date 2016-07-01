@@ -6,6 +6,8 @@ import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle'
 
 import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
 
+import Config from '../app/config.model';
+
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LoadingState} from '../shared/loading-state.model';
@@ -105,10 +107,10 @@ import {
         display: block;
     }
     .md-active {
-        background: #f5f5f5;
+        background: ${Config.COLORS.DEFAULT};
     }
     md-divider.md-active {
-        border-top-color: #3f51b5;
+        border-top-color: ${Config.COLORS.PRIMARY};
     }
     md-list-item {
         cursor: pointer;
