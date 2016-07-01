@@ -1,10 +1,14 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
 import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray,
+    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray, Control,
 } from '@angular/common';
+
+import {Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+
+import Config from '../../app/config.model';
 
 import {
     LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
@@ -34,7 +38,7 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
     <form [ngFormModel]="configForm">
         <wave-multi-layer-selection
             [layers]="layers" [min]="1" [max]="1"
-            [types]="[ResultTypes.POINTS, ResultTypes.LINES, ResultTypes.POLYGONS]"
+            [types]="[ResultTypes.POINTS]"
             (selectedLayers)="onSelectVectorLayer($event[0])"
         ></wave-multi-layer-selection>
         <wave-multi-layer-selection
@@ -58,7 +62,7 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
                         [ngFormControl]="control"
                         #theInput
                     >
-                        <md-hint align="end" style="color: #f44336"
+                        <md-hint align="end" style="color: ${Config.COLORS.WARN}"
                             *ngIf="invalidAttributeName(theInput.value)"
                         >attribute name is duplicate!</md-hint>
                     </md-input>
@@ -75,10 +79,11 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent
-                                                    implements OnInit {
+                                                    implements OnInit, OnDestroy {
 
     configForm: ControlGroup;
     valueNamesControls: ControlArray;
+    valueNamesNameChanged: Array<boolean>;
 
     selectedVectorLayer: VectorLayer<AbstractVectorSymbology>;
     selectedRasterLayers: Array<Layer<Symbology>>;
@@ -90,6 +95,8 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     // TODO: magic numbers
     private resolutionX = 1024;
     private resolutionY = 1024;
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         layerService: LayerService,
@@ -104,6 +111,8 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.valueNamesControls.valueChanges.subscribe(attributeNameArray => {
             this.checkForDisallowedAttributeNames(attributeNameArray);
         });
+        
+        this.valueNamesNameChanged = [];
 
         this.configForm = formBuilder.group({
             'valueNames': this.valueNamesControls,
@@ -114,6 +123,12 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
     ngOnInit() {
         super.ngOnInit();
         this.dialog.setTitle('Extract a Raster Value and Add it to the Vector Layer');
+    }
+
+    ngOnDestroy() {
+        for (const subscription of this.subscriptions) {
+            subscription.unsubscribe();
+        }
     }
 
     onSelectVectorLayer(layer: VectorLayer<AbstractVectorSymbology>) {
@@ -127,13 +142,27 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         let discrepancy = layers.length - this.valueNamesControls.length;
         if (discrepancy > 0) {
             for (let i = this.valueNamesControls.length; i < layers.length; i++) {
-                this.valueNamesControls.push(this.formBuilder.control(
+                const control = this.formBuilder.control(
                     layers[i].name, Validators.required
-                ));
+                );
+                this.valueNamesControls.push(control);
+                this.valueNamesNameChanged.push(false);
+
+                this.subscriptions.push(
+                    control.valueChanges.subscribe(_ => this.valueNamesNameChanged[i] = true)
+                );
             }
         } else if (discrepancy < 0) {
             for (let i = layers.length; i < this.valueNamesControls.length; i++) {
                 this.valueNamesControls.removeAt(i);
+                this.valueNamesNameChanged.splice(i, 1);
+            }
+        } else {
+            for (let i = 0; i < this.valueNamesControls.length; i++) {
+                if (!this.valueNamesNameChanged[i]) {
+                    (this.valueNamesControls.at(i) as Control).updateValue(layers[i].name);
+                    this.valueNamesNameChanged[i] = false;
+                }
             }
         }
 
