@@ -1,0 +1,35 @@
+[{
+  "name": "South African weather sensors",
+  "params": {
+    "filename": "datasources/idessa/dwd.ttx",
+    "geometry": "xy",
+    "time": "start",
+    "on_error": "skip",
+    "time1_format": {
+      "format": "dmyhm"
+    },
+    "duration": "inf",
+    "columns": {
+      "x": "Longitude",
+      "y": "Latitude",
+      "time1": "DateT",
+      "numeric": ["Rain"],
+      "textual": ["StasName"]
+    }
+  }
+},
+{
+  "name": "Bush Density Survey, Christiaan Harmse (2011-2012)",
+  "params": {
+    "filename": "datasources/idessa/bush_densities.csv",
+    "geometry": "xy",
+    "time": "none",
+    "on_error": "skip",
+    "columns": {
+      "x": "x",
+      "y": "y",
+      "numeric": ["Woody plants ha-1","Tree equivalents ha-1"],
+      "textual": ["Site name"]
+    }
+  }
+}]

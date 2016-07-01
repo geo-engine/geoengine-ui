@@ -11,6 +11,8 @@ import {MappingRequestParameters, ParametersType} from '../queries/request-param
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
 } from '../models/mapping-source.model';
+import {Csv} from '../models/csv.model';
+
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 
 export interface Session {
@@ -288,6 +290,19 @@ export class UserService {
             });
         });
 
+    }
+
+    /**
+     * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
+     */
+    getCsvStream(): Observable<Array<Csv>> {
+        type CsvResponse = Array<Csv>;
+
+        const csvSourcesUrl = './assets/csv-data-sources.json';
+
+        return this.http.get(csvSourcesUrl).map(
+            response => response.json()
+        ).map((csvs: CsvResponse) => csvs);
     }
 
     protected request(requestParameters: MappingRequestParameters): Promise<Response> {

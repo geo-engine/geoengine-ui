@@ -5,6 +5,8 @@ import {Observable} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
+import Config from '../app/config.model';
+
 import {LayerService} from '../layers/layer.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
@@ -132,14 +134,21 @@ import {ResultTypes} from '../operators/result-type.model';
                     </button>
                 </div>
                 <div layout="column">
-                    <button md-button
+                    <button md-button *ngIf="Config.PROJECT.GFBIO"
                         class="md-primary small"
                         (click)="gfbio.emit()"
                     >
                         <i md-icon>add_shopping_cart</i>
                         GFBio Search
                     </button>
-                    <button md-button
+                    <button md-button *ngIf="Config.PROJECT.IDESSA"
+                        class="md-primary small"
+                        (click)="csv.emit()"
+                    >
+                        <i md-icon>show_chart</i>
+                        Sensors
+                    </button>
+                    <button md-button *ngIf="false"
                         class="md-primary small"
                         disabled="true"
                     >
@@ -232,12 +241,15 @@ export class StartTabComponent {
 
     @Output() gfbio = new EventEmitter<void>();
 
+    @Output() csv = new EventEmitter<void>();
+
     // tslint:disable:variable-name
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
     ExportDialogComponent = ExportDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     GBIFOperatorComponent = GBIFOperatorComponent;
+    Config = Config;
     // tslint:enable
 
     exportLayerUrl$: Observable<string>;

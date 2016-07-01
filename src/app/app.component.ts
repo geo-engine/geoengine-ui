@@ -20,6 +20,7 @@ import {DataTableComponent} from '../components/data-table.component';
 import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
+import {CsvRepositoryComponent} from '../components/csv-repository.component';
 
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
@@ -60,6 +61,7 @@ import {PlotService} from '../plots/plot.service';
                     (zoomMap)="mapComponent.zoomToMap()"
                     (addData)="sidenavRight.open(); sidenavContainer.load(RRC);"
                     (gfbio)="sidenavRight.open(); sidenavContainer.load(ARC);"
+                    (csv)="sidenavRight.open(); sidenavContainer.load(CSV);"
             ></wave-ribbons-component>
         </div>
         <div
@@ -248,7 +250,7 @@ import {PlotService} from '../plots/plot.service';
         DataTableComponent, RasterRepositoryComponent, PlotListComponent,
         MapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
         OlPolygonLayerComponent, ProvenanceListComponent, SidenavContainerComponent,
-        AbcdRepositoryComponent,
+        AbcdRepositoryComponent, CsvRepositoryComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
@@ -280,6 +282,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
     private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
     private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
 
     constructor(
         private layerService: LayerService,

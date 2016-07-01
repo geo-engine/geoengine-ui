@@ -38,4 +38,8 @@ export default {
         },
         DEBOUNCE: 400,
     },
+    PROJECT: {
+        GFBIO: true,
+        IDESSA: true,
+    },
 };
