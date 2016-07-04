@@ -62,28 +62,46 @@ export class TimeRibbonComponent implements OnInit {
     constructor(private projectService: ProjectService) {}
 
     updateYear(event: string | number) {
-        this.moment.year(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.year(value);
+            this.push();
+        }
     }
     updateMonth(event: string | number) {
-        this.moment.month(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.month(value);
+            this.push();
+        }
     }
     updateDate(event: string | number) {
-        this.moment.date(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.date(value);
+            this.push();
+        }
     }
     updateHour(event: string | number) {
-        this.moment.hour(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.hour(value);
+            this.push();
+        }
     }
     updateMinute(event: string | number) {
-        this.moment.minute(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.minute(value);
+            this.push();
+        }
     }
     updateSecond(event: string | number) {
-        this.moment.second(this.eventToNumber(event));
-        this.push();
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.moment.second(value);
+            this.push();
+        }
     }
 
     ngOnInit() {
@@ -105,11 +123,11 @@ export class TimeRibbonComponent implements OnInit {
         if (typeof event === 'number') {
             return event;
         }
-        return 0;
+        return NaN;
     }
 
     private push() {
-        if (this.moment.isValid()) {
+        if (this.moment.isValid() && this.moment !== undefined) {
             this.projectService.setTime(this.moment.clone());
         }
     }

@@ -32,6 +32,7 @@ import {
     MsgPansharpenType, MsgPansharpenTypeDict,
     MsgCo2CorrectionType,
 } from './msg-types.model';
+import { CsvSourceType, CsvSourceTypeDict } from './csv-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -78,6 +79,8 @@ export abstract class OperatorTypeFactory {
                 return MsgCo2CorrectionType.fromDict(dict);
             case ABCDSourceType.TYPE:
                 return ABCDSourceType.fromDict(dict as ABCDSourceTypeDict);
+            case CsvSourceType.TYPE:
+                return CsvSourceType.fromDict(dict as CsvSourceTypeDict);
             default:
                 throw 'There is not factory method defined for this operator.';
         }

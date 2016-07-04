@@ -11,8 +11,6 @@ import {MATERIAL_DIRECTIVES, ITableSelectionChange, ITableSelectableRowSelection
     MdDataTable} from 'ng2-material';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
-import Immutable from 'immutable';
-
 import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
@@ -266,13 +264,18 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
      * @param force Force the update (even if nothing may have changed).
      */
     updateVisibleRows(newVisible: number, force: boolean) {
-      if ( force || newVisible < this.firstVisible || newVisible > this.lastVisible
-          || this.lastVisible - this.firstVisible < this.numberOfVisibleRows ) {
+      if ( force || newVisible < this.firstVisible || newVisible > this.lastVisible) {
               // don't scroll outside of the table.
-          this.firstVisible = Math.min(newVisible, this.rows.length - this.numberOfVisibleRows + 1);
-          this.lastVisible = this.firstVisible + this.numberOfVisibleRows;
+          this.firstVisible = (
+              Math.min(
+                  newVisible, Math.max(
+                      this.rows.length - this.numberOfVisibleRows + 1, 0
+                  )
+              )
+          );
+          this.lastVisible = this.firstVisible + this.numberOfVisibleRows - 1;
           this.visibleRows = this.rows.slice(
-              Math.floor(this.firstVisible), Math.ceil(this.lastVisible)
+             this.firstVisible, this.lastVisible
           );
           this.updateScrollPosition(this.firstVisible * this.rowHeight);
       }
