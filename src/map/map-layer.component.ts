@@ -181,7 +181,9 @@ export class OlRasterLayerComponent
 
         if (changes['projection'] || changes['time']) {
             this.source.updateParams(params.asObject());
-            this.source.refresh();
+            if (Config.REFRESH_LAYERS_ON_CHANGE) {
+                this.source.refresh();
+            }
         }
         if (changes['symbology']) {
             this._mapLayer.setOpacity(this.symbology.opacity);

@@ -38,6 +38,7 @@ export default {
         },
         DEBOUNCE: 400,
     },
+    REFRESH_LAYERS_ON_CHANGE: false,
     PROJECT: {
         GFBIO: true,
         IDESSA: true,
