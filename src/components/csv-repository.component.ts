@@ -10,7 +10,7 @@ import {LayerService} from '../layers/layer.service';
 import {VectorLayer} from '../layers/layer.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
-import {DataType} from '../operators/datatype.model';
+import {DataType, DataTypes} from '../operators/datatype.model';
 import {Csv} from '../models/csv.model';
 import {CsvSourceType} from '../operators/types/csv-source-type.model';
 import {
@@ -97,15 +97,30 @@ export class CsvRepositoryComponent {
             symbology = new SimpleVectorSymbology({fillRGBA: fillRGBA});
         }
 
+        const attributes: Array<string> = [];
+        const dataTypes = new Map<string, DataType>();
+        const units = new Map<string, Unit>();
+
+        for (const attribute of csv.params.columns.numeric) {
+            attributes.push(attribute);
+            dataTypes.set(attribute, DataTypes.Float64); // TODO: get more accurate type
+            units.set(attribute, Unit.defaultUnit);
+        }
+
+        // TODO: add string attributes
+        // for (const attribute of csv.params.columns.textual) {
+        //     ...
+        // }
+
         const operator = new Operator({
             operatorType: new CsvSourceType({
                 csvParameters: csv.params,
             }),
             resultType: resultType,
             projection: Projections.WGS_84,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
+            attributes: attributes,
+            dataTypes: dataTypes,
+            units: units,
         });
 
         const layer = new VectorLayer<AbstractVectorSymbology>({
