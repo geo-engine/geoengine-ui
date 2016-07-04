@@ -134,14 +134,14 @@ import {ResultTypes} from '../operators/result-type.model';
                     </button>
                 </div>
                 <div layout="column">
-                    <button md-button *ngIf="Config.PROJECT.GFBIO"
+                    <button md-button *ngIf="Config.PROJECT === 'GFBio' || Config.DEVELOPER_MODE"
                         class="md-primary small"
                         (click)="gfbio.emit()"
                     >
                         <i md-icon>add_shopping_cart</i>
                         GFBio Search
                     </button>
-                    <button md-button *ngIf="Config.PROJECT.IDESSA"
+                    <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
                         class="md-primary small"
                         (click)="csv.emit()"
                     >

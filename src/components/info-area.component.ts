@@ -31,7 +31,17 @@ import {LayoutService} from '../app/layout.service';
         </button>
         <md-toolbar-row class="title-bar">
             <md-divider></md-divider>
-            <h1>WAVE</h1>
+            ${Config.PROJECT === 'GFBio' ? `
+                <h1>WAVE</h1>
+            ` : `
+                <h1 style="width: calc(100% - 2*14px); opacity: 1;">
+                    <img
+                        src="assets/logo_idessa.png"
+                        style="vertical-align: middle; height: 41px;"
+                    >
+                    <span style="opacity: 0.5;">IDESSA</span>
+                </h1>
+            `}
             <md-divider></md-divider>
         </md-toolbar-row>
         <md-toolbar-row>
@@ -59,6 +69,13 @@ import {LayoutService} from '../app/layout.service';
     }
     md-toolbar >>> md-toolbar-row {
         height: 48px;
+    }
+    md-toolbar {
+        ${Config.PROJECT === 'IDESSA' ? 'background: white !important;' : ''}
+        ${Config.PROJECT === 'IDESSA' ? 'color: black !important;' : ''}
+    }
+    md-toolbar >>> button {
+        ${Config.PROJECT === 'IDESSA' ? 'color: black !important;' : ''}
     }
     .title-bar {
         height: calc(100% - 96px);
