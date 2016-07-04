@@ -54,11 +54,12 @@ export class ProjectService {
 
     setTime(time: moment.Moment) {
         const value = this.project$.value;
-
-        this.changeProjectConfig({
-            time: time,
-            projection: value.projection,
-        });
+        if (time.isValid() && !time.isSame(value.time) ) {
+            this.changeProjectConfig({
+                time: time,
+                projection: value.projection,
+            });
+        }
     }
 
     changeProjectConfig(config: {projection?: Projection, time?: moment.Moment}) {
