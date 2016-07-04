@@ -264,8 +264,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
      * @param force Force the update (even if nothing may have changed).
      */
     updateVisibleRows(newVisible: number, force: boolean) {
-      if ( force || newVisible < this.firstVisible || newVisible > this.lastVisible
-          || this.lastVisible - this.firstVisible < this.numberOfVisibleRows ) {
+      if ( force || newVisible < this.firstVisible || newVisible > this.lastVisible) {
               // don't scroll outside of the table.
           this.firstVisible = (
               Math.min(
