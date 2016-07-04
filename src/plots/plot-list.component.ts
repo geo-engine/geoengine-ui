@@ -55,7 +55,7 @@ import {LoadingState} from '../shared/loading-state.model';
                             *ngIf="(plot.data.state$ | async) === LoadingState.OK"
                             (click)="plotDetailsDialogDialog.show({plot: plot})"
                         >
-                            <i md-icon>info</i>
+                            <i md-icon>fullscreen</i>
                         </button>
                         <button
                             md-button class="md-icon-button error-button" aria-label="Error"
