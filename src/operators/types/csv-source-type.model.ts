@@ -54,8 +54,8 @@ export class CsvSourceType extends OperatorType {
             ['filename', this.csvParameters.filename],
             ['geometry', this.csvParameters.geometry],
             ['field_separator', (this.csvParameters.field_separator) ?
-                this.csvParameters.field_separator : undefined],
-            ['time', (this.csvParameters.time) ? this.csvParameters.time : undefined],
+                this.csvParameters.field_separator : ''],
+            ['time', (this.csvParameters.time) ? this.csvParameters.time : ''],
         ];
     }
 
