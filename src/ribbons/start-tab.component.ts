@@ -34,7 +34,7 @@ import {ResultTypes} from '../operators/result-type.model';
         <fieldset [class.selected]="isLayerSelected$ | async">
             <legend>Layer</legend>
             <div layout="row">
-                <div layout="column" layout-align="space-around center">
+                <div layout="column" layout-align="space-around center" style="display: none;">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" [disabled]="true"
                             layout="column" layout-align="center center">
@@ -58,7 +58,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         <i md-icon>file_download</i>
                         Export
                     </button>
-                    <button md-button style="text-align: left; margin: 0px;"
+                    <button md-button style="text-align: left; margin: 0px; visibility: hidden;"
                             class="md-primary" [disabled]="true">
                         <i md-icon>share</i>
                         Share
@@ -99,7 +99,7 @@ import {ResultTypes} from '../operators/result-type.model';
                     </button>
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomProject.emit()"
-                            disabled="true">
+                            disabled="true" style="visibility: hidden; margin: 0;">
                         <i md-icon>zoom_in</i>
                         Project
                     </button>

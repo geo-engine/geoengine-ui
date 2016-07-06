@@ -22,37 +22,37 @@ import {
     selector: 'wave-layer-list',
     template: `
     <md-content flex>
-    <md-list [dragula]='layer-bag'>
+    <md-list [dragula]="layer-bag">
         <md-list-item
             *ngIf="(layerService.getLayersStream() | async).length === 0"
             class="no-layer"
         >no layer available</md-list-item>
         <md-list-item md-ink
-            *ngFor='let layer of layerService.getLayersStream() | async; let index = index'
-            (click)='layerService.setSelectedLayer(layer)'
-            [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'
-            (contextmenu)='replaceContextMenu($event, layer)'
+            *ngFor="let layer of layerService.getLayersStream() | async; let index = index"
+            (click)="layerService.setSelectedLayer(layer)"
+            [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)"
+            (contextmenu)="replaceContextMenu($event, layer)"
             [title]="layer.name"
         >
-            <div layout='column'>
-                <div layout='row'>
-                    <button md-button class='md-icon-button'
-                            style='margin-left: -16px;'
-                            aria-label='Settings'
-                            (click)='toggleLayer(layer)'>
-                        <i *ngIf='!layer.expanded' md-icon>expand_more</i>
-                        <i *ngIf='layer.expanded' md-icon>expand_less</i>
+            <div layout="column">
+                <div layout="row">
+                    <button md-button class="md-icon-button"
+                            style="margin-left: -16px;"
+                            aria-label="Settings"
+                            (click)="toggleLayer(layer)">
+                        <i *ngIf="!layer.expanded" md-icon>expand_more</i>
+                        <i *ngIf="layer.expanded" md-icon>expand_less</i>
                     </button>
 
-                    <div #layerName class='md-list-item-text' style='padding-top: 10px'>
+                    <div #layerName class="md-list-item-text" style="padding-top: 10px">
                         {{layer.name}}
                     </div>
 
-                    <button md-button class='md-icon-button'
-                            style='margin-right: -16px;'
-                            aria-label='More'
-                            *ngIf='layer === (layerService.getSelectedLayerStream() | async)'
-                            (click)='replaceContextMenu($event, layer)'
+                    <button md-button class="md-icon-button"
+                            style="margin-right: -16px; visibility: hidden;"
+                            aria-label="More"
+                            *ngIf="layer === (layerService.getSelectedLayerStream() | async)"
+                            (click)="replaceContextMenu($event, layer)"
                             disabled="true"
                     >
                         <i md-icon>more_vert</i>
@@ -62,45 +62,45 @@ import {
                         *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
                     ></md-progress-circle>
                     <button
-                        md-button class='md-icon-button md-warn error-button' aria-label='Reload'
-                        *ngIf='(layer.loadingState| async) === LoadingState.ERROR'
-                        (click)='layer.reload()'
+                        md-button class="md-icon-button md-warn error-button" aria-label="Reload"
+                        *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
+                        (click)="layer.reload()"
                     >
                         <i md-icon>replay</i>
                     </button>
                 </div>
-                <div *ngIf='layer.expanded' [ngSwitch]='layer.symbology.symbologyType'>
+                <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.symbologyType">
 
                     <wave-legendary-points
-                        *ngSwitchCase='_enumSymbologyType.SIMPLE_POINT'
-                        [symbology]='layer.symbology'>
+                        *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"
+                        [symbology]="layer.symbology">
                     </wave-legendary-points>
 
                     <wave-legendary-clustered-points
-                        *ngSwitchCase='_enumSymbologyType.CLUSTERED_POINT'
-                        [symbology]='layer.symbology'>
+                        *ngSwitchCase="_enumSymbologyType.CLUSTERED_POINT"
+                        [symbology]="layer.symbology">
                     </wave-legendary-clustered-points>
 
                     <wave-legendary-vector
-                        *ngSwitchCase='_enumSymbologyType.SIMPLE_VECTOR'
-                        [symbology]='layer.symbology'>
+                        *ngSwitchCase="_enumSymbologyType.SIMPLE_VECTOR"
+                        [symbology]="layer.symbology">
                     </wave-legendary-vector>
 
                     <wave-legendary-raster
-                        *ngSwitchCase='_enumSymbologyType.RASTER'
-                        [symbology]='layer.symbology'>
+                        *ngSwitchCase="_enumSymbologyType.RASTER"
+                        [symbology]="layer.symbology">
                     </wave-legendary-raster>
 
                     <wave-legendary-mapping-colorizer-raster
-                        *ngSwitchCase='_enumSymbologyType.MAPPING_COLORIZER_RASTER'
-                        [symbology]='layer.symbology'>
+                        *ngSwitchCase="_enumSymbologyType.MAPPING_COLORIZER_RASTER"
+                        [symbology]="layer.symbology">
                     </wave-legendary-mapping-colorizer-raster>
 
-                    <wave-legendary *ngSwitchDefault [symbology]='layer.symbology'></wave-legendary>
+                    <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
                 </div>
             </div>
             <md-divider
-                [class.md-active]='layer === (layerService.getSelectedLayerStream() | async)'>
+                [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)">
             </md-divider>
         </md-list-item>
     </md-list>

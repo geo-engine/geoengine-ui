@@ -45,11 +45,14 @@ import {LayoutService} from '../app/layout.service';
             <md-divider></md-divider>
         </md-toolbar-row>
         <md-toolbar-row>
-            <button md-button class="md-icon-button" aria-label="Settings" disabled="true">
+            <button
+                md-button class="md-icon-button" aria-label="Layer List Actions"
+                disabled="true" style="visibility: hidden;"
+            >
                 <i md-icon>menu</i>
             </button>
             <span class="fill-remaining-space">Layers</span>
-            <button md-button class="md-icon-button" aria-label="Settings"
+            <button md-button class="md-icon-button" aria-label="Toggle Layer List Visibility"
                     (click)="layoutService.toggleLayerListVisibility()"
                     [ngSwitch]="layerListVisibility$ | async">
                 <i *ngSwitchCase="true" md-icon>expand_less</i>
