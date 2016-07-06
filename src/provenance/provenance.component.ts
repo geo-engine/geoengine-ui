@@ -57,6 +57,10 @@ export class NbspPipe implements PipeTransform {
         display: block;
     }
 
+    md-list {
+        padding: 0;
+    }
+
     md-list-item {
         margin: 0;
         font-size: 13px;
