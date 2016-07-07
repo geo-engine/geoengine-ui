@@ -107,10 +107,11 @@ export class CsvRepositoryComponent {
             units.set(attribute, Unit.defaultUnit);
         }
 
-        // TODO: add string attributes
-        // for (const attribute of csv.params.columns.textual) {
-        //     ...
-        // }
+        for (const attribute of csv.params.columns.textual) {
+            attributes.push(attribute);
+            dataTypes.set(attribute, DataTypes.Alphanumeric);
+            units.set(attribute, Unit.defaultUnit);
+        }
 
         const operator = new Operator({
             operatorType: new CsvSourceType({
