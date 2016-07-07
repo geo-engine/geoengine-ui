@@ -161,7 +161,19 @@ export class UserService {
      * @returns `true` if the login was succesful, `false` otherwise.
      */
     isSessionValid(session: Session): Promise<boolean> {
-        return this.getUserDetails(session).then(user => !!user);
+        // use >>user info request<< for this
+        const parameters = new UserServiceRequestParameters({
+            request: 'info',
+            sessionToken: session.sessionToken,
+        });
+        return this.request(parameters).then(response => {
+            const result = response.json() as {result: string | boolean};
+            const valid = typeof result.result === 'boolean' && result.result;
+
+            return valid;
+        });
+
+        // return this.getUserDetails(session).then(user => !!user);
     }
 
     /**
