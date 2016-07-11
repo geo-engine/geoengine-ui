@@ -6,6 +6,7 @@ import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
+import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
 
 import Config from '../app/config.model';
 
@@ -27,6 +28,7 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
         <md-input type="text" placeholder="Username" ngControl="username"></md-input>
         <md-input type="password" placeholder="Password" ngControl="password"></md-input>
         <span *ngIf="invalidCredentials">Invalid Credentials</span>
+        <md-checkbox ngControl="staySignedIn">Stay signed in</md-checkbox>
     </form>
     <div *ngIf="isLoggedIn$ | async" class="logged-in" layout="column">
         <md-input
@@ -81,6 +83,7 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
     providers: [],
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
+        MD_CHECKBOX_DIRECTIVES,
     ],
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
@@ -112,6 +115,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
                 },
             ])],
             password: ['', Validators.required],
+            staySignedIn: [true, Validators.required],
         });
 
         this.userService.isSessionValid(this.userService.getSession()).then(valid => {
@@ -134,15 +138,15 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
     }
 
     ngOnInit() {
-        this.dialog.setTitle('User Info');
-
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
                 switch (status) {
                     case FormStatus.LoggedIn:
+                        this.dialog.setTitle('User Info');
                         this.removeLoginButtons();
                     break;
                     case FormStatus.LoggedOut:
+                        this.dialog.setTitle('Login');
                         this.createLoginButtons();
                     break;
                     case FormStatus.Loading:
@@ -164,6 +168,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
         this.userService.login({
             user: this.form.controls['username'].value,
             password: this.form.controls['password'].value,
+            staySignedIn: this.form.controls['staySignedIn'].value.checked,
         }).then(valid => {
             if (valid) {
                 this.invalidCredentials = false;

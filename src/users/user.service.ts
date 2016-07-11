@@ -18,6 +18,7 @@ import {Unit, UnitMappingDict} from '../operators/unit.model';
 export interface Session {
     user: string;
     sessionToken: string;
+    staySignedIn?: boolean;
 }
 
 class UserServiceRequestParameters extends MappingRequestParameters {
@@ -64,21 +65,14 @@ export class UserService {
     constructor(
         private http: Http
     ) {
-        const storedSession: Session = JSON.parse(localStorage.getItem('session'));
         this.session$ = new BehaviorSubject(
-            // tslint:disable-next-line:no-null-keyword
-            storedSession !== null ? storedSession : {
-                user: Config.USER.GUEST.NAME,
-                sessionToken: '',
-            }
+            this.loadSessionData()
         );
 
         this.isGuestUser$ = this.session$.map(s => s.user === Config.USER.GUEST.NAME);
 
         // storage of the session
-        this.session$.subscribe(newSession =>
-            localStorage.setItem('session', JSON.stringify(newSession))
-        );
+        this.session$.subscribe(newSession => this.saveSessionData(newSession));
 
         // user info
         this.user$ = new BehaviorSubject(new Guest());
@@ -127,7 +121,11 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    login(credentials: {user: string, password: string}): Promise<boolean> {
+    login(credentials: {user: string, password: string, staySignedIn?: boolean}): Promise<boolean> {
+        if (credentials.staySignedIn === undefined) {
+            credentials.staySignedIn = true;
+        }
+
         const parameters = new LoginRequestParameters({
             username: credentials.user,
             password: credentials.password,
@@ -140,6 +138,7 @@ export class UserService {
                 this.session$.next({
                     user: credentials.user,
                     sessionToken: result.session,
+                    staySignedIn: credentials.staySignedIn,
                 });
             }
 
@@ -315,6 +314,40 @@ export class UserService {
         return this.http.get(csvSourcesUrl).map(
             response => response.json()
         ).map((csvs: CsvResponse) => csvs);
+    }
+
+    /**
+     * Get the session data.
+     * @returns the session data
+     */
+    protected loadSessionData(): Session {
+        // look first into the localStorage, then sessionStorage and if there is no data
+        // return an empty guest session
+
+        const sessionData = JSON.parse(localStorage.getItem('session')) as Session;
+        if (sessionData === null) { // tslint:disable-line:no-null-keyword
+            const sessionData2 = JSON.parse(sessionStorage.getItem('session')) as Session;
+            if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
+                return {
+                    user: Config.USER.GUEST.NAME,
+                    sessionToken: '',
+                };
+            } else {
+                return sessionData2;
+            }
+        } else {
+            return sessionData;
+        }
+    }
+
+    protected saveSessionData(sessionData: Session) {
+        if (sessionData.staySignedIn) {
+            localStorage.setItem('session', JSON.stringify(sessionData));
+            sessionStorage.removeItem('session');
+        } else {
+            sessionStorage.setItem('session', JSON.stringify(sessionData));
+            localStorage.removeItem('session');
+        }
     }
 
     protected request(requestParameters: MappingRequestParameters): Promise<Response> {
