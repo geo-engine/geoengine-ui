@@ -14,7 +14,7 @@ export class MappingDataSourceFilter implements PipeTransform {
 
         let resultSources: Array<MappingSource> = [];
         for (let source of items) {
-            if (source.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+            if (source.name && source.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
               resultSources.push(source);
             } else {
               let resultChannels = source.channels.filter(

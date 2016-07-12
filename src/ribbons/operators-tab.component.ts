@@ -39,11 +39,11 @@ import {PointInPolygonFilterOperatorComponent}
 import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
-// import {
-//     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
-//     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
-//     MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
-// } from '../operators/dialogs/msg-operators.component';
+import {
+     MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
+     MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
+     MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
+} from '../operators/dialogs/msg-operators.component';
 
 /**
  * The operator tab of the ribbons component.
@@ -94,32 +94,32 @@ import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgRadianceType.NAME"
                 [iconUrl]="MsgRadianceType.ICON_URL"
-                (click)="addMsgRadianceOperator()">
+                (click)="msgRadianceOperatorComponentDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgReflectanceType.NAME"
                 [iconUrl]="MsgReflectanceType.ICON_URL"
-                (click)="addMsgReflectanceOperator()">
+                (click)="msgReflectanceOperatorComponentDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgSolarangleType.NAME"
                 [iconUrl]="MsgSolarangleType.ICON_URL"
-                (click)="addMsgSolarangleOperator()">
+                (click)="msgSolarangleOperatorComponentDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgTemperatureType.NAME"
                 [iconUrl]="MsgTemperatureType.ICON_URL"
-                (click)="addMsgTemperatureOperator()">
+                (click)="msgTemperatureOperatorComponentDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgPansharpenType.NAME"
                 [iconUrl]="MsgPansharpenType.ICON_URL"
-                (click)="addMsgPansharpenOperator()">
+                (click)="msgPansharpenOperatorComponentDialog.show()">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgCo2CorrectionType.NAME"
                 [iconUrl]="MsgCo2CorrectionType.ICON_URL"
-                (click)="addMsgCo2CorrectionOperator()">
+                (click)="msgCo2CorrectionOperatorComponentDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
     </div>
@@ -140,6 +140,24 @@ import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
     ></wave-dialog-loader>
     <wave-dialog-loader #rOperatorComponentDialog
         [type]="ROperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgRadianceOperatorComponentDialog
+        [type]="MsgRadianceOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgReflectanceOperatorComponentDialog
+        [type]="MsgReflectanceOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgSolarangleOperatorComponentDialog
+        [type]="MsgSolarangleOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgTemperatureOperatorComponentDialog
+        [type]="MsgTemperatureOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgPansharpenOperatorComponentDialog
+        [type]="MsgPansharpenOperatorComponent"
+    ></wave-dialog-loader>
+    <wave-dialog-loader #msgCo2CorrectionOperatorComponentDialog
+        [type]="MsgPansharpenOperatorComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
@@ -201,6 +219,12 @@ export class OperatorsTabComponent implements AfterViewInit {
     ExpressionOperatorComponent = ExpressionOperatorComponent;
     HistogramOperatorComponent = HistogramOperatorComponent;
     ROperatorComponent = ROperatorComponent;
+    MsgRadianceOperatorComponent = MsgRadianceOperatorComponent;
+    MsgReflectanceOperatorComponent = MsgReflectanceOperatorComponent;
+    MsgSolarangleOperatorComponent = MsgSolarangleOperatorComponent;
+    MsgTemperatureOperatorComponent = MsgTemperatureOperatorComponent;
+    MsgPansharpenOperatorComponent = MsgPansharpenOperatorComponent;
+    MsgCo2CorrectionOperatorComponent = MsgCo2CorrectionOperatorComponent;
     // tslint:enable
 
     constructor(
