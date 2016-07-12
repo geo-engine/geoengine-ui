@@ -17,7 +17,7 @@ import moment from 'moment';
             (wheel)="$event.stopPropagation()"
         ></md-input>
         <md-input placeholder="month" type="number" maxLength="2"
-            [ngModel]="moment.month()" (ngModelChange)="updateMonth($event)"
+            [ngModel]="moment.month()+1" (ngModelChange)="updateMonth($event-1)"
             (wheel)="$event.stopPropagation()"
         ></md-input>
         <md-input placeholder="day" type="number" maxLength="2"
