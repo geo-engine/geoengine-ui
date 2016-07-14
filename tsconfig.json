@@ -71,6 +71,7 @@
     "src/operators/projection.model.ts",
     "src/operators/result-type.model.ts",
     "src/operators/types/abcd-source-type.model.ts",
+    "src/operators/types/classification-type.model.ts",
     "src/operators/types/csv-source-type.model.ts",
     "src/operators/types/expression-type.model.ts",
     "src/operators/types/gbif-source-type.model.ts",

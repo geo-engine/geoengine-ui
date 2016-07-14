@@ -24,6 +24,18 @@ import {GFBioSourceType} from '../operators/types/gfbio-source-type.model';
 import {WKTSourceType} from '../operators/types/wkt-source-type.model';
 import {HistogramType} from '../operators/types/histogram-type.model';
 import {RScriptType} from '../operators/types/r-script-type.model';
+import {ExpressionType} from '../operators/types/expression-type.model';
+import {ClassificationType} from '../operators/types/classification-type.model';
+import {
+    MsgRadianceType,
+    MsgReflectanceType, MsgReflectanceTypeDict,
+    MsgSolarangleType, MsgSolarangleTypeDict,
+    MsgTemperatureType,
+    MsgPansharpenType, MsgPansharpenTypeDict,
+    MsgCo2CorrectionType,
+    MsgSofosGccThermalThresholdType,
+} from '../operators/types/msg-types.model';
+
 
 /**
  * The start tab of the ribbons component.
@@ -69,6 +81,12 @@ import {RScriptType} from '../operators/types/r-script-type.model';
                             (click)="addRasterLayer()">
                         <i md-icon>add</i>
                         Raster
+                    </button>
+                    <button md-button style="text-align: left; margin: 0px;"
+                            class="md-primary"
+                            (click)="addCloudLayer()">
+                        <i md-icon>cloud</i>
+                        Clouds
                     </button>
                 </div>
             </div>
@@ -361,6 +379,119 @@ export class DebugTabComponent {
         this.addRTextPlot();
         this.addRPlotPlot();
         this.addHistogramPlot();
+    }
+
+    addCloudLayer() {
+        const msg_temp_unit = new Unit({
+            measurement: 'temperature',
+            unit: 'C',
+            interpolation: Interpolation.Continuous,
+        });
+
+        const diff_unit = new Unit({
+            measurement: 'raw',
+            unit: 'unknown',
+            interpolation: Interpolation.Continuous,
+            max: 10,
+            min: -30,
+        });
+
+        const msg_raw_8 = new Operator({
+            operatorType: new RasterSourceType({
+                channel: 8,
+                sourcename: 'msg9_geos',
+                transform: false,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+        });
+
+        const msg_raw_3 = new Operator({
+            operatorType: new RasterSourceType({
+                channel: 3,
+                sourcename: 'msg9_geos',
+                transform: false,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+        });
+
+        const msg_temp_8 = new Operator({
+            operatorType: new MsgTemperatureType({}),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [msg_raw_8],
+        });
+
+        const msg_temp_3 = new Operator({
+            operatorType: new MsgTemperatureType({}),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [msg_raw_3],
+        });
+
+        const diff_expr = new Operator({
+            operatorType: new ExpressionType({
+                expression: 'A-B',
+                datatype: DataTypes.Float32,
+                unit: diff_unit,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', diff_unit),
+            rasterSources: [msg_temp_8, msg_temp_3],
+        });
+
+        const msg_solar_zenith = new Operator({
+            operatorType: new MsgSolarangleType({
+                solarangle: 'zenith',
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [msg_raw_8],
+        });
+
+        const msg_sofos_th = new Operator({
+            operatorType: new MsgSofosGccThermalThresholdType({}),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [msg_solar_zenith, diff_expr],
+        });
+
+        let cloud_unit = diff_unit;
+        const op_graph = msg_sofos_th;
+
+        this.layerService.addLayer(
+            new RasterLayer({
+                name: 'SOFOS thresholds',
+                symbology: new MappingColorizerRasterSymbology(
+                    { unit: cloud_unit },
+                    this.mappingQueryService.getColorizerStream(op_graph)
+                ),
+                operator: op_graph,
+                provenance: this.mappingQueryService.getProvenanceStream(op_graph),
+            })
+        );
     }
 
 }

@@ -31,8 +31,10 @@ import {
     MsgTemperatureType,
     MsgPansharpenType, MsgPansharpenTypeDict,
     MsgCo2CorrectionType,
+    MsgSofosGccThermalThresholdType,
 } from './msg-types.model';
 import { CsvSourceType, CsvSourceTypeDict } from './csv-source-type.model';
+import { ClassificationTypeDict, ClassificationType} from './classification-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -42,6 +44,7 @@ export abstract class OperatorTypeFactory {
      * Create operator type from serialized data.
      */
     static fromDict(dict: OperatorTypeDict): OperatorType {
+        console.log("dict", dict);
         switch (dict.operatorType) {
             case NumericAttributeFilterType.TYPE:
                 return NumericAttributeFilterType.fromDict(dict as NumericAttributeFilterTypeDict);
@@ -77,10 +80,14 @@ export abstract class OperatorTypeFactory {
                 return MsgPansharpenType.fromDict(dict as MsgPansharpenTypeDict);
             case MsgCo2CorrectionType.TYPE:
                 return MsgCo2CorrectionType.fromDict(dict);
+            case MsgSofosGccThermalThresholdType.TYPE:
+                return MsgSofosGccThermalThresholdType.fromDict(dict);
             case ABCDSourceType.TYPE:
                 return ABCDSourceType.fromDict(dict as ABCDSourceTypeDict);
             case CsvSourceType.TYPE:
                 return CsvSourceType.fromDict(dict as CsvSourceTypeDict);
+            case ClassificationType.TYPE:
+                return ClassificationType.fromDict(dict as ClassificationTypeDict);
             default:
                 throw 'There is not factory method defined for this operator.';
         }
