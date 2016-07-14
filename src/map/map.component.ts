@@ -3,6 +3,8 @@ import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, On
     } from '@angular/core';
 import ol from 'openlayers';
 
+import Config from '../app/config.model';
+
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
@@ -295,13 +297,43 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     }
 
     private createBackgroundLayer(projection: Projection): ol.layer.Image {
-        // TODO: more layers
-        if (projection === Projections.WEB_MERCATOR) {
-            return new ol.layer.Tile({
-                source: new ol.source.OSM(),
-            });
-        } else {
-            return new ol.layer.Image();
+        switch (Config.MAP.BACKGROUND_LAYER) {
+            case 'OSM':
+                if (projection === Projections.WEB_MERCATOR) {
+                    return new ol.layer.Tile({
+                        source: new ol.source.OSM(),
+                    });
+                } else {
+                    return new ol.layer.Image();
+                }
+            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+                return new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        url: 'assets/countries.geo.json',
+                        format: new ol.format.GeoJSON(),
+                    }),
+                    style: (feature: ol.Feature, resolution: number): ol.style.Style => {
+                        if (feature.getId() === 'BACKGROUND') {
+                            return new ol.style.Style({
+                                fill: new ol.style.Fill({
+                                    color: '#ADD8E6',
+                                }),
+                            });
+                        } else {
+                            return new ol.style.Style({
+                                stroke: new ol.style.Stroke({
+                                    color: 'rgba(0, 0, 0, 1)',
+                                    width: 1,
+                                }),
+                                fill: new ol.style.Fill({
+                                    color: 'rgba(210, 180, 140, 1)',
+                                }),
+                            });
+                        }
+                    },
+                });
+            default:
+                throw 'Unknown Background Layer Name';
         }
     }
 }

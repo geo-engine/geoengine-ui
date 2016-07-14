@@ -47,4 +47,7 @@ export default {
             PROJECTION: 'EPSG:4326',
         },
     },
+    MAP: {
+        BACKGROUND_LAYER: 'OSM', // one of: OSM, countries
+    },
 };
