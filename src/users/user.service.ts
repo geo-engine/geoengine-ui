@@ -283,6 +283,7 @@ export class UserService {
                                 unit: channel.unit ?
                                     Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
                                 hasTransform: !!channel.transform,
+                                isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
                                 transform: channel.transform === undefined ?
                                     undefined : {
                                         unit: channel.transform.unit ?

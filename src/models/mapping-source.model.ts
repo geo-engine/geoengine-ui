@@ -16,6 +16,7 @@ export interface MappingSourceChannel {
   colorizer?: string;
   transform?: MappingTransform;
   hasTransform: boolean;
+  isSwitchable: boolean;
   missingUnit?: boolean;
 }
 
