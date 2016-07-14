@@ -303,3 +303,39 @@ export class MsgCo2CorrectionType extends OperatorType {
     }
 
 }
+
+export class MsgSofosGccThermalThresholdType extends OperatorType {
+    private static _TYPE = 'meteosat_gccthermthresholddetection';
+    private static _ICON_URL = OperatorType.createIconDataUrl(
+        MsgSofosGccThermalThresholdType._TYPE
+    );
+    private static _NAME = 'MSG SOFOS thermal threshold detection operator';
+
+    static get TYPE(): string { return MsgSofosGccThermalThresholdType._TYPE; }
+    static get ICON_URL(): string { return MsgSofosGccThermalThresholdType._ICON_URL; }
+    static get NAME(): string { return MsgSofosGccThermalThresholdType._NAME; }
+
+    constructor(config: {}) {
+        super();
+    }
+
+    static fromDict(dict: OperatorTypeDict): MsgSofosGccThermalThresholdType {
+        return new MsgSofosGccThermalThresholdType(dict);
+    }
+
+    getMappingName(): string { return MsgSofosGccThermalThresholdType.TYPE; }
+
+    getIconUrl(): string { return MsgSofosGccThermalThresholdType.ICON_URL; }
+
+    toString(): string { return MsgSofosGccThermalThresholdType.NAME; }
+
+    getParametersAsStrings(): Array<[string, string]> { return []; }
+
+    toMappingDict(): OperatorTypeMappingDict { return {}; }
+
+    toDict(): OperatorTypeDict {
+        return {
+            operatorType: MsgSofosGccThermalThresholdType.TYPE,
+        };
+    }
+}
