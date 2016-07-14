@@ -44,7 +44,6 @@ export abstract class OperatorTypeFactory {
      * Create operator type from serialized data.
      */
     static fromDict(dict: OperatorTypeDict): OperatorType {
-        console.log("dict", dict);
         switch (dict.operatorType) {
             case NumericAttributeFilterType.TYPE:
                 return NumericAttributeFilterType.fromDict(dict as NumericAttributeFilterTypeDict);
