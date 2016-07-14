@@ -40,4 +40,11 @@ export default {
     },
     REFRESH_LAYERS_ON_CHANGE: false,
     PROJECT: 'GFBio', // one of: GFBIO, IDESSA
+    DEFAULTS: {
+        PROJECT: {
+            NAME: 'Default',
+            TIME: '2010-06-06T18:00:00.000Z',
+            PROJECTION: 'EPSG:4326',
+        },
+    },
 };

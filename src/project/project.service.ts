@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
+import Config from '../app/config.model';
 import {Projections, Projection} from '../operators/projection.model';
 
 import {Project} from './project.model';
@@ -34,9 +35,9 @@ export class ProjectService {
 
     createDefaultProject(): Project {
         return new Project({
-            name: 'Default',
-            projection: Projections.WGS_84,
-            time: moment('2010-06-06T18:00:00.000Z'),
+            name: Config.DEFAULTS.PROJECT.NAME,
+            projection: Projections.fromCode(Config.DEFAULTS.PROJECT.PROJECTION),
+            time: moment(Config.DEFAULTS.PROJECT.TIME),
         });
     }
 
