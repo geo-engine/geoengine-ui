@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {COMMON_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
@@ -59,7 +59,10 @@ export class TimeRibbonComponent implements OnInit {
 
     private moment: moment.Moment;
 
-    constructor(private projectService: ProjectService) {}
+    constructor(
+        private projectService: ProjectService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     updateYear(event: string | number) {
         const value = this.eventToNumber(event);
@@ -108,6 +111,7 @@ export class TimeRibbonComponent implements OnInit {
         this.projectService.getTimeStream().subscribe(time => {
             if (!time.isSame(this.moment)) {
                 this.moment = time.clone();
+                this.changeDetectorRef.markForCheck();
                 // console.log("wave-time-ribbon", "projectService changed", this.moment);
             }
         });
