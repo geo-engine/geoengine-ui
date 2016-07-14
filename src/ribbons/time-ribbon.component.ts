@@ -61,7 +61,7 @@ export class TimeRibbonComponent implements OnInit {
 
     constructor(
         private projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
+        private changeDetectorRef: ChangeDetectorRef
     ) {}
 
     updateYear(event: string | number) {

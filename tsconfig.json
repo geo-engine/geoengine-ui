@@ -74,7 +74,6 @@
     "src/operators/types/classification-type.model.ts",
     "src/operators/types/csv-source-type.model.ts",
     "src/operators/types/expression-type.model.ts",
-    "src/operators/types/gbif-source-type.model.ts",
     "src/operators/types/gfbio-source-type.model.ts",
     "src/operators/types/histogram-type.model.ts",
     "src/operators/types/msg-types.model.ts",

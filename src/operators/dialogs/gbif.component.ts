@@ -26,7 +26,6 @@ import {Operator} from '../operator.model';
 import {ResultTypes, ResultType} from '../result-type.model';
 import {OperatorType} from '../operator-type.model';
 import {GFBioSourceType} from '../types/gfbio-source-type.model';
-import {GBIFSourceType} from '../types/gbif-source-type.model';
 import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
 import {DataType} from '../datatype.model';
@@ -211,14 +210,8 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         this.loading = true;
 
         const searchString = this.form.controls['searchString'].value;
-        const query = JSON.stringify({
-            globalAttributes: {
-                speciesName: searchString,
-            },
-            localAttributes: {},
-        });
 
-        this.mappingQueryService.getGBIFDataSourceCounts(query).then(results => {
+        this.mappingQueryService.getGBIFDataSourceCounts(searchString).then(results => {
             this.loading = false;
 
             let totalCount = 0;
@@ -255,13 +248,6 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         const layerName = this.form.controls['name'].value;
         const searchString = this.form.controls['searchString'].value;
 
-        const query = JSON.stringify({
-            globalAttributes: {
-                speciesName: searchString,
-            },
-            localAttributes: {},
-        });
-
         const sources: Array<{
             name: string, operatorType: OperatorType, resultType: ResultType
         }> = [];
@@ -269,8 +255,9 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
             sources.push({
                 name: 'IUCN',
                 operatorType: new GFBioSourceType({
-                    datasource: 'IUCN',
-                    query: query,
+                    dataSource: 'IUCN',
+                    scientificName: searchString,
+                    includeMetadata: false,
                 }),
                 resultType: ResultTypes.POLYGONS,
             });
@@ -278,7 +265,8 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         if (this.form.controls['selectGBIF'].value) {
             sources.push({
                 name: 'GBIF',
-                operatorType: new GBIFSourceType({
+                operatorType: new GFBioSourceType({
+                    dataSource: 'GBIF',
                     scientificName: searchString,
                     includeMetadata: false,
                 }),

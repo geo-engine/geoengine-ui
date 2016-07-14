@@ -497,18 +497,38 @@ export class MappingQueryService {
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
-        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
-        const service = 'searchSpecies';
-        return this.http.get(serverURL + service + '?term=' + scientificName).toPromise().then(
-            response => response.json()
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'searchSpecies',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                term: scientificName,
+            },
+        });
+
+        const queryUrl = Config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        // TODO: react on failures of this weired protocol
+        return this.http.get(queryUrl).toPromise().then(
+            response => response.json()['speciesNames']
         );
     }
 
-    getGBIFDataSourceCounts(query: string): Promise<Array<{name: string, count: number}>> {
-        const serverURL = 'http://pc12388.mathematik.uni-marburg.de:81/GFBioJavaWS/Wizzard/';
-        const service = 'queryDataSources';
-        return this.http.get(serverURL + service + '?query=' + encodeURI(query)).toPromise().then(
-            response => response.json()
+    getGBIFDataSourceCounts(scientificName: string): Promise<Array<{name: string, count: number}>> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'queryDataSources',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                term: scientificName,
+            },
+        });
+
+        const queryUrl = Config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        // TODO: react on failures of this weired protocol
+        return this.http.get(queryUrl).toPromise().then(
+            response => response.json()['dataSources']
         );
     }
 

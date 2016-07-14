@@ -2,18 +2,21 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
 
 interface GFBioSourceTypeConfig {
-    datasource: string;
-    query: string;
+    dataSource: string;
+    scientificName: string;
+    includeMetadata: boolean;
 }
 
 interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
-    datasource: string;
-    query: string;
+    dataSource: string;
+    scientificName: string;
+    includeMetadata: boolean;
 }
 
 export interface GFBioSourceTypeDict extends OperatorTypeDict  {
-    datasource: string;
-    query: string;
+    dataSource: string;
+    scientificName: string;
+    includeMetadata: boolean;
 }
 
 /**
@@ -28,19 +31,22 @@ export class GFBioSourceType extends OperatorType {
     static get ICON_URL(): string { return GFBioSourceType._ICON_URL; }
     static get NAME(): string { return GFBioSourceType._NAME; }
 
-    private datasource: string;
-    private query: string;
+    private dataSource: string;
+    private scientificName: string;
+    private includeMetadata: boolean;
 
     constructor(config: GFBioSourceTypeConfig) {
         super();
-        this.datasource = config.datasource;
-        this.query = config.query;
+        this.dataSource = config.dataSource;
+        this.scientificName = config.scientificName;
+        this.includeMetadata = config.includeMetadata;
     }
 
     static fromDict(dict: GFBioSourceTypeDict): GFBioSourceType {
         return new GFBioSourceType({
-            datasource: dict.datasource,
-            query: dict.query,
+            dataSource: dict.dataSource,
+            scientificName: dict.scientificName,
+            includeMetadata: dict.includeMetadata,
         });
     }
 
@@ -58,23 +64,26 @@ export class GFBioSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['datasource', this.datasource.toString()],
-            ['query', this.query.toString()],
+            ['dataSource', this.dataSource.toString()],
+            ['scientificName', this.scientificName.toString()],
+            ['includeMetadata', this.includeMetadata.toString()],
         ];
     }
 
     toMappingDict(): GFBioSourceTypeMappingDict {
         return {
-            datasource: this.datasource,
-            query: this.query,
+            dataSource: this.dataSource,
+            scientificName: this.scientificName,
+            includeMetadata: this.includeMetadata,
         };
     }
 
     toDict(): GFBioSourceTypeDict {
         return {
             operatorType: GFBioSourceType.TYPE,
-            datasource: this.datasource,
-            query: this.query,
+            dataSource: this.dataSource,
+            scientificName: this.scientificName,
+            includeMetadata: this.includeMetadata,
         };
     }
 

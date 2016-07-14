@@ -171,8 +171,9 @@ export class DebugTabComponent {
     addPointLayer() {
         const gbifPumaOperator = new Operator({
             operatorType: new GFBioSourceType({
-                datasource: 'GBIF',
-                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
+                dataSource: 'GBIF',
+                scientificName: 'Puma concolor',
+                includeMetadata: false,
             }),
             resultType: ResultTypes.POINTS,
             projection: Projections.WGS_84,
@@ -228,9 +229,10 @@ export class DebugTabComponent {
     addPolygonLayer() {
         const iucnPumaOperator = new Operator({
             operatorType: new GFBioSourceType({
-                datasource: 'IUCN',
-                query: `{'globalAttributes':{'speciesName':'Puma concolor'},'localAttributes':{}}`,
-                }),
+                dataSource: 'IUCN',
+                scientificName: 'Puma concolor',
+                includeMetadata: false,
+            }),
             resultType: ResultTypes.POLYGONS,
             projection: Projections.WGS_84,
             attributes: [],
