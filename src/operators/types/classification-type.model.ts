@@ -11,7 +11,7 @@ interface ClassificationTypeConfig {
 interface ClassificationTypeMappingDict extends OperatorTypeMappingDict {
     reclassNoData: boolean;
     noDataClass: number;
-    remapRange: [Array<number>, Array<number>];
+    RemapRange: [Array<number>, Array<number>];
 }
 
 export interface ClassificationTypeDict extends OperatorTypeDict, ClassificationTypeConfig  {
@@ -72,7 +72,7 @@ export class ClassificationType extends OperatorType {
         return {
             reclassNoData: this.reclassNoData,
             noDataClass: this.noDataClass,
-            remapRange: [this.remapRangeValues, this.remapRangeClasses],
+            RemapRange: [this.remapRangeValues, this.remapRangeClasses],
         };
     }
 

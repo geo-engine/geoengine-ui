@@ -26,6 +26,8 @@ import {HistogramType} from '../operators/types/histogram-type.model';
 import {RScriptType} from '../operators/types/r-script-type.model';
 import {ExpressionType} from '../operators/types/expression-type.model';
 import {ClassificationType} from '../operators/types/classification-type.model';
+import {ProjectionType} from '../operators/types/projection-type.model';
+
 import {
     MsgRadianceType,
     MsgReflectanceType, MsgReflectanceTypeDict,
@@ -390,58 +392,103 @@ export class DebugTabComponent {
             interpolation: Interpolation.Continuous,
         });
 
+        const bin_unit = new Unit({
+            measurement: 'raw',
+            unit: 'unknown',
+            interpolation: Interpolation.Discrete,
+            max: 1,
+            min: 0,
+        });
+
+        const dnt_unit = new Unit({
+            measurement: 'raw',
+            unit: 'unknown',
+            interpolation: Interpolation.Discrete,
+            max: 3,
+            min: 1,
+        });
+
         const diff_unit = new Unit({
             measurement: 'raw',
             unit: 'unknown',
             interpolation: Interpolation.Continuous,
-            max: 10,
-            min: -30,
+            max: 50,
+            min: -50,
         });
 
-        const msg_raw_8 = new Operator({
+        // raw channels
+        const msg_raw_3 = DebugTabComponent.createMsgRawOp(3, false);
+        const msg_raw_4 = DebugTabComponent.createMsgRawOp(4, false);
+        const msg_raw_5 = DebugTabComponent.createMsgRawOp(5, false);
+        const msg_raw_6 = DebugTabComponent.createMsgRawOp(6, false);
+        const msg_raw_7 = DebugTabComponent.createMsgRawOp(7, false);
+        const msg_raw_8 = DebugTabComponent.createMsgRawOp(8, false);
+        const msg_raw_9 = DebugTabComponent.createMsgRawOp(9, false);
+        const msg_raw_10 = DebugTabComponent.createMsgRawOp(10, false);
+
+        // temp channels
+        const msg_temp_3 = DebugTabComponent.createMsgTemperatureOp(msg_raw_3);
+        const msg_temp_4 = DebugTabComponent.createMsgTemperatureOp(msg_raw_4);
+        const msg_temp_5 = DebugTabComponent.createMsgTemperatureOp(msg_raw_5);
+        const msg_temp_6 = DebugTabComponent.createMsgTemperatureOp(msg_raw_6);
+        const msg_temp_7 = DebugTabComponent.createMsgTemperatureOp(msg_raw_7);
+        const msg_temp_8 = DebugTabComponent.createMsgTemperatureOp(msg_raw_8);
+        const msg_temp_9 = DebugTabComponent.createMsgTemperatureOp(msg_raw_9);
+        const msg_temp_10 = DebugTabComponent.createMsgTemperatureOp(msg_raw_10);
+
+        // vis channels
+        const msg_vis_0 = DebugTabComponent.createMsgRawOp(0, true);
+        const msg_vis_1 = DebugTabComponent.createMsgRawOp(1, true);
+        const msg_vis_2 = DebugTabComponent.createMsgRawOp(2, true);
+
+        // refl channels
+        const msg_refl_0 = DebugTabComponent.createMsgReflectanceOp(msg_vis_0);
+        const msg_refl_1 = DebugTabComponent.createMsgReflectanceOp(msg_vis_1);
+        const msg_refl_2 = DebugTabComponent.createMsgReflectanceOp(msg_vis_2);
+
+        const srtm = new Operator({
             operatorType: new RasterSourceType({
-                channel: 8,
-                sourcename: 'msg9_geos',
-                transform: false,
+                channel: 0,
+                sourcename: 'srtm',
+                transform: true,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.WGS_84,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
+            units: new Map<string, Unit>().set('value', new Unit({
+                measurement: 'elevation',
+                unit: 'm',
+                interpolation: Interpolation.Continuous,
+            })),
+        });
+
+        const landSea = new Operator({
+            operatorType: new ClassificationType({
+                remapRangeValues: [-1000, 0, 1],
+                remapRangeClasses: [0, 10000, 2],
+                noDataClass: 1,
+                reclassNoData: true,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.WGS_84,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', diff_unit),
+            rasterSources: [srtm],
+        });
+
+        const landSeaGeos = new Operator({
+            operatorType: new ProjectionType({
+                srcProjection: Projections.fromCode('EPSG:4326'),
+                destProjection: Projections.fromCode('EPSG:40453'),
             }),
             resultType: ResultTypes.RASTER,
             projection: Projections.GEOS,
             attributes: ['value'],
-            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
-            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
-        });
-
-        const msg_raw_3 = new Operator({
-            operatorType: new RasterSourceType({
-                channel: 3,
-                sourcename: 'msg9_geos',
-                transform: false,
-            }),
-            resultType: ResultTypes.RASTER,
-            projection: Projections.GEOS,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
-            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
-        });
-
-        const msg_temp_8 = new Operator({
-            operatorType: new MsgTemperatureType({}),
-            resultType: ResultTypes.RASTER,
-            projection: Projections.GEOS,
-            attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
-            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
-            rasterSources: [msg_raw_8],
-        });
-
-        const msg_temp_3 = new Operator({
-            operatorType: new MsgTemperatureType({}),
-            resultType: ResultTypes.RASTER,
-            projection: Projections.GEOS,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
-            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
-            rasterSources: [msg_raw_3],
+            units: new Map<string, Unit>().set('value', diff_unit),
+            rasterSources: [landSea],
         });
 
         const diff_expr = new Operator({
@@ -480,12 +527,40 @@ export class DebugTabComponent {
             rasterSources: [msg_solar_zenith, diff_expr],
         });
 
+        const dnt = new Operator({
+            operatorType: new ExpressionType({
+                expression: '(A<93)?1:((A<100)?2:3)',
+                datatype: DataTypes.Byte,
+                unit: dnt_unit,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Byte),
+            units: new Map<string, Unit>().set('value', dnt_unit),
+            rasterSources: [msg_solar_zenith],
+        });
+
+        const lastStep = new Operator({
+            operatorType: new ExpressionType({
+                expression: '((K-F<=J)|((A==2)&(((B==2)&(K-M<=15))|((B==1)&(K-M<=18))|(K-I>=2)))|((A==3)&(F-L>1))|((A==3)&(((B==1)&(I-F>7))))|((K<253))|((G<220)|(H<240)|((H-G)<=13))|(((A==1)&(K<261))|(I-K>0)))&(!((A==1)&(E/C>1.5)))&(!((A==1)&(B==2)&((C-E)/(C+E)>=0.4)&(K>=265)))',
+                datatype: DataTypes.Byte,
+                unit: bin_unit,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Byte),
+            units: new Map<string, Unit>().set('value', bin_unit),
+            rasterSources: [dnt, landSeaGeos, msg_refl_0, msg_refl_1, msg_refl_2, msg_temp_3, msg_temp_4, msg_temp_5, msg_temp_6, msg_sofos_th, msg_temp_8, msg_temp_9, msg_temp_10],
+        });
+
         let cloud_unit = diff_unit;
-        const op_graph = msg_sofos_th;
+        const op_graph = lastStep;
 
         this.layerService.addLayer(
             new RasterLayer({
-                name: 'SOFOS thresholds',
+                name: 'SOFOS clouds',
                 symbology: new MappingColorizerRasterSymbology(
                     { unit: cloud_unit },
                     this.mappingQueryService.getColorizerStream(op_graph)
@@ -494,6 +569,53 @@ export class DebugTabComponent {
                 provenance: this.mappingQueryService.getProvenanceStream(op_graph),
             })
         );
+    }
+
+    static createMsgRawOp(channel: number, transform: boolean): Operator {
+        const msgRawOp = new Operator({
+            operatorType: new RasterSourceType({
+                channel: channel,
+                sourcename: 'msg9_geos',
+                transform: transform,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Int16),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+        });
+        return msgRawOp;
+    }
+
+    static createMsgTemperatureOp(rawOp: Operator): Operator {
+        const msgTempOp = new Operator({
+            operatorType: new MsgTemperatureType({}),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [rawOp],
+        });
+
+        return msgTempOp;
+    }
+
+    static createMsgReflectanceOp(radiance: Operator): Operator {
+        const msgReflOp = new Operator({
+            operatorType: new MsgReflectanceType({
+                isHrv: false,
+                solarCorrection: true,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: Projections.GEOS,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.Float32),
+            units: new Map<string, Unit>().set('value', Unit.defaultUnit),
+            rasterSources: [radiance],
+        });
+
+        return msgReflOp;
     }
 
 }
