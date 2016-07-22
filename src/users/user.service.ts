@@ -271,7 +271,7 @@ export class UserService {
                     const source: MappingSourceDict = json.sourcelist[sourceId];
                     sources.push({
                         source: sourceId,
-                        name: source.name,
+                        name: (source.name) ? source.name : sourceId,
                         colorizer: source.colorizer,
                         coords: source.coords,
                         channels: source.channels.map((channel, index) => {
