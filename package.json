@@ -5,8 +5,6 @@
     "postinstall": "typings install",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
-    "server": "http-server --proxy http://pc12316.mathematik.uni-marburg.de:10080/",
-    "start": "concurrently \"npm run tsc:w\" \"npm run server\" ",
     "bundle": "node bundle.js",
     "doc": "typedoc --target ES5 --mode modules --experimentalDecorators --module system --excludeExternals --moduleResolution node --preserveConstEnums --stripInternal --suppressExcessPropertyErrors --suppressImplicitAnyIndexErrors --ignoreCompilerErrors --out ./doc ./src"
   },
@@ -20,6 +18,7 @@
     "@angular/platform-browser": "2.0.0-rc.3",
     "@angular/platform-browser-dynamic": "2.0.0-rc.3",
     "@angular/router": "3.0.0-alpha.8",
+    "@angular2-material/card": "2.0.0-alpha.5-2",
     "@angular2-material/checkbox": "2.0.0-alpha.5-2",
     "@angular2-material/core": "2.0.0-alpha.5-2",
     "@angular2-material/input": "2.0.0-alpha.5-2",
@@ -50,9 +49,7 @@
   },
   "devDependencies": {
     "codelyzer": "0.0.19",
-    "concurrently": "^2.0.0",
-    "http-server": "^0.9.0",
-    "systemjs-builder": "^0.15.17",
+    "systemjs-builder": "0.15.23",
     "tslint": "^3.10.2",
     "typedoc": "^0.3.12",
     "typescript": "^1.8.10",

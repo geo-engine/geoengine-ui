@@ -59,6 +59,7 @@
 
   // Material2 specific barrels.
   var mdPackageNames = [
+    'card',
     'core',
     'checkbox',
     'progress-circle',

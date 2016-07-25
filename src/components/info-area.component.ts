@@ -10,6 +10,7 @@ import Config from '../app/config.model';
 
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {LoginDialogComponent} from '../users/login-dialog.component';
+import {HelpDialogComponent} from '../app/help.component';
 
 import {UserService} from '../users/user.service';
 import {LayoutService} from '../app/layout.service';
@@ -79,7 +80,7 @@ class IdessaLogoComponent {}
             {{username$ | async}}
         </button>
         <span class="fill-remaining-space"></span>
-        <button md-button class="md-icon-button" aria-label="Help">
+        <button md-button class="md-icon-button" aria-label="Help" (click)="helpDialog.show()">
             <i md-icon>help</i>
         </button>
         <md-toolbar-row class="title-bar">
@@ -105,6 +106,7 @@ class IdessaLogoComponent {}
         </md-toolbar-row>
     </md-toolbar>
     <wave-dialog-loader #loginDialog [type]="LoginDialogComponent"></wave-dialog-loader>
+    <wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>
     `,
     styles: [`
     :host {
@@ -161,7 +163,10 @@ export class InfoAreaComponent {
     layerListVisibility$: Observable<boolean>;
     username$: Observable<string>;
 
-    LoginDialogComponent = LoginDialogComponent; // tslint:disable-line:variable-name
+    // tslint:disable:variable-name
+    LoginDialogComponent = LoginDialogComponent;
+    HelpDialogComponent = HelpDialogComponent;
+    // tslint:enable
 
     constructor(
         private layoutService: LayoutService,

@@ -24,6 +24,7 @@
   "files": [
     "src/app/app.component.ts",
     "src/app/config.model.ts",
+    "src/app/help.component.ts",
     "src/app/layout.service.ts",
     "src/app/notification.service.ts",
     "src/app/safe-template.pipe.ts",
