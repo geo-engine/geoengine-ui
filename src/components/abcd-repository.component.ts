@@ -47,7 +47,7 @@ interface Group<T> {
                     layout="column"
                     (click)="add(archive)">
                     <p>{{archive.dataset}}</p>
-                    <a href={{archive.link}}>{{archive.link}}</a>
+                    <a class="link" target="_blank" href={{archive.link}}>{{archive.link}}</a>
                   </div>
               </md-list-item>
               <md-divider></md-divider>
@@ -64,6 +64,9 @@ interface Group<T> {
     md-list-item {
         cursor: pointer;
     }
+    .md-list-item-text {
+        align-items: flex-end;
+    }
     md-list >>> md-subheader {
         color: white;
         background-color: #009688;
@@ -71,6 +74,12 @@ interface Group<T> {
     }
     img {
       padding: 5px 5px 5px 0px;
+    }
+    .link {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     `],
     directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
