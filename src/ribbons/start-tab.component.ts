@@ -139,7 +139,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         (click)="gfbio.emit()"
                     >
                         <i md-icon>add_shopping_cart</i>
-                        GFBio Search
+                        GFBio Data
                     </button>
                     <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
                         class="md-primary small"
@@ -160,7 +160,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         (click)="gbifLoader.show()"
                     >
                         <i md-icon>search</i>
-                        GBIF Search
+                        Occurrences
                     </button>
                     <button md-button
                         *ngIf="false"
