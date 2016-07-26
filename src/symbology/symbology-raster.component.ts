@@ -8,27 +8,36 @@ import {RasterSymbology} from './symbology.model';
     selector: 'wave-symbology-raster',
     template: `
     <form>
-    <div>
-        <label>Opacity</label>
-        <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'>
-        </md-input>
-    </div>
-    <div>
-        <label>Hue</label>
-        <md-input disabled
-            type='number'
-            [(ngModel)]='symbology.hue'
-            (ngModelChange)='update()'>
-        </md-input>
-    </div>
-    <div>
-        <label>Saturation</label>
-        <md-input disabled
-            type='number'
-            [(ngModel)]='symbology.saturation'
-            (ngModelChange)='update()'>
-        </md-input>
-    </div>
+    <table>
+        <tr>
+            <td><label>Opacity</label></td>
+            <td>
+                <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'>
+                </md-input>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label>Hue</label></td>
+            <td>
+                <md-input disabled
+                    type='number'
+                    [(ngModel)]='symbology.hue'
+                    (ngModelChange)='update()'>
+                </md-input>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Saturation</label></td>
+            <td>
+                <md-input disabled
+                    type='number'
+                    [(ngModel)]='symbology.saturation'
+                    (ngModelChange)='update()'>
+                </md-input>
+            </td>
+        </tr>
+    </table>
     </form>
       `,
     styles: [`

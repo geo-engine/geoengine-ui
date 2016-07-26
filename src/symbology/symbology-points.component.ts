@@ -13,45 +13,76 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
     selector: 'wave-symbology-points',
     template: `
         <form class='md-block'>
-        <div>
-            <label>Fill color</label>
-            <md-input
-                [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
-                (colorPickerChange)='updateFillRgba($event)'
-                [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                (ngModelChange)='updateFillRgba($event)'>
-            </md-input>
-        </div>
-        <div>
-            <label>Stroke color</label>
-            <md-input
-                [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                (colorPickerChange)='updateStrokeRgba($event)'
-                [cpOutputFormat]="'rgba'"
-                [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                (ngModelChange)='updateStrokeRgba($event)'>
-            </md-input>
-        </div>
-        <div>
-            <label>Stroke width</label>
-            <md-input type='number'
-                min=0
-                [(ngModel)]='symbology.strokeWidth'
-                (ngModelChange)='update()'>
-            </md-input>
-        </div>
-        <div>
-            <label>Radius</label>
-            <md-input type='number'
-                min=0
-                [(ngModel)]='symbology.radius'
-                (ngModelChange)='update()'>
-            </md-input>
-        </div>
+        <table>
+            <tr>
+                <td>
+                    <label>Fill color</label>
+                </td>
+                <td>
+                    <md-input
+                        class='cc'
+                        [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        (colorPickerChange)='updateFillRgba($event)'
+                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        (ngModelChange)='updateFillRgba($event)'>
+                    </md-input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Stroke color</label>
+                </td>
+                <td>
+                    <md-input
+                        class='cc'
+                        [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        (colorPickerChange)='updateStrokeRgba($event)'
+                        [cpOutputFormat]="'rgba'"
+                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        (ngModelChange)='updateStrokeRgba($event)'>
+                    </md-input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Stroke width</label>
+                </td>
+                <td>
+                    <md-input type='number'
+                        min=0
+                        [(ngModel)]='symbology.strokeWidth'
+                        (ngModelChange)='update()'>
+                    </md-input>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Radius</label></td>
+                <td>
+                    <md-input type='number'
+                        min=0
+                        [(ngModel)]='symbology.radius'
+                        (ngModelChange)='update()'>
+                    </md-input>
+                </td>
+            </tr>
+        </table>
         </form>
         `,
+    styles: [`
+        form {
+            padding-top: 16px;
+        }
+        md-input >>> input {
+            color: black !important;
+            text-shadow:
+            -1px -1px 0 #fff,
+            1px -1px 0 #fff,
+            -1px 1px 0 #fff,
+            1px 1px 0 #fff !important;
+        }
+        `],
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, ColorPickerDirective],
     pipes: [RgbaToCssStringPipe, CssStringToRgbaPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
@@ -101,40 +132,65 @@ export class SymbologyPointsComponent {
     selector: 'wave-symbology-vector',
     template: `
     <form>
-        <template [ngIf]='symbology.describesArea'>
-        <div>
-            <label>Fill color</label>
-            <md-input
-                [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
-                (colorPickerChange)='updateFillRgba($event)'
-                [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                (ngModelChange)='updateFillRgba($event)'>
-            </md-input>
-        </div>
-        </template>
-        <div>
-            <label>Stroke color</label>
-            <md-input
-                [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                (colorPickerChange)='updateStrokeRgba($event)'
-                [cpOutputFormat]="'rgba'"
-                [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                (ngModelChange)='updateStrokeRgba($event)'>
-            </md-input>
-        </div>
-        <div>
-        <label>Stroke width</label>
-        <md-input type='number'
-            min=0
-            [(ngModel)]='symbology.strokeWidth'
-            (ngModelChange)='update()'>
-        </md-input>
-        </div>
+        <table>
+            <template [ngIf]='symbology.describesArea'>
+            <tr>
+                <td>
+                    <label>Fill color</label>
+                </td>
+                <td>
+                    <md-input
+                        class='cc'
+                        [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        (colorPickerChange)='updateFillRgba($event)'
+                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
+                        (ngModelChange)='updateFillRgba($event)'>
+                    </md-input>
+                </td>
+            </tr>
+            </template>
+            <tr>
+                <td>
+                    <label>Stroke color</label>
+                </td>
+                <td>
+                    <md-input
+                        class='cc'
+                        [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        (colorPickerChange)='updateStrokeRgba($event)'
+                        [cpOutputFormat]="'rgba'"
+                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                        (ngModelChange)='updateStrokeRgba($event)'>
+                    </md-input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Stroke width</label>
+                </td>
+                <td>
+                    <md-input type='number'
+                        min=0
+                        [(ngModel)]='symbology.strokeWidth'
+                        (ngModelChange)='update()'>
+                    </md-input>
+                </td>
+            </tr>
+        </table>
     </form>
      `,
-    styles: [``],
+    styles: [`
+        md-input >>> input {
+            color: black !important;
+            text-shadow:
+            -1px -1px 0 #fff,
+            1px -1px 0 #fff,
+            -1px 1px 0 #fff,
+            1px 1px 0 #fff !important;
+        }
+    `],
     directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, ColorPickerDirective],
     pipes: [RgbaToCssStringPipe, CssStringToRgbaPipe],
     // changeDetection: ChangeDetectionStrategy.OnPush
