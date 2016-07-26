@@ -332,6 +332,20 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                         }
                     },
                 });
+            case 'hosted':
+                const hostedSource = new ol.source.TileWMS({
+                    url: Config.MAP.HOSTED_BACKGROUND_SERVICE,
+                    params: {
+                        layers: Config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
+                        projection: projection.getCode(),
+                        version: Config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
+                    },
+                    wrapX: false,
+                });
+                const hostedLayer = new ol.layer.Tile({
+                    source: hostedSource,
+                });
+                return hostedLayer;
             default:
                 throw 'Unknown Background Layer Name';
         }
