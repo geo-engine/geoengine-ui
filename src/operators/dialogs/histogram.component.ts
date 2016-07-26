@@ -16,6 +16,7 @@ import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 import {PlotService} from '../../plots/plot.service';
+import {LayoutService, Browser} from '../../app/layout.service';
 
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../symbology/symbology.model';
@@ -47,7 +48,10 @@ import {HistogramType} from '../types/histogram-type.model';
             <md-card-content layout="column">
                 <div *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
                     <label>Attribute</label>
-                    <select ngControl="attributeName">
+                    <select
+                        ngControl="attributeName"
+                        [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                    >
                         <option *ngFor="let attribute of attributes" [ngValue]="attribute">
                             {{attribute}}
                         </option>
@@ -55,7 +59,10 @@ import {HistogramType} from '../types/histogram-type.model';
                 </div>
                 <div>
                     <label>Range Type</label>
-                    <select ngControl="rangeType">
+                    <select
+                        ngControl="rangeType"
+                        [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                    >
                         <option *ngFor="let rangeType of rangeTypes" [ngValue]="rangeType">
                             {{rangeType}}
                         </option>
@@ -104,6 +111,8 @@ import {HistogramType} from '../types/histogram-type.model';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HistogramOperatorComponent extends OperatorBaseComponent implements OnInit {
+    Browser = Browser; // tslint:disable-line:variable-name
+
     private selectedLayer: Layer<Symbology>;
 
     private customRange = false;
@@ -119,6 +128,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
         private mappingQueryService: MappingQueryService,
         private projectService: ProjectService,
         private plotService: PlotService,
+        private layoutService: LayoutService,
         private formBuilder: FormBuilder
     ) {
         super(layerService);

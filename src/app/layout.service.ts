@@ -16,6 +16,17 @@ export interface LayoutDict {
 }
 
 /**
+ * The type of Browser.
+ */
+export enum Browser {
+    FIREFOX, CHROME, SAFARI, OPERA, IE, EDGE,
+}
+
+// declarations for browser detection
+declare const InstallTrigger: {};
+declare const opr: {};
+
+/**
  * A service that keeps track of app layouting options.
  */
 @Injectable()
@@ -56,6 +67,11 @@ export class LayoutService {
      */
     private dataTableHeightPercentage$: BehaviorSubject<number> = new BehaviorSubject(2 / 5);
 
+    /**
+     * Store the detected browser.
+     */
+    private browser: Browser;
+
     constructor(
         private plotService: PlotService
     ) {
@@ -68,6 +84,16 @@ export class LayoutService {
         this.plotComponentVisible$.filter(visible => visible === false)
                              .map(() => true)
                              .subscribe(this.plotListVisible$);
+
+        this.browser = this.detectBrowser();
+    }
+
+    /**
+     * Get the detected user browser
+     * @returns the browser type
+     */
+    getBrowser(): Browser {
+        return this.browser;
     }
 
     /**
@@ -370,6 +396,42 @@ export class LayoutService {
             dataTableHeightPercentage, totalAvailabeHeight
         );
         return totalAvailabeHeight - dataTableHeight;
+    }
+
+    private detectBrowser(): Browser {
+        // Opera 8.0+
+        const isOpera = (!!window['opr'] && !!opr['addons']) || !!window['opera']
+                        || navigator.userAgent.indexOf(' OPR/') >= 0;
+        if (isOpera) {
+            return Browser.OPERA;
+        }
+        // Firefox 1.0+
+        const isFirefox = typeof InstallTrigger !== 'undefined';
+        if (isFirefox) {
+            return Browser.FIREFOX;
+        }
+        // At least Safari 3+: "[object HTMLElementConstructor]"
+        const isSafari = Object.prototype.toString.call(
+            window['HTMLElement']
+        ).indexOf('Constructor') > 0;
+        if (isSafari) {
+            return Browser.SAFARI;
+        }
+        // Internet Explorer 6-11
+        const isIE = /*@cc_on!@*/false || !!document['documentMode'];
+        if (isIE) {
+            return Browser.IE;
+        }
+        // Edge 20+
+        const isEdge = !isIE && !!window['StyleMedia'];
+        if (isEdge) {
+            return Browser.EDGE;
+        }
+        // Chrome 1+
+        const isChrome = !!window['chrome'] && !!window['chrome'].webstore;
+        if (isChrome) {
+            return Browser.CHROME;
+        }
     }
 
 }

@@ -19,6 +19,7 @@ import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
+import {LayoutService, Browser} from '../../app/layout.service';
 
 import {VectorLayer} from '../../layers/layer.model';
 import {Operator} from '../operator.model';
@@ -53,7 +54,10 @@ import {
             <md-card-content>
                 <div>
                     <label>Attribute</label>
-                    <select ngControl="attributeName">
+                    <select
+                        ngControl="attributeName"
+                        [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                    >
                         <option *ngFor="let attribute of attributes" [ngValue]="attribute">
                             {{attribute}}
                         </option>
@@ -89,6 +93,7 @@ import {
 })
 export class NumericAttributeFilterOperatorComponent extends OperatorBaseComponent
                                                      implements OnInit {
+    Browser = Browser; // tslint:disable-line:variable-name
 
     private configForm: ControlGroup;
 
@@ -107,6 +112,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         private mappingQueryService: MappingQueryService,
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
+        private layoutService: LayoutService,
         private changeDetectorRef: ChangeDetectorRef
     ) {
         super(layerService);

@@ -12,6 +12,7 @@ import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../layers/layer.service';
+import {LayoutService, Browser} from '../../app/layout.service';
 
 import {Symbology} from '../../symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
@@ -26,8 +27,11 @@ import {Projection} from '../projection.model';
     template: `
     <div [ngSwitch]="layers.length">
         <label>Input {{id}}</label>
-        <select *ngSwitchDefault
-                [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)">
+        <select
+            *ngSwitchDefault
+            [ngModel]="_selectedLayer" (ngModelChange)="selectedLayer.emit($event)"
+            [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+        >
             <option *ngFor="let layer of layers" [ngValue]="layer">{{layer.name}}</option>
         </select>
         <p *ngSwitchCase="0">No Input Available</p>
@@ -60,9 +64,14 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
      */
     @Output('selectedLayer') selectedLayer = new EventEmitter<Layer<Symbology>>();
 
+    Browser = Browser; // tslint:disable-line:variable-name
+
     private _selectedLayer: Layer<Symbology>;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private layoutService: LayoutService,
+    ) {
         this.selectedLayer.subscribe((layer: Layer<Symbology>) => this._selectedLayer = layer);
     }
 
@@ -284,6 +293,7 @@ export class LayerMultiSelectComponent implements OnChanges {
             [ngModel]="selectedProjection"
             (ngModelChange)="valueChange.emit($event)"
             (blur)="onBlur()"
+            [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
         >
             <option
                 *ngFor="let projection of projections"
@@ -322,6 +332,8 @@ export class ReprojectionSelectionComponent
      */
     @Output() valueChange = new EventEmitter<Projection>();
 
+    Browser = Browser; // tslint:disable-line:variable-name
+
     private projections: Array<Projection>;
     private selectedProjection: Projection;
 
@@ -329,7 +341,8 @@ export class ReprojectionSelectionComponent
     private changeSubscription: { unsubscribe: () => {} } = undefined;
 
     constructor(
-        private changeDetectorRef: ChangeDetectorRef
+        private changeDetectorRef: ChangeDetectorRef,
+        private layoutService: LayoutService,
     ) {
         this.valueChange.subscribe((projection: Projection) => {
             this.selectedProjection = projection;

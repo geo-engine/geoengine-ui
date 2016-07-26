@@ -20,6 +20,7 @@ import {PlotService} from '../../plots/plot.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
+import {LayoutService, Browser} from '../../app/layout.service';
 
 import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {Plot} from '../../plots/plot.model';
@@ -66,7 +67,10 @@ import {RScript} from '../../storage/storage-provider.model';
                 <div layout="row">
                     <div>
                         <label for="dataType">Result Type</label>
-                        <select ngControl="resultType">
+                        <select
+                            ngControl="resultType"
+                            [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                        >
                             <option
                                 *ngFor="let resultType of [ResultTypes.RASTER, ResultTypes.POINTS,
                                                            ResultTypes.PLOT, ResultTypes.TEXT]"
@@ -137,6 +141,7 @@ export class ROperatorComponent extends OperatorBaseComponent
     // tslint:disable:variable-name
     RScriptSaveDialogComponent = RScriptSaveDialogComponent;
     RScriptLoadDialogComponent = RScriptLoadDialogComponent;
+    Browser = Browser;
     // tslint:enable
 
     @ViewChild(CodeEditorComponent) codeEditor: CodeEditorComponent;
@@ -156,6 +161,7 @@ export class ROperatorComponent extends OperatorBaseComponent
         private mappingQueryService: MappingQueryService,
         private projectService: ProjectService,
         private plotService: PlotService,
+        private layoutService: LayoutService,
         private formBuilder: FormBuilder
     ) {
         super(layerService);

@@ -15,6 +15,7 @@ import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
+import {LayoutService, Browser} from '../../app/layout.service';
 
 import {RasterLayer} from '../../layers/layer.model';
 import {RasterSymbology} from '../../symbology/symbology.model';
@@ -52,7 +53,10 @@ import {ExpressionType} from '../types/expression-type.model';
                     <tr>
                         <td>
                             <label>Output Data Type</label>
-                            <select ngControl="dataType">
+                            <select
+                                ngControl="dataType"
+                                [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                            >
                                 <option
                                     *ngFor="let dataType of outputDataTypes"
                                     [ngValue]="dataType[0]"
@@ -71,7 +75,10 @@ import {ExpressionType} from '../types/expression-type.model';
                     <tr>
                         <td>
                             <label>Output Unit</label>
-                            <select ngControl="unit">
+                            <select
+                                ngControl="unit"
+                                [size]="layoutService.getBrowser() === Browser.FIREFOX ? 2 : 1"
+                            >
                                 <option
                                     *ngFor="let unit of outputUnits"
                                     [ngValue]="unit"
@@ -109,6 +116,7 @@ import {ExpressionType} from '../types/expression-type.model';
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent
                                          implements OnInit {
+    Browser = Browser; // tslint:disable-line:variable-name
 
     private configForm: ControlGroup;
     private selectedLayers: Array<RasterLayer<RasterSymbology>>;
@@ -124,6 +132,7 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
         private randomColorService: RandomColorService,
         private mappingQueryService: MappingQueryService,
         private projectService: ProjectService,
+        private layoutService: LayoutService,
         private formBuilder: FormBuilder
     ) {
         super(layerService);
