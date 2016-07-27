@@ -66,8 +66,12 @@ import {
                 <md-progress-circle mode="indeterminate" *ngIf="dataLoading"></md-progress-circle>
                 <wave-histogram [height]="500" [width]="500" [selectable]="true"
                                 *ngIf="data" [data]="data" interactable="true"
-                                (minRange)="boundsMin = $event" (maxRange)="boundsMax = $event">
+                                [(minRange)]="boundsMin" [(maxRange)]="boundsMax">
                 </wave-histogram>
+                <div layout="row" class="min-max-ranges">
+                    <md-input type="number" placeholder="Min" [(ngModel)]="boundsMin"></md-input>
+                    <md-input type="number" placeholder="Max" [(ngModel)]="boundsMax"></md-input>
+                </div>
             </md-card-content>
         </md-card>
         <wave-operator-output-name ngControl="name"></wave-operator-output-name>
@@ -82,6 +86,12 @@ import {
     md-progress-circle {
         position: relative;
         left: calc(50% - 50px);
+    }
+    .min-max-ranges {
+        margin: 0 auto;
+    }
+    .min-max-ranges md-input {
+        margin: 0 1rem;
     }
     `],
     directives: [

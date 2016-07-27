@@ -129,14 +129,41 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     @Input() selectable: boolean = false;
     @Input() interactable: boolean = false;
 
-    @Output() minRange = new EventEmitter<number>();
-    @Output() maxRange = new EventEmitter<number>();
+    @Input() minRange: number = undefined;
+    @Output() minRangeChange = new EventEmitter<number>();
+    @Input() maxRange: number = undefined;
+    @Output() maxRangeChange = new EventEmitter<number>();
+
+    private leftSlider: Slider;
+    private rightSlider: Slider;
+    private xAxis: d3.svg.Axis;
+    private maxWidth: number;
 
     constructor() {}
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         if (changes['data'] && !changes['data'].isFirstChange()) {
             this.drawHistogram();
+        }
+        // TODO: refactor the set slider position function out (here and in makeDrag)
+        if (changes['minRange'] && !changes['minRange'].isFirstChange()) {
+            const value = changes['minRange'].currentValue;
+            const xPosition = Math.max(this.xAxis.scale()(value), 0);
+            this.leftSlider.pointer.attr('x', xPosition);
+            this.leftSlider.position = value;
+            this.leftSlider.text.attr('x', xPosition);
+            this.leftSlider.text.text(value);
+            this.leftSlider.area.attr('width', xPosition);
+        }
+        if (changes['maxRange'] && !changes['maxRange'].isFirstChange()) {
+            const value = changes['maxRange'].currentValue;
+            const xPosition = Math.min(this.xAxis.scale()(value), this.maxWidth);
+            this.rightSlider.pointer.attr('x', xPosition);
+            this.rightSlider.position = value;
+            this.rightSlider.text.attr('x', xPosition);
+            this.rightSlider.text.text(value);
+            this.rightSlider.area.attr('width', this.maxWidth - xPosition);
+            this.rightSlider.area.attr('x', xPosition);
         }
     }
 
@@ -157,6 +184,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         };
 
         const width = this.width * this.viewBoxRatio - margin.left - margin.right;
+        this.maxWidth = width;
         const height = this.height * this.viewBoxRatio - margin.top - margin.bottom;
 
         const x = d3.scale.linear()
@@ -167,6 +195,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                                    .range([height, 0]);
 
         const xAxis = d3.svg.axis().scale(x).orient('bottom');
+        this.xAxis = xAxis;
 
         const yAxis = d3.svg.axis().scale(y).orient('left');
 
@@ -279,6 +308,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 text: this.makeText(xSlider, height, sliderDim, 0, this.data.metadata.min),
                 position: this.data.metadata.min,
             };
+            this.leftSlider = leftSlider;
 
             const rightSlider: Slider = {
                 area: this.makeArea(xSlider, height),
@@ -286,6 +316,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 text: this.makeText(xSlider, height, sliderDim, width, this.data.metadata.max),
                 position: this.data.metadata.max,
             };
+            this.rightSlider = rightSlider;
 
             const leftDrag = this.makeDrag(
                 xAxis, leftSlider, leftSlider, rightSlider, width, true
@@ -468,9 +499,11 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             slider.text.attr('x', newX);
             slider.text.text(newXVal);
             if (isLeft) {
-                this.minRange.emit(newXVal);
+                this.minRange = newXVal;
+                this.minRangeChange.emit(this.minRange);
             } else {
-                this.maxRange.emit(newXVal);
+                this.maxRange = newXVal;
+                this.maxRangeChange.emit(this.maxRange);
             }
             if (isLeft) {
                 if (newX > 0) {
