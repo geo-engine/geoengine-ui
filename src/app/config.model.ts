@@ -53,4 +53,7 @@ export default {
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
     },
+    GFBIO: {
+        LIFERAY_PORTAL_URL: 'http://gfbio-dev1.inf-bb.uni-jena.de:8080/',
+    },
 };

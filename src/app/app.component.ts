@@ -1,6 +1,5 @@
 import {
     Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef,
-    provide,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
@@ -31,7 +30,6 @@ import {SidenavContainerComponent} from './sidenav-container.component';
 
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
-import {GfbioService} from '../gfbio/gfbio.service';
 import {StorageService} from '../storage/storage.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
@@ -256,9 +254,7 @@ import {PlotService} from '../plots/plot.service';
     providers: [
         MATERIAL_BROWSER_PROVIDERS,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
-        StorageService, RandomColorService, ColorPickerService, MapService, NotificationService,
-        provide(UserService, {useClass: GfbioService}),
-        provide(GfbioService, {useClass: GfbioService}),
+        StorageService, RandomColorService, ColorPickerService, MapService, NotificationService, UserService,
     ],
     queries: {
         rightSidenavContainer: new ViewChild(SidenavContainerComponent),
@@ -291,7 +287,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private notificationService: NotificationService,
         private projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
-        private userService: GfbioService,
+        private userService: UserService,
         private randomColorService: RandomColorService,
         private storageService: StorageService,
         private changeDetectorRef: ChangeDetectorRef

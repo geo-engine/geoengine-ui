@@ -6,7 +6,8 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import Config from '../app/config.model';
 import {User, Guest} from './user.model';
 
-import {MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
+import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
+import {AbcdArchive} from '../models/abcd.model';
 
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
@@ -49,6 +50,28 @@ class LoginRequestParameters extends UserServiceRequestParameters {
                 password: config.password,
             },
         });
+    }
+}
+
+class GfbioServiceRequestParameters extends MappingRequestParameters {
+    constructor(config: {
+        request: string,
+        sessionToken: string,
+        parameters?: ParametersType
+    }) {
+        super({
+            service: 'gfbio',
+            request: config.request,
+            sessionToken: config.sessionToken,
+            parameters: config.parameters,
+        });
+    }
+}
+
+class GFBioPortalLoginRequestParameters extends RequestParameters {
+    constructor(config: { username: string; password: string; }) {
+        super();
+        this.addAuthentication(config.username, config.password);
     }
 }
 
@@ -317,6 +340,90 @@ export class UserService {
             response => response.json()
         ).map((csvs: CsvResponse) => csvs);
     }
+
+    /**
+     * Get as stream of Abcd sources depending on the logged in user.
+     */
+    getAbcdArchivesStream(): Observable<Array<AbcdArchive>> {
+        interface AbcdResponse {
+            archives: Array<AbcdArchive>;
+            result: boolean;
+        }
+
+        return this.getSessionStream().switchMap(session => {
+            const parameters = new GfbioServiceRequestParameters({
+                request: 'abcd',
+                sessionToken: session.sessionToken,
+            });
+            return this.request(parameters).then(
+                response => response.json()
+            ).then((abcdResponse: AbcdResponse) => abcdResponse.archives);
+
+        });
+    }
+
+    /**
+     * Get the GFBio login token from the portal.
+     */
+    getGFBioToken(credentials: {username: string, password: string}): Promise<string> {
+        const parameters = new GFBioPortalLoginRequestParameters(credentials);
+
+        return this.http.get(
+            Config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
+            {headers: parameters.getHeaders()}
+        ).flatMap(response => {
+            const json = response.json();
+            if (typeof json === 'string') {
+                return Observable.of(json); // token
+            } else {
+                const result: { exception: string, message: string } = json;
+                return Observable.throw(result.message);
+            }
+        }).toPromise();
+    }
+
+    /**
+     * Login using gfbio credentials. If it was successful, set a new user.
+     * @param credentials.user The user name.
+     * @param credentials.password The user's password.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Promise<boolean> {
+        const tokenPromise = this.getGFBioToken({
+            username: credentials.user,
+            password: credentials.password,
+        });
+        return tokenPromise.then(
+            token => {
+                const parameters = new MappingRequestParameters({
+                    service: 'gfbio',
+                    sessionToken: undefined,
+                    request: 'login',
+                    parameters: {token: token},
+                });
+                return this.request(parameters).then(response => {
+                    const result = response.json() as {result: string | boolean, session: string};
+                    const success = typeof result.result === 'boolean' && result.result === true;
+
+                    if (success) {
+                        this.session$.next({
+                            user: credentials.user,
+                            sessionToken: result.session,
+                            staySignedIn: credentials.staySignedIn,
+                        });
+                    }
+
+                    return success;
+                });
+            },
+            error => Promise.resolve(false)
+        );
+    }
+
+    // service gfbio
+    // request login
+    // parameter: token=???
+    // result is login (true + token)
 
     /**
      * Get the session data.

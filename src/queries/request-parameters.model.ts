@@ -5,40 +5,25 @@ import Immutable from 'immutable';
 export type ParameterType = string | number | boolean;
 export type ParametersType = {[index: string]: ParameterType};
 
-export class MappingRequestParameters {
-    private immutable = false;
-    private parameters: Immutable.Map<string, ParameterType>;
+export class RequestParameters {
+    protected immutable = false;
+    protected parameters: Immutable.Map<string, ParameterType>;
+    protected headers = new Headers();
 
-    constructor(config: {
-        service: string;
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
-        this.parameters = Immutable.Map<string, ParameterType>({
-            service: config.service,
-            request: config.request,
-            sessiontoken: config.sessionToken,
-        }).asMutable();
-        if (config.parameters) {
-            this.parameters.merge(config.parameters);
+    constructor(parameters?: ParametersType) {
+        this.headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        if (parameters) {
+            this.parameters = Immutable.Map<string, ParameterType>(parameters).asMutable();
+        } else {
+            this.parameters = Immutable.Map<string, ParameterType>().asMutable();
         }
     }
 
     setParameter(key: string, value: ParameterType) {
-        if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
-            throw 'You must not reset "service", "request" or "sessionToken"';
-        }
         this.parameters = this.parameters.set(key, value);
     }
 
     setParameters(parameters: ParametersType) {
-        Object.keys(parameters).forEach(key => {
-            if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
-                throw 'You must not reset "service", "request" or "sessionToken"';
-            }
-        });
-
         this.parameters = this.parameters.merge(parameters);
     }
 
@@ -68,9 +53,44 @@ export class MappingRequestParameters {
         return this.parameters.toObject();
     }
 
+    addAuthentication(username: string, password: string) {
+        this.headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
+    }
+
     getHeaders(): Headers {
-        return new Headers({
-           'Content-Type': 'application/x-www-form-urlencoded',
+        return this.headers;
+    }
+}
+
+export class MappingRequestParameters extends RequestParameters {
+    constructor(config: {
+        service: string;
+        request: string,
+        sessionToken: string,
+        parameters?: ParametersType
+    }) {
+        super(config.parameters);
+        this.parameters.merge({
+            service: config.service,
+            request: config.request,
+            sessiontoken: config.sessionToken,
         });
+    }
+
+    setParameter(key: string, value: ParameterType) {
+        if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
+            throw 'You must not reset "service", "request" or "sessionToken"';
+        }
+        this.parameters = this.parameters.set(key, value);
+    }
+
+    setParameters(parameters: ParametersType) {
+        Object.keys(parameters).forEach(key => {
+            if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
+                throw 'You must not reset "service", "request" or "sessionToken"';
+            }
+        });
+
+        this.parameters = this.parameters.merge(parameters);
     }
 }

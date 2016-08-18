@@ -7,6 +7,7 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
+import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
 
 import Config from '../app/config.model';
 
@@ -17,14 +18,16 @@ import {UserService} from './user.service';
 
 enum FormStatus { LoggedOut, LoggedIn, Loading }
 
+// TODO: switch from radio to button-toggle in newer version of material
+
 @Component({
     selector: 'wave-login-dialog',
     template: `
-    <form
-        *ngIf="isLoggedOut$ | async"
-        [ngFormModel]="form"
-        layout="column"
-    >
+    <form *ngIf="isLoggedOut$ | async" [ngFormModel]="form" layout="column">
+        <md-radio-group ngControl="loginAuthority" *ngIf="${Config.PROJECT === 'GFBio'}" style="margin-bottom: 1rem;">
+            <md-radio-button value="system">System</md-radio-button>
+            <md-radio-button value="GFBio">GFBio</md-radio-button>
+        </md-radio-group>
         <md-input type="text" placeholder="Username" ngControl="username"></md-input>
         <md-input type="password" placeholder="Password" ngControl="password"></md-input>
         <span *ngIf="invalidCredentials">Invalid Credentials</span>
@@ -80,10 +83,10 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
         height: 100px;
     }
     `],
-    providers: [],
+    providers: [MdRadioDispatcher],
     directives: [
         COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        MD_CHECKBOX_DIRECTIVES,
+        MD_CHECKBOX_DIRECTIVES, MD_RADIO_DIRECTIVES,
     ],
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
@@ -107,6 +110,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
         super();
 
         this.form = this.formBuilder.group({
+            loginAuthority: ['system', Validators.required],
             username: ['', Validators.compose([
                 Validators.required,
                 (control: Control) => {
@@ -165,11 +169,29 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
 
     login() {
         this.formStatus$.next(FormStatus.Loading);
-        this.userService.login({
-            user: this.form.controls['username'].value,
-            password: this.form.controls['password'].value,
-            staySignedIn: this.form.controls['staySignedIn'].value.checked,
-        }).then(valid => {
+
+        let loginRequest: Promise<boolean>;
+
+        switch (this.form.controls['loginAuthority'].value) {
+            case 'GFBio':
+                loginRequest = this.userService.gfbioLogin({
+                    user: this.form.controls['username'].value,
+                    password: this.form.controls['password'].value,
+                });
+
+                break;
+            case 'system':
+            /* falls through */
+            default:
+                loginRequest = this.userService.login({
+                    user: this.form.controls['username'].value,
+                    password: this.form.controls['password'].value,
+                    staySignedIn: this.form.controls['staySignedIn'].value.checked,
+                });
+                break;
+        }
+
+        loginRequest.then(valid => {
             if (valid) {
                 this.invalidCredentials = false;
                 this.formStatus$.next(FormStatus.LoggedIn);
