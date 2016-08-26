@@ -8,6 +8,7 @@ import {User, Guest} from './user.model';
 
 import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
 import {AbcdArchive} from '../models/abcd.model';
+import {IBasket} from '../baskets/gfbio-basket.model';
 
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
@@ -358,6 +359,27 @@ export class UserService {
             return this.request(parameters).then(
                 response => response.json()
             ).then((abcdResponse: AbcdResponse) => abcdResponse.archives);
+
+        });
+    }
+
+    /**
+     * Get as stream of GFBio baskets sources depending on the logged in user.
+     */
+    getGfbioBasketStream(): Observable<Array<IBasket>> {
+        interface GfbioBasketResponse {
+            baskets: Array<IBasket>;
+            result: boolean;
+        }
+
+        return this.getSessionStream().switchMap(session => {
+            const parameters = new GfbioServiceRequestParameters({
+                request: 'baskets',
+                sessionToken: session.sessionToken,
+            });
+            return this.request(parameters).then(
+                response => response.json()
+            ).then((gfbioBasketResponse: GfbioBasketResponse) => gfbioBasketResponse.baskets);
 
         });
     }

@@ -26,6 +26,7 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 interface Column {
     name: string;
     type: 'string' | 'number' | '';
+    unit: string;
 }
 
 interface Row {
@@ -220,11 +221,11 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
             if (features.length > 0) {
                 if ( features[0].id ) {
-                    this.columns = [{name: 'id', type: 'string'}];
+                    this.columns = [{name: 'id', type: 'string', unit: undefined}];
                 };
                 if (features[0].properties) {
                     this.propertyColumns = Object.keys(features[0].properties).map(x => {
-                         return {name: x, type: ''} as Column;
+                         return {name: x, type: '', unit: ''} as Column;
                      });
                  }
                 this.rows = features;

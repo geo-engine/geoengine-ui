@@ -35,6 +35,7 @@ import Config from '../app/config.model';
                     (zoomMap)="zoomMap.emit()"
                     (addData)="addData.emit()"
                     (gfbio)="gfbio.emit()"
+                    (abcd)="abcd.emit()"
                     (csv)="csv.emit()"
                 ></wave-start-tab>
             </template>
@@ -97,6 +98,8 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
     @Output() addData = new EventEmitter<void>();
 
     @Output() gfbio = new EventEmitter<void>();
+
+    @Output() abcd = new EventEmitter<void>();
 
     @Output() csv = new EventEmitter<void>();
 

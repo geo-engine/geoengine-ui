@@ -4,15 +4,18 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
 interface ABCDSourceTypeConfig {
     provider: string;
     id: string;
+    units?: Array<string>;
 }
 
 interface ABCDSourceTypeMappingDict extends OperatorTypeMappingDict {
     path: string;
+    units: Array<string>;
 }
 
 export interface ABCDSourceTypeDict extends OperatorTypeDict  {
     provider: string;
     id: string;
+    units: Array<string>;
 }
 
 /**
@@ -29,17 +32,20 @@ export class ABCDSourceType extends OperatorType {
 
     private provider: string;
     private id: string;
+    private units: Array<string>;
 
     constructor(config: ABCDSourceTypeConfig) {
         super();
         this.provider = config.provider;
         this.id = config.id;
+        this.units = (config.units) ? config.units : [];
     }
 
     static fromDict(dict: ABCDSourceTypeDict): ABCDSourceType {
         return new ABCDSourceType({
             provider: dict.provider,
             id: dict.id,
+            units: dict.units,
         });
     }
 
@@ -59,12 +65,14 @@ export class ABCDSourceType extends OperatorType {
         return [
             ['archive', this.provider],
             ['id', this.id],
+            ['units', this.units.join((', '))],
         ];
     }
 
     toMappingDict(): ABCDSourceTypeMappingDict {
         return {
             path: this.id,
+            units: this.units,
         };
     }
 
@@ -73,6 +81,7 @@ export class ABCDSourceType extends OperatorType {
             operatorType: ABCDSourceType.TYPE,
             provider: this.provider,
             id: this.id,
+            units: this.units,
         };
     }
 

@@ -70,7 +70,7 @@ export class LayerSelectionComponent implements AfterViewInit, OnChanges {
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
-        private layoutService: LayoutService,
+        private layoutService: LayoutService
     ) {
         this.selectedLayer.subscribe((layer: Layer<Symbology>) => this._selectedLayer = layer);
     }
@@ -342,7 +342,7 @@ export class ReprojectionSelectionComponent
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
-        private layoutService: LayoutService,
+        private layoutService: LayoutService
     ) {
         this.valueChange.subscribe((projection: Projection) => {
             this.selectedProjection = projection;

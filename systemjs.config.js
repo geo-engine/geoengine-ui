@@ -69,6 +69,7 @@
     'sidenav',
     'icon',
     'input',
+    'button',
     'tabs'
   ];
   mdPackageNames.forEach( function(pkgName) {

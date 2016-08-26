@@ -17,7 +17,7 @@ import {SimplePointSymbology} from '../symbology/symbology.model';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {GfbioService} from '../gfbio/gfbio.service';
+import {UserService} from '../users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
 
@@ -94,10 +94,10 @@ export class AbcdRepositoryComponent {
         private mappingQueryService: MappingQueryService,
         private layerService: LayerService,
         private projectService: ProjectService,
-        private gfbioService: GfbioService,
+        private userService: UserService,
         private randomColorService: RandomColorService
     ) {
-        this.groups = this.gfbioService.getAbcdArchivesStream().map(archives => {
+        this.groups = this.userService.getAbcdArchivesStream().map(archives => {
             let groups: {[groupname: string]: Group<AbcdArchive>} = {};
 
             for (let a of archives) {

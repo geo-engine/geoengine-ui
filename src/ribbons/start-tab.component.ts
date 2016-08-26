@@ -129,7 +129,7 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" layout="column"
                             (click)="addData.emit()">
-                        <i md-icon>storage</i>
+                        <i md-icon>layers</i>
                         <div>Repository</div>
                     </button>
                 </div>
@@ -154,6 +154,14 @@ import {ResultTypes} from '../operators/result-type.model';
                     >
                         <i md-icon>file_upload</i>
                         Upload
+                    </button>
+                    <button md-button *ngIf="false"
+                        class="md-primary small"
+                        disabled="true"
+                        (click)="abcd.emit()"
+                    >
+                        <i md-icon>storage</i>
+                        ABCD archives
                     </button>
                     <button md-button
                         class="md-primary small"
@@ -240,6 +248,8 @@ export class StartTabComponent {
     @Output() addData = new EventEmitter<void>();
 
     @Output() gfbio = new EventEmitter<void>();
+
+    @Output() abcd = new EventEmitter<void>();
 
     @Output() csv = new EventEmitter<void>();
 

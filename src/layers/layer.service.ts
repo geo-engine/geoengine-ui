@@ -175,7 +175,7 @@ export class LayerService {
                     operatorMap
                 );
             default:
-                throw `LayerService.createLayerFromDict: Unknown LayerType -> ${dict.type}.`;
+                throw 'LayerService.createLayerFromDict: Unknown LayerType ->' + dict;
         }
     }
 

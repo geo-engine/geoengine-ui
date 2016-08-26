@@ -7,6 +7,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
 import {MD_TABS_DIRECTIVES, MdTabGroup} from '@angular2-material/tabs';
+import {MdIconRegistry} from  '@angular2-material/icon';
 
 import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
 
@@ -20,6 +21,7 @@ import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
 import {CsvRepositoryComponent} from '../components/csv-repository.component';
+import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
@@ -58,7 +60,8 @@ import {PlotService} from '../plots/plot.service';
                     (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                     (zoomMap)="mapComponent.zoomToMap()"
                     (addData)="sidenavRight.open(); sidenavContainer.load(RRC);"
-                    (gfbio)="sidenavRight.open(); sidenavContainer.load(ARC);"
+                    (gfbio)="sidenavRight.open(); sidenavContainer.load(GBC);"
+                    (abcd)="sidenavRight.open(); sidenavContainer.load(ARC);"
                     (csv)="sidenavRight.open(); sidenavContainer.load(CSV);"
             ></wave-ribbons-component>
         </div>
@@ -252,7 +255,7 @@ import {PlotService} from '../plots/plot.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        MATERIAL_BROWSER_PROVIDERS,
+        MATERIAL_BROWSER_PROVIDERS, MdIconRegistry,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
         StorageService, RandomColorService, ColorPickerService, MapService, NotificationService, UserService,
     ],
@@ -279,6 +282,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
     private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
     private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private GBC = GfbioBasketsComponent;
 
     constructor(
         private layerService: LayerService,

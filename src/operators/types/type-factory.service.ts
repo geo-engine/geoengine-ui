@@ -32,6 +32,7 @@ import {
     MsgSofosGccThermalThresholdType,
 } from './msg-types.model';
 import { CsvSourceType, CsvSourceTypeDict } from './csv-source-type.model';
+import { PangaeaSourceType, PangaeaSourceTypeDict } from './pangaea-source-type.model';
 import { ClassificationTypeDict, ClassificationType} from './classification-type.model';
 
 /**
@@ -83,6 +84,8 @@ export abstract class OperatorTypeFactory {
                 return CsvSourceType.fromDict(dict as CsvSourceTypeDict);
             case ClassificationType.TYPE:
                 return ClassificationType.fromDict(dict as ClassificationTypeDict);
+            case PangaeaSourceType.TYPE:
+                return PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict);
             default:
                 throw 'There is not factory method defined for this operator.';
         }
