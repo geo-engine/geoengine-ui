@@ -5,16 +5,13 @@ import {Observable} from 'rxjs/Rx';
 
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
-import {LayerService} from '../layers/layer.service';
 import {IBasket, BasketTypeAbcdGrouped, BasketTypePangaea} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
-import {MappingQueryService} from '../queries/mapping-query.service';
 import {UserService} from '../users/user.service';
-import {ProjectService} from '../project/project.service';
-import {RandomColorService} from '../services/random-color.service';
-import {BasketResult, GroupedAbcdBasketResult, PangaeaBasketResult} from './gfbio-basket-result.component';
+
 import {MdToolbar} from '@angular2-material/toolbar';
 import {MdIcon} from '@angular2-material/icon';
+import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-result.component";
 
 @Component({
     selector: 'wave-gfbio-baskets',

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
@@ -11,6 +11,7 @@ import Config from '../app/config.model';
 import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {LoginDialogComponent} from '../users/login-dialog.component';
 import {HelpDialogComponent} from '../app/help.component';
+import {IntroductionDialogComponent} from './introduction-dialog.component';
 
 import {UserService} from '../users/user.service';
 import {LayoutService} from '../app/layout.service';
@@ -42,7 +43,7 @@ import {LayoutService} from '../app/layout.service';
     }
     `],
 })
-class VatLogoComponent {}
+export class VatLogoComponent {}
 
 @Component({
     selector: 'wave-idessa-logo',
@@ -66,7 +67,7 @@ class VatLogoComponent {}
     }
     `],
 })
-class IdessaLogoComponent {}
+export class IdessaLogoComponent {}
 
 /**
  * The top left info area component for user info and layer list collapsing.
@@ -107,6 +108,7 @@ class IdessaLogoComponent {}
     </md-toolbar>
     <wave-dialog-loader #loginDialog [type]="LoginDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>
+    <wave-dialog-loader #introductionDialog [type]="IntroductionDialogComponent"></wave-dialog-loader>
     `,
     styles: [`
     :host {
@@ -159,11 +161,14 @@ class IdessaLogoComponent {}
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InfoAreaComponent {
+export class InfoAreaComponent implements AfterViewInit{
+
+    @ViewChild('introductionDialog') introductionDialogLoader: DialogLoaderComponent;
     layerListVisibility$: Observable<boolean>;
     username$: Observable<string>;
 
     // tslint:disable:variable-name
+    IntroductionDialogComponent = IntroductionDialogComponent;
     LoginDialogComponent = LoginDialogComponent;
     HelpDialogComponent = HelpDialogComponent;
     // tslint:enable
@@ -177,5 +182,9 @@ export class InfoAreaComponent {
         this.username$ = this.userService.getSessionStream().map(
             session =>  session.user === Config.USER.GUEST.NAME ? 'login' : session.user
         );
+    }
+
+    ngAfterViewInit() {
+        this.introductionDialogLoader.show(); //TODO: listen to the checkbox
     }
 }
