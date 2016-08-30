@@ -16,13 +16,14 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
 @Component({
     selector: 'wave-gfbio-baskets',
     template: `
-    <div style="height:100%" layout="column">
+    <div style="height:100%; min-width:300px;" layout="column">
         <md-toolbar>
           <label>Basket: </label>
-            <select [(ngModel)]='selectedBasket'>
-                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'>{{basket.timestamp}} - {{basket.query}}</option>
+            <select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
+                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'> {{basket.timestamp}} - {{basket.query}} </option>
             </select> 
-          <button md-button class='md-icon-button' aria-label='sync' (click)='relord()'>
+          <span></span>
+          <button md-icon-button aria-label='sync' (click)='relord()'>
             <md-icon>sync</md-icon>
           </button>
         </md-toolbar>
@@ -44,8 +45,8 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
     styles: [`
 
     
-    .searchInput {
-        width: 100%;
+    .toolbar-fill-remaining-space {
+        flex: 1 1 auto;
     }
     md-list-item {
         cursor: pointer;
@@ -61,12 +62,11 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
     `],
     pipes: [BasketResultGroupByDatasetPipe],
     directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MdIcon, MdToolbar, PangaeaBasketResult, GroupedAbcdBasketResult],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class GfbioBasketsComponent {
 
-    private baskets: Observable<Array<IBasket>>;
+    private baskets: Observable<Array<IBasket>> = Observable.of([]);
     private selectedBasket: IBasket;
     private abcdGroupedType: BasketTypeAbcdGrouped = 'abcd_grouped';
 
@@ -74,7 +74,14 @@ export class GfbioBasketsComponent {
         private userService: UserService
     ) {
         this.baskets = this.userService.getGfbioBasketStream();
-
+        this.baskets.subscribe(b => {
+            if (!this.selectedBasket) {
+                if(b.length > 0) {
+                    console.log("init basket", b);
+                    this.selectedBasket = b[0];
+                }
+            }
+        })
     }
 
     relord() {
