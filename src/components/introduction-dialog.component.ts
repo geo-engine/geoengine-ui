@@ -13,7 +13,7 @@ import {VatLogoComponent} from './info-area.component';
         <p>Visualize, analyse and transform your biodiversity data in a comfortable online GIS environment! Save and share your workflows!</p>
         <p>Have access to collections and biodiversity data centers, international data aggregators and environmental data, and integrate your own data!</p>
         <p>For a detailed introduction, please have a look at our help section!</p>
-        <md-checkbox>Don’t show this message again</md-checkbox>
+        <md-checkbox [ngModel]="isChecked" (change)="changeTick($event)">Don’t show this message again</md-checkbox>
     `,
     styles: [`
     
@@ -31,12 +31,18 @@ import {VatLogoComponent} from './info-area.component';
 })
 export class IntroductionDialogComponent extends DefaultBasicDialog implements OnInit{
 
+    private isChecked: boolean;
+
     constructor(private userService: UserService) {
         super();
     }
 
     ngOnInit() {
         this.dialog.setTitle('Visualization, analysis and transformation system');
+    }
+
+    changeTick(event: any) {
+        console.log("changeTick", event);
     }
 
 }

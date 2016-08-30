@@ -16,17 +16,17 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
 @Component({
     selector: 'wave-gfbio-baskets',
     template: `
-    <md-toolbar>
-      <label>Basket: </label>
-        <select [(ngModel)]='selectedBasket'>
-            <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'>{{basket.timestamp}} - {{basket.query}}</option>
-        </select> 
-      <button md-button class='md-icon-button' aria-label='sync' (click)='relord()'>
-        <md-icon>sync</md-icon>
-      </button>
-    </md-toolbar>
-    <div layout='column'>
-        <md-content>
+    <div style="height:100%" layout="column">
+        <md-toolbar>
+          <label>Basket: </label>
+            <select [(ngModel)]='selectedBasket'>
+                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'>{{basket.timestamp}} - {{basket.query}}</option>
+            </select> 
+          <button md-button class='md-icon-button' aria-label='sync' (click)='relord()'>
+            <md-icon>sync</md-icon>
+          </button>
+        </md-toolbar>
+        <md-content flex="grow">
              <template [ngIf]='selectedBasket'>       
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       

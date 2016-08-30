@@ -26,8 +26,7 @@ import {ProjectService} from '../project/project.service';
     selector: 'wave-raster-repository',
     template: `
     <div style="height:100%" layout="column">
-    <md-input placeholder="Search term" type="text" [(ngModel)]="_searchTerm"
-    ></md-input>
+        <md-input placeholder="Search term" type="text" [(ngModel)]="_searchTerm"></md-input>
     <md-content flex="grow">
       <md-list>
         <template
