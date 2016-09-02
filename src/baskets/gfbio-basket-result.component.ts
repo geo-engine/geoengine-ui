@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
 import {MdButton} from '@angular2-material/button';
 import {CORE_DIRECTIVES} from '@angular/common';
@@ -16,7 +16,7 @@ import {SimplePointSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {LayerService} from '../layers/layer.service';
 import {RandomColorService} from '../services/random-color.service';
-import {PangaeaSourceType} from "../operators/types/pangaea-source-type.model";
+import {PangaeaSourceType} from '../operators/types/pangaea-source-type.model';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
@@ -61,13 +61,19 @@ export class BasketResult<T extends IBasketResult>  {
            <md-card-content >
                 <table class='main' >
                     <tr>
-                        <td class='key'>Authors</td> <td>{{result.authors | waveTrimPipe}}</td>
+                        <td class='key'>Authors</td>
+                        <td>
+                            <template ngFor let-author [ngForOf]='result.authors'>
+                                <span class='author'>{{author | waveTrimPipe}}</span>
+                            </template>
+                        </td>
                     </tr>
                     <tr>
                         <td class='key'>Data center</td> <td>{{result.dataCenter | waveTrimPipe}}</td>
                     </tr>
                     <tr>
-                        <td class='key'>Metadata</td> <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
+                        <td class='key'>Metadata</td>
+                         <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
                     </tr>
 
                 </table>
@@ -93,6 +99,14 @@ export class BasketResult<T extends IBasketResult>  {
             border-spacing: 0;
         }
         
+        td .author {
+            
+        }
+        
+        td .author:not(:last-child)::after {
+            content: '; ';
+        }
+        
         md-card {
             max-width: 600px !important;
         }
@@ -104,7 +118,6 @@ export class BasketResult<T extends IBasketResult>  {
         .main {
             width: 100%;
         }
-        
         
         .key {
             color: darkslategray;
@@ -154,13 +167,19 @@ export class PangaeaBasketResult extends BasketResult<IBasketPangaeaResult> {
            <md-card-content>
                 <table class='main'>
                     <tr>
-                        <td class='key'>Authors</td> <td>{{result.authors | waveTrimPipe}}</td>
+                        <td class='key'>Authors</td> 
+                        <td>
+                            <template ngFor let-author [ngForOf]='result.authors'>
+                                <span class='author'>{{author | waveTrimPipe}}</span>
+                            </template>
+                        </td>
                     </tr>
                     <tr>
                         <td class='key'>Data center</td> <td>{{result.dataCenter | waveTrimPipe}}</td>
                     </tr>
                     <tr>
-                        <td class='key'>Metadata</td> <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
+                        <td class='key'>Metadata</td>
+                        <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
                     </tr>
 
                 </table>
@@ -175,7 +194,8 @@ export class PangaeaBasketResult extends BasketResult<IBasketPangaeaResult> {
                                 </tr>
                             <template ngFor let-unit [ngForOf]='result.units'>
                                 <tr>
-                                    <td>{{unit.prefix}}</td> <td>{{unit.type}}</td> <td><a href='{{unit.metadataLink}}'>{{unit.unitId}}</a></td>
+                                    <td>{{unit.prefix}}</td> <td>{{unit.type}}</td>
+                                    <td><a href='{{unit.metadataLink}}'>{{unit.unitId}}</a></td>
                                 </tr>
                             </template>
                         </table>
@@ -225,20 +245,25 @@ export class PangaeaBasketResult extends BasketResult<IBasketPangaeaResult> {
             width: 100%;
         }
         
+        td .author {
+            
+        }
+        
+        td .author:not(:last-child)::after {
+            content: '; ';
+        }
+        
         .key {
             color: darkslategray;
         }
-       
         
         .key::after {
             content: ':';
         }
         
-        .additional {
-          
+        .additional {          
             width: 100%;
             font-size: 12px;
-
         }
         
         .additional tr:nth-child(odd) {
@@ -248,12 +273,11 @@ export class PangaeaBasketResult extends BasketResult<IBasketPangaeaResult> {
          .additional tr:nth-child(even) {
             background-color: lightgray;
         }
-
     `],
     pipes: [TrimPipe],
     directives: [CORE_DIRECTIVES, MD_CARD_DIRECTIVES, MdButton],
 })
-export class GroupedAbcdBasketResult extends BasketResult<IBasketGroupedAbcdResult> implements OnInit{
+export class GroupedAbcdBasketResult extends BasketResult<IBasketGroupedAbcdResult> implements OnInit {
     showUnits: boolean = false;
     hasUnits: boolean = false;
 

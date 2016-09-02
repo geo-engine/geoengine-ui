@@ -125,21 +125,19 @@ import {ResultTypes} from '../operators/result-type.model';
         <fieldset>
             <legend>Add Data</legend>
             <div layout="row">
-                <div layout="column" layout-align="space-around center">
+                <div layout="column">
                     <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column"
+                            class="md-primary small"
                             (click)="addData.emit()">
                         <i md-icon>layers</i>
-                        <div>Repository</div>
+                       Environmental
                     </button>
-                </div>
-                <div layout="column">
-                    <button md-button *ngIf="Config.PROJECT === 'GFBio' || Config.DEVELOPER_MODE"
+                    <button md-button
                         class="md-primary small"
-                        (click)="gfbio.emit()"
+                        (click)="abcd.emit()"
                     >
-                        <i md-icon>add_shopping_cart</i>
-                        GFBio Data
+                        <i md-icon>storage</i>
+                        ABCD archives
                     </button>
                     <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
                         class="md-primary small"
@@ -148,6 +146,16 @@ import {ResultTypes} from '../operators/result-type.model';
                         <i md-icon>show_chart</i>
                         Sensors
                     </button>
+                </div>
+                <div layout="column">
+                    <button md-button *ngIf="Config.PROJECT === 'GFBio' || Config.DEVELOPER_MODE"
+                        class="md-primary small"
+                        (click)="gfbio.emit()"
+                    >
+                        <i md-icon>add_shopping_cart</i>
+                        GFBio baskets
+                    </button>
+
                     <button md-button *ngIf="false"
                         class="md-primary small"
                         disabled="true"
@@ -155,20 +163,13 @@ import {ResultTypes} from '../operators/result-type.model';
                         <i md-icon>file_upload</i>
                         Upload
                     </button>
-                    <button md-button *ngIf="false"
-                        class="md-primary small"
-                        disabled="true"
-                        (click)="abcd.emit()"
-                    >
-                        <i md-icon>storage</i>
-                        ABCD archives
-                    </button>
+                    
                     <button md-button
                         class="md-primary small"
                         (click)="gbifLoader.show()"
                     >
                         <i md-icon>search</i>
-                        Occurrences
+                        Sp. distribution
                     </button>
                     <button md-button
                         *ngIf="false"

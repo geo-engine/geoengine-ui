@@ -8,7 +8,7 @@ export type BasketTypeAbcdGrouped = 'abcd_grouped';
 export type BasketTypePangaea = 'pangaea';
 
 export interface IBasketResult {
-    authors:  string;
+    authors: Array<string>;
     available: boolean;
     dataCenter: string;
     dataLink: string;

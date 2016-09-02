@@ -20,7 +20,9 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
         <md-toolbar>
           <label>Basket: </label>
             <select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
-                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'> {{basket.timestamp}} - {{basket.query}} </option>
+                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'> 
+                    {{basket.timestamp}} - {{basket.query}}
+                    </option>
             </select> 
           <span></span>
           <button md-icon-button aria-label='sync' (click)='relord()'>
@@ -32,18 +34,17 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
                       <template [ngIf]='result.type === abcdGroupedType'>
-                        <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>                      
+                        <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
                       </template>
                       <template [ngIf]='result.type !== abcdGroupedType'>
                         <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
                       </template>
                 </template>
-             </template>             
+             </template>
         </md-content>
     </div>
     `,
     styles: [`
-
     
     .toolbar-fill-remaining-space {
         flex: 1 1 auto;
@@ -76,12 +77,12 @@ export class GfbioBasketsComponent {
         this.baskets = this.userService.getGfbioBasketStream();
         this.baskets.subscribe(b => {
             if (!this.selectedBasket) {
-                if(b.length > 0) {
-                    console.log("init basket", b);
+                if( b.length > 0 ) {
+                    console.log('init basket', b);
                     this.selectedBasket = b[0];
                 }
             }
-        })
+        });
     }
 
     relord() {
