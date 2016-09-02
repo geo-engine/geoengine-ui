@@ -72,11 +72,11 @@ import {HistogramType} from '../types/histogram-type.model';
                     <md-input type="number" placeholder="Min" ngControl="rangeMin"></md-input>
                     <md-input type="number" placeholder="Max" ngControl="rangeMax"></md-input>
                 </div>
-                <md-checkbox ngControl="autoBuckets" #autoBuckets>
+                <md-checkbox type="checkbox" ngControl="autoBuckets" #autoB>
                     Choose number of buckets automatically
                 </md-checkbox>
                 <md-input
-                    *ngIf="!autoBuckets.checked"
+                    *ngIf="!autoB.checked"
                     type="number"
                     class="choose-buckets"
                     placeholder="Number of Buckets"
@@ -138,7 +138,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
             'rangeType': [this.rangeTypes[2], Validators.required],
             'rangeMin': [0, Validators.required],
             'rangeMax': [0, Validators.required],
-            autoBuckets: [true, Validators.required],
+            'autoBuckets': [true, Validators.required],
             'buckets': [20, Validators.required],
             'name': ['Histogram', Validators.required],
         });
@@ -182,7 +182,12 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
             range = this.configForm.controls['rangeType'].value.toLowerCase();
         }
         let buckets: number = undefined;
-        if (!this.configForm.controls['autoBuckets'].value) {
+
+        // TODO: fix forms...
+        let a = (!!this.configForm.controls['autoBuckets'].value && this.configForm.controls['autoBuckets'].value.checked === undefined);
+        let b = (!!this.configForm.controls['autoBuckets'].value && this.configForm.controls['autoBuckets'].value.checked !== undefined && this.configForm.controls['autoBuckets'].value.checked);
+        if (!(a || b)) {
+            console.log(this.configForm);
             buckets = parseInt(this.configForm.controls['buckets'].value, 10);
         }
 
