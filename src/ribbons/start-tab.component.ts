@@ -3,7 +3,8 @@ import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
+import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
 
 import Config from '../app/config.model';
 
@@ -38,7 +39,7 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" [disabled]="true"
                             layout="column" layout-align="center center">
-                        <i md-icon>info</i>
+                        <md-icon>info</md-icon>
                         <div>Info</div>
                     </button>
                 </div>
@@ -46,7 +47,7 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                             (click)="lineageDialog.show()">
-                        <i md-icon>merge_type</i>
+                        <md-icon>merge_type</md-icon>
                         Lineage
                     </button>
                     <button md-button
@@ -55,12 +56,12 @@ import {ResultTypes} from '../operators/result-type.model';
                         [disabled]="!(isLayerSelected$ | async)"
                         (click)="exportDialog.show()"
                     >
-                        <i md-icon>file_download</i>
+                        <md-icon>file_download</md-icon>
                         Export
                     </button>
                     <button md-button style="text-align: left; margin: 0px; visibility: hidden;"
                             class="md-primary" [disabled]="true">
-                        <i md-icon>share</i>
+                        <md-icon>share</md-icon>
                         Share
                     </button>
                 </div>
@@ -68,19 +69,19 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                             (click)="renameLayerDialog.show()">
-                        <i md-icon>mode_edit</i>
+                        <md-icon>mode_edit</md-icon>
                         Rename
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                       (click)="symbologyDialog.show()">
-                        <i md-icon>format_paint</i>
+                        <md-icon>format_paint</md-icon>
                         Symbology
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                             (click)="removeSelectedLayer()">
-                        <i md-icon>cancel</i>
+                        <md-icon>cancel</md-icon>
                         Remove
                     </button>
                 </div>
@@ -94,29 +95,29 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomLayer.emit()"
                             [disabled]="!(isLayerSelected$ | async)">
-                        <i md-icon>zoom_in</i>
+                        <md-icon>zoom_in</md-icon>
                         Layer
                     </button>
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomProject.emit()"
                             disabled="true" style="visibility: hidden; margin: 0;">
-                        <i md-icon>zoom_in</i>
+                        <md-icon>zoom_in</md-icon>
                         Project
                     </button>
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomMap.emit()">
-                        <i md-icon>zoom_out</i>
+                        <md-icon>zoom_out</md-icon>
                         Map
                     </button>
                 </div>
                 <div layout="column" layout-align="space-around center">
-                    <button md-fab class="md-mini md-primary" aria-label="Zoom In"
+                    <button md-icon-button md-fab class="md-mini md-primary" aria-label="Zoom In"
                             (click)="zoomIn.emit()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                     </button>
-                    <button md-fab class="md-mini md-primary" aria-label="Zoom Out"
+                    <button md-icon-button md-fab class="md-mini md-primary" aria-label="Zoom Out"
                             (click)="zoomOut.emit()">
-                        <i md-icon>remove</i>
+                        <md-icon>remove</md-icon>
                     </button>
                 </div>
             </div>
@@ -129,21 +130,21 @@ import {ResultTypes} from '../operators/result-type.model';
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary small"
                             (click)="addData.emit()">
-                        <i md-icon>layers</i>
+                        <md-icon>layers</md-icon>
                        Environmental
                     </button>
                     <button md-button
                         class="md-primary small"
                         (click)="abcd.emit()"
                     >
-                        <i md-icon>storage</i>
+                        <md-icon>storage</md-icon>
                         ABCD archives
                     </button>
                     <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
                         class="md-primary small"
                         (click)="csv.emit()"
                     >
-                        <i md-icon>show_chart</i>
+                        <md-icon>show_chart</md-icon>
                         Sensors
                     </button>
                 </div>
@@ -152,7 +153,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         class="md-primary small"
                         (click)="gfbio.emit()"
                     >
-                        <i md-icon>add_shopping_cart</i>
+                        <md-icon>add_shopping_cart</md-icon>
                         GFBio baskets
                     </button>
 
@@ -160,7 +161,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         class="md-primary small"
                         disabled="true"
                     >
-                        <i md-icon>file_upload</i>
+                        <md-icon>file_upload</md-icon>
                         Upload
                     </button>
                     
@@ -168,7 +169,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         class="md-primary small"
                         (click)="gbifLoader.show()"
                     >
-                        <i md-icon>search</i>
+                        <md-icon>search</md-icon>
                         Sp. distribution
                     </button>
                     <button md-button
@@ -176,7 +177,7 @@ import {ResultTypes} from '../operators/result-type.model';
                         class="md-primary small"
                         disabled="true"
                     >
-                        <i md-icon>brush</i>
+                        <md-icon>brush</md-icon>
                         Draw
                     </button>
                 </div>
@@ -230,7 +231,7 @@ import {ResultTypes} from '../operators/result-type.model';
     }
     `],
     directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, TimeRibbonComponent,
+        CORE_DIRECTIVES, MD_ICON_DIRECTIVES, MD_BUTTON_DIRECTIVES, TimeRibbonComponent,
         DialogLoaderComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,

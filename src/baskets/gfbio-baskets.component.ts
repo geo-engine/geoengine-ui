@@ -4,13 +4,14 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {Observable} from 'rxjs/Rx';
 
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
+import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
+import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
+import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 
 import {IBasket, BasketTypeAbcdGrouped, BasketTypePangaea} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
 import {UserService} from '../users/user.service';
 
-import {MdToolbar} from '@angular2-material/toolbar';
-import {MdIcon} from '@angular2-material/icon';
 import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-result.component";
 
 @Component({
@@ -62,7 +63,7 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
     }
     `],
     pipes: [BasketResultGroupByDatasetPipe],
-    directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MdIcon, MdToolbar, PangaeaBasketResult, GroupedAbcdBasketResult],
+    directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, PangaeaBasketResult, GroupedAbcdBasketResult],
 })
 
 export class GfbioBasketsComponent {
