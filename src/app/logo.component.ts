@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component} from '@angular/core';
 
 @Component({
     selector: 'wave-vat-logo',
@@ -28,6 +28,29 @@ import {Component} from "@angular/core";
     `],
 })
 export class VatLogoComponent {}
+
+@Component({
+    selector: 'wave-gfbio-logo',
+    template: `
+    <h1>
+        <img src="assets/logo_gfbio.png">
+    </h1>
+    `,
+    styles: [`
+    h1 {
+        opacity: 1;
+        font-size: 34px;
+    }
+    img {
+        vertical-align: middle;
+        height: 41px;
+    }
+    span {
+        opacity: 0.5;
+    }
+    `],
+})
+export class GFBioLogoComponent {}
 
 @Component({
     selector: 'wave-idessa-logo',
