@@ -3,7 +3,7 @@ import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserService} from '../users/user.service';
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-import {VatLogoComponent} from './info-area.component';
+import {VatLogoComponent} from '../app/logo.component';
 
 @Component({
     selector: 'wave-introduction-dialog',
@@ -24,7 +24,7 @@ import {VatLogoComponent} from './info-area.component';
     `],
     providers: [],
     directives: [
-        COMMON_DIRECTIVES, MD_CHECKBOX_DIRECTIVES,
+        COMMON_DIRECTIVES, MD_CHECKBOX_DIRECTIVES, VatLogoComponent,
     ],
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
