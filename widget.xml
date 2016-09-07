@@ -19,13 +19,16 @@
             iframe.src = prefs.getString('VAT_URL');
 
             // listen on load event and then send the token
-            function forwardToken() {
-                parent.Liferay.Service(
-                    '/GFBioProject-portlet.basket/get-token',
-                    function(token) {
-                        iframe.contentWindow.postMessage({ type: 'TOKEN_LOGIN', token: token }, '*');
-                    }
-                );
+            function forwardToken(event) {
+                var message = event.data;
+                if (message.type === 'STATUS' && message.status === 'READY') {
+                    parent.Liferay.Service(
+                        '/GFBioProject-portlet.basket/get-token',
+                        function (token) {
+                            iframe.contentWindow.postMessage({type: 'TOKEN_LOGIN', token: token}, '*');
+                        }
+                    );
+                }
             }
 
             window.addEventListener('message', forwardToken);
@@ -33,6 +36,6 @@
             // append iframe to document body
             document.getElementsByTagName('body')[0].appendChild(iframe);
         </script>
-	]]>
+        ]]>
     </Content>
 </Module>

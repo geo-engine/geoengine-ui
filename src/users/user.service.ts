@@ -442,10 +442,36 @@ export class UserService {
         );
     }
 
-    // service gfbio
-    // request login
-    // parameter: token=???
-    // result is login (true + token)
+    /**
+     * Login using the gfbio token. If it was successful, set a new user.
+     * @param token The user's token.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    gfbioTokenLogin(token: string): Promise<boolean> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            sessionToken: undefined,
+            request: 'login',
+            parameters: {token: token},
+        });
+        return this.request(parameters).then(response => {
+            const result = response.json() as {result: string | boolean, session: string};
+            const success = typeof result.result === 'boolean' && result.result === true;
+
+            if (success) {
+                return this.getUserDetails({user: undefined, sessionToken: result.session}).then(user => {
+                    this.session$.next({
+                        user: user.name,
+                        sessionToken: result.session,
+                        staySignedIn: false, // TODO: think about good default value
+                    });
+                    return true;
+                });
+            } else {
+                return false;
+            }
+        });
+    }
 
     /**
      * Get the session data.
