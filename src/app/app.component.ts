@@ -371,8 +371,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     public handleMessage(message: { type: string }) {
         switch (message.type) {
             case 'TOKEN_LOGIN':
-                const tokenMessage: { type: string, token: string } = message;
-                this.userService.gfbioTokenLogin(tokenMessage.token).then(success => console.log("success"));
+                const tokenMessage = message as { type: string, token: string };
+                this.userService.gfbioTokenLogin(tokenMessage.token);
                 break;
             default:
                 // unhandled message
