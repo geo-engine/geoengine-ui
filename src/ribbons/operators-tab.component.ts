@@ -11,6 +11,8 @@ import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {OperatorButtonComponent, OperatorSelectionGroupComponent}
   from './operator-selection-group.component';
 
+import Config from '../app/config.model';
+
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {ProjectService} from '../project/project.service';
@@ -83,7 +85,7 @@ import {
                 (click)="histogramOperatorDialog.show()">
             </wave-operator-button>
         </wave-operator-selection-group>
-        <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons">
+        <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons" *ngIf="Config.DEVELOPER_MODE">
             <wave-operator-button [small]="smallButtons"
                 [text]="RScriptType.NAME"
                 [iconUrl]="RScriptType.ICON_URL"
@@ -194,6 +196,9 @@ export class OperatorsTabComponent implements AfterViewInit {
     @Input() maxWidth: number;
 
     smallButtons = false;
+
+    // make config available in the view
+    Config = Config // tslint:disable-line:variable-name
 
     // make these types accessible in the view
     // tslint:disable:variable-name
