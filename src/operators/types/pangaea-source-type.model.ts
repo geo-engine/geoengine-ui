@@ -1,17 +1,19 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
+import {CsvParameters} from '../../models/csv.model';
 
 interface PangaeaSourceTypeConfig {
     dataLink: string;
-
+    csvParameters: CsvParameters;
 }
 
-interface PangaeaSourceTypeMappingDict extends OperatorTypeMappingDict {
+interface PangaeaSourceTypeMappingDict extends OperatorTypeMappingDict, CsvParameters {
     dataLink: string;
 }
 
 export interface PangaeaSourceTypeDict extends OperatorTypeDict  {
     dataLink: string;
+    csvParameters: CsvParameters;
 }
 
 /**
@@ -26,17 +28,20 @@ export class PangaeaSourceType extends OperatorType {
     static get ICON_URL(): string { return PangaeaSourceType._ICON_URL; }
     static get NAME(): string { return PangaeaSourceType._NAME; }
 
-    private dataLink: string
+    private dataLink: string;
+    private csvParameters: CsvParameters;
 
     constructor(config: PangaeaSourceTypeConfig) {
         super();
         this.dataLink = config.dataLink;
+        this.csvParameters = config.csvParameters;
     }
 
     static fromDict(dict: PangaeaSourceTypeDict): PangaeaSourceType {
         return new PangaeaSourceType({
             dataLink: dict.dataLink,
-        });
+            csvParameters: dict.csvParameters,
+    });
     }
 
     getMappingName(): string {
@@ -54,19 +59,24 @@ export class PangaeaSourceType extends OperatorType {
     getParametersAsStrings(): Array<[string, string]> {
         return [
             ['dataLink', this.dataLink],
+            ['geometry', this.csvParameters.geometry],
+            ['separator', (this.csvParameters.separator) ?
+                this.csvParameters.separator : ''],
+            ['time', (this.csvParameters.time) ? this.csvParameters.time : ''],
         ];
     }
 
     toMappingDict(): PangaeaSourceTypeMappingDict {
-        return {
-            dataLink: this.dataLink,
-        };
+        let dict = this.csvParameters as PangaeaSourceTypeMappingDict;
+        dict.dataLink = this.dataLink;
+        return dict;
     }
 
     toDict(): PangaeaSourceTypeDict {
         return {
             operatorType: PangaeaSourceType.TYPE,
             dataLink: this.dataLink,
+            csvParameters: this.csvParameters,
         };
     }
 

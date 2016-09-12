@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
@@ -8,11 +8,11 @@ import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
 import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
 import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 
-import {IBasket, BasketTypeAbcdGrouped, BasketTypePangaea} from './gfbio-basket.model';
+import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
 import {UserService} from '../users/user.service';
 
-import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-result.component";
+import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './gfbio-basket-result.component';
 
 @Component({
     selector: 'wave-gfbio-baskets',
@@ -25,7 +25,7 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
                     {{basket.timestamp}} - {{basket.query}}
                     </option>
             </select> 
-          <span></span>
+          <span class="toolbar-fill-remaining-space"></span>
           <button md-icon-button aria-label='sync' (click)='relord()'>
             <md-icon>sync</md-icon>
           </button>
@@ -34,10 +34,10 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
              <template [ngIf]='selectedBasket'>       
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
-                      <template [ngIf]='result.type === abcdGroupedType'>
+                      <template [ngIf]='result.type === _abcdGroupedType'>
                         <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
                       </template>
-                      <template [ngIf]='result.type !== abcdGroupedType'>
+                      <template [ngIf]='result.type !== _abcdGroupedType'>
                         <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
                       </template>
                 </template>
@@ -59,29 +59,28 @@ import {PangaeaBasketResult, GroupedAbcdBasketResult} from "./gfbio-basket-resul
         font-weight: bold;
     }
     img {
-      padding: 5px 5px 5px 0px;
+      padding: 5px 5px 5px 0;
     }
     `],
     pipes: [BasketResultGroupByDatasetPipe],
-    directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, PangaeaBasketResult, GroupedAbcdBasketResult],
+    directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES,
+        PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent],
 })
 
 export class GfbioBasketsComponent {
 
     private baskets: Observable<Array<IBasket>> = Observable.of([]);
     private selectedBasket: IBasket;
-    private abcdGroupedType: BasketTypeAbcdGrouped = 'abcd_grouped';
+    private _abcdGroupedType: BasketTypeAbcdGrouped = 'abcd_grouped';
 
     constructor(
         private userService: UserService
     ) {
         this.baskets = this.userService.getGfbioBasketStream();
         this.baskets.subscribe(b => {
-            if (!this.selectedBasket) {
-                if( b.length > 0 ) {
-                    console.log('init basket', b);
-                    this.selectedBasket = b[0];
-                }
+            if (!this.selectedBasket && !!b && b.length > 0) {
+                console.log('init basket', b);
+                this.selectedBasket = b[0];
             }
         });
     }

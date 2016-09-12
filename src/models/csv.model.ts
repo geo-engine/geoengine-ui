@@ -16,14 +16,13 @@ export interface CsvTimeFormat {
 export type CsvErrorCase = 'skip' | 'abort' | 'keep';
 
 export interface CsvParameters {
-    filename: string;
-    field_separator?: string;
+    separator?: string;
     on_error?: CsvErrorCase;
     geometry: 'xy' | 'wkt';
     time: 'none' | 'start' | 'start+end' | 'start+duration';
     time1_format?: CsvTimeFormat;
     time2_format?: CsvTimeFormat;
-    duration: number;
+    duration?: number;
     columns: CsvColumns;
 }
 
@@ -31,4 +30,14 @@ export interface Csv {
   name: string;
   params: CsvParameters;
   geometry_type?: 'points' | 'lines' | 'polygons';
+}
+
+export interface CsvColumn {
+    name: string;
+    numeric: boolean;
+    unit: string;
+}
+
+export interface CsvFile extends Csv {
+    filename: string;
 }

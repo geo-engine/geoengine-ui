@@ -13,7 +13,7 @@ import {IBasket} from '../baskets/gfbio-basket.model';
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
 } from '../models/mapping-source.model';
-import {Csv} from '../models/csv.model';
+import {CsvFile} from '../models/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 
@@ -332,8 +332,8 @@ export class UserService {
     /**
      * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
      */
-    getCsvStream(): Observable<Array<Csv>> {
-        type CsvResponse = Array<Csv>;
+    getCsvStream(): Observable<Array<CsvFile>> {
+        type CsvResponse = Array<CsvFile>;
 
         const csvSourcesUrl = './assets/csv-data-sources.json';
 
