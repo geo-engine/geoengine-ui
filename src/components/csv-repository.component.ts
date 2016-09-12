@@ -3,7 +3,9 @@ import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
+import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
+import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
+import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../layers/layer.service';
@@ -11,7 +13,7 @@ import {VectorLayer} from '../layers/layer.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
-import {Csv} from '../models/csv.model';
+import {CsvFile} from '../models/csv.model';
 import {CsvSourceType} from '../operators/types/csv-source-type.model';
 import {
     AbstractVectorSymbology, SimplePointSymbology, SimpleVectorSymbology,
@@ -26,26 +28,41 @@ import {RandomColorService} from '../services/random-color.service';
 @Component({
     selector: 'wave-csv-repository',
     template: `
-    <div style="height:100%" layout="column">
-    <md-content flex="grow">
-      <md-list>
-
-            <template ngFor let-csv [ngForOf]="csvs | async" >
-                <md-list-item md-clickable class="md-2-line">
-                  <div class="md-list-item-text"
-                    layout="column"
-                    (click)="add(csv)">
-                    <p>{{csv.name}}</p>
-                    <p>{{csv.params.filename}}</p>
-                  </div>
-              </md-list-item>
-              <md-divider></md-divider>
-          </template>
-      </md-list>
+     <div style="height:100%; min-width:300px;" layout="column">
+        <md-toolbar>
+          <label>CSV data / upload</label>            
+          <span class="toolbar-fill-remaining-space"></span>
+           <button md-button aria-label='sync' (click)='relord()'>
+            <md-icon>cloud_upload</md-icon>
+            upload
+          </button>
+          <button md-icon-button aria-label='sync' (click)='relord()'>
+            <md-icon>sync</md-icon>
+          </button>
+        </md-toolbar>
+        <md-content flex="grow">
+          <md-list>
+    
+                <template ngFor let-csv [ngForOf]="csvs | async" >
+                    <md-list-item md-clickable class="md-2-line">
+                      <div class="md-list-item-text"
+                        layout="column"
+                        (click)="add(csv)">
+                        <p>{{csv.name}}</p>
+                        <p>{{csv.params.filename}}</p>
+                      </div>
+                  </md-list-item>
+                  <md-divider></md-divider>
+              </template>
+          </md-list>
     </md-content>
     </div>
     `,
     styles: [`
+
+    .toolbar-fill-remaining-space {
+        flex: 1 1 auto;
+    }
     .searchInput {
         width: 100%;
     }
@@ -61,13 +78,12 @@ import {RandomColorService} from '../services/random-color.service';
       padding: 5px 5px 5px 0px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    directives: [CORE_DIRECTIVES, MD_ICON_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES],
 })
 
 export class CsvRepositoryComponent {
 
-    private csvs: Observable<Array<Csv>>;
+    private csvs: Observable<Array<CsvFile>>;
 
     constructor(
         private mappingQueryService: MappingQueryService,
@@ -79,7 +95,7 @@ export class CsvRepositoryComponent {
         this.csvs = this.userService.getCsvStream();
     }
 
-    add(csv: Csv) {
+    add(csv: CsvFile) {
 
         const fillRGBA = this.randomColorService.getRandomColor();
         let resultType = ResultTypes.POINTS;
@@ -116,6 +132,7 @@ export class CsvRepositoryComponent {
         const operator = new Operator({
             operatorType: new CsvSourceType({
                 csvParameters: csv.params,
+                filename: csv.filename,
             }),
             resultType: resultType,
             projection: Projections.WGS_84,

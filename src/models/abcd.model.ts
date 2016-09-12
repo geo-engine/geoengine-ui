@@ -3,4 +3,4 @@ export interface AbcdArchive {
     file: string;
     link: string;
     provider: string;
-};
+}

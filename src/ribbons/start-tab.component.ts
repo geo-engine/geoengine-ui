@@ -144,8 +144,8 @@ import {ResultTypes} from '../operators/result-type.model';
                         class="md-primary small"
                         (click)="csv.emit()"
                     >
-                        <md-icon>show_chart</md-icon>
-                        Sensors
+                        <md-icon>grid_on</md-icon>
+                        CSV data/import
                     </button>
                 </div>
                 <div layout="column">

@@ -13,7 +13,7 @@ import {IBasket} from '../baskets/gfbio-basket.model';
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
 } from '../models/mapping-source.model';
-import {Csv} from '../models/csv.model';
+import {CsvFile, CsvColumn} from '../models/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 
@@ -332,12 +332,25 @@ export class UserService {
     /**
      * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
      */
-    getCsvStream(): Observable<Array<Csv>> {
-        type CsvResponse = Array<Csv>;
+    getCsvStream(): Observable<Array<CsvFile>> {
+        type CsvResponse = Array<CsvFile>;
 
         const csvSourcesUrl = './assets/csv-data-sources.json';
 
         return this.http.get(csvSourcesUrl).map(
+            response => response.json()
+        ).map((csvs: CsvResponse) => csvs);
+    }
+
+    /**
+     * Get the schema of a source operator. TODO: this should be replaced by a generic service call, which resolves the shema of a source.
+     */
+    getSourceSchemaAbcd(): Observable<Array<CsvColumn>> {
+        type CsvResponse = Array<CsvColumn>;
+
+        const jsonUrl = './assets/abcd-mandatory-fields.json';
+
+        return this.http.get(jsonUrl).map(
             response => response.json()
         ).map((csvs: CsvResponse) => csvs);
     }

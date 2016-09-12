@@ -10,9 +10,9 @@ import {LayerService} from '../layers/layer.service';
 import {VectorLayer} from '../layers/layer.model';
 import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
-import {DataType} from '../operators/datatype.model';
+import {DataType, DataTypes} from '../operators/datatype.model';
 import {AbcdArchive} from '../models/abcd.model';
-import {ABCDSourceType} from '../operators/types/abcd-source-type.model';
+import {ABCDSourceType, ABCDSourceTypeConfig} from '../operators/types/abcd-source-type.model';
 import {SimplePointSymbology} from '../symbology/symbology.model';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
@@ -20,6 +20,7 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 import {UserService} from '../users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
+import {BasicColumns} from "../models/csv.model";
 
 type Grouped<T> = Iterable<Group<T>>;
 
@@ -124,29 +125,56 @@ export class AbcdRepositoryComponent {
 
     add(archive: AbcdArchive) {
 
-        const operator = new Operator({
-            operatorType: new ABCDSourceType({
+        const basicColumns: BasicColumns = {
+            numeric: [],
+            textual: [],
+        };
+
+        const attributes: Array<string> = [];
+        const dataTypes = new Map<string, DataType>();
+        const units = new Map<string, Unit>();
+
+        this.userService.getSourceSchemaAbcd().subscribe(sourceSchema => {
+
+            console.log("asdsasdasdas", sourceSchema);
+
+            for (let attribute of sourceSchema) {
+
+                if (attribute.numeric) {
+                    basicColumns.numeric.push(attribute.name);
+                    attributes.push(attribute.name);
+                    dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                    units.set(attribute.name, Unit.defaultUnit);
+                }
+            }
+
+            const sourceTypeConfig: ABCDSourceTypeConfig = {
                 provider: archive.provider,
                 id: archive.file,
-            }),
-            resultType: ResultTypes.POINTS,
-            projection: Projections.WGS_84,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
-        });
+                columns: basicColumns,
+            };
 
-        const layer = new VectorLayer<SimplePointSymbology>({
-            name: archive.dataset,
-            operator: operator,
-            symbology: new SimplePointSymbology({
-                fillRGBA: this.randomColorService.getRandomColor(),
-            }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            const operator = new Operator({
+                operatorType: new ABCDSourceType(sourceTypeConfig),
+                resultType: ResultTypes.POINTS,
+                projection: Projections.WGS_84,
+                attributes: attributes,
+                dataTypes: dataTypes,
+                units: units,
+            });
+
+            const layer = new VectorLayer<SimplePointSymbology>({
+                name: archive.dataset,
+                operator: operator,
+                symbology: new SimplePointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                }),
+                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    operator,
+                }),
+                provenance: this.mappingQueryService.getProvenanceStream(operator),
+            });
+            this.layerService.addLayer(layer);
         });
-        this.layerService.addLayer(layer);
     }
 }

@@ -1,3 +1,4 @@
+import {CsvColumn} from '../models/csv.model';
 export type BasketResult = IBasketAbcdResult | IBasketPangaeaResult;
 
 export type UnitGroupedBasketResult = IBasketGroupedAbcdResult | IBasketPangaeaResult;
@@ -35,6 +36,9 @@ export interface IBasketGroupedAbcdResult extends IBasketResult {
 export interface IBasketPangaeaResult extends IBasketResult {
     doi: string;
     format: string;
+    isGeoreferenced?: boolean;
+    isTabSeparated?: boolean;
+    parameters: Array<CsvColumn>;
 }
 
 export interface IBasket {

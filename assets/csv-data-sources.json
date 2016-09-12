@@ -1,7 +1,7 @@
 [{
   "name": "South African weather sensors",
+  "filename": "datasources/idessa/dwd.ttx",
   "params": {
-    "filename": "datasources/idessa/dwd.ttx",
     "geometry": "xy",
     "time": "start",
     "on_error": "skip",
@@ -20,8 +20,8 @@
 },
 {
   "name": "Bush Density Survey, Christiaan Harmse (2011-2012)",
+  "filename": "datasources/idessa/bush_densities.csv",
   "params": {
-    "filename": "datasources/idessa/bush_densities.csv",
     "geometry": "xy",
     "time": "none",
     "on_error": "skip",
@@ -32,4 +32,23 @@
       "textual": ["Site name"]
     }
   }
-}]
+},
+  {
+    "name": "GBIF - Loxodonta cyclotis (Matschie, 1900)",
+    "filename": "datasources/gfbio/gbif-0004807-160822134323880.csv",
+    "params": {
+      "geometry": "xy",
+      "time": "none",
+      "on_error": "skip",
+      "separator": ";",
+      "columns": {
+        "x": "decimallongitude",
+        "y": "decimallatitude",
+        "numeric": ["gbifid"],
+        "textual": ["datasetkey", "occurrenceid", "kingdom", "phylum", "class", "order", "family", "genus", "species", "infraspecificepithet", "taxonrank", "scientificname", "countrycode", "locality", "publishingorgkey"
+        ]
+      }
+    }
+  }
+
+]

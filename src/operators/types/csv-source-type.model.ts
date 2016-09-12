@@ -4,12 +4,16 @@ import {CsvParameters} from '../../models/csv.model';
 
 interface CsvSourceTypeConfig {
     csvParameters: CsvParameters;
+    filename: string;
 }
 
-interface CsvSourceTypeMappingDict extends OperatorTypeMappingDict, CsvParameters {}
+interface CsvSourceTypeMappingDict extends OperatorTypeMappingDict, CsvParameters {
+    filename: string;
+}
 
 export interface CsvSourceTypeDict extends OperatorTypeDict  {
     csvParameters: CsvParameters;
+    filename: string;
 }
 
 /**
@@ -25,15 +29,18 @@ export class CsvSourceType extends OperatorType {
     static get NAME(): string { return CsvSourceType._NAME; }
 
     private csvParameters: CsvParameters;
+    private filename: string;
 
     constructor(config: CsvSourceTypeConfig) {
         super();
         this.csvParameters = config.csvParameters;
+        this.filename = config.filename;
     }
 
     static fromDict(dict: CsvSourceTypeDict): CsvSourceType {
         return new CsvSourceType({
             csvParameters: dict.csvParameters,
+            filename: dict.filename,
         });
     }
 
@@ -51,22 +58,25 @@ export class CsvSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['filename', this.csvParameters.filename],
+            ['filename', this.filename],
             ['geometry', this.csvParameters.geometry],
-            ['field_separator', (this.csvParameters.field_separator) ?
-                this.csvParameters.field_separator : ''],
+            ['field_separator', (this.csvParameters.separator) ?
+                this.csvParameters.separator : ''],
             ['time', (this.csvParameters.time) ? this.csvParameters.time : ''],
         ];
     }
 
     toMappingDict(): CsvSourceTypeMappingDict {
-        return this.csvParameters;
+        let dict = this.csvParameters as CsvSourceTypeMappingDict;
+        dict.filename = this.filename;
+        return dict;
     }
 
     toDict(): CsvSourceTypeDict {
         return {
             operatorType: CsvSourceType.TYPE,
             csvParameters: this.csvParameters,
+            filename: this.filename,
         };
     }
 
