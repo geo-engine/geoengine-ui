@@ -1,5 +1,5 @@
 import {
-    Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef,
+    Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef, HostListener,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
@@ -345,6 +345,14 @@ export class AppComponent implements OnInit, AfterViewInit {
                 setTimeout(() => this.changeDetectorRef.markForCheck());
             }
         });
+
+        // notify window parent that this component is ready
+        if (parent !== window) {
+            parent.postMessage({
+                type: 'STATUS',
+                status: 'READY',
+            }, '*');
+        }
     }
 
     setTabIndex(index: number) {
@@ -357,6 +365,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
+    }
+
+    @HostListener('window:message', ['$event.data'])
+    public handleMessage(message: { type: string }) {
+        switch (message.type) {
+            case 'TOKEN_LOGIN':
+                const tokenMessage = message as { type: string, token: string };
+                this.userService.gfbioTokenLogin(tokenMessage.token);
+                break;
+            default:
+                // unhandled message
+        }
     }
 
 }

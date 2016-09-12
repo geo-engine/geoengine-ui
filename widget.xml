@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="VAT" author="Database Research Group of Uni Marburg" />
+    <UserPref name="VAT_URL" display_name="VAT URL" required="true" datatype="string"
+              default_value="http://pc12388.mathematik.uni-marburg.de/index.html" />
+    <Content type="html">
+        <![CDATA[
+        <script type="text/javascript">
+            // create iframe
+            var iframe = document.createElement('iframe');
+            iframe.id = 'searchVisualizationFrame';
+            iframe.style.border = 'none';
+            iframe.style.margin = 0;
+            iframe.style.padding = 0;
+            iframe.style.height = '100%';
+            iframe.style.width = '100%';
+
+            var prefs = new gadgets.Prefs();
+            iframe.src = prefs.getString('VAT_URL');
+
+            // listen on load event and then send the token
+            function forwardToken(event) {
+                var message = event.data;
+                if (message.type === 'STATUS' && message.status === 'READY') {
+                    parent.Liferay.Service(
+                        '/GFBioProject-portlet.basket/get-token',
+                        function (token) {
+                            iframe.contentWindow.postMessage({type: 'TOKEN_LOGIN', token: token}, '*');
+                        }
+                    );
+                }
+            }
+
+            window.addEventListener('message', forwardToken);
+
+            // append iframe to document body
+            document.getElementsByTagName('body')[0].appendChild(iframe);
+        </script>
+        ]]>
+    </Content>
+</Module>
