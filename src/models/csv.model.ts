@@ -1,10 +1,13 @@
-export interface CsvColumns {
+export interface BasicColumns {
+    numeric: Array<string>;
+    textual: Array<string>;
+}
+
+export interface CsvColumns extends BasicColumns {
     x: string;
     y: string;
     time1?: string;
     time2?: string;
-    numeric: Array<string>;
-    textual: Array<string>;
 }
 
 export type CsvTimeType = 'custom' | 'seconds' | 'dmyhm' | 'iso';

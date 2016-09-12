@@ -6,7 +6,7 @@ import {CORE_DIRECTIVES} from '@angular/common';
 import {TrimPipe} from '../pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
 import {Operator} from '../operators/operator.model';
-import {ABCDSourceType} from '../operators/types/abcd-source-type.model';
+import {ABCDSourceType, ABCDSourceTypeConfig} from '../operators/types/abcd-source-type.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {Projections} from '../operators/projection.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
@@ -17,7 +17,8 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 import {LayerService} from '../layers/layer.service';
 import {RandomColorService} from '../services/random-color.service';
 import {PangaeaSourceType} from '../operators/types/pangaea-source-type.model';
-import {CsvParameters, CsvColumns} from '../models/csv.model';
+import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';
+import {UserService} from '../users/user.service';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
@@ -25,6 +26,7 @@ export class BasketResult<T extends IBasketResult>  {
     mappingQueryService: MappingQueryService;
     layerService: LayerService;
     randomColorService: RandomColorService;
+    userService: UserService;
 
     constructor(
         mappingQueryService: MappingQueryService,
@@ -251,19 +253,20 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
                         <button md-button (click)='showUnits= !showUnits'>Toggle Units</button>
                     </template>    
                     <template [ngIf]='result.available && hasUnits' >    
-                        <button md-button color='primary' (click)='addUnits()'>Add <u>units</u> as layer</button> 
+                        <button md-button color='primary' (click)='add(true)'>Add <u>units</u> as layer</button> 
                     </template>
                     <template [ngIf]='result.available' >                
-                        <button md-button color='primary'(click)='addDataset()' >Add <u>dataset</u> as layer</button>
+                        <button md-button color='primary'(click)='add(false)' >Add <u>dataset</u> as layer</button>
                     </template>
                </md-card-actions>
            
-           <template [ngIf]='!result.available'>              
-
+           <template [ngIf]='!(result.available && result.isGeoreferenced)'>              
                  <md-card-content>
                     <i>This dataset is currently not available in the VAT system</i>
+                    <ul>
+                        <li *ngIf='!result.isGeoreferenced'> no georeference detected </li>
+                    </ul>
                 </md-card-content>
-               
             </template>          
         </md-card>
     `,
@@ -322,6 +325,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult> implements OnInit {
     showUnits: boolean = false;
     hasUnits: boolean = false;
+    sourceSchema: Array<CsvColumn> =[];
 
     constructor(
         mappingQueryService: MappingQueryService,
@@ -334,40 +338,50 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     ngOnInit() {
         this.hasUnits = this.result.units.length > 0;
         this.showUnits = this.hasUnits;
-    }
-
-    createResultOperator(): Operator {
-        return new Operator({
-            operatorType: new ABCDSourceType({
-                provider: this.result.dataCenter,
-                id: this.result.dataLink,
-            }),
-            resultType: ResultTypes.POINTS,
-            projection: Projections.WGS_84,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
+        this.userService.getSourceSchemaAbcd().do(schema => { // TODO: subscribe when something might change...
+            this.sourceSchema = schema;
         });
     }
 
-    addDataset() {
-        this.createAndAddLayer(this.createResultOperator(), this.result.title);
-    }
+    add(filterUnits: boolean) {
 
-    addUnits() {
+        const basicColumns: BasicColumns = {
+            numeric: [],
+            textual: [],
+        };
+
+        const attributes: Array<string> = [];
+        const dataTypes = new Map<string, DataType>();
+        const units = new Map<string, Unit>();
+
+        for (let attribute of this.sourceSchema) {
+
+            if (attribute.numeric) {
+                basicColumns.numeric.push(attribute.name);
+                attributes.push(attribute.name);
+                dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                units.set(attribute.name, Unit.defaultUnit);
+            }
+        }
+
+        const sourceTypeConfig: ABCDSourceTypeConfig = {
+            provider: this.result.dataCenter,
+            id: this.result.dataLink,
+            columns: basicColumns,
+        };
+
+        if ( filterUnits ) {
+            sourceTypeConfig.units = this.result.units.map((u) => u.unitId);
+        }
+
         const operator = new Operator({
-            operatorType: new ABCDSourceType({
-                provider: this.result.dataCenter,
-                id: this.result.dataLink,
-                units: this.result.units.map((u) => u.unitId),
-            }),
+            operatorType: new ABCDSourceType(sourceTypeConfig),
             resultType: ResultTypes.POINTS,
             projection: Projections.WGS_84,
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
+            attributes: attributes,
+            dataTypes: dataTypes,
+            units: units,
         });
         this.createAndAddLayer(operator, this.result.title);
     }
-
 }

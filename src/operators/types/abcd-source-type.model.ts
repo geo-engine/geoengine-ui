@@ -1,21 +1,25 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
+import {BasicColumns} from "../../models/csv.model";
 
-interface ABCDSourceTypeConfig {
+export interface ABCDSourceTypeConfig {
     provider: string;
     id: string;
     units?: Array<string>;
+    columns?: BasicColumns;
 }
 
 interface ABCDSourceTypeMappingDict extends OperatorTypeMappingDict {
     path: string;
     units: Array<string>;
+    columns?: BasicColumns;
 }
 
 export interface ABCDSourceTypeDict extends OperatorTypeDict  {
     provider: string;
     id: string;
     units: Array<string>;
+    columns?: BasicColumns;
 }
 
 /**
@@ -33,12 +37,14 @@ export class ABCDSourceType extends OperatorType {
     private provider: string;
     private id: string;
     private units: Array<string>;
+    private columns: BasicColumns;
 
     constructor(config: ABCDSourceTypeConfig) {
         super();
         this.provider = config.provider;
         this.id = config.id;
         this.units = (config.units) ? config.units : [];
+        this.columns = config.columns;
     }
 
     static fromDict(dict: ABCDSourceTypeDict): ABCDSourceType {
@@ -73,6 +79,7 @@ export class ABCDSourceType extends OperatorType {
         return {
             path: this.id,
             units: this.units,
+            columns: this.columns,
         };
     }
 
@@ -82,6 +89,7 @@ export class ABCDSourceType extends OperatorType {
             provider: this.provider,
             id: this.id,
             units: this.units,
+            columns: this.columns,
         };
     }
 
