@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';

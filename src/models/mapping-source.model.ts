@@ -23,6 +23,9 @@ export interface MappingSourceChannel {
 export interface MappingSource {
     source: string;
     name: string;
+    uri: string;
+    license: string;
+    citation: string;
     channels: MappingSourceChannel[];
     colorizer: string;
     coords: {
