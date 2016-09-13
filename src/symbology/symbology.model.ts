@@ -241,9 +241,9 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
 
     get olStyle(): ol.style.StyleFunction {
         return (feature, resolution) => {
-            const numberOfPoints = feature.get('numberOfPoints') as number;
+            const numberOfPoints = feature.get('___numberOfPoints') as number;
             const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
-            const radius = parseFloat(feature.get('radius'));
+            const radius = parseFloat(feature.get('___radius'));
 
             const style = new ol.style.Style({
                 image: new ol.style.Circle({
