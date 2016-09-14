@@ -135,13 +135,18 @@ export class AbcdRepositoryComponent {
         const units = new Map<string, Unit>();
 
         this.userService.getSourceSchemaAbcd().subscribe(sourceSchema => {
-            
+
             for (let attribute of sourceSchema) {
 
                 if (attribute.numeric) {
                     basicColumns.numeric.push(attribute.name);
                     attributes.push(attribute.name);
                     dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                    units.set(attribute.name, Unit.defaultUnit);
+                } else {
+                    basicColumns.textual.push(attribute.name);
+                    attributes.push(attribute.name);
+                    dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
                     units.set(attribute.name, Unit.defaultUnit);
                 }
             }
