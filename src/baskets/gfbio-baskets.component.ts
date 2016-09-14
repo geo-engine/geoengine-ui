@@ -1,12 +1,13 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
-import {Observable} from 'rxjs/Rx';
+import {Observable, Subscription, BehaviorSubject} from 'rxjs/Rx';
 
 import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
 import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
 import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
+import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
@@ -21,16 +22,19 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
         <md-toolbar>
           <label>Basket: </label>
             <select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
-                <option *ngFor='let basket of baskets | async; let first=first' [ngValue]='basket'> 
+                <option *ngFor='let basket of baskets' [ngValue]='basket'> 
                     {{basket.timestamp}} - {{basket.query}}
                     </option>
             </select> 
           <span class="toolbar-fill-remaining-space"></span>
-          <button md-icon-button aria-label='sync' (click)='relord()'>
+          <button md-icon-button aria-label='sync' (click)='reload()'>
             <md-icon>sync</md-icon>
           </button>
         </md-toolbar>
-        <md-content flex="grow">
+        <div *ngIf="isLoading$ | async" class="loading">
+            <md-progress-circle mode="indeterminate"></md-progress-circle>
+        </div>
+        <md-content *ngIf="!(isLoading$ | async)" flex="grow">
              <template [ngIf]='selectedBasket'>       
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
@@ -46,7 +50,6 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
     </div>
     `,
     styles: [`
-
     select {
         max-width: 80%;
         overflow: hidden;
@@ -73,31 +76,62 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
     img {
       padding: 5px 5px 5px 0;
     }
+    div.loading {
+        padding: 32px calc(50% - 100px/2);
+    }
+    md-progress-circle {
+        width: 100px;
+        height: 100px;
+    }
     `],
     pipes: [BasketResultGroupByDatasetPipe],
-    directives: [CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES,
-        PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent],
+    directives: [
+        CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES,
+        MD_PROGRESS_CIRCLE_DIRECTIVES, PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent,
+    ],
 })
 
-export class GfbioBasketsComponent {
+export class GfbioBasketsComponent implements OnDestroy {
 
-    private baskets: Observable<Array<IBasket>> = Observable.of([]);
-    private selectedBasket: IBasket;
+    baskets: Array<IBasket> = [];
+    selectedBasket: IBasket;
+
     private _abcdGroupedType: BasketTypeAbcdGrouped = 'abcd_grouped';
 
+    private gfbioBasketStream: Observable<Array<IBasket>>;
+    private subscription: Subscription;
+    private isLoading$ = new BehaviorSubject<boolean>(true);
+
     constructor(
-        private userService: UserService
+        private userService: UserService,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
-        this.baskets = this.userService.getGfbioBasketStream();
-        this.baskets.subscribe(b => {
-            if (!this.selectedBasket && !!b && b.length > 0) {
-                console.log('init basket', b);
-                this.selectedBasket = b[0];
-            }
-        });
+        this.gfbioBasketStream = this.userService.getGfbioBasketStream();
+        this.subscribeToBasketStream();
     }
 
-    relord() {
-        this.baskets = this.userService.getGfbioBasketStream().retry();
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+
+    reload() {
+        this.baskets = [];
+        this.selectedBasket = undefined;
+
+        this.subscription.unsubscribe();
+        this.subscribeToBasketStream();
+
+        this.isLoading$.next(true);
+    }
+
+    private subscribeToBasketStream() {
+        this.subscription = this.gfbioBasketStream.subscribe(baskets => {
+            this.baskets = baskets;
+            if (!this.selectedBasket && !!baskets && baskets.length > 0) {
+                this.selectedBasket = baskets[0];
+            }
+            this.isLoading$.next(false);
+            this.changeDetectorRef.markForCheck();
+        });
     }
 }
