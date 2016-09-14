@@ -224,11 +224,13 @@ export class UserService {
                     username: string,
                     realname: string,
                     email: string,
+                    externalid?: string;
                 };
                 return new User({
                     name: userResult.username,
                     realName: userResult.realname,
                     email: userResult.email,
+                    externalid: userResult.externalid,
                 });
             } else {
                 return undefined;

@@ -17,7 +17,7 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
 @Component({
     selector: 'wave-gfbio-baskets',
     template: `
-    <div style="height:100%; min-width:300px;" layout="column">
+    <div class="container" layout="column">
         <md-toolbar>
           <label>Basket: </label>
             <select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
@@ -46,6 +46,18 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
     </div>
     `,
     styles: [`
+
+    select {
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .container {
+        height: 100%;
+        min-width: 300px;
+        max-width: 600px;
+    }
     
     .toolbar-fill-remaining-space {
         flex: 1 1 auto;

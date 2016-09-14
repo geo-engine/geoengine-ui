@@ -5,6 +5,8 @@ interface UserConfig {
 
     realName: string;
     email: string;
+
+    externalid?: string;
 }
 
 /**
@@ -18,10 +20,17 @@ export class User {
 
     session: string;
 
+    externalid: string;
+
     constructor(config: UserConfig) {
         this.name = config.name;
         this.realName = config.realName;
         this.email = config.email;
+        this.externalid = (config.externalid) ? config.externalid : '';
+    }
+
+    public hasExternalIdPrefix(prefix: string): boolean {
+        return this.externalid.startsWith(prefix);
     }
 }
 
