@@ -85,7 +85,7 @@ export abstract class Layer<S extends Symbology> {
         return this._provenance.provenance$;
     }
 
-    protected abstract get layerType(): LayerType;
+    protected abstract getLayerType(): LayerType;
 
     /**
      * Retrieve the loading state of the layer.
@@ -107,7 +107,7 @@ export abstract class Layer<S extends Symbology> {
             operator: this._operator.toDict(),
             expanded: this.expanded,
             symbology: this.symbology.toDict(),
-            type: this.layerType,
+            type: this.getLayerType(),
             typeOptions: this.typeOptions,
         };
     }
@@ -174,7 +174,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
         return this._data;
     }
 
-    get layerType(): LayerType {
+    getLayerType(): LayerType {
         return 'vector';
     }
 
@@ -221,7 +221,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
         return layer;
     }
 
-    get layerType(): LayerType {
+    getLayerType(): LayerType {
         return 'raster';
     }
 }
