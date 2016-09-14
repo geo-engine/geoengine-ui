@@ -16,3 +16,10 @@
 
 # WebStorm
 /.idea
+
+# NPM
+npm-debug.log
+
+# Build Files
+/build/*
+!/build/index.html
