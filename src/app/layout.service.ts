@@ -399,8 +399,24 @@ export class LayoutService {
     }
 
     private detectBrowser(): Browser {
+        interface ExtendedWindow extends Window {
+            opr?: {};
+            addons?: {};
+            opera?: {};
+            HTMLElement?: {};
+            StyleMedia?: {};
+            chrome?: {
+                webstore?: {};
+            };
+        }
+        interface ExtendedDocument extends Document {
+            documentMode?: {};
+        }
+        const extendedWindow = window as ExtendedWindow;
+        const extendedDocument = document as ExtendedDocument;
+
         // Opera 8.0+
-        const isOpera = (!!window['opr'] && !!opr['addons']) || !!window['opera']
+        const isOpera = (!!extendedWindow['opr'] && !!extendedWindow['addons']) || !!extendedWindow['opera']
                         || navigator.userAgent.indexOf(' OPR/') >= 0;
         if (isOpera) {
             return Browser.OPERA;
@@ -412,23 +428,23 @@ export class LayoutService {
         }
         // At least Safari 3+: "[object HTMLElementConstructor]"
         const isSafari = Object.prototype.toString.call(
-            window['HTMLElement']
+            extendedWindow['HTMLElement']
         ).indexOf('Constructor') > 0;
         if (isSafari) {
             return Browser.SAFARI;
         }
         // Internet Explorer 6-11
-        const isIE = /*@cc_on!@*/false || !!document['documentMode'];
+        const isIE = /*@cc_on!@*/false || !!extendedDocument['documentMode'];
         if (isIE) {
             return Browser.IE;
         }
         // Edge 20+
-        const isEdge = !isIE && !!window['StyleMedia'];
+        const isEdge = !isIE && !!extendedWindow['StyleMedia'];
         if (isEdge) {
             return Browser.EDGE;
         }
         // Chrome 1+
-        const isChrome = !!window['chrome'] && !!window['chrome'].webstore;
+        const isChrome = !!extendedWindow['chrome'] && !!extendedWindow['chrome'].webstore;
         if (isChrome) {
             return Browser.CHROME;
         }
