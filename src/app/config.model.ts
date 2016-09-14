@@ -39,7 +39,7 @@ export default {
         DEBOUNCE: 400,
     },
     REFRESH_LAYERS_ON_CHANGE: false,
-    PROJECT: 'GFBio', // one of: GFBIO, IDESSA
+    PROJECT: 'GFBio', // one of: GFBio, IDESSA
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
@@ -48,7 +48,7 @@ export default {
         },
     },
     MAP: {
-        BACKGROUND_LAYER: 'hosted', // one of: OSM, countries, hosted
+        BACKGROUND_LAYER: 'OSM', // one of: OSM, countries, hosted
         HOSTED_BACKGROUND_SERVICE: 'http://pc12388.mathematik.uni-marburg.de/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
