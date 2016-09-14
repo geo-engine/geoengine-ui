@@ -134,6 +134,8 @@ export class InfoAreaComponent implements AfterViewInit{
     }
 
     ngAfterViewInit() {
-        this.introductionDialogLoader.show(); //TODO: listen to the checkbox
+        if (this.userService.shouldShowIntroductoryPopup()) {
+            this.introductionDialogLoader.show();
+        }
     }
 }

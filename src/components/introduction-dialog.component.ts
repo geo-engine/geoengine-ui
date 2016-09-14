@@ -1,5 +1,5 @@
 import {COMMON_DIRECTIVES} from '@angular/common';
-import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
+import {MD_CHECKBOX_DIRECTIVES, MdCheckboxChange} from '@angular2-material/checkbox';
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserService} from '../users/user.service';
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
@@ -41,20 +41,23 @@ import {VatLogoComponent, GFBioLogoComponent} from '../app/logo.component';
     pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class IntroductionDialogComponent extends DefaultBasicDialog implements OnInit{
+export class IntroductionDialogComponent extends DefaultBasicDialog implements OnInit {
 
-    private isChecked: boolean;
+    isChecked: boolean;
 
-    constructor(private userService: UserService) {
+    constructor(
+        private userService: UserService
+    ) {
         super();
     }
 
     ngOnInit() {
         this.dialog.setTitle('Visualization, analysis and transformation system');
+        this.isChecked = !this.userService.shouldShowIntroductoryPopup();
     }
 
-    changeTick(event: any) {
-        console.log("changeTick", event);
+    changeTick(event: MdCheckboxChange) {
+        this.userService.setIntroductoryPopup(!event.checked);
     }
 
 }

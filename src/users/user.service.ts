@@ -496,6 +496,15 @@ export class UserService {
         });
     }
 
+    setIntroductoryPopup(show: boolean) {
+        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
+    }
+
+    shouldShowIntroductoryPopup(): boolean {
+        const show = localStorage.getItem('showIntroductoryPopup');
+        return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
+    }
+
     /**
      * Get the session data.
      * @returns the session data
