@@ -166,16 +166,23 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 
             if ( attribute.name.toLowerCase().indexOf('longitude') !== -1 ) {
                 csvColumns.x = attribute.name;
+                continue;
             }
 
             if ( attribute.name.toLowerCase().indexOf('latitude') !== -1 ) {
                 csvColumns.y = attribute.name;
+                continue;
             }
 
             if (attribute.numeric) {
                 csvColumns.numeric.push(attribute.name);
                 attributes.push(attribute.name);
                 dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                units.set(attribute.name, Unit.defaultUnit);
+            } else {
+                csvColumns.textual.push(attribute.name);
+                attributes.push(attribute.name);
+                dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
                 units.set(attribute.name, Unit.defaultUnit);
             }
         }
@@ -364,6 +371,11 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
                 basicColumns.numeric.push(attribute.name);
                 attributes.push(attribute.name);
                 dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                units.set(attribute.name, Unit.defaultUnit);
+            } else {
+                basicColumns.textual.push(attribute.name);
+                attributes.push(attribute.name);
+                dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
                 units.set(attribute.name, Unit.defaultUnit);
             }
         }

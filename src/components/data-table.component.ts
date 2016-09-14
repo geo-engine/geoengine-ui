@@ -224,9 +224,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
                     this.columns = [{name: 'id', type: 'string', unit: undefined}];
                 };
                 if (features[0].properties) {
-                    this.propertyColumns = Object.keys(features[0].properties).map(x => {
-                         return {name: x, type: '', unit: ''} as Column;
-                     });
+                    this.propertyColumns = Object.keys(features[0].properties).filter(x => !x.startsWith('___'))
+                        .map(x => { return {name: x, type: '', unit: ''} as Column; });
                  }
                 this.rows = features;
             }
