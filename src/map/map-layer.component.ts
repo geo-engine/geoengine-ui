@@ -47,7 +47,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
 
     abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
-    abstract get extent(): number[];
+    abstract getExtent(): number[];
 
     protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for (const property in changes) {
@@ -104,7 +104,7 @@ abstract class OlVectorLayerComponent
         }
     }
 
-    get extent() {
+    getExtent() {
         return this.source.getExtent();
     }
 }
@@ -192,7 +192,7 @@ export class OlRasterLayerComponent
         }
     }
 
-    get extent() {
+    getExtent() {
         return this._mapLayer.getExtent();
     }
 }

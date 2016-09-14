@@ -85,7 +85,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     zoomToLayer(layerIndex: number) {
         const layer = this.contentChildren.toArray()[layerIndex];
 
-        const extent = layer.extent;
+        const extent = layer.getExtent();
 
         if (extent === undefined) {
             this.zoomToMap();
