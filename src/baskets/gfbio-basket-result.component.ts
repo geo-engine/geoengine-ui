@@ -263,7 +263,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
                     </template>
                </md-card-actions>
            
-           <template [ngIf]='!(result.available && result.isGeoreferenced)'>              
+           <template [ngIf]='!result.available'>              
                  <md-card-content>
                     <i>This dataset is currently not available in the VAT system</i>
                     <ul>
