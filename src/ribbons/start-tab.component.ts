@@ -229,6 +229,9 @@ import {ResultTypes} from '../operators/result-type.model';
         text-align: left;
         margin: 0px;
     }
+    .md-mini md-icon {
+        padding: 8px !important;
+    }
     `],
     directives: [
         CORE_DIRECTIVES, MD_ICON_DIRECTIVES, MD_BUTTON_DIRECTIVES, TimeRibbonComponent,
