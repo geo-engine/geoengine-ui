@@ -31,11 +31,13 @@ export class BasketResult<T extends IBasketResult>  {
     constructor(
         mappingQueryService: MappingQueryService,
         layerService: LayerService,
-        randomColorService: RandomColorService
+        randomColorService: RandomColorService,
+        userService: UserService
     ) {
         this.mappingQueryService = mappingQueryService;
         this.layerService = layerService;
         this.randomColorService = randomColorService;
+        this.userService = userService;
     }
 
     protected createAndAddLayer(operator: Operator, name: string) {
@@ -142,9 +144,10 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
     constructor(
         mappingQueryService: MappingQueryService,
         layerService: LayerService,
-        randomColorService: RandomColorService
+        randomColorService: RandomColorService,
+        userService: UserService
     ) {
-        super(mappingQueryService, layerService, randomColorService);
+        super(mappingQueryService, layerService, randomColorService, userService);
     };
 
     createResultOperator(): Operator {
@@ -330,9 +333,10 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     constructor(
         mappingQueryService: MappingQueryService,
         layerService: LayerService,
-        randomColorService: RandomColorService
+        randomColorService: RandomColorService,
+        userService: UserService
     ) {
-        super(mappingQueryService, layerService, randomColorService);
+        super(mappingQueryService, layerService, randomColorService, userService);
     };
 
     ngOnInit() {
