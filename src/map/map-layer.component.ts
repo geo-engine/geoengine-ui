@@ -86,10 +86,11 @@ abstract class OlVectorLayerComponent
             }
 
             if (changes['symbology']) {
-                if (this.symbology.olStyle instanceof ol.style.Style) {
-                    this.mapLayer.setStyle(this.symbology.olStyle as ol.style.Style);
+                const olStyle = this.symbology.getOlStyle();
+                if (olStyle instanceof ol.style.Style) {
+                    this.mapLayer.setStyle(olStyle as ol.style.Style);
                 } else {
-                    this.mapLayer.setStyle(this.symbology.olStyle as ol.style.StyleFunction);
+                    this.mapLayer.setStyle(olStyle as ol.style.StyleFunction);
                 }
             }
 

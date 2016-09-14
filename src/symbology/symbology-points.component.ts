@@ -133,7 +133,7 @@ export class SymbologyPointsComponent {
     template: `
     <form>
         <table>
-            <template [ngIf]='symbology.describesArea'>
+            <template [ngIf]='symbology.describesArea()'>
             <tr>
                 <td>
                     <label>Fill color</label>

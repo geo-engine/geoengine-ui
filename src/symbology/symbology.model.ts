@@ -56,10 +56,10 @@ export abstract class Symbology implements ISymbology {
         }
     }
 
-    abstract get symbologyType(): SymbologyType;
+    abstract getSymbologyType(): SymbologyType;
 
     get symbologyTypeId(): string {
-        return SymbologyType[this.symbologyType];
+        return SymbologyType[this.getSymbologyType()];
     }
 
     abstract clone(): Symbology;
@@ -86,9 +86,9 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
     strokeRGBA: [number, number, number, number] = [0, 0, 0, 1];
     strokeWidth: number = 1;
 
-    abstract get olStyle(): ol.style.Style | ol.style.StyleFunction;
-    abstract get describesArea(): boolean;
-    abstract get describesRadius(): boolean;
+    abstract getOlStyle(): ol.style.Style | ol.style.StyleFunction;
+    abstract describesArea(): boolean;
+    abstract describesRadius(): boolean;
 
     constructor(config: IVectorSymbology) {
         super();
@@ -108,7 +108,7 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
         return new SimpleVectorSymbology(config);
     }
 
-    get symbologyType(): SymbologyType {
+    getSymbologyType(): SymbologyType {
         return SymbologyType.SIMPLE_VECTOR;
     }
 
@@ -120,17 +120,17 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
         return this.clone();
     }
 
-    get olStyle(): ol.style.Style {
+    getOlStyle(): ol.style.Style {
         return new ol.style.Style({
             fill: new ol.style.Fill({ color: this.fillRGBA }),
             stroke: new ol.style.Stroke({ color: this.strokeRGBA, width: this.strokeWidth }),
         });
     }
 
-    get describesArea(): boolean {
+    describesArea(): boolean {
         return true;
     }
-    get describesRadius(): boolean{
+    describesRadius(): boolean{
         return false;
     }
 
@@ -160,7 +160,7 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
       if (config.radius) {this.radius = config.radius; }
   }
 
-  get symbologyType(): SymbologyType {
+  getSymbologyType(): SymbologyType {
       return SymbologyType.SIMPLE_POINT;
   }
 
@@ -172,7 +172,7 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
       return this.clone();
   }
 
-  get olStyle(): ol.style.Style {
+  getOlStyle(): ol.style.Style {
       return new ol.style.Style({
           image: new ol.style.Circle({
               radius: this.radius,
@@ -182,10 +182,10 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
       });
   }
 
-  get describesArea(): boolean {
+  describesArea(): boolean {
       return true;
   }
-  get describesRadius(): boolean{
+  describesRadius(): boolean{
       return true;
   }
 
@@ -227,7 +227,7 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
         this.textStrokeWidth = Math.ceil(config.strokeWidth * 0.1);
     }
 
-    get symbologyType(): SymbologyType {
+    getSymbologyType(): SymbologyType {
         return SymbologyType.CLUSTERED_POINT;
     }
 
@@ -239,7 +239,7 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
         return this.clone();
     }
 
-    get olStyle(): ol.style.StyleFunction {
+    getOlStyle(): ol.style.StyleFunction {
         return (feature, resolution) => {
             const numberOfPoints = feature.get('___numberOfPoints') as number;
             const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
@@ -272,10 +272,10 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
         };
     }
 
-    get describesArea(): boolean {
+    describesArea(): boolean {
         return true;
     }
-    get describesRadius(): boolean{
+    describesRadius(): boolean{
         return false;
     }
 
@@ -325,7 +325,7 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
         return this.unit.interpolation === Interpolation.Discrete;
     }
 
-    get symbologyType(): SymbologyType {
+    getSymbologyType(): SymbologyType {
         return SymbologyType.RASTER;
     }
 
@@ -364,7 +364,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
         this.colorizer$ = colorizer$;
     }
 
-    get symbologyType(): SymbologyType {
+    getSymbologyType(): SymbologyType {
         return SymbologyType.MAPPING_COLORIZER_RASTER;
     }
 
