@@ -24,6 +24,8 @@ import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
 
 import {ResultTypes} from '../operators/result-type.model';
 
+import {UserService} from '../users/user.service';
+
 /**
  * The start tab of the ribbons component.
  */
@@ -149,7 +151,10 @@ import {ResultTypes} from '../operators/result-type.model';
                     </button>
                 </div>
                 <div layout="column">
-                    <button md-button *ngIf="Config.PROJECT === 'GFBio' || Config.DEVELOPER_MODE"
+                    <button md-button
+                        *ngIf="
+                            (Config.PROJECT === 'GFBio' && userService.getUser().hasExternalIdPrefix('GFBIO'))
+                            || Config.DEVELOPER_MODE"
                         class="md-primary small"
                         (click)="gfbio.emit()"
                     >
@@ -270,7 +275,8 @@ export class StartTabComponent {
 
     constructor(
         private layerService: LayerService,
-        private mappingQueryService: MappingQueryService
+        private mappingQueryService: MappingQueryService,
+        private userService: UserService
     ) {
         this.isLayerSelected$ = this.layerService.getIsAnyLayerSelectedStream();
         this.exportLayerUrl$ = this.layerService.getSelectedLayerStream().filter(
