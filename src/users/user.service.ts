@@ -261,6 +261,11 @@ export class UserService {
         interface MappingSourceDict {
             name: string;
             colorizer: string;
+            provenance?: {
+                uri: string;
+                license: string;
+                citation: string;
+            };
             coords: {
                 epsg: number,
                 origin: number[],
@@ -296,6 +301,9 @@ export class UserService {
                     sources.push({
                         source: sourceId,
                         name: (source.name) ? source.name : sourceId,
+                        uri: (source.provenance) ? source.provenance.uri : '',
+                        citation: source.provenance ? source.provenance.citation : '',
+                        license: source.provenance ? source.provenance.license : '',
                         colorizer: source.colorizer,
                         coords: source.coords,
                         channels: source.channels.map((channel, index) => {

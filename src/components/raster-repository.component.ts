@@ -34,7 +34,9 @@ import {ProjectService} from '../project/project.service';
             [ngForOf]="sources | async | waveMappingDataSourceFilter:_searchTerm"
         >
           <md-subheader>
-            <span [innerHtml] = "source.name | waveHighlightPipe:_searchTerm"></span>
+            <span bind-innerHtml = "source.name | waveHighlightPipe:_searchTerm"></span>
+            <br/>
+            <span><a [href]="source?.uri">{{source?.uri}}</a></span>
           </md-subheader>
 
           <template ngFor let-channel [ngForOf]="source.channels">
@@ -87,6 +89,11 @@ import {ProjectService} from '../project/project.service';
     </div>
     `,
     styles: [`
+    md-subheader a {
+        color: white;
+        font-size: x-small;
+    }
+
     .searchInput {
         width: 100%;
     }

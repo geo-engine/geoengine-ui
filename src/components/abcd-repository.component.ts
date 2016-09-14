@@ -20,7 +20,7 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 import {UserService} from '../users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
-import {BasicColumns} from "../models/csv.model";
+import {BasicColumns} from '../models/csv.model';
 
 type Grouped<T> = Iterable<Group<T>>;
 
@@ -32,23 +32,23 @@ interface Group<T> {
 @Component({
     selector: 'wave-abcd-repository',
     template: `
-    <div style="height:100%" layout="column">
-    <md-content flex="grow">
+    <div style='height:100%' layout='column'>
+    <md-content flex='grow'>
       <md-list>
         <template
             ngFor let-group
-            [ngForOf]="groups | async"
+            [ngForOf]='groups | async'
         >
             <md-subheader>
                 <span>{{group.name}}</span>
             </md-subheader>
-            <template ngFor let-archive [ngForOf]="group.group" >
-                <md-list-item md-clickable class="md-2-line">
-                  <div class="md-list-item-text"
-                    layout="column"
-                    (click)="add(archive)">
+            <template ngFor let-archive [ngForOf]='group.group' >
+                <md-list-item md-clickable class='md-2-line'>
+                  <div class='md-list-item-text'
+                    layout='column'
+                    (click)='add(archive)'>
                     <p>{{archive.dataset}}</p>
-                    <a class="link" target="_blank" href={{archive.link}}>{{archive.link}}</a>
+                    <a class='link' target='_blank' href={{archive.link}}>{{archive.link}}</a>
                   </div>
               </md-list-item>
               <md-divider></md-divider>
@@ -135,9 +135,7 @@ export class AbcdRepositoryComponent {
         const units = new Map<string, Unit>();
 
         this.userService.getSourceSchemaAbcd().subscribe(sourceSchema => {
-
-            console.log("asdsasdasdas", sourceSchema);
-
+            
             for (let attribute of sourceSchema) {
 
                 if (attribute.numeric) {
