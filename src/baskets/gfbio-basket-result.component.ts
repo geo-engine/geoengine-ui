@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
 import {MdButton} from '@angular2-material/button';
 import {CORE_DIRECTIVES} from '@angular/common';
@@ -12,13 +12,14 @@ import {Projections} from '../operators/projection.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
 import {VectorLayer} from '../layers/layer.model';
 import {Unit} from '../operators/unit.model';
-import {SimplePointSymbology} from '../symbology/symbology.model';
+import {ClusteredPointSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {LayerService} from '../layers/layer.service';
 import {RandomColorService} from '../services/random-color.service';
 import {PangaeaSourceType} from '../operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';
 import {UserService} from '../users/user.service';
+import {Subscription} from "rxjs";
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
@@ -41,16 +42,19 @@ export class BasketResult<T extends IBasketResult>  {
     }
 
     protected createAndAddLayer(operator: Operator, name: string) {
-        const layer = new VectorLayer<SimplePointSymbology>({
+        const clustered = true;
+        const layer = new VectorLayer<ClusteredPointSymbology>({
             name: name,
             operator: operator,
-            symbology: new SimplePointSymbology({
+            symbology: new ClusteredPointSymbology({
                 fillRGBA: this.randomColorService.getRandomColor(),
             }),
             data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                 operator,
+                clustered,
             }),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
+            clustered: clustered,
         });
         this.layerService.addLayer(layer);
 
@@ -333,10 +337,13 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
     pipes: [TrimPipe],
     directives: [CORE_DIRECTIVES, MD_CARD_DIRECTIVES, MdButton],
 })
-export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult> implements OnInit {
+export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult>
+                                              implements OnInit, OnDestroy {
     showUnits: boolean = false;
     hasUnits: boolean = false;
-    sourceSchema: Array<CsvColumn> =[];
+    sourceSchema: Array<CsvColumn> = [];
+
+    private abcdSchemaSubscription: Subscription;
 
     constructor(
         mappingQueryService: MappingQueryService,
@@ -350,9 +357,14 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     ngOnInit() {
         this.hasUnits = this.result.units.length > 0;
         this.showUnits = this.hasUnits;
-        this.userService.getSourceSchemaAbcd().do(schema => { // TODO: subscribe when something might change...
+        this.abcdSchemaSubscription = this.userService.getSourceSchemaAbcd().subscribe(schema => {
+            // TODO: subscribe when something might change...
             this.sourceSchema = schema;
         });
+    }
+
+    ngOnDestroy() {
+        this.abcdSchemaSubscription.unsubscribe();
     }
 
     add(filterUnits: boolean) {
