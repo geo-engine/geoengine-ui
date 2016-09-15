@@ -284,9 +284,9 @@ export class MappingQueryService {
                     state$.next(LoadingState.OK);
                     return result;
                 },
-                (reason: Response) => {
+                (reason: Error) => {
                     state$.next(LoadingState.ERROR);
-                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
+                    this.notificationService.error(`${reason.message}`);
                     return undefined;
                 }
             );
