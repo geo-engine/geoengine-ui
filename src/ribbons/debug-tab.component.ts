@@ -175,7 +175,6 @@ export class DebugTabComponent {
             operatorType: new GFBioSourceType({
                 dataSource: 'GBIF',
                 scientificName: 'Puma concolor',
-                includeMetadata: false,
             }),
             resultType: ResultTypes.POINTS,
             projection: Projections.WGS_84,
@@ -233,7 +232,6 @@ export class DebugTabComponent {
             operatorType: new GFBioSourceType({
                 dataSource: 'IUCN',
                 scientificName: 'Puma concolor',
-                includeMetadata: false,
             }),
             resultType: ResultTypes.POLYGONS,
             projection: Projections.WGS_84,
