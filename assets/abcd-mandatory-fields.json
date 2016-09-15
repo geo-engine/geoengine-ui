@@ -1,221 +1,131 @@
 [
 {
-  "name": "/DataSets/DataSet/DatasetGUID",
-  "numeric": false,
-  "unit": ""
-},
-{
-"name": "/DataSets/DataSet/TechnicalContacts/TechnicalContact/Name",
+"name": "SourceInstitutionID",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/TechnicalContacts/TechnicalContact/Email",
+"name": "SourceID",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/ContentContacts/ContentContact/Name",
+"name": "UnitID",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Description/Representation/Title",
+"name": "DateLastEdited",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Description/Representation/Detail",
+"name": "Description/RelatedDatasetGUID",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Description/Representation/URI",
+"name": "Description/RelatedDatasetID",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/RevisionData/DateModified",
+"name": "Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonName",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/Text",
+"name": "Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonRank",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/Details",
+"name": "Identifications/Identification/Result/TaxonIdentified/ScientificName/FullScientificNameString",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/URI",
+"name": "RecordBasis",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/TermsOfUseStatements/TermsOfUse/Text",
+"name": "MultiMediaObjects/MultiMediaObject/FileURI",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Citations/Citation/Text",
+"name": "MultiMediaObjects/MultiMediaObject/Format",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Citations/Citation/Details",
+"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Text",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/IPRStatements/Citations/Citation/URI",
+"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Details",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/SourceInstitutionID",
+"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/URI",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/SourceID",
+"name": "MultiMediaObjects/MultiMediaObject/Creator",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/UnitID",
+"name": "Gathering/DateTime/ISODateTimeBegin",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/DateLastEdited",
+"name": "Gathering/Agents/GatheringAgent/AgentText",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Owners/Owner/Organisation/Name/Representation/Text",
+"name": "Gathering/LocalityText",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Owners/Owner/Person/FullName",
+"name": "Gathering/Country/Name",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Metadata/Owners/Owner/Roles/Role",
+"name": "Gathering/Country/ISO3166Code",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/Description/RelatedDatasetGUID",
+"name": "Gathering/NamedAreas/NamedArea/AreaName",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet//Units/Unit/Description/RelatedDatasetID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonName",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonRank",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/ScientificName/FullScientificNameString",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/RecordBasis",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/FileURI",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/Format",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Text",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Details",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/URI",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/Creator",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/DateTime/ISODateTimeBegin",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/Agents/GatheringAgent/AgentText",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/LocalityText",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/Country/Name",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/Country/ISO3166Code",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/NamedAreas/NamedArea/AreaName",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LongitudeDecimal",
+"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LongitudeDecimal",
 "numeric": true,
 "unit": "°"
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LatitudeDecimal",
+"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LatitudeDecimal",
 "numeric": true,
 "unit": "°"
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/SpatialDatum",
+"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/SpatialDatum",
 "numeric": false,
 "unit": ""
 },
 {
-"name": "/DataSets/DataSet/Units/Unit/RecordURI",
+"name": "RecordURI",
 "numeric": false,
 "unit": ""
 }
