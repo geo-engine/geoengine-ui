@@ -1,22 +1,23 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
+import {BasicColumns} from "../../models/csv.model";
 
 interface GFBioSourceTypeConfig {
     dataSource: string;
     scientificName: string;
-    includeMetadata: boolean;
+    columns?: BasicColumns;
 }
 
 interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
     dataSource: string;
     scientificName: string;
-    includeMetadata: boolean;
+    columns?: BasicColumns;
 }
 
 export interface GFBioSourceTypeDict extends OperatorTypeDict  {
     dataSource: string;
     scientificName: string;
-    includeMetadata: boolean;
+    columns?: BasicColumns;
 }
 
 /**
@@ -33,20 +34,20 @@ export class GFBioSourceType extends OperatorType {
 
     private dataSource: string;
     private scientificName: string;
-    private includeMetadata: boolean;
+    private columns: BasicColumns;
 
     constructor(config: GFBioSourceTypeConfig) {
         super();
         this.dataSource = config.dataSource;
         this.scientificName = config.scientificName;
-        this.includeMetadata = config.includeMetadata;
+        this.columns = config.columns;
     }
 
     static fromDict(dict: GFBioSourceTypeDict): GFBioSourceType {
         return new GFBioSourceType({
             dataSource: dict.dataSource,
             scientificName: dict.scientificName,
-            includeMetadata: dict.includeMetadata,
+            columns: dict.columns,
         });
     }
 
@@ -63,10 +64,12 @@ export class GFBioSourceType extends OperatorType {
     }
 
     getParametersAsStrings(): Array<[string, string]> {
+        const columns = this.columns.numeric.concat(this.columns.textual);
+        columns.sort();
         return [
             ['dataSource', this.dataSource.toString()],
             ['scientificName', this.scientificName.toString()],
-            ['includeMetadata', this.includeMetadata.toString()],
+            ['columns', columns.join(', ')],
         ];
     }
 
@@ -74,7 +77,7 @@ export class GFBioSourceType extends OperatorType {
         return {
             dataSource: this.dataSource,
             scientificName: this.scientificName,
-            includeMetadata: this.includeMetadata,
+            columns: this.columns,
         };
     }
 
@@ -83,7 +86,7 @@ export class GFBioSourceType extends OperatorType {
             operatorType: GFBioSourceType.TYPE,
             dataSource: this.dataSource,
             scientificName: this.scientificName,
-            includeMetadata: this.includeMetadata,
+            columns: this.columns,
         };
     }
 

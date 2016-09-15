@@ -28,7 +28,9 @@ import {OperatorType} from '../operator-type.model';
 import {GFBioSourceType} from '../types/gfbio-source-type.model';
 import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
-import {DataType} from '../datatype.model';
+import {DataType, DataTypes} from '../datatype.model';
+import {BasicColumns} from "../../models/csv.model";
+import {Http} from "@angular/http";
 
 /**
  * This component allows querying GBIF.
@@ -138,13 +140,17 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
     gbifCount = 0;
     iucnCount = 0;
 
+    private gbifColumns: BasicColumns = {numeric: [], textual: []};
+    private iucnColumns: BasicColumns = {numeric: [], textual: []};
+
     private nameCustomChanged = false;
 
     constructor(
         layerService: LayerService,
         private randomColorService: RandomColorService,
         private mappingQueryService: MappingQueryService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private http: Http
     ) {
         super(layerService);
 
@@ -192,6 +198,19 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
 
         this.form.controls['selectGBIF'].valueChanges.subscribe(_ => this.addAllowCheck());
         this.form.controls['selectIUCN'].valueChanges.subscribe(_ => this.addAllowCheck());
+
+        // TODO: think about very unlikely race condition
+        this.http.get('assets/gbif-default-fields.json').toPromise().then(response => {
+            const fieldList: Array<{ name: string, datatype: string }> = response.json();
+            for (const field of fieldList) {
+                if (DataTypes.ALL_NUMERICS.indexOf(DataTypes.fromCode(field.datatype)) >= 0) {
+                    this.gbifColumns.numeric.push(field.name);
+                } else {
+                    this.gbifColumns.textual.push(field.name);
+                }
+            }
+            console.log("BLA ", this.gbifColumns);
+        });
     }
 
     ngOnInit() {
@@ -257,7 +276,7 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 operatorType: new GFBioSourceType({
                     dataSource: 'IUCN',
                     scientificName: searchString,
-                    includeMetadata: false,
+                    columns: this.iucnColumns,
                 }),
                 resultType: ResultTypes.POLYGONS,
             });
@@ -268,7 +287,7 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 operatorType: new GFBioSourceType({
                     dataSource: 'GBIF',
                     scientificName: searchString,
-                    includeMetadata: false,
+                    columns: this.gbifColumns,
                 }),
                 resultType: ResultTypes.POINTS,
             });

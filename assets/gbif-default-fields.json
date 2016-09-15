@@ -1,0 +1,82 @@
+[
+    {
+        "name": "id",
+        "datatype": "Int32"
+    },
+    {
+        "name": "institution_code",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "collection_code",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "basis_of_record",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "scientific_name",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "kingdom",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "phylum",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "class",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "order",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "family",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "genus",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "specific_epithet",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "verbatim_scientific_name",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "coordinate_precision",
+        "datatype": "Float64"
+    },
+    {
+        "name": "continent_ocean",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "state_province",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "county",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "country",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "locality",
+        "datatype": "Alphanumeric"
+    },
+    {
+        "name": "identified_by",
+        "datatype": "Alphanumeric"
+    }
+]
