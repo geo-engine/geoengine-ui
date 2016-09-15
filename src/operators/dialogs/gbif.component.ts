@@ -141,7 +141,14 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
     iucnCount = 0;
 
     private gbifColumns: BasicColumns = {numeric: [], textual: []};
+    private gbifAttributes: Array<string> = [];
+    private gbifUnits = new Map<string, Unit>();
+    private gbifDatatypes = new Map<string, DataType>();
+
     private iucnColumns: BasicColumns = {numeric: [], textual: []};
+    private iucnAttributes: Array<string> = [];
+    private iucnUnits = new Map<string, Unit>();
+    private iucnDatatypes = new Map<string, DataType>();
 
     private nameCustomChanged = false;
 
@@ -203,13 +210,18 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         this.http.get('assets/gbif-default-fields.json').toPromise().then(response => {
             const fieldList: Array<{ name: string, datatype: string }> = response.json();
             for (const field of fieldList) {
-                if (DataTypes.ALL_NUMERICS.indexOf(DataTypes.fromCode(field.datatype)) >= 0) {
+                this.gbifAttributes.push(field.name);
+
+                const datatype = DataTypes.fromCode(field.datatype);
+                if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                     this.gbifColumns.numeric.push(field.name);
                 } else {
                     this.gbifColumns.textual.push(field.name);
                 }
+
+                this.gbifDatatypes.set(field.name, datatype);
+                this.gbifUnits.set(field.name, Unit.defaultUnit);
             }
-            console.log("BLA ", this.gbifColumns);
         });
     }
 
@@ -298,9 +310,9 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
                 operatorType: source.operatorType,
                 resultType: source.resultType,
                 projection: Projections.WGS_84,
-                attributes: [],
-                dataTypes: new Map<string, DataType>(),
-                units: new Map<string, Unit>(),
+                attributes: source.name === 'GBIF' ? this.gbifAttributes : this.iucnAttributes,
+                dataTypes: source.name === 'GBIF' ? this.gbifDatatypes : this.iucnDatatypes,
+                units: source.name === 'GBIF' ? this.gbifUnits : this.iucnUnits,
             });
 
             let symbology: AbstractVectorSymbology;
