@@ -192,6 +192,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
             separator: '\t',
             time: 'none',
             columns: csvColumns,
+            on_error: 'keep', // TODO: let the user decide on this
         };
 
         return new Operator({
