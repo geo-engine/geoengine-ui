@@ -8,7 +8,7 @@ import Config from '../app/config.model';
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {Symbology} from '../symbology/symbology.model';
+import {Symbology, AbstractVectorSymbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {MapService} from './map.service';
@@ -247,8 +247,30 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
         (select as any).setActive(false);
         this.map.addInteraction(select);
-        select.on(['select'], (event: any) => {
+        select.on(['select'], (event: {}) => {
             const selectEvent = event as ol.SelectEvent;
+
+            const highlightSymbology = this.layerService.getSelectedLayer().symbology.clone();
+
+            if (highlightSymbology instanceof AbstractVectorSymbology) {
+                highlightSymbology.fillRGBA = [0, 153, 255, 1];
+                highlightSymbology.strokeRGBA = [255, 255, 255, 1];
+
+                selectEvent.selected.forEach((feature) => {
+                    const highlightStyle = highlightSymbology.getOlStyle();
+                    if (highlightStyle instanceof ol.style.Style) {
+                        feature.setStyle(highlightStyle);
+                    } else {
+                        const highlightStyleFunction = highlightStyle as ol.style.StyleFunction;
+                        feature.setStyle(highlightStyleFunction.call(undefined, feature));
+                    }
+                });
+
+                selectEvent.deselected.forEach((feature) => {
+                    feature.setStyle(undefined);
+                });
+            }
+
             this.layerService.updateSelectedFeatures(
                 selectEvent.selected.map(
                     feature => feature.getId()
