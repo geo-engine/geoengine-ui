@@ -5,19 +5,19 @@ import {BasicColumns} from "../../models/csv.model";
 interface GFBioSourceTypeConfig {
     dataSource: string;
     scientificName: string;
-    columns?: BasicColumns;
+    columns: BasicColumns;
 }
 
 interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
     dataSource: string;
     scientificName: string;
-    columns?: BasicColumns;
+    columns: BasicColumns;
 }
 
 export interface GFBioSourceTypeDict extends OperatorTypeDict  {
     dataSource: string;
     scientificName: string;
-    columns?: BasicColumns;
+    columns: BasicColumns;
 }
 
 /**
