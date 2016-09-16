@@ -152,9 +152,8 @@ import {UserService} from '../users/user.service';
                 </div>
                 <div layout="column">
                     <button md-button
-                        *ngIf="
-                            (Config.PROJECT === 'GFBio' && userService.getUser().hasExternalIdPrefix('GFBIO'))
-                            || Config.DEVELOPER_MODE"
+                        *ngIf="Config.PROJECT === 'GFBio'
+                               && (userService.getUserStream() | async).hasExternalIdPrefix('GFBIO')"
                         class="md-primary small"
                         (click)="gfbio.emit()"
                     >
