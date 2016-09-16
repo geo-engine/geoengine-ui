@@ -90,6 +90,25 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
     abstract describesArea(): boolean;
     abstract describesRadius(): boolean;
 
+    getHighlightSymbology(): AbstractVectorSymbology {
+        const highlightSymbology: AbstractVectorSymbology = this.clone() as AbstractVectorSymbology;
+
+        highlightSymbology.fillRGBA = [0, 153, 255, 1];
+        highlightSymbology.strokeRGBA = [255, 255, 255, 1];
+
+        return highlightSymbology;
+    }
+
+    getOlStyleAsFunction(): ol.style.StyleFunction {
+        const style = this.getOlStyle();
+
+        if (style instanceof ol.style.Style) {
+            return (feature: ol.Feature, resolution: number) => style;
+        } else {
+            return style as ol.style.StyleFunction;
+        }
+    }
+
     constructor(config: IVectorSymbology) {
         super();
         this.fillRGBA = config.fillRGBA;
@@ -277,6 +296,14 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
     }
     describesRadius(): boolean{
         return false;
+    }
+
+    getHighlightSymbology(): AbstractVectorSymbology {
+        const highlightSymbology: ClusteredPointSymbology = super.getHighlightSymbology() as ClusteredPointSymbology;
+
+        highlightSymbology.textRGBA = [255, 255, 255, 1];
+
+        return highlightSymbology;
     }
 
     toDict(): VectorSymbologyDict {
