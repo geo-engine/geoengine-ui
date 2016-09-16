@@ -140,14 +140,14 @@ import {UserService} from '../users/user.service';
                         (click)="abcd.emit()"
                     >
                         <md-icon>storage</md-icon>
-                        ABCD archives
+                        ABCD Archives
                     </button>
                     <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
                         class="md-primary small"
                         (click)="csv.emit()"
                     >
                         <md-icon>grid_on</md-icon>
-                        CSV data/import
+                        CSV Data/Import
                     </button>
                 </div>
                 <div layout="column">
@@ -159,7 +159,7 @@ import {UserService} from '../users/user.service';
                         (click)="gfbio.emit()"
                     >
                         <md-icon>add_shopping_cart</md-icon>
-                        GFBio baskets
+                        GFBio Baskets
                     </button>
 
                     <button md-button *ngIf="false"
@@ -175,7 +175,7 @@ import {UserService} from '../users/user.service';
                         (click)="gbifLoader.show()"
                     >
                         <md-icon>search</md-icon>
-                        Sp. distribution
+                        Species Distribution
                     </button>
                     <button md-button
                         *ngIf="false"
