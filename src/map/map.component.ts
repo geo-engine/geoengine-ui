@@ -172,6 +172,12 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         view.on('change:resolution', () => {
+            // remove selected features on resolution change
+            this.layerService.updateSelectedFeatures(
+                [],
+                this.layerService.getSelectedFeatures().selected.toArray()
+            );
+
             this.mapService.setViewportSize({
                 // extent: view.calculateExtent(this.map.getSize()),
                 extent: this.projection.getExtent(),
@@ -209,6 +215,12 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
             });
 
             view.on('change:resolution', () => {
+                // remove selected features on resolution change
+                this.layerService.updateSelectedFeatures(
+                    [],
+                    this.layerService.getSelectedFeatures().selected.toArray()
+                );
+
                 this.mapService.setViewportSize({
                     // extent: view.calculateExtent(this.map.getSize()),
                     extent: this.projection.getExtent(),

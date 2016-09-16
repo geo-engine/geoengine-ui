@@ -186,6 +186,13 @@ export class LayerService {
         return this.selectedFeatures$.asObservable();
     }
 
+    /**
+     * @returns The currently selected features.
+     */
+    getSelectedFeatures(): SelectedFeatures {
+        return this.selectedFeatures$.value;
+    }
+
     updateSelectedFeatures(add: Array<FeatureID>, remove: Array<FeatureID>): void {
         const currentSelected = this.selectedFeatures$.value.selected;
         const actualRemove = Immutable.Set(remove).intersect(currentSelected);
