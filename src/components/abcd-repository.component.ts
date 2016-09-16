@@ -47,7 +47,7 @@ interface Group<T> {
                   <div class='md-list-item-text'
                     layout='column'
                     (click)='add(archive)'>
-                    <p>{{archive.dataset}}</p>
+                    <p>{{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span></p>
                     <a class='link' target='_blank' href={{archive.link}}>{{archive.link}}</a>
                   </div>
               </md-list-item>
