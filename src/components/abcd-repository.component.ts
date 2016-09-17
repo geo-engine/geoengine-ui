@@ -13,7 +13,7 @@ import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
 import {AbcdArchive} from '../models/abcd.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../operators/types/abcd-source-type.model';
-import {SimplePointSymbology} from '../symbology/symbology.model';
+import {SimplePointSymbology, ClusteredPointSymbology} from '../symbology/symbology.model';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
@@ -166,14 +166,16 @@ export class AbcdRepositoryComponent {
                 units: units,
             });
 
-            const layer = new VectorLayer<SimplePointSymbology>({
+            const clustered = true;
+            const layer = new VectorLayer<ClusteredPointSymbology>({
                 name: archive.dataset,
                 operator: operator,
-                symbology: new SimplePointSymbology({
+                symbology: new ClusteredPointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
                 data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                     operator,
+                    clustered,
                 }),
                 provenance: this.mappingQueryService.getProvenanceStream(operator),
             });

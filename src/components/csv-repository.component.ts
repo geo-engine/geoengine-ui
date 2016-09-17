@@ -16,7 +16,7 @@ import {DataType, DataTypes} from '../operators/datatype.model';
 import {CsvFile} from '../models/csv.model';
 import {CsvSourceType} from '../operators/types/csv-source-type.model';
 import {
-    AbstractVectorSymbology, SimplePointSymbology, SimpleVectorSymbology,
+    AbstractVectorSymbology, SimplePointSymbology, SimpleVectorSymbology, ClusteredPointSymbology,
 } from '../symbology/symbology.model';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
@@ -99,10 +99,12 @@ export class CsvRepositoryComponent {
 
         const fillRGBA = this.randomColorService.getRandomColor();
         let resultType = ResultTypes.POINTS;
-        let symbology: AbstractVectorSymbology = new SimplePointSymbology({fillRGBA: fillRGBA});
+        let symbology: AbstractVectorSymbology = new ClusteredPointSymbology({fillRGBA: fillRGBA});
+        let clustered = true;
 
         if ( csv.geometry_type && csv.geometry_type === 'lines') {
             resultType = ResultTypes.LINES;
+            clustered = false;
             symbology = new SimpleVectorSymbology({
                 strokeRGBA: fillRGBA,
                 fillRGBA: [0, 0, 0, 0],
@@ -110,6 +112,7 @@ export class CsvRepositoryComponent {
         }
         if ( csv.geometry_type && csv.geometry_type === 'polygons') {
             resultType = ResultTypes.POLYGONS;
+            clustered = false;
             symbology = new SimpleVectorSymbology({fillRGBA: fillRGBA});
         }
 
@@ -147,6 +150,7 @@ export class CsvRepositoryComponent {
             symbology: symbology,
             data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                 operator,
+                clustered,
             }),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
