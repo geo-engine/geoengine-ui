@@ -8,7 +8,7 @@ import Config from '../app/config.model';
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {Symbology, AbstractVectorSymbology} from '../symbology/symbology.model';
+import {Symbology, AbstractVectorSymbology, SymbologyType} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {MapService} from './map.service';
@@ -261,20 +261,23 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         this.map.addInteraction(select);
         select.on(['select'], (event: {}) => {
             const selectEvent = event as ol.SelectEvent;
+            const selectedSymbology = this.layerService.getSelectedLayer().symbology;
 
-            const highlightSymbology = (
-                this.layerService.getSelectedLayer().symbology as AbstractVectorSymbology
-            ).getHighlightSymbology();
+            if (selectedSymbology instanceof AbstractVectorSymbology) {
+                const highlightSymbology = (
+                    selectedSymbology as AbstractVectorSymbology
+                ).getHighlightSymbology();
 
-            selectEvent.selected.forEach((feature) => {
-                const highlightStyle = highlightSymbology.getOlStyle();
-                if (highlightStyle instanceof ol.style.Style) {
-                    feature.setStyle(highlightStyle);
-                } else {
-                    const highlightStyleFunction = highlightStyle as ol.style.StyleFunction;
-                    feature.setStyle(highlightStyleFunction.call(undefined, feature));
-                }
-            });
+                selectEvent.selected.forEach((feature) => {
+                    const highlightStyle = highlightSymbology.getOlStyle();
+                    if (highlightStyle instanceof ol.style.Style) {
+                        feature.setStyle(highlightStyle);
+                    } else {
+                        const highlightStyleFunction = highlightStyle as ol.style.StyleFunction;
+                        feature.setStyle(highlightStyleFunction.call(undefined, feature));
+                    }
+                });
+            }
 
             selectEvent.deselected.forEach((feature) => {
                 feature.setStyle(undefined);
@@ -306,11 +309,11 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         this.layerService.getSelectedFeaturesStream().subscribe(selected => {
             const selectedLayer = this.layerService.getSelectedLayer();
-            const highlightStyleFunction =
-                selectedLayer === undefined ?
-                    (feature: ol.Feature, resolution: number) => undefined as ol.style.Style
-                    :
+            let highlightStyleFunction = (feature: ol.Feature, resolution: number) => undefined as ol.style.Style;
+            if (selectedLayer !== undefined && selectedLayer.symbology instanceof AbstractVectorSymbology) {
+                highlightStyleFunction =
                     (selectedLayer.symbology as AbstractVectorSymbology).getHighlightSymbology().getOlStyleAsFunction();
+            }
 
             select.getFeatures().forEach(feature => {
                 if (selected.remove && selected.remove.contains(feature.getId())) {

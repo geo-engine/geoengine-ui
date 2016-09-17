@@ -69,7 +69,7 @@ import {
                         <i md-icon>replay</i>
                     </button>
                 </div>
-                <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.symbologyType">
+                <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()">
 
                     <wave-legendary-points
                         *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"
