@@ -8,7 +8,7 @@ import Config from '../app/config.model';
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {Symbology, AbstractVectorSymbology, SymbologyType} from '../symbology/symbology.model';
+import {Symbology, AbstractVectorSymbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {MapService} from './map.service';
@@ -166,8 +166,10 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         // get resolution changes
         this.mapService.setViewportSize({
-            // extent: view.calculateExtent(this.map.getSize()),
-            extent: this.projection.getExtent(),
+            extent: ol.extent.getIntersection(
+                this.map.getView().calculateExtent(this.map.getSize()),
+                this.projection.getExtent()
+            ),// extent: this.projection.getExtent(),
             resolution: view.getResolution(),
         });
 
@@ -178,10 +180,22 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 this.layerService.getSelectedFeatures().selected.toArray()
             );
 
+
             this.mapService.setViewportSize({
-                // extent: view.calculateExtent(this.map.getSize()),
-                extent: this.projection.getExtent(),
+                extent: this.map.getView().calculateExtent(this.map.getSize()),
+                // extent: this.projection.getExtent(),
                 resolution: view.getResolution(),
+            });
+        });
+
+        this.map.on('moveend', event => {
+
+            this.mapService.setViewportSize({
+                extent: ol.extent.getIntersection(
+                    this.map.getView().calculateExtent(this.map.getSize()),
+                    this.projection.getExtent()
+                ),
+                resolution: this.map.getView().getResolution(),
             });
         });
     }
@@ -209,12 +223,13 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
             // get resolution changes
             this.mapService.setViewportSize({
-                // extent: view.calculateExtent(this.map.getSize()),
-                extent: this.projection.getExtent(),
-                resolution: view.getResolution(),
+                extent: this.map.getView().calculateExtent(this.map.getSize()),
+                // extent: this.projection.getExtent(),
+                resolution: this.map.getView().getResolution(),
             });
 
             view.on('change:resolution', () => {
+
                 // remove selected features on resolution change
                 this.layerService.updateSelectedFeatures(
                     [],
@@ -222,9 +237,11 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 );
 
                 this.mapService.setViewportSize({
-                    // extent: view.calculateExtent(this.map.getSize()),
-                    extent: this.projection.getExtent(),
-                    resolution: view.getResolution(),
+                    extent: ol.extent.getIntersection(
+                        this.map.getView().calculateExtent(this.map.getSize()),
+                        this.projection.getExtent()
+                    ),
+                    resolution: this.map.getView().getResolution(),
                 });
             });
 

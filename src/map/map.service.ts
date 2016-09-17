@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
+import ol from 'openlayers';
 
 export interface ViewportSize {
-    extent: [number, number, number, number];
+    extent: [number, number, number, number]  | ol.Extent;
     resolution: number;
 }
 
@@ -26,6 +27,7 @@ export class MapService {
 
         const oldViewportSize = this.viewportSize$.value;
         if (!this.viewportSizeEquals(oldViewportSize, newViewportSize)) {
+
             this.viewportSize$.next(newViewportSize);
         }
     }
