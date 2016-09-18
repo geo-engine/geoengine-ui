@@ -44,13 +44,15 @@ export class MapService {
         if (v1.resolution !== v2.resolution) {
             return false;
         }
-
+/*
         for (let i = 0; i < 4; i++) {
             if (v1.extent[i] !== v2.extent[i]) {
                 return false;
             }
         }
+*/
+        return ol.extent.containsExtent(v1.extent, v2.extent);
 
-        return true;
+        // return true;
     }
 }
