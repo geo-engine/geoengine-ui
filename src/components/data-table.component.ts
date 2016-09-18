@@ -97,11 +97,17 @@ interface Row {
     md-data-table thead th,
     md-data-table thead >>> .md-data-check-cell {
         height: 40px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
     md-data-table tbody tr,
     md-data-table tbody td,
     md-data-table tbody >>> .md-data-check-cell {
         height: 32px;
+       text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
     md-progress-circle {
         position: absolute;
