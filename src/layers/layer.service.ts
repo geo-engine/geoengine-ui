@@ -208,7 +208,7 @@ export class LayerService {
                 next.focus = add[add.length - 1];
             }
             this.selectedFeatures$.next(next);
-            console.log('featureIds next', this.selectedFeatures$.value);
+            //console.log('featureIds next', this.selectedFeatures$.value);
         }
     }
 

@@ -154,7 +154,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
         const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
 
         const clustered = (typeOptions && typeOptions.clustered) && typeOptions.clustered || dict.symbology instanceof ClusteredPointSymbology || false;
-        console.log('VectorLayer', 'fromDict', clustered, dict);
+        //console.log('VectorLayer', 'fromDict', clustered, dict);
 
         const layer = new VectorLayer({
             name: dict.name,

@@ -187,7 +187,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
         let a = (!!this.configForm.controls['autoBuckets'].value && this.configForm.controls['autoBuckets'].value.checked === undefined);
         let b = (!!this.configForm.controls['autoBuckets'].value && this.configForm.controls['autoBuckets'].value.checked !== undefined && this.configForm.controls['autoBuckets'].value.checked);
         if (!(a || b)) {
-            console.log(this.configForm);
+            //console.log(this.configForm);
             buckets = parseInt(this.configForm.controls['buckets'].value, 10);
         }
 
