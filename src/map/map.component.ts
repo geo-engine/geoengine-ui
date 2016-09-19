@@ -170,11 +170,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         // get resolution changes
         this.mapService.setViewportSize({
-            extent: ol.extent.getIntersection(
-                this.map.getView().calculateExtent(this.map.getSize()),
-                this.projection.getExtent()
-            ),// extent: this.projection.getExtent(),
-            resolution: view.getResolution(),
+            extent: this.map.getView().calculateExtent(this.map.getSize()),
+            resolution: this.map.getView().getResolution(),
+            maxExtent: this.projection.getExtent(),
         });
 
         view.on('change:resolution', () => {
@@ -186,11 +184,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
             console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
             this.mapService.setViewportSize({
-                extent: ol.extent.getIntersection(
-                    this.map.getView().calculateExtent(this.map.getSize()),
-                    this.projection.getExtent()
-                ),
-                resolution: view.getResolution(),
+                extent: this.map.getView().calculateExtent(this.map.getSize()),
+                resolution: this.map.getView().getResolution(),
+                maxExtent: this.projection.getExtent(),
             });
         });
 
@@ -198,11 +194,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
             console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
             this.mapService.setViewportSize({
-                extent: ol.extent.getIntersection(
-                    this.map.getView().calculateExtent(this.map.getSize()),
-                    this.projection.getExtent()
-                ),
+                extent: this.map.getView().calculateExtent(this.map.getSize()),
                 resolution: this.map.getView().getResolution(),
+                maxExtent: this.projection.getExtent(),
             });
         });
     }
@@ -230,11 +224,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
             // get resolution changes
             this.mapService.setViewportSize({
-                extent: ol.extent.getIntersection(
-                    this.map.getView().calculateExtent(this.map.getSize()),
-                    this.projection.getExtent()
-                ),
+                extent: this.map.getView().calculateExtent(this.map.getSize()),
                 resolution: this.map.getView().getResolution(),
+                maxExtent: this.projection.getExtent(),
             });
 
             view.on('change:resolution', () => {
@@ -246,11 +238,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 );
 
                 this.mapService.setViewportSize({
-                    extent: ol.extent.getIntersection(
-                        this.map.getView().calculateExtent(this.map.getSize()),
-                        this.projection.getExtent()
-                    ),
+                    extent: this.map.getView().calculateExtent(this.map.getSize()),
                     resolution: this.map.getView().getResolution(),
+                    maxExtent: this.projection.getExtent(),
                 });
             });
 

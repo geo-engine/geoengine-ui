@@ -5,6 +5,7 @@ import ol from 'openlayers';
 export interface ViewportSize {
     extent: [number, number, number, number]  | ol.Extent;
     resolution: number;
+    maxExtent?: [number, number, number, number];
 }
 
 @Injectable()
@@ -15,9 +16,9 @@ export class MapService {
     });
 
     constructor() {
-        // this.viewportSize$.subscribe(
-        //     v => console.log('viewport', v.extent.join(','), v.resolution)
-        // );
+        this.viewportSize$.subscribe(
+           v => console.log('viewport', v.extent.join(','), v.resolution)
+        );
     }
 
     setViewportSize(newViewportSize: ViewportSize) {
@@ -27,6 +28,16 @@ export class MapService {
 
         const oldViewportSize = this.viewportSize$.value;
         if (!this.viewportSizeEquals(oldViewportSize, newViewportSize)) {
+
+            const w = ol.extent.getWidth(newViewportSize.extent);
+            const h = ol.extent.getHeight(newViewportSize.extent);
+            let newExtent = ol.extent.buffer(newViewportSize.extent, Math.max(w, h) * 0.5);
+            console.log('newExtent', w, h, newViewportSize.extent, newExtent);
+
+            if ( newViewportSize.maxExtent ) {
+                newExtent = ol.extent.getIntersection(newExtent, newViewportSize.maxExtent);
+            }
+            newViewportSize.extent = newExtent;
 
             this.viewportSize$.next(newViewportSize);
         }
