@@ -262,7 +262,9 @@ export class MappingQueryService {
         clustered?: boolean
     }): VectorLayerData {
         const viewportSize$: Observable<boolean | ViewportSize> =
-            config.clustered ? this.mapService.getViewportSizeStream() : Observable.of(false);
+            config.clustered ?
+                this.mapService.getViewportSizeStream().debounceTime(Config.DELAYS.DEBOUNCE)
+                : Observable.of(false);
 
         const reload$ = new BehaviorSubject<void>(undefined);
         const state$ = new ReplaySubject<LoadingState>(1);
@@ -294,7 +296,7 @@ export class MappingQueryService {
             if (result) {
                 const geojson = result as GeoJsonFeatureCollection;
                 const features = geojson.features;
-                for ( let localRowId = 0 ; localRowId < features.length; localRowId++ ) {
+                for (let localRowId = 0; localRowId < features.length; localRowId++) {
                     const feature = features[localRowId];
                     if (feature.id === undefined) {
                         feature.id = 'lrid_' + localRowId;
@@ -307,7 +309,8 @@ export class MappingQueryService {
                     features: [],
                 } as GeoJsonFeatureCollection;
             }
-        }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+            // }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+        }).share();
 
         return {
             data$: data$,
