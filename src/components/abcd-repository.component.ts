@@ -178,6 +178,7 @@ export class AbcdRepositoryComponent {
                     clustered,
                 }),
                 provenance: this.mappingQueryService.getProvenanceStream(operator),
+                clustered: clustered,
             });
             this.layerService.addLayer(layer);
         });

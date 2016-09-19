@@ -153,6 +153,7 @@ export class CsvRepositoryComponent {
                 clustered,
             }),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
+            clustered: clustered,
         });
         this.layerService.addLayer(layer);
     }
