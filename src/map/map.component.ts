@@ -130,6 +130,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         // Hack: querylist ignores order changes
+
         this.layerService.getLayersStream().subscribe(x => {
             if (this._layers === x) { return; };
 
@@ -164,6 +165,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         this.map.setView(view);
 
+        console.log('ngAfterViewInit', 'this.map.getView().calculateExtent(this.map.getSize())', this.map.getView().calculateExtent(this.map.getSize()));
+        console.log('ngAfterViewInit', 'this.projection.getExtent()', this.projection.getExtent());
+
         // get resolution changes
         this.mapService.setViewportSize({
             extent: ol.extent.getIntersection(
@@ -180,15 +184,18 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 this.layerService.getSelectedFeatures().selected.toArray()
             );
 
-
+            console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
             this.mapService.setViewportSize({
-                extent: this.map.getView().calculateExtent(this.map.getSize()),
-                // extent: this.projection.getExtent(),
+                extent: ol.extent.getIntersection(
+                    this.map.getView().calculateExtent(this.map.getSize()),
+                    this.projection.getExtent()
+                ),
                 resolution: view.getResolution(),
             });
         });
 
         this.map.on('moveend', event => {
+            console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
             this.mapService.setViewportSize({
                 extent: ol.extent.getIntersection(
@@ -223,8 +230,10 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
             // get resolution changes
             this.mapService.setViewportSize({
-                extent: this.map.getView().calculateExtent(this.map.getSize()),
-                // extent: this.projection.getExtent(),
+                extent: ol.extent.getIntersection(
+                    this.map.getView().calculateExtent(this.map.getSize()),
+                    this.projection.getExtent()
+                ),
                 resolution: this.map.getView().getResolution(),
             });
 
