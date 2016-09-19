@@ -134,7 +134,7 @@ export class MappingStorageProvider extends StorageProvider {
 
         return this.http.post(
             Config.MAPPING_URL,
-            updateRequest.toMessageBody(),
+            updateRequest.toMessageBody(true),
             {headers: updateRequest.getHeaders()}
         ).toPromise().then(responseString => {
             const response = responseString.json();
