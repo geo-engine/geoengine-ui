@@ -309,8 +309,8 @@ export class MappingQueryService {
                     features: [],
                 } as GeoJsonFeatureCollection;
             }
-            // }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
-        }).share();
+        }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+        //}).share();
 
         return {
             data$: data$,
