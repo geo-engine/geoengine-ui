@@ -111,20 +111,25 @@ export class GfbioBasketsComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 
     reload() {
         this.baskets = [];
         this.selectedBasket = undefined;
 
-        this.subscription.unsubscribe();
         this.subscribeToBasketStream();
 
         this.isLoading$.next(true);
     }
 
     private subscribeToBasketStream() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+
         this.subscription = this.gfbioBasketStream.subscribe(baskets => {
             this.baskets = baskets;
             if (!this.selectedBasket && !!baskets && baskets.length > 0) {

@@ -5,7 +5,7 @@ import {
 import {CORE_DIRECTIVES} from '@angular/common';
 import {Http} from '@angular/http';
 
-import {Observable} from 'rxjs/Rx';
+import {Observable, Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, ITableSelectionChange, ITableSelectableRowSelectionChange,
     MdDataTable} from 'ng2-material';
@@ -168,6 +168,9 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     private data$: Observable<Array<GeoJsonFeature>>;
     private state$: Observable<LoadingState>;
 
+    private dataSubscription: Subscription;
+    private featureSubscription: Subscription;
+
     constructor(
         private http: Http,
         private changeDetectorRef: ChangeDetectorRef,
@@ -220,7 +223,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
     ngOnInit() {
         // console.log("DataTableComponent", "ngOnInit");
-        this.data$.subscribe( (features: Array<GeoJsonFeature>) => {
+        this.dataSubscription = this.data$.subscribe( (features: Array<GeoJsonFeature>) => {
             this.columns = [];
             this.propertyColumns = [];
             this.rows = [];
@@ -247,7 +250,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
     }
 
     ngAfterViewInit() {
-            this.layerService.getSelectedFeaturesStream().subscribe(x => {
+            this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
                 this.updateSelectedRows(x);
             });
     }
@@ -262,7 +265,10 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
       }
     }
 
-    ngOnDestroy() {}
+    ngOnDestroy() {
+        this.dataSubscription.unsubscribe();
+        this.featureSubscription.unsubscribe();
+    }
 
     /**
      * Method to update/refresh the visible elements of the table.

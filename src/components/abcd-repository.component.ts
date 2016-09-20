@@ -134,7 +134,7 @@ export class AbcdRepositoryComponent {
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
 
-        this.userService.getSourceSchemaAbcd().subscribe(sourceSchema => {
+        this.userService.getSourceSchemaAbcd().first().subscribe(sourceSchema => {
 
             for (let attribute of sourceSchema) {
 
