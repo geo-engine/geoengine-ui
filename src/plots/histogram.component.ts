@@ -143,6 +143,10 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         if (changes['data'] && !changes['data'].isFirstChange()) {
+            // clean up histogram
+            d3.select(this.svgRef.nativeElement).select('g').remove();
+
+            // draw new one
             this.drawHistogram();
         }
         // TODO: refactor the set slider position function out (here and in makeDrag)
