@@ -142,7 +142,7 @@ import {UserService} from '../users/user.service';
                         <md-icon>storage</md-icon>
                         ABCD Archives
                     </button>
-                    <button md-button *ngIf="Config.PROJECT === 'IDESSA' || Config.DEVELOPER_MODE"
+                    <button md-button
                         class="md-primary small"
                         (click)="csv.emit()"
                     >
