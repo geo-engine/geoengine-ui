@@ -1,10 +1,10 @@
 import {
     Component, ChangeDetectionStrategy, ViewChild, ComponentFactory, AfterViewInit,
-    ComponentRef, Input, ViewContainerRef, ComponentResolver, ChangeDetectorRef,
+    ComponentRef, Input, ViewContainerRef, ComponentResolver, ChangeDetectorRef, OnDestroy,
 } from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
 import {MATERIAL_DIRECTIVES, MdBackdrop} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
@@ -87,7 +87,7 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
     ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DialogLoaderComponent implements AfterViewInit {
+export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
     @ViewChild(MdDialog) dialog: MdDialog;
     @ViewChild('target', {read: ViewContainerRef}) target: ViewContainerRef;
     @ViewChild(MdBackdrop) backdrop: MdBackdrop;
@@ -114,19 +114,25 @@ export class DialogLoaderComponent implements AfterViewInit {
     private windowHeight$: BehaviorSubject<number>;
     private windowWidth$: BehaviorSubject<number>;
 
+    private subscriptions: Array<Subscription> = [];
+
     constructor(
         private componentResolver: ComponentResolver,
         private changeDetectorRef: ChangeDetectorRef
     ) {
         this.windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, 'resize')
-                  .map(_ => window.innerHeight)
-                  .subscribe(this.windowHeight$);
+        this.subscriptions.push(
+            Observable.fromEvent(window, 'resize')
+                      .map(_ => window.innerHeight)
+                      .subscribe(this.windowHeight$)
+        );
 
         this.windowWidth$ = new BehaviorSubject(window.innerWidth);
-        Observable.fromEvent(window, 'resize')
-                  .map(_ => window.innerWidth)
-                  .subscribe(this.windowWidth$);
+        this.subscriptions.push(
+            Observable.fromEvent(window, 'resize')
+                      .map(_ => window.innerWidth)
+                      .subscribe(this.windowWidth$)
+        );
 
         const MARGIN = 48;
         const DIALOG_ACTIONS_HEIGHT = 52 + 8; // height + margin
@@ -162,26 +168,38 @@ export class DialogLoaderComponent implements AfterViewInit {
             close: () => this.close(),
         };
 
-        this.maxHeight$.subscribe(maxHeight => this.dialogRef.maxHeight = maxHeight);
-        this.maxWidth$.subscribe(maxWidth => this.dialogRef.maxWidth = maxWidth);
+        this.subscriptions.push(
+            this.maxHeight$.subscribe(maxHeight => this.dialogRef.maxHeight = maxHeight)
+        );
+        this.subscriptions.push(
+            this.maxWidth$.subscribe(maxWidth => this.dialogRef.maxWidth = maxWidth)
+        );
     }
 
     ngAfterViewInit() {
         // make dialog behave according to this subject
-        this.dialogIsOpen.subscribe(isOpen => {
-            if (isOpen) {
-                this.createChildComponent().then(() => {
-                    this.backdrop.show();
-                    this.dialog.show().then(dialog => {
-                        setTimeout(() => this.changeDetectorRef.markForCheck());
+        this.subscriptions.push(
+            this.dialogIsOpen.subscribe(isOpen => {
+                if (isOpen) {
+                    this.createChildComponent().then(() => {
+                        this.backdrop.show();
+                        this.dialog.show().then(dialog => {
+                            setTimeout(() => this.changeDetectorRef.markForCheck());
+                        });
                     });
-                });
-            } else {
-                this.dialog.close();
-                this.backdrop.hide();
-                this.destroyChildComponent();
-            }
-        });
+                } else {
+                    this.dialog.close();
+                    this.backdrop.hide();
+                    this.destroyChildComponent();
+                }
+            })
+        );
+    }
+
+    ngOnDestroy() {
+        for (const subscription of this.subscriptions) {
+            subscription.unsubscribe();
+        }
     }
 
     show(config: DialogInput = undefined) {

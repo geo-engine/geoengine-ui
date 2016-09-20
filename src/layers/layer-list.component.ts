@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {CORE_DIRECTIVES} from '@angular/common';
 
 import {MATERIAL_DIRECTIVES} from 'ng2-material';
@@ -17,6 +17,7 @@ import {
     LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
     LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
 } from '../symbology/legendary.component';
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'wave-layer-list',
@@ -168,12 +169,14 @@ import {
     ],
 })
 
-export class LayerListComponent {
+export class LayerListComponent implements OnDestroy {
     // make visible in template
     // tslint:disable:variable-name
     LoadingState = LoadingState;
     _enumSymbologyType = SymbologyType;
     // tslint:enable
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         private dragulaService: DragulaService,
@@ -187,24 +190,34 @@ export class LayerListComponent {
         this.handleDragAndDrop();
     }
 
+    ngOnDestroy() {
+        for (const subscription of this.subscriptions) {
+            subscription.unsubscribe();
+        }
+    }
+
     handleDragAndDrop() {
         let dragIndex: number;
         let dropIndex: number;
 
-        this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
-            const [_, listItem, list] = value;
-            dragIndex = this.domIndexOf(listItem, list);
-            // console.log('drag', dragIndex);
-        });
-        this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
-            const [_, listItem, list] = value;
-            dropIndex = this.domIndexOf(listItem, list);
-            // console.log('drop', dropIndex);
+        this.subscriptions.push(
+            this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
+                const [_, listItem, list] = value;
+                dragIndex = this.domIndexOf(listItem, list);
+                // console.log('drag', dragIndex);
+            })
+        );
+        this.subscriptions.push(
+            this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
+                const [_, listItem, list] = value;
+                dropIndex = this.domIndexOf(listItem, list);
+                // console.log('drop', dropIndex);
 
-            const layers = this.layerService.getLayers();
-            layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
-            this.layerService.setLayers(layers);
-        });
+                const layers = this.layerService.getLayers();
+                layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
+                this.layerService.setLayers(layers);
+            })
+        );
     }
 
     replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
