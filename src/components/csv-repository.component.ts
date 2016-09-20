@@ -32,11 +32,11 @@ import {RandomColorService} from '../services/random-color.service';
         <md-toolbar>
           <label>CSV data / upload</label>            
           <span class="toolbar-fill-remaining-space"></span>
-           <button md-button aria-label='sync' (click)='relord()'>
+           <button md-button aria-label='upload' disabled>
             <md-icon>cloud_upload</md-icon>
             upload
           </button>
-          <button md-icon-button aria-label='sync' (click)='relord()'>
+          <button md-icon-button aria-label='sync' disabled>
             <md-icon>sync</md-icon>
           </button>
         </md-toolbar>

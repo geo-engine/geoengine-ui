@@ -43,7 +43,7 @@ export default {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
-            TIME: '2010-06-06T18:00:00.000Z',
+            TIME: '2000-06-06T12:00:00.000Z',
             PROJECTION: 'EPSG:4326',
         },
     },
