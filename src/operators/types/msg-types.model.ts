@@ -84,7 +84,7 @@ export class MsgReflectanceType extends OperatorType {
         if (config.forceSatelliteName) {
             this.forceSatelliteName = config.forceSatelliteName;
         }
-        this.forceSatellite = this.forceSatelliteName !== '';
+        this.forceSatellite = this.forceSatelliteName !== undefined;
     }
 
     static fromDict(dict: MsgReflectanceTypeDict): MsgReflectanceType {

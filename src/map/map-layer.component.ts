@@ -1,10 +1,10 @@
 import {
-    Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy, provide,
+    Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy,
 } from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 
-import ol from 'openlayers';
-import moment from 'moment';
+import * as ol from 'openlayers';
+import {Moment} from 'moment';
 
 import Config from '../app/config.model';
 import {Projection} from '../operators/projection.model';
@@ -36,7 +36,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     @Input() layer: L;
     @Input() projection: Projection;
     @Input() symbology: S;
-    @Input() time: moment.Moment;
+    @Input() time: Moment;
 
     protected _mapLayer: OlLayer;
     protected source: OlSource;
@@ -47,7 +47,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
 
     abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
-    abstract getExtent(): number[];
+    abstract getExtent(): [number, number, number, number];
 
     protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for (const property in changes) {
@@ -90,7 +90,7 @@ abstract class OlVectorLayerComponent
                 if (olStyle instanceof ol.style.Style) {
                     this.mapLayer.setStyle(olStyle as ol.style.Style);
                 } else {
-                    this.mapLayer.setStyle(olStyle as ol.style.StyleFunction);
+                    this.mapLayer.setStyle(olStyle as ol.StyleFunction);
                 }
             }
 
@@ -113,8 +113,9 @@ abstract class OlVectorLayerComponent
 @Component({
     selector: 'wave-ol-point-layer',
     template: '',
-    providers: [provide(OlMapLayerComponent, {useExisting: OlPointLayerComponent})],
+    providers: [{provide: OlMapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    inputs: ["layer", "projection", "symbology", "time"],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -125,8 +126,9 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-line-layer',
     template: '',
-    providers: [provide(OlMapLayerComponent, {useExisting: OlLineLayerComponent})],
+    providers: [{provide: OlMapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    inputs: ["layer", "projection", "symbology", "time"],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -137,8 +139,9 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-polygon-layer',
     template: '',
-    providers: [provide(OlMapLayerComponent, {useExisting: OlPolygonLayerComponent})],
+    providers: [{provide: OlMapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    inputs: ["layer", "projection", "symbology", "time"],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -149,8 +152,9 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-raster-layer',
     template: '',
-    providers: [provide(OlMapLayerComponent, {useExisting: OlRasterLayerComponent})],
+    providers: [{provide: OlMapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    inputs: ["layer", "projection", "symbology", "time"],
 })
 export class OlRasterLayerComponent
     extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS,
@@ -173,6 +177,7 @@ export class OlRasterLayerComponent
                 url: Config.MAPPING_URL,
                 params: params.asObject(),
                 wrapX: false,
+                projection: this.projection.getCode()
             });
             this._mapLayer = new ol.layer.Tile({
                 source: this.source,

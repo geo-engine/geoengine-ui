@@ -1,19 +1,9 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, ControlArray, Control,
-} from '@angular/common';
+import {FormGroup, FormArray, FormBuilder, Validators, FormControl} from "@angular/forms";
 
 import {Subscription} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-
 import Config from '../../app/config.model';
-
-import {
-    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
-    LetterNumberConverter, OperatorOutputNameComponent,
-} from './operator.component';
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
@@ -26,8 +16,10 @@ import {
 } from '../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
+import {LetterNumberConverter} from './operator.component' //FIXME: WHAT?
 import {ResultTypes} from '../result-type.model';
 import {RasterValueExtractionType} from '../types/raster-value-extraction-type.model';
+import {OperatorBaseComponent} from "./operator.component";
 
 /**
  * This component allows creating the expression operator.
@@ -48,10 +40,8 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
         ></wave-multi-layer-selection>
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
+                    <md-card-title class="md-title">Configuration</md-card-title>
+                    <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <div layout="row" ngControlGroup="valueNames">
@@ -72,17 +62,13 @@ import {RasterValueExtractionType} from '../types/raster-value-extraction-type.m
         <wave-operator-output-name ngControl="name"></wave-operator-output-name>
     </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent
                                                     implements OnInit, OnDestroy {
 
-    configForm: ControlGroup;
-    valueNamesControls: ControlArray;
+    configForm: FormGroup;
+    valueNamesControls: FormArray;
     valueNamesNameChanged: Array<boolean>;
 
     selectedVectorLayer: VectorLayer<AbstractVectorSymbology>;
@@ -111,7 +97,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         this.valueNamesControls.valueChanges.subscribe(attributeNameArray => {
             this.checkForDisallowedAttributeNames(attributeNameArray);
         });
-        
+
         this.valueNamesNameChanged = [];
 
         this.configForm = formBuilder.group({
@@ -160,7 +146,7 @@ export class RasterValueExtractionOperatorComponent extends OperatorBaseComponen
         } else {
             for (let i = 0; i < this.valueNamesControls.length; i++) {
                 if (!this.valueNamesNameChanged[i]) {
-                    (this.valueNamesControls.at(i) as Control).updateValue(layers[i].name);
+                    (this.valueNamesControls.at(i) as FormControl).setValue(layers[i].name);
                     this.valueNamesNameChanged[i] = false;
                 }
             }

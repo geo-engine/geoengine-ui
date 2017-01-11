@@ -1,23 +1,11 @@
 import {
-    Component, ViewChild, ChangeDetectionStrategy, OnInit, AfterViewInit, ChangeDetectorRef, HostListener,
+  Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener,
+  ChangeDetectorRef, Type
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
+import {MdTabGroup} from "@angular/material";
+import {Observable, BehaviorSubject} from "rxjs";
 
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import {MD_SIDENAV_DIRECTIVES} from '@angular2-material/sidenav';
-import {MD_TABS_DIRECTIVES, MdTabGroup} from '@angular2-material/tabs';
-import {MdIconRegistry} from  '@angular2-material/icon';
-
-import {MATERIAL_DIRECTIVES, MATERIAL_BROWSER_PROVIDERS} from 'ng2-material';
-
-import {ColorPickerService} from 'ct-angular2-color-picker/component';
-
-import {InfoAreaComponent} from '../components/info-area.component';
-import {RibbonsComponent} from '../ribbons/ribbons.component';
-import {InfoBarComponent} from '../components/info-bar.component';
-import {DataTableComponent} from '../components/data-table.component';
-import {ProvenanceListComponent} from '../provenance/provenance.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
 import {CsvRepositoryComponent} from '../components/csv-repository.component';
@@ -26,8 +14,8 @@ import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from '../operators/result-type.model';
 
-import {LayoutService} from '../app/layout.service';
-import {NotificationService, NotificationType} from '../app/notification.service';
+import {LayoutService} from './layout.service';
+import {NotificationService, NotificationType} from './notification.service';
 import {SidenavContainerComponent} from './sidenav-container.component';
 
 import {ProjectService} from '../project/project.service';
@@ -37,22 +25,18 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
 import {MapComponent} from '../map/map.component';
-import {MapService} from '../map/map.service';
-import {
-    OlPointLayerComponent, OlLineLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,
-} from '../map/map-layer.component';
 
-import {LayerListComponent} from '../layers/layer-list.component';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 
-import {PlotListComponent} from '../plots/plot-list.component';
 import {PlotService} from '../plots/plot.service';
+
+
 
 @Component({
     selector: 'wave-app',
     template: `
-    <md-sidenav-layout fullscreen>
+    <md-sidenav-container fullscreen>
         <div class="topContainer md-whiteframe-3dp">
             <wave-info-area></wave-info-area>
             <wave-ribbons-component
@@ -70,9 +54,8 @@ import {PlotService} from '../plots/plot.service';
             [style.height.px]="middleContainerHeight$ | async"
         >
             <wave-layer-list
-                class="md-whiteframe-3dp"
+                md-whiteframe
                 *ngIf="layerListVisible$ | async"
-                [layers]="layers"
                 [style.max-height.px]="middleContainerHeight$ | async"
             ></wave-layer-list>
             <wave-ol-map
@@ -125,12 +108,12 @@ import {PlotService} from '../plots/plot.service';
              class="bottomContainer md-whiteframe-3dp"
         >
             <div class="bottomToggle">
-                <button md-button class="md-icon-button" aria-label="Toggle Data Table"
+                <button md-icon-button class="md-icon-button" aria-label="Toggle Data Table"
                         (click)="layoutService.toggleDataTableVisibility()"
                         [ngSwitch]="dataTableVisible$ | async"
                 >
-                    <i *ngSwitchCase="true" md-icon>expand_more</i>
-                    <i *ngSwitchCase="false" md-icon>expand_less</i>
+                    <md-icon *ngSwitchCase="true">expand_more</md-icon>
+                    <md-icon *ngSwitchCase="false">expand_less</md-icon>
                 </button>
                 <md-divider></md-divider>
             </div>
@@ -164,7 +147,7 @@ import {PlotService} from '../plots/plot.service';
         <md-sidenav #sidenavRight align="end" layout="column" mode="over">
             <wave-sidenav-container #sidenavContainer style='height:100%'></wave-sidenav-container>
         </md-sidenav>
-    </md-sidenav-layout>
+    </md-sidenav-container>
     `,
     styles: [`
 
@@ -245,20 +228,7 @@ import {PlotService} from '../plots/plot.service';
         overflow-y: auto;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_SIDENAV_DIRECTIVES, MD_TABS_DIRECTIVES,
-        InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
-        DataTableComponent, RasterRepositoryComponent, PlotListComponent,
-        MapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-        OlPolygonLayerComponent, ProvenanceListComponent, SidenavContainerComponent,
-        AbcdRepositoryComponent, CsvRepositoryComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        MATERIAL_BROWSER_PROVIDERS, MdIconRegistry,
-        ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
-        StorageService, RandomColorService, ColorPickerService, MapService, NotificationService, UserService,
-    ],
     queries: {
         rightSidenavContainer: new ViewChild(SidenavContainerComponent),
     },

@@ -1,10 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../layers/layer.service';
 import {RasterLayer} from '../layers/layer.model';
@@ -12,8 +8,6 @@ import {Operator} from '../operators/operator.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {DataType, DataTypes} from '../operators/datatype.model';
 import {MappingSource, MappingSourceChannel} from '../models/mapping-source.model';
-import {MappingDataSourceFilter} from '../pipes/mapping-data-sources.pipe';
-import {HighlightPipe} from '../pipes/highlight.pipe';
 import {Projections} from '../operators/projection.model';
 import {Unit} from '../operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
@@ -43,11 +37,11 @@ import {ProjectService} from '../project/project.service';
             <md-divider></md-divider>
               <md-list-item md-clickable class="md-3-line">
                 <template [ngIf]="channel.isSwitchable">
-                      <md-switch #t
+                      <md-slide-toggle #t
                                 [checked]="channel.hasTransform"
                                 aria-label="transform raw data"
                                 [disabled]="!channel.hasTransform">
-                      </md-switch>
+                      </md-slide-toggle>
                       <div class="md-list-item-text"
                             layout="column"
                             (click)="add(source, channel, t.checked)">
@@ -109,8 +103,6 @@ import {ProjectService} from '../project/project.service';
       padding: 5px 5px 5px 0px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
-    pipes: [MappingDataSourceFilter, HighlightPipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

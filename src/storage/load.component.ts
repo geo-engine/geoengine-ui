@@ -1,18 +1,13 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
-
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
-
 import Config from '../app/config.model';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
 import {ProjectService} from '../project/project.service';
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from './storage.service';
+
 
 @Component({
     selector: 'wave-load-dialog',
@@ -43,7 +38,7 @@ import {StorageService} from '../storage/storage.service';
     }
     md-radio-group {
         overflow-y: auto;
-        padding: 0px 16px;
+        padding: 0 16px;
     }
     md-radio-button >>> .md-radio-label-content {
         float: none;
@@ -52,15 +47,10 @@ import {StorageService} from '../storage/storage.service';
         margin: 0 auto;
     }
     `],
-    providers: [MdRadioDispatcher],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_RADIO_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LoadDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
-    form: ControlGroup;
+    form: FormGroup;
 
     projects$: Promise<Array<string>>;
     loading$ = new BehaviorSubject<boolean>(true);

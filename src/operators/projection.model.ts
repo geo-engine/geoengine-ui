@@ -1,5 +1,5 @@
-import ol from 'openlayers';
-import proj4 from 'proj4';
+import * as ol from 'openlayers';
+//import proj4 from 'proj4';
 
 /**
  * A wrapper class around a projection string.
@@ -107,11 +107,16 @@ export class GEOS extends Projection {
         if (!GEOS.isProjectionRegistered) {
             // proj4.defs('SR-ORG:81', '+proj=geos +lon_0=0 +h=-0 +x_0=0 +y_0=0 '
             //                         + '+ellps=WGS84 +units=m +no_defs');
-            proj4.defs(this.getCode(),
-                       '+proj=stere +lat_0=90 +lat_ts=60 +lon_0=0 +k=1 +x_0=0 +y_0=0 '
-                       + '+a=6378273 +b=6356889.449 +units=m +no_defs');
+            //proj4.defs(this.getCode(),
+            //           '+proj=stere +lat_0=90 +lat_ts=60 +lon_0=0 +k=1 +x_0=0 +y_0=0 '
+            //           + '+a=6378273 +b=6356889.449 +units=m +no_defs');
+          let projection = ol.proj.addProjection(new ol.proj.Projection({
+            code: this.getCode(),
+            extent: this.getExtent(),
+            units: 'm'
+          }));
 
-            GEOS.isProjectionRegistered = true;
+          GEOS.isProjectionRegistered = true;
         }
     }
 }

@@ -1,21 +1,21 @@
 import {Headers} from '@angular/http';
 
-import Immutable from 'immutable';
+import {Map} from 'immutable';
 
 export type ParameterType = string | number | boolean;
 export type ParametersType = {[index: string]: ParameterType};
 
 export class RequestParameters {
     protected immutable = false;
-    protected parameters: Immutable.Map<string, ParameterType>;
+    protected parameters: Map<string, ParameterType>;
     protected headers = new Headers();
 
     constructor(parameters?: ParametersType) {
         this.headers.append('Content-Type', 'application/x-www-form-urlencoded');
         if (parameters) {
-            this.parameters = Immutable.Map<string, ParameterType>(parameters).asMutable();
+            this.parameters = Map<string, ParameterType>(parameters).asMutable();
         } else {
-            this.parameters = Immutable.Map<string, ParameterType>().asMutable();
+            this.parameters = Map<string, ParameterType>().asMutable();
         }
     }
 
@@ -39,7 +39,7 @@ export class RequestParameters {
         ).valueSeq().join('&');
     }
 
-    asMap(): Immutable.Map<string, ParameterType> {
+    asMap(): Map<string, ParameterType> {
         if (!this.immutable) {
             this.parameters = this.parameters.asImmutable();
         }

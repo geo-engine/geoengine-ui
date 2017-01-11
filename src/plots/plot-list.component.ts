@@ -1,18 +1,10 @@
 import {Component, ChangeDetectionStrategy, Input}
   from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MdToolbar} from '@angular2-material/toolbar';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-
 import Config from '../app/config.model';
 
-import {HistogramComponent} from './histogram.component';
-
-import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {PlotDetailsDialogComponent} from './plot-detail-dialog.component';
 
 import {PlotService} from './plot.service';
@@ -42,7 +34,7 @@ import {LoadingState} from '../shared/loading-state.model';
             <i md-icon>delete</i>
         </button>
     </md-toolbar>
-    <md-content *ngIf="plotListVisible$ | async" [style.max-height.px]="maxHeight - 48">
+    <div class="md-content" *ngIf="plotListVisible$ | async" [style.max-height.px]="maxHeight - 48">
         <md-list>
             <md-list-item *ngFor="let plot of plots$ | async"
                           [ngSwitch]="(plot.data.data$ | async)?.type"
@@ -78,10 +70,7 @@ import {LoadingState} from '../shared/loading-state.model';
                                  width="150" height="150" alt="{{plot.name}}">
                         </template>
                         <template ngSwitchCase="histogram">
-                            <wave-histogram [data]="plot.data.data$ | async"
-                                            width="150" height="150"
-                                            viewBoxRatio="3">
-                            </wave-histogram>
+                          <i>"FIXME: fix the histogram component"</i>
                         </template>
                         <md-progress-circle
                             mode="indeterminate"
@@ -92,13 +81,13 @@ import {LoadingState} from '../shared/loading-state.model';
                 <md-divider></md-divider>
             </md-list-item>
         </md-list>
-    </md-content>
+    </div>>
     <wave-dialog-loader #plotDetailsDialogDialog
         [type]="PlotDetailsDialogComponent"
     ></wave-dialog-loader>
     `,
     styles: [`
-    md-content {
+    .md-content {
         overflow-y: auto !important;
     }
     md-toolbar,
@@ -152,10 +141,6 @@ import {LoadingState} from '../shared/loading-state.model';
         height: 36px;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        DialogLoaderComponent, HistogramComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent {
@@ -179,3 +164,10 @@ export class PlotListComponent {
     }
 
 }
+
+/* TODO: FIXME: add the histogram
+ <wave-histogram [data]="plot.data.data$ | async"
+ width="150" height="150"
+ viewBoxRatio="3">
+ </wave-histogram>
+ */

@@ -1,13 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
-
+import {FormBuilder, FormGroup, FormControl, Validators} from "@angular/forms";
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
-import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
-import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
+import {MdDialogRef} from '@angular/material';
 
 import Config from '../app/config.model';
 
@@ -18,52 +12,62 @@ import {UserService} from './user.service';
 
 enum FormStatus { LoggedOut, LoggedIn, Loading }
 
-// TODO: switch from radio to button-toggle in newer version of material
+// TODO: switch from radio to button-toggle in newer version of materials
 
 @Component({
     selector: 'wave-login-dialog',
     template: `
-    <form *ngIf="isLoggedOut$ | async" [ngFormModel]="form" layout="column">
-        <md-radio-group ngControl="loginAuthority" *ngIf="${Config.PROJECT === 'GFBio'}" style="margin-bottom: 1rem;">
-            <md-radio-button value="system">System</md-radio-button>
-            <md-radio-button value="GFBio">GFBio</md-radio-button>
-        </md-radio-group>
-        <md-input type="text" placeholder="Username" ngControl="username"></md-input>
-        <md-input type="password" placeholder="Password" ngControl="password"></md-input>
-        <span *ngIf="invalidCredentials">Invalid Credentials</span>
-        <md-checkbox ngControl="staySignedIn">Stay signed in</md-checkbox>
-    </form>
-    <div *ngIf="isLoggedIn$ | async" class="logged-in" layout="column">
-        <md-input
-            type="text"
-            placeholder="Username"
-            [ngModel]="(user | async).name"
-            [disabled]="true"
-        ></md-input>
-        <md-input
-            type="text"
-            placeholder="Real Name"
-            [ngModel]="(user | async).realName"
-            [disabled]="true"
-        ></md-input>
-        <md-input
-            type="text"
-            placeholder="E-Mail"
-            [ngModel]="(user | async).email"
-            [disabled]="true"
-        ></md-input>
-        <button md-raised-button (click)="logout()">Logout</button>
-    </div>
-    <div *ngIf="isLoading$ | async" class="loading">
-        <md-progress-circle mode="indeterminate"></md-progress-circle>
-    </div>
+      <h1 md-dialog-title md-primary>{{dialogTitle}}</h1>
+      <div md-dialog-content class="user-form">
+        <form *ngIf="isLoggedOut$ | async" [formGroup]="form" class="flex-column">
+            <md-radio-group formControlName="loginAuthority" *ngIf="config.PROJECT === 'GFBio'" style="margin-bottom: 1rem;">
+                <md-radio-button value="system">System</md-radio-button>
+                <md-radio-button value="GFBio">GFBio</md-radio-button>
+            </md-radio-group>
+            <md-input type="text" placeholder="Username" formControlName="username"></md-input>
+            <md-input type="password" placeholder="Password" formControlName="password"></md-input>
+            <span *ngIf="invalidCredentials">Invalid Credentials</span>
+            <md-checkbox ngControl="staySignedIn">Stay signed in</md-checkbox>
+        </form>
+        <div *ngIf="isLoggedIn$ | async" class="logged-in flex-column">
+            <md-input
+                type="text"
+                placeholder="Username"
+                [ngModel]="(user | async).name"
+                [disabled]="true"
+            ></md-input>
+            <md-input
+                type="text"
+                placeholder="Real Name"
+                [ngModel]="(user | async).realName"
+                [disabled]="true"
+            ></md-input>
+            <md-input
+                type="text"
+                placeholder="E-Mail"
+                [ngModel]="(user | async).email"
+                [disabled]="true"
+            ></md-input>
+        </div>
+        <div *ngIf="isLoading$ | async" class="loading">
+          <md-progress-circle mode="indeterminate"></md-progress-circle>
+        </div>
+      </div>
+      <div md-dialog-actions>
+          <button *ngIf="isLoggedOut$ | async" md-raised-button md-dialog-close (click)="login()">Login</button>
+          <button *ngIf="isLoggedIn$ | async" md-raised-button md-dialog-close (click)="logout()">Logout</button>
+          <button md-raised-button md-dialog-close>Cancel</button>
+      </div>
     `,
     styles: [`
+    h1 {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }    
     form {
         padding: 16px 0;
     }
     span {
-        color: ${Config.COLORS.WARN};
+        color: red;
     }
     .password {
         width: 90%;
@@ -78,20 +82,25 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
     div.loading {
         padding: 32px calc(50% - 100px/2);
     }
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-form {
+      display:flex;
+      flex-direction: column;
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+    
     md-progress-circle {
         width: 100px;
         height: 100px;
     }
     `],
-    providers: [MdRadioDispatcher],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        MD_CHECKBOX_DIRECTIVES, MD_RADIO_DIRECTIVES,
-    ],
-    pipes: [],
+    providers: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+export class LoginDialogComponent implements OnInit, OnDestroy {
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     isLoggedIn$ = this.formStatus$.map(status => status === FormStatus.LoggedIn);
     isLoggedOut$ = this.formStatus$.map(status => status === FormStatus.LoggedOut);
@@ -99,21 +108,23 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
     invalidCredentials = false;
     user: Observable<User>;
 
-    form: ControlGroup;
+    config = Config;
+    form: FormGroup;
 
     private subscriptions: Array<Subscription> = [];
+    private dialogTitle: string;
 
     constructor(
+        public dialogRef: MdDialogRef<LoginDialogComponent>,
         private userService: UserService,
         private formBuilder: FormBuilder
     ) {
-        super();
 
         this.form = this.formBuilder.group({
             loginAuthority: ['system', Validators.required],
             username: ['', Validators.compose([
                 Validators.required,
-                (control: Control) => {
+                (control: FormControl) => {
                     // tslint:disable-next-line:no-null-keyword
                     return control.value === Config.USER.GUEST.NAME ? {'keyword': true} : null;
                 },
@@ -132,7 +143,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
             //     this.form.controls['username'].value = this.user.name;
             // }
             if (isNoGuest) {
-                (this.form.controls['username'] as Control).updateValue(
+                (this.form.controls['username'] as FormControl).setValue(
                     this.userService.getSession().user
                 );
             }
@@ -146,17 +157,17 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
             this.formStatus$.subscribe(status => {
                 switch (status) {
                     case FormStatus.LoggedIn:
-                        this.dialog.setTitle('User Info');
-                        this.removeLoginButtons();
+                        this.dialogTitle = 'User Info';
+                        //this.removeLoginButtons();
                     break;
                     case FormStatus.LoggedOut:
-                        this.dialog.setTitle('Login');
+                        this.dialogTitle = 'Login';
                         this.createLoginButtons();
                     break;
                     case FormStatus.Loading:
                     /* falls through */
                     default:
-                        this.removeLoginButtons();
+                        //this.removeLoginButtons();
                     break;
                 }
             })
@@ -197,7 +208,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
                 this.formStatus$.next(FormStatus.LoggedIn);
             } else {
                 this.invalidCredentials = true;
-                (this.form.controls['password'] as Control).updateValue('');
+                (this.form.controls['password'] as FormControl).setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             }
         });
@@ -207,7 +218,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
         this.formStatus$.next(FormStatus.Loading);
         this.userService.guestLogin().then(success => {
             // TODO: what to do if this is not successful?
-            (this.form.controls['password'] as Control).updateValue('');
+            (this.form.controls['password'] as FormControl).setValue('');
             this.formStatus$.next(FormStatus.LoggedOut);
         });
     }
@@ -221,7 +232,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
                 loginButtonDisabled$
             )
         );
-
+/*
         this.dialog.setButtons([
             {
                 title: 'Login',
@@ -237,6 +248,7 @@ export class LoginDialogComponent extends DefaultBasicDialog implements OnInit, 
 
     private removeLoginButtons() {
         this.dialog.setButtons([]);
+*/
     }
 
 }

@@ -1,13 +1,6 @@
 import {Component, OnDestroy, ChangeDetectorRef} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable, Subscription, BehaviorSubject} from 'rxjs/Rx';
-
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
-import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
-import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
@@ -34,7 +27,7 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
         <div *ngIf="isLoading$ | async" class="loading">
             <md-progress-circle mode="indeterminate"></md-progress-circle>
         </div>
-        <md-content *ngIf="!(isLoading$ | async)" flex="grow">
+        <div *ngIf="!(isLoading$ | async)" flex="grow">
              <template [ngIf]='selectedBasket'>       
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
@@ -46,7 +39,7 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
                       </template>
                 </template>
              </template>
-        </md-content>
+        </div>
     </div>
     `,
     styles: [`
@@ -84,11 +77,6 @@ import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './
         height: 100px;
     }
     `],
-    pipes: [BasketResultGroupByDatasetPipe],
-    directives: [
-        CORE_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_ICON_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES,
-        MD_PROGRESS_CIRCLE_DIRECTIVES, PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent,
-    ],
 })
 
 export class GfbioBasketsComponent implements OnDestroy {

@@ -3,7 +3,7 @@ import {
     ElementRef, OnChanges, SimpleChange,
 } from '@angular/core';
 
-import d3 from 'd3';
+import {} from 'd3';
 
 /**
  * Schema for histogram data.

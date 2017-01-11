@@ -2,16 +2,9 @@ import {
     Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnChanges, SimpleChange,
     ViewChild, ElementRef, AfterViewInit, OnDestroy,
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 import {Http} from '@angular/http';
 
 import {Observable, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES, ITableSelectionChange, ITableSelectableRowSelectionChange,
-    MdDataTable} from 'ng2-material';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
-
-import {SafeStylePipe} from '../app/safe-template.pipe';
 
 import {ResultTypes} from '../operators/result-type.model';
 import {GeoJsonFeature} from '../models/geojson.model';
@@ -22,6 +15,7 @@ import {LoadingState} from '../shared/loading-state.model';
 import {LayerService, SelectedFeatures} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
+import {MdDataTable, ITableSelectionChange, ITableSelectableRowSelectionChange} from "ng2-material";
 
 interface Column {
     name: string;
@@ -50,7 +44,6 @@ interface Row {
                 <tbody>
                     <template ngFor let-row [ngForOf]="visibleRows" let-idx="index">
                         <tr md-data-table-selectable-row
-                            [selectable-value]="row.id"
                             (onChange)="onRowSelectionChange($event)"
                         >
                             <td *ngFor="let column of columns">{{row[column.name]}}</td>
@@ -131,8 +124,6 @@ interface Row {
         datatable: new ViewChild(MdDataTable),
         container: new ViewChild('container'),
     },
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES],
-    pipes: [SafeStylePipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
@@ -298,7 +289,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
                   const contains = this.selectedFeatures.selected.contains(row.selectableValue);
                   return (!row.isActive && contains) || (row.isActive && !contains);
               }
-          ).forEach(row => row.change());
+          ).forEach(row => row.change({}));
       }
       this.changeDetectorRef.markForCheck();
     }

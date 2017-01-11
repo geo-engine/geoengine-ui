@@ -44,7 +44,7 @@ export default {
         PROJECT: {
             NAME: 'Default',
             TIME: '2000-06-06T12:00:00.000Z',
-            PROJECTION: 'EPSG:4326',
+            PROJECTION: 'EPSG:3857',
         },
     },
     MAP: {

@@ -1,6 +1,4 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {RasterSymbology} from './symbology.model';
 
@@ -45,8 +43,6 @@ import {RasterSymbology} from './symbology.model';
             padding-top: 16px;
         }
         `],
-    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
-    // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbologyRasterComponent  {
     @Input() symbology: RasterSymbology;

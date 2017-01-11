@@ -1,7 +1,4 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
-import {MD_CARD_DIRECTIVES} from '@angular2-material/card/card';
-import {MdButton} from '@angular2-material/button';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {TrimPipe} from '../pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
@@ -141,8 +138,6 @@ export class BasketResult<T extends IBasketResult>  {
         }
 
     `],
-    pipes: [TrimPipe],
-    directives: [CORE_DIRECTIVES, MD_CARD_DIRECTIVES, MdButton],
 })
 export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaResult> {
     constructor(
@@ -334,8 +329,6 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
             background-color: lightgray;
         }
     `],
-    pipes: [TrimPipe],
-    directives: [CORE_DIRECTIVES, MD_CARD_DIRECTIVES, MdButton],
 })
 export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult>
                                               implements OnInit, OnDestroy {

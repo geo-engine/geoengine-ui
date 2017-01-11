@@ -1,5 +1,4 @@
 import {Component,  Input, OnInit} from '@angular/core';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {Observable} from 'rxjs/Rx';
 
@@ -8,21 +7,11 @@ import {
     MappingColorizerRasterSymbology, MappingColorizer, ClusteredPointSymbology,
 } from './symbology.model';
 
-import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
-import {SafeStylePipe} from '../pipes/safe-style.pipe';
-
-import {MappingColorizerToGradientPipe} from './mapping-colorizer-to-gradient.pipe';
-
 @Component({
     selector: 'wave-legendary',
     template: `
-    <md-list>
-        <md-list-item>
-            <div>{{symbology.symbologyTypeId}}</div>
-        </md-list-item>
-    </md-list>
+      <span>{{symbology.symbologyTypeId}}</span>
     `,
-    directives: [MATERIAL_DIRECTIVES],
 })
 export class LegendaryComponent<S extends Symbology> {
     @Input() symbology: S;
@@ -33,13 +22,13 @@ export class LegendaryComponent<S extends Symbology> {
     template: `
         <md-list>
             <md-list-item>
-                <i md-icon class='circle'
+                <md-icon class='circle'
                     [style.width.px]='symbology.radius*2'
                     [style.height.px]='symbology.radius*2'
                     [style.border-width.px]='symbology.strokeWidth'
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
-                </i>
+                </md-icon>
                 <p class='md-list-item-text'>Point</p>
             </md-list-item>
         </md-list>
@@ -54,12 +43,11 @@ export class LegendaryComponent<S extends Symbology> {
             border-radius: 50%;
             max-width: 50px;
             max-height: 50px;
-            border: 1.5px solid #fff;
+            border: 2px solid #fff;
             color: white;
         }`,
     ],
-    directives: [MATERIAL_DIRECTIVES],
-    pipes: [RgbaToCssStringPipe],
+    inputs: ["symbology"],
     // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryPointComponent<S extends SimplePointSymbology> extends LegendaryComponent<S> {
@@ -70,13 +58,13 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
     template: `
         <md-list>
             <md-list-item>
-                <i md-icon class='circle'
+                <md-icon class='circle'
                     [style.width.px]='10'
                     [style.height.px]='10'
                     [style.border-width.px]='symbology.strokeWidth'
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
-                </i>
+                </md-icon>
                 <p class='md-list-item-text'>Point</p>
             </md-list-item>
         </md-list>
@@ -91,13 +79,12 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
             border-radius: 50%;
             max-width: 50px;
             max-height: 50px;
-            border: 1.5px solid #fff;
+            border: 2px solid #fff;
             color: white;
         }`,
     ],
-    directives: [MATERIAL_DIRECTIVES],
-    pipes: [RgbaToCssStringPipe],
-    // changeDetection: ChangeDetectionStrategy.OnPush
+    inputs: ["symbology"],
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
     extends LegendaryComponent<S> {}
@@ -107,11 +94,11 @@ export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
     template: `
         <md-list>
             <md-list-item>
-                <i md-icon class='vector'
+                <md-icon class='vector'
                     [style.border-width.px]='symbology.strokeWidth'
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
-                </i>
+                </md-icon>
                 <p class='md-list-item-text'>Vector</p>
             </md-list-item>
         </md-list>
@@ -122,13 +109,12 @@ export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
             height: 20px;
             max-width: 50px;
             max-height: 50px;
-            border: 1.5px solid #fff;
+            border: 2px solid #fff;
             color: white;
         }`,
     ],
-    directives: [MATERIAL_DIRECTIVES],
-    pipes: [RgbaToCssStringPipe],
-    // changeDetection: ChangeDetectionStrategy.OnPush
+    inputs: ["symbology"],
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryVectorComponent<S extends SimpleVectorSymbology>
     extends LegendaryComponent<S> {}
@@ -136,15 +122,11 @@ export class LegendaryVectorComponent<S extends SimpleVectorSymbology>
 @Component({
     selector: 'wave-legendary-raster',
     template: `
-        <md-list>
-            <md-list-item>
-                <div class='md-list-item-text'>opacity: {{symbology.opacity}}</div>
-            </md-list-item>
-        </md-list>
+        <span>opacity: {{symbology.opacity}}</span>
         `,
     styles: [``],
-    directives: [MATERIAL_DIRECTIVES],
-    // changeDetection: ChangeDetectionStrategy.OnPush
+    inputs: ["symbology"],
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryRasterComponent<S extends RasterSymbology> extends LegendaryComponent<S> {}
 
@@ -211,9 +193,8 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
         }
 
         `],
-    directives: [MATERIAL_DIRECTIVES],
-    pipes: [MappingColorizerToGradientPipe, SafeStylePipe],
-    // changeDetection: ChangeDetectionStrategy.OnPush
+    inputs: ["symbology"],
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
     extends LegendaryRasterComponent<S> implements OnInit {

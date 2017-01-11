@@ -1,14 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
-} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
 
 import {
-    OperatorBaseComponent, LayerMultiSelectComponent, OperatorOutputNameComponent,
+    OperatorBaseComponent,
 } from './operator.component';
 
 import {LayerService} from '../../layers/layer.service';
@@ -26,6 +19,7 @@ import {ResultTypes} from '../result-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
 import {HistogramType} from '../types/histogram-type.model';
+import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
 
 /**
  * This component allows creating the histogram operator.
@@ -40,10 +34,8 @@ import {HistogramType} from '../types/histogram-type.model';
         </wave-multi-layer-selection>
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
+                    <md-card-title>Configuration</md-card-title>
+                    <md-card-subtitle>Specify the operator</md-card-subtitle>
             </md-card-header>
             <md-card-content layout="column">
                 <div *ngIf="selectedLayer?.operator?.resultType !== ResultTypes.RASTER">
@@ -104,10 +96,6 @@ import {HistogramType} from '../types/histogram-type.model';
         margin: 8px 0;
     }
     `],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_CHECKBOX_DIRECTIVES,
-        LayerMultiSelectComponent, OperatorOutputNameComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HistogramOperatorComponent extends OperatorBaseComponent implements OnInit {
@@ -117,7 +105,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
 
     private customRange = false;
 
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
 
     private rangeTypes = ['Custom', 'Unit', 'Data'];
     private attributes: Array<string>;
@@ -164,7 +152,7 @@ export class HistogramOperatorComponent extends OperatorBaseComponent implements
                                         .toArray();
 
         if (this.attributes.length > 0) {
-            (this.configForm.controls['attributeName'] as Control).updateValue(this.attributes[0]);
+            (this.configForm.controls['attributeName'] as FormControl).setValue(this.attributes[0]);
         }
     }
 

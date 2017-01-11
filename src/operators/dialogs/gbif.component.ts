@@ -1,15 +1,6 @@
 import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit} from '@angular/core';
-import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
-} from '@angular/common';
 
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
-import {MD_CHECKBOX_DIRECTIVES} from '@angular2-material/checkbox';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {OperatorBaseComponent, OperatorOutputNameComponent} from './operator.component';
 
@@ -31,6 +22,7 @@ import {Unit} from '../unit.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {BasicColumns} from "../../models/csv.model";
 import {Http} from "@angular/http";
+import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
 
 /**
  * This component allows querying GBIF.
@@ -38,13 +30,11 @@ import {Http} from "@angular/http";
 @Component({
     selector: 'wave-gbif-loader',
     template: `
-    <form [ngFormModel]="form" autocomplete="off">
+    <form [ngControl]="form" autocomplete="off">
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">1. Search Species</span>
-                    <span class="md-subheader">Lookup a Scientific Name</span>
-                </md-card-header-text>
+                    <md-card-title>1. Search Species</md-card-title>
+                    <md-card-subtitle>Lookup a Scientific Name</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <md-input
@@ -83,10 +73,8 @@ import {Http} from "@angular/http";
         </md-card>
         <md-card *ngIf="mode === 2">
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">2. Select Resources</span>
-                    <span class="md-subheader">Select different source results</span>
-                </md-card-header-text>
+                    <md-card-title>2. Select Resources</md-card-title>
+                    <md-card-subtitle>Select different source results</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <md-progress-circle mode="indeterminate" *ngIf="loading"></md-progress-circle>
@@ -117,20 +105,11 @@ import {Http} from "@angular/http";
         margin: 0 auto;
     }
     `],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES,
-        MD_INPUT_DIRECTIVES, MD_RADIO_DIRECTIVES, MD_CHECKBOX_DIRECTIVES,
-        MD_PROGRESS_CIRCLE_DIRECTIVES,
-        OperatorOutputNameComponent,
-    ],
-    providers: [
-        MdRadioDispatcher,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GBIFOperatorComponent extends OperatorBaseComponent implements OnInit, AfterViewInit {
 
-    form: ControlGroup;
+    form: FormGroup;
     autoCompleteResults$: Observable<Array<string>>;
     autoCompleteLoading$ = new BehaviorSubject<boolean>(false);
 
@@ -172,7 +151,7 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         this.form.controls['searchString'].valueChanges.filter(
             _ => !this.nameCustomChanged
         ).subscribe(
-            searchString => (this.form.controls['name'] as Control).updateValue(searchString)
+            searchString => (this.form.controls['name'] as FormControl).setValue(searchString)
         );
 
         this.form.controls['name'].valueChanges.filter(
@@ -270,8 +249,8 @@ export class GBIFOperatorComponent extends OperatorBaseComponent implements OnIn
         this.loading = false;
         this.gbifCount = 0;
         this.iucnCount = 0;
-        (this.form.controls['selectGBIF'] as Control).updateValue(false);
-        (this.form.controls['selectIUCN'] as Control).updateValue(false);
+        (this.form.controls['selectGBIF'] as FormControl).setValue(false);
+        (this.form.controls['selectIUCN'] as FormControl).setValue(false);
         this.addDisabled.next(true);
     }
 

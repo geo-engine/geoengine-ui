@@ -1,20 +1,12 @@
 import {Component, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
-import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
 
 import Config from '../app/config.model';
 
 import {LayerService} from '../layers/layer.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
-
-import {TimeRibbonComponent} from './time-ribbon.component';
-
-import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
@@ -32,20 +24,20 @@ import {UserService} from '../users/user.service';
 @Component({
     selector: 'wave-start-tab',
     template: `
-    <md-content layout="row">
+    <div class="ribbons">
 
         <fieldset [class.selected]="isLayerSelected$ | async">
             <legend>Layer</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center" style="display: none;">
-                    <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" [disabled]="true"
-                            layout="column" layout-align="center center">
+            <div class="flex-row">
+                <div class="flex-column" style="display: none;">
+                    <button md-button style="margin: 0; height: auto;"
+                            class="flex-column md-primary" [disabled]="true"
+                            layout-align="center center">
                         <md-icon>info</md-icon>
                         <div>Info</div>
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                             (click)="lineageDialog.show()">
@@ -67,7 +59,7 @@ import {UserService} from '../users/user.service';
                         Share
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
                             (click)="renameLayerDialog.show()">
@@ -92,8 +84,8 @@ import {UserService} from '../users/user.service';
 
         <fieldset>
             <legend>Zoom</legend>
-            <div layout="row">
-                <div layout="column">
+            <div class="flex-row">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomLayer.emit()"
                             [disabled]="!(isLayerSelected$ | async)">
@@ -112,12 +104,12 @@ import {UserService} from '../users/user.service';
                         Map
                     </button>
                 </div>
-                <div layout="column" layout-align="space-around center">
-                    <button md-icon-button md-fab class="md-mini md-primary" aria-label="Zoom In"
+                <div class="flex-column flex_center">
+                    <button md-mini-fab md-primary aria-label="Zoom In"
                             (click)="zoomIn.emit()">
                         <md-icon>add</md-icon>
                     </button>
-                    <button md-icon-button md-fab class="md-mini md-primary" aria-label="Zoom Out"
+                    <button md-mini-fab md-primary aria-label="Zoom Out"
                             (click)="zoomOut.emit()">
                         <md-icon>remove</md-icon>
                     </button>
@@ -127,8 +119,8 @@ import {UserService} from '../users/user.service';
 
         <fieldset>
             <legend>Add Data</legend>
-            <div layout="row">
-                <div layout="column">
+            <div class="flex-row">
+                <div class="flex-column">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary small"
                             (click)="addData.emit()">
@@ -150,7 +142,7 @@ import {UserService} from '../users/user.service';
                         CSV Data/Import
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button
                         *ngIf="Config.PROJECT === 'GFBio'
                                && (userService.getUserStream() | async).hasExternalIdPrefix('GFBIO')"
@@ -193,7 +185,7 @@ import {UserService} from '../users/user.service';
             <wave-time-ribbon></wave-time-ribbon>
         </fieldset>
 
-    </md-content>
+    </div>
     <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
     <wave-dialog-loader #symbologyDialog [type]="SymbologyDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #exportDialog [type]="ExportDialogComponent"></wave-dialog-loader>
@@ -204,6 +196,25 @@ import {UserService} from '../users/user.service';
     <wave-dialog-loader #gbifLoader [type]="GBIFOperatorComponent"></wave-dialog-loader>
     `,
     styles: [`
+    .ribbons {
+      display: flex;
+      flex: 1;
+    }    
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      box-sizing: border-box;      
+    }
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;  
+    }
+    .flex_center {
+      align-items: center;
+      align-content: center;
+      justify-content: space-around;
+    }
     .selected {
       background-color: #f5f5f5 !important;
     }
@@ -217,30 +228,10 @@ import {UserService} from '../users/user.service';
         border-width: 1px;
         padding: 0px;
     }
-    fieldset .material-icons {
-        vertical-align: middle;
-    }
-    fieldset [md-fab] .material-icons {
-        vertical-align: baseline;
-    }
-    button {
-        height: 36px;
-    }
     button[disabled] {
         background-color: transparent;
     }
-    button.small {
-        text-align: left;
-        margin: 0px;
-    }
-    .md-mini md-icon {
-        padding: 8px !important;
-    }
     `],
-    directives: [
-        CORE_DIRECTIVES, MD_ICON_DIRECTIVES, MD_BUTTON_DIRECTIVES, TimeRibbonComponent,
-        DialogLoaderComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartTabComponent {

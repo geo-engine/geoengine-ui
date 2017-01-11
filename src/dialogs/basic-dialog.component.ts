@@ -21,4 +21,4 @@ export abstract class DefaultBasicDialog extends BasicDialog<DialogInput> {}
  */
 export interface DialogInput {
     [index: string]: string | number | boolean | Object;
-};
+}

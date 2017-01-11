@@ -1,9 +1,6 @@
 import {Component, Input, ChangeDetectionStrategy, Pipe, PipeTransform} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../layers/layer.service';
 import {Provenance} from './provenance.model';
@@ -97,8 +94,6 @@ export class NbspPipe implements PipeTransform {
     }
 
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
-    pipes: [NbspPipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProvenanceListComponent {

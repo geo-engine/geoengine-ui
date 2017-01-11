@@ -1,16 +1,12 @@
 import {
-    Component, ChangeDetectionStrategy, ViewChild, ComponentFactory, AfterViewInit,
-    ComponentRef, Input, ViewContainerRef, ComponentResolver, ChangeDetectorRef, OnDestroy,
+  Component, ChangeDetectionStrategy, ViewChild, ComponentFactory, AfterViewInit,
+  ComponentRef, Input, ViewContainerRef, ComponentFactoryResolver, ChangeDetectorRef, OnDestroy, Type,
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES, MdBackdrop} from 'ng2-material';
+import {MdBackdrop} from 'ng2-material';
 import {MdDialog} from 'ng2-material';
-
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
 
 import {DialogRef, ButtonDescription, ActionInputDescription} from './dialog-ref.model';
 import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
@@ -82,9 +78,6 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
         padding-top: 8px;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdDialog, MD_TOOLBAR_DIRECTIVES, MD_INPUT_DIRECTIVES,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
@@ -92,7 +85,7 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
     @ViewChild('target', {read: ViewContainerRef}) target: ViewContainerRef;
     @ViewChild(MdBackdrop) backdrop: MdBackdrop;
 
-    @Input() type: DefaultBasicDialog;
+    @Input() type: Type<DefaultBasicDialog>;
     @Input() config: DialogInput = {}; // optional
 
     dialogChild: ComponentRef<DefaultBasicDialog>;
@@ -117,7 +110,7 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(
-        private componentResolver: ComponentResolver,
+        private componentResolver: ComponentFactoryResolver,
         private changeDetectorRef: ChangeDetectorRef
     ) {
         this.windowHeight$ = new BehaviorSubject(window.innerHeight);
@@ -217,15 +210,12 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
         if (this.type) {
             this.destroyChildComponent();
 
-            return this.componentResolver.resolveComponent(
-                this.type
-            ).then((factory: ComponentFactory<DefaultBasicDialog>) => {
-                this.dialogChild = this.target.createComponent(factory);
-
+          this.dialogChild = this.componentResolver.resolveComponentFactory(this.type).create(this.target);
                 // inject
-                this.dialogChild.instance.dialog = this.dialogRef;
-                this.dialogChild.instance.dialogInput = this.config;
-            });
+          this.dialogChild.instance.dialog = this.dialogRef;
+          this.dialogChild.instance.dialogInput = this.config;
+          return Observable.empty().toPromise(); // FIXME: WTF???
+
         } else {
             throw 'DialogLoader: There is no Component to load.';
         }

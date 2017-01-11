@@ -1,10 +1,6 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-
+import {Component, ChangeDetectionStrategy, AfterViewInit, ViewChild, AfterContentInit} from '@angular/core';
+import {MdDialog} from "@angular/material";
 import {Observable} from 'rxjs/Rx';
-
-import {MdToolbar} from '@angular2-material/toolbar';
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import Config from '../app/config.model';
 
@@ -16,8 +12,6 @@ import {IntroductionDialogComponent} from './introduction-dialog.component';
 import {UserService} from '../users/user.service';
 import {LayoutService} from '../app/layout.service';
 
-import {VatLogoComponent, IdessaLogoComponent} from '../app/logo.component';
-
 /**
  * The top left info area component for user info and layer list collapsing.
  */
@@ -25,13 +19,13 @@ import {VatLogoComponent, IdessaLogoComponent} from '../app/logo.component';
     selector: 'wave-info-area',
     template: `
     <md-toolbar class="md-accent">
-        <button md-button aria-label="User" (click)="loginDialog.show()">
-            <i md-icon>person</i>
+        <button md-button aria-label="User" (click)="openUserDialog()">
+            <md-icon>person</md-icon>
             {{username$ | async}}
         </button>
         <span class="fill-remaining-space"></span>
-        <button md-button class="md-icon-button" aria-label="Help" (click)="helpDialog.show()">
-            <i md-icon>help</i>
+        <button md-icon-button class="md-icon-button" aria-label="Help" (click)="helpDialog.show()">
+            <md-icon>help</md-icon>
         </button>
         <md-toolbar-row class="title-bar">
             <md-divider></md-divider>
@@ -44,18 +38,17 @@ import {VatLogoComponent, IdessaLogoComponent} from '../app/logo.component';
                 md-button class="md-icon-button" aria-label="Layer List Actions"
                 disabled="true" style="visibility: hidden;"
             >
-                <i md-icon>menu</i>
+                <md-icon>menu</md-icon>
             </button>
             <span class="fill-remaining-space">Layers</span>
-            <button md-button class="md-icon-button" aria-label="Toggle Layer List Visibility"
+            <button md-icon-button aria-label="Toggle Layer List Visibility"
                     (click)="layoutService.toggleLayerListVisibility()"
                     [ngSwitch]="layerListVisibility$ | async">
-                <i *ngSwitchCase="true" md-icon>expand_less</i>
-                <i *ngSwitchCase="false" md-icon>expand_more</i>
+                <md-icon *ngSwitchCase="true">expand_less</md-icon>
+                <md-icon *ngSwitchCase="false">expand_more</md-icon>
             </button>
         </md-toolbar-row>
     </md-toolbar>
-    <wave-dialog-loader #loginDialog [type]="LoginDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #introductionDialog [type]="IntroductionDialogComponent"></wave-dialog-loader>
     `,
@@ -104,13 +97,9 @@ import {VatLogoComponent, IdessaLogoComponent} from '../app/logo.component';
         background-color: transparent;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar, DialogLoaderComponent, VatLogoComponent,
-        IdessaLogoComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InfoAreaComponent implements AfterViewInit{
+export class InfoAreaComponent implements AfterContentInit {
 
     @ViewChild('introductionDialog') introductionDialogLoader: DialogLoaderComponent;
     layerListVisibility$: Observable<boolean>;
@@ -118,11 +107,11 @@ export class InfoAreaComponent implements AfterViewInit{
 
     // tslint:disable:variable-name
     IntroductionDialogComponent = IntroductionDialogComponent;
-    LoginDialogComponent = LoginDialogComponent;
     HelpDialogComponent = HelpDialogComponent;
     // tslint:enable
 
     constructor(
+        public dialog: MdDialog,
         private layoutService: LayoutService,
         private userService: UserService
     ) {
@@ -133,9 +122,17 @@ export class InfoAreaComponent implements AfterViewInit{
         );
     }
 
-    ngAfterViewInit() {
-        if (this.userService.shouldShowIntroductoryPopup()) {
-            this.introductionDialogLoader.show();
-        }
+    openUserDialog() {
+      let dialogRef = this.dialog.open(LoginDialogComponent, {
+        disableClose: false
+      });
+    }
+
+    ngAfterContentInit() {
+      if (this.userService.shouldShowIntroductoryPopup()) {
+        setTimeout(() => {
+          this.dialog.open(IntroductionDialogComponent, {});
+        });
+      }
     }
 }

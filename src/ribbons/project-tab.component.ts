@@ -1,15 +1,11 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {ProjectService} from '../project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {UserService} from '../users/user.service';
 
-import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {SaveAsDialogComponent} from '../storage/save-as.component';
 import {LoadDialogComponent} from '../storage/load.component';
 import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
@@ -22,60 +18,60 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
 @Component({
     selector: 'wave-project-tab',
     template: `
-    <md-content layout="row">
+    <div class="ribbons flex-row">
         <fieldset>
             <legend>Storage</legend>
-            <div layout="row" layout-align="center">
+            <div class="flex-row flex-center">
                 <button md-button
-                    class="md-primary" layout="column space-around"
+                    class="md-primary flex-column"
                     disabled>
-                    <i md-icon>save</i>
+                    <md-icon>save</md-icon>
                     <div>Save (autosave)</div>
                 </button>
                 <button md-button
-                    class="md-primary" layout="column space-around"
+                    class="md-primary flex-column"
                     [disabled]="isGuestUser$ | async"
                     (click)="saveAsDialog.show()"
                 >
-                    <i md-icon>archive</i>
+                    <md-icon>archive</md-icon>
                     <div>Save as...</div>
                 </button>
                 <button md-button
-                    class="md-primary" layout="column space-around"
+                    class="md-primary flex-column"
                     [disabled]="isGuestUser$ | async"
                     (click)="loadDialog.show()"
                 >
-                    <i md-icon>unarchive</i>
+                    <md-icon>unarchive</md-icon>
                     <div>Load</div>
                 </button>
             </div>
         </fieldset>
         <fieldset>
             <legend>Project</legend>
-            <div layout="row" layout-align="center">
+            <div class="flex-row flex-center">
                 <button md-button
-                    class="md-primary" layout="column space-around"
+                    class="md-primary flex-column"
                     [disabled]="isGuestUser$ | async"
                     (click)="newProjectDialog.show()"
                 >
-                    <i md-icon>create_new_folder</i>
+                    <md-icon>create_new_folder</md-icon>
                     <div>New</div>
                 </button>
                 <button md-button
-                        class="md-primary" layout="column space-around"
+                        class="md-primary flex-column"
                         (click)="projectSettingsDialog.show()">
-                    <i md-icon>settings</i>
+                    <md-icon>settings</md-icon>
                     <div>Configuration</div>
                 </button>
                 <button md-button
-                        class="md-primary" layout="column space-around"
+                        class="md-primary flex-column"
                         (click)="lineageDialog.show()">
-                    <i md-icon>merge_type</i>
+                    <md-icon>merge_type</md-icon>
                     <div>Lineage</div>
                 </button>
             </div>
         </fieldset>
-    </md-content>
+    </div>
     <wave-dialog-loader #saveAsDialog
         [type]="SaveAsDialogComponent"
     ></wave-dialog-loader>
@@ -94,6 +90,24 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
     ></wave-dialog-loader>
     `,
     styles: [`
+    .ribbons {
+      display: flex;
+      flex: 1;
+    }    
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      box-sizing: border-box;      
+    }
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;  
+    }
+    .flex-center {
+      align-items: center;
+    }
+
     fieldset {
         border-style: solid;
         border-width: 1px;
@@ -103,24 +117,7 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
     fieldset > div {
         height: 105px;
     }
-    fieldset .material-icons {
-        vertical-align: middle;
-    }
-    fieldset [md-fab] .material-icons {
-        vertical-align: baseline;
-    }
-    button {
-        height: 36px;
-        margin: 0px;
-        height: auto;
-    }
-    button[disabled] {
-        background-color: transparent;
-    }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, DialogLoaderComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectTabComponent {

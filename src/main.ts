@@ -1,19 +1,12 @@
-import { bootstrap }    from '@angular/platform-browser-dynamic';
-import {HTTP_PROVIDERS} from '@angular/http';
-import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
-import {enableProdMode} from '@angular/core';
+import './polyfills.ts';
 
-import {AppComponent} from './app/app.component';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode } from '@angular/core';
+import { environment } from './environments/environment';
+import { AppModule } from './app/app.module';
 
-import Config from './app/config.model';
-
-// disable dev mode when not in debug mode
-if (!Config.DEVELOPER_MODE) {
-    enableProdMode();
+if (environment.production) {
+  enableProdMode();
 }
 
-bootstrap(
-    AppComponent, [HTTP_PROVIDERS, OVERLAY_PROVIDERS]
-).catch(
-    error => console.error(error)
-);
+platformBrowserDynamic().bootstrapModule(AppModule);

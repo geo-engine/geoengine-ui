@@ -1,4 +1,4 @@
-import {DomSanitizationService} from '@angular/platform-browser';
+import {DomSanitizer} from '@angular/platform-browser';
 import {Pipe, PipeTransform} from '@angular/core';
 
 /**
@@ -7,7 +7,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  */
 @Pipe({name: 'waveSafeStyle'})
 export class SafeStylePipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizationService) {}
+    constructor(private sanitizer: DomSanitizer) {}
 
     transform(style: any) {
         return this.sanitizer.bypassSecurityTrustStyle(style);

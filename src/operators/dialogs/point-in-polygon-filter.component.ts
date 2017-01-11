@@ -1,8 +1,4 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
     OperatorBaseComponent, LayerMultiSelectComponent, OperatorOutputNameComponent,
@@ -20,6 +16,7 @@ import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.mo
 import {
     SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
 } from '../../symbology/symbology.model';
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -41,16 +38,12 @@ import {
         <wave-operator-output-name ngControl="name"></wave-operator-output-name>
     </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        LayerMultiSelectComponent, OperatorOutputNameComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PointInPolygonFilterOperatorComponent extends OperatorBaseComponent
                                                    implements OnInit {
 
-        private configForm: ControlGroup;
+        private configForm: FormGroup;
         private pointLayer: VectorLayer<AbstractVectorSymbology>;
         private polygonLayer: VectorLayer<AbstractVectorSymbology>;
 

@@ -1,0 +1,75 @@
+@import '~@angular/material/core/theming/all-theme';
+
+
+wave-layer-list {
+  background-color: white; // TODO: THEME
+  display: block;
+}
+
+wave-layer-list .container {
+  display: block;
+  flex: 1;
+  position: relative;
+}
+
+wave-layer-list .list-item-column {
+  flex-direction: column;
+}
+
+wave-layer-list .list-item-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+wave-layer-list .no-layer {
+  height: 24px;
+  min-height: 24px;
+  cursor: auto;
+}
+
+wave-layer-list md-list md-list-item,
+wave-layer-list md-list md-list-item > .md-list-item {
+  height: unset;
+  min-height: 48px;
+}
+
+wave-layer-list md-list md-list-item .md-list-item-text {
+  max-width: 110px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+wave-layer-list md-list {
+  height: 100%;
+}
+
+wave-layer-list md-content {
+  overflow-x: hidden;
+}
+
+wave-layer-list button[disabled] {
+  background-color: transparent;
+}
+
+wave-layer-list md-progress-circle {
+  position: absolute;
+  height: 36px !important;
+  width: 36px !important;
+  left: calc(50% - 36px/2);
+  top: 6px;
+}
+
+wave-layer-list button.error-button {
+  position: absolute;
+  left: calc(50% - 40px/2);
+}
+
+wave-layer-list .active-layer .md-list-item {
+  background: whitesmoke;//${Config.COLORS.DEFAULT};
+  border-bottom: solid 1px #009688;
+}

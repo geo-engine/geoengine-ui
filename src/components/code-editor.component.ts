@@ -2,14 +2,14 @@ import {
     Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChange, ViewChild, AfterViewInit,
     ElementRef, OnDestroy, Provider,
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/common';
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
-import CodeMirror from 'codemirror';
+import * as CodeMirror from 'codemirror';
 
 // import all possible modes
 import 'codemirror/mode/r/r';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
 
 const LANGUAGES = ['r'];
 
@@ -30,12 +30,7 @@ const LANGUAGES = ['r'];
         width: 100%;
     }
     `],
-    providers: [
-        new Provider(
-            NG_VALUE_ACCESSOR, {
-              useExisting: CodeEditorComponent,
-              multi: true,
-          }),
+    providers: [ {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true,},
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

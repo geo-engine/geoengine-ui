@@ -2,7 +2,6 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, OnInit,
         Input, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
 import {LayerService} from '../../layers/layer.service';
@@ -12,9 +11,9 @@ import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {Symbology} from '../../symbology/symbology.model';
 
-import d3 from 'd3'; // necessary for dagreD3
+import * as d3 from 'd3'; // necessary for dagreD3
 // import dagre from 'dagre';
-import dagreD3 from 'dagre-d3';
+import * as dagreD3 from 'dagre-d3';
 
 interface LineageDialogInput extends DialogInput {
     selectedLayerOnly: boolean;
@@ -191,7 +190,6 @@ const GRAPH_STYLE = {
             stroke-dasharray: 5, 5;
         }
     `],
-    directives: [MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorGraphDialogComponent extends BasicDialog<LineageDialogInput>

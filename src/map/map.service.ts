@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
-import ol from 'openlayers';
+import * as ol from 'openlayers';
 
 export interface ViewportSize {
     extent: [number, number, number, number]  | ol.Extent;

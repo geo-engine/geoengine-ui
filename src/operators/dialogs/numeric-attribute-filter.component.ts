@@ -1,19 +1,11 @@
 import {
     Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef,
 } from '@angular/core';
-import {HTTP_PROVIDERS} from '@angular/http';
-import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
-} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {
-    LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
+     OperatorBaseComponent
 } from './operator.component';
-import {HistogramComponent, HistogramData} from '../../plots/histogram.component';
+//FIXME: import {HistogramData} from '../../plots/histogram.component';
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
@@ -31,6 +23,7 @@ import {Unit} from '../unit.model';
 import {
     SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
 } from '../../symbology/symbology.model';
+import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
 
 /**
  * This component allows creating the numeric attribute filter operator.
@@ -46,10 +39,8 @@ import {
         </wave-multi-layer-selection>
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
+                    <md-card-title class="md-title">Configuration</md-card-title>
+                    <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <div>
@@ -94,18 +85,13 @@ import {
         margin: 0 1rem;
     }
     `],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class NumericAttributeFilterOperatorComponent extends OperatorBaseComponent
                                                      implements OnInit {
     Browser = Browser; // tslint:disable-line:variable-name
 
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
 
     private attributes: Array<string> = [];
 
@@ -113,7 +99,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
     private boundsMin: number;
     private boundsMax: number;
 
-    private data: HistogramData;
+    private data: any;//FIXME: HistogramData;
     private dataLoading: boolean = false;
 
     constructor(
@@ -157,7 +143,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
                 operator: operator,
                 time: this.projectService.getTime(),
             }).then(
-                data => this.data = data as HistogramData
+                data => this.data = data //FIXME: as HistogramData
             ).then(
                 _ => this.dataLoading = false
             );
@@ -179,7 +165,7 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
         }).toArray();
 
         if (this.attributes.length > 0) {
-            (this.configForm.controls['attributeName'] as Control).updateValue(
+            (this.configForm.controls['attributeName'] as FormControl).setValue(
                 this.attributes[0],
                 {
                     emitEvent: true,
@@ -214,9 +200,9 @@ export class NumericAttributeFilterOperatorComponent extends OperatorBaseCompone
             attributes: attributes,
             dataTypes: dataTypes,
             units: units,
-            pointSources: new Array<Operator>(),
-            lineSources: new Array<Operator>(),
-            polygonSources: new Array<Operator>(),
+            pointSources: [],
+            lineSources: [],
+            polygonSources: [],
         };
 
         switch (vectorOperator.resultType) {

@@ -1,7 +1,4 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-
-import {MD_CARD_DIRECTIVES} from '@angular2-material/card';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
@@ -316,10 +313,6 @@ import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
     `],
     providers: [],
-    directives: [
-        CORE_DIRECTIVES, MD_CARD_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpDialogComponent extends DefaultBasicDialog implements OnInit {

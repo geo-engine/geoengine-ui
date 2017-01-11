@@ -1,10 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../layers/layer.service';
 import {VectorLayer} from '../layers/layer.model';
@@ -27,13 +23,13 @@ type Grouped<T> = Iterable<Group<T>>;
 interface Group<T> {
         group: Array<T>;
         name: string;
-    };
+    }
 
 @Component({
     selector: 'wave-abcd-repository',
     template: `
     <div style='height:100%' layout='column'>
-    <md-content flex='grow'>
+    <div flex='grow'>
       <md-list>
         <template
             ngFor let-group
@@ -55,7 +51,7 @@ interface Group<T> {
           </template>
       </template>
       </md-list>
-    </md-content>
+    </div>
     </div>
     `,
     styles: [`
@@ -83,7 +79,6 @@ interface Group<T> {
         text-overflow: ellipsis;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

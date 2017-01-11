@@ -1,10 +1,6 @@
 import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MdToolbar} from '@angular2-material/toolbar';
 
 import {LayoutService} from '../app/layout.service';
 
@@ -12,11 +8,11 @@ import {LayoutService} from '../app/layout.service';
     selector: 'wave-info-bar',
     template: `
     <md-toolbar>
-        <button md-button class="md-icon-button" aria-label="Toggle Data Table"
+        <button md-icon-button aria-label="Toggle Data Table"
                 (click)="layoutService.toggleDataTableVisibility()"
                 [ngSwitch]="dataTableVisible$ | async">
-            <i *ngSwitchCase="true" md-icon>expand_more</i>
-            <i *ngSwitchCase="false" md-icon>expand_less</i>
+            <md-icon *ngSwitchCase="true">expand_more</md-icon>
+            <md-icon *ngSwitchCase="false">expand_less</md-icon>
         </button>
         <small>Data Table</small>
         <md-divider *ngIf="citationString"></md-divider>
@@ -40,7 +36,6 @@ import {LayoutService} from '../app/layout.service';
         width: 16px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MdToolbar],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

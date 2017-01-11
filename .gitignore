@@ -1,25 +1,35 @@
-# Packaged components
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+
+# dependencies
 /node_modules
 /bower_components
 
-# Typescript bindings
+# IDEs and editors
+/.idea
+/.vscode
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log
+testem.log
 /typings
 
-# Compiled typesript sources.
-/app
+# e2e
+/e2e/*.js
+/e2e/*.map
 
-# Documentation
-/doc
-
-# Eclipse
-.project
-
-# WebStorm
-/.idea
-
-# NPM
-npm-debug.log
-
-# Build Files
-/build/*
-!/build/index.html
+#System Files
+.DS_Store
+Thumbs.db

@@ -1,11 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 import {BehaviorSubject, Observable, Subscription, Observer} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import Config from '../../../app/config.model';
 
@@ -59,16 +55,11 @@ type RScriptLoadDialogType = {
         margin: 0 auto;
     }
     `],
-    providers: [MdRadioDispatcher],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_RADIO_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RScriptLoadDialogComponent extends BasicDialog<RScriptLoadDialogType>
                                         implements OnInit, OnDestroy {
-    form: ControlGroup;
+    form: FormGroup;
 
     scriptNames$: Promise<Array<string>>;
     loading$ = new BehaviorSubject<boolean>(true);

@@ -1,12 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {ProjectService} from '../project/project.service';
 
-import moment from 'moment';
+import {Moment} from 'moment';
 
 @Component({
     selector: 'wave-time-ribbon',
@@ -52,12 +48,11 @@ import moment from 'moment';
         display: none;
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeRibbonComponent implements OnInit {
 
-    private moment: moment.Moment;
+    private moment: Moment;
 
     constructor(
         private projectService: ProjectService,

@@ -1,12 +1,6 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_RADIO_DIRECTIVES, MdRadioDispatcher} from '@angular2-material/radio';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import Config from '../../app/config.model';
 
@@ -22,6 +16,7 @@ import {ResultTypes} from '../../operators/result-type.model';
 import {LayerService} from '../layer.service';
 import {Layer} from '../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
 @Component({
     selector: 'wave-export-dialog',
@@ -74,12 +69,6 @@ import {Symbology} from '../../symbology/symbology.model';
         float: none;
     }
     `],
-    providers: [MdRadioDispatcher],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        MD_RADIO_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExportDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
@@ -89,7 +78,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
     WCSOutputFormats = WCSOutputFormats;
     // tslint:enable
 
-    form: ControlGroup;
+    form: FormGroup;
 
     layer: Layer<Symbology>;
     isRaster: boolean;
@@ -134,7 +123,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
                 minResolutionControl.valueChanges.map(
                     value => Math.round(value * quotient)
                 ).subscribe(
-                    value => maxResolutionControl.updateValue(value)
+                    value => maxResolutionControl.setValue(value)
                 )
             );
 
@@ -144,7 +133,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
                 ).filter(
                     value => isNaN(value)
                 ).subscribe(
-                    _ => minResolutionControl.updateValue(DEFAULT_WIDTH)
+                    _ => minResolutionControl.setValue(DEFAULT_WIDTH)
                 )
             );
 

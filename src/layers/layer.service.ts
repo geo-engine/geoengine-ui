@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import Immutable from 'immutable';
+import {Set as ImmutableSet} from 'immutable';
 
 import {MappingQueryService} from '../queries/mapping-query.service';
 
@@ -11,9 +11,9 @@ import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
 
 export interface SelectedFeatures {
-    selected: Immutable.Set<FeatureID>;
-    add?: Immutable.Set<FeatureID>;
-    remove?: Immutable.Set<FeatureID>;
+    selected: ImmutableSet<FeatureID>;
+    add?: ImmutableSet<FeatureID>;
+    remove?: ImmutableSet<FeatureID>;
     focus?: FeatureID;
 }
 
@@ -25,7 +25,7 @@ export class LayerService {
     private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
     private selectedFeatures$: BehaviorSubject<SelectedFeatures> = new BehaviorSubject({
-        selected: Immutable.Set<FeatureID>(),
+        selected: ImmutableSet<FeatureID>(),
     });
     private isAnyLayerSelected$: Observable<boolean>;
 
@@ -123,7 +123,7 @@ export class LayerService {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
             this.selectedFeatures$.next({
-                selected: Immutable.Set<FeatureID>(),
+                selected: ImmutableSet<FeatureID>(),
             });
         }
     }
@@ -195,9 +195,9 @@ export class LayerService {
 
     updateSelectedFeatures(add: Array<FeatureID>, remove: Array<FeatureID>): void {
         const currentSelected = this.selectedFeatures$.value.selected;
-        const actualRemove = Immutable.Set(remove).intersect(currentSelected);
+        const actualRemove = ImmutableSet(remove).intersect(currentSelected);
         const actualSelected = currentSelected.subtract(remove);
-        const actualAdd = Immutable.Set(add).subtract(actualSelected);
+        const actualAdd = ImmutableSet(add).subtract(actualSelected);
         if (actualAdd.size > 0 || actualRemove.size > 0) {
             let next: SelectedFeatures = {
                 selected: actualSelected.union(actualAdd),

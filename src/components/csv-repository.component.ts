@@ -1,12 +1,6 @@
 import {Component} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
-
-import {MD_ICON_DIRECTIVES} from '@angular2-material/icon';
-import {MD_BUTTON_DIRECTIVES} from '@angular2-material/button';
-import {MD_TOOLBAR_DIRECTIVES} from '@angular2-material/toolbar';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {LayerService} from '../layers/layer.service';
 import {VectorLayer} from '../layers/layer.model';
@@ -41,16 +35,11 @@ import {RandomColorService} from '../services/random-color.service';
           </button>
         </md-toolbar>
         <md-content flex="grow">
-          <md-list>
-    
+          <md-list>   
                 <template ngFor let-csv [ngForOf]="csvs | async" >
-                    <md-list-item md-clickable class="md-2-line">
-                      <div class="md-list-item-text"
-                        layout="column"
-                        (click)="add(csv)">
-                        <p>{{csv.name}}</p>
-                        <p>{{csv.params.filename}}</p>
-                      </div>
+                    <md-list-item md-clickable (click)="add(csv)">                      
+                        <p md-line>{{csv.name}}</p>
+                        <p md-line>{{csv.params.filename}}</p>                      
                   </md-list-item>
                   <md-divider></md-divider>
               </template>
@@ -59,15 +48,11 @@ import {RandomColorService} from '../services/random-color.service';
     </div>
     `,
     styles: [`
-
     .toolbar-fill-remaining-space {
         flex: 1 1 auto;
     }
     .searchInput {
         width: 100%;
-    }
-    md-list-item {
-        cursor: pointer;
     }
     md-list >>> md-subheader {
         color: white;
@@ -78,7 +63,6 @@ import {RandomColorService} from '../services/random-color.service';
       padding: 5px 5px 5px 0px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MD_ICON_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_TOOLBAR_DIRECTIVES, MD_BUTTON_DIRECTIVES],
 })
 
 export class CsvRepositoryComponent {

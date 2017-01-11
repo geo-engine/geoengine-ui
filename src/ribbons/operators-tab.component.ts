@@ -2,14 +2,10 @@ import {
     Component, Input, ChangeDetectionStrategy, ElementRef, ViewChildren,
     QueryList, AfterViewInit, ChangeDetectorRef, ViewChild,
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
 
 import {Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-
-import {OperatorButtonComponent, OperatorSelectionGroupComponent}
-  from './operator-selection-group.component';
+import {OperatorSelectionGroupComponent} from './operator-selection-group.component';
 
 import Config from '../app/config.model';
 
@@ -31,7 +27,6 @@ import {
     MsgPansharpenType, MsgCo2CorrectionType,
 } from '../operators/types/msg-types.model';
 
-import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {RasterValueExtractionOperatorComponent}
   from '../operators/dialogs/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
@@ -39,7 +34,7 @@ import {NumericAttributeFilterOperatorComponent}
 import {PointInPolygonFilterOperatorComponent}
   from '../operators/dialogs/point-in-polygon-filter.component';
 import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
-import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
+// FIXME: import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
 import {
      MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
@@ -53,7 +48,7 @@ import {
 @Component({
     selector: 'wave-operators-tab',
     template: `
-    <div #container layout="row">
+    <div class="ribbons" #container layout="row">
         <wave-operator-selection-group groupName="Vector" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
@@ -163,6 +158,10 @@ import {
     ></wave-dialog-loader>
     `,
     styles: [`
+    .ribbons {
+      display: flex;
+    }
+    
     fieldset {
         border-style: solid;
         border-width: 1px;
@@ -181,10 +180,6 @@ import {
         background-color: transparent;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, DialogLoaderComponent,
-        OperatorSelectionGroupComponent, OperatorButtonComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorsTabComponent implements AfterViewInit {
@@ -222,7 +217,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
     ExpressionOperatorComponent = ExpressionOperatorComponent;
-    HistogramOperatorComponent = HistogramOperatorComponent;
+    // FIXME: HistogramOperatorComponent = HistogramOperatorComponent;
     ROperatorComponent = ROperatorComponent;
     MsgRadianceOperatorComponent = MsgRadianceOperatorComponent;
     MsgReflectanceOperatorComponent = MsgReflectanceOperatorComponent;

@@ -1,17 +1,11 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
-import {ProjectService} from '../project/project.service';
-
-import {Project} from '../project/project.model';
+import {ProjectService} from './project.service';
+import {Project} from './project.model';
 import {Projection, Projections} from '../operators/projection.model';
 
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Component({
     selector: 'wave-project-settings',
@@ -45,8 +39,6 @@ import moment from 'moment';
         color: rgba(0, 0, 0, 0.38);
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ProjectSettingsComponent extends DefaultBasicDialog implements OnInit {

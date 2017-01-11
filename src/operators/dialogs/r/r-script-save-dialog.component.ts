@@ -1,11 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
 
 import {BehaviorSubject, Subscription, Observer, Observable} from 'rxjs/Rx';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import Config from '../../../app/config.model';
 
@@ -13,6 +9,7 @@ import {BasicDialog} from '../../../dialogs/basic-dialog.component';
 
 import {StorageService} from '../../../storage/storage.service';
 import {RScript} from '../../../storage/storage-provider.model';
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
 type RScriptSaveDialogType = {
     initialName: string,
@@ -55,16 +52,11 @@ type RScriptSaveDialogType = {
         left: calc(50% - 50px/2);
     }
     `],
-    providers: [],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RScriptSaveDialogComponent extends BasicDialog<RScriptSaveDialogType>
                                         implements OnInit, OnDestroy {
-    form: ControlGroup;
+    form: FormGroup;
     loading$ = new BehaviorSubject(false);
 
     private subscriptions: Array<Subscription> = [];
@@ -98,7 +90,7 @@ export class RScriptSaveDialogComponent extends BasicDialog<RScriptSaveDialogTyp
             )
         );
 
-        nameControl.updateValue(this.dialogInput.initialName);
+        nameControl.setValue(this.dialogInput.initialName);
 
         this.dialog.setButtons([
             {

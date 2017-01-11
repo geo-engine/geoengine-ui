@@ -1,10 +1,6 @@
-import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
+import {Component, ChangeDetectionStrategy, OnDestroy, ViewEncapsulation} from '@angular/core';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
-
-import {Dragula, DragulaService} from 'ng2-dragula/ng2-dragula';
+import {DragulaService} from 'ng2-dragula/ng2-dragula';
 
 import Config from '../app/config.model';
 
@@ -13,162 +9,100 @@ import {Layer} from '../layers/layer.model';
 import {LoadingState} from '../shared/loading-state.model';
 
 import {LayerService} from '../layers/layer.service';
-import {
-    LegendaryRasterComponent, LegendaryPointComponent, LegendaryVectorComponent,
-    LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
-} from '../symbology/legendary.component';
 import {Subscription} from "rxjs";
 
 @Component({
     selector: 'wave-layer-list',
     template: `
-    <md-content flex>
-    <md-list [dragula]="layer-bag">
-        <md-list-item
-            *ngIf="(layerService.getLayersStream() | async).length === 0"
-            class="no-layer"
-        >no layer available</md-list-item>
-        <md-list-item md-ink
-            *ngFor="let layer of layerService.getLayersStream() | async; let index = index"
-            (click)="layerService.setSelectedLayer(layer)"
-            [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)"
-            (contextmenu)="replaceContextMenu($event, layer)"
-            [title]="layer.name"
-        >
-            <div layout="column">
-                <div layout="row">
-                    <button md-button class="md-icon-button"
-                            style="margin-left: -16px;"
-                            aria-label="Settings"
-                            (click)="toggleLayer(layer)">
-                        <i *ngIf="!layer.expanded" md-icon>expand_more</i>
-                        <i *ngIf="layer.expanded" md-icon>expand_less</i>
-                    </button>
+<div class="container" flex>
+  <md-list [dragula]="layer-bag">
+    <md-list-item
+      *ngIf="(layerService.getLayersStream() | async).length === 0"
+      class="no-layer"
+    >no layer available</md-list-item>
+    <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
+    <md-list-item class="unsized-list-item"
+                  
+                  (click)="layerService.setSelectedLayer(layer)"
+                  [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
+                  (contextmenu)="replaceContextMenu($event, layer)"
+                  [title]="layer.name"
+    >
+      <div class="list-item-column" >
+        <div class="list-item-row" >
+          <button md-icon-button
+                  style="margin-left: -16px;"
+                  aria-label="Settings"
+                  (click)="toggleLayer(layer)">
+            <md-icon *ngIf="!layer.expanded">expand_more</md-icon>
+            <md-icon *ngIf="layer.expanded">expand_less</md-icon>
+          </button>
+          <div #layerName class="md-list-item-text" style="padding-top: 10px">
+            {{layer.name}}
+          </div>
 
-                    <div #layerName class="md-list-item-text" style="padding-top: 10px">
-                        {{layer.name}}
-                    </div>
+          <button md-icon-button
+                  style="margin-right: -16px; visibility: hidden;"
+                  aria-label="More"
+                  *ngIf="layer === (layerService.getSelectedLayerStream() | async)"
+                  (click)="replaceContextMenu($event, layer)"
+                  disabled="true"
+          >
+            <md-icon>more_vert</md-icon>
+          </button>
+          <md-progress-circle
+            mode="indeterminate"
+            *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
+          ></md-progress-circle>
+          <button
+            md-button class="md-icon-button md-warn error-button" aria-label="Reload"
+            *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
+            (click)="layer.reload()"
+          >
+            <md-icon>replay</md-icon>
+          </button>
+        </div>
+        <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" class="list-item-row">
 
-                    <button md-button class="md-icon-button"
-                            style="margin-right: -16px; visibility: hidden;"
-                            aria-label="More"
-                            *ngIf="layer === (layerService.getSelectedLayerStream() | async)"
-                            (click)="replaceContextMenu($event, layer)"
-                            disabled="true"
-                    >
-                        <i md-icon>more_vert</i>
-                    </button>
-                    <md-progress-circle
-                        mode="indeterminate"
-                        *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
-                    ></md-progress-circle>
-                    <button
-                        md-button class="md-icon-button md-warn error-button" aria-label="Reload"
-                        *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
-                        (click)="layer.reload()"
-                    >
-                        <i md-icon>replay</i>
-                    </button>
-                </div>
-                <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()">
+          <wave-legendary-points
+            *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"
+            [symbology]="layer.symbology">
+          </wave-legendary-points>
 
-                    <wave-legendary-points
-                        *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"
-                        [symbology]="layer.symbology">
-                    </wave-legendary-points>
+          <wave-legendary-clustered-points
+            *ngSwitchCase="_enumSymbologyType.CLUSTERED_POINT"
+            [symbology]="layer.symbology">
+          </wave-legendary-clustered-points>
 
-                    <wave-legendary-clustered-points
-                        *ngSwitchCase="_enumSymbologyType.CLUSTERED_POINT"
-                        [symbology]="layer.symbology">
-                    </wave-legendary-clustered-points>
+          <wave-legendary-vector
+            *ngSwitchCase="_enumSymbologyType.SIMPLE_VECTOR"
+            [symbology]="layer.symbology">
+          </wave-legendary-vector>
 
-                    <wave-legendary-vector
-                        *ngSwitchCase="_enumSymbologyType.SIMPLE_VECTOR"
-                        [symbology]="layer.symbology">
-                    </wave-legendary-vector>
+          <wave-legendary-raster
+            *ngSwitchCase="_enumSymbologyType.RASTER"
+            [symbology]="layer.symbology">
+          </wave-legendary-raster>
 
-                    <wave-legendary-raster
-                        *ngSwitchCase="_enumSymbologyType.RASTER"
-                        [symbology]="layer.symbology">
-                    </wave-legendary-raster>
+          <wave-legendary-mapping-colorizer-raster
+            *ngSwitchCase="_enumSymbologyType.MAPPING_COLORIZER_RASTER"
+            [symbology]="layer.symbology">
+          </wave-legendary-mapping-colorizer-raster>
 
-                    <wave-legendary-mapping-colorizer-raster
-                        *ngSwitchCase="_enumSymbologyType.MAPPING_COLORIZER_RASTER"
-                        [symbology]="layer.symbology">
-                    </wave-legendary-mapping-colorizer-raster>
+          <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
+        </div>
+        </div>      
+    </md-list-item>
 
-                    <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
-                </div>
-            </div>
-            <md-divider
-                [class.md-active]="layer === (layerService.getSelectedLayerStream() | async)">
-            </md-divider>
-        </md-list-item>
-    </md-list>
-    </md-content>
-    `,
-    styles: [`
-    :host {
-        display: block;
-    }
-    .no-layer {
-        height: 24px;
-        min-height: 24px;
-        cursor: auto;
-    }
-    .no-layer >>> .md-list-item-inner {
-        height: 24px;
-        min-height: 24px;
-        color: ${Config.COLORS.TEXT.DEFAULT};
-        opacity: 0.5;
-        justify-content: center;
-        font-style: oblique;
-    }
-    .md-active {
-        background: ${Config.COLORS.DEFAULT};
-    }
-    md-divider.md-active {
-        border-top-color: ${Config.COLORS.PRIMARY};
-    }
-    md-list-item {
-        cursor: pointer;
-    }
-    .md-list-item-text {
-        width: 110px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-    md-list {
-        height: 100%;
-    }
-    md-content {
-        overflow-x: hidden;
-    }
-    button[disabled] {
-        background-color: transparent;
-    }
-    md-progress-circle {
-        position: absolute;
-        height: 36px !important;
-        width: 36px !important;
-        left: calc(50% - 36px/2);
-        top: 6px;
-    }
-    button.error-button {
-        position: absolute;
-        left: calc(50% - 40px/2);
-    }
-    `],
-    viewProviders: [DragulaService],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES, Dragula,
-        LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
-        LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
-    ],
+    </template>
+  </md-list>
+</div>
+`,
+  viewProviders: [DragulaService],
+  styleUrls: ['./layer-list.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
-
 export class LayerListComponent implements OnDestroy {
     // make visible in template
     // tslint:disable:variable-name

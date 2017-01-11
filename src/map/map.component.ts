@@ -1,7 +1,7 @@
 import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, OnChanges,
         ContentChildren, QueryList, AfterViewChecked, ChangeDetectionStrategy, AfterContentInit,
     } from '@angular/core';
-import ol from 'openlayers';
+import * as ol from 'openlayers';
 
 import Config from '../app/config.model';
 
@@ -165,8 +165,8 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         this.map.setView(view);
 
-        //console.log('ngAfterViewInit', 'this.map.getView().calculateExtent(this.map.getSize())', this.map.getView().calculateExtent(this.map.getSize()));
-        //console.log('ngAfterViewInit', 'this.projection.getExtent()', this.projection.getExtent());
+        console.log('ngAfterViewInit', 'this.map.getView().calculateExtent(this.map.getSize())', this.map.getView().calculateExtent(this.map.getSize()));
+        console.log('ngAfterViewInit', 'this.projection.getExtent()', this.projection.getExtent());
 
         // get resolution changes
         this.mapService.setViewportSize({
@@ -182,7 +182,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 this.layerService.getSelectedFeatures().selected.toArray()
             );
 
-            //console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
+            console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
             this.mapService.setViewportSize({
                 extent: this.map.getView().calculateExtent(this.map.getSize()),
                 resolution: this.map.getView().getResolution(),
@@ -191,7 +191,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         this.map.on('moveend', event => {
-            //console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
+            console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
             this.mapService.setViewportSize({
                 extent: this.map.getView().calculateExtent(this.map.getSize()),
@@ -276,7 +276,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         (select as any).setActive(false);
         this.map.addInteraction(select);
         select.on(['select'], (event: {}) => {
-            const selectEvent = event as ol.SelectEvent;
+            const selectEvent = event as ol.interaction.SelectEvent;
             const selectedSymbology = this.layerService.getSelectedLayer().symbology;
 
             if (selectedSymbology instanceof AbstractVectorSymbology) {
@@ -289,7 +289,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                     if (highlightStyle instanceof ol.style.Style) {
                         feature.setStyle(highlightStyle);
                     } else {
-                        const highlightStyleFunction = highlightStyle as ol.style.StyleFunction;
+                        const highlightStyleFunction = highlightStyle as ol.StyleFunction;
                         feature.setStyle(highlightStyleFunction.call(undefined, feature));
                     }
                 });
@@ -325,7 +325,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         this.layerService.getSelectedFeaturesStream().subscribe(selected => {
             const selectedLayer = this.layerService.getSelectedLayer();
-            let highlightStyleFunction = (feature: ol.Feature, resolution: number) => undefined as ol.style.Style;
+            let highlightStyleFunction = (feature: ol.Feature, resolution: number) => undefined as ol.style.Style | ol.style.Style[];
             if (selectedLayer !== undefined && selectedLayer.symbology instanceof AbstractVectorSymbology) {
                 highlightStyleFunction =
                     (selectedLayer.symbology as AbstractVectorSymbology).getHighlightSymbology().getOlStyleAsFunction();
@@ -350,9 +350,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                                 }
                             }
                         });
-                    };
+                    }
                 });
-            };
+            }
         });
     }
 
@@ -401,6 +401,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                         version: Config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
                     },
                     wrapX: false,
+                    projection: projection.getCode(),
                 });
                 const hostedLayer = new ol.layer.Tile({
                     source: hostedSource,

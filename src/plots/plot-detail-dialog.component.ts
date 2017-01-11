@@ -1,10 +1,6 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {BasicDialog} from '../dialogs/basic-dialog.component';
-import {HistogramComponent} from './histogram.component';
 
 import {Plot} from './plot.model';
 
@@ -36,10 +32,6 @@ type PlotDetailsDialogType = {plot: Plot, [index: string]: Plot};
 
     `],
     providers: [],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, HistogramComponent,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PlotDetailsDialogComponent extends BasicDialog<PlotDetailsDialogType>

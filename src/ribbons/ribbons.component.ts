@@ -2,20 +2,12 @@ import {
     Component, AfterViewInit, Output, EventEmitter, ChangeDetectionStrategy,
     ChangeDetectorRef, AfterViewChecked, ViewChild,
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-
-import {MD_TABS_DIRECTIVES, MdTabGroup} from '@angular2-material/tabs';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-
-import {StartTabComponent} from './start-tab.component';
-import {OperatorsTabComponent} from './operators-tab.component';
-import {ProjectTabComponent} from './project-tab.component';
-import {DebugTabComponent} from './debug-tab.component';
+import {MdTabGroup} from "@angular/material";
 
 import {LayoutService} from '../app/layout.service';
 
 import Config from '../app/config.model';
+
 
 /**
  * The ribbons component.
@@ -24,39 +16,27 @@ import Config from '../app/config.model';
     selector: 'wave-ribbons-component',
     template: `
     <md-tab-group md-border-bottom (wheel)="onScroll($event)">
-        <md-tab>
-            <template md-tab-label>Start</template>
-            <template md-tab-content>
-                <wave-start-tab
-                    (zoomIn)="zoomIn.emit()"
-                    (zoomOut)="zoomOut.emit()"
-                    (zoomLayer)="zoomLayer.emit()"
-                    (zoomProject)="zoomProject.emit()"
-                    (zoomMap)="zoomMap.emit()"
-                    (addData)="addData.emit()"
-                    (gfbio)="gfbio.emit()"
-                    (abcd)="abcd.emit()"
-                    (csv)="csv.emit()"
-                ></wave-start-tab>
-            </template>
+        <md-tab label="Start">
+          <wave-start-tab
+              (zoomIn)="zoomIn.emit()"
+              (zoomOut)="zoomOut.emit()"
+              (zoomLayer)="zoomLayer.emit()"
+              (zoomProject)="zoomProject.emit()"
+              (zoomMap)="zoomMap.emit()"
+              (addData)="addData.emit()"
+              (gfbio)="gfbio.emit()"
+              (abcd)="abcd.emit()"
+              (csv)="csv.emit()"
+          ></wave-start-tab>
         </md-tab>
-        <md-tab>
-            <template md-tab-label>Operators</template>
-            <template md-tab-content>
-                <wave-operators-tab></wave-operators-tab>
-            </template>
+        <md-tab label="Operators">
+          <wave-operators-tab></wave-operators-tab>
         </md-tab>
-        <md-tab>
-            <template md-tab-label>Project</template>
-            <template md-tab-content>
-                <wave-project-tab></wave-project-tab>
-            </template>
+        <md-tab label="Project">
+          <wave-project-tab></wave-project-tab>
         </md-tab>
-        <md-tab *ngIf="DEVELOPER_MODE">
-            <template md-tab-label>Debug</template>
-            <template md-tab-content>
-                <wave-debug-tab></wave-debug-tab>
-            </template>
+        <md-tab *ngIf="DEVELOPER_MODE" label="Debug">
+          <wave-debug-tab></wave-debug-tab>
         </md-tab>
     </md-tab-group>
     `,
@@ -75,10 +55,6 @@ import Config from '../app/config.model';
         overflow: visible;
     }
     `],
-    directives: [
-        CORE_DIRECTIVES, MATERIAL_DIRECTIVES, MD_TABS_DIRECTIVES,
-        StartTabComponent, OperatorsTabComponent, ProjectTabComponent, DebugTabComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RibbonsComponent implements AfterViewInit, AfterViewChecked {

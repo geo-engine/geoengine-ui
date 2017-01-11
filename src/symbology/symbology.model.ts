@@ -1,4 +1,4 @@
-import ol from 'openlayers';
+import * as ol from 'openlayers';
 import {Observable} from 'rxjs/Rx';
 import {Unit, UnitDict, Interpolation} from '../operators/unit.model';
 
@@ -67,7 +67,7 @@ export abstract class Symbology implements ISymbology {
     abstract toConfig(): ISymbology;
 
     abstract toDict(): SymbologyDict;
-};
+}
 
 export interface IVectorSymbology extends ISymbology {
     fillRGBA: [number, number, number, number];
@@ -86,7 +86,7 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
     strokeRGBA: [number, number, number, number] = [0, 0, 0, 1];
     strokeWidth: number = 1;
 
-    abstract getOlStyle(): ol.style.Style | ol.style.StyleFunction;
+    abstract getOlStyle(): ol.style.Style | ol.StyleFunction;
     abstract describesArea(): boolean;
     abstract describesRadius(): boolean;
 
@@ -99,21 +99,21 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
         return highlightSymbology;
     }
 
-    getOlStyleAsFunction(): ol.style.StyleFunction {
+    getOlStyleAsFunction(): ol.StyleFunction {
         const style = this.getOlStyle();
 
         if (style instanceof ol.style.Style) {
             return (feature: ol.Feature, resolution: number) => style;
         } else {
-            return style as ol.style.StyleFunction;
+            return style as ol.StyleFunction;
         }
     }
 
     constructor(config: IVectorSymbology) {
         super();
         this.fillRGBA = config.fillRGBA;
-        if (config.strokeRGBA) { this.strokeRGBA = config.strokeRGBA; };
-        if (config.strokeWidth) { this.strokeWidth = config.strokeWidth; };
+        if (config.strokeRGBA) { this.strokeRGBA = config.strokeRGBA; }
+        if (config.strokeWidth) { this.strokeWidth = config.strokeWidth; }
     }
 }
 
@@ -258,7 +258,7 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
         return this.clone();
     }
 
-    getOlStyle(): ol.style.StyleFunction {
+    getOlStyle(): ol.StyleFunction {
         return (feature, resolution) => {
             const numberOfPoints = feature.get('___numberOfPoints') as number;
             const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
@@ -339,9 +339,9 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     constructor(config: IRasterSymbology) {
         super();
         this.unit = config.unit;
-        if (config.opacity) { this.opacity = config.opacity; };
-        if (config.hue) { this.hue = config.hue; };
-        if (config.saturation) { this.saturation = config.saturation; };
+        if (config.opacity) { this.opacity = config.opacity; }
+        if (config.hue) { this.hue = config.hue; }
+        if (config.saturation) { this.saturation = config.saturation; }
     }
 
     isContinuous() {

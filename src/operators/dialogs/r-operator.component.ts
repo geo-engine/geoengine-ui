@@ -2,13 +2,10 @@ import {
     Component, ChangeDetectionStrategy, OnInit, ViewChild, AfterViewInit, OnDestroy,
 } from '@angular/core';
 import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control,
-} from '@angular/common';
+    Validators, FormBuilder, FormGroup, FormControl,
+} from '@angular/forms';
 
 import {BehaviorSubject, Subject, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
     LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
@@ -56,10 +53,8 @@ import {RScript} from '../../storage/storage-provider.model';
         </wave-multi-layer-selection>
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
+                    <md-card-title>Configuration</md-card-title>
+                    <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <p>Help?</p>
@@ -128,11 +123,6 @@ import {RScript} from '../../storage/storage-provider.model';
         vertical-align: middle;
     }
     `],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        OperatorOutputNameComponent, LayerMultiSelectComponent, CodeEditorComponent,
-        DialogLoaderComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ROperatorComponent extends OperatorBaseComponent
@@ -146,7 +136,7 @@ export class ROperatorComponent extends OperatorBaseComponent
 
     @ViewChild(CodeEditorComponent) codeEditor: CodeEditorComponent;
 
-    form: ControlGroup;
+    form: FormGroup;
     rasterSources: Array<RasterLayer<RasterSymbology>> = [];
     pointSources: Array<VectorLayer<AbstractVectorSymbology>> = [];
 
@@ -174,8 +164,8 @@ export class ROperatorComponent extends OperatorBaseComponent
 
         this.subscriptions.push(
             this.scriptLoaded$.subscribe(script => {
-                (this.form.controls['resultType'] as Control).updateValue(script.resultType);
-                (this.form.controls['code'] as Control).updateValue(script.code);
+                (this.form.controls['resultType'] as FormControl).setValue(script.resultType);
+                (this.form.controls['code'] as FormControl).setValue(script.code);
             })
         );
     }

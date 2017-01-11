@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {IBasketResult, IBasketAbcdResult, IBasketPangaeaResult, IBasketGroupedAbcdResult, UnitGroupedBasketResult} from './gfbio-basket.model';
+import {IBasketResult, IBasketAbcdResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
 
 @Pipe({name: 'waveBasketResultGroupByDatasetPipe'})
 export class BasketResultGroupByDatasetPipe implements PipeTransform {

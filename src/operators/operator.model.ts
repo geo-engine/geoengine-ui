@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import {List as ImmutableList, Map as ImmutableMap} from 'immutable';
 
 import {ResultType, ResultTypes} from './result-type.model';
 import {Projection, Projections} from './projection.model';
@@ -19,13 +19,13 @@ interface OperatorConfig {
     operatorType: OperatorType;
     resultType: ResultType;
     projection: Projection;
-    attributes?: Immutable.List<AttributeName> | Array<AttributeName>;
-    dataTypes?: Immutable.Map<AttributeName, DataType> | Map<AttributeName, DataType>;
-    units?: Immutable.Map<AttributeName, Unit> | Map<AttributeName, Unit>;
-    rasterSources?: Immutable.List<Operator> | Array<Operator>;
-    pointSources?: Immutable.List<Operator> | Array<Operator>;
-    lineSources?: Immutable.List<Operator> | Array<Operator>;
-    polygonSources?: Immutable.List<Operator> | Array<Operator>;
+    attributes?: ImmutableList<AttributeName> | Array<AttributeName>;
+    dataTypes?: ImmutableMap<AttributeName, DataType> | Map<AttributeName, DataType>;
+    units?: ImmutableMap<AttributeName, Unit> | Map<AttributeName, Unit>;
+    rasterSources?: ImmutableList<Operator> | Array<Operator>;
+    pointSources?: ImmutableList<Operator> | Array<Operator>;
+    lineSources?: ImmutableList<Operator> | Array<Operator>;
+    polygonSources?: ImmutableList<Operator> | Array<Operator>;
 }
 
 /**
@@ -71,16 +71,16 @@ export class Operator {
     private _resultType: ResultType;
     private _operatorType: OperatorType;
 
-    private _attributes: Immutable.List<AttributeName>;
-    private _dataTypes: Immutable.Map<AttributeName, DataType>;
-    private _units: Immutable.Map<AttributeName, Unit>;
+    private _attributes: ImmutableList<AttributeName>;
+    private _dataTypes: ImmutableMap<AttributeName, DataType>;
+    private _units: ImmutableMap<AttributeName, Unit>;
 
     private _projection: Projection;
 
-    private rasterSources: Immutable.List<Operator>;
-    private pointSources: Immutable.List<Operator>;
-    private lineSources: Immutable.List<Operator>;
-    private polygonSources: Immutable.List<Operator>;
+    private rasterSources: ImmutableList<Operator>;
+    private pointSources: ImmutableList<Operator>;
+    private lineSources: ImmutableList<Operator>;
+    private polygonSources: ImmutableList<Operator>;
 
     /**
      * Instantiate an operator.
@@ -104,38 +104,38 @@ export class Operator {
         this._projection = config.projection;
 
         if (config.attributes) {
-            this._attributes = config.attributes instanceof Immutable.List ?
-                config.attributes as Immutable.List<AttributeName> :
-                Immutable.List(config.attributes as Array<AttributeName>);
+            this._attributes = config.attributes instanceof ImmutableList ?
+                config.attributes as ImmutableList<AttributeName> :
+                ImmutableList(config.attributes as Array<AttributeName>);
         } else {
-            this._attributes = Immutable.List<AttributeName>();
+            this._attributes = ImmutableList<AttributeName>();
         }
 
         if (config.dataTypes) {
-            this._dataTypes = config.dataTypes instanceof Immutable.Map ?
-                config.dataTypes as Immutable.Map<AttributeName, DataType> :
-                Immutable.Map<AttributeName, DataType>(
+            this._dataTypes = config.dataTypes instanceof ImmutableMap ?
+                config.dataTypes as ImmutableMap<AttributeName, DataType> :
+                ImmutableMap<AttributeName, DataType>(
                     (config.dataTypes as Map<AttributeName, DataType>).entries()
                 );
         } else {
-            this._dataTypes = Immutable.Map<AttributeName, DataType>();
+            this._dataTypes = ImmutableMap<AttributeName, DataType>();
         }
 
         if (config.units) {
-            this._units = config.units instanceof Immutable.Map ?
-                config.units as Immutable.Map<AttributeName, Unit> :
-                Immutable.Map<AttributeName, Unit>(
+            this._units = config.units instanceof ImmutableMap ?
+                config.units as ImmutableMap<AttributeName, Unit> :
+                ImmutableMap<AttributeName, Unit>(
                     (config.units as Map<AttributeName, Unit>).entries()
                 );
         } else {
-            this._units = Immutable.Map<AttributeName, Unit>();
+            this._units = ImmutableMap<AttributeName, Unit>();
         }
 
-        const returnChecked = (source: Immutable.List<Operator> | Array<Operator>,
-                               type: ResultType): Immutable.List<Operator> => {
+        const returnChecked = (source: ImmutableList<Operator> | Array<Operator>,
+                               type: ResultType): ImmutableList<Operator> => {
             if (source) {
-                const list = source instanceof Immutable.List ?
-                    source as Immutable.List<Operator> : Immutable.List(source as Array<Operator>);
+                const list = source instanceof ImmutableList ?
+                    source as ImmutableList<Operator> : ImmutableList(source as Array<Operator>);
 
                 if (list.filter(op => op.resultType !== type).size > 0) {
                     throw Error(`The Input Operator is not of type ${type.toString()}.`);
@@ -143,7 +143,7 @@ export class Operator {
                     return list;
                 }
             } else {
-                return Immutable.List<Operator>();
+                return ImmutableList<Operator>();
             }
         };
 
@@ -177,27 +177,27 @@ export class Operator {
             operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
             resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
-            attributes: Immutable.List(operatorDict.attributes),
-            dataTypes: Immutable.Map<AttributeName, DataType>(
+            attributes: ImmutableList(operatorDict.attributes),
+            dataTypes: ImmutableMap<AttributeName, DataType>(
                 (operatorDict.dataTypes as Array<[string, string]>).map(
                     ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
                 )
             ),
-            units: Immutable.Map<AttributeName, Unit>(
+            units: ImmutableMap<AttributeName, Unit>(
                 (operatorDict.units as Array<[string, UnitDict]>).map(
                     ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
                 )
             ),
-            rasterSources: Immutable.List(
+            rasterSources: ImmutableList(
                 operatorDict.rasterSources.map(dict => Operator.fromDict(dict, operators))
             ),
-            pointSources: Immutable.List(
+            pointSources: ImmutableList(
                 operatorDict.pointSources.map(dict => Operator.fromDict(dict, operators))
             ),
-            lineSources: Immutable.List(
+            lineSources: ImmutableList(
                 operatorDict.lineSources.map(dict => Operator.fromDict(dict, operators))
             ),
-            polygonSources: Immutable.List(
+            polygonSources: ImmutableList(
                 operatorDict.polygonSources.map(dict => Operator.fromDict(dict, operators))
             ),
         });
@@ -247,7 +247,7 @@ export class Operator {
     /**
      * Retrieve the output attributes.
      */
-    get attributes(): Immutable.List<AttributeName> {
+    get attributes(): ImmutableList<AttributeName> {
         return this._attributes;
     }
 
@@ -261,7 +261,7 @@ export class Operator {
     /**
      * Retrieve all data types.
      */
-    get dataTypes(): Immutable.Map<AttributeName, DataType> {
+    get dataTypes(): ImmutableMap<AttributeName, DataType> {
         return this._dataTypes;
     }
 
@@ -275,7 +275,7 @@ export class Operator {
     /**
      * Retrieve all units.
      */
-    get units(): Immutable.Map<AttributeName, Unit> {
+    get units(): ImmutableMap<AttributeName, Unit> {
         return this._units;
     }
 
@@ -320,7 +320,7 @@ export class Operator {
      *
      * @param sourceType The {@link resultType} of the source.
      */
-    getSources(sourceType: ResultType): Immutable.List<Operator> {
+    getSources(sourceType: ResultType): ImmutableList<Operator> {
         switch (sourceType) {
             case ResultTypes.RASTER:
                 return this.rasterSources;
@@ -356,13 +356,13 @@ export class Operator {
                 dataTypes: this._dataTypes,
                 units: this._units,
                 rasterSources: this.resultType === ResultTypes.RASTER ?
-                                Immutable.List.of(this) : Immutable.List<Operator>(),
+                                ImmutableList.of(this) : ImmutableList<Operator>(),
                 pointSources: this.resultType === ResultTypes.POINTS ?
-                                Immutable.List.of(this) : Immutable.List<Operator>(),
+                                ImmutableList.of(this) : ImmutableList<Operator>(),
                 lineSources: this.resultType === ResultTypes.LINES ?
-                                Immutable.List.of(this) : Immutable.List<Operator>(),
+                                ImmutableList.of(this) : ImmutableList<Operator>(),
                 polygonSources: this.resultType === ResultTypes.POLYGONS ?
-                                Immutable.List.of(this) : Immutable.List<Operator>(),
+                                ImmutableList.of(this) : ImmutableList<Operator>(),
             });
         }
     }
@@ -412,7 +412,7 @@ export class Operator {
         if (this.hasSources()) {
             const sources: { [index: string]: Array<QueryDict> } = {};
 
-            const sourcesList: Array<[string, Immutable.List<Operator>]> = [
+            const sourcesList: Array<[string, ImmutableList<Operator>]> = [
                 [ResultTypes.RASTER.getCode(), this.rasterSources],
                 [ResultTypes.POINTS.getCode(), this.pointSources],
                 [ResultTypes.LINES.getCode(), this.lineSources],

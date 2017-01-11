@@ -1,17 +1,12 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup} from '@angular/common';
-
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import Config from '../app/config.model';
 
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from './storage.service';
 import {ProjectService} from '../project/project.service';
 import {Project} from '../project/project.model';
 
@@ -57,15 +52,10 @@ import {Project} from '../project/project.model';
         height: 19px;
     }
     `],
-    providers: [],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-    ],
-    pipes: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SaveAsDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
-    form: ControlGroup;
+    form: FormGroup;
 
     project: Project;
     invalidNewName$: Observable<boolean>;

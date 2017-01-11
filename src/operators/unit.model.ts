@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import {Map as ImmutableMap} from 'immutable';
 
 export const enum Interpolation {
     Unknown = 0,
@@ -39,7 +39,7 @@ export interface UnitConfig {
     min?: number;
     max?: number;
     interpolation: Interpolation;
-    classes?: Map<number, Class> | Immutable.Map<number, Class>;
+    classes?: Map<number, Class> | ImmutableMap<number, Class>;
 }
 
 export interface UnitDict {
@@ -85,7 +85,7 @@ export class Unit {
     private _min: number;
     private _max: number;
     private _interpolation: Interpolation;
-    private _classes: Immutable.Map<number, Class>;
+    private _classes: ImmutableMap<number, Class>;
 
     constructor(config: UnitConfig) {
         this._measurement = config.measurement;
@@ -94,10 +94,10 @@ export class Unit {
         this._max = config.max;
         this._interpolation = config.interpolation;
         if (config.classes) {
-            if (config.classes instanceof Immutable.Map) {
-                this._classes = config.classes as Immutable.Map<number, Class>;
+            if (config.classes instanceof ImmutableMap) {
+                this._classes = config.classes as ImmutableMap<number, Class>;
             } else {
-                this._classes = Immutable.Map<number, Class>(config.classes as Map<number, Class>);
+                this._classes = ImmutableMap<number, Class>(config.classes as Map<number, Class>);
             }
         }
     }
@@ -167,7 +167,7 @@ export class Unit {
         return this._interpolation;
     }
 
-    get classes(): Immutable.Map<number, Class> {
+    get classes(): ImmutableMap<number, Class> {
         return this._classes;
     }
 

@@ -1,14 +1,9 @@
 import {
     Component, OnInit, ChangeDetectionStrategy,
 } from '@angular/core';
-import {COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup, Control} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {
-    LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorBaseComponent,
-    LetterNumberConverter, OperatorOutputNameComponent,
+  OperatorBaseComponent, LetterNumberConverter,
 } from './operator.component';
 
 import {LayerService} from '../../layers/layer.service';
@@ -26,6 +21,7 @@ import {ResultTypes} from '../result-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
 import {ExpressionType} from '../types/expression-type.model';
+import {FormBuilder, Validators, FormGroup} from "@angular/forms";
 
 /**
  * This component allows creating the expression operator.
@@ -40,10 +36,8 @@ import {ExpressionType} from '../types/expression-type.model';
         </wave-multi-layer-selection>
         <md-card>
             <md-card-header>
-                <md-card-header-text>
-                    <span class="md-title">Configuration</span>
-                    <span class="md-subheader">Specify the operator</span>
-                </md-card-header-text>
+                    <md-card-title>Configuration</md-card-title>
+                    <md-card-subtitle>Specify the operator</md-card-subtitle>
             </md-card-header>
             <md-card-content>
                 <p>Use A to reference the existing pixel of the first raster,
@@ -108,17 +102,13 @@ import {ExpressionType} from '../types/expression-type.model';
         padding: 0 5px;
     }
     `],
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent,
-    ],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExpressionOperatorComponent extends OperatorBaseComponent
                                          implements OnInit {
     Browser = Browser; // tslint:disable-line:variable-name
 
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private selectedLayers: Array<RasterLayer<RasterSymbology>>;
 
     private outputDataTypes: Array<[DataType, string]> = DataTypes.ALL_NUMERICS.map(
@@ -163,10 +153,10 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
 
         this.configForm.controls['dataType'].valueChanges.subscribe(() => {
             const dataType: DataType = this.configForm.controls['dataType'].value;
-            const minValueControl: Control = this.configForm.controls['minValue'] as Control;
-            const maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
-            minValueControl.updateValue(dataType.getMin());
-            maxValueControl.updateValue(dataType.getMax() - 1);
+            const minValueControl = this.configForm.controls['minValue'];
+            const maxValueControl  = this.configForm.controls['maxValue'];
+            minValueControl.setValue(dataType.getMin());
+            maxValueControl.setValue(dataType.getMax() - 1);
         });
     }
 
@@ -242,10 +232,10 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             this.outputUnits.push(Unit.defaultUnit);
         }
 
-        const dataTypeControl: Control = this.configForm.controls['unit'] as Control;
+        const dataTypeControl = this.configForm.controls['unit'];
         if (dataTypeControl.value === -1) {
             const dataType = this.outputUnits[0];
-            dataTypeControl.updateValue(dataType);
+            dataTypeControl.setValue(dataType);
         }
     }
 
@@ -270,13 +260,13 @@ export class ExpressionOperatorComponent extends OperatorBaseComponent
             }
         }
 
-        const dataTypeControl: Control = this.configForm.controls['dataType'] as Control;
+        const dataTypeControl = this.configForm.controls['dataType'];
         if (dataTypeControl.value === -1) {
-            dataTypeControl.updateValue(firstItemWithRefs);
-            const minValueControl: Control = this.configForm.controls['minValue'] as Control;
-            const maxValueControl: Control = this.configForm.controls['maxValue'] as Control;
-            minValueControl.updateValue(firstItemWithRefs.getMin());
-            maxValueControl.updateValue(firstItemWithRefs.getMax() - 1);
+            dataTypeControl.setValue(firstItemWithRefs);
+            const minValueControl = this.configForm.controls['minValue'];
+            const maxValueControl = this.configForm.controls['maxValue'];
+            minValueControl.setValue(firstItemWithRefs.getMin());
+            maxValueControl.setValue(firstItemWithRefs.getMax() - 1);
         }
     }
 

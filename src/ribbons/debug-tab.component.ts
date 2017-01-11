@@ -1,7 +1,4 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
@@ -45,49 +42,49 @@ import {
 @Component({
     selector: 'wave-debug-tab',
     template: `
-    <md-content layout="row">
+    <div class="ribbons" layout="row">
         <fieldset>
             <legend>Add Layers</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
+            <div class="flex-row">
+                <div class="flex-column">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary" layout="column" layout-align="center center"
                             (click)="addAllLayers()">
-                        <i md-icon>add_to_queue</i>
+                        <md-icon>add_to_queue</md-icon>
                         <div>All Types</div>
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addPointLayer()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         Points
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addLineLayer()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         Lines
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addPolygonLayer()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         Polygons
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addRasterLayer()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         Raster
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addCloudLayer()">
-                        <i md-icon>cloud</i>
+                        <md-icon>cloud</md-icon>
                         Clouds
                     </button>
                 </div>
@@ -95,43 +92,58 @@ import {
         </fieldset>
         <fieldset>
             <legend>Add Plots</legend>
-            <div layout="row">
-                <div layout="column" layout-align="space-around center">
+            <div class="flex-row">
+                <div class="flex-column flex_center">
                     <button md-button style="margin: 0px; height: auto;"
-                            class="md-primary" layout="column" layout-align="center center"
+                            class="md-primary"
                             (click)="addAllPlots()">
-                        <i md-icon>add_to_queue</i>
+                        <md-icon>add_to_queue</md-icon>
                         <div>All Types</div>
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addHistogramPlot()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         Histogram
                     </button>
                 </div>
-                <div layout="column">
+                <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addRPlotPlot()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         R Plot
                     </button>
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary"
                             (click)="addRTextPlot()">
-                        <i md-icon>add</i>
+                        <md-icon>add</md-icon>
                         R Text
                     </button>
                     <button md-button class="spacer-button"></button>
                 </div>
             </div>
         </fieldset>
-    </md-content>
+    </div>
     `,
     styles: [`
+    .ribbons {
+      display: flex;
+      flex: 1;
+    }    
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      box-sizing: border-box;   
+    }
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;    
+    }
+    
     .selected {
       background-color: #f5f5f5 !important;
     }
@@ -139,19 +151,7 @@ import {
         border-style: solid;
         border-width: 1px;
         padding: 0px;
-    }
-    fieldset .material-icons {
-        vertical-align: middle;
-    }
-    fieldset [md-fab] .material-icons {
-        vertical-align: baseline;
-    }
-    button {
-        height: 36px;
-    }
-    button[disabled] {
-        background-color: transparent;
-    }
+    } 
     .spacer-button {
         width: 0px;
         min-width: 0px;
@@ -159,7 +159,6 @@ import {
         margin: 0px;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DebugTabComponent {

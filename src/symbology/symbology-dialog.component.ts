@@ -1,18 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {COMMON_DIRECTIVES} from '@angular/common';
 
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {OVERLAY_PROVIDERS} from '@angular2-material/core/overlay/overlay';
-
-// import {MdDialogRef, MdDialogConfig} from 'ng2-material/components/dialog/dialog';
 import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 
 import {LayerService} from '../layers/layer.service';
 
 import {Symbology, SymbologyType} from './symbology.model';
-import {SymbologyRasterComponent} from './symbology-raster.component';
-import {SymbologyPointsComponent, SymbologyVectorComponent} from './symbology-points.component';
 
 import {Layer} from '../layers/layer.model';
 
@@ -55,10 +47,6 @@ import {Layer} from '../layers/layer.model';
             min-width: 20px;
         }
     `],
-    providers: [OVERLAY_PROVIDERS],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES,
-        SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent],
-    // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbologyDialogComponent extends DefaultBasicDialog implements OnInit {
     // for ng-switch

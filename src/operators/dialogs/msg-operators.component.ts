@@ -1,20 +1,10 @@
 import {
     Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef,
 } from '@angular/core';
-import {HTTP_PROVIDERS} from '@angular/http';
-import {
-    COMMON_DIRECTIVES, Validators, FormBuilder, ControlGroup,
-} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
-import {MdCheckbox} from '@angular2-material/checkbox';
-import {MD_PROGRESS_CIRCLE_DIRECTIVES} from '@angular2-material/progress-circle';
 
 import {
-    LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
+    OperatorBaseComponent,
 } from './operator.component';
-import {HistogramComponent} from '../../plots/histogram.component';
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
@@ -33,6 +23,7 @@ import {
 import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
     MsgTemperatureType, MsgPansharpenType,
     MsgCo2CorrectionType, SolarangleName} from '../types/msg-types.model';
+import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 
 /**
  * This component allows creating the MSG radiance operator.
@@ -47,10 +38,8 @@ import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Description</span>
-                        <p> This operator transforms raw SEVIRI data into radiances. </p>
-                    </md-card-header-text>
+                        <md-card-title>Description</md-card-title>
+                        <md-card-subtitle> This operator transforms raw SEVIRI data into radiances. </md-card-subtitle>
                 </md-card-header>
                 <md-card-content>
 
@@ -59,16 +48,11 @@ import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgRadianceOperatorComponent extends OperatorBaseComponent implements OnInit {
 
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private rasterSources: Array<Layer<Symbology>>;
 
     constructor(
@@ -135,10 +119,8 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
+                        <md-card-title class="md-title">Configuration</md-card-title>
+                        <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
                 </md-card-header>
                 <md-card-content>
                     <div>
@@ -158,16 +140,11 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
 
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        MdCheckbox, LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgReflectanceOperatorComponent extends OperatorBaseComponent implements OnInit {
 
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private rasterSources: Array<Layer<Symbology>>;
 
     // private forceSatellite: boolean = false;
@@ -244,10 +221,8 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
+                        <md-card-title class="md-title">Configuration</md-card-title>
+                        <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
                 </md-card-header>
                 <md-card-content>
                       <label>Solarangle</label>
@@ -261,15 +236,10 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implements OnInit {
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private rasterSources: Array<RasterLayer<RasterSymbology>>;
     private solarangleNames = ['zenith', 'azimuth'];
 
@@ -344,26 +314,19 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implem
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Description</span>
-                        <span class="md-subheader">
+                        <md-card-title class="md-title">Description</md-card-title>
+                        <md-card-subtitle class="md-subheader">
                             This operator transforms raw MSG SEVIRI data into blackbody temperatures
-                        </span>
-                    </md-card-header-text>
+                        </md-card-subtitle>
                 </md-card-header>
             </md-card>
             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgTemperatureOperatorComponent extends OperatorBaseComponent implements OnInit {
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private rasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(
@@ -428,10 +391,8 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent imple
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Configuration</span>
-                        <span class="md-subheader">Specify the operator</span>
-                    </md-card-header-text>
+                        <md-card-title class="md-title">Configuration</md-card-title>
+                        <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
                 </md-card-header>
                 <md-card-content>
 
@@ -440,15 +401,10 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent imple
             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implements OnInit {
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(
@@ -514,9 +470,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implem
             </wave-multi-layer-selection>
             <md-card>
                 <md-card-header>
-                    <md-card-header-text>
-                        <span class="md-title">Description</span>
-                    </md-card-header-text>
+                        <md-card-title class="md-title">Description</md-card-title>
                 </md-card-header>
                 <md-card-content>
 
@@ -525,15 +479,10 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implem
             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
         </form>
     `,
-    directives: [
-        COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES,
-        LayerMultiSelectComponent, HistogramComponent, OperatorOutputNameComponent,
-    ],
-    providers: [HTTP_PROVIDERS],
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent implements OnInit {
-    private configForm: ControlGroup;
+    private configForm: FormGroup;
     private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
     constructor(

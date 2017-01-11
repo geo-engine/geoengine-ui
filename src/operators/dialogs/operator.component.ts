@@ -2,12 +2,8 @@ import {
     Component, Input, Output, EventEmitter, ChangeDetectorRef, ChangeDetectionStrategy, OnDestroy,
     OnChanges, SimpleChange, OnInit, AfterViewInit, Provider,
 } from '@angular/core';
-import {COMMON_DIRECTIVES, NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/common';
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
-import {MD_INPUT_DIRECTIVES} from '@angular2-material/input';
 
 import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
 
@@ -18,6 +14,7 @@ import {Symbology} from '../../symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
 import {ResultType, ResultTypes} from '../result-type.model';
 import {Projection} from '../projection.model';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
 
 /**
  * This component allows selecting an input operator by choosing a layer.
@@ -44,7 +41,6 @@ import {Projection} from '../projection.model';
         color: rgba(0, 0, 0, 0.38);
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerSelectionComponent implements AfterViewInit, OnChanges {
@@ -135,7 +131,6 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
     template: `
     <md-card>
         <md-card-header>
-            <md-card-header-text>
                 <div class="md-title" layout="row">
                     <span flex="grow">{{title}}</span>
                     <span>
@@ -152,7 +147,6 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
                     </span>
                 </div>
                 <span class="md-subheader">Select input {{title}}</span>
-            </md-card-header-text>
         </md-card-header>
         <md-card-content layout="row">
             <div *ngFor="let id of ids; let i = index" layout="row">
@@ -176,7 +170,6 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
         background-color: transparent;
     }
     `],
-    directives: [COMMON_DIRECTIVES, MATERIAL_DIRECTIVES, LayerSelectionComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerMultiSelectComponent implements OnChanges {
@@ -309,13 +302,8 @@ export class LayerMultiSelectComponent implements OnChanges {
         color: rgba(0, 0, 0, 0.38);
     }
     `],
-    directives: [MATERIAL_DIRECTIVES],
     providers: [
-        new Provider(
-            NG_VALUE_ACCESSOR, {
-              useExisting: ReprojectionSelectionComponent,
-              multi: true,
-          }),
+      {provide: NG_VALUE_ACCESSOR, useExisting: ReprojectionSelectionComponent, multi: true},
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -421,10 +409,8 @@ export class ReprojectionSelectionComponent
     template: `
     <md-card>
         <md-card-header>
-            <md-card-header-text>
-                <span class="md-title">Output Name</span>
-                <span class="md-subheader">Specify the name of the operator result</span>
-            </md-card-header-text>
+                <md-card-title>Output Name</md-card-title>
+                <md-card-subtitle>Specify the name of the operator result</md-card-subtitle>
         </md-card-header>
         <md-card-content>
             <md-input
@@ -436,13 +422,8 @@ export class ReprojectionSelectionComponent
         </md-card-content>
     </md-card>
     `,
-    directives: [MATERIAL_DIRECTIVES, MD_INPUT_DIRECTIVES],
     providers: [
-        new Provider(
-            NG_VALUE_ACCESSOR, {
-              useExisting: OperatorOutputNameComponent,
-              multi: true,
-          }),
+      {provide: NG_VALUE_ACCESSOR, useExisting: ReprojectionSelectionComponent, multi: true},
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

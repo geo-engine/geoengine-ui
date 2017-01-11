@@ -2,9 +2,6 @@ import {
     Component, Input, ChangeDetectionStrategy, ContentChildren, QueryList, Output, EventEmitter,
     ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef,
 } from '@angular/core';
-import {CORE_DIRECTIVES} from '@angular/common';
-
-import {MATERIAL_DIRECTIVES} from 'ng2-material';
 
 /**
  * Sizes for the buttons and the groups to use within calculations and style settings.
@@ -81,7 +78,6 @@ const SIZES = {
         display: none;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorButtonComponent {
@@ -113,8 +109,8 @@ export class OperatorButtonComponent {
                 <div class="selector"
                      [hidden]="buttonsVisible >= buttons.length"
                      [ngSwitch]="expanded" (click)="toggleExpand()">
-                    <i md-icon *ngSwitchCase="true">expand_less</i>
-                    <i md-icon *ngSwitchCase="false">expand_more</i>
+                    <md-icon *ngSwitchCase="true">expand_less</md-icon>
+                    <md-icon *ngSwitchCase="false">expand_more</md-icon>
                 </div>
             </div>
         </fieldset>
@@ -162,7 +158,6 @@ export class OperatorButtonComponent {
         bottom: 0;
     }
     `],
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorSelectionGroupComponent implements AfterViewInit {
