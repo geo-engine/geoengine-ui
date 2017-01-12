@@ -20,85 +20,79 @@ import {ProjectService} from '../project/project.service';
     selector: 'wave-raster-repository',
     template: `
     <div style="height:100%" layout="column">
-        <md-input placeholder="Search term" type="text" [(ngModel)]="_searchTerm"></md-input>
-    <md-content flex="grow">
+        <md-toolbar>
+              <label>Raster </label>
+              <md-icon>search</md-icon>
+              <md-input-container>
+                <input md-input placeholder="Layer" type="text" [(ngModel)]="_searchTerm">
+              </md-input-container>
+        </md-toolbar>
+    <div flex="grow">
       <md-list>
         <template
             ngFor let-source
             [ngForOf]="sources | async | waveMappingDataSourceFilter:_searchTerm"
         >
-          <md-subheader>
-            <span bind-innerHtml = "source.name | waveHighlightPipe:_searchTerm"></span>
-            <br/>
-            <span><a [href]="source?.uri">{{source?.uri}}</a></span>
-          </md-subheader>
-
-          <template ngFor let-channel [ngForOf]="source.channels">
-            <md-divider></md-divider>
-              <md-list-item md-clickable class="md-3-line">
+          <h3 md-subheader class="dataset">
+            <a [href]="source?.uri" bind-innerHtml = "source.name | waveHighlightPipe:_searchTerm"></a>
+          </h3>
+          <template ngFor let-channel [ngForOf]="source.channels">            
+              <md-list-item>
                 <template [ngIf]="channel.isSwitchable">
                       <md-slide-toggle #t
                                 [checked]="channel.hasTransform"
                                 aria-label="transform raw data"
                                 [disabled]="!channel.hasTransform">
                       </md-slide-toggle>
-                      <div class="md-list-item-text"
-                            layout="column"
-                            (click)="add(source, channel, t.checked)">
-
-                          <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
+                      <div (click)="add(source, channel, t.checked)">
+                          <p md-line bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
                           <template [ngIf]="t.checked">
-                              <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                              <p>unit: {{channel?.transform?.unit?.unit}}</p>
+                              <p md-line >measurement: {{channel?.transform?.unit?.measurement}}</p>
+                              <p md-line >unit: {{channel?.transform?.unit?.unit}}</p>
                           </template>
                           <template [ngIf]="!t.checked">
-                              <p>measurement: {{channel?.unit?.measurement}}</p>
-                              <p>unit: {{channel?.unit?.unit}}</p>
+                              <p md-line >measurement: {{channel?.unit?.measurement}}</p>
+                              <p md-line >unit: {{channel?.unit?.unit}}</p>
                           </template>
-
                       </div>
                   </template>
                   <template [ngIf]="!channel.isSwitchable">
-                        <div class="md-list-item-text"
-                              layout="column"
-                              (click)="add(source, channel, channel.hasTransform)">
-
-                            <p bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
+                        <div (click)="add(source, channel, channel.hasTransform)">
+                            <p md-line  bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm"></p>
                             <template [ngIf]="!channel.hasTransform">
-                                <p>measurement: {{channel?.unit?.measurement}}</p>
-                                <p>unit: {{channel?.unit?.unit}}</p>
+                                <p md-line >measurement: {{channel?.unit?.measurement}}</p>
+                                <p md-line >unit: {{channel?.unit?.unit}}</p>
                             </template>
                             <template [ngIf]="channel.hasTransform">
-                                <p>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                                <p>unit: {{channel?.transform?.unit?.unit}}</p>
+                                <p md-line >measurement: {{channel?.transform?.unit?.measurement}}</p>
+                                <p md-line >unit: {{channel?.transform?.unit?.unit}}</p>
                             </template>
                         </div>
                     </template>
               </md-list-item>
+              <md-divider></md-divider>
           </template>
-
       </template>
       </md-list>
-    </md-content>
+    </div>
     </div>
     `,
     styles: [`
-    md-subheader a {
+    .dataset a {
         color: white;
-        font-size: x-small;
+        font-family: Roboto, "Helvetica Neue";
     }
 
-    .searchInput {
-        width: 100%;
-    }
     md-list-item {
         cursor: pointer;
     }
-    md-list >>> md-subheader {
+    
+    .dataset {
         color: white;
         background-color: #009688;
         font-weight: bold;
     }
+    
     img {
       padding: 5px 5px 5px 0px;
     }
