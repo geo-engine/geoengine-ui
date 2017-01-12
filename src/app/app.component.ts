@@ -123,11 +123,11 @@ import {PlotService} from '../plots/plot.service';
                         <div (click)="setTabIndex(0)">Data Table</div>
                     </template>
                     <template md-tab-content>
-                        <wave-data-table
+                        <!--<wave-data-table
                             *ngIf= "dataTableVisible$ | async"
                             [style.height.px]="(bottomContainerHeight$ | async)"
                             [height]="(bottomContainerHeight$ | async)">
-                        </wave-data-table>
+                        </wave-data-table>-->
                     </template>
                 </md-tab>
                 <md-tab>

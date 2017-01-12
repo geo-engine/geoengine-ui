@@ -72,6 +72,7 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
             </div>
         </fieldset>
     </div>
+    <!--
     <wave-dialog-loader #saveAsDialog
         [type]="SaveAsDialogComponent"
     ></wave-dialog-loader>
@@ -88,6 +89,7 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
     <wave-dialog-loader #newProjectDialog
         [type]="NewProjectDialogComponent"
     ></wave-dialog-loader>
+    -->
     `,
     styles: [`
     .ribbons {

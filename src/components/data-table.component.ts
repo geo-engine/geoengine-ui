@@ -7,7 +7,7 @@ import {Http} from '@angular/http';
 import {Observable, Subscription} from 'rxjs/Rx';
 
 import {ResultTypes} from '../operators/result-type.model';
-import {GeoJsonFeature} from '../models/geojson.model';
+import {GeoJsonFeature, FeatureID} from '../models/geojson.model';
 import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';
 import {LoadingState} from '../shared/loading-state.model';
@@ -15,7 +15,6 @@ import {LoadingState} from '../shared/loading-state.model';
 import {LayerService, SelectedFeatures} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {MdDataTable, ITableSelectionChange, ITableSelectableRowSelectionChange} from "ng2-material";
 
 interface Column {
     name: string;
@@ -121,7 +120,7 @@ interface Row {
 
     `],
     queries: {
-        datatable: new ViewChild(MdDataTable),
+        datatable: new ViewChild(undefined), // TODO: fix
         container: new ViewChild('container'),
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,8 +133,8 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
 
     @Input()
     private height: number;
-    @ViewChild(MdDataTable)
-    private datatable: MdDataTable;
+    @ViewChild(undefined) // TODO: fix
+    private datatable: {_rows : {filter: (row) => Observable<{change: (idk) => void}>}}; // TODO: fix
     @ViewChild('container')
     private container: ElementRef;
 
@@ -305,7 +304,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
         this.updateVisibleRows(newFirstVisible, true);
     }
 
-    change(event: ITableSelectionChange) {
+    change(event: {}) { // fix
         // const trueRemove = this.datatable._rows.filter(
         //     x => !x.isActive && this.selectedFeatures.selected.indexOf(x.selectableValue) !== -1
         // ).map(x => x.selectableValue);
@@ -317,7 +316,7 @@ export class DataTableComponent implements OnInit, OnChanges, AfterViewInit, OnD
         // this.layerService.updateSelectedFeatures(trueAdd, trueRemove); // FIXME: game of life :(
     }
 
-    onRowSelectionChange(event: ITableSelectableRowSelectionChange ) {
+    onRowSelectionChange(event:  {isActive: boolean, selectableValue: FeatureID}) { // fix
         if (event.isActive) {
              this.layerService.updateSelectedFeatures([event.selectableValue], []);
         } else {

@@ -120,6 +120,7 @@ import {
             </wave-operator-button>
         </wave-operator-selection-group>
     </div>
+    <!--
     <wave-dialog-loader #rasterValueExtractionOperatorDialog
         [type]="RasterValueExtractionOperatorComponent"
     ></wave-dialog-loader>
@@ -156,6 +157,7 @@ import {
     <wave-dialog-loader #msgCo2CorrectionOperatorComponentDialog
         [type]="MsgPansharpenOperatorComponent"
     ></wave-dialog-loader>
+    -->
     `,
     styles: [`
     .ribbons {
