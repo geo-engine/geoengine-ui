@@ -22,6 +22,7 @@ import {ProjectService} from '../project/project.service';
     <div style="height:100%" layout="column">
         <md-toolbar>
               <label>Raster </label>
+              <span class="toolbar-fill-remaining-space"></span>
               <md-icon>search</md-icon>
               <md-input-container>
                 <input md-input placeholder="Layer" type="text" [(ngModel)]="_searchTerm">
@@ -33,7 +34,7 @@ import {ProjectService} from '../project/project.service';
             ngFor let-source
             [ngForOf]="sources | async | waveMappingDataSourceFilter:_searchTerm"
         >
-          <h3 md-subheader class="dataset">
+          <h3 md-subheader class="datagroup">
             <a [href]="source?.uri" bind-innerHtml = "source.name | waveHighlightPipe:_searchTerm"></a>
           </h3>
           <template ngFor let-channel [ngForOf]="source.channels">            
@@ -78,7 +79,16 @@ import {ProjectService} from '../project/project.service';
     </div>
     `,
     styles: [`
-    .dataset a {
+    .toolbar-fill-remaining-space {
+        flex: 1 1 auto;
+    }
+        
+    .datagroup {
+        color: white;
+        background-color: #009688;
+    }
+    
+    .datagroup a {
         color: white;
         font-family: Roboto, "Helvetica Neue";
     }
@@ -86,13 +96,7 @@ import {ProjectService} from '../project/project.service';
     md-list-item {
         cursor: pointer;
     }
-    
-    .dataset {
-        color: white;
-        background-color: #009688;
-        font-weight: bold;
-    }
-    
+
     img {
       padding: 5px 5px 5px 0px;
     }

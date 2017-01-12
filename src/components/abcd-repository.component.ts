@@ -30,22 +30,23 @@ interface Group<T> {
     template: `
     <div style='height:100%' layout='column'>
     <div flex='grow'>
+      <md-toolbar>
+        <label>ABCD</label>            
+        <span class="toolbar-fill-remaining-space"></span>
+        <md-icon>search</md-icon>
+        <md-input-container>
+          <input md-input placeholder="Layer" type="text" [(ngModel)]="_searchTerm" disabled>
+        </md-input-container>
+      </md-toolbar>
       <md-list>
-        <template
-            ngFor let-group
-            [ngForOf]='groups | async'
-        >
-            <md-subheader>
-                <span>{{group.name}}</span>
-            </md-subheader>
-            <template ngFor let-archive [ngForOf]='group.group' >
-                <md-list-item md-clickable class='md-2-line'>
-                  <div class='md-list-item-text'
-                    layout='column'
-                    (click)='add(archive)'>
-                    <p>{{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span></p>
-                    <a class='link' target='_blank' href={{archive.link}}>{{archive.link}}</a>
-                  </div>
+        <template ngFor let-group [ngForOf]='groups | async'>
+            <h3 md-subheader class="datagroup">
+              <a [href]="group?.uri" bind-innerHtml="group.name"></a>
+            </h3>
+            <template ngFor let-archive [ngForOf]='group.group'>
+                <md-list-item (click)='add(archive)'>
+                    <p md-line>{{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span></p>
+                    <a md-line class='link' target='_blank' href={{archive.link}}>{{archive.link}}</a>                 
               </md-list-item>
               <md-divider></md-divider>
           </template>
@@ -55,20 +56,27 @@ interface Group<T> {
     </div>
     `,
     styles: [`
+    .toolbar-fill-remaining-space {
+        flex: 1 1 auto;
+    }
+    
+    .datagroup {
+        color: white;
+        background-color: #009688;
+    }
+    
+    .datagroup a {
+        color: white;
+        font-family: Roboto, "Helvetica Neue";
+    }
+    
     .searchInput {
         width: 100%;
     }
     md-list-item {
         cursor: pointer;
     }
-    .md-list-item-text {
-        align-items: flex-end;
-    }
-    md-list >>> md-subheader {
-        color: white;
-        background-color: #009688;
-        font-weight: bold;
-    }
+    
     img {
       padding: 5px 5px 5px 0px;
     }
