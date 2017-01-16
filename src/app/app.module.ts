@@ -4,15 +4,14 @@ import {NgModule, ComponentFactoryResolver} from '@angular/core';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule, MdIconRegistry} from '@angular/material';
-
-import { Ng2MaterialModule } from 'ng2-material';
+import 'hammerjs';
 
 import { AppComponent } from './app.component';
 import {InfoAreaComponent} from "../components/info-area.component";
 import {RibbonsComponent} from "../ribbons/ribbons.component";
 import {LayerListComponent} from "../layers/layer-list.component";
 import {InfoBarComponent} from "../components/info-bar.component";
-import {DataTableComponent} from "../components/data-table.component";
+// import {DataTableComponent} from "../components/data-table.component";
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
 import {PlotListComponent} from "../plots/plot-list.component";
 import {MapComponent} from "../map/map.component";
@@ -76,7 +75,7 @@ import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
   declarations: [
     AppComponent,
     InfoAreaComponent, RibbonsComponent, LayerListComponent, InfoBarComponent,
-    DataTableComponent, RasterRepositoryComponent, PlotListComponent,
+    /*DataTableComponent,*/ RasterRepositoryComponent, PlotListComponent,
     MapComponent, OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
     OlPolygonLayerComponent, ProvenanceListComponent, SidenavContainerComponent,
     AbcdRepositoryComponent, CsvRepositoryComponent, RgbaToCssStringPipe, CssStringToRgbaPipe, SymbologyPointsComponent, SymbologyRasterComponent, SymbologyVectorComponent,
@@ -95,7 +94,6 @@ import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
     HttpModule,
     MaterialModule.forRoot(),
     DragulaModule,
-    Ng2MaterialModule,
     ReactiveFormsModule,
   ],
   entryComponents: [IntroductionDialogComponent, LoginDialogComponent, RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent],

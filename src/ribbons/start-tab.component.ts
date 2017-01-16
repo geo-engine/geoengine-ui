@@ -186,6 +186,7 @@ import {UserService} from '../users/user.service';
         </fieldset>
 
     </div>
+    <!--
     <wave-dialog-loader #renameLayerDialog [type]="RenameLayerComponent"></wave-dialog-loader>
     <wave-dialog-loader #symbologyDialog [type]="SymbologyDialogComponent"></wave-dialog-loader>
     <wave-dialog-loader #exportDialog [type]="ExportDialogComponent"></wave-dialog-loader>
@@ -194,6 +195,7 @@ import {UserService} from '../users/user.service';
         [config]="{selectedLayerOnly: true}"
     ></wave-dialog-loader>
     <wave-dialog-loader #gbifLoader [type]="GBIFOperatorComponent"></wave-dialog-loader>
+    -->
     `,
     styles: [`
     .ribbons {

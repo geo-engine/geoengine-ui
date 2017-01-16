@@ -34,7 +34,7 @@ import {RandomColorService} from '../services/random-color.service';
             <md-icon>sync</md-icon>
           </button>
         </md-toolbar>
-        <md-content flex="grow">
+        <div flex="grow">
           <md-list>   
                 <template ngFor let-csv [ngForOf]="csvs | async" >
                     <md-list-item md-clickable (click)="add(csv)">                      
@@ -44,7 +44,7 @@ import {RandomColorService} from '../services/random-color.service';
                   <md-divider></md-divider>
               </template>
           </md-list>
-    </md-content>
+    </div>
     </div>
     `,
     styles: [`

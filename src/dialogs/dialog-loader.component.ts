@@ -5,8 +5,8 @@ import {
 
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
-import {MdBackdrop} from 'ng2-material';
-import {MdDialog} from 'ng2-material';
+// import {MdBackdrop} from 'ng2-material';
+// import {MdDialog} from 'ng2-material';
 
 import {DialogRef, ButtonDescription, ActionInputDescription} from './dialog-ref.model';
 import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
@@ -14,21 +14,21 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
 @Component({
     selector: 'wave-dialog-loader',
     template: `
-    <md-dialog>
+    <div style="display: none;">
         <md-toolbar class="md-primary">
             <span>{{title | async}}</span>
             <button md-button class="md-icon-button" aria-label="Close Dialog" (click)="close()">
                 <i md-icon>close</i>
             </button>
         </md-toolbar>
-        <md-content
+        <div
             [style.maxHeight.px]="maxHeight$ | async"
             [style.maxWidth.px]="maxWidth$ | async"
             [class.no-overflow]="!(overflows | async)"
             [class.no-side-margins]="!(sideMargins | async)"
         >
             <template #target></template>
-        </md-content>
+        </div>
         <md-dialog-actions *ngIf="(buttons | async).length > 0">
             <button md-button type="button"
                 *ngFor="let buttonProperties of buttons | async"
@@ -38,8 +38,8 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
                 [disabled]="buttonProperties.disabled | async"
             >{{buttonProperties.title}}</button>
         </md-dialog-actions>
-    </md-dialog>
-    <md-backdrop class="md-opaque" (click)="close()"></md-backdrop>
+    </div>
+    <div class="md-opaque" (click)="close()"></div>
     `,
     styles: [`
     md-toolbar,
@@ -81,9 +81,11 @@ import {DefaultBasicDialog, DialogInput} from './basic-dialog.component';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
+    /*
     @ViewChild(MdDialog) dialog: MdDialog;
     @ViewChild('target', {read: ViewContainerRef}) target: ViewContainerRef;
     @ViewChild(MdBackdrop) backdrop: MdBackdrop;
+    */
 
     @Input() type: Type<DefaultBasicDialog>;
     @Input() config: DialogInput = {}; // optional
@@ -170,6 +172,7 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
+        /*
         // make dialog behave according to this subject
         this.subscriptions.push(
             this.dialogIsOpen.subscribe(isOpen => {
@@ -187,6 +190,7 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
                 }
             })
         );
+        */
     }
 
     ngOnDestroy() {
@@ -206,11 +210,11 @@ export class DialogLoaderComponent implements AfterViewInit, OnDestroy {
         this.dialogIsOpen.next(false);
     }
 
-    private createChildComponent(): Promise<void> {
+    private createChildComponent(): Promise<{}> {
         if (this.type) {
             this.destroyChildComponent();
 
-          this.dialogChild = this.componentResolver.resolveComponentFactory(this.type).create(this.target);
+          this.dialogChild = undefined; //this.componentResolver.resolveComponentFactory(this.type).create(this.target);
                 // inject
           this.dialogChild.instance.dialog = this.dialogRef;
           this.dialogChild.instance.dialogInput = this.config;

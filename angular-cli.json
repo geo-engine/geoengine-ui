@@ -1,6 +1,6 @@
 {
   "project": {
-    "version": "1.0.0-beta.21",
+    "version": "1.0.0-beta.24",
     "name": "wave"
   },
   "apps": [
@@ -15,11 +15,13 @@
       "main": "main.ts",
       "test": "test.ts",
       "tsconfig": "tsconfig.json",
-      "prefix": "app",
+      "prefix": "wave",
       "mobile": false,
       "styles": [
         "styles.css",
-        "wave-app-theme.scss"
+        "wave-app-theme.scss",
+        "../node_modules/dragula/dist/dragula.min.css",
+        "../node_modules/codemirror/lib/codemirror.css"
       ],
       "scripts": [],
       "environments": {
