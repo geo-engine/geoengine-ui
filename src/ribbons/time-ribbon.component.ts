@@ -7,45 +7,62 @@ import {Moment} from 'moment';
 @Component({
     selector: 'wave-time-ribbon',
     template: `
-    <div layout="row">
-        <md-input placeholder="year" type="number" maxLength="4"
-            [ngModel]="moment.year()" (ngModelChange)="updateYear($event)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
-        <md-input placeholder="month" type="number" maxLength="2"
-            [ngModel]="moment.month()+1" (ngModelChange)="updateMonth($event-1)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
-        <md-input placeholder="day" type="number" maxLength="2"
-            [ngModel]="moment.date()" (ngModelChange)="updateDate($event)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
-    </div>
-    <div layout="row">
-        <md-input placeholder="hour" type="number" maxLength="4"
-            [ngModel]="moment.hour()" (ngModelChange)="updateHour($event)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
-        <md-input placeholder="minute" type="number" maxLength="2"
-            [ngModel]="moment.minute()" (ngModelChange)="updateMinute($event)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
-        <md-input placeholder="second" type="number" maxLength="2"
-            [ngModel]="moment.second()" (ngModelChange)="updateSecond($event)"
-            (wheel)="$event.stopPropagation()"
-        ></md-input>
+      <div class="flex-column">
+      <div class="flex-row">
+        <md-input-container>
+          <input md-input placeholder="year" type="number" maxLength="4"
+              [ngModel]="moment.year()" (ngModelChange)="updateYear($event)"
+              (wheel)="$event.stopPropagation()"
+          >
+        </md-input-container>
+        <md-input-container>
+          <input md-input placeholder="month" type="number" maxLength="2"
+              [ngModel]="moment.month()+1" (ngModelChange)="updateMonth($event-1)"
+              (wheel)="$event.stopPropagation()"
+          >
+        </md-input-container>
+        <md-input-container>
+          <input md-input placeholder="day" type="number" maxLength="2"
+              [ngModel]="moment.date()" (ngModelChange)="updateDate($event)"
+              (wheel)="$event.stopPropagation()"
+          >
+        </md-input-container>
+      </div>
+      <div class="flex-row">
+        <md-input-container>
+          <input md-input placeholder="hour" type="number" maxLength="2"
+              [ngModel]="moment.hour()" (ngModelChange)="updateHour($event)"
+              (wheel)="$event.stopPropagation()"
+          >
+        </md-input-container>
+        <md-input-container>
+          <input md-input placeholder="minute" type="number" maxLength="2"
+              [ngModel]="moment.minute()" (ngModelChange)="updateMinute($event)"
+              (wheel)="$event.stopPropagation()"
+          >
+         </md-input-container>
+         <md-input-container>
+          <input md-input placeholder="second" type="number" maxLength="2"
+              [ngModel]="moment.second()" (ngModelChange)="updateSecond($event)"
+              (wheel)="$event.stopPropagation()"
+          >
+        </md-input-container>
+      </div>
     </div>
     `,
     styles: [`
-    md-input {
-        margin-bottom: 2px;
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+      box-sizing: border-box;      
     }
-    md-input {
-        width: 60px;
+    .flex-column {
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;  
     }
-
-    md-input >>> .md-errors-spacer {
-        display: none;
+    md-input-container {
+        width: 120px;
     }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
