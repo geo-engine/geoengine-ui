@@ -24,30 +24,40 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
                 <md-radio-button value="system">System</md-radio-button>
                 <md-radio-button value="GFBio">GFBio</md-radio-button>
             </md-radio-group>
-            <md-input type="text" placeholder="Username" formControlName="username"></md-input>
-            <md-input type="password" placeholder="Password" formControlName="password"></md-input>
+            <md-input-container>
+              <input md-input type="text" placeholder="Username" formControlName="username">
+            </md-input-container>
+            <md-input-container>
+              <input md-input type="password" placeholder="Password" formControlName="password">
+            </md-input-container>
             <span *ngIf="invalidCredentials">Invalid Credentials</span>
             <md-checkbox ngControl="staySignedIn">Stay signed in</md-checkbox>
         </form>
         <div *ngIf="isLoggedIn$ | async" class="logged-in flex-column">
-            <md-input
+          <md-input-container>
+            <input md-input
                 type="text"
                 placeholder="Username"
                 [ngModel]="(user | async).name"
                 [disabled]="true"
-            ></md-input>
-            <md-input
+            >
+          </md-input-container>
+          <md-input-container>
+            <input md-input
                 type="text"
                 placeholder="Real Name"
                 [ngModel]="(user | async).realName"
                 [disabled]="true"
-            ></md-input>
-            <md-input
+            >
+          </md-input-container>
+          <md-input-container>
+            <input md-input
                 type="text"
                 placeholder="E-Mail"
                 [ngModel]="(user | async).email"
                 [disabled]="true"
-            ></md-input>
+            >
+          </md-input-container>
         </div>
         <div *ngIf="isLoading$ | async" class="loading">
           <md-progress-circle mode="indeterminate"></md-progress-circle>
