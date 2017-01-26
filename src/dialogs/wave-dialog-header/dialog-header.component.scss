@@ -1,0 +1,15 @@
+@import '~@angular/material/dialog/dialog.scss';
+
+md-toolbar[md-dialog-title] {
+    margin: #{-$md-dialog-padding} #{-$md-dialog-padding} 0 #{-$md-dialog-padding};
+    width: calc(100% + #{2 * $md-dialog-padding});
+}
+
+md-toolbar[md-dialog-title] span {
+    flex-grow: 1;
+}
+
+md-toolbar button {
+    background-color: transparent;
+    box-shadow: none;
+}

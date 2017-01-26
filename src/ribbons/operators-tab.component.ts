@@ -41,6 +41,7 @@ import {
      MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
      MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
 } from '../operators/dialogs/msg-operators.component';
+import {MdDialog} from "@angular/material";
 
 /**
  * The operator tab of the ribbons component.
@@ -52,71 +53,76 @@ import {
         <wave-operator-selection-group groupName="Vector" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
-                [iconUrl]="RasterValueExtractionType.ICON_URL"
-                (click)="rasterValueExtractionOperatorDialog.show()">
+                [iconUrl]="RasterValueExtractionType.ICON_URL">
+                <!--(click)="rasterValueExtractionOperatorDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="NumericAttributeFilterType.NAME"
-                [iconUrl]="NumericAttributeFilterType.ICON_URL"
-                (click)="numericAttributeFilterOperatorDialog.show()">
+                [iconUrl]="NumericAttributeFilterType.ICON_URL">
+                <!--(click)="numericAttributeFilterOperatorDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="PointInPolygonFilterType.NAME"
                 [iconUrl]="PointInPolygonFilterType.ICON_URL"
-                (click)="pointInPolygonFilterOperatorDialog.show()">
+                (click)="dialog.open(PointInPolygonFilterOperatorComponent)">
             </wave-operator-button>
+            <wave-operator-button
+                 [small]="smallButtons"
+                text="FAKE"
+                [iconUrl]="PointInPolygonFilterType.ICON_URL"
+            ></wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Raster" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="ExpressionType.NAME"
-                [iconUrl]="ExpressionType.ICON_URL"
-                (click)="expressionOperatorDialog.show()">
+                [iconUrl]="ExpressionType.ICON_URL">
+                <!--(click)="expressionOperatorDialog.show()">-->
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Plots" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="HistogramType.NAME"
-                [iconUrl]="HistogramType.ICON_URL"
-                (click)="histogramOperatorDialog.show()">
+                [iconUrl]="HistogramType.ICON_URL">
+                <!--(click)="histogramOperatorDialog.show()">-->
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Misc" [smallButtons]="smallButtons" *ngIf="Config.DEVELOPER_MODE">
             <wave-operator-button [small]="smallButtons"
                 [text]="RScriptType.NAME"
-                [iconUrl]="RScriptType.ICON_URL"
-                (click)="rOperatorComponentDialog.show()">
+                [iconUrl]="RScriptType.ICON_URL">
+                <!--(click)="rOperatorComponentDialog.show()">-->
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="MSG" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgRadianceType.NAME"
-                [iconUrl]="MsgRadianceType.ICON_URL"
-                (click)="msgRadianceOperatorComponentDialog.show()">
+                [iconUrl]="MsgRadianceType.ICON_URL">
+                <!--(click)="msgRadianceOperatorComponentDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgReflectanceType.NAME"
-                [iconUrl]="MsgReflectanceType.ICON_URL"
-                (click)="msgReflectanceOperatorComponentDialog.show()">
+                [iconUrl]="MsgReflectanceType.ICON_URL">
+                <!--(click)="msgReflectanceOperatorComponentDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgSolarangleType.NAME"
-                [iconUrl]="MsgSolarangleType.ICON_URL"
-                (click)="msgSolarangleOperatorComponentDialog.show()">
+                [iconUrl]="MsgSolarangleType.ICON_URL">
+                <!--(click)="msgSolarangleOperatorComponentDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgTemperatureType.NAME"
-                [iconUrl]="MsgTemperatureType.ICON_URL"
-                (click)="msgTemperatureOperatorComponentDialog.show()">
+                [iconUrl]="MsgTemperatureType.ICON_URL">
+                <!--(click)="msgTemperatureOperatorComponentDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgPansharpenType.NAME"
-                [iconUrl]="MsgPansharpenType.ICON_URL"
-                (click)="msgPansharpenOperatorComponentDialog.show()">
+                [iconUrl]="MsgPansharpenType.ICON_URL">
+                <!--(click)="msgPansharpenOperatorComponentDialog.show()">-->
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="MsgCo2CorrectionType.NAME"
-                [iconUrl]="MsgCo2CorrectionType.ICON_URL"
-                (click)="msgCo2CorrectionOperatorComponentDialog.show()">
+                [iconUrl]="MsgCo2CorrectionType.ICON_URL">
+                <!--(click)="msgCo2CorrectionOperatorComponentDialog.show()">-->
             </wave-operator-button>
         </wave-operator-selection-group>
     </div>
@@ -195,7 +201,7 @@ export class OperatorsTabComponent implements AfterViewInit {
     smallButtons = false;
 
     // make config available in the view
-    Config = Config // tslint:disable-line:variable-name
+    Config = Config; // tslint:disable-line:variable-name
 
     // make these types accessible in the view
     // tslint:disable:variable-name
@@ -231,6 +237,7 @@ export class OperatorsTabComponent implements AfterViewInit {
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
+        public dialog: MdDialog,
         private layerService: LayerService,
         private plotService: PlotService,
         private projectService: ProjectService,
@@ -254,8 +261,8 @@ export class OperatorsTabComponent implements AfterViewInit {
 
         // initially calculate the button group sizing
         setTimeout(() => this.setGroupSizeBasedOnMaxWidth(
-            this.container.nativeElement.clientWidth)
-        );
+            this.container.nativeElement.clientWidth
+        ), 500); // TODO: fix this delay
     }
 
     /**

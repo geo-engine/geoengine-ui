@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Rx';
 
 import Config from '../app/config.model';
 
-import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
+// import {DialogLoaderComponent} from '../dialogs/dialog-loader.component';
 import {LoginDialogComponent} from '../users/login-dialog.component';
 import {HelpDialogComponent} from '../app/help.component';
 import {IntroductionDialogComponent} from './introduction-dialog.component';
@@ -49,8 +49,8 @@ import {LayoutService} from '../app/layout.service';
             </button>
         </md-toolbar-row>
     </md-toolbar>
-    <wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>
-    <wave-dialog-loader #introductionDialog [type]="IntroductionDialogComponent"></wave-dialog-loader>
+    <!--<wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>-->
+    <!--<wave-dialog-loader #introductionDialog [type]="IntroductionDialogComponent"></wave-dialog-loader>-->
     `,
     styles: [`
     :host {
@@ -101,7 +101,7 @@ import {LayoutService} from '../app/layout.service';
 })
 export class InfoAreaComponent implements AfterContentInit {
 
-    @ViewChild('introductionDialog') introductionDialogLoader: DialogLoaderComponent;
+    // @ViewChild('introductionDialog') introductionDialogLoader: DialogLoaderComponent;
     layerListVisibility$: Observable<boolean>;
     username$: Observable<string>;
 

@@ -82,9 +82,9 @@ import {LoadingState} from '../shared/loading-state.model';
             </md-list-item>
         </md-list>
     </div>>
-    <wave-dialog-loader #plotDetailsDialogDialog
-        [type]="PlotDetailsDialogComponent"
-    ></wave-dialog-loader>
+    <!--<wave-dialog-loader #plotDetailsDialogDialog-->
+        <!--[type]="PlotDetailsDialogComponent"-->
+    <!--&gt;</wave-dialog-loader>-->
     `,
     styles: [`
     .md-content {
