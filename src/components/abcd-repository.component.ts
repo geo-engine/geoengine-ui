@@ -41,12 +41,22 @@ interface Group<T> {
       <md-list>
         <template ngFor let-group [ngForOf]='groups | async'>
             <h3 md-subheader class="datagroup">
-              <a [href]="group?.uri" bind-innerHtml="group.name"></a>
+              {{group.name}} <a md-icon-button target='_blank' href={{group?.uri}} *ngIf="!!group.uri"><md-icon>open_in_new</md-icon></a>
             </h3>
             <template ngFor let-archive [ngForOf]='group.group'>
-                <md-list-item (click)='add(archive)'>
-                    <p md-line>{{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span></p>
-                    <a md-line class='link' target='_blank' href={{archive.link}}>{{archive.link}}</a>                 
+                <md-list-item>
+                    <a  md-icon-button
+                        class="secondary_action"
+                        target='_blank'
+                        href={{archive.link}}
+                        *ngIf="!!archive.link"
+                        mdTooltip="landingpage"
+                        >
+                            <md-icon>open_in_new</md-icon>
+                    </a>
+                    <p md-line (click)='add(archive)'>
+                        {{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span>                        
+                    </p>
               </md-list-item>
               <md-divider></md-divider>
           </template>
@@ -75,6 +85,10 @@ interface Group<T> {
     }
     md-list-item {
         cursor: pointer;
+    }
+    
+    .secondary_action {
+        float: right;
     }
     
     img {
