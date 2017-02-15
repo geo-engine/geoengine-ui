@@ -30,9 +30,9 @@ import {
 import {RasterValueExtractionOperatorComponent}
   from '../operators/dialogs/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
-  from '../operators/dialogs/numeric-attribute-filter.component';
+  from '../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
-  from '../operators/dialogs/point-in-polygon-filter.component';
+  from '../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
 // FIXME: import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
@@ -58,8 +58,8 @@ import {MdDialog} from "@angular/material";
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="NumericAttributeFilterType.NAME"
-                [iconUrl]="NumericAttributeFilterType.ICON_URL">
-                <!--(click)="numericAttributeFilterOperatorDialog.show()">-->
+                [iconUrl]="NumericAttributeFilterType.ICON_URL"
+                (click)="dialog.open(NumericAttributeFilterOperatorComponent)">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="PointInPolygonFilterType.NAME"

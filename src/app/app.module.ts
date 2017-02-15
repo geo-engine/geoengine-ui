@@ -70,8 +70,9 @@ import {PlotService} from "../plots/plot.service";
 import {ColorPickerService} from "ct-angular2-color-picker/lib/color-picker.service";
 import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
 import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
-import {PointInPolygonFilterOperatorComponent} from "../operators/dialogs/point-in-polygon-filter.component";
+import {PointInPolygonFilterOperatorComponent} from "../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
 import {DialogHeaderComponent} from "../dialogs/wave-dialog-header/dialog-header.component";
+import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
 
 @NgModule({
     declarations: [
@@ -89,7 +90,7 @@ import {DialogHeaderComponent} from "../dialogs/wave-dialog-header/dialog-header
         IdessaLogoComponent, MappingDataSourceFilter, HighlightPipe, BasketResultGroupByDatasetPipe, TrimPipe, PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent, SafeStylePipe, MappingColorizerToGradientPipe,
         IntroductionDialogComponent, LoginDialogComponent, GfbioBasketsComponent,
         /*HistogramComponent, */
-        PointInPolygonFilterOperatorComponent,
+        PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
         DialogHeaderComponent,
     ],
     imports: [
@@ -101,8 +102,9 @@ import {DialogHeaderComponent} from "../dialogs/wave-dialog-header/dialog-header
         ReactiveFormsModule,
     ],
     entryComponents: [
-        IntroductionDialogComponent, LoginDialogComponent, RasterRepositoryComponent, AbcdRepositoryComponent,
-        CsvRepositoryComponent, GfbioBasketsComponent, PointInPolygonFilterOperatorComponent,
+        IntroductionDialogComponent, LoginDialogComponent,
+        RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent,
+        PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
     ],
     providers: [DragulaService, MdIconRegistry, FormBuilder,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,

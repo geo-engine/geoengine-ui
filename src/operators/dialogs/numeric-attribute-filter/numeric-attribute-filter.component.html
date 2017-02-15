@@ -1,0 +1,35 @@
+<wave-dialog-header>Numeric Attribute Filter</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <md-dialog-content>
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.POINTS]"
+            [min]="1" [max]="1"
+            formControlName="pointLayers">
+        </wave-multi-layer-selection>
+        <md-select placeholder="Attribute" formControlName="attribute">
+            <md-option
+                *ngFor="let attribute of computeAttributes(form.controls.pointLayers.valueChanges | async)"
+                [value]="attribute"
+            >{{attribute}}</md-option>
+        </md-select>
+        <!--<md-progress-circle mode="indeterminate" *ngIf="dataLoading"></md-progress-circle>-->
+        <!--<wave-histogram [height]="500" [width]="500" [selectable]="true"-->
+                        <!--*ngIf="data" [data]="data" interactable="true"-->
+                        <!--[(minRange)]="boundsMin" [(maxRange)]="boundsMax">-->
+        <!--</wave-histogram>-->
+        <div formGroupName="bounds">
+            <md-input type="number" placeholder="Min" formControlName="min"></md-input>
+            <md-input type="number" placeholder="Max" formControlName="max"></md-input>
+        </div>
+        <md-checkbox formControlName="noData">Keep NoData values?</md-checkbox>
+        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+    </md-dialog-content>
+    <md-dialog-actions align="end">
+        <button
+            type="submit"
+            md-raised-button
+            color="primary"
+            [disabled]="form.invalid"
+        >Apply</button>
+    </md-dialog-actions>
+</form>
