@@ -2,7 +2,7 @@ import {
     Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit,
 } from '@angular/core';
 
-// FIXME: import {HistogramData} from '../../plots/histogram.component';
+import {HistogramData} from '../../../plots/histogram.component';
 
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../services/random-color.service';
@@ -10,15 +10,18 @@ import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {DataTypes} from '../../datatype.model';
+import {DataTypes, DataType} from '../../datatype.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
 } from '../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
-import {Subscription} from 'rxjs';
+import {Subscription, BehaviorSubject} from 'rxjs';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {MdDialogRef} from '@angular/material';
+import {HistogramType} from '../../types/histogram-type.model';
+import {Unit} from '../../unit.model';
+import {ProjectService} from '../../../project/project.service';
 
 function minOverMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;
@@ -48,13 +51,14 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
     private subscriptions: Array<Subscription> = [];
 
-    // private data: any;//FIXME: HistogramData;
-    // private dataLoading: boolean = false;
+    data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
+    dataLoading$ = new BehaviorSubject(false);
 
     constructor(
         private layerService: LayerService,
         private randomColorService: RandomColorService,
         private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MdDialogRef<NumericAttributeFilterOperatorComponent>
     ) {
@@ -75,34 +79,32 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             noData: [false, Validators.required]
         });
 
-        // attributeNameControl.valueChanges.subscribe((attributeName: string) => {
-        //     // console.log(attributeName, this.selectedLayer);
-        //
-        //     const operator = new Operator({
-        //         operatorType: new HistogramType({
-        //             attribute: attributeName,
-        //             range: 'data',
-        //         }),
-        //         resultType: ResultTypes.PLOT,
-        //         projection: this.selectedLayer.operator.projection,
-        //         attributes: [],
-        //         dataTypes: new Map<string, DataType>(),
-        //         units: new Map<string, Unit>(),
-        //         pointSources: [this.selectedLayer.operator],
-        //     });
-        //
-        //     this.dataLoading = true;
-        //     this.mappingQueryService.getPlotData({
-        //         operator: operator,
-        //         time: this.projectService.getTime(),
-        //     }).then(
-        //         data => this.data = data //FIXME: as HistogramData
-        //     ).then(
-        //         _ => this.dataLoading = false
-        //     );
-        //
-        //     this.changeDetectorRef.markForCheck();
-        // });
+        this.form.controls['attribute'].valueChanges.subscribe((attribute: string) => {
+            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
+
+            const operator = new Operator({
+                operatorType: new HistogramType({
+                    attribute: attribute,
+                    range: 'data',
+                }),
+                resultType: ResultTypes.PLOT,
+                projection: vectorLayer.operator.projection,
+                attributes: [],
+                dataTypes: new Map<string, DataType>(),
+                units: new Map<string, Unit>(),
+                pointSources: [vectorLayer.operator],
+            });
+
+            this.dataLoading$.next(true);
+            this.mappingQueryService.getPlotData({
+                operator: operator,
+                time: this.projectService.getTime(),
+            }).then(
+                data => this.data$.next(data as HistogramData)
+            ).then(
+                _ => this.dataLoading$.next(false)
+            );
+        });
     }
 
     ngAfterViewInit() {

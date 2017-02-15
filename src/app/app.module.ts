@@ -73,6 +73,9 @@ import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
 import {PointInPolygonFilterOperatorComponent} from "../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
 import {DialogHeaderComponent} from "../dialogs/wave-dialog-header/dialog-header.component";
 import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
+import {HistogramComponent} from '../plots/histogram.component';
+import {DialogSectionHeadingComponent} from '../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
     declarations: [
@@ -89,15 +92,17 @@ import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/nume
         LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent, VatLogoComponent,
         IdessaLogoComponent, MappingDataSourceFilter, HighlightPipe, BasketResultGroupByDatasetPipe, TrimPipe, PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent, SafeStylePipe, MappingColorizerToGradientPipe,
         IntroductionDialogComponent, LoginDialogComponent, GfbioBasketsComponent,
-        /*HistogramComponent, */
+        HistogramComponent,
         PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
         DialogHeaderComponent,
+        DialogSectionHeadingComponent,
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpModule,
         MaterialModule.forRoot(),
+        FlexLayoutModule.forRoot(),
         DragulaModule,
         ReactiveFormsModule,
     ],

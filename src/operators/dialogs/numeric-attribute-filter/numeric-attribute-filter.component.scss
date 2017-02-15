@@ -1,15 +1,11 @@
-label {
-    display: block;
-    font-size: 12px;
-    color: rgba(0, 0, 0, 0.38);
-}
+$circle-width: 100px;
+
 md-progress-circle {
     position: relative;
-    left: calc(50% - 50px);
+    left: calc(50% - #{$circle-width / 2});
+    width: $circle-width;
 }
-//.min-max-ranges {
-//    margin: 0 auto;
-//}
-//.min-max-ranges md-input {
-//    margin: 0 1rem;
-//}
+
+md-input-container:not(:last-child) {
+    margin-right: 1rem;
+}
