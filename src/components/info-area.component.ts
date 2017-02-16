@@ -34,19 +34,29 @@ import {LayoutService} from '../app/layout.service';
             <md-divider></md-divider>
         </md-toolbar-row>
         <md-toolbar-row>
-            <button
-                md-button class="md-icon-button" aria-label="Layer List Actions"
-                disabled="true" style="visibility: hidden;"
-            >
-                <md-icon>menu</md-icon>
+            <span>Layers</span>
+            <span class="fill-remaining-space"></span>
+           
+            <md-menu #layerListMenu="mdMenu">              
+                <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
+                    <md-icon *ngSwitchCase="true">expand_less</md-icon>
+                    <md-icon *ngSwitchCase="false">expand_more</md-icon>
+                    <span>Show/Hide</span>
+                </button>
+                <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
+                    <md-icon>merge_type</md-icon>
+                    <div>Project Lineage</div>
+                </button>
+                <button md-menu-item [disabled]="true">
+                    <md-icon>fullscreen</md-icon>
+                    <span>Zoom to Project</span>                
+                </button>
+            </md-menu>
+            
+            <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
+               <md-icon>more_vert</md-icon>
             </button>
-            <span class="fill-remaining-space">Layers</span>
-            <button md-icon-button aria-label="Toggle Layer List Visibility"
-                    (click)="layoutService.toggleLayerListVisibility()"
-                    [ngSwitch]="layerListVisibility$ | async">
-                <md-icon *ngSwitchCase="true">expand_less</md-icon>
-                <md-icon *ngSwitchCase="false">expand_more</md-icon>
-            </button>
+            
         </md-toolbar-row>
     </md-toolbar>
     <!--<wave-dialog-loader #helpDialog [type]="HelpDialogComponent"></wave-dialog-loader>-->
@@ -89,9 +99,6 @@ import {LayoutService} from '../app/layout.service';
     .fill-remaining-space {
         flex: 1 1 auto;
         text-align: center;
-    }
-    button {
-        color: ${Config.COLORS.TEXT.ACCENT};
     }
     button[disabled] {
         background-color: transparent;

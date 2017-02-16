@@ -27,6 +27,7 @@ import {MdDialog} from '@angular/material';
     template: `
     <div class="ribbons">
 
+        <!--
         <fieldset [class.selected]="isLayerSelected$ | async">
             <legend>Layer</legend>
             <div class="flex-row">
@@ -82,11 +83,14 @@ import {MdDialog} from '@angular/material';
                 </div>
             </div>
         </fieldset>
+        -->
 
         <fieldset>
             <legend>Zoom</legend>
             <div class="flex-row">
+                <!--
                 <div class="flex-column">
+                
                     <button md-button style="text-align: left; margin: 0px;" class="md-primary"
                             (click)="zoomLayer.emit()"
                             [disabled]="!(isLayerSelected$ | async)">
@@ -105,6 +109,7 @@ import {MdDialog} from '@angular/material';
                         Map
                     </button>
                 </div>
+                -->
                 <div class="flex-column flex_center">
                     <button md-mini-fab md-primary aria-label="Zoom In"
                             (click)="zoomIn.emit()">

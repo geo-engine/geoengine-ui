@@ -63,12 +63,14 @@ import {NewProjectDialogComponent} from '../project/new-project.component';
                     <md-icon>settings</md-icon>
                     <div>Configuration</div>
                 </button>
+                <!--
                 <button md-button
                         class="md-primary flex-column"
                         (click)="lineageDialog.show()">
                     <md-icon>merge_type</md-icon>
                     <div>Lineage</div>
                 </button>
+                -->
             </div>
         </fieldset>
     </div>

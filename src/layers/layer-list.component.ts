@@ -10,6 +10,9 @@ import {LoadingState} from '../shared/loading-state.model';
 
 import {LayerService} from '../layers/layer.service';
 import {Subscription} from "rxjs";
+import {MdDialog} from "@angular/material";
+
+import {RenameLayerComponent} from "./dialogs/rename-layer.component";
 
 @Component({
     selector: 'wave-layer-list',
@@ -31,6 +34,17 @@ import {Subscription} from "rxjs";
         <div class="list-item-row">
             
         <md-menu #layerMenu="mdMenu">
+
+            <button md-menu-item [disabled]="true">
+                <md-icon >visibility_off</md-icon>
+                <span>Hide Layer</span>                
+            </button>
+            <!--
+            <button md-menu-item *ngIf="layer.expanded" [disabled]="true">
+                <md-icon >visibility</md-icon>
+                <span>Show Layer</span>                
+            </button>
+            -->
             <button md-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
                 <md-icon >expand_more</md-icon>
                 <span>Show Legend</span>                
@@ -39,17 +53,33 @@ import {Subscription} from "rxjs";
                 <md-icon >expand_less</md-icon>
                 <span>Hide Legend</span>                
             </button>
-            <button md-menu-item (click)="removeLayer(layer)">
-                        <md-icon>remove</md-icon>
-                        <span>Remove</span>
+            <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
+                <md-icon>merge_type</md-icon>
+                <span>Lineage</span>
             </button>
-            <button md-menu-item>
+            <button md-menu-item (click)="removeLayer(layer)">
+                <md-icon>delete</md-icon>
+                <span>Remove</span>
+            </button>
+            <button md-menu-item (click)="dialog.open(RenameLayerComponent)">
                 <md-icon>mode_edit</md-icon>
                 <span>Rename</span>
             </button>
-            <button md-menu-item>
+            <button md-menu-item [disabled]="true">
                 <md-icon>color_lens</md-icon>
                 <span>Edit Symbology</span>
+            </button>
+            <button md-menu-item [disabled]="true">
+                <md-icon>fullscreen</md-icon>
+                <span>Zoom to Extent</span>                
+            </button>
+            <button md-menu-item (click)="dialog.open(ExportLayerComponent)" [disabled]="true">
+                <md-icon>file_download</md-icon>
+                <span>Export</span>
+            </button>
+            <button md-menu-item [disabled]="true">
+                <md-icon>share</md-icon>
+                <span>Share</span>
             </button>
         </md-menu>
         
@@ -127,11 +157,13 @@ export class LayerListComponent implements OnDestroy {
     // tslint:disable:variable-name
     LoadingState = LoadingState;
     _enumSymbologyType = SymbologyType;
+    RenameLayerComponent = RenameLayerComponent;
     // tslint:enable
 
     private subscriptions: Array<Subscription> = [];
 
     constructor(
+        private dialog: MdDialog,
         private dragulaService: DragulaService,
         private layerService: LayerService
     ) {

@@ -104,7 +104,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
         FormsModule,
         HttpModule,
         MaterialModule.forRoot(),
-        FlexLayoutModule.forRoot(),
+        FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
     ],
