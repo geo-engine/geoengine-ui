@@ -13,6 +13,7 @@ import {Subscription} from "rxjs";
 import {MdDialog} from "@angular/material";
 
 import {RenameLayerComponent} from "./dialogs/rename-layer.component";
+import {MapService} from "../map/map.service";
 
 @Component({
     selector: 'wave-layer-list',
@@ -69,7 +70,7 @@ import {RenameLayerComponent} from "./dialogs/rename-layer.component";
                 <md-icon>color_lens</md-icon>
                 <span>Edit Symbology</span>
             </button>
-            <button md-menu-item [disabled]="true">
+            <button md-menu-item (click)="mapService.zoomToLayer(layer)">
                 <md-icon>fullscreen</md-icon>
                 <span>Zoom to Extent</span>                
             </button>
@@ -99,10 +100,7 @@ import {RenameLayerComponent} from "./dialogs/rename-layer.component";
             <md-icon>more_vert</md-icon>
         </button>
           
-          <md-progress-circle
-            mode="indeterminate"
-            *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
-          ></md-progress-circle>
+          
           <button
             md-button class="md-icon-button md-warn error-button" aria-label="Reload"
             *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
@@ -110,7 +108,12 @@ import {RenameLayerComponent} from "./dialogs/rename-layer.component";
           >
             <md-icon>replay</md-icon>
           </button>
+
         </div>
+        <md-progress-bar
+            *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
+            mode="query"
+        ></md-progress-bar>
         <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" class="list-item-row">
 
           <wave-legendary-points
@@ -165,7 +168,8 @@ export class LayerListComponent implements OnDestroy {
     constructor(
         private dialog: MdDialog,
         private dragulaService: DragulaService,
-        private layerService: LayerService
+        private layerService: LayerService,
+        private mapService: MapService
     ) {
         dragulaService.setOptions('layer-bag', {
             removeOnSpill: false,

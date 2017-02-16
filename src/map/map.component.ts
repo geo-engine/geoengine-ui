@@ -57,6 +57,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         private layerService: LayerService
     ) {
         this.initOpenlayersMap();
+
     }
 
     /**
@@ -79,22 +80,29 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
     zoomToMap() {
         const extent = this.map.getView().getProjection().getExtent();
-        this.map.getView().fit(extent, this.map.getSize());
+        this.zoomToExtent(extent);
     }
 
-    zoomToLayer(layerIndex: number) {
-        const layer = this.contentChildren.toArray()[layerIndex];
+    zoomToLayer(layer: Layer<Symbology>) {
+        const candidates = this.contentChildren.filter(
+            olLayerComponent => olLayerComponent.layer === layer
+        );
 
-        const extent = layer.getExtent();
+        const extent = candidates[0].getExtent();
+
+        console.log("zoomToLayer", candidates, extent);
 
         if (extent === undefined) {
             this.zoomToMap();
         } else {
-            this.map.getView().fit(
-                extent,
-                this.map.getSize()
-            );
+            this.zoomToExtent(extent);
         }
+    }
+
+    zoomToExtent(extent: [number, number, number, number] | ol.Extent) {
+
+        console.log("zoomToExtent", extent, this.map.getSize());
+        this.map.getView().fit(extent, this.map.getSize());
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
@@ -130,9 +138,8 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         // Hack: querylist ignores order changes
-
         this.layerService.getLayersStream().subscribe(x => {
-            if (this._layers === x) { return; };
+            if (this._layers === x) { return; }
 
             let change = this._layers.length !== x.length;
 
@@ -146,8 +153,15 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 this.contentChildren.setDirty();
                 this._layers = x.slice(0);
             }
-
         });
+
+        this.mapService.getZoomToExtentStream().subscribe(
+            x => this.zoomToExtent(x)
+        );
+
+        this.mapService.getZoomToLayerStream().subscribe(
+            l => this.zoomToLayer(l)
+        );
     }
 
     ngAfterViewInit() {

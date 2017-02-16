@@ -1,12 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Observable, BehaviorSubject} from 'rxjs/Rx';
+import {Observable, BehaviorSubject, Subject} from 'rxjs/Rx';
 import * as ol from 'openlayers';
+import {MapComponent} from "./map.component";
+import {Symbology} from "../symbology/symbology.model";
+import {Layer} from "../layers/layer.model";
 
 export interface ViewportSize {
-    extent: [number, number, number, number]  | ol.Extent;
+    extent: Extent;
     resolution: number;
     maxExtent?: [number, number, number, number];
 }
+
+type Extent = [number, number, number, number]  | ol.Extent;
 
 @Injectable()
 export class MapService {
@@ -15,10 +20,29 @@ export class MapService {
         resolution: 1,
     });
 
+    private zoomToExtent$ = new Subject<Extent>();
+    private zoomToLayer$ = new Subject<Layer<Symbology>>();
+
     constructor() {
         //this.viewportSize$.subscribe(
         //   v => console.log('viewport', v.extent.join(','), v.resolution)
         //);
+    }
+
+    getZoomToExtentStream(): Observable<Extent>{
+        return this.zoomToExtent$;
+    }
+
+    getZoomToLayerStream(): Observable<Layer<Symbology>>{
+        return this.zoomToLayer$;
+    }
+
+    public zoomToLayer(l: Layer<Symbology>) {
+        this.zoomToLayer$.next(l);
+    }
+
+    public zoomToExtent(extent: Extent) {
+        this.zoomToExtent$.next(extent);
     }
 
     setViewportSize(newViewportSize: ViewportSize) {

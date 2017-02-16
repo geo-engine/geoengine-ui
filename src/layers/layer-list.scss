@@ -57,12 +57,14 @@ wave-layer-list button[disabled] {
   background-color: transparent;
 }
 
-wave-layer-list md-progress-circle {
-  position: absolute;
-  height: 36px !important;
-  width: 36px !important;
-  left: calc(50% - 36px/2);
-  top: 6px;
+wave-layer-list md-progress-bar {
+    width: 100% !important;
+    bottom: 0;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    left: 0;
+    right: 0;
 }
 
 wave-layer-list button.error-button {
