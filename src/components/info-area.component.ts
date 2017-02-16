@@ -49,7 +49,11 @@ import {LayoutService} from '../app/layout.service';
                 </button>
                 <button md-menu-item [disabled]="true">
                     <md-icon>fullscreen</md-icon>
-                    <span>Zoom to Project</span>                
+                    <span>Zoom to All</span>                
+                </button>                
+                <button md-menu-item [disabled]="true">
+                    <md-icon>delete_sweep</md-icon>
+                    <span>Remove All</span>                
                 </button>
             </md-menu>
             
