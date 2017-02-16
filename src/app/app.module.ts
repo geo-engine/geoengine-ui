@@ -76,6 +76,7 @@ import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/nume
 import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from '../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 
 @NgModule({
     declarations: [
@@ -96,6 +97,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
         PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
         DialogHeaderComponent,
         DialogSectionHeadingComponent,
+        RenameLayerComponent,
     ],
     imports: [
         BrowserModule,
@@ -107,7 +109,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
         ReactiveFormsModule,
     ],
     entryComponents: [
-        IntroductionDialogComponent, LoginDialogComponent,
+        IntroductionDialogComponent, LoginDialogComponent, RenameLayerComponent,
         RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
     ],
