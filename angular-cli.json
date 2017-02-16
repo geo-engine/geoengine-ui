@@ -18,7 +18,7 @@
       "prefix": "wave",
       "mobile": false,
       "styles": [
-        "styles.css",
+        "styles.scss",
         "wave-app-theme.scss",
         "../node_modules/dragula/dist/dragula.min.css",
         "../node_modules/codemirror/lib/codemirror.css"

@@ -3,7 +3,7 @@ import {
     ElementRef, OnChanges, SimpleChange,
 } from '@angular/core';
 
-import {} from 'd3';
+import * as d3 from 'd3';
 
 /**
  * Schema for histogram data.
@@ -47,6 +47,9 @@ interface Slider {
     template: `<svg #svg class="histogram"></svg>`,
     styles: [
         `
+        :host {
+            display: block;
+        }
         :host .histogram >>> .chartbg {
           fill: transparent;
         }
@@ -124,10 +127,10 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
     @Input() height: number;
     @Input() width: number;
-    @Input() viewBoxRatio: number = 1;
+    @Input() viewBoxRatio = 1;
 
-    @Input() selectable: boolean = false;
-    @Input() interactable: boolean = false;
+    @Input() selectable = false;
+    @Input() interactable = false;
 
     @Input() minRange: number = undefined;
     @Output() minRangeChange = new EventEmitter<number>();

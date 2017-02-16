@@ -17,6 +17,7 @@ import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
 import {ResultTypes} from '../operators/result-type.model';
 
 import {UserService} from '../users/user.service';
+import {MdDialog} from '@angular/material';
 
 /**
  * The start tab of the ribbons component.
@@ -62,7 +63,7 @@ import {UserService} from '../users/user.service';
                 <div class="flex-column">
                     <button md-button style="text-align: left; margin: 0px;"
                             class="md-primary" [disabled]="!(isLayerSelected$ | async)"
-                            (click)="renameLayerDialog.show()">
+                            (click)="dialog.open(RenameLayerComponent)">
                         <md-icon>mode_edit</md-icon>
                         Rename
                     </button>
@@ -269,6 +270,7 @@ export class StartTabComponent {
     private isLayerSelected$: Observable<boolean>;
 
     constructor(
+        public dialog: MdDialog,
         private layerService: LayerService,
         private mappingQueryService: MappingQueryService,
         private userService: UserService

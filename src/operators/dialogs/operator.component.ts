@@ -144,11 +144,8 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
 @Component({
     selector: 'wave-multi-layer-selection',
     template: `
-    <h3>
-        <div>
-            {{title}}
-            <small>Select input {{title}}</small>
-        </div>
+    <div class="header">
+        <wave-dialog-section-heading [title]="title" subtitle="Select input {{title}}"></wave-dialog-section-heading>
         <div>
             <button md-mini-fab
                 (click)="add()"
@@ -161,7 +158,7 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
                 [disabled]="amountOfLayers <= min || filteredLayers.length <= 0"
             ><md-icon>remove_circle_outline</md-icon></button>
         </div>
-    </h3>
+    </div>
     <div>
         <wave-layer-selection
             *ngFor="let id of ids; let i = index"
@@ -176,15 +173,11 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
         display: block;
         padding-bottom: 1em;
     }
-    h3 {
+    .header {
         display: flex;
     }
-    h3 div:first-child {
+    .header div:first-child {
         flex-grow: 1;
-    }
-    h3 small {
-        display: block;
-        font-weight: normal;
     }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -475,10 +468,9 @@ export class ReprojectionSelectionComponent
 @Component({
     selector: 'wave-operator-output-name',
     template: `
-    <h3>
-        Output Name
-        <small>Specify the name of the operator result</small>
-    </h3>
+    <wave-dialog-section-heading
+        title="Output Name" subtitle="Specify the name of the operator result"
+    ></wave-dialog-section-heading>
     <md-input
         placeholder="Output {{type}} Name"
         [(ngModel)]="name"

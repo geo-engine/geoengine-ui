@@ -1,0 +1,11 @@
+$circle-width: 100px;
+
+md-progress-circle {
+    position: relative;
+    left: calc(50% - #{$circle-width / 2});
+    width: $circle-width;
+}
+
+md-input-container:not(:last-child) {
+    margin-right: 1rem;
+}

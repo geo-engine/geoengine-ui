@@ -1,16 +1,16 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../layers/layer.model';
-import {Operator} from '../operator.model';
-import {ResultTypes} from '../result-type.model';
-import {PointInPolygonFilterType} from '../types/point-in-polygon-filter-type.model';
+import {VectorLayer} from '../../../layers/layer.model';
+import {Operator} from '../../operator.model';
+import {ResultTypes} from '../../result-type.model';
+import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
-} from '../../symbology/symbology.model';
+} from '../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
 
@@ -19,33 +19,8 @@ import {MdDialogRef} from '@angular/material';
  */
 @Component({
     selector: 'wave-point-in-polygon-filter',
-    template: `
-    <wave-dialog-header>Point in Polygon Filter</wave-dialog-header>
-    <form [formGroup]="form" (ngSubmit)="add($event)">
-        <md-dialog-content>
-            <wave-multi-layer-selection
-                [types]="[ResultTypes.POINTS]"
-                [min]="1" [max]="1"
-                formControlName="pointLayers">
-            </wave-multi-layer-selection>
-            <wave-multi-layer-selection
-                [types]="[ResultTypes.POLYGONS]"
-                [min]="1" [max]="1"
-                formControlName="polygonLayers">
-            </wave-multi-layer-selection>
-            <wave-operator-output-name formControlName="name"></wave-operator-output-name>
-        </md-dialog-content>
-        <md-dialog-actions align="end">
-            <button
-                type="submit"
-                md-raised-button
-                color="primary"
-                [disabled]="form.invalid"
-            >Apply</button>
-        </md-dialog-actions>
-    </form>
-    `,
-    styleUrls: ['./point-in-polygon-filter.component.scss'],
+    templateUrl: 'point-in-polygon-filter.component.html',
+    styleUrls: ['point-in-polygon-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointInPolygonFilterOperatorComponent {
