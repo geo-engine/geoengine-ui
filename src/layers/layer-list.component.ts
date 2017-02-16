@@ -25,31 +25,50 @@ import {Subscription} from "rxjs";
                   
                   (click)="layerService.setSelectedLayer(layer)"
                   [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
-                  (contextmenu)="replaceContextMenu($event, layer)"
                   [title]="layer.name"
     >
-      <div class="list-item-column" >
-        <div class="list-item-row" >
-          <button md-icon-button
-                  style="margin-left: -16px;"
-                  aria-label="Settings"
-                  (click)="toggleLayer(layer)">
+      <div class="list-item-column">
+        <div class="list-item-row">
+            
+        <md-menu #layerMenu="mdMenu">
+            <button md-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
+                <md-icon >expand_more</md-icon>
+                <span>Show Legend</span>                
+            </button>
+            <button md-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">
+                <md-icon >expand_less</md-icon>
+                <span>Hide Legend</span>                
+            </button>
+            <button md-menu-item (click)="removeLayer(layer)">
+                        <md-icon>remove</md-icon>
+                        <span>Remove</span>
+            </button>
+            <button md-menu-item>
+                <md-icon>mode_edit</md-icon>
+                <span>Rename</span>
+            </button>
+            <button md-menu-item>
+                <md-icon>color_lens</md-icon>
+                <span>Edit Symbology</span>
+            </button>
+        </md-menu>
+        
+        <button md-icon-button
+            style="margin-left: -16px;"
+            aria-label="Settings"
+            (click)="toggleLayer(layer)">
             <md-icon *ngIf="!layer.expanded">expand_more</md-icon>
             <md-icon *ngIf="layer.expanded">expand_less</md-icon>
-          </button>
-          <div #layerName class="md-list-item-text" style="padding-top: 10px">
+        </button>
+          
+        <div #layerName class="md-list-item-text">
             {{layer.name}}
-          </div>
-
-          <button md-icon-button
-                  style="margin-right: -16px; visibility: hidden;"
-                  aria-label="More"
-                  *ngIf="layer === (layerService.getSelectedLayerStream() | async)"
-                  (click)="replaceContextMenu($event, layer)"
-                  disabled="true"
-          >
+        </div>       
+            
+        <button md-icon-button class="secondary_action" #menuTrigger [mdMenuTriggerFor]="layerMenu" aria-label="More">
             <md-icon>more_vert</md-icon>
-          </button>
+        </button>
+          
           <md-progress-circle
             mode="indeterminate"
             *ngIf="(layer.loadingState | async) === LoadingState.LOADING"
@@ -161,6 +180,10 @@ export class LayerListComponent implements OnDestroy {
 
     toggleLayer(layer: Layer<Symbology>) {
         this.layerService.toggleLayer(layer);
+    }
+
+    removeLayer(layer: Layer<Symbology>) {
+        this.layerService.removeLayer(layer);
     }
 
     private domIndexOf(child: HTMLElement, parent: HTMLElement) {

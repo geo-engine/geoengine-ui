@@ -22,7 +22,8 @@ wave-layer-list .list-item-row {
   align-items: center;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 14px;
+    justify-content: space-between;
 }
 
 wave-layer-list .no-layer {
@@ -72,4 +73,8 @@ wave-layer-list button.error-button {
 wave-layer-list .active-layer .md-list-item {
   background: whitesmoke;//${Config.COLORS.DEFAULT};
   border-bottom: solid 1px #009688;
+}
+
+wave-layer-list .secondary_action {
+    margin-left: auto;
 }
