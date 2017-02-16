@@ -195,18 +195,18 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
     /**
      * The minimum number of elements to select.
      */
-    @Input() min: number = 1;
+    @Input() min = 1;
 
     /**
      * The maximum number of elements to select.
      */
-    @Input() max: number = 1;
+    @Input() max = 1;
 
     /**
      * The initial amount of elements to select.
      * @type {number}
      */
-    @Input() initialAmount: number = 1;
+    @Input() initialAmount = 1;
 
     /**
      * The type is used as a filter for the layers to choose from.
@@ -224,7 +224,7 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
     filteredLayers: Array<Layer<Symbology>>;
     ids: Array<string>;
 
-    amountOfLayers: number = 1;
+    amountOfLayers = 1;
 
     selectedLayers: Array<Layer<Symbology>> = [];
 
@@ -271,18 +271,14 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
 
     updateLayer(index: number, layer: Layer<Symbology>) {
         this.selectedLayers[index] = layer;
-        if (this.onChange) {
-            this.onChange(this.selectedLayers);
-        }
+        this.propagateChange();
     }
 
     add() {
         this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
         this.recalculateIds();
         this.selectedLayers.push(this.filteredLayers[0]);
-        if (this.onChange) {
-            this.onChange(this.selectedLayers);
-        }
+        this.propagateChange();
         this.onBlur();
     }
 
@@ -290,9 +286,7 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
         this.amountOfLayers = Math.max(this.amountOfLayers - 1, this.min);
         this.recalculateIds();
         this.selectedLayers.pop();
-        if (this.onChange) {
-            this.onChange(this.selectedLayers);
-        }
+        this.propagateChange();
         this.onBlur();
     }
 
@@ -308,22 +302,24 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
 
             this.changeDetectorRef.markForCheck();
         } else {
-            if (this.onChange) {
-                this.onChange(this.selectedLayers);
-            }
+            this.propagateChange();
         }
     }
 
     registerOnChange(fn: (_: Array<Layer<Symbology>>) => void): void {
         this.onChange = fn;
 
-        if (this.selectedLayers) {
-            this.onChange(this.selectedLayers);
-        }
+        this.propagateChange();
     }
 
     registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
+    }
+
+    private propagateChange() {
+        if (this.onChange && this.selectedLayers && this.filteredLayers.length > 0) {
+            this.onChange(this.selectedLayers);
+        }
     }
 
     private recalculateIds() {

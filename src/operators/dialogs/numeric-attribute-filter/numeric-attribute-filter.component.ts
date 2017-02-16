@@ -79,7 +79,12 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             noData: [false, Validators.required]
         });
 
-        this.form.controls['attribute'].valueChanges.subscribe((attribute: string) => {
+        this.subscriptions.push(this.form.controls['attribute'].valueChanges.subscribe((attribute: string) => {
+            if (!attribute) {
+                this.data$.next(undefined);
+                return;
+            }
+
             const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
 
             const operator = new Operator({
@@ -104,11 +109,15 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             ).then(
                 _ => this.dataLoading$.next(false)
             );
-        });
+        }));
     }
 
     ngAfterViewInit() {
         this.form.controls['pointLayers'].enable({emitEvent: true});
+
+        this.subscriptions.push(this.form.controls['pointLayers'].valueChanges.subscribe(_ => {
+            this.form.controls['attribute'].setValue(undefined);
+        }));
     }
 
     ngOnDestroy() {

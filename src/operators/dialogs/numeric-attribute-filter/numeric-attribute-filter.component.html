@@ -7,12 +7,14 @@
             formControlName="pointLayers">
         </wave-multi-layer-selection>
         <wave-dialog-section-heading title="Filter" subtitle="Select the value range."></wave-dialog-section-heading>
-        <md-select placeholder="Attribute" formControlName="attribute">
-            <md-option
-                *ngFor="let attribute of computeAttributes(form.controls.pointLayers.valueChanges | async)"
-                [value]="attribute"
-            >{{attribute}}</md-option>
-        </md-select>
+        <div class="downward-margin">
+            <md-select placeholder="Attribute" formControlName="attribute">
+                <md-option
+                    *ngFor="let attribute of computeAttributes(form.controls.pointLayers.valueChanges | async)"
+                    [value]="attribute"
+                >{{attribute}}</md-option>
+            </md-select>
+        </div>
         <md-progress-circle mode="indeterminate" *ngIf="dataLoading$ | async"></md-progress-circle>
         <wave-histogram [height]="500" [width]="500" [selectable]="true"
                         *ngIf="data$ | async" [data]="data$ | async" interactable="true"
@@ -26,12 +28,13 @@
             class="flex-container"
             fxLayout="row" fxLayoutAlign="space-between center"
             fxLayout.xs="column"  fxLayoutAlign.xs="start"
+            *ngIf="!!form.controls.attribute.value"
         >
             <md-input-container class="flex-item" fxFlex>
-                <input md-input type="number" placeholder="Min" formControlName="min">
+                <input md-input type="number" step="any" placeholder="Min" formControlName="min">
             </md-input-container>
             <md-input-container class="flex-item" fxFlex>
-                <input md-input type="number" placeholder="Max" formControlName="max">
+                <input md-input type="number" step="any" placeholder="Max" formControlName="max">
             </md-input-container>
         </div>
         <md-checkbox formControlName="noData">Keep NoData values?</md-checkbox>
