@@ -1,0 +1,100 @@
+@border: 1px solid #ccc;
+
+.scrollContent{
+  overflow: auto;
+  height: 500px;
+  width: 100%;
+  border: @border;
+  position: relative;
+}
+
+table{
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-spacing: 0;
+
+  .tableFixed {
+    position: relative;
+    background: fade(#ffffff, 90%);
+  }
+  .tableFixedVertical{
+    z-index: 100;
+  }
+
+  thead{
+    .tableFixedHorizontal{
+      z-index: 110;
+    }
+
+    .tableFixedHorizontal.tableFixedVertical{
+      z-index: 120;
+    }
+
+    .tableCell{
+      overflow: hidden;
+      hyphens: auto;
+    }
+  }
+
+  tbody{
+    .tableCell{
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .offsetterTop, .offsetterBottom{
+    td {
+      padding: 0;
+      border: 0;
+    }
+  }
+
+  td, th{
+    border: @border;
+    border-spacing: 0;
+    padding: 2px 5px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .tableCell {
+    height: 42px;
+    //width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+    //width: -moz-max-content;    /* Firefox/Gecko */
+    //width: -webkit-max-content; /* Chrome */
+    //width: 600px;
+    max-width: 600px;
+  }
+
+  //For testing only
+  /*.tr6, .tr34{
+    background: red;
+  }
+  .tr7, .tr33{
+    background: orangered;
+  }*/
+
+  //, .tr15, .tr25, .tr35, .tr45, .tr55{
+  /*.tr10, .tr20, .tr30, .tr40, .tr50, .tr60{
+    background: red;
+  }*/
+}
+
+.spinnerContainer{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top:0;
+  left:0;
+  background: fade(#ffffff, 70%);
+  z-index: 1000;
+
+  .spinner{
+    position: absolute;
+    top: calc(~"50% - 50px");
+    left: calc(~"50% - 50px");
+  }
+}
+

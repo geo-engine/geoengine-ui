@@ -1,0 +1,62 @@
+<div class="scrollContent" (scroll)="updateScroll()" (window:resize)="updateContainer()" #scrollContainer>
+
+  <!-- Loading Spinner -->
+  <div class="spinnerContainer" *ngIf="loading" [style.left]="scrollContainer.scrollLeft+'px'" [style.top]="scrollTop+'px'">
+    <div class="spinner">
+      <md-spinner color="primary"></md-spinner>
+    </div>
+  </div>
+
+  <!-- Data-Table -->
+  <table #scrollContainerContent>
+    <thead> <!--#tableHead-->
+      <tr>
+        <th [style.left]="scrollContainer.scrollLeft+'px'" [style.top]="scrollTop+'px'" [style.position]="'relative'" class="tableFixed tableFixedHorizontal tableFixedVertical">
+          <div class="tableCell">
+            <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual" (change)="toggleAll()"></md-checkbox>
+          </div>
+        </th>
+        <th *ngFor="let t of dataHead; let i=index" [style.top]="scrollTop+'px'" [style.position]="'relative'" class="tableFixed tableFixedHorizontal">
+          <div class="tableCell" [style.width]="avgWidths[i]+'px'">
+            {{t}}
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody> <!--#tableBody-->
+      <!-- Top Offset for virtual scrolling-->
+      <tr #offsetterTop [style.height]="offsetTop+'px'" class="offsetterTop">
+        <td [style.width]="'100%'"></td>
+      </tr>
+
+      <!-- Content -->
+      <tr *ngFor="let tr of displayItemCounter" [class]="'tr'+tr" [class.rowSelected]="selected[tr+firstDisplay]"> <!--#tableElements-->  <!--[class]="'tr'+r+' '+'data'+(r+firstDisplay)"-->
+        <td [style.left]="scrollLeft+'px'" [style.position]="'relative'" class="tableFixed tableFixedVertical">
+          <div class="tableCell">
+            <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]" (change)="toggle(tr+firstDisplay)"></md-checkbox>
+          </div>
+        </td>
+        <td *ngFor="let t of dataHead; let i=index">
+          <!--<div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="!textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
+            <app-dialog [url]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </app-dialog>
+          </div>
+          <div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
+            <app-dialog [url]="data[tr+firstDisplay]['properties'][t]" [md-tooltip]="data[tr+firstDisplay]['properties'][t]" [tooltip-position]="'below'"> {{data[tr+firstDisplay]['properties'][t]}} </app-dialog>
+          </div>
+          -->
+          <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width]="avgWidths[i]+'px'">
+            <app-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]" [type]="colTypes[i]"> </app-dialog>
+            <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </span>
+          </div>
+        </td>
+      </tr>
+
+    <!-- Bottom Offset for virtual scrolling-->
+      <tr #offsetterBottom [style.height]="offsetBottom+'px'" class="offsetterBottom">
+        <td [style.width]="'100%'"></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

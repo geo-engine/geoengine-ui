@@ -1,0 +1,507 @@
+import {
+  Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter, ChangeDetectionStrategy
+} from '@angular/core';
+import {DialogComponent} from "../dialog/dialog.component";
+
+/**
+ * Data-Table-Component
+ * Displays a Data-Table
+ */
+@Component({
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrls: ['table.component.less'],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+/**
+ * Data-Table-Component
+ * Displays a Data-Table
+ */
+export class TableComponent implements OnChanges, AfterViewInit{
+
+  /**
+   * Input: Data to display in the table
+   */
+  @Input()
+  private data: Array<any>;
+
+  /**
+   * Output: Is emitted when the row-selection changes. The selected rows are emitted
+   * @type {EventEmitter}
+   */
+  @Output()
+  private rowsSelected:EventEmitter<Array<number>> = new EventEmitter();
+
+
+  //Data-Subsets
+  private dataHead: Array<string>;
+  private testData: Array<any>;
+
+  //For row-selection
+  private selected: boolean[];
+  private selectedRowsList: Array<number>;
+  private allSelected: boolean;
+  private allEqual: boolean;
+
+  //Element-References
+  @ViewChild('scrollContainer') private container:ElementRef;
+  //@ViewChild('scrollContainerContent') table:ElementRef;
+  //@ViewChild('tableHead') tableHead:ElementRef;
+  //@ViewChild('tableBody') tableBody:ElementRef;
+  //@ViewChildren('tableElements') tableElements:QueryList<ElementRef>;
+
+  //For text-width-calculation
+  private styleString = "16px serif";
+  private oneLineMaxWidth = 300;
+  private canvas;
+
+  private avgWidths: number[];
+  private colTypes: string[];
+
+  //For virtual scrolling
+  private scrollTop = 0;
+  private scrollLeft = 0;
+
+  private scrollTopBefore = 0;
+  private scrollLeftBefore = 0;
+  //tableHeight: number;
+
+  private containerHeight = 0;
+  private offsetTop = 0;
+  private offsetBottom = 0;
+  private elementHeight = 48;
+
+
+  private displayItemCount = 40;
+  private displayOffsetMax = 10;
+  private displayOffsetMin = 5;
+
+  private displayItemCounter: number[];
+
+  private firstDisplay: number;
+  //private lastDisplay: number;
+
+  private scrolling = false;
+
+
+  private cdr;
+
+  private loading = false;
+
+  /**
+   * Sets up all variables
+   * Extracts the column names from the data input and calculates the average widths of all rows
+   * @param cdr ChangeDetector Reference
+   */
+  constructor(cdr: ChangeDetectorRef) {
+    this.cdr = cdr;
+
+    this.canvas = document.createElement("canvas");
+  }
+
+  /**
+   * Run, when input data has changed
+   * resets row-selection
+   * recalculates average column widths
+   * resets virtual scrolling
+   */
+  ngOnChanges(){
+    //console.log("Changes!");
+
+    //let time1 = Math.floor(Date.now());
+
+    if(this.data != null) {
+      //this.loading = true;
+
+      this.dataInit();
+
+      this.loading = false;
+    }
+    else{
+      this.dataHead = null;
+
+      this.offsetTop = 0;
+      this.offsetBottom = 0;
+
+      this.displayItemCounter = [];
+
+      this.loading = false;
+    }
+
+    //let time2 = Math.floor(Date.now());
+    //console.log("Update calc time: "+(time2-time1));
+  }
+
+  /**
+   * Get the height of the container and save it to variable
+   */
+  ngAfterViewInit(){
+    this.containerHeight = this.container.nativeElement.offsetHeight;
+    //console.log(this.containerHeight);
+  }
+
+
+  /**
+   * Sets the loading-variable to show or hide a Loading-Spinner. It is alway hidden, after the input-variable data has changed and the view is updated
+   */
+  public setLoading(loading){
+    this.loading = loading;
+    //console.log("Loading:"+this.loading);
+    this.cdr.markForCheck();
+  }
+
+
+  /**
+   * Called when the input-variable data has changed
+   * Resets and recalculates all variables needed for displaying data in the table, virtual scrolling and selection
+   */
+  private dataInit(){
+    this.firstDisplay = 0;
+    //this.lastDisplay = 15;
+
+    this.container.nativeElement.scrollTop = 0;
+    this.container.nativeElement.scrollLeft = 0;
+
+    this.offsetTop = 0;
+    this.offsetBottom = (this.data.length - this.displayItemCount) * this.elementHeight;
+    if(this.offsetBottom < 0){
+      this.offsetBottom = 0;
+    }
+
+
+    //Reset selection
+    this.selected = [];
+    for (let i = 0; i < this.data.length; i++) {
+      this.selected[i] = false;
+    }
+
+    //Get Header
+    if (this.data.length > 0) {
+      this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
+    }
+
+    //Reset avg widths
+    this.avgWidths = [];
+    for (let i = 0; i < this.data.length; i++) {
+      this.avgWidths[i] = 300;
+    }
+
+    //Calculate Column widths
+    this.testData = this.selectRandomSubData(20);
+    this.avgWidths, this.colTypes = this.calculateColumnProperties(this.testData, this.dataHead);
+
+    //Recreate displayItemCounter
+    this.displayItemCounter = [];
+    let i = 0;
+    while(this.displayItemCounter.length<this.displayItemCount && this.displayItemCounter.length<this.data.length){
+      this.displayItemCounter.push(i);
+      i++;
+    }
+
+    //Test for Selections
+    this.testSelected();
+    this.testEqual();
+  }
+
+
+  /**
+   * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+   *
+   * @param {String} text The text to be rendered.
+   * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+   */
+  private getTextWidth(text, font) {
+    // re-use canvas object for better performance
+    let context = this.canvas.getContext("2d");
+    context.font = font;
+    let metrics = context.measureText(text);
+    return metrics.width;
+  }
+
+  /**
+   * Selects a given number of random rows from the main dataset
+   * @param number amount of rows to select
+   * @returns {Array} an array of rows from the dataset
+   */
+  private selectRandomSubData(number){
+    let testData = [];
+
+    for(let i=0; i<number; i++){
+      let r = Math.floor(Math.random() * this.data.length);
+
+      testData[i] = this.data[r];
+    }
+
+    return testData;
+  }
+
+  /**
+   * Calculates the average column-text-widths of a given dataset. Also includes the header-texts to make shure they also fit
+   * Tests for the contents of the sample-data to predict the content type of each column
+   * @param testData the dataset, to calculate column widths from
+   * @param dataHead the column names of the given dataset
+   * @returns ({Array},{Array}) an array of average-widths and an array with the predicted content types
+   */
+  private calculateColumnProperties(testData, dataHead){
+
+    let headCount = dataHead.length;
+
+    let widths = [];
+    let types = []
+
+    for(let i=0; i < testData.length+1; i++){
+      for(let j=0; j<headCount; j++) {
+        let w = 0;
+        let t;
+
+        //Header Row
+        if(i == testData.length){
+          w = this.getTextWidth(dataHead[j], "bold " + this.styleString);
+
+          t = "";
+        }
+        //Normal Table Rows
+        else{
+          let tmp = testData[i]['properties'][dataHead[j]];
+          w = this.getTextWidth(tmp, this.styleString);
+
+          if (typeof tmp == "string" && tmp != ""){
+            let urls = tmp.split(/(,)/g);
+            for (let u in urls) {
+              t = DialogComponent.getType(urls[u]);
+
+              if(t != ""){
+                if(t != "text"){
+                  t = "media";
+                }
+
+                if(types[j] == "text" && t != "text"){
+                  types[j] = t;
+                }
+              }
+
+              if(types[j] == null ||types[j] == ""){
+                types[j] = t;
+              }
+            }
+          }
+          else{
+            t = "";
+          }
+
+        }
+
+        //Widths
+        if(w > this.oneLineMaxWidth){
+          w = w/2 + 50;
+        }
+        if(w > widths[j] || widths[j] == null){
+          widths[j] = w;
+          //console.log(dataHead[j]+": "+widths[j]);
+        }
+
+        //Types
+        if(t != ""){
+          if(t != "text"){
+            t = "media";
+          }
+
+          if(types[j] == "text" && t != "text"){
+            types[j] = t;
+          }
+        }
+        if(types[j] == null){
+          types[j] = t;
+        }
+      }
+    }
+
+    return (widths, types);
+  }
+
+  /**
+   * Checks whether a given text is too wide for the column with given id
+   * @param text the text for the column
+   * @param colID the ID of the column to test for
+   * @returns {boolean} true, if the text is too wide for the column, false otherwise
+   */
+  private textTooWideForColumn(text, colID){
+    let w = this.getTextWidth(text, this.styleString);
+    if(w > this.oneLineMaxWidth){
+      w = w/2 + 50;
+    }
+    //console.log(w > this.avgWidths[colID]);
+    return w > this.avgWidths[colID];
+  }
+
+
+  /**
+   * Returns all the keys of an object as array
+   * @param object the object containing the keys
+   * @returns {string[]} a string-array containing all the keys
+   */
+  private static getArrayOfKeys(object){
+    return Object.keys(object);
+  }
+
+  private updateContainer(){
+    this.containerHeight = this.container.nativeElement.offsetHeight;
+    //console.log("new height: "+this.containerHeight);
+  }
+
+  /**
+   * Called on Scrolling the Data-Table
+   * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
+   */
+  private updateScroll(){
+    this.scrollTopBefore = this.scrollTop;
+    this.scrollLeftBefore = this.scrollLeft;
+
+    this.scrollTop = this.container.nativeElement.scrollTop;
+    this.scrollLeft = this.container.nativeElement.scrollLeft;
+
+    //console.log(this.scrollTopBefore+"->"+this.scrollTop);
+
+    if (this.data != null && !this.scrolling) {
+      this.scrolling = true;
+
+      //let time1 = Math.floor(Date.now());
+
+      //Scrolling down
+      if(this.scrollTop > this.scrollTopBefore){
+        this.updateScrollDown();
+      }
+
+      //Scrolling up
+      if(this.scrollTop < this.scrollTopBefore){
+        this.updateScrollUp();
+      }
+
+      //Scrolling right
+      if(this.scrollLeft > this.scrollLeftBefore){
+
+      }
+
+      //Scrolling left
+      if(this.scrollLeft < this.scrollLeftBefore){
+
+      }
+
+      //let time2 = Math.floor(Date.now());
+
+      this.scrolling = false;
+
+      //console.log("UpdateScroll: "+(time2-time1));
+    }
+  }
+
+  /**
+   * Virtual Scroll Update Function
+   * Loads or unloads data of the Data-Table if necessary
+   */
+  private updateScrollDown() {
+    let tableHeadHeight = this.elementHeight;
+
+    //Scrolling down
+    if (this.scrollTop + this.containerHeight >  tableHeadHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
+
+      let numberOfTopRows = Math.floor((this.scrollTop - tableHeadHeight) / this.elementHeight) - this.displayOffsetMin;
+
+      if (numberOfTopRows + this.displayItemCount > this.data.length) {
+        numberOfTopRows = this.data.length - this.displayItemCount;
+      }
+      if (numberOfTopRows < 0) {
+        numberOfTopRows = 0;
+      }
+
+      this.firstDisplay = numberOfTopRows;
+
+      this.offsetTop = numberOfTopRows * this.elementHeight;
+      this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight; //this.offsetBottom - (this.offsetTop - newOffsetTop);
+    }
+  }
+
+  /**
+   * Virtual Scroll Update Function
+   * Loads or unloads data of the Data-Table if necessary
+   */
+  private updateScrollUp() {
+    let tableHeadHeight = this.elementHeight;
+
+    //Scrolling up
+    if (this.scrollTop < tableHeadHeight + (this.firstDisplay + this.displayOffsetMin) * this.elementHeight) {
+
+      let numberOfTopRows = Math.floor((this.scrollTop + this.containerHeight) / this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
+
+      if (numberOfTopRows + this.displayItemCount > this.data.length) {
+        numberOfTopRows = this.data.length - this.displayItemCount;
+      }
+      if (numberOfTopRows < 0) {
+        numberOfTopRows = 0;
+      }
+
+      this.firstDisplay = numberOfTopRows;
+
+      this.offsetTop = numberOfTopRows * this.elementHeight;
+      this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+    }
+  }
+
+
+  /**
+   * Row-Selection
+   * Called on clicking a checkbox to select a row
+   * toggles the checked-variable for this row and runs the tests to check, whether all rows are selected or unselected
+   */
+  private toggle(index: number){
+    this.selected[index] = !this.selected[index];
+    this.testSelected();
+    this.testEqual();
+  }
+
+  /**
+   * Row-Selection
+   * Called when clicking the select-all-checkbox
+   * Selects or unselects all rows, depending on whether a row is already selected
+   */
+  private toggleAll(){
+    for(let i: number = 0; i < this.selected.length; i++) {
+      this.selected[i] = !this.allSelected;
+    }
+    this.testSelected();
+    this.testEqual();
+  }
+
+  /**
+   * Row-Selection
+   * Tests, if all Rows are selected and sets the global allSelected variable
+   * Also emits the row-selection-event
+   */
+  private testSelected():void{
+    this.allSelected = true;
+    this.selectedRowsList = [];
+    for(let i in this.selected){
+      this.allSelected = this.allSelected && this.selected[i];
+
+      if(this.selected[i]){
+        this.selectedRowsList.push(Number(i));
+      }
+    }
+
+    this.rowsSelected.emit(this.selectedRowsList);
+    //console.log("allSelected:"+this.allSelected);
+  }
+
+  /**
+   * Row-Selection
+   * Tests, if all Rows are in equal state (all selected or all unselected) and sets the global allEqual variable
+   */
+  private testEqual():void{
+    this.allEqual = true;
+    for(let s of this.selected){
+      this.allEqual = this.allEqual && (s == this.selected[0]);
+    }
+    //console.log("allEqual:"+this.allEqual);
+  }
+
+}

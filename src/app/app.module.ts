@@ -12,6 +12,8 @@ import {RibbonsComponent} from "../ribbons/ribbons.component";
 import {LayerListComponent} from "../layers/layer-list.component";
 import {InfoBarComponent} from "../components/info-bar.component";
 // import {DataTableComponent} from "../components/data-table.component";
+import {DataTableModule} from "./datatable/datatable.module";
+//
 import {RasterRepositoryComponent} from "../components/raster-repository.component";
 import {PlotListComponent} from "../plots/plot-list.component";
 import {MapComponent} from "../map/map.component";
@@ -101,7 +103,7 @@ import { SmallTimeInteractionComponent } from './small-time-interaction/small-ti
         DialogSectionHeadingComponent,
         RenameLayerComponent,
         LayerSelectionComponent,
-        OperatorRepositoryComponent,
+        OperatorRepositoryComponent
     ],
     imports: [
         BrowserModule,
@@ -111,6 +113,7 @@ import { SmallTimeInteractionComponent } from './small-time-interaction/small-ti
         FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
+        DataTableModule
     ],
     entryComponents: [
         IntroductionDialogComponent, LoginDialogComponent, RenameLayerComponent,
