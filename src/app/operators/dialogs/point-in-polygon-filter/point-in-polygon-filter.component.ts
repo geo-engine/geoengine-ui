@@ -36,16 +36,8 @@ export class PointInPolygonFilterOperatorComponent {
                 private dialogRef: MdDialogRef<PointInPolygonFilterOperatorComponent>) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
-            pointLayers: [undefined, Validators.compose([
-                Validators.required,
-                Validators.minLength(1),
-                Validators.maxLength(1)
-            ])],
-            polygonLayers: [undefined, Validators.compose([
-                Validators.required,
-                Validators.minLength(1),
-                Validators.maxLength(1)
-            ])],
+            pointLayer: [undefined, Validators.required],
+            polygonLayer: [undefined, Validators.required],
         });
 
     }
@@ -57,9 +49,10 @@ export class PointInPolygonFilterOperatorComponent {
             return;
         }
 
-        const pointLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
+        // const pointLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
+        const pointLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const pointOperator: Operator = pointLayer.operator;
-        const polygonOperator: Operator = this.form.controls['polygonLayers'].value[0].operator;
+        const polygonOperator: Operator = this.form.controls['polygonLayer'].value.operator;
 
         const name: string = this.form.controls['name'].value;
 

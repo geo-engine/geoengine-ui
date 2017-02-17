@@ -1,16 +1,14 @@
 <wave-dialog-header>Point in Polygon Filter</wave-dialog-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
     <md-dialog-content>
-        <wave-multi-layer-selection
+        <wave-layer-selection
             [types]="[ResultTypes.POINTS]"
-            [min]="1" [max]="1"
-            formControlName="pointLayers">
-        </wave-multi-layer-selection>
-        <wave-multi-layer-selection
+            formControlName="pointLayer"
+        ></wave-layer-selection>
+        <wave-layer-selection
             [types]="[ResultTypes.POLYGONS]"
-            [min]="1" [max]="1"
-            formControlName="polygonLayers">
-        </wave-multi-layer-selection>
+            formControlName="polygonLayer"
+        ></wave-layer-selection>
         <wave-operator-output-name formControlName="name"></wave-operator-output-name>
     </md-dialog-content>
     <md-dialog-actions align="end">
