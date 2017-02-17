@@ -15,7 +15,7 @@ import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
 } from '../../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
-import {Subscription, BehaviorSubject} from 'rxjs';
+import {Subscription, BehaviorSubject, Observable} from 'rxjs';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {MdDialogRef} from '@angular/material';
@@ -51,6 +51,8 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
     private subscriptions: Array<Subscription> = [];
 
+    attributes$: Observable<Array<string>>;
+
     data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
     dataLoading$ = new BehaviorSubject(false);
 
@@ -64,11 +66,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     ) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
-            pointLayers: [undefined, Validators.compose([
-                Validators.required,
-                Validators.minLength(1),
-                Validators.maxLength(1)
-            ])],
+            pointLayer: [undefined, Validators.required],
             attribute: [undefined, Validators.required],
             bounds: formBuilder.group({
                 min: [undefined],
@@ -85,7 +83,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 return;
             }
 
-            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
+            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
 
             const operator = new Operator({
                 operatorType: new HistogramType({
@@ -110,33 +108,32 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 _ => this.dataLoading$.next(false)
             );
         }));
+
+        this.attributes$ = this.form.controls['pointLayer'].valueChanges.map(layer => {
+            // side effect!!!
+            this.form.controls['attribute'].setValue(undefined);
+
+            if (layer) {
+                return layer.operator.attributes.filter((attribute: string) => {
+                    return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
+                }).toArray();
+            } else {
+                return [];
+            }
+        });
     }
 
     ngAfterViewInit() {
-        this.form.controls['pointLayers'].enable({emitEvent: true});
-
-        this.subscriptions.push(this.form.controls['pointLayers'].valueChanges.subscribe(_ => {
-            this.form.controls['attribute'].setValue(undefined);
-        }));
+        // initially get attributes
+        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}));
     }
 
     ngOnDestroy() {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    computeAttributes(layers: Array<VectorLayer<AbstractVectorSymbology>>): Array<string> {
-        if (layers && layers.length > 0) {
-            const layer = layers[0];
-            return layer.operator.attributes.filter((attribute: string) => {
-                return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
-            }).toArray();
-        } else {
-            return [];
-        }
-    }
-
     add() {
-        const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayers'].value[0];
+        const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 
         const units = vectorOperator.units;

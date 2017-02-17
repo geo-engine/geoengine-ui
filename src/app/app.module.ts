@@ -35,7 +35,7 @@ import {DebugTabComponent} from "../ribbons/debug-tab.component";
 import {OperatorSelectionGroupComponent, OperatorButtonComponent} from "../ribbons/operator-selection-group.component";
 import {
     OperatorOutputNameComponent, LayerMultiSelectComponent,
-    ReprojectionSelectionComponent, LayerSelectionComponent
+    ReprojectionSelectionComponent, LayerSingleSelectionComponent
 } from "./operators/dialogs/operator.component";
 import {CodeEditorComponent} from "../components/code-editor.component";
 import {DragulaService} from "ng2-dragula/components/dragula.provider";
@@ -75,6 +75,7 @@ import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
+import { LayerSelectionComponent } from './layers/layer-selection/layer-selection.component';
 import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
 import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
@@ -90,7 +91,7 @@ import { SmallTimeInteractionComponent } from './small-time-interaction/small-ti
         TimeRibbonComponent,
         StartTabComponent, OperatorsTabComponent, ProjectTabComponent, DebugTabComponent,
         OperatorSelectionGroupComponent, OperatorButtonComponent, NbspPipe, LayerMultiSelectComponent, ReprojectionSelectionComponent, OperatorOutputNameComponent, CodeEditorComponent,
-        LayerSelectionComponent, LegendaryComponent, LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
+        LayerSingleSelectionComponent, LegendaryComponent, LegendaryPointComponent, LegendaryRasterComponent, LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent, VatLogoComponent,
         IdessaLogoComponent, MappingDataSourceFilter, HighlightPipe, BasketResultGroupByDatasetPipe, TrimPipe, PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent, SafeStylePipe, MappingColorizerToGradientPipe,
         IntroductionDialogComponent, LoginDialogComponent, GfbioBasketsComponent,
@@ -99,6 +100,7 @@ import { SmallTimeInteractionComponent } from './small-time-interaction/small-ti
         DialogHeaderComponent,
         DialogSectionHeadingComponent,
         RenameLayerComponent,
+        LayerSelectionComponent,
         OperatorRepositoryComponent,
     ],
     imports: [

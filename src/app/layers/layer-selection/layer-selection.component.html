@@ -1,0 +1,13 @@
+<wave-dialog-section-heading [title]="title" subtitle="Select Input {{title}}"></wave-dialog-section-heading>
+<div fxLayout="row">
+    <md-select
+        *ngIf="filteredLayers.length > 0"
+        placeholder="Input"
+        [ngModel]="selectedLayer" (ngModelChange)="setSelectedLayer($event)"
+        (onBlur)="onBlur()"
+        fxFlex
+    >
+        <md-option *ngFor="let layer of filteredLayers" [value]="layer">{{layer.name}}</md-option>
+    </md-select>
+    <p *ngIf="filteredLayers.length <= 0">No Input Available</p>
+</div>

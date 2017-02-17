@@ -33,10 +33,10 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
     styles: [``],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
+        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSingleSelectionComponent), multi: true},
     ],
 })
-export class LayerSelectionComponent implements AfterViewInit, OnChanges, ControlValueAccessor {
+export class LayerSingleSelectionComponent implements AfterViewInit, OnChanges, ControlValueAccessor {
 
     /**
      * This id gets display alongside to the select element.
@@ -289,7 +289,7 @@ export class LayerMultiSelectComponent implements OnChanges, ControlValueAccesso
     }
 
     onBlur() {
-        if (this.onTouched()) {
+        if (this.onTouched) {
             this.onTouched();
         }
     }
