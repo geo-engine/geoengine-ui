@@ -33,7 +33,6 @@ import {OperatorsTabComponent} from "../ribbons/operators-tab.component";
 import {ProjectTabComponent} from "../ribbons/project-tab.component";
 import {DebugTabComponent} from "../ribbons/debug-tab.component";
 import {OperatorSelectionGroupComponent, OperatorButtonComponent} from "../ribbons/operator-selection-group.component";
-//import {HistogramComponent} from "../plots/histogram.component";
 import {
     OperatorOutputNameComponent, LayerMultiSelectComponent,
     ReprojectionSelectionComponent, LayerSelectionComponent
@@ -70,10 +69,10 @@ import {ColorPickerService} from "ct-angular2-color-picker/lib/color-picker.serv
 import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
 import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
 import {PointInPolygonFilterOperatorComponent} from "../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
-import {DialogHeaderComponent} from "../dialogs/wave-dialog-header/dialog-header.component";
+import {DialogHeaderComponent} from "./dialogs/dialog-header/dialog-header.component";
 import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
 import {HistogramComponent} from '../plots/histogram.component';
-import {DialogSectionHeadingComponent} from '../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 

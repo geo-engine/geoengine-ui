@@ -1,4 +1,4 @@
-@import '~@angular/material/dialog/dialog.scss';
+@import '../../../../node_modules/@angular/material/dialog/dialog';
 
 md-toolbar[md-dialog-title] {
     margin: #{-$md-dialog-padding} #{-$md-dialog-padding} 0 #{-$md-dialog-padding};
