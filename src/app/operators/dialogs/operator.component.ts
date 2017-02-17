@@ -18,7 +18,7 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
  * This component allows selecting an input operator by choosing a layer.
  */
 @Component({
-    selector: 'wave-layer-selection',
+    selector: 'wave-single-layer-selection',
     template: `
     <md-select
         *ngIf="layers.length > 0"
@@ -158,12 +158,12 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
         </div>
     </div>
     <div>
-        <wave-layer-selection
+        <wave-single-layer-selection
             *ngFor="let id of ids; let i = index"
             [id]="id"
             [layers]="filteredLayers" [ngModel]="selectedLayers[i]" (ngModelChange)="updateLayer(i, $event)"
             (onBlur)="onBlur()"
-        ></wave-layer-selection>
+        ></wave-single-layer-selection>
     </div>
     `,
     styles: [`

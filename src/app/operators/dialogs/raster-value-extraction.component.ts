@@ -90,7 +90,7 @@ export class RasterValueExtractionOperatorComponent
         private projectService: ProjectService,
         private formBuilder: FormBuilder
     ) {
-        super(layerService);
+        // super(layerService);
 
         this.valueNamesControls = formBuilder.array([]);
         this.valueNamesControls.valueChanges.subscribe(attributeNameArray => {
