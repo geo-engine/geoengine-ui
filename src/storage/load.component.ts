@@ -60,7 +60,7 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
         private storageService: StorageService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
 
         this.form = this.formBuilder.group({
             projectName: [this.projectService.getProject().name, Validators.required],
@@ -77,8 +77,8 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Load');
-        this.dialog.setSideMargins(false);
+        // this.dialog.setTitle('Load');
+        // this.dialog.setSideMargins(false);
 
         const loadButtonDisabled$ = new BehaviorSubject(true);
         this.loadButtonSubscription = this.form.controls['projectName'].valueChanges.map(
@@ -86,17 +86,17 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
         ).subscribe(
             loadButtonDisabled$
         );
-        this.dialog.setButtons([
-            {
-                title: 'Load',
-                action: () => this.load(),
-                disabled: loadButtonDisabled$,
-            },
-            {
-                title: 'Cancel',
-                action: () => this.dialog.close(),
-            },
-        ]);
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'Load',
+        //         action: () => this.load(),
+        //         disabled: loadButtonDisabled$,
+        //     },
+        //     {
+        //         title: 'Cancel',
+        //         action: () => this.dialog.close(),
+        //     },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -106,7 +106,7 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
     load() {
         this.storageService.loadProjectByName(this.form.controls['projectName'].value);
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }

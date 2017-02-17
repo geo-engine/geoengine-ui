@@ -91,7 +91,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
         private plotService: PlotService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
 
         this.form = this.formBuilder.group({
             name: ['', Validators.required],
@@ -126,7 +126,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.dialog.setTitle('New Project');
+        // this.dialog.setTitle('New Project');
 
         const newButtonDisabled = new BehaviorSubject<boolean>(true);
         this.subscriptions.push(
@@ -141,15 +141,15 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
             )
         );
 
-        this.dialog.setButtons([
-            {
-                title: 'New',
-                class: 'md-primary',
-                action: () => this.newAndSwitch(),
-                disabled: newButtonDisabled,
-            },
-            { title: 'Cancel', action: () => this.dialog.close() },
-        ]);
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'New',
+        //         class: 'md-primary',
+        //         action: () => this.newAndSwitch(),
+        //         disabled: newButtonDisabled,
+        //     },
+        //     { title: 'Cancel', action: () => this.dialog.close() },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -169,7 +169,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
         this.layerService.setLayers([]);
         this.plotService.setPlots([]);
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }

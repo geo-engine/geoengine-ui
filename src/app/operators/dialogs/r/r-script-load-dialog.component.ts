@@ -68,7 +68,7 @@ export class RScriptLoadDialogComponent
         private storageService: StorageService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
 
         this.scriptNames$ = this.storageService.getRScripts();
     }

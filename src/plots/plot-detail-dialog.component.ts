@@ -37,8 +37,8 @@ export class PlotDetailsDialogComponent
     plot: Plot;
 
     ngOnInit() {
-        this.plot = this.dialogInput.plot;
-        this.dialog.setTitle(`${this.plot.operator.resultType}: ${this.plot.name}`);
+        // this.plot = this.dialogInput.plot;
+        // this.dialog.setTitle(`${this.plot.operator.resultType}: ${this.plot.name}`);
     }
 
     getWidthBound(maxContentWidth: number, imageNaturalWidth: number) {

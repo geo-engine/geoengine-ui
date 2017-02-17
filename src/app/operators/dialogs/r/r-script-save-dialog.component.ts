@@ -63,11 +63,11 @@ export class RScriptSaveDialogComponent
         private storageService: StorageService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Save R Script');
+        // this.dialog.setTitle('Save R Script');
 
         const nameControl = this.formBuilder.control(
             '',
@@ -88,19 +88,19 @@ export class RScriptSaveDialogComponent
             )
         );
 
-        nameControl.setValue(this.dialogInput.initialName);
-
-        this.dialog.setButtons([
-            {
-                title: 'Save',
-                action: () => this.save(),
-                disabled: saveButtonDisabled$,
-            },
-            {
-                title: 'Cancel',
-                action: () => this.dialog.close(),
-            },
-        ]);
+        // nameControl.setValue(this.dialogInput.initialName);
+        //
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'Save',
+        //         action: () => this.save(),
+        //         disabled: saveButtonDisabled$,
+        //     },
+        //     {
+        //         title: 'Cancel',
+        //         action: () => this.dialog.close(),
+        //     },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -112,11 +112,11 @@ export class RScriptSaveDialogComponent
     save() {
         this.loading$.next(true);
         const scriptName = this.form.controls['name'].value as string;
-        this.storageService.saveRScript(scriptName, this.dialogInput.script).then(() => {
-            this.dialogInput.newName$.next(scriptName);
-            this.loading$.next(false);
-            this.dialog.close();
-        });
+        // this.storageService.saveRScript(scriptName, this.dialogInput.script).then(() => {
+        //     this.dialogInput.newName$.next(scriptName);
+        //     this.loading$.next(false);
+        //     this.dialog.close();
+        // });
     }
 
 }

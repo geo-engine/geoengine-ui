@@ -52,7 +52,7 @@ export class ProjectSettingsComponent implements OnInit {
     constructor(
         private projectService: ProjectService
     ) {
-        super();
+        // super();
 
         this.project = this.projectService.getProject();
         this.projection = this.project.projection;

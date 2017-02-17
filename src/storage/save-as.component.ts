@@ -67,7 +67,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
         private projectService: ProjectService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
         this.project = this.projectService.getProject();
 
         const nameControl = this.formBuilder.control('', Validators.required);
@@ -101,7 +101,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Save as...');
+        // this.dialog.setTitle('Save as...');
 
         const saveButtonDisabled$ = new BehaviorSubject(true);
         this.saveButtonSubscription = Observable.combineLatest(
@@ -112,17 +112,17 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
         ).subscribe(
             saveButtonDisabled$
         );
-        this.dialog.setButtons([
-            {
-                title: 'Save',
-                action: () => this.saveAs(),
-                disabled: saveButtonDisabled$,
-            },
-            {
-                title: 'Cancel',
-                action: () => this.dialog.close(),
-            },
-        ]);
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'Save',
+        //         action: () => this.saveAs(),
+        //         disabled: saveButtonDisabled$,
+        //     },
+        //     {
+        //         title: 'Cancel',
+        //         action: () => this.dialog.close(),
+        //     },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -132,7 +132,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
     saveAs() {
         this.projectService.renameProject(this.form.controls['name'].value);
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }

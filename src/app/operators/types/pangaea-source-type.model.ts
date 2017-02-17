@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
-import {CsvParameters} from '../../models/csv.model';
+import {CsvParameters} from '../../../models/csv.model';
 
 interface PangaeaSourceTypeConfig {
     dataLink: string;

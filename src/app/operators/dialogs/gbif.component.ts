@@ -138,7 +138,7 @@ export class GBIFOperatorComponent implements OnInit, AfterViewInit {
         private formBuilder: FormBuilder,
         private http: Http
     ) {
-        super(layerService);
+        // super(layerService);
 
         this.form = formBuilder.group({
             autocompleteString: ['', Validators.required],
@@ -205,10 +205,10 @@ export class GBIFOperatorComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        super.ngOnInit();
-
-        this.dialog.setTitle('GBIF & IUCN Loader');
-        this.addDisabled.next(true);
+        // super.ngOnInit();
+        //
+        // this.dialog.setTitle('GBIF & IUCN Loader');
+        // this.addDisabled.next(true);
     }
 
     ngAfterViewInit() {
@@ -251,7 +251,7 @@ export class GBIFOperatorComponent implements OnInit, AfterViewInit {
         this.iucnCount = 0;
         (this.form.controls['selectGBIF'] as FormControl).setValue(false);
         (this.form.controls['selectIUCN'] as FormControl).setValue(false);
-        this.addDisabled.next(true);
+        // this.addDisabled.next(true);
     }
 
     add() {
@@ -311,19 +311,19 @@ export class GBIFOperatorComponent implements OnInit, AfterViewInit {
             }
 
             const clustered = source.resultType === ResultTypes.POINTS;
-            this.layerService.addLayer(new VectorLayer({
-                name: `${layerName} (${source.name})`,
-                operator: operator,
-                symbology: symbology,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                    operator, clustered,
-                }),
-                provenance: this.mappingQueryService.getProvenanceStream(operator),
-                clustered: clustered,
-            }));
+            // this.layerService.addLayer(new VectorLayer({
+            //     name: `${layerName} (${source.name})`,
+            //     operator: operator,
+            //     symbology: symbology,
+            //     data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //         operator, clustered,
+            //     }),
+            //     provenance: this.mappingQueryService.getProvenanceStream(operator),
+            //     clustered: clustered,
+            // }));
         }
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
     private addAllowCheck() {
@@ -331,7 +331,7 @@ export class GBIFOperatorComponent implements OnInit, AfterViewInit {
         const selectIUCN = this.form.controls['selectIUCN'].value;
         const atLeastOneSelected = selectGBIF || selectIUCN;
 
-        this.addDisabled.next(!atLeastOneSelected);
+        // this.addDisabled.next(!atLeastOneSelected);
     }
 
 }
