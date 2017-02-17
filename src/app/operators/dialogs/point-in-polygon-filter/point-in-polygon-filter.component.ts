@@ -1,16 +1,16 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {LayerService} from '../../../layers/layer.service';
-import {RandomColorService} from '../../../services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {LayerService} from '../../../../layers/layer.service';
+import {RandomColorService} from '../../../../services/random-color.service';
+import {MappingQueryService} from '../../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../../layers/layer.model';
+import {VectorLayer} from '../../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
-} from '../../../symbology/symbology.model';
+} from '../../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
 

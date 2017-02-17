@@ -6,14 +6,14 @@ import {
   LetterNumberConverter,
 } from './operator.component';
 
-import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
-import {ProjectService} from '../../project/project.service';
-import {LayoutService, Browser} from '../../app/layout.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {ProjectService} from '../../../project/project.service';
+import {LayoutService, Browser} from '../../layout.service';
 
-import {RasterLayer} from '../../layers/layer.model';
-import {RasterSymbology} from '../../symbology/symbology.model';
+import {RasterLayer} from '../../../layers/layer.model';
+import {RasterSymbology} from '../../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
@@ -21,7 +21,7 @@ import {ResultTypes} from '../result-type.model';
 import {DataType, DataTypes} from '../datatype.model';
 import {Unit} from '../unit.model';
 import {ExpressionType} from '../types/expression-type.model';
-import {FormBuilder, Validators, FormGroup} from "@angular/forms";
+import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 
 /**
  * This component allows creating the expression operator.
@@ -125,11 +125,11 @@ export class ExpressionOperatorComponent
         private layoutService: LayoutService,
         private formBuilder: FormBuilder
     ) {
-        super(layerService);
-
-        const firstRasterLayer = this.layerService.getLayers().filter(
-            layer => layer.operator.resultType === ResultTypes.RASTER
-        )[0];
+        // super(layerService);
+        //
+        // const firstRasterLayer = this.layerService.getLayers().filter(
+        //     layer => layer.operator.resultType === ResultTypes.RASTER
+        // )[0];
 
         this.configForm = formBuilder.group({
             'expression': ['1 * A', Validators.compose([
@@ -145,7 +145,7 @@ export class ExpressionOperatorComponent
             ])],
             'unit': [-1, Validators.required],
             projection: [
-                firstRasterLayer ? firstRasterLayer.operator.projection : undefined,
+                /*firstRasterLayer ? firstRasterLayer.operator.projection : */undefined,
                 Validators.required,
             ],
             'name': ['Expression', Validators.required],
@@ -161,8 +161,8 @@ export class ExpressionOperatorComponent
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('Calculate Expression on Raster');
+        // super.ngOnInit();
+        // this.dialog.setTitle('Calculate Expression on Raster');
     }
 
     onSelectLayers(layers: Array<RasterLayer<RasterSymbology>>) {
@@ -209,14 +209,14 @@ export class ExpressionOperatorComponent
             ),
         });
 
-        this.layerService.addLayer(new RasterLayer({
-            name: name,
-            operator: operator,
-            symbology: new RasterSymbology({ unit: unit }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
-        }));
+        // this.layerService.addLayer(new RasterLayer({
+        //     name: name,
+        //     operator: operator,
+        //     symbology: new RasterSymbology({ unit: unit }),
+        //     provenance: this.mappingQueryService.getProvenanceStream(operator),
+        // }));
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
     private calculateUnitList(layers: Array<RasterLayer<RasterSymbology>>) {

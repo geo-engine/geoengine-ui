@@ -7,7 +7,7 @@ import * as ol from 'openlayers';
 import {Moment} from 'moment';
 
 import Config from '../app/config.model';
-import {Projection} from '../operators/projection.model';
+import {Projection} from '../app/operators/projection.model';
 import {Symbology, AbstractVectorSymbology, RasterSymbology}
     from '../symbology/symbology.model';
 

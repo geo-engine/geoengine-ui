@@ -10,20 +10,20 @@ import {BehaviorSubject, Subject, Subscription} from 'rxjs/Rx';
 import {
     LayerMultiSelectComponent, OperatorOutputNameComponent,
 } from './operator.component';
-import {CodeEditorComponent} from '../../components/code-editor.component';
+import {CodeEditorComponent} from '../../../components/code-editor.component';
 
-import {LayerService} from '../../layers/layer.service';
-import {PlotService} from '../../plots/plot.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
-import {ProjectService} from '../../project/project.service';
-import {LayoutService, Browser} from '../../app/layout.service';
+import {LayerService} from '../../../layers/layer.service';
+import {PlotService} from '../../../plots/plot.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {ProjectService} from '../../../project/project.service';
+import {LayoutService, Browser} from '../../../app/layout.service';
 
-import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
-import {Plot} from '../../plots/plot.model';
+import {Layer, VectorLayer, RasterLayer} from '../../../layers/layer.model';
+import {Plot} from '../../../plots/plot.model';
 import {
     Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology,
-} from '../../symbology/symbology.model';
+} from '../../../symbology/symbology.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';
@@ -33,7 +33,7 @@ import {RScriptType} from '../types/r-script-type.model';
 
 import {RScriptLoadDialogComponent} from './r/r-script-load-dialog.component';
 import {RScriptSaveDialogComponent} from './r/r-script-save-dialog.component';
-import {RScript} from '../../storage/storage-provider.model';
+import {RScript} from '../../../storage/storage-provider.model';
 
 /**
  * This component allows creating the R operator.

@@ -15,7 +15,7 @@ import {
 } from '../models/mapping-source.model';
 import {CsvFile, CsvColumn} from '../models/csv.model';
 
-import {Unit, UnitMappingDict} from '../operators/unit.model';
+import {Unit, UnitMappingDict} from '../app/operators/unit.model';
 
 export interface Session {
     user: string;

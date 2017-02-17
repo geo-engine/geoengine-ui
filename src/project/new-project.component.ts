@@ -13,7 +13,7 @@ import {PlotService} from '../plots/plot.service';
 import {StorageService} from '../storage/storage.service';
 
 import {Project} from './project.model';
-import {Projections} from '../operators/projection.model';
+import {Projections} from '../app/operators/projection.model';
 
 @Component({
     selector: 'wave-new-project-dialog',

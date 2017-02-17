@@ -12,9 +12,9 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 import {ExportDialogComponent} from '../layers/dialogs/export.component';
-import {GBIFOperatorComponent}  from '../operators/dialogs/gbif.component';
+import {GBIFOperatorComponent}  from '../app/operators/dialogs/gbif.component';
 
-import {ResultTypes} from '../operators/result-type.model';
+import {ResultTypes} from '../app/operators/result-type.model';
 
 import {UserService} from '../users/user.service';
 import {MdDialog} from '@angular/material';

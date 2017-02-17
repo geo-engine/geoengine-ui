@@ -13,9 +13,9 @@ import {UserService} from '../users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
 import {NotificationService} from '../app/notification.service';
 
-import {Operator} from '../operators/operator.model';
-import {Projection} from '../operators/projection.model';
-import {ResultTypes} from '../operators/result-type.model';
+import {Operator} from '../app/operators/operator.model';
+import {Projection} from '../app/operators/projection.model';
+import {ResultTypes} from '../app/operators/result-type.model';
 
 import Config from '../app/config.model';
 import {PlotData, PlotDataStream} from '../plots/plot.model';

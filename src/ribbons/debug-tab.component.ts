@@ -7,23 +7,23 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {VectorLayer, RasterLayer} from '../layers/layer.model';
 import {Plot} from '../plots/plot.model';
-import {Operator} from '../operators/operator.model';
-import {ResultTypes} from '../operators/result-type.model';
-import {DataType, DataTypes} from '../operators/datatype.model';
-import {Projections} from '../operators/projection.model';
-import {Unit, Interpolation} from '../operators/unit.model';
+import {Operator} from '../app/operators/operator.model';
+import {ResultTypes} from '../app/operators/result-type.model';
+import {DataType, DataTypes} from '../app/operators/datatype.model';
+import {Projections} from '../app/operators/projection.model';
+import {Unit, Interpolation} from '../app/operators/unit.model';
 import {
     SimplePointSymbology, SimpleVectorSymbology, MappingColorizerRasterSymbology,
 } from '../symbology/symbology.model';
 
-import {RasterSourceType} from '../operators/types/raster-source-type.model';
-import {GFBioSourceType} from '../operators/types/gfbio-source-type.model';
-import {WKTSourceType} from '../operators/types/wkt-source-type.model';
-import {HistogramType} from '../operators/types/histogram-type.model';
-import {RScriptType} from '../operators/types/r-script-type.model';
-import {ExpressionType} from '../operators/types/expression-type.model';
-import {ClassificationType} from '../operators/types/classification-type.model';
-import {ProjectionType} from '../operators/types/projection-type.model';
+import {RasterSourceType} from '../app/operators/types/raster-source-type.model';
+import {GFBioSourceType} from '../app/operators/types/gfbio-source-type.model';
+import {WKTSourceType} from '../app/operators/types/wkt-source-type.model';
+import {HistogramType} from '../app/operators/types/histogram-type.model';
+import {RScriptType} from '../app/operators/types/r-script-type.model';
+import {ExpressionType} from '../app/operators/types/expression-type.model';
+import {ClassificationType} from '../app/operators/types/classification-type.model';
+import {ProjectionType} from '../app/operators/types/projection-type.model';
 
 import {
     MsgRadianceType,
@@ -33,7 +33,7 @@ import {
     MsgPansharpenType, MsgPansharpenTypeDict,
     MsgCo2CorrectionType,
     MsgSofosGccThermalThresholdType,
-} from '../operators/types/msg-types.model';
+} from '../app/operators/types/msg-types.model';
 
 
 /**

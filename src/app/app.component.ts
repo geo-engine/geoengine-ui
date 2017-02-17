@@ -12,7 +12,7 @@ import {CsvRepositoryComponent} from '../components/csv-repository.component';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 
 import {Symbology} from '../symbology/symbology.model';
-import {ResultTypes} from '../operators/result-type.model';
+import {ResultTypes} from './operators/result-type.model';
 
 import {LayoutService} from './layout.service';
 import {NotificationService, NotificationType} from './notification.service';

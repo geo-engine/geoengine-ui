@@ -5,8 +5,8 @@ import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {LayerService} from '../../layers/layer.service';
 
 import {Layer} from '../../layers/layer.model';
-import {Operator} from '../../operators/operator.model';
-import {ResultTypes} from '../../operators/result-type.model';
+import {Operator} from '../../app/operators/operator.model';
+import {ResultTypes} from '../../app/operators/result-type.model';
 import {Symbology} from '../../symbology/symbology.model';
 
 import * as d3 from 'd3'; // necessary for dagreD3

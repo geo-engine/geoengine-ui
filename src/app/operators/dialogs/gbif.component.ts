@@ -4,14 +4,14 @@ import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {OperatorOutputNameComponent} from './operator.component';
 
-import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../layers/layer.model';
+import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology,
-} from '../../symbology/symbology.model';
+} from '../../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {ResultTypes, ResultType} from '../result-type.model';
@@ -20,9 +20,9 @@ import {GFBioSourceType} from '../types/gfbio-source-type.model';
 import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
 import {DataType, DataTypes} from '../datatype.model';
-import {BasicColumns} from "../../models/csv.model";
-import {Http} from "@angular/http";
-import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
+import {BasicColumns} from '../../../models/csv.model';
+import {Http} from '@angular/http';
+import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
 
 /**
  * This component allows querying GBIF.

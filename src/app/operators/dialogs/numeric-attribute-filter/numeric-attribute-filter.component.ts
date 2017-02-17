@@ -2,18 +2,18 @@ import {
     Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit,
 } from '@angular/core';
 
-import {HistogramData} from '../../../plots/histogram.component';
+import {HistogramData} from '../../../../plots/histogram.component';
 
-import {LayerService} from '../../../layers/layer.service';
-import {RandomColorService} from '../../../services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {LayerService} from '../../../../layers/layer.service';
+import {RandomColorService} from '../../../../services/random-color.service';
+import {MappingQueryService} from '../../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../../layers/layer.model';
+import {VectorLayer} from '../../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataTypes, DataType} from '../../datatype.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
-} from '../../../symbology/symbology.model';
+} from '../../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
 import {Subscription, BehaviorSubject} from 'rxjs';
 import {Operator} from '../../operator.model';
@@ -21,7 +21,7 @@ import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-t
 import {MdDialogRef} from '@angular/material';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Unit} from '../../unit.model';
-import {ProjectService} from '../../../project/project.service';
+import {ProjectService} from '../../../../project/project.service';
 
 function minOverMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;

@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs/Rx';
 
-import {Operator, OperatorDict} from '../operators/operator.model';
+import {Operator, OperatorDict} from '../app/operators/operator.model';
 import Config from '../app/config.model';
 import {
     Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer, ClusteredPointSymbology

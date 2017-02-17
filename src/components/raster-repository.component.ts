@@ -4,16 +4,16 @@ import {Observable} from 'rxjs/Rx';
 
 import {LayerService} from '../layers/layer.service';
 import {RasterLayer} from '../layers/layer.model';
-import {Operator} from '../operators/operator.model';
-import {ResultTypes} from '../operators/result-type.model';
-import {DataType, DataTypes} from '../operators/datatype.model';
+import {Operator} from '../app/operators/operator.model';
+import {ResultTypes} from '../app/operators/result-type.model';
+import {DataType, DataTypes} from '../app/operators/datatype.model';
 import {MappingSource, MappingSourceChannel} from '../models/mapping-source.model';
-import {Projections} from '../operators/projection.model';
-import {Unit} from '../operators/unit.model';
+import {Projections} from '../app/operators/projection.model';
+import {Unit} from '../app/operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {UserService} from '../users/user.service';
-import {RasterSourceType} from '../operators/types/raster-source-type.model';
+import {RasterSourceType} from '../app/operators/types/raster-source-type.model';
 import {ProjectService} from '../project/project.service';
 
 @Component({

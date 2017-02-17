@@ -2,12 +2,12 @@ import {
     Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef,
 } from '@angular/core';
 
-import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
-import {ProjectService} from '../../project/project.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {ProjectService} from '../../../project/project.service';
 
-import {Layer, RasterLayer} from '../../layers/layer.model';
+import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';
@@ -15,11 +15,11 @@ import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
 import {
     Symbology, MappingColorizerRasterSymbology, RasterSymbology,
-} from '../../symbology/symbology.model';
+} from '../../../symbology/symbology.model';
 import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
     MsgTemperatureType, MsgPansharpenType,
     MsgCo2CorrectionType, SolarangleName} from '../types/msg-types.model';
-import {FormGroup, FormBuilder, Validators} from "@angular/forms";
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 /**
  * This component allows creating the MSG radiance operator.

@@ -9,7 +9,7 @@ import {MappingQueryService} from '../../queries/mapping-query.service';
 
 import {WFSOutputFormats} from '../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../queries/output-formats/wcs-output-format.model';
-import {ResultTypes} from '../../operators/result-type.model';
+import {ResultTypes} from '../../app/operators/result-type.model';
 
 import {LayerService} from '../layer.service';
 import {Layer} from '../layer.model';

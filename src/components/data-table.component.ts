@@ -6,7 +6,7 @@ import {Http} from '@angular/http';
 
 import {Observable, Subscription} from 'rxjs/Rx';
 
-import {ResultTypes} from '../operators/result-type.model';
+import {ResultTypes} from '../app/operators/result-type.model';
 import {GeoJsonFeature, FeatureID} from '../models/geojson.model';
 import {VectorLayer} from '../layers/layer.model';
 import {AbstractVectorSymbology} from '../symbology/symbology.model';

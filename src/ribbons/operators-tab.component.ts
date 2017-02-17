@@ -15,32 +15,32 @@ import {ProjectService} from '../project/project.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {RandomColorService} from '../services/random-color.service';
 
-import {RasterValueExtractionType} from '../operators/types/raster-value-extraction-type.model';
-import {NumericAttributeFilterType} from '../operators/types/numeric-attribute-filter-type.model';
-import {PointInPolygonFilterType} from '../operators/types/point-in-polygon-filter-type.model';
-import {ExpressionType} from '../operators/types/expression-type.model';
-import {HistogramType} from '../operators/types/histogram-type.model';
-import {RScriptType} from '../operators/types/r-script-type.model';
+import {RasterValueExtractionType} from '../app/operators/types/raster-value-extraction-type.model';
+import {NumericAttributeFilterType} from '../app/operators/types/numeric-attribute-filter-type.model';
+import {PointInPolygonFilterType} from '../app/operators/types/point-in-polygon-filter-type.model';
+import {ExpressionType} from '../app/operators/types/expression-type.model';
+import {HistogramType} from '../app/operators/types/histogram-type.model';
+import {RScriptType} from '../app/operators/types/r-script-type.model';
 import {
     MsgRadianceType, MsgReflectanceType,
     MsgSolarangleType, MsgTemperatureType,
     MsgPansharpenType, MsgCo2CorrectionType,
-} from '../operators/types/msg-types.model';
+} from '../app/operators/types/msg-types.model';
 
 import {RasterValueExtractionOperatorComponent}
-  from '../operators/dialogs/raster-value-extraction.component';
+  from '../app/operators/dialogs/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
-  from '../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
+  from '../app/operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
-  from '../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
-import {ExpressionOperatorComponent} from '../operators/dialogs/expression-operator.component';
+  from '../app/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
+import {ExpressionOperatorComponent} from '../app/operators/dialogs/expression-operator.component';
 // FIXME: import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
-import {ROperatorComponent} from '../operators/dialogs/r-operator.component';
+import {ROperatorComponent} from '../app/operators/dialogs/r-operator.component';
 import {
      MsgRadianceOperatorComponent, MsgReflectanceOperatorComponent,
      MsgSolarangleOperatorComponent, MsgTemperatureOperatorComponent,
      MsgPansharpenOperatorComponent, MsgCo2CorrectionOperatorComponent,
-} from '../operators/dialogs/msg-operators.component';
+} from '../app/operators/dialogs/msg-operators.component';
 import {MdDialog} from "@angular/material";
 
 /**

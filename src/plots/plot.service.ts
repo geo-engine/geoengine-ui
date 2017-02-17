@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Plot, PlotDict} from './plot.model';
-import {Operator} from '../operators/operator.model';
+import {Operator} from '../app/operators/operator.model';
 
 import {MappingQueryService} from '../queries/mapping-query.service';
 

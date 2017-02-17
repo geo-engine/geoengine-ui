@@ -7,7 +7,7 @@ import Config from '../app/config.model';
 
 import {OlMapLayerComponent} from './map-layer.component';
 
-import {Projection, Projections} from '../operators/projection.model';
+import {Projection, Projections} from '../app/operators/projection.model';
 import {Symbology, AbstractVectorSymbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';

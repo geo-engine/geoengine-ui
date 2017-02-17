@@ -1,6 +1,6 @@
 import * as ol from 'openlayers';
 import {Observable} from 'rxjs/Rx';
-import {Unit, UnitDict, Interpolation} from '../operators/unit.model';
+import {Unit, UnitDict, Interpolation} from '../app/operators/unit.model';
 
 export enum SymbologyType {
     RASTER,

@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-import {Projection, Projections} from '../operators/projection.model';
+import {Projection, Projections} from '../app/operators/projection.model';
 
 export interface ProjectConfig {
     name: string;

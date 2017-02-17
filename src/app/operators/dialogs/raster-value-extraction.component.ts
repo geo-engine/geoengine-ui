@@ -1,19 +1,19 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {FormGroup, FormArray, FormBuilder, Validators, FormControl} from "@angular/forms";
+import {FormGroup, FormArray, FormBuilder, Validators, FormControl} from '@angular/forms';
 
 import {Subscription} from 'rxjs/Rx';
 
-import Config from '../../app/config.model';
+import Config from '../../config.model';
 
-import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../services/random-color.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
-import {ProjectService} from '../../project/project.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {ProjectService} from '../../../project/project.service';
 
-import {VectorLayer, Layer} from '../../layers/layer.model';
+import {VectorLayer, Layer} from '../../../layers/layer.model';
 import {
     Symbology, SimplePointSymbology, AbstractVectorSymbology, ClusteredPointSymbology,
-} from '../../symbology/symbology.model';
+} from '../../../symbology/symbology.model';
 
 import {Operator} from '../operator.model';
 import {LetterNumberConverter} from './operator.component' //FIXME: WHAT?
@@ -106,8 +106,8 @@ export class RasterValueExtractionOperatorComponent
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('Extract a Raster Value and Add it to the Vector Layer');
+        // super.ngOnInit();
+        // this.dialog.setTitle('Extract a Raster Value and Add it to the Vector Layer');
     }
 
     ngOnDestroy() {
@@ -197,24 +197,24 @@ export class RasterValueExtractionOperatorComponent
         });
 
         const clustered = this.selectedVectorLayer.clustered;
-        this.layerService.addLayer(new VectorLayer({
-            name: name,
-            operator: operator,
-            symbology: clustered ?
-                new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
-                }) :
-                new SimplePointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
-                }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator, clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
-            clustered: clustered,
-        }));
+        // this.layerService.addLayer(new VectorLayer({
+        //     name: name,
+        //     operator: operator,
+        //     symbology: clustered ?
+        //         new ClusteredPointSymbology({
+        //             fillRGBA: this.randomColorService.getRandomColor(),
+        //         }) :
+        //         new SimplePointSymbology({
+        //             fillRGBA: this.randomColorService.getRandomColor(),
+        //         }),
+        //     data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+        //         operator, clustered,
+        //     }),
+        //     provenance: this.mappingQueryService.getProvenanceStream(operator),
+        //     clustered: clustered,
+        // }));
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
     invalidAttributeName(
@@ -233,7 +233,7 @@ export class RasterValueExtractionOperatorComponent
             (oldValue, newValue) => oldValue || newValue, false
         );
 
-        this.addDisabled.next(nameCollision);
+        // this.addDisabled.next(nameCollision);
     }
 
 }

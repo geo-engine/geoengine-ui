@@ -36,7 +36,7 @@ import {OperatorSelectionGroupComponent, OperatorButtonComponent} from "../ribbo
 import {
     OperatorOutputNameComponent, LayerMultiSelectComponent,
     ReprojectionSelectionComponent, LayerSelectionComponent
-} from "../operators/dialogs/operator.component";
+} from "./operators/dialogs/operator.component";
 import {CodeEditorComponent} from "../components/code-editor.component";
 import {DragulaService} from "ng2-dragula/components/dragula.provider";
 import {DragulaModule} from "ng2-dragula/ng2-dragula";
@@ -67,10 +67,10 @@ import {NotificationService} from "./notification.service";
 import {PlotService} from "../plots/plot.service";
 import {ColorPickerService} from "ct-angular2-color-picker/lib/color-picker.service";
 import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
-import {GBIFOperatorComponent} from "../operators/dialogs/gbif.component";
-import {PointInPolygonFilterOperatorComponent} from "../operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
+import {GBIFOperatorComponent} from "./operators/dialogs/gbif.component";
+import {PointInPolygonFilterOperatorComponent} from "./operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
 import {DialogHeaderComponent} from "./dialogs/dialog-header/dialog-header.component";
-import {NumericAttributeFilterOperatorComponent} from "../operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
+import {NumericAttributeFilterOperatorComponent} from "./operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
 import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';

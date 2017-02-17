@@ -5,8 +5,8 @@ import {
 } from '../storage-provider.model';
 import Config from '../../app/config.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
-import {Operator} from '../../operators/operator.model';
-import {ResultTypes} from '../../operators/result-type.model';
+import {Operator} from '../../app/operators/operator.model';
+import {ResultTypes} from '../../app/operators/result-type.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Project} from '../../project/project.model';

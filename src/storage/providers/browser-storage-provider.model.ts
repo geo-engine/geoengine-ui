@@ -7,8 +7,8 @@ import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../project/project.model';
 import {Plot, PlotDict} from '../../plots/plot.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {Operator} from '../../operators/operator.model';
-import {ResultTypes} from '../../operators/result-type.model';
+import {Operator} from '../../app/operators/operator.model';
+import {ResultTypes} from '../../app/operators/result-type.model';
 
 /**
  * StorageProvider implementation that uses the brower's localStorage
