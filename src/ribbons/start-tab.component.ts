@@ -18,6 +18,12 @@ import {ResultTypes} from '../app/operators/result-type.model';
 
 import {UserService} from '../users/user.service';
 import {MdDialog} from '@angular/material';
+import {RasterRepositoryComponent} from "../components/raster-repository.component";
+import {AbcdRepositoryComponent} from "../components/abcd-repository.component";
+import {CsvRepositoryComponent} from "../components/csv-repository.component";
+import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
+import {OperatorRepositoryComponent} from "../components/operator-repository.component";
+import {LayoutService} from "../app/layout.service";
 
 /**
  * The start tab of the ribbons component.
@@ -129,20 +135,20 @@ import {MdDialog} from '@angular/material';
                 <div class="flex-column">
                     <button md-button style="margin: 0px; height: auto;"
                             class="md-primary small"
-                            (click)="addData.emit()">
+                            (click)="layoutService.setSidenavContentComponent(RRC)">
                         <md-icon>layers</md-icon>
                        Environmental
                     </button>
                     <button md-button
                         class="md-primary small"
-                        (click)="abcd.emit()"
+                        (click)="layoutService.setSidenavContentComponent(ARC)"
                     >
                         <md-icon>storage</md-icon>
                         ABCD Archives
                     </button>
                     <button md-button
                         class="md-primary small"
-                        (click)="csv.emit()"
+                        (click)="layoutService.setSidenavContentComponent(CSV)"
                     >
                         <md-icon>grid_on</md-icon>
                         CSV Data/Import
@@ -153,7 +159,7 @@ import {MdDialog} from '@angular/material';
                         *ngIf="Config.PROJECT === 'GFBio'
                                && (userService.getUserStream() | async).hasExternalIdPrefix('GFBIO')"
                         class="md-primary small"
-                        (click)="gfbio.emit()"
+                        (click)="layoutService.setSidenavContentComponent(GBC)"
                     >
                         <md-icon>add_shopping_cart</md-icon>
                         GFBio Baskets
@@ -173,6 +179,13 @@ import {MdDialog} from '@angular/material';
                     >
                         <md-icon>search</md-icon>
                         Species Distribution
+                    </button>
+                    <button md-button
+                        class="md-primary small"
+                        (click)="layoutService.setSidenavContentComponent(ORC)"
+                    >
+                        <md-icon>sentiment_very_dissatisfied</md-icon>
+                        Operators
                     </button>
                     <button md-button
                         *ngIf="false"
@@ -247,19 +260,15 @@ export class StartTabComponent {
 
     @Output() zoomOut = new EventEmitter<void>();
 
-    @Output() zoomLayer = new EventEmitter<void>();
-
     @Output() zoomProject = new EventEmitter<void>();
 
     @Output() zoomMap = new EventEmitter<void>();
 
-    @Output() addData = new EventEmitter<void>();
-
-    @Output() gfbio = new EventEmitter<void>();
-
-    @Output() abcd = new EventEmitter<void>();
-
-    @Output() csv = new EventEmitter<void>();
+    private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
+    private GBC = GfbioBasketsComponent;
+    private ORC = OperatorRepositoryComponent;
 
     // tslint:disable:variable-name
     RenameLayerComponent = RenameLayerComponent;
@@ -278,7 +287,8 @@ export class StartTabComponent {
         public dialog: MdDialog,
         private layerService: LayerService,
         private mappingQueryService: MappingQueryService,
-        private userService: UserService
+        private userService: UserService,
+        private layoutService: LayoutService
     ) {
         this.isLayerSelected$ = this.layerService.getIsAnyLayerSelectedStream();
         this.exportLayerUrl$ = this.layerService.getSelectedLayerStream().filter(
@@ -333,8 +343,10 @@ export class StartTabComponent {
     /**
      * Remove the selected layer from the list.
      */
+    /* TODO: REMOVE
     removeSelectedLayer() {
         const selectedLayer = this.layerService.getSelectedLayer();
         this.layerService.removeLayer(selectedLayer);
     }
+    */
 }

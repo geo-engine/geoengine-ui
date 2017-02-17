@@ -2,7 +2,7 @@ import {
   Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener,
   ChangeDetectorRef, Type
 } from '@angular/core';
-import {MdTabGroup} from "@angular/material";
+import {MdTabGroup, MdSidenav} from "@angular/material";
 import {Observable, BehaviorSubject} from "rxjs";
 
 
@@ -30,6 +30,7 @@ import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 
 import {PlotService} from '../plots/plot.service';
+import {OperatorRepositoryComponent} from "../components/operator-repository.component";
 
 
 
@@ -43,10 +44,6 @@ import {PlotService} from '../plots/plot.service';
                     (zoomIn)="mapComponent.zoomIn()" (zoomOut)="mapComponent.zoomOut()"
                     (zoomLayer)="mapComponent.zoomToLayer(getMapIndexOfSelectedLayer())"
                     (zoomMap)="mapComponent.zoomToMap()"
-                    (addData)="sidenavRight.open(); sidenavContainer.load(RRC);"
-                    (gfbio)="sidenavRight.open(); sidenavContainer.load(GBC);"
-                    (abcd)="sidenavRight.open(); sidenavContainer.load(ARC);"
-                    (csv)="sidenavRight.open(); sidenavContainer.load(CSV);"
             ></wave-ribbons-component>
         </div>
         <div
@@ -230,12 +227,16 @@ import {PlotService} from '../plots/plot.service';
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
     queries: {
+        rightSidenav: new ViewChild(MdSidenav),
         rightSidenavContainer: new ViewChild(SidenavContainerComponent),
     },
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent) mapComponent: MapComponent;
     @ViewChild(MdTabGroup) bottomTabs: MdTabGroup;
+
+    @ViewChild(MdSidenav) rightSidenav: MdSidenav;
+    @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent<any>; //TODO: correct params?
 
     private layerListVisible$: Observable<boolean>;
     private plotComponentVisible$: Observable<boolean>;
@@ -249,10 +250,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     // for ng-switch
     private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
-    private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private GBC = GfbioBasketsComponent;
 
     constructor(
         private layerService: LayerService,
@@ -308,6 +305,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
+        this.layoutService.getSidenavContentComponentStream().subscribe(c => {
+            this.rightSidenav.open();
+            this.rightSidenavContainer.load(c);
+        });
+
         // set the stored tab index
         this.layoutService.getFooterTabIndexStream().subscribe(tabIndex => {
             if (this.bottomTabs.selectedIndex !== tabIndex) {
@@ -330,12 +332,14 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layoutService.setDataTableVisibility(true);
     }
 
+
     getMapIndexOfSelectedLayer() {
         let layers = this.layerService.getLayers();
         let selectedLayer = this.layerService.getSelectedLayer();
         let index = layers.indexOf(selectedLayer);
         return layers.length - index - 1;
     }
+
 
     @HostListener('window:message', ['$event.data'])
     public handleMessage(message: { type: string }) {

@@ -75,6 +75,9 @@ import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
+import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
+import {OperatorRepositoryComponent} from '../components/operator-repository.component';
+import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
 
 @NgModule({
     declarations: [
@@ -96,6 +99,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
         DialogHeaderComponent,
         DialogSectionHeadingComponent,
         RenameLayerComponent,
+        OperatorRepositoryComponent,
     ],
     imports: [
         BrowserModule,
@@ -109,7 +113,7 @@ import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
     entryComponents: [
         IntroductionDialogComponent, LoginDialogComponent, RenameLayerComponent,
         RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent,
-        PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent,
+        PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent, OperatorRepositoryComponent,
     ],
     providers: [DragulaService, MdIconRegistry, FormBuilder,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,

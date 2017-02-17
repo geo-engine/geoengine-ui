@@ -2,18 +2,21 @@ import {Component, ChangeDetectionStrategy, OnDestroy, ViewEncapsulation} from '
 
 import {DragulaService} from 'ng2-dragula/ng2-dragula';
 
-import Config from '../app/config.model';
-
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
-import {Layer} from '../layers/layer.model';
+import {Layer} from './layer.model';
 import {LoadingState} from '../shared/loading-state.model';
 
-import {LayerService} from '../layers/layer.service';
+import {LayerService} from './layer.service';
 import {Subscription} from "rxjs";
 import {MdDialog} from "@angular/material";
 
+import {SymbologyDialogComponent} from "../symbology/symbology-dialog.component";
 import {RenameLayerComponent} from "./dialogs/rename-layer.component";
+import {OperatorGraphDialogComponent} from "./dialogs/operator-graph.component";
+import {ExportDialogComponent} from "./dialogs/export.component";
+import {OperatorRepositoryComponent} from "../components/operator-repository.component";
 import {MapService} from "../map/map.service";
+import {LayoutService} from "../app/layout.service";
 
 @Component({
     selector: 'wave-layer-list',
@@ -54,11 +57,11 @@ import {MapService} from "../map/map.service";
                 <md-icon >expand_less</md-icon>
                 <span>Hide Legend</span>                
             </button>
-            <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
+            <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})"  [disabled]="true">
                 <md-icon>merge_type</md-icon>
                 <span>Lineage</span>
             </button>
-            <button md-menu-item (click)="removeLayer(layer)">
+            <button md-menu-item (click)="layerService.removeLayer(layer)">
                 <md-icon>delete</md-icon>
                 <span>Remove</span>
             </button>
@@ -66,7 +69,7 @@ import {MapService} from "../map/map.service";
                 <md-icon>mode_edit</md-icon>
                 <span>Rename</span>
             </button>
-            <button md-menu-item [disabled]="true">
+            <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)"  [disabled]="true">
                 <md-icon>color_lens</md-icon>
                 <span>Edit Symbology</span>
             </button>
@@ -74,7 +77,11 @@ import {MapService} from "../map/map.service";
                 <md-icon>fullscreen</md-icon>
                 <span>Zoom to Extent</span>                
             </button>
-            <button md-menu-item (click)="dialog.open(ExportLayerComponent)" [disabled]="true">
+            <button md-menu-item (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)">
+                <md-icon>input</md-icon>
+                <span>Matching Operators</span>
+            </button>
+            <button md-menu-item (click)="dialog.open(ExportDialogComponent)"  [disabled]="true">
                 <md-icon>file_download</md-icon>
                 <span>Export</span>
             </button>
@@ -153,7 +160,7 @@ import {MapService} from "../map/map.service";
   viewProviders: [DragulaService],
   styleUrls: ['./layer-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None //FIXME: fix this ASAP
 })
 export class LayerListComponent implements OnDestroy {
     // make visible in template
@@ -161,6 +168,10 @@ export class LayerListComponent implements OnDestroy {
     LoadingState = LoadingState;
     _enumSymbologyType = SymbologyType;
     RenameLayerComponent = RenameLayerComponent;
+    SymbologyDialogComponent = SymbologyDialogComponent;
+    OperatorGraphDialogComponent = OperatorGraphDialogComponent;
+    ExportDialogComponent = ExportDialogComponent;
+    OperatorRepositoryComponent = OperatorRepositoryComponent;
     // tslint:enable
 
     private subscriptions: Array<Subscription> = [];
@@ -169,6 +180,7 @@ export class LayerListComponent implements OnDestroy {
         private dialog: MdDialog,
         private dragulaService: DragulaService,
         private layerService: LayerService,
+        private layoutService: LayoutService,
         private mapService: MapService
     ) {
         dragulaService.setOptions('layer-bag', {
@@ -209,17 +221,8 @@ export class LayerListComponent implements OnDestroy {
         );
     }
 
-    replaceContextMenu(event: MouseEvent, layer: Layer<Symbology>) {
-        // event.preventDefault();
-        console.info(`A context menu for ${layer.name} will appear in future versions!`);
-    }
-
     toggleLayer(layer: Layer<Symbology>) {
         this.layerService.toggleLayer(layer);
-    }
-
-    removeLayer(layer: Layer<Symbology>) {
-        this.layerService.removeLayer(layer);
     }
 
     private domIndexOf(child: HTMLElement, parent: HTMLElement) {

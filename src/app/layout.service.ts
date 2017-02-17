@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {Injectable, Type} from '@angular/core';
+import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs/Rx';
 
 import {PlotService} from '../plots/plot.service';
 
@@ -68,6 +68,12 @@ export class LayoutService {
     private dataTableHeightPercentage$: BehaviorSubject<number> = new BehaviorSubject(2 / 5);
 
     /**
+     *  Sidenav content
+     */
+    private sidenavContentComponent$: Subject<any> = new ReplaySubject();
+
+
+    /**
      * Store the detected browser.
      */
     private browser: Browser;
@@ -86,6 +92,21 @@ export class LayoutService {
                              .subscribe(this.plotListVisible$);
 
         this.browser = this.detectBrowser();
+    }
+
+    /**
+     * Which component to show in the sidenav?
+     */
+    getSidenavContentComponentStream<C>(): Observable<Type<C>> {
+        return this.sidenavContentComponent$;
+    }
+
+    /**
+     * Set the new Component to show in the sidenav
+     * @param component
+     */
+    setSidenavContentComponent(component: any){
+        this.sidenavContentComponent$.next(component);
     }
 
     /**
