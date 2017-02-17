@@ -1,7 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {BasicDialog} from '../dialogs/basic-dialog.component';
-
 import {Plot} from './plot.model';
 
 type PlotDetailsDialogType = {plot: Plot, [index: string]: Plot};
@@ -34,7 +32,7 @@ type PlotDetailsDialogType = {plot: Plot, [index: string]: Plot};
     providers: [],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class PlotDetailsDialogComponent extends BasicDialog<PlotDetailsDialogType>
+export class PlotDetailsDialogComponent
                                         implements OnInit {
     plot: Plot;
 

@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 
 import {
-  OperatorBaseComponent, LetterNumberConverter,
+  LetterNumberConverter,
 } from './operator.component';
 
 import {LayerService} from '../../layers/layer.service';
@@ -104,7 +104,7 @@ import {FormBuilder, Validators, FormGroup} from "@angular/forms";
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ExpressionOperatorComponent extends OperatorBaseComponent
+export class ExpressionOperatorComponent
                                          implements OnInit {
     Browser = Browser; // tslint:disable-line:variable-name
 

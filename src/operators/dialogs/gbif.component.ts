@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit} from '@angula
 
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {OperatorBaseComponent, OperatorOutputNameComponent} from './operator.component';
+import {OperatorOutputNameComponent} from './operator.component';
 
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
@@ -107,7 +107,7 @@ import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class GBIFOperatorComponent extends OperatorBaseComponent implements OnInit, AfterViewInit {
+export class GBIFOperatorComponent implements OnInit, AfterViewInit {
 
     form: FormGroup;
     autoCompleteResults$: Observable<Array<string>>;

@@ -3,8 +3,6 @@ import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import Config from '../app/config.model';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 import {ProjectService} from '../project/project.service';
 import {StorageService} from './storage.service';
 
@@ -49,7 +47,7 @@ import {StorageService} from './storage.service';
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class LoadDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+export class LoadDialogComponent implements OnInit, OnDestroy {
     form: FormGroup;
 
     projects$: Promise<Array<string>>;

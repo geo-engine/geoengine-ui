@@ -5,8 +5,6 @@ import {BehaviorSubject, Observable, Subscription, Observer} from 'rxjs/Rx';
 
 import Config from '../../../app/config.model';
 
-import {BasicDialog} from '../../../dialogs/basic-dialog.component';
-
 import {StorageService} from '../../../storage/storage.service';
 import {RScript} from '../../../storage/storage-provider.model';
 
@@ -57,7 +55,7 @@ type RScriptLoadDialogType = {
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class RScriptLoadDialogComponent extends BasicDialog<RScriptLoadDialogType>
+export class RScriptLoadDialogComponent
                                         implements OnInit, OnDestroy {
     form: FormGroup;
 
@@ -76,11 +74,11 @@ export class RScriptLoadDialogComponent extends BasicDialog<RScriptLoadDialogTyp
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Load R Script');
-        this.dialog.setSideMargins(false);
+        // this.dialog.setTitle('Load R Script');
+        // this.dialog.setSideMargins(false);
 
         this.form = this.formBuilder.group({
-            scriptName: [this.dialogInput.currentName, Validators.required],
+            scriptName: [/*this.dialogInput.currentName*/undefined, Validators.required],
         });
 
         Observable.merge(
@@ -100,17 +98,17 @@ export class RScriptLoadDialogComponent extends BasicDialog<RScriptLoadDialogTyp
                 loadButtonDisabled$
             )
         );
-        this.dialog.setButtons([
-            {
-                title: 'Load',
-                action: () => this.load(),
-                disabled: loadButtonDisabled$,
-            },
-            {
-                title: 'Cancel',
-                action: () => this.dialog.close(),
-            },
-        ]);
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'Load',
+        //         action: () => this.load(),
+        //         disabled: loadButtonDisabled$,
+        //     },
+        //     {
+        //         title: 'Cancel',
+        //         action: () => this.dialog.close(),
+        //     },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -126,9 +124,9 @@ export class RScriptLoadDialogComponent extends BasicDialog<RScriptLoadDialogTyp
             scriptName
         ).then(script => {
             this.loading$.next(false);
-            this.dialogInput.newCurrentName$.next(scriptName);
-            this.dialogInput.script$.next(script);
-            this.dialog.close();
+            // this.dialogInput.newCurrentName$.next(scriptName);
+            // this.dialogInput.script$.next(script);
+            // this.dialog.close();
         });
     }
 

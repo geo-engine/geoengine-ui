@@ -19,7 +19,6 @@ import {Operator} from '../operator.model';
 import {LetterNumberConverter} from './operator.component' //FIXME: WHAT?
 import {ResultTypes} from '../result-type.model';
 import {RasterValueExtractionType} from '../types/raster-value-extraction-type.model';
-import {OperatorBaseComponent} from "./operator.component";
 
 /**
  * This component allows creating the expression operator.
@@ -64,7 +63,7 @@ import {OperatorBaseComponent} from "./operator.component";
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class RasterValueExtractionOperatorComponent extends OperatorBaseComponent
+export class RasterValueExtractionOperatorComponent
                                                     implements OnInit, OnDestroy {
 
     configForm: FormGroup;

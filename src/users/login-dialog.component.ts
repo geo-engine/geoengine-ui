@@ -5,8 +5,6 @@ import {MdDialogRef} from '@angular/material';
 
 import Config from '../app/config.model';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 import {User} from './user.model';
 import {UserService} from './user.service';
 

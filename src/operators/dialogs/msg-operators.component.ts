@@ -2,10 +2,6 @@ import {
     Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef,
 } from '@angular/core';
 
-import {
-    OperatorBaseComponent,
-} from './operator.component';
-
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
@@ -50,7 +46,7 @@ import {FormGroup, FormBuilder, Validators} from "@angular/forms";
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgRadianceOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgRadianceOperatorComponent implements OnInit {
 
     private configForm: FormGroup;
     private rasterSources: Array<Layer<Symbology>>;
@@ -63,7 +59,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
 
         this.configForm = formBuilder.group({
             // 'resultType': [ResultTypes.RASTER, Validators.required],
@@ -72,8 +68,8 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIR Radiance');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIR Radiance');
     }
 
     add() {
@@ -99,8 +95,8 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
             ),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
-        this.layerService.addLayer(layer);
-        this.dialog.close();
+        // this.layerService.addLayer(layer);
+        // this.dialog.close();
     }
 
 }
@@ -142,7 +138,7 @@ export class MsgRadianceOperatorComponent extends OperatorBaseComponent implemen
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgReflectanceOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgReflectanceOperatorComponent implements OnInit {
 
     private configForm: FormGroup;
     private rasterSources: Array<Layer<Symbology>>;
@@ -160,7 +156,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
 
         this.configForm = formBuilder.group({
             // 'resultType': [ResultTypes.RASTER, Validators.required],
@@ -169,8 +165,8 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIRI Reflectance');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIRI Reflectance');
     }
 
     add() {
@@ -201,9 +197,9 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
 
-        this.layerService.addLayer(layer);
-
-        this.dialog.close();
+        // this.layerService.addLayer(layer);
+        //
+        // this.dialog.close();
     }
 
 }
@@ -238,7 +234,7 @@ export class MsgReflectanceOperatorComponent extends OperatorBaseComponent imple
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgSolarangleOperatorComponent implements OnInit {
     private configForm: FormGroup;
     private rasterSources: Array<RasterLayer<RasterSymbology>>;
     private solarangleNames = ['zenith', 'azimuth'];
@@ -255,7 +251,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implem
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
         this.configForm = formBuilder.group({
             'solarangleName': [this.solarangleNames[0], Validators.required],
             'name': ['Solarangle (MSG)', Validators.required],
@@ -263,8 +259,8 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implem
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIRI solar angle');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIRI solar angle');
     }
 
     add() {
@@ -294,9 +290,9 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implem
             ),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
-        this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }
@@ -325,7 +321,7 @@ export class MsgSolarangleOperatorComponent extends OperatorBaseComponent implem
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgTemperatureOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgTemperatureOperatorComponent implements OnInit {
     private configForm: FormGroup;
     private rasterSources: Array<RasterLayer<RasterSymbology>>;
 
@@ -337,15 +333,15 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent imple
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
         this.configForm = formBuilder.group({
             'name': ['Temperature (MSG)', Validators.required],
         });
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIRI temperature');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIRI temperature');
     }
 
     add() {
@@ -372,9 +368,9 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent imple
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
 
-        this.layerService.addLayer(layer);
-
-        this.dialog.close();
+        // this.layerService.addLayer(layer);
+        //
+        // this.dialog.close();
     }
 }
 
@@ -403,7 +399,7 @@ export class MsgTemperatureOperatorComponent extends OperatorBaseComponent imple
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgPansharpenOperatorComponent implements OnInit {
     private configForm: FormGroup;
     private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
@@ -415,15 +411,15 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implem
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
         this.configForm = formBuilder.group({
             'name': ['Pansharpen (MSG)', Validators.required],
         });
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIRI pansharpening');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIRI pansharpening');
     }
 
     add() {
@@ -451,9 +447,9 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implem
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
 
-        this.layerService.addLayer(layer);
-
-        this.dialog.close();
+        // this.layerService.addLayer(layer);
+        //
+        // this.dialog.close();
     }
 }
 
@@ -481,7 +477,7 @@ export class MsgPansharpenOperatorComponent extends OperatorBaseComponent implem
     `,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class MsgCo2CorrectionOperatorComponent implements OnInit {
     private configForm: FormGroup;
     private selectedRasterSources: Array<RasterLayer<RasterSymbology>>;
 
@@ -493,15 +489,15 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent imp
         private formBuilder: FormBuilder,
         private changeDetectorRef: ChangeDetectorRef
     ) {
-        super(layerService);
+        // super(layerService);
         this.configForm = formBuilder.group({
             'name': ['CO2 correction (MSG)', Validators.required],
         });
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('MSG SEVIRI CO2 correction');
+        // super.ngOnInit();
+        // this.dialog.setTitle('MSG SEVIRI CO2 correction');
     }
 
     add() {
@@ -529,8 +525,8 @@ export class MsgCo2CorrectionOperatorComponent extends OperatorBaseComponent imp
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
 
-        this.layerService.addLayer(layer);
-
-        this.dialog.close();
+        // this.layerService.addLayer(layer);
+        //
+        // this.dialog.close();
     }
 }

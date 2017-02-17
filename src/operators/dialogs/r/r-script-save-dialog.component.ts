@@ -5,8 +5,6 @@ import {BehaviorSubject, Subscription, Observer, Observable} from 'rxjs/Rx';
 
 import Config from '../../../app/config.model';
 
-import {BasicDialog} from '../../../dialogs/basic-dialog.component';
-
 import {StorageService} from '../../../storage/storage.service';
 import {RScript} from '../../../storage/storage-provider.model';
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
@@ -54,7 +52,7 @@ type RScriptSaveDialogType = {
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class RScriptSaveDialogComponent extends BasicDialog<RScriptSaveDialogType>
+export class RScriptSaveDialogComponent
                                         implements OnInit, OnDestroy {
     form: FormGroup;
     loading$ = new BehaviorSubject(false);

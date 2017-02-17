@@ -7,8 +7,6 @@ import * as moment from 'moment';
 
 import Config from '../app/config.model';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 import {ProjectService} from './project.service';
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
@@ -75,7 +73,7 @@ import {Projections} from '../operators/projection.model';
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class NewProjectDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+export class NewProjectDialogComponent implements OnInit, OnDestroy {
     // make it available for template
     Projections = Projections; // tslint:disable-line:variable-name
 

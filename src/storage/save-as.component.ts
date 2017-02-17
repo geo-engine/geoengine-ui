@@ -4,8 +4,6 @@ import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
 import Config from '../app/config.model';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 import {StorageService} from './storage.service';
 import {ProjectService} from '../project/project.service';
 import {Project} from '../project/project.model';
@@ -54,7 +52,7 @@ import {Project} from '../project/project.model';
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class SaveAsDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+export class SaveAsDialogComponent implements OnInit, OnDestroy {
     form: FormGroup;
 
     project: Project;

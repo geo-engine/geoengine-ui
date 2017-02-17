@@ -5,8 +5,6 @@ import {
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
-import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
-
 import {LayerService} from '../../layers/layer.service';
 import {LayoutService, Browser} from '../../app/layout.service';
 
@@ -486,7 +484,7 @@ export class ReprojectionSelectionComponent
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorOutputNameComponent implements ControlValueAccessor, AfterViewInit {
-    @Input() type: string = 'Layer';
+    @Input() type = 'Layer';
 
     private _name: string;
     private onTouched: () => void;
@@ -532,44 +530,4 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, AfterV
     registerOnTouched(fn: () => {}) {
         this.onTouched = fn;
     }
-}
-
-/**
- * This component is the base class for all operator types.
- */
-export abstract class OperatorBaseComponent extends BasicDialog<DialogInput> implements OnInit {
-
-    protected layers: Array<Layer<Symbology>> = [];
-    protected addDisabled = new BehaviorSubject(false);
-
-    // types
-    protected ResultTypes = ResultTypes; // tslint:disable-line:variable-name
-
-    constructor(
-        protected layerService: LayerService
-    ) {
-        super();
-
-        this.layers = this.layerService.getLayers();
-    }
-
-    /**
-     * Sets defaults for title and buttons.
-     * Call this with super if you override it!!!
-     */
-    ngOnInit() {
-        this.dialog.setTitle('Operator'); // TODO: think about this to remove
-        this.dialog.setButtons([
-            {
-                title: 'Add',
-                class: 'md-primary',
-                action: () => this.add(),
-                disabled: this.addDisabled,
-            },
-            { title: 'Cancel', action: () => this.dialog.close() },
-        ]);
-    }
-
-    abstract add(): void;
-
 }

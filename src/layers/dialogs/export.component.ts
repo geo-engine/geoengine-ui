@@ -4,8 +4,6 @@ import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
 import Config from '../../app/config.model';
 
-import {DefaultBasicDialog} from '../../dialogs/basic-dialog.component';
-
 import {ProjectService} from '../../project/project.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 
@@ -16,7 +14,7 @@ import {ResultTypes} from '../../operators/result-type.model';
 import {LayerService} from '../layer.service';
 import {Layer} from '../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {FormGroup, FormBuilder, Validators} from "@angular/forms";
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 @Component({
     selector: 'wave-export-dialog',
@@ -71,7 +69,7 @@ import {FormGroup, FormBuilder, Validators} from "@angular/forms";
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ExportDialogComponent extends DefaultBasicDialog implements OnInit, OnDestroy {
+export class ExportDialogComponent implements OnInit, OnDestroy {
     // make this available in the template
     // tslint:disable:variable-name
     WFSOutputFormats = WFSOutputFormats;
@@ -92,7 +90,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
         private projectService: ProjectService,
         private formBuilder: FormBuilder
     ) {
-        super();
+        // super();
         this.layer = this.layerService.getSelectedLayer();
 
         this.isVector = ResultTypes.VECTOR_TYPES.indexOf(this.layer.operator.resultType) >= 0;
@@ -148,27 +146,27 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Export');
-
-        const saveButtonDisabled$ = new BehaviorSubject(false);
-        this.subscriptions.push(
-            this.form.valueChanges.map(_ => {
-                return !!this.form.errors && Object.keys(this.form.errors).length > 0;
-            }).subscribe(
-                saveButtonDisabled$
-            )
-        );
-        this.dialog.setButtons([
-            {
-                title: 'Cancel',
-                action: () => this.dialog.close(),
-            },
-            {
-                title: 'Download',
-                action: () => this.download(),
-                disabled: saveButtonDisabled$,
-            },
-        ]);
+        // this.dialog.setTitle('Export');
+        //
+        // const saveButtonDisabled$ = new BehaviorSubject(false);
+        // this.subscriptions.push(
+        //     this.form.valueChanges.map(_ => {
+        //         return !!this.form.errors && Object.keys(this.form.errors).length > 0;
+        //     }).subscribe(
+        //         saveButtonDisabled$
+        //     )
+        // );
+        // this.dialog.setButtons([
+        //     {
+        //         title: 'Cancel',
+        //         action: () => this.dialog.close(),
+        //     },
+        //     {
+        //         title: 'Download',
+        //         action: () => this.download(),
+        //         disabled: saveButtonDisabled$,
+        //     },
+        // ]);
     }
 
     ngOnDestroy() {
@@ -194,7 +192,7 @@ export class ExportDialogComponent extends DefaultBasicDialog implements OnInit,
             });
         }
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }

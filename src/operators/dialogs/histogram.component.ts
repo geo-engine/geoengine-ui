@@ -1,9 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {
-    OperatorBaseComponent,
-} from './operator.component';
-
 import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../services/random-color.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
@@ -98,7 +94,7 @@ import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class HistogramOperatorComponent extends OperatorBaseComponent implements OnInit {
+export class HistogramOperatorComponent implements OnInit {
     Browser = Browser; // tslint:disable-line:variable-name
 
     private selectedLayer: Layer<Symbology>;

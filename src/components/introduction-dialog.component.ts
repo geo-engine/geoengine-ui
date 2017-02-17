@@ -1,9 +1,6 @@
-import {ChangeDetectionStrategy, Component, OnInit, AfterContentInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {UserService} from '../users/user.service';
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-import {VatLogoComponent, GFBioLogoComponent} from '../app/logo.component';
-import {MdCheckboxChange, MdDialogRef} from "@angular/material";
-import {LoginDialogComponent} from "../users/login-dialog.component";
+import {MdCheckboxChange} from '@angular/material';
 
 @Component({
     selector: 'wave-introduction-dialog',
@@ -40,20 +37,13 @@ import {LoginDialogComponent} from "../users/login-dialog.component";
     }
     `],
 })
-export class IntroductionDialogComponent implements AfterContentInit {
+export class IntroductionDialogComponent {
 
     isChecked: boolean;
 
     constructor(
-      public dialogRef: MdDialogRef<IntroductionDialogComponent>,
       private userService: UserService
-    ) {
-
-    }
-
-    ngAfterContentInit() {
-      //this.isChecked = !this.userService.shouldShowIntroductoryPopup();
-    }
+    ) {}
 
     changeTick(event: MdCheckboxChange) {
         this.userService.setIntroductoryPopup(!event.checked);

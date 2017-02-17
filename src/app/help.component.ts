@@ -1,7 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 @Component({
     selector: 'wave-help-dialog',
     template: `
@@ -315,8 +313,8 @@ import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HelpDialogComponent extends DefaultBasicDialog implements OnInit {
+export class HelpDialogComponent implements OnInit {
     ngOnInit() {
-        this.dialog.setTitle('Help');
+        // this.dialog.setTitle('Help');
     }
 }

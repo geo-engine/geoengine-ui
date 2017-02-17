@@ -2,8 +2,6 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, OnInit,
         Input, ViewChild, ElementRef, ChangeDetectorRef} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {BasicDialog, DialogInput} from '../../dialogs/basic-dialog.component';
-
 import {LayerService} from '../../layers/layer.service';
 
 import {Layer} from '../../layers/layer.model';
@@ -15,7 +13,7 @@ import * as d3 from 'd3'; // necessary for dagreD3
 // import dagre from 'dagre';
 // import * as dagreD3 from 'dagre-d3';
 
-interface LineageDialogInput extends DialogInput {
+interface LineageDialogInput {
     selectedLayerOnly: boolean;
 }
 

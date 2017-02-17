@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
-
 import {LayerService} from '../layers/layer.service';
 
 import {Symbology, SymbologyType} from './symbology.model';
@@ -48,7 +46,7 @@ import {Layer} from '../layers/layer.model';
         }
     `],
 })
-export class SymbologyDialogComponent extends DefaultBasicDialog implements OnInit {
+export class SymbologyDialogComponent implements OnInit {
     // for ng-switch
     public enumSymbologyType = SymbologyType;
 
@@ -58,17 +56,17 @@ export class SymbologyDialogComponent extends DefaultBasicDialog implements OnIn
     constructor(
         private layerService: LayerService
     ) {
-        super();
+        // super();
 
         this._layer = this.layerService.getSelectedLayer();
         this._symbology = this._layer.symbology.clone();
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Change the Symbology of the current Layer');
-        this.dialog.setButtons([
-            { title: 'Close', action: () => this.dialog.close() },
-        ]);
+        // this.dialog.setTitle('Change the Symbology of the current Layer');
+        // this.dialog.setButtons([
+        //     { title: 'Close', action: () => this.dialog.close() },
+        // ]);
     }
 
     update_symbology(symbology: Symbology) {

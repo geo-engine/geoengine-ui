@@ -8,7 +8,7 @@ import {
 import {BehaviorSubject, Subject, Subscription} from 'rxjs/Rx';
 
 import {
-    LayerMultiSelectComponent, OperatorBaseComponent, OperatorOutputNameComponent,
+    LayerMultiSelectComponent, OperatorOutputNameComponent,
 } from './operator.component';
 import {CodeEditorComponent} from '../../components/code-editor.component';
 
@@ -31,7 +31,6 @@ import {Unit} from '../unit.model';
 import {Projections} from '../projection.model';
 import {RScriptType} from '../types/r-script-type.model';
 
-import {DialogLoaderComponent} from '../../dialogs/dialog-loader.component';
 import {RScriptLoadDialogComponent} from './r/r-script-load-dialog.component';
 import {RScriptSaveDialogComponent} from './r/r-script-save-dialog.component';
 import {RScript} from '../../storage/storage-provider.model';
@@ -125,7 +124,7 @@ import {RScript} from '../../storage/storage-provider.model';
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ROperatorComponent extends OperatorBaseComponent
+export class ROperatorComponent
                                 implements OnInit, AfterViewInit, OnDestroy {
     // make this available in the template
     // tslint:disable:variable-name
@@ -154,7 +153,7 @@ export class ROperatorComponent extends OperatorBaseComponent
         private layoutService: LayoutService,
         private formBuilder: FormBuilder
     ) {
-        super(layerService);
+        // super(layerService);
 
         this.form = formBuilder.group({
             code: [`print("Hello world");\na <- 1:5;\nprint(a);`, Validators.required],
@@ -171,8 +170,8 @@ export class ROperatorComponent extends OperatorBaseComponent
     }
 
     ngOnInit() {
-        super.ngOnInit();
-        this.dialog.setTitle('Execute R Script (experimental)');
+        // super.ngOnInit();
+        // this.dialog.setTitle('Execute R Script (experimental)');
     }
 
     ngAfterViewInit() {
@@ -251,7 +250,7 @@ export class ROperatorComponent extends OperatorBaseComponent
                 default:
                     throw 'Unknown Symbology Error';
             }
-            this.layerService.addLayer(layer);
+            // this.layerService.addLayer(layer);
         } else {
             // PLOT
             const plot = new Plot({
@@ -262,7 +261,7 @@ export class ROperatorComponent extends OperatorBaseComponent
             this.plotService.addPlot(plot);
         }
 
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }

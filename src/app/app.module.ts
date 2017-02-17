@@ -28,7 +28,6 @@ import {RgbaToCssStringPipe} from "../pipes/rgba-to-css-string.pipe";
 import {SymbologyPointsComponent, SymbologyVectorComponent} from "../symbology/symbology-points.component";
 import {SymbologyRasterComponent} from "../symbology/symbology-raster.component";
 import {TimeRibbonComponent} from "../ribbons/time-ribbon.component";
-import {DialogLoaderComponent} from "../dialogs/dialog-loader.component";
 import {StartTabComponent} from "../ribbons/start-tab.component";
 import {OperatorsTabComponent} from "../ribbons/operators-tab.component";
 import {ProjectTabComponent} from "../ribbons/project-tab.component";

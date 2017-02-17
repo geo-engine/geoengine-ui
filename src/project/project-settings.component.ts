@@ -1,6 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {DefaultBasicDialog} from '../dialogs/basic-dialog.component';
 import {ProjectService} from './project.service';
 import {Project} from './project.model';
 import {Projection, Projections} from '../operators/projection.model';
@@ -41,7 +40,7 @@ import * as moment from 'moment';
     `],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ProjectSettingsComponent extends DefaultBasicDialog implements OnInit {
+export class ProjectSettingsComponent implements OnInit {
     // make it available for template
     Projections = Projections; // tslint:disable-line:variable-name
 
@@ -61,11 +60,11 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
     }
 
     ngOnInit() {
-        this.dialog.setTitle('Project Settings');
-        this.dialog.setButtons([
-            { title: 'Save', class: 'md-primary', action: () => this.save() },
-            { title: 'Cancel', action: () => this.dialog.close() },
-        ]);
+        // this.dialog.setTitle('Project Settings');
+        // this.dialog.setButtons([
+        //     { title: 'Save', class: 'md-primary', action: () => this.save() },
+        //     { title: 'Cancel', action: () => this.dialog.close() },
+        // ]);
     }
 
     save() {
@@ -78,7 +77,7 @@ export class ProjectSettingsComponent extends DefaultBasicDialog implements OnIn
                 time: (useTime) ? newTime : this.project.time,
             });
         }
-        this.dialog.close();
+        // this.dialog.close();
     }
 
 }
