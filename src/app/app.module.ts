@@ -67,7 +67,6 @@ import {NotificationService} from "./notification.service";
 import {PlotService} from "../plots/plot.service";
 import {ColorPickerService} from "ct-angular2-color-picker/lib/color-picker.service";
 import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
-import {GBIFOperatorComponent} from "./operators/dialogs/gbif.component";
 import {PointInPolygonFilterOperatorComponent} from "./operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
 import {DialogHeaderComponent} from "./dialogs/dialog-header/dialog-header.component";
 import {NumericAttributeFilterOperatorComponent} from "./operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
@@ -76,9 +75,7 @@ import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/di
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import { LayerSelectionComponent } from './layers/layer-selection/layer-selection.component';
-import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
-import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
 
 @NgModule({
     declarations: [
