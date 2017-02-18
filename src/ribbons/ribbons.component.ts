@@ -27,6 +27,7 @@ import Config from '../app/config.model';
               (gfbio)="gfbio.emit()"
               (abcd)="abcd.emit()"
               (csv)="csv.emit()"
+              (operators) = "operators.emit()"
           ></wave-start-tab>
         </md-tab>
         <md-tab label="Operators">
@@ -65,19 +66,9 @@ export class RibbonsComponent implements AfterViewInit, AfterViewChecked {
 
     @Output() zoomOut = new EventEmitter<void>();
 
-    @Output() zoomLayer = new EventEmitter<void>();
-
     @Output() zoomProject = new EventEmitter<void>();
 
     @Output() zoomMap = new EventEmitter<void>();
-
-    @Output() addData = new EventEmitter<void>();
-
-    @Output() gfbio = new EventEmitter<void>();
-
-    @Output() abcd = new EventEmitter<void>();
-
-    @Output() csv = new EventEmitter<void>();
 
     DEVELOPER_MODE: boolean = Config.DEVELOPER_MODE;
 

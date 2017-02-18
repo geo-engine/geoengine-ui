@@ -41,6 +41,10 @@ export class MapService {
         this.zoomToLayer$.next(l);
     }
 
+    public zoomToLayers(l: Iterable<Layer<any>>){
+
+    }
+
     public zoomToExtent(extent: Extent) {
         this.zoomToExtent$.next(extent);
     }
