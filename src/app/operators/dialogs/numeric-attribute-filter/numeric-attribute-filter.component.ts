@@ -23,15 +23,24 @@ import {HistogramType} from '../../types/histogram-type.model';
 import {Unit} from '../../unit.model';
 import {ProjectService} from '../../../../project/project.service';
 
-function minOverMax(control: AbstractControl): {[key: string]: boolean} {
+function minMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;
     const max = control.get('max').value;
 
+    const errors: {
+        minOverMax?: boolean,
+        noFilter?: boolean,
+    } = {};
+
     if (min && max && max < min) {
-        return {minOverMax: true};
+        errors.minOverMax = true;
     }
 
-    return null;
+    if (!min && !max) {
+        errors.noFilter = true;
+    }
+
+    return Object.keys(errors).length > 0 ? errors : null;
 }
 
 
@@ -72,7 +81,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 min: [undefined],
                 max: [undefined]
             }, {
-                validator: minOverMax
+                validator: minMax
             }),
             noData: [false, Validators.required]
         });
