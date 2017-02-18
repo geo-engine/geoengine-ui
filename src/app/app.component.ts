@@ -32,8 +32,6 @@ import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {OperatorRepositoryComponent} from "../components/operator-repository.component";
 
-
-
 @Component({
     selector: 'wave-app',
     template: `
@@ -119,25 +117,27 @@ import {OperatorRepositoryComponent} from "../components/operator-repository.com
                     <template md-tab-label>
                         <div (click)="setTabIndex(0)">Data Table</div>
                     </template>
-                    <template md-tab-content>
-                        <!--<wave-data-table
-                            *ngIf= "dataTableVisible$ | async"
-                            [style.height.px]="(bottomContainerHeight$ | async)"
-                            [height]="(bottomContainerHeight$ | async)">
-                        </wave-data-table>-->
-                    </template>
+                    <!-- new DataTable -->
+                    <dataTable *ngIf= "dataTableVisible$ | async"
+                        [height]="(bottomContainerHeight$ | async)">
+                    </dataTable>
+                        
+                    <!--<wave-data-table
+                        *ngIf= "dataTableVisible$ | async"
+                        [style.height.px]="(bottomContainerHeight$ | async)"
+                        [height]="(bottomContainerHeight$ | async)">
+                    </wave-data-table>-->
+                    
                 </md-tab>
                 <md-tab>
                     <template md-tab-label>
                         <div (click)="setTabIndex(1)">Citation</div>
                     </template>
-                    <template md-tab-content>
-                        <wave-provenance-list
-                            *ngIf= "dataTableVisible$ | async"
-                            [style.height.px]= "(bottomContainerHeight$ | async)"
-                            [height]= "(bottomContainerHeight$ | async)"
-                        ></wave-provenance-list>
-                    </template>
+                    <wave-provenance-list
+                        *ngIf= "dataTableVisible$ | async"
+                        [style.height.px]= "(bottomContainerHeight$ | async)"
+                        [height]= "(bottomContainerHeight$ | async)"
+                    ></wave-provenance-list>
                 </md-tab>
             </md-tab-group>
         </div>

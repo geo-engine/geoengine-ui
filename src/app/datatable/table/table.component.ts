@@ -1,14 +1,30 @@
 import {
-  Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter, ChangeDetectionStrategy
+    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter,
+    ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
 import {DialogComponent} from "../dialog/dialog.component";
+import {Observable, Subscription} from "rxjs";
+import {LayerService} from "../../../layers/layer.service";
+import {LoadingState} from "../../../shared/loading-state.model";
+import {ResultTypes} from "../../operators/result-type.model";
+import {VectorLayer} from "../../../layers/layer.model";
+import {AbstractVectorSymbology} from "../../../symbology/symbology.model";
+import {GeoJsonFeature, FeatureID} from "../../../models/geojson.model";
+
+
+interface Column {
+    name: string;
+    type: 'text' | 'media' | '';
+    avgWidth: string;
+}
+
 
 /**
  * Data-Table-Component
  * Displays a Data-Table
  */
 @Component({
-  selector: 'app-table',
+  selector: 'dataTable',
   templateUrl: './table.component.html',
   styleUrls: ['table.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,19 +33,24 @@ import {DialogComponent} from "../dialog/dialog.component";
  * Data-Table-Component
  * Displays a Data-Table
  */
-export class TableComponent implements OnChanges, AfterViewInit{
+export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit{
+
+  LoadingState = LoadingState; // tslint:disable-line:variable-name
+
+  @Input()
+  private height: number;
 
   /**
    * Input: Data to display in the table
    */
-  @Input()
+  //@Input()
   private data: Array<any>;
 
   /**
    * Output: Is emitted when the row-selection changes. The selected rows are emitted
    * @type {EventEmitter}
    */
-  @Output()
+  //@Output()
   private rowsSelected:EventEmitter<Array<number>> = new EventEmitter();
 
 
@@ -85,18 +106,48 @@ export class TableComponent implements OnChanges, AfterViewInit{
 
 
   private cdr;
+  private layerService;
 
   private loading = false;
+
+  //Observables
+  private data$: Observable<Array<GeoJsonFeature>>;
+  private state$: Observable<LoadingState>;
+
+  private selectable$: Observable<boolean>;
+  private dataSubscription: Subscription;
+  private featureSubscription: Subscription;
 
   /**
    * Sets up all variables
    * Extracts the column names from the data input and calculates the average widths of all rows
    * @param cdr ChangeDetector Reference
+   * @param layerService LayerService Reference
    */
-  constructor(cdr: ChangeDetectorRef) {
+  constructor(cdr: ChangeDetectorRef, layerService: LayerService) {
     this.cdr = cdr;
+    this.layerService = layerService;
 
     this.canvas = document.createElement("canvas");
+
+    this.initDataStream()
+  }
+
+  ngOnInit() {
+    this.dataSubscription = this.data$.subscribe((features: Array<GeoJsonFeature>) => {
+      this.dataHead = [];
+      this.data = [];
+
+      this.data = features; //.map(x => (x.properties));
+      if (features.length > 0) {
+        console.log(features[0]);
+      }
+
+      // only needs to be called once for each "data"
+      this.dataInit();
+
+      this.cdr.markForCheck();
+    });
   }
 
   /**
@@ -110,7 +161,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
 
     //let time1 = Math.floor(Date.now());
 
-    if(this.data != null) {
+    /*if(this.data != null) {
       //this.loading = true;
 
       this.dataInit();
@@ -126,7 +177,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
       this.displayItemCounter = [];
 
       this.loading = false;
-    }
+    }*/
 
     //let time2 = Math.floor(Date.now());
     //console.log("Update calc time: "+(time2-time1));
@@ -138,7 +189,28 @@ export class TableComponent implements OnChanges, AfterViewInit{
   ngAfterViewInit(){
     this.containerHeight = this.container.nativeElement.offsetHeight;
     //console.log(this.containerHeight);
+
+      this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
+        for (let i = 0; i < this.data.length; i++) {
+          if (x.selected.contains(this.data[i].id)) {
+            this.selected[i] = true;
+          }
+          else {
+            this.selected[i] = false;
+          }
+        }
+
+        this.testSelected();
+        this.testEqual();
+
+        this.cdr.markForCheck();
+      });
   }
+
+    ngOnDestroy() {
+      this.dataSubscription.unsubscribe();
+      this.featureSubscription.unsubscribe();
+    }
 
 
   /**
@@ -148,6 +220,40 @@ export class TableComponent implements OnChanges, AfterViewInit{
     this.loading = loading;
     //console.log("Loading:"+this.loading);
     this.cdr.markForCheck();
+  }
+
+  private initDataStream() {
+    const dataStream = this.layerService.getSelectedLayerStream().map(layer => {
+      if (layer === undefined) {
+        return {
+          data$: Observable.of([]),
+          state$: Observable.of(LoadingState.OK),
+          selectable: false,
+        };
+      }
+      switch (layer.operator.resultType) {
+        case ResultTypes.POINTS:
+        case ResultTypes.LINES:
+        case ResultTypes.POLYGONS:
+          let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
+          return {
+            data$: vectorLayer.data.data$.map(data => data.features),
+            state$: vectorLayer.data.state$,
+            selectable: true,
+          };
+        default:
+          return {
+            data$: Observable.of([]),
+            state$: Observable.of(LoadingState.OK),
+            selectable: false,
+          };
+      }
+      ;
+    });
+
+    this.data$ = dataStream.switchMap(stream => stream.data$);
+    this.state$ = dataStream.switchMap(stream => stream.state$);
+    this.selectable$ = dataStream.map(stream => stream.selectable);
   }
 
 
@@ -188,7 +294,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
 
     //Calculate Column widths
     this.testData = this.selectRandomSubData(20);
-    this.avgWidths, this.colTypes = this.calculateColumnProperties(this.testData, this.dataHead);
+    [this.avgWidths, this.colTypes] = this.calculateColumnProperties(this.testData, this.dataHead);
 
     //Recreate displayItemCounter
     this.displayItemCounter = [];
@@ -247,7 +353,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
     let headCount = dataHead.length;
 
     let widths = [];
-    let types = []
+    let types = [];
 
     for(let i=0; i < testData.length+1; i++){
       for(let j=0; j<headCount; j++) {
@@ -316,7 +422,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
       }
     }
 
-    return (widths, types);
+    return ([widths, types]);
   }
 
   /**
@@ -341,7 +447,7 @@ export class TableComponent implements OnChanges, AfterViewInit{
    * @returns {string[]} a string-array containing all the keys
    */
   private static getArrayOfKeys(object){
-    return Object.keys(object);
+    return Object.keys(object).filter(x => !x.startsWith('___'));
   }
 
   private updateContainer(){
@@ -455,8 +561,16 @@ export class TableComponent implements OnChanges, AfterViewInit{
    */
   private toggle(index: number){
     this.selected[index] = !this.selected[index];
-    this.testSelected();
-    this.testEqual();
+
+      if(this.selected[index]){
+          this.layerService.updateSelectedFeatures([this.data[index].id], []);
+      }
+      else{
+          this.layerService.updateSelectedFeatures([], [this.data[index].id]);
+      }
+
+    //this.testSelected();
+    //this.testEqual();
   }
 
   /**
@@ -465,11 +579,23 @@ export class TableComponent implements OnChanges, AfterViewInit{
    * Selects or unselects all rows, depending on whether a row is already selected
    */
   private toggleAll(){
-    for(let i: number = 0; i < this.selected.length; i++) {
+    let toggledList = Array<FeatureID>();
+      for(let i: number = 0; i < this.selected.length; i++) {
+        if(this.allSelected == this.selected[i]){
+            toggledList.push(this.data[i].id);
+        }
       this.selected[i] = !this.allSelected;
     }
-    this.testSelected();
-    this.testEqual();
+
+      if(!this.allSelected){
+          this.layerService.updateSelectedFeatures(toggledList, []);
+      }
+      else{
+          this.layerService.updateSelectedFeatures([], toggledList);
+      }
+
+    //this.testSelected();
+    //this.testEqual();
   }
 
   /**

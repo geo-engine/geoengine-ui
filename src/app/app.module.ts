@@ -78,9 +78,9 @@ import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/di
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import { LayerSelectionComponent } from './layers/layer-selection/layer-selection.component';
-import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
+//import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
-import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
+//import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
 
 @NgModule({
     declarations: [
