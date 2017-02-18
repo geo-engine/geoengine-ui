@@ -1,0 +1,13 @@
+<wave-dialog-section-heading
+    title="Output Name" subtitle="Specify the name of the operator result"
+></wave-dialog-section-heading>
+<md-input-container fxLayout="row">
+    <input md-input
+           type="text"
+           placeholder="Output {{type}} Name"
+           [(ngModel)]="name"
+           minLength="1"
+           (blur)="onBlur()"
+           fxFlex
+    >
+</md-input-container>

@@ -34,7 +34,7 @@ import {ProjectTabComponent} from "../ribbons/project-tab.component";
 import {DebugTabComponent} from "../ribbons/debug-tab.component";
 import {OperatorSelectionGroupComponent, OperatorButtonComponent} from "../ribbons/operator-selection-group.component";
 import {
-    OperatorOutputNameComponent, LayerMultiSelectComponent,
+    LayerMultiSelectComponent,
     ReprojectionSelectionComponent, LayerSingleSelectionComponent
 } from "./operators/dialogs/operator.component";
 import {CodeEditorComponent} from "../components/code-editor.component";
@@ -74,8 +74,9 @@ import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
-import { LayerSelectionComponent } from './layers/layer-selection/layer-selection.component';
+import { LayerSelectionComponent } from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
+import { OperatorOutputNameComponent } from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 
 @NgModule({
     declarations: [
@@ -99,6 +100,7 @@ import {OperatorRepositoryComponent} from '../components/operator-repository.com
         RenameLayerComponent,
         LayerSelectionComponent,
         OperatorRepositoryComponent,
+        OperatorOutputNameComponent,
     ],
     imports: [
         BrowserModule,

@@ -44,7 +44,10 @@
         </div>
         <md-checkbox formControlName="noData">Keep NoData values?</md-checkbox>
 
-        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Filtered ' + (form.controls.pointLayer.valueChanges | async)?.name"
+        ></wave-operator-output-name>
     </md-dialog-content>
     <md-dialog-actions align="end">
         <button

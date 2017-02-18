@@ -3,18 +3,18 @@ import {
     ChangeDetectorRef
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {Layer} from '../../../layers/layer.model';
-import {LayerService} from '../../../layers/layer.service';
-import {Symbology} from '../../../symbology/symbology.model';
-import {ResultType, ResultTypes} from '../../operators/result-type.model';
+import {Layer} from '../../../../../layers/layer.model';
+import {LayerService} from '../../../../../layers/layer.service';
+import {Symbology} from '../../../../../symbology/symbology.model';
+import {ResultType, ResultTypes} from '../../../result-type.model';
 
 /**
  * This component allows selecting one layer.
  */
 @Component({
     selector: 'wave-layer-selection',
-    templateUrl: './layer-selection.component.html',
-    styleUrls: ['./layer-selection.component.scss'],
+    templateUrl: 'layer-selection.component.html',
+    styleUrls: ['layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
