@@ -38,6 +38,11 @@ import {OperatorRepositoryComponent} from "../components/operator-repository.com
     selector: 'wave-app',
     template: `
     <md-sidenav-container fullscreen>
+        <div fxLayout="row">
+            <wave-next-layer-list></wave-next-layer-list>
+            <wave-top-toolbar fxFlex></wave-top-toolbar>
+        </div>
+        <!--
         <div class="topContainer md-whiteframe-3dp">
             <wave-info-area></wave-info-area>
             <wave-ribbons-component
@@ -46,6 +51,7 @@ import {OperatorRepositoryComponent} from "../components/operator-repository.com
                     (zoomMap)="mapComponent.zoomToMap()"
             ></wave-ribbons-component>
         </div>
+        -->
         <div
             class="middleContainer"
             [style.height.px]="middleContainerHeight$ | async"
@@ -294,7 +300,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                   .map(_ => window.innerHeight)
                   .subscribe(windowHeight$);
 
-        const HEADER_HEIGHT = 180;
+        const HEADER_HEIGHT = 64;//180;
         const INFO_BAR_HEIGHT = 48;
         const remainingHeight$ = windowHeight$.map(
             height => Math.max(height - HEADER_HEIGHT - INFO_BAR_HEIGHT), 0

@@ -1,13 +1,13 @@
 {
   "/cgi-bin/*": {
-    "target": "http://pc12388.mathematik.uni-marburg.de/",
+    "target": "http://141.2.171.107/",
     "changeOrigin": true,
     "secure": false,
     "logLevel": "debug"
   },
 
   "/mapcache/*": {
-    "target": "http://pc12388.mathematik.uni-marburg.de/mapcache/",
+    "target": "http://141.2.171.107/mapcache/",
     "logLevel": "debug"
   }
 }

@@ -1,5 +1,5 @@
 export default {
-    MAPPING_URL: '/cgi-bin/mapping',
+    MAPPING_URL: '/cgi-bin/mapping_cgi',
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',

@@ -1,0 +1,13 @@
+<button md-icon-button (click)="timeRwd()">
+    <md-icon>navigate_before</md-icon>
+</button>
+<button md-button (click)="openTimeConfig()">{{timeRepresentation}}</button>
+<button md-icon-button (click)="timeFwd()">
+    <md-icon>navigate_next</md-icon>
+</button>
+<button md-icon-button *ngIf="!timeIsPlaying" (click)="timePlay()" disabled>
+    <md-icon>play_arrow</md-icon>
+</button>
+<button md-icon-button *ngIf="timeIsPlaying" (click)="timeStop()" disabled>
+    <md-icon>stop</md-icon>
+</button>

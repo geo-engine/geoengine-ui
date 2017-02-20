@@ -1,27 +1,39 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {RasterValueExtractionType} from "../app/operators/types/raster-value-extraction-type.model";
+import {RasterValueExtractionType} from '../app/operators/types/raster-value-extraction-type.model';
 
-import {NumericAttributeFilterType} from "../app/operators/types/numeric-attribute-filter-type.model";
-import {NumericAttributeFilterOperatorComponent} from "../app/operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
+import {NumericAttributeFilterType} from '../app/operators/types/numeric-attribute-filter-type.model';
+import {
+    NumericAttributeFilterOperatorComponent
+} from '../app/operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 
-import {PointInPolygonFilterType} from "../app/operators/types/point-in-polygon-filter-type.model";
-import {PointInPolygonFilterOperatorComponent} from "../app/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
+import {PointInPolygonFilterType} from '../app/operators/types/point-in-polygon-filter-type.model';
+import {PointInPolygonFilterOperatorComponent} from '../app/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 
-import {ExpressionType} from "../app/operators/types/expression-type.model";
-import {HistogramType} from "../app/operators/types/histogram-type.model";
-import {RScriptType} from "../app/operators/types/r-script-type.model";
-import {MsgRadianceType, MsgPansharpenType, MsgReflectanceType, MsgSolarangleType, MsgTemperatureType, MsgCo2CorrectionType} from "../app/operators/types/msg-types.model";
-import {MdDialog} from "@angular/material";
+import {ExpressionOperatorComponent} from '../app/operators/dialogs/expression-operator/expression-operator.component';
+import {ExpressionType} from '../app/operators/types/expression-type.model';
+
+import {HistogramType} from '../app/operators/types/histogram-type.model';
+import {RScriptType} from '../app/operators/types/r-script-type.model';
+import {
+    MsgRadianceType,
+    MsgPansharpenType,
+    MsgReflectanceType,
+    MsgSolarangleType,
+    MsgTemperatureType,
+    MsgCo2CorrectionType
+} from '../app/operators/types/msg-types.model';
+import {MdDialog} from '@angular/material';
+import {RasterValueExtractionOperatorComponent} from '../app/operators/dialogs/raster-value-extraction/raster-value-extraction.component';
 
 @Component({
     selector: 'wave-operator-repository',
     template: `
-    <div style='height:100%' layout='column'>
-    <div flex='grow'>
+    <div style="height: 100%;" fxLayout='column'>
+    <div fxFlex>
       <md-toolbar>
         <label>Operators</label>            
-        <span class="toolbar-fill-remaining-space"></span>
+        <span fxFlex></span>
         <md-icon>search</md-icon>
         <md-input-container>
           <input md-input placeholder="Operator" type="text" disabled>
@@ -32,8 +44,7 @@ import {MdDialog} from "@angular/material";
                 Vector
             </h3>
                 <md-list-item>    
-                    <p md-line>
-                        <!--(click)="rasterValueExtractionOperatorDialog.show()>"-->                        
+                    <p md-line (click)="dialog.open(RasterValueExtractionOperatorComponent)">
                         {{RasterValueExtractionType.NAME}}                       
                     </p>
               </md-list-item>
@@ -54,8 +65,7 @@ import {MdDialog} from "@angular/material";
                 Raster
             </h3>
             <md-list-item>    
-                    <p md-line>
-                        <!--(click)="expressionOperatorDialog.show()">-->
+                    <p md-line (click)="dialog.open(ExpressionOperatorComponent)">
                         {{ExpressionType.NAME}}                       
                     </p>
               </md-list-item>
@@ -129,10 +139,6 @@ import {MdDialog} from "@angular/material";
     </div>
     `,
     styles: [`
-    .toolbar-fill-remaining-space {
-        flex: 1 1 auto;
-    }
-    
     .operator_group {
         color: white;
         background-color: #009688;
@@ -155,6 +161,7 @@ import {MdDialog} from "@angular/material";
 
 export class OperatorRepositoryComponent {
 
+    RasterValueExtractionOperatorComponent = RasterValueExtractionOperatorComponent;
     RasterValueExtractionType = RasterValueExtractionType;
 
     NumericAttributeFilterOperatorComponent = NumericAttributeFilterOperatorComponent;
@@ -163,7 +170,9 @@ export class OperatorRepositoryComponent {
     PointInPolygonFilterOperatorComponent = PointInPolygonFilterOperatorComponent;
     PointInPolygonFilterType = PointInPolygonFilterType;
 
+    ExpressionOperatorComponent = ExpressionOperatorComponent;
     ExpressionType = ExpressionType;
+
     HistogramType = HistogramType;
     RScriptType = RScriptType;
     MsgRadianceType = MsgRadianceType;
@@ -173,7 +182,6 @@ export class OperatorRepositoryComponent {
     MsgTemperatureType = MsgTemperatureType;
     MsgCo2CorrectionType = MsgCo2CorrectionType;
 
-    constructor(
-        private dialog: MdDialog
-    ){}
+    constructor(public dialog: MdDialog) {
+    }
 }
