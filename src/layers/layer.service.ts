@@ -71,7 +71,7 @@ export class LayerService {
        let layers = this.layers$.getValue();
        this.setLayers([layer, ...layers]);
 
-       this.notificationService.info('Added New Layer ' + layer.name);
+       this.notificationService.info('Added New Layer »' + layer.name + '«');
     }
 
     /**
@@ -87,7 +87,7 @@ export class LayerService {
             this.setLayers(layers);
         }
 
-        this.notificationService.info('Removed Layer ' + layer.name);
+        this.notificationService.info('Removed Layer »' + layer.name + '«');
     }
 
     /**
