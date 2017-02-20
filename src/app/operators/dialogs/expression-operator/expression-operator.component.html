@@ -1,0 +1,69 @@
+<wave-dialog-header>Calculate Expression on Raster</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <md-dialog-content>
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.RASTER]"
+            formControlName="rasterLayers"
+            [min]="1" [max]="5"
+        ></wave-multi-layer-selection>
+        <wave-dialog-section-heading
+            title="Configuration" subtitle="Specify the operator"
+        ></wave-dialog-section-heading>
+        <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
+        <div fxLayout="column">
+            <md-input-container fxFlex>
+                <input
+                    md-input type="text"
+                    formControlName="expression"
+                    placeholder="Expression"
+                >
+            </md-input-container>
+            <md-select formControlName="dataType" placeholder="Output Data Type" fxFlex>
+                <md-option
+                    *ngFor="let dataType of outputDataTypes$ | async"
+                    [value]="dataType"
+                >{{dataType[0]}} {{dataType[1]}}</md-option>
+            </md-select>
+            <div fxLayout="row">
+                <md-input-container fxFlex>
+                    <input
+                        md-input type="number"
+                        formControlName="minValue"
+                        placeholder="Minimum Value"
+                    >
+                </md-input-container>
+                <div fxFlex="1rem"></div>
+                <md-input-container fxFlex>
+                    <input
+                        md-input type="number"
+                        formControlName="maxValue"
+                        placeholder="Maximum Value"
+                    >
+                </md-input-container>
+            </div>
+            <div fxLayout="row">
+                <md-select formControlName="unit" placeholder="Output Unit" fxFlex>
+                    <md-option
+                        *ngFor="let unit of outputUnits$ | async"
+                        [value]="unit"
+                    >{{unit}}</md-option>
+                </md-select>
+                <div fxFlex="1rem"></div>
+                <wave-reprojection-selection
+                    fxFlex
+                    [layers]="form.controls.rasterLayers.valueChanges | async"
+                    formControlName="projection"
+                ></wave-reprojection-selection>
+            </div>
+        </div>
+    <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+    </md-dialog-content>
+    <md-dialog-actions align="end">
+        <button
+            type="submit"
+            md-raised-button
+            color="primary"
+            [disabled]="form.invalid"
+        >Apply</button>
+    </md-dialog-actions>
+</form>

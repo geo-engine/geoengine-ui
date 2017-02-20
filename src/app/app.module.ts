@@ -74,6 +74,7 @@ import { OperatorOutputNameComponent } from './operators/dialogs/helpers/operato
 import { MultiLayerSelectionComponent } from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import { ReprojectionSelectionComponent } from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import { RasterValueExtractionOperatorComponent } from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
+import { ExpressionOperatorComponent } from './operators/dialogs/expression-operator/expression-operator.component';
 
 @NgModule({
     declarations: [
@@ -104,6 +105,7 @@ import { RasterValueExtractionOperatorComponent } from './operators/dialogs/rast
         MultiLayerSelectionComponent,
         ReprojectionSelectionComponent,
         RasterValueExtractionOperatorComponent,
+        ExpressionOperatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -118,7 +120,7 @@ import { RasterValueExtractionOperatorComponent } from './operators/dialogs/rast
         IntroductionDialogComponent, LoginDialogComponent, RenameLayerComponent,
         RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent, OperatorRepositoryComponent,
-        RasterValueExtractionOperatorComponent,
+        RasterValueExtractionOperatorComponent, ExpressionOperatorComponent,
     ],
     providers: [DragulaService, MdIconRegistry, FormBuilder,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,

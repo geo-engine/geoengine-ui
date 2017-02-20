@@ -33,7 +33,7 @@ import {NumericAttributeFilterOperatorComponent}
   from '../app/operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
   from '../app/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
-import {ExpressionOperatorComponent} from '../app/operators/dialogs/expression-operator.component';
+import {ExpressionOperatorComponent} from '../app/operators/dialogs/expression-operator/expression-operator.component';
 // FIXME: import {HistogramOperatorComponent} from '../operators/dialogs/histogram.component';
 import {ROperatorComponent} from '../app/operators/dialogs/r-operator.component';
 import {
@@ -75,8 +75,8 @@ import {MdDialog} from "@angular/material";
         <wave-operator-selection-group groupName="Raster" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="ExpressionType.NAME"
-                [iconUrl]="ExpressionType.ICON_URL">
-                <!--(click)="expressionOperatorDialog.show()">-->
+                [iconUrl]="ExpressionType.ICON_URL"
+                (click)="dialog.open(ExpressionOperatorComponent)">
             </wave-operator-button>
         </wave-operator-selection-group>
         <wave-operator-selection-group groupName="Plots" [smallButtons]="smallButtons">
