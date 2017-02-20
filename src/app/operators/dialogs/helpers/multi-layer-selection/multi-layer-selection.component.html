@@ -1,0 +1,27 @@
+<div fxLayout="row">
+    <wave-dialog-section-heading [title]="title" subtitle="Select input {{title}}"></wave-dialog-section-heading>
+    <div fxFlex fxLayout="row" fxLayoutAlign="end">
+        <button md-button color="primary"
+                (click)="$event.preventDefault();add()"
+                *ngIf="max - min > 0"
+                [disabled]="amountOfLayers >= max || filteredLayers.length <= 0"
+        ><md-icon>add_circle_outline</md-icon></button>
+        <button md-button color="primary"
+                (click)="$event.preventDefault();remove()"
+                *ngIf="max - min > 0"
+                [disabled]="amountOfLayers <= min || filteredLayers.length <= 0"
+        ><md-icon>remove_circle_outline</md-icon></button>
+    </div>
+</div>
+<div *ngIf="filteredLayers.length > 0" fxLayout="column">
+    <md-select
+        *ngFor="let id of ids; let i = index"
+        placeholder="Input {{id}}"
+        [ngModel]="selectedLayers[i]" (ngModelChange)="updateLayer(i, $event)"
+        (onBlur)="onBlur()"
+        fxFlex
+    >
+        <md-option *ngFor="let layer of filteredLayers" [value]="layer">{{layer.name}}</md-option>
+    </md-select>
+</div>
+<p *ngIf="filteredLayers.length <= 0">No Input Available</p>

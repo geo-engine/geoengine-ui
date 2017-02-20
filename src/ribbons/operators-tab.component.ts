@@ -28,7 +28,7 @@ import {
 } from '../app/operators/types/msg-types.model';
 
 import {RasterValueExtractionOperatorComponent}
-  from '../app/operators/dialogs/raster-value-extraction.component';
+  from '../app/operators/dialogs/raster-value-extraction/raster-value-extraction.component';
 import {NumericAttributeFilterOperatorComponent}
   from '../app/operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 import {PointInPolygonFilterOperatorComponent}
@@ -53,8 +53,8 @@ import {MdDialog} from "@angular/material";
         <wave-operator-selection-group groupName="Vector" [smallButtons]="smallButtons">
             <wave-operator-button [small]="smallButtons"
                 [text]="RasterValueExtractionType.NAME"
-                [iconUrl]="RasterValueExtractionType.ICON_URL">
-                <!--(click)="rasterValueExtractionOperatorDialog.show()">-->
+                [iconUrl]="RasterValueExtractionType.ICON_URL"
+                (click)="dialog.open(RasterValueExtractionOperatorComponent)">
             </wave-operator-button>
             <wave-operator-button [small]="smallButtons"
                 [text]="NumericAttributeFilterType.NAME"
