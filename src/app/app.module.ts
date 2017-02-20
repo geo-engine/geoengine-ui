@@ -79,6 +79,7 @@ import { LayerSelectionComponent } from './layers/layer-selection/layer-selectio
 import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
 import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
+import { TopToolbarComponent } from './top-toolbar/top-toolbar.component';
 
 @NgModule({
     declarations: [
@@ -102,6 +103,9 @@ import { SmallTimeInteractionComponent } from './small-time-interaction/small-ti
         RenameLayerComponent,
         LayerSelectionComponent,
         OperatorRepositoryComponent,
+        SmallTimeInteractionComponent,
+        TopToolbarComponent,
+        NextLayerListComponent
     ],
     imports: [
         BrowserModule,

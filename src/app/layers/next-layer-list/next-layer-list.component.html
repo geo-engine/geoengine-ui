@@ -1,0 +1,33 @@
+<div class="container">
+
+    <md-toolbar color="primary">
+        <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span>Layers</span>
+
+            <md-menu #layerListMenu="mdMenu">
+                <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
+                    <md-icon *ngSwitchCase="true">expand_less</md-icon>
+                    <md-icon *ngSwitchCase="false">expand_more</md-icon>
+                    <span>Show/Hide</span>
+                </button>
+                <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
+                    <md-icon>merge_type</md-icon>
+                    <div>Project Lineage</div>
+                </button>
+                <button md-menu-item [disabled]="true">
+                    <md-icon>fullscreen</md-icon>
+                    <span>Zoom to All</span>
+                </button>
+                <button md-menu-item [disabled]="true">
+                    <md-icon>delete_sweep</md-icon>
+                    <span>Remove All</span>
+                </button>
+            </md-menu>
+
+            <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
+                <md-icon>more_vert</md-icon>
+            </button>
+        </md-toolbar-row>
+    </md-toolbar>
+
+</div>
