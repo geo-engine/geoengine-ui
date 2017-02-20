@@ -1,0 +1,42 @@
+<wave-dialog-header>Extract a Raster Value and Add it to the Vector Layer</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <md-dialog-content>
+        <wave-layer-selection
+            [types]="[ResultTypes.POINTS]"
+            formControlName="pointLayer"
+        ></wave-layer-selection>
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.RASTER]"
+            formControlName="rasterLayers"
+            [min]="1" [max]="5"
+        ></wave-multi-layer-selection>
+        <wave-dialog-section-heading
+            title="Configuration" subtitle="Specify the operator"
+        ></wave-dialog-section-heading>
+        <div fxLayout="column" formArrayName="valueNames">
+            <md-input-container
+                fxFlex
+                *ngFor="let control of form.controls.valueNames.controls; let i = index"
+                [dividerColor]="form.controls.valueNames.controls[i].errors? 'warn' : 'default'"
+            >
+                <input
+                    [formControl]="control"
+                    md-input type="text"
+                    placeholder="Value Name for Raster {{LetterNumberConverter.toLetters(i+1)}}"
+                >
+                <md-hint *ngIf="form.controls.valueNames.controls[i].errors?.duplicateName" class="error">
+                    Duplicate Value
+                </md-hint>
+            </md-input-container>
+        </div>
+        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+    </md-dialog-content>
+    <md-dialog-actions align="end">
+        <button
+            type="submit"
+            md-raised-button
+            color="primary"
+            [disabled]="form.invalid"
+        >Apply</button>
+    </md-dialog-actions>
+</form>
