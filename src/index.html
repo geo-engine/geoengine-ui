@@ -38,17 +38,7 @@
             padding: 0;
             color: whitesmoke;
             text-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            background: #335AA3 linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.1) 25%,
-                rgba(0, 0, 0, 0) 25%,
-                rgba(0, 0, 0, 0) 50%,
-                rgba(255, 255, 255, 0.1) 50%,
-                rgba(255, 255, 255, 0.1) 75%,
-                rgba(0, 0, 0, 0) 75%,
-                rgba(0, 0, 0, 0) 0
-            );
-            background-size: 50px 50px;
+            background: #335AA3;
         }
         h1 {
             text-align: center;
@@ -57,6 +47,16 @@
             height: 20vh;
             line-height: 20vh;
             margin: 30vh 0 0 0;
+        }
+        h1 span {
+            background: url('assets/vat_logo.svg') right no-repeat;
+            background-size: 18vh 18vh;
+            height: calc(18vh - 1px);
+            width: calc(18vh - 1px);
+            border: 1px solid whitesmoke;
+            border-radius: 18vh;
+            display: inline-block;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12)) drop-shadow(0 1px 2px rgba(0,0,0,0.24));
         }
         div {
             text-align: center;
@@ -89,7 +89,7 @@
             animation-delay: 0.4s;
         }
     </style>
-    <h1>VAT</h1>
+    <h1><span class="logo"></span>VAT</h1>
     <div class="dots">
         <span>&middot;</span>
         <span>&middot;</span>
