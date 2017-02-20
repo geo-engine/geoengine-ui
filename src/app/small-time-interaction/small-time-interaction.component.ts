@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ProjectService} from "../../project/project.service";
+import {LayoutService} from "../layout.service";
+import {TimeConfigComponent} from "../time-config/time-config.component";
 
 @Component({
   selector: 'wave-small-time-interaction',
@@ -11,7 +13,10 @@ export class SmallTimeInteractionComponent implements OnInit {
   private timeRepresentation: string;
   private timeIsPlaying = false;
 
-  constructor(private projectService: ProjectService) {
+  constructor(
+      private projectService: ProjectService,
+      private layoutService: LayoutService
+  ) {
 
   }
 
@@ -42,4 +47,8 @@ export class SmallTimeInteractionComponent implements OnInit {
       this.timeIsPlaying = false;
   }
 
+  openTimeConfig() {
+    console.log("open time config");
+    this.layoutService.setSidenavContentComponent(TimeConfigComponent);
+  }
 }

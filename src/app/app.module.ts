@@ -77,6 +77,7 @@ import { RasterValueExtractionOperatorComponent } from './operators/dialogs/rast
 import { TopToolbarComponent } from './top-toolbar/top-toolbar.component';
 import {NextLayerListComponent} from "./layers/next-layer-list/next-layer-list.component";
 import {SmallTimeInteractionComponent} from "./small-time-interaction/small-time-interaction.component";
+import { TimeConfigComponent } from './time-config/time-config.component';
 
 @NgModule({
     declarations: [
@@ -109,7 +110,8 @@ import {SmallTimeInteractionComponent} from "./small-time-interaction/small-time
         RasterValueExtractionOperatorComponent,
         SmallTimeInteractionComponent,
         TopToolbarComponent,
-        NextLayerListComponent
+        NextLayerListComponent,
+        TimeConfigComponent
     ],
     imports: [
         BrowserModule,
@@ -124,7 +126,7 @@ import {SmallTimeInteractionComponent} from "./small-time-interaction/small-time
         IntroductionDialogComponent, LoginDialogComponent, RenameLayerComponent,
         RasterRepositoryComponent, AbcdRepositoryComponent, CsvRepositoryComponent, GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent, NumericAttributeFilterOperatorComponent, OperatorRepositoryComponent,
-        RasterValueExtractionOperatorComponent,
+        RasterValueExtractionOperatorComponent, TimeConfigComponent,
     ],
     providers: [DragulaService, MdIconRegistry, FormBuilder,
         ProjectService, MappingQueryService, LayerService, PlotService, LayoutService,
