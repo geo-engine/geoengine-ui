@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WAVE: Workflow, Analysis and Visualization Editor</title>
+    <title>VAT: Visualization, Analysis and Transformation System</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -24,6 +24,7 @@
     <!-- Material -->
     <link href="assets/fonts/roboto/roboto.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
 
 </head>
 
@@ -32,210 +33,67 @@
 
 <wave-app>
     <style type="text/css">
-    @-webkit-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-webkit-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-moz-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-ms-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-moz-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-webkit-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @-o-keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    @keyframes uil-ripple {
-      0% {
-        width: 0;
-        height: 0;
-        opacity: 0;
-        margin: 0 0 0 0;
-      }
-      33% {
-        width: 44%;
-        height: 44%;
-        margin: -22% 0 0 -22%;
-        opacity: 1;
-      }
-      100% {
-        width: 88%;
-        height: 88%;
-        margin: -44% 0 0 -44%;
-        opacity: 0;
-      }
-    }
-    .uil-ripple-css {
-      background: none;
-      position: relative;
-      width: 50vh;
-      height: 50vh;
-      transform: scale(0.93);
-    }
-    .uil-ripple-container {
-        width: 50vh;
-        height: 75vh;
-        padding-top: 25vh;
-        margin: 0 auto;
-    }
-    .uil-ripple-css div {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin: 0;
-      width: 0;
-      height: 0;
-      opacity: 0;
-      border-radius: 50%;
-      border-width: 12px;
-      border-style: solid;
-      -ms-animation: uil-ripple 2s ease-out infinite;
-      -moz-animation: uil-ripple 2s ease-out infinite;
-      -webkit-animation: uil-ripple 2s ease-out infinite;
-      -o-animation: uil-ripple 2s ease-out infinite;
-      animation: uil-ripple 2s ease-out infinite;
-    }
-    .uil-ripple-css div:nth-of-type(1) {
-      border-color: #3f51b5;
-    }
-    .uil-ripple-css div:nth-of-type(2) {
-      border-color: #e91e63;
-      -ms-animation-delay: 1s;
-      -moz-animation-delay: 1s;
-      -webkit-animation-delay: 1s;
-      -o-animation-delay: 1s;
-      animation-delay: 1s;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            color: whitesmoke;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            background: #335AA3;
+        }
+        h1 {
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            font-size: 20vh;
+            height: 20vh;
+            line-height: 20vh;
+            margin: 30vh 0 0 0;
+        }
+        h1 span {
+            background: url('assets/vat_logo.svg') right no-repeat;
+            background-size: 18vh 18vh;
+            height: calc(18vh - 1px);
+            width: calc(18vh - 1px);
+            border: 1px solid whitesmoke;
+            border-radius: 18vh;
+            display: inline-block;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12)) drop-shadow(0 1px 2px rgba(0,0,0,0.24));
+        }
+        div {
+            text-align: center;
+            font-size: 20vh;
+            height: 20vh;
+            line-height: 20vh;
+            margin: 0 0 30vh 0;
+        }
+        @keyframes blink {
+            0% {
+                opacity: 0.2;
+            }
+            20% {
+                opacity: 1.0;
+            }
+            100% {
+                opacity: 0.2;
+            }
+        }
+        .dots span {
+            animation-name: blink;
+            animation-duration: 1.4s;
+            animation-iteration-count: infinite;
+            animation-fill-mode: both;
+        }
+        .dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
     </style>
-    <div class="uil-ripple-container">
-        <div class="uil-ripple-css"><div></div><div></div></div>
+    <h1><span class="logo"></span>VAT</h1>
+    <div class="dots">
+        <span>&middot;</span>
+        <span>&middot;</span>
+        <span>&middot;</span>
     </div>
 </wave-app>
 </body>

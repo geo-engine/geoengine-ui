@@ -1,3 +1,5 @@
+@import "../../../../wave-app-theme";
+
 $circle-width: 100px;
 
 md-progress-circle {
@@ -6,10 +8,18 @@ md-progress-circle {
     width: $circle-width;
 }
 
+md-input-container {
+    margin-bottom: 1rem;
+}
+
 md-input-container:not(:last-child) {
     margin-right: 1rem;
 }
 
 .downward-margin {
     margin-bottom: 1rem;
+}
+
+.error {
+    color: md-color($wave-app-warn);
 }

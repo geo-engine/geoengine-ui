@@ -9,6 +9,7 @@ import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
 import {Operator} from '../app/operators/operator.model';
 import {FeatureID} from '../models/geojson.model';
 import {Symbology} from '../symbology/symbology.model';
+import {NotificationService} from '../app/notification.service';
 
 export interface SelectedFeatures {
     selected: ImmutableSet<FeatureID>;
@@ -30,7 +31,8 @@ export class LayerService {
     private isAnyLayerSelected$: Observable<boolean>;
 
     constructor(
-        private mappingQueryService: MappingQueryService
+        private mappingQueryService: MappingQueryService,
+        private notificationService: NotificationService
     ) {
         this.isAnyLayerSelected$ = this.getSelectedLayerStream().map(layer => layer !== undefined);
     }
@@ -68,6 +70,8 @@ export class LayerService {
     addLayer(layer: Layer<Symbology>) {
        let layers = this.layers$.getValue();
        this.setLayers([layer, ...layers]);
+
+       this.notificationService.info('Added New Layer »' + layer.name + '«');
     }
 
     /**
@@ -82,6 +86,8 @@ export class LayerService {
             layers.splice(index, 1);
             this.setLayers(layers);
         }
+
+        this.notificationService.info('Removed Layer »' + layer.name + '«');
     }
 
     /**

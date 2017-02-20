@@ -34,7 +34,7 @@ import {ProjectTabComponent} from "../ribbons/project-tab.component";
 import {DebugTabComponent} from "../ribbons/debug-tab.component";
 import {OperatorSelectionGroupComponent, OperatorButtonComponent} from "../ribbons/operator-selection-group.component";
 import {
-    OperatorOutputNameComponent, LayerMultiSelectComponent,
+    LayerMultiSelectComponent,
     ReprojectionSelectionComponent, LayerSingleSelectionComponent
 } from "./operators/dialogs/operator.component";
 import {CodeEditorComponent} from "../components/code-editor.component";
@@ -67,7 +67,6 @@ import {NotificationService} from "./notification.service";
 import {PlotService} from "../plots/plot.service";
 import {ColorPickerService} from "ct-angular2-color-picker/lib/color-picker.service";
 import {GfbioBasketsComponent} from "../baskets/gfbio-baskets.component";
-import {GBIFOperatorComponent} from "./operators/dialogs/gbif.component";
 import {PointInPolygonFilterOperatorComponent} from "./operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component";
 import {DialogHeaderComponent} from "./dialogs/dialog-header/dialog-header.component";
 import {NumericAttributeFilterOperatorComponent} from "./operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component";
@@ -75,11 +74,12 @@ import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
-import { LayerSelectionComponent } from './layers/layer-selection/layer-selection.component';
-import { NextLayerListComponent } from './layers/next-layer-list/next-layer-list.component';
+import { LayerSelectionComponent } from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
-import { SmallTimeInteractionComponent } from './small-time-interaction/small-time-interaction.component';
+import { OperatorOutputNameComponent } from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 import { TopToolbarComponent } from './top-toolbar/top-toolbar.component';
+import {NextLayerListComponent} from "./layers/next-layer-list/next-layer-list.component";
+import {SmallTimeInteractionComponent} from "./small-time-interaction/small-time-interaction.component";
 
 @NgModule({
     declarations: [
@@ -103,6 +103,7 @@ import { TopToolbarComponent } from './top-toolbar/top-toolbar.component';
         RenameLayerComponent,
         LayerSelectionComponent,
         OperatorRepositoryComponent,
+        OperatorOutputNameComponent,
         SmallTimeInteractionComponent,
         TopToolbarComponent,
         NextLayerListComponent

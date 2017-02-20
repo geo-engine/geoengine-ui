@@ -31,14 +31,23 @@
         >
             <md-input-container class="flex-item" fxFlex>
                 <input md-input type="number" step="any" placeholder="Min" formControlName="min">
+                <md-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
+                    Specify at least minimum or maximum.
+                </md-hint>
             </md-input-container>
             <md-input-container class="flex-item" fxFlex>
                 <input md-input type="number" step="any" placeholder="Max" formControlName="max">
+                <md-hint class="error"  *ngIf="form.controls.bounds.errors?.minOverMax">
+                    The maximum must be greater or equal to the minimum.
+                </md-hint>
             </md-input-container>
         </div>
         <md-checkbox formControlName="noData">Keep NoData values?</md-checkbox>
 
-        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Filtered ' + (form.controls.pointLayer.valueChanges | async)?.name"
+        ></wave-operator-output-name>
     </md-dialog-content>
     <md-dialog-actions align="end">
         <button
