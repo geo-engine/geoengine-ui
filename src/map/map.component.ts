@@ -345,12 +345,19 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                     (selectedLayer.symbology as AbstractVectorSymbology).getHighlightSymbology().getOlStyleAsFunction();
             }
 
+            let newSelect = new ol.Collection<ol.Feature>();
+            //SEITENEFFEKT SORGTE DAFÜR, DASS NUR JEDES ZWEITE ITEM DER REMOVE-LIST GELÖSCHT WURDE!
             select.getFeatures().forEach(feature => {
                 if (selected.remove && selected.remove.contains(feature.getId())) {
-                    select.getFeatures().remove(feature);
+                    newSelect.push(feature);
                     feature.setStyle(undefined);
                 }
             });
+
+            newSelect.forEach(feature => {
+                select.getFeatures().remove(feature);
+            });
+
             if ( selectedOlLayers ) {
                 selectedOlLayers.forEach(layer => {
                     if (layer instanceof ol.layer.Vector) {

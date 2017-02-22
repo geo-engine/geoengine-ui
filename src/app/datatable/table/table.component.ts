@@ -2,14 +2,14 @@ import {
     Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter,
     ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
-import {DialogComponent} from "../dialog/dialog.component";
-import {Observable, Subscription} from "rxjs";
-import {LayerService} from "../../../layers/layer.service";
-import {LoadingState} from "../../../shared/loading-state.model";
-import {ResultTypes} from "../../operators/result-type.model";
-import {VectorLayer} from "../../../layers/layer.model";
-import {AbstractVectorSymbology} from "../../../symbology/symbology.model";
-import {GeoJsonFeature, FeatureID} from "../../../models/geojson.model";
+import {DialogComponent} from '../dialog/dialog.component';
+import {Observable, Subscription} from 'rxjs';
+import {LayerService} from '../../../layers/layer.service';
+import {LoadingState} from '../../../shared/loading-state.model';
+import {ResultTypes} from '../../operators/result-type.model';
+import {VectorLayer} from '../../../layers/layer.model';
+import {AbstractVectorSymbology} from '../../../symbology/symbology.model';
+import {GeoJsonFeature, FeatureID} from '../../../models/geojson.model';
 
 
 interface Column {
@@ -24,7 +24,7 @@ interface Column {
  * Displays a Data-Table
  */
 @Component({
-  selector: 'dataTable',
+  selector: 'wave-data-table',
   templateUrl: './table.component.html',
   styleUrls: ['table.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,9 +33,9 @@ interface Column {
  * Data-Table-Component
  * Displays a Data-Table
  */
-export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit{
+export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
-  LoadingState = LoadingState; // tslint:disable-line:variable-name
+  LoadingState = LoadingState;
 
   @Input()
   private height: number;
@@ -43,49 +43,51 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
   /**
    * Input: Data to display in the table
    */
-  //@Input()
+  // @Input()
   private data: Array<any>;
 
   /**
    * Output: Is emitted when the row-selection changes. The selected rows are emitted
    * @type {EventEmitter}
    */
-  //@Output()
-  private rowsSelected:EventEmitter<Array<number>> = new EventEmitter();
+  // @Output()
+  private rowsSelected: EventEmitter<Array<number>> = new EventEmitter();
 
 
-  //Data-Subsets
+  // Data-Subsets
   private dataHead: Array<string>;
   private testData: Array<any>;
 
-  //For row-selection
+  // For row-selection
   private selected: boolean[];
   private selectedRowsList: Array<number>;
   private allSelected: boolean;
   private allEqual: boolean;
 
-  //Element-References
-  @ViewChild('scrollContainer') private container:ElementRef;
-  //@ViewChild('scrollContainerContent') table:ElementRef;
-  //@ViewChild('tableHead') tableHead:ElementRef;
-  //@ViewChild('tableBody') tableBody:ElementRef;
-  //@ViewChildren('tableElements') tableElements:QueryList<ElementRef>;
+  // Element-References
+  @ViewChild('scrollContainer') private container: ElementRef;
+  /*
+  @ViewChild('scrollContainerContent') table:ElementRef;
+  @ViewChild('tableHead') tableHead:ElementRef;
+  @ViewChild('tableBody') tableBody:ElementRef;
+  @ViewChildren('tableElements') tableElements:QueryList<ElementRef>;
+  */
 
-  //For text-width-calculation
-  private styleString = "16px serif";
+  // For text-width-calculation
+  private styleString = '16px serif';
   private oneLineMaxWidth = 300;
   private canvas;
 
   private avgWidths: number[];
   private colTypes: string[];
 
-  //For virtual scrolling
+  // For virtual scrolling
   private scrollTop = 0;
   private scrollLeft = 0;
 
   private scrollTopBefore = 0;
   private scrollLeftBefore = 0;
-  //tableHeight: number;
+  // tableHeight: number;
 
   private containerHeight = 0;
   private offsetTop = 0;
@@ -100,7 +102,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
   private displayItemCounter: number[];
 
   private firstDisplay: number;
-  //private lastDisplay: number;
+  // private lastDisplay: number;
 
   private scrolling = false;
 
@@ -110,13 +112,23 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
   private loading = false;
 
-  //Observables
+  // Observables
   private data$: Observable<Array<GeoJsonFeature>>;
   private state$: Observable<LoadingState>;
 
   private selectable$: Observable<boolean>;
   private dataSubscription: Subscription;
   private featureSubscription: Subscription;
+
+
+  /**
+   * Returns all the keys of an object as array
+   * @param object the object containing the keys
+   * @returns {string[]} a string-array containing all the keys
+   */
+  private static getArrayOfKeys(object){
+    return Object.keys(object).filter(x => !x.startsWith('___'));
+  }
 
   /**
    * Sets up all variables
@@ -128,9 +140,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     this.cdr = cdr;
     this.layerService = layerService;
 
-    this.canvas = document.createElement("canvas");
+    this.canvas = document.createElement('canvas');
 
-    this.initDataStream()
+    this.initDataStream();
   }
 
   ngOnInit() {
@@ -138,10 +150,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
       this.dataHead = [];
       this.data = [];
 
-      this.data = features; //.map(x => (x.properties));
-      if (features.length > 0) {
-        console.log(features[0]);
-      }
+      this.data = features; // .map(x => (x.properties));
 
       // only needs to be called once for each "data"
       this.dataInit();
@@ -156,10 +165,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * recalculates average column widths
    * resets virtual scrolling
    */
-  ngOnChanges(){
-    //console.log("Changes!");
-
-    //let time1 = Math.floor(Date.now());
+  ngOnChanges() {
+    // let time1 = Math.floor(Date.now());
 
     /*if(this.data != null) {
       //this.loading = true;
@@ -179,23 +186,22 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
       this.loading = false;
     }*/
 
-    //let time2 = Math.floor(Date.now());
-    //console.log("Update calc time: "+(time2-time1));
+    /*let time2 = Math.floor(Date.now());
+    console.log("Update calc time: "+(time2-time1));*/
   }
 
   /**
    * Get the height of the container and save it to variable
    */
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     this.containerHeight = this.container.nativeElement.offsetHeight;
-    //console.log(this.containerHeight);
+    // console.log(this.containerHeight);
 
       this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
         for (let i = 0; i < this.data.length; i++) {
           if (x.selected.contains(this.data[i].id)) {
             this.selected[i] = true;
-          }
-          else {
+          } else {
             this.selected[i] = false;
           }
         }
@@ -207,18 +213,19 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
       });
   }
 
-    ngOnDestroy() {
-      this.dataSubscription.unsubscribe();
-      this.featureSubscription.unsubscribe();
-    }
+  ngOnDestroy() {
+    this.dataSubscription.unsubscribe();
+    this.featureSubscription.unsubscribe();
+  }
 
 
   /**
-   * Sets the loading-variable to show or hide a Loading-Spinner. It is alway hidden, after the input-variable data has changed and the view is updated
+   * Sets the loading-variable to show or hide a Loading-Spinner.
+   * It is alway hidden, after the input-variable data has changed and the view is updated
    */
-  public setLoading(loading){
+  public setLoading(loading) {
     this.loading = loading;
-    //console.log("Loading:"+this.loading);
+    // console.log("Loading:"+this.loading);
     this.cdr.markForCheck();
   }
 
@@ -261,50 +268,50 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * Called when the input-variable data has changed
    * Resets and recalculates all variables needed for displaying data in the table, virtual scrolling and selection
    */
-  private dataInit(){
+  private dataInit() {
     this.firstDisplay = 0;
-    //this.lastDisplay = 15;
+    // this.lastDisplay = 15;
 
     this.container.nativeElement.scrollTop = 0;
     this.container.nativeElement.scrollLeft = 0;
 
     this.offsetTop = 0;
     this.offsetBottom = (this.data.length - this.displayItemCount) * this.elementHeight;
-    if(this.offsetBottom < 0){
+    if (this.offsetBottom < 0) {
       this.offsetBottom = 0;
     }
 
 
-    //Reset selection
+    // Reset selection
     this.selected = [];
     for (let i = 0; i < this.data.length; i++) {
       this.selected[i] = false;
     }
 
-    //Get Header
+    // Get Header
     if (this.data.length > 0) {
       this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
     }
 
-    //Reset avg widths
+    // Reset avg widths
     this.avgWidths = [];
     for (let i = 0; i < this.data.length; i++) {
       this.avgWidths[i] = 300;
     }
 
-    //Calculate Column widths
+    // Calculate Column widths
     this.testData = this.selectRandomSubData(20);
     [this.avgWidths, this.colTypes] = this.calculateColumnProperties(this.testData, this.dataHead);
 
-    //Recreate displayItemCounter
+    // Recreate displayItemCounter
     this.displayItemCounter = [];
     let i = 0;
-    while(this.displayItemCounter.length<this.displayItemCount && this.displayItemCounter.length<this.data.length){
+    while (this.displayItemCounter.length < this.displayItemCount && this.displayItemCounter.length < this.data.length) {
       this.displayItemCounter.push(i);
       i++;
     }
 
-    //Test for Selections
+    // Test for Selections
     this.testSelected();
     this.testEqual();
   }
@@ -318,7 +325,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    */
   private getTextWidth(text, font) {
     // re-use canvas object for better performance
-    let context = this.canvas.getContext("2d");
+    let context = this.canvas.getContext('2d');
     context.font = font;
     let metrics = context.measureText(text);
     return metrics.width;
@@ -329,10 +336,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * @param number amount of rows to select
    * @returns {Array} an array of rows from the dataset
    */
-  private selectRandomSubData(number){
+  private selectRandomSubData(number) {
     let testData = [];
 
-    for(let i=0; i<number; i++){
+    for (let i = 0; i < number; i++) {
       let r = Math.floor(Math.random() * this.data.length);
 
       testData[i] = this.data[r];
@@ -348,75 +355,73 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * @param dataHead the column names of the given dataset
    * @returns ({Array},{Array}) an array of average-widths and an array with the predicted content types
    */
-  private calculateColumnProperties(testData, dataHead){
+  private calculateColumnProperties(testData, dataHead) {
 
     let headCount = dataHead.length;
 
     let widths = [];
     let types = [];
 
-    for(let i=0; i < testData.length+1; i++){
-      for(let j=0; j<headCount; j++) {
+    for (let i = 0; i < testData.length + 1; i++) {
+      for (let j = 0; j < headCount; j++) {
         let w = 0;
         let t;
 
-        //Header Row
-        if(i == testData.length){
-          w = this.getTextWidth(dataHead[j], "bold " + this.styleString);
+        // Header Row
+        if (i === testData.length) {
+          w = this.getTextWidth(dataHead[j], 'bold ' + this.styleString);
 
-          t = "";
+          t = '';
         }
-        //Normal Table Rows
-        else{
+        // Normal Table Rows
+        else {
           let tmp = testData[i]['properties'][dataHead[j]];
           w = this.getTextWidth(tmp, this.styleString);
 
-          if (typeof tmp == "string" && tmp != ""){
+          if (typeof tmp === 'string' && tmp !== '') {
             let urls = tmp.split(/(,)/g);
             for (let u in urls) {
               t = DialogComponent.getType(urls[u]);
 
-              if(t != ""){
-                if(t != "text"){
-                  t = "media";
+              if (t !== '') {
+                if (t !== 'text') {
+                  t = 'media';
                 }
 
-                if(types[j] == "text" && t != "text"){
+                if (types[j] === 'text' && t !== 'text') {
                   types[j] = t;
                 }
               }
 
-              if(types[j] == null ||types[j] == ""){
+              if (types[j] == null || types[j] === '') {
                 types[j] = t;
               }
             }
+          } else {
+            t = '';
           }
-          else{
-            t = "";
-          }
-
         }
 
-        //Widths
-        if(w > this.oneLineMaxWidth){
-          w = w/2 + 50;
+        // Widths
+        if (w > this.oneLineMaxWidth) {
+          w = w / 2 + 50;
         }
-        if(w > widths[j] || widths[j] == null){
+        if (w > widths[j] || widths[j] == null) {
           widths[j] = w;
-          //console.log(dataHead[j]+": "+widths[j]);
+          // console.log(dataHead[j]+": "+widths[j]);
         }
 
-        //Types
-        if(t != ""){
-          if(t != "text"){
-            t = "media";
+        // Types
+        if (t !== '') {
+          if (t !== 'text') {
+            t = 'media';
           }
 
-          if(types[j] == "text" && t != "text"){
+          if (types[j] === 'text' && t !== 'text') {
             types[j] = t;
           }
         }
-        if(types[j] == null){
+        if (types[j] == null) {
           types[j] = t;
         }
       }
@@ -431,73 +436,64 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * @param colID the ID of the column to test for
    * @returns {boolean} true, if the text is too wide for the column, false otherwise
    */
-  private textTooWideForColumn(text, colID){
+  private textTooWideForColumn(text, colID) {
     let w = this.getTextWidth(text, this.styleString);
-    if(w > this.oneLineMaxWidth){
-      w = w/2 + 50;
+    if (w > this.oneLineMaxWidth) {
+      w = w / 2 + 50;
     }
-    //console.log(w > this.avgWidths[colID]);
+    // console.log(w > this.avgWidths[colID]);
     return w > this.avgWidths[colID];
   }
 
 
-  /**
-   * Returns all the keys of an object as array
-   * @param object the object containing the keys
-   * @returns {string[]} a string-array containing all the keys
-   */
-  private static getArrayOfKeys(object){
-    return Object.keys(object).filter(x => !x.startsWith('___'));
-  }
-
-  private updateContainer(){
+  private updateContainer() {
     this.containerHeight = this.container.nativeElement.offsetHeight;
-    //console.log("new height: "+this.containerHeight);
+    // console.log("new height: "+this.containerHeight);
   }
 
   /**
    * Called on Scrolling the Data-Table
    * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
    */
-  private updateScroll(){
+  private updateScroll() {
     this.scrollTopBefore = this.scrollTop;
     this.scrollLeftBefore = this.scrollLeft;
 
     this.scrollTop = this.container.nativeElement.scrollTop;
     this.scrollLeft = this.container.nativeElement.scrollLeft;
 
-    //console.log(this.scrollTopBefore+"->"+this.scrollTop);
+    // console.log(this.scrollTopBefore+"->"+this.scrollTop);
 
     if (this.data != null && !this.scrolling) {
       this.scrolling = true;
 
-      //let time1 = Math.floor(Date.now());
+      // let time1 = Math.floor(Date.now());
 
-      //Scrolling down
-      if(this.scrollTop > this.scrollTopBefore){
+      // Scrolling down
+      if (this.scrollTop > this.scrollTopBefore) {
         this.updateScrollDown();
       }
 
-      //Scrolling up
-      if(this.scrollTop < this.scrollTopBefore){
+      // Scrolling up
+      if (this.scrollTop < this.scrollTopBefore) {
         this.updateScrollUp();
       }
 
-      //Scrolling right
-      if(this.scrollLeft > this.scrollLeftBefore){
+      // Scrolling right
+      if (this.scrollLeft > this.scrollLeftBefore) {
 
       }
 
-      //Scrolling left
-      if(this.scrollLeft < this.scrollLeftBefore){
+      // Scrolling left
+      if (this.scrollLeft < this.scrollLeftBefore) {
 
       }
 
-      //let time2 = Math.floor(Date.now());
+      // let time2 = Math.floor(Date.now());
 
       this.scrolling = false;
 
-      //console.log("UpdateScroll: "+(time2-time1));
+      // console.log("UpdateScroll: "+(time2-time1));
     }
   }
 
@@ -508,8 +504,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
   private updateScrollDown() {
     let tableHeadHeight = this.elementHeight;
 
-    //Scrolling down
-    if (this.scrollTop + this.containerHeight >  tableHeadHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
+    // Scrolling down
+    if (this.scrollTop + this.containerHeight >
+        tableHeadHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
 
       let numberOfTopRows = Math.floor((this.scrollTop - tableHeadHeight) / this.elementHeight) - this.displayOffsetMin;
 
@@ -523,7 +520,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
       this.firstDisplay = numberOfTopRows;
 
       this.offsetTop = numberOfTopRows * this.elementHeight;
-      this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight; //this.offsetBottom - (this.offsetTop - newOffsetTop);
+      this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+        // this.offsetBottom - (this.offsetTop - newOffsetTop);
     }
   }
 
@@ -534,10 +532,11 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
   private updateScrollUp() {
     let tableHeadHeight = this.elementHeight;
 
-    //Scrolling up
+    // Scrolling up
     if (this.scrollTop < tableHeadHeight + (this.firstDisplay + this.displayOffsetMin) * this.elementHeight) {
 
-      let numberOfTopRows = Math.floor((this.scrollTop + this.containerHeight) / this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
+      let numberOfTopRows = Math.floor((this.scrollTop + this.containerHeight) /
+              this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
 
       if (numberOfTopRows + this.displayItemCount > this.data.length) {
         numberOfTopRows = this.data.length - this.displayItemCount;
@@ -559,18 +558,17 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * Called on clicking a checkbox to select a row
    * toggles the checked-variable for this row and runs the tests to check, whether all rows are selected or unselected
    */
-  private toggle(index: number){
+  private toggle(index: number) {
     this.selected[index] = !this.selected[index];
 
-      if(this.selected[index]){
+      if (this.selected[index]) {
           this.layerService.updateSelectedFeatures([this.data[index].id], []);
-      }
-      else{
+      } else {
           this.layerService.updateSelectedFeatures([], [this.data[index].id]);
       }
 
-    //this.testSelected();
-    //this.testEqual();
+    /*this.testSelected();
+    this.testEqual();*/
   }
 
   /**
@@ -578,24 +576,24 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * Called when clicking the select-all-checkbox
    * Selects or unselects all rows, depending on whether a row is already selected
    */
-  private toggleAll(){
+  private toggleAll() {
     let toggledList = Array<FeatureID>();
-      for(let i: number = 0; i < this.selected.length; i++) {
-        if(this.allSelected == this.selected[i]){
+      for (let i = 0; i < this.selected.length; i++) {
+        if (this.allSelected === this.selected[i]) {
             toggledList.push(this.data[i].id);
         }
+
       this.selected[i] = !this.allSelected;
     }
 
-      if(!this.allSelected){
-          this.layerService.updateSelectedFeatures(toggledList, []);
-      }
-      else{
-          this.layerService.updateSelectedFeatures([], toggledList);
-      }
+    if (!this.allSelected) {
+        this.layerService.updateSelectedFeatures(toggledList, []);
+    } else {
+        this.layerService.updateSelectedFeatures([], toggledList);
+    }
 
-    //this.testSelected();
-    //this.testEqual();
+    /*this.testSelected();
+    this.testEqual(); */
   }
 
   /**
@@ -603,31 +601,31 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
    * Tests, if all Rows are selected and sets the global allSelected variable
    * Also emits the row-selection-event
    */
-  private testSelected():void{
+  private testSelected(): void {
     this.allSelected = true;
     this.selectedRowsList = [];
-    for(let i in this.selected){
+    for (let i in this.selected) {
       this.allSelected = this.allSelected && this.selected[i];
 
-      if(this.selected[i]){
+      if (this.selected[i]) {
         this.selectedRowsList.push(Number(i));
       }
     }
 
     this.rowsSelected.emit(this.selectedRowsList);
-    //console.log("allSelected:"+this.allSelected);
+    // console.log("allSelected:"+this.allSelected);
   }
 
   /**
    * Row-Selection
    * Tests, if all Rows are in equal state (all selected or all unselected) and sets the global allEqual variable
    */
-  private testEqual():void{
+  private testEqual(): void {
     this.allEqual = true;
-    for(let s of this.selected){
-      this.allEqual = this.allEqual && (s == this.selected[0]);
+    for (let s of this.selected) {
+      this.allEqual = this.allEqual && (s === this.selected[0]);
     }
-    //console.log("allEqual:"+this.allEqual);
+    // console.log("allEqual:"+this.allEqual);
   }
 
 }

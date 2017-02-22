@@ -196,7 +196,7 @@ export class LayerService {
     updateSelectedFeatures(add: Array<FeatureID>, remove: Array<FeatureID>): void {
         const currentSelected = this.selectedFeatures$.value.selected;
         const actualRemove = ImmutableSet(remove).intersect(currentSelected);
-        const actualSelected = currentSelected.subtract(remove);
+        const actualSelected = currentSelected.subtract(actualRemove);
         const actualAdd = ImmutableSet(add).subtract(actualSelected);
         if (actualAdd.size > 0 || actualRemove.size > 0) {
             let next: SelectedFeatures = {
@@ -207,8 +207,25 @@ export class LayerService {
             if (actualAdd.size > 0) {
                 next.focus = add[add.length - 1];
             }
+
+            //console.log('featureIds next', next);
             this.selectedFeatures$.next(next);
-            //console.log('featureIds next', this.selectedFeatures$.value);
+        }
+    }
+
+    setSelectedFeatures(selection: Array<FeatureID>): void {
+        const currentSelected = this.selectedFeatures$.value.selected;
+        const newSelected = ImmutableSet(selection);
+        if (newSelected.size > 0) {
+            let next: SelectedFeatures = {
+                selected: newSelected,
+                add: newSelected,
+                remove: currentSelected,
+            };
+            if (newSelected.size > 0) {
+                next.focus = selection[selection.length - 1];
+            }
+            this.selectedFeatures$.next(next);
         }
     }
 

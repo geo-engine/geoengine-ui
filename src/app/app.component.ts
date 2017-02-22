@@ -118,9 +118,9 @@ import {OperatorRepositoryComponent} from "../components/operator-repository.com
                         <div (click)="setTabIndex(0)">Data Table</div>
                     </template>
                     <!-- new DataTable -->
-                    <dataTable *ngIf= "dataTableVisible$ | async"
+                    <wave-data-table *ngIf= "dataTableVisible$ | async"
                         [height]="(bottomContainerHeight$ | async)">
-                    </dataTable>
+                    </wave-data-table>
                         
                     <!--<wave-data-table
                         *ngIf= "dataTableVisible$ | async"
