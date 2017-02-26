@@ -1,7 +1,7 @@
-<div class="scrollContent" [style.height.px]="height" (scroll)="updateScroll()" (window:resize)="updateContainer()" #scrollContainer>
+<div class="scrollContent" [style.height.px]="height" #scrollContainer (window:resize)="updateContainer()" (scroll)="updateScroll()">
 
   <!-- Loading Spinner -->
-  <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollTop">
+  <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollLeft" [style.top.px]="scrollTop">
     <div class="spinner">
       <md-spinner color="primary"></md-spinner>
     </div>
@@ -13,7 +13,7 @@
     <table #scrollContainerContent>
       <thead> <!--#tableHead-->
         <tr>
-          <th [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollTop" [style.position]="'relative'" class="tableFixed tableFixedHorizontal tableFixedVertical">
+          <th [style.left.px]="scrollLeft" [style.top.px]="scrollTop" [style.position]="'relative'" class="tableFixed tableFixedHorizontal tableFixedVertical">
             <div class="tableCell">
               <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual" (change)="toggleAll()"></md-checkbox>
             </div>

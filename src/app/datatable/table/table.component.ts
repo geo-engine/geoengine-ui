@@ -1,6 +1,6 @@
 import {
     Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter,
-    ChangeDetectionStrategy, OnInit, OnDestroy
+    ChangeDetectionStrategy, OnInit, OnDestroy, HostListener
 } from '@angular/core';
 import {DialogComponent} from '../dialog/dialog.component';
 import {Observable, Subscription} from 'rxjs';
@@ -26,7 +26,7 @@ interface Column {
 @Component({
   selector: 'wave-data-table',
   templateUrl: './table.component.html',
-  styleUrls: ['table.component.less'],
+  styleUrls: ['table.component.less','table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 /**
@@ -34,6 +34,19 @@ interface Column {
  * Displays a Data-Table
  */
 export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+
+    /*@HostListener('scroll', ['$event']) private onScroll($event:Event):void {
+        //if($event.target){
+        this.scrollTopBefore = this.scrollTop;
+        this.scrollLeftBefore = this.scrollLeft;
+
+        this.scrollTop = $event.target['scrollTop'];
+        this.scrollLeft = $event.target['scrollLeft'];
+        //console.log($event.target['scrollLeft'], $event.target['scrollTop']);
+        //}
+        this.updateScroll();
+    };*/
+
 
   LoadingState = LoadingState;
 
@@ -450,6 +463,13 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     this.containerHeight = this.container.nativeElement.offsetHeight;
     // console.log("new height: "+this.containerHeight);
   }
+
+
+    /*private updateScroll2() {
+        console.log("Test1");
+        console.log("Test2");
+    }*/
+
 
   /**
    * Called on Scrolling the Data-Table
