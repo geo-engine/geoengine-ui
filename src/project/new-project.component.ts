@@ -19,12 +19,12 @@ import {Projections} from '../app/operators/projection.model';
     selector: 'wave-new-project-dialog',
     template: `
     <form [ngFormModel]="form">
-        <md-input placeholder="Name" ngControl="name">
+        <input mdInput placeholder="Name" ngControl="name">
             <md-hint align="end" *ngIf="form.controls.name.errors?.required"
             >The name must be non-empty.</md-hint>
             <md-hint align="end" *ngIf="nameInUsage$ | async"
             >The name is already in use.</md-hint>
-        </md-input>
+        
         <md-progress-circle mode="indeterminate" *ngIf="nameLoading$ | async"></md-progress-circle>
         <p>Set the projection for reviewing and exporting:</p>
         <div class="select">
@@ -36,10 +36,10 @@ import {Projections} from '../app/operators/projection.model';
             </select>
         </div>
         <p>This will be the visible timestamp:</p>
-        <md-input placeholder="Date/Time" ngControl="time">
+        <input mdInput placeholder="Date/Time" ngControl="time">
             <md-hint align="end" [class.no-error]="!form.controls.time.errors?.invalidTime"
             >YYYY-MM-DDTHH:mm:ss</md-hint>
-        </md-input>
+        
     </form>
     `,
     styles: [`

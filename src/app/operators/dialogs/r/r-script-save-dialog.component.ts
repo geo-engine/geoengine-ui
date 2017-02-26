@@ -27,7 +27,7 @@ type RScriptSaveDialogType = {
         >
             <md-hint align="end" *ngIf="form.controls.name.errors?.required"
             >The name must be non-empty.</md-hint>
-        </md-input>
+        
         <md-progress-circle
             mode="indeterminate"
             *ngIf="loading$ | async"

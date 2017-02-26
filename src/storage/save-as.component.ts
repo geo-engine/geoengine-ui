@@ -17,7 +17,7 @@ import {Project} from '../project/project.model';
             placeholder="Current Project Name"
             [ngModel]="project.name"
             [disabled]="true"
-        ></md-input>
+        >
         <md-input
             type="text"
             placeholder="New Project Name"
@@ -27,7 +27,7 @@ import {Project} from '../project/project.model';
             >The new name must be different and non-empty.</md-hint>
             <md-hint align="end" *ngIf="usedName$ | async"
             >The name is already in use.</md-hint>
-        </md-input>
+        
         <md-progress-circle
             mode="indeterminate"
             *ngIf="loading$ | async"

@@ -23,10 +23,10 @@ enum FormStatus { LoggedOut, LoggedIn, Loading }
                 <md-radio-button value="GFBio">GFBio</md-radio-button>
             </md-radio-group>
             <md-input-container>
-              <input md-input type="text" placeholder="Username" formControlName="username">
+              <input mdInput type="text" placeholder="Username" formControlName="username">
             </md-input-container>
             <md-input-container>
-              <input md-input type="password" placeholder="Password" formControlName="password">
+              <input mdInput type="password" placeholder="Password" formControlName="password">
             </md-input-container>
             <span *ngIf="invalidCredentials">Invalid Credentials</span>
             <md-checkbox ngControl="staySignedIn">Stay signed in</md-checkbox>

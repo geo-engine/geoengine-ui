@@ -470,7 +470,7 @@ export class ReprojectionSelectionComponent
         [(ngModel)]="name"
         minLength="1"
         (blur)="onBlur()"
-    ></md-input>
+    >
     `,
     styles: [`
     h3 small {

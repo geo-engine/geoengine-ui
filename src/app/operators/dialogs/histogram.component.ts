@@ -57,8 +57,8 @@ import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
                     </select>
                 </div>
                 <div *ngIf="customRange" layout="row" class="custom-range">
-                    <md-input type="number" placeholder="Min" ngControl="rangeMin"></md-input>
-                    <md-input type="number" placeholder="Max" ngControl="rangeMax"></md-input>
+                    <input mdInput type="number" placeholder="Min" ngControl="rangeMin">
+                    <input mdInput type="number" placeholder="Max" ngControl="rangeMax">
                 </div>
                 <md-checkbox type="checkbox" ngControl="autoBuckets" #autoB>
                     Choose number of buckets automatically
@@ -69,7 +69,7 @@ import {FormGroup, FormBuilder, Validators, FormControl} from "@angular/forms";
                     class="choose-buckets"
                     placeholder="Number of Buckets"
                     ngControl="buckets"
-                ></md-input>
+                >
             </md-card-content>
         </md-card>
         <wave-operator-output-name ngControl="name"></wave-operator-output-name>

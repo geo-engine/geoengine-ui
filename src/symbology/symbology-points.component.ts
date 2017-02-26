@@ -13,12 +13,11 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
                     <label>Fill color</label>
                 </td>
                 <td>
-                    <md-input
+                    <input mdInput
                         class='cc'
                         [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
                         [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
                         (ngModelChange)='updateFillRgba($event)'>
-                    </md-input>
                 </td>
             </tr>
             <tr>
@@ -26,12 +25,12 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
                     <label>Stroke color</label>
                 </td>
                 <td>
-                    <md-input
+                    <input mdInput
                         class='cc'
                         [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                         [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
                         (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input>
+                    
                 </td>
             </tr>
             <tr>
@@ -39,19 +38,19 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
                     <label>Stroke width</label>
                 </td>
                 <td>
-                    <md-input type='number' min='0'
+                    <input mdInput type='number' min='0'
                         [(ngModel)]='symbology.strokeWidth'
                         (ngModelChange)='update()'>
-                    </md-input>
+                    
                 </td>
             </tr>
             <tr>
                 <td><label>Radius</label></td>
                 <td>
-                    <md-input type='number' min='0'
+                    <input mdInput type='number' min='0'
                         [(ngModel)]='symbology.radius'
                         (ngModelChange)='update()'>
-                    </md-input>
+                    
                 </td>
             </tr>
         </table>
@@ -123,12 +122,12 @@ export class SymbologyPointsComponent {
                     <label>Fill color</label>
                 </td>
                 <td>
-                    <md-input
+                    <input md-input
                         class='cc'
                         [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
                         [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
                         (ngModelChange)='updateFillRgba($event)'>
-                    </md-input>
+                    
                 </td>
             </tr>
             </template>
@@ -137,12 +136,12 @@ export class SymbologyPointsComponent {
                     <label>Stroke color</label>
                 </td>
                 <td>
-                    <md-input
+                    <input md-input
                         class='cc'
                         [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                         [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
                         (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input>
+                    
                 </td>
             </tr>
             <tr>
@@ -150,17 +149,17 @@ export class SymbologyPointsComponent {
                     <label>Stroke width</label>
                 </td>
                 <td>
-                    <md-input type='number' min='0'
+                    <input mdInput type='number' min='0'
                         [(ngModel)]='symbology.strokeWidth'
                         (ngModelChange)='update()'>
-                    </md-input>
+                    
                 </td>
             </tr>
         </table>
     </form>
      `,
     styles: [`
-        md-input >>> input {
+        .mat-input >>> input {
             color: black !important;
             text-shadow:
             -1px -1px 0 #fff,

@@ -21,7 +21,7 @@
             >
                 <input
                     [formControl]="control"
-                    md-input type="text"
+                    mdInput type="text"
                     placeholder="Value Name for Raster {{LetterNumberConverter.toLetters(i+1)}}"
                 >
                 <md-hint *ngIf="form.controls.valueNames.controls[i].errors?.duplicateName" class="error">

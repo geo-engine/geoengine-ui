@@ -36,7 +36,7 @@ import {RasterValueExtractionOperatorComponent} from '../app/operators/dialogs/r
         <span fxFlex></span>
         <md-icon>search</md-icon>
         <md-input-container>
-          <input md-input placeholder="Operator" type="text" disabled>
+          <input mdInput placeholder="Operator" type="text" disabled>
         </md-input-container>
       </md-toolbar>
       <md-list>      

@@ -42,7 +42,7 @@ import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
                     placeholder="Scientific Name"
                     autocomplete="off"
                     [disabled]="mode === 2"
-                ></md-input>
+                >
                 <md-progress-circle
                     mode="indeterminate"
                     *ngIf="autoCompleteLoading$ | async"

@@ -10,19 +10,19 @@ import {Moment} from 'moment';
       <div class="flex-column">
       <div class="flex-row">
         <md-input-container>
-          <input md-input placeholder="year" type="number" maxLength="4"
+          <input mdInput placeholder="year" type="number" maxLength="4"
               [ngModel]="moment.year()" (ngModelChange)="updateYear($event)"
               (wheel)="$event.stopPropagation()"
           >
         </md-input-container>
         <md-input-container>
-          <input md-input placeholder="month" type="number" maxLength="2"
+          <input mdInput placeholder="month" type="number" maxLength="2"
               [ngModel]="moment.month()+1" (ngModelChange)="updateMonth($event-1)"
               (wheel)="$event.stopPropagation()"
           >
         </md-input-container>
         <md-input-container>
-          <input md-input placeholder="day" type="number" maxLength="2"
+          <input mdInput placeholder="day" type="number" maxLength="2"
               [ngModel]="moment.date()" (ngModelChange)="updateDate($event)"
               (wheel)="$event.stopPropagation()"
           >
@@ -30,19 +30,19 @@ import {Moment} from 'moment';
       </div>
       <div class="flex-row">
         <md-input-container>
-          <input md-input placeholder="hour" type="number" maxLength="2"
+          <input mdInput placeholder="hour" type="number" maxLength="2"
               [ngModel]="moment.hour()" (ngModelChange)="updateHour($event)"
               (wheel)="$event.stopPropagation()"
           >
         </md-input-container>
         <md-input-container>
-          <input md-input placeholder="minute" type="number" maxLength="2"
+          <input mdInput placeholder="minute" type="number" maxLength="2"
               [ngModel]="moment.minute()" (ngModelChange)="updateMinute($event)"
               (wheel)="$event.stopPropagation()"
           >
          </md-input-container>
          <md-input-container>
-          <input md-input placeholder="second" type="number" maxLength="2"
+          <input mdInput placeholder="second" type="number" maxLength="2"
               [ngModel]="moment.second()" (ngModelChange)="updateSecond($event)"
               (wheel)="$event.stopPropagation()"
           >

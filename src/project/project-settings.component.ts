@@ -10,7 +10,7 @@ import * as moment from 'moment';
     selector: 'wave-project-settings',
     template: `
     <form>
-        <md-input placeholder="Name" disabled [(ngModel)]="project.name"></md-input>
+        <input mdInput placeholder="Name" disabled [(ngModel)]="project.name">
         <p>Set the projection for reviewing and exporting:</p>
         <div class="select">
             <label>Projection</label>
@@ -20,9 +20,9 @@ import * as moment from 'moment';
                 >{{projection}}</option>
             </select>
         </div>
-        <!--</md-input>-->
+        <!---->
         <p>This is the currently visible timestamp:</p>
-        <md-input placeholder="Date/Time" disabled [(ngModel)]="time"></md-input>
+        <input mdInput placeholder="Date/Time" disabled [(ngModel)]="time">
     </form>
     `,
     styles: [`

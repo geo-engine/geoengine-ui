@@ -42,7 +42,7 @@ import {FormBuilder, Validators, FormGroup} from '@angular/forms';
             <md-card-content>
                 <p>Use A to reference the existing pixel of the first raster,
                 B for the second one, etc.</p>
-                <md-input placeholder="Expression" ngControl="expression"></md-input>
+                <input mdInput placeholder="Expression" ngControl="expression">
                 <table>
                     <tr>
                         <td>
@@ -58,12 +58,12 @@ import {FormBuilder, Validators, FormGroup} from '@angular/forms';
                             </select>
                         </td>
                         <td>
-                            <md-input type="number" placeholder="Minimum Value" ngControl="minValue"
-                            ></md-input>
+                            <input mdInput type="number" placeholder="Minimum Value" ngControl="minValue"
+                            >
                         </td>
                         <td>
-                            <md-input type="number" placeholder="Maximum Value" ngControl="maxValue"
-                            ></md-input>
+                            <input mdInput type="number" placeholder="Maximum Value" ngControl="maxValue"
+                            >
                         </td>
                     </tr>
                     <tr>

@@ -43,11 +43,11 @@ wave-layer-list md-list md-list-item .md-list-item-text {
   overflow: hidden;
 }
 
-wave-layer-list md-list {
+wave-layer-list mat-list {
   height: 100%;
 }
 
-wave-layer-list md-content {
+wave-layer-list mat-content {
   overflow-x: hidden;
 }
 
@@ -55,7 +55,7 @@ wave-layer-list button[disabled] {
   background-color: transparent;
 }
 
-wave-layer-list md-progress-bar {
+wave-layer-list mat-progress-bar {
     width: 100% !important;
     bottom: 0;
     height: 1px !important;
@@ -70,7 +70,7 @@ wave-layer-list button.error-button {
   left: calc(50% - 40px/2);
 }
 
-wave-layer-list .active-layer .md-list-item {
+wave-layer-list .active-layer .mat-list-item {
   background: whitesmoke;//${Config.COLORS.DEFAULT};
   border-bottom: solid 1px #009688;
 }

@@ -35,7 +35,7 @@ interface Group<T> {
         <span class="toolbar-fill-remaining-space"></span>
         <md-icon>search</md-icon>
         <md-input-container>
-          <input md-input placeholder="Layer" type="text" [(ngModel)]="_searchTerm" disabled>
+          <input mdInput placeholder="Layer" type="text" [(ngModel)]="_searchTerm" disabled>
         </md-input-container>
       </md-toolbar>
       <md-list>

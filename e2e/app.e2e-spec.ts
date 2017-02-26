@@ -1,10 +1,10 @@
-import { WavePage } from './app.po';
+import { UpgradeProjectPage } from './app.po';
 
-describe('wave App', function() {
-  let page: WavePage;
+describe('upgrade-project App', () => {
+  let page: UpgradeProjectPage;
 
   beforeEach(() => {
-    page = new WavePage();
+    page = new UpgradeProjectPage();
   });
 
   it('should display message saying app works', () => {
