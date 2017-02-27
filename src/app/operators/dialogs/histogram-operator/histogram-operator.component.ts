@@ -1,6 +1,6 @@
-import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators, AbstractControl} from '@angular/forms';
-import {Observable, Subscription, Subject, ReplaySubject} from 'rxjs/Rx';
+import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Subscription, ReplaySubject} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {MdDialogRef} from '@angular/material';
@@ -32,7 +32,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
     form: FormGroup;
 
-    attributes$ = new  ReplaySubject<Array<string>>();
+    attributes$ = new ReplaySubject<Array<string>>();
 
     private subscriptions: Array<Subscription> = [];
 
@@ -55,30 +55,16 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             range: this.formBuilder.group({
                 min: [undefined],
                 max: [undefined],
-            }, WaveValidators.conditionalValidator(
-                WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
-                () => rangeTypeControl.value === 'custom'
-            )),
+            }, {
+                validator: WaveValidators.conditionalValidator(
+                    WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
+                    () => rangeTypeControl.value === 'custom'
+                )
+            }),
             autoBuckets: [true, Validators.required],
             numberOfBuckets: [20, Validators.required],
-        });
-
-        this.form.statusChanges.subscribe(status => console.log("STATUS", status, this.form.errors));
-
-        // this.subscriptions.push(
-        //     this.form.controls['attribute'].valueChanges.subscribe(() => {
-        //         setTimeout(() => this.changeDetectorRef.markForCheck(), 2000);
-        //     })
-        // );
-
-        // this.subscriptions.push(
-        //     rangeTypeControl.valueChanges.subscribe(rangeType => {
-        //         this.form.controls['range'].updateValueAndValidity({
-        //             onlySelf: false,
-        //             emitEvent: true,
-        //         });
-        //     })
-        // );
+        })
+        ;
 
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges.map(layer => {
@@ -93,6 +79,12 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     return [];
                 }
             }).subscribe(this.attributes$)
+        );
+
+        this.subscriptions.push(
+            this.form.controls['rangeType'].valueChanges
+                .filter(rangeType => rangeType === 'custom')
+                .subscribe(() => this.form.controls['range'].updateValueAndValidity())
         );
     }
 
