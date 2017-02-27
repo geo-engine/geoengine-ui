@@ -1,9 +1,10 @@
 @import "../../../../wave-app-theme";
 
-md-input-container {
-    margin-bottom: 1rem;
-}
-
 .error {
     color: mat-color($wave-app-warn);
+}
+
+div {
+    padding-bottom: 0.5rem;
+    padding-top: 1rem;
 }

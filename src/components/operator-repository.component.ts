@@ -25,6 +25,7 @@ import {
 } from '../app/operators/types/msg-types.model';
 import {MdDialog} from '@angular/material';
 import {RasterValueExtractionOperatorComponent} from '../app/operators/dialogs/raster-value-extraction/raster-value-extraction.component';
+import {HistogramOperatorComponent} from '../app/operators/dialogs/histogram-operator/histogram-operator.component';
 
 @Component({
     selector: 'wave-operator-repository',
@@ -74,8 +75,7 @@ import {RasterValueExtractionOperatorComponent} from '../app/operators/dialogs/r
                 Plots
             </h3>
             <md-list-item>    
-                    <p md-line>
-                        <!--(click)="histogramOperatorDialog.show()">-->
+                    <p md-line (click)="dialog.open(HistogramOperatorComponent)">
                         {{HistogramType.NAME}}                       
                     </p>
               </md-list-item>
@@ -173,7 +173,9 @@ export class OperatorRepositoryComponent {
     ExpressionOperatorComponent = ExpressionOperatorComponent;
     ExpressionType = ExpressionType;
 
+    HistogramOperatorComponent = HistogramOperatorComponent;
     HistogramType = HistogramType;
+
     RScriptType = RScriptType;
     MsgRadianceType = MsgRadianceType;
     MsgPansharpenType = MsgPansharpenType;

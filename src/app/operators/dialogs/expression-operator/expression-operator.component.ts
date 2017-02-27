@@ -5,7 +5,7 @@ import {ResultTypes} from '../../result-type.model';
 import {LayerService} from '../../../../layers/layer.service';
 import {DataTypes, DataType} from '../../datatype.model';
 import {Unit} from '../../unit.model';
-import {Observable} from 'rxjs';
+import {Observable} from 'rxjs/Rx';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
@@ -74,7 +74,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                 setTimeout(() => {
                     unitControl.setValue(outputUnits[0]);
                     this.changeDetectorRef.markForCheck();
-                });
+                }, 0);
             }
 
             return outputUnits;
@@ -115,7 +115,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                     maxValueControl.setValue(firstItemWithRefs[0].getMax() - 1);
 
                     this.changeDetectorRef.markForCheck();
-                });
+                }, 0);
             }
 
             return outputDataTypes;
@@ -127,7 +127,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         setTimeout(() => this.form.controls['rasterLayers'].updateValueAndValidity({
             onlySelf: false,
             emitEvent: true
-        }));
+        }), 0);
     }
 
     add() {
