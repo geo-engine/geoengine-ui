@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {ProjectService} from "../../project/project.service";
-import {Moment} from 'Moment';
-import {Subscription} from "rxjs";
+import {ProjectService} from '../../project/project.service';
+import {Moment} from 'moment';
+import {Subscription} from 'rxjs/Rx';
 
 @Component({
   selector: 'wave-time-config',
@@ -63,7 +63,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy {
         let sub = this.projectService.getTimeStream().subscribe(time => {
             if (!time.isSame(this.moment)) {
                 this.moment = time.clone();
-                //this.changeDetectorRef.markForCheck();
+                // this.changeDetectorRef.markForCheck();
                 // console.log("wave-time-ribbon", "projectService changed", this.moment);
             }
         });
