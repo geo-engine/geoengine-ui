@@ -1,5 +1,12 @@
 import {AbstractControl} from '@angular/forms';
 
+/**
+ * A validator that validates a form group that contains min/max number fields.
+ * @param controlMinName
+ * @param controlMaxName
+ * @param options
+ * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
+ */
 function minAndMax(controlMinName: string,
                    controlMaxName: string,
                    options?: {
@@ -41,6 +48,12 @@ function minAndMax(controlMinName: string,
     };
 }
 
+/**
+ * A validator that invokes the underlying one only if the condition holds.
+ * @param validator
+ * @param condition
+ * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
+ */
 function conditionalValidator(validator: (control: AbstractControl) => {[key: string]: boolean},
                               condition: () => boolean) {
     return (control: AbstractControl): {[key: string]: boolean} => {
