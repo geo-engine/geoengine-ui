@@ -12,7 +12,6 @@ import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.com
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 import {ExportDialogComponent} from '../layers/dialogs/export.component';
-import {GBIFOperatorComponent}  from '../app/operators/dialogs/gbif.component';
 
 import {ResultTypes} from '../app/operators/result-type.model';
 
@@ -275,7 +274,6 @@ export class StartTabComponent {
     SymbologyDialogComponent = SymbologyDialogComponent;
     ExportDialogComponent = ExportDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
-    GBIFOperatorComponent = GBIFOperatorComponent;
     Config = Config;
     // tslint:enable
 

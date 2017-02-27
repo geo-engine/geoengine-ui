@@ -14,6 +14,7 @@ import {GfbioBasketsComponent} from "../../baskets/gfbio-baskets.component";
 import {OperatorRepositoryComponent} from "../../components/operator-repository.component";
 
 import Config from '../config.model';
+import {GbifOperatorComponent} from '../operators/dialogs/gbif-operator/gbif-operator.component';
 
 @Component({
   selector: 'wave-top-toolbar',
@@ -21,6 +22,8 @@ import Config from '../config.model';
   styleUrls: ['./top-toolbar.component.scss']
 })
 export class TopToolbarComponent implements OnInit {
+    GbifOperatorComponent = GbifOperatorComponent;
+
     private username$: Observable<string>;
 
     private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name

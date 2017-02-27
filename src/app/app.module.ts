@@ -80,6 +80,8 @@ import {SmallTimeInteractionComponent} from './small-time-interaction/small-time
 import { TimeConfigComponent } from './time-config/time-config.component';
 import { ExpressionOperatorComponent } from './operators/dialogs/expression-operator/expression-operator.component';
 import { HistogramOperatorComponent } from './operators/dialogs/histogram-operator/histogram-operator.component';
+import { GbifOperatorComponent } from './operators/dialogs/gbif-operator/gbif-operator.component';
+import {ConfigService} from './config.service';
 
 @NgModule({
     declarations: [
@@ -152,12 +154,13 @@ import { HistogramOperatorComponent } from './operators/dialogs/histogram-operat
         TimeConfigComponent,
         ExpressionOperatorComponent,
         HistogramOperatorComponent,
+        GbifOperatorComponent,
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpModule,
-        MaterialModule.forRoot(),
+        MaterialModule,
         FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
@@ -177,6 +180,7 @@ import { HistogramOperatorComponent } from './operators/dialogs/histogram-operat
         ExpressionOperatorComponent,
         RasterValueExtractionOperatorComponent,
         HistogramOperatorComponent,
+        GbifOperatorComponent,
     ],
     providers: [
         DragulaService,
@@ -193,6 +197,7 @@ import { HistogramOperatorComponent } from './operators/dialogs/histogram-operat
         MapService,
         NotificationService,
         UserService,
+        ConfigService,
     ],
     bootstrap: [AppComponent]
 })
