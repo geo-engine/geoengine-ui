@@ -1,59 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Record} from 'immutable';
+import * as Immutable from 'immutable';
 import {Http} from '@angular/http';
 
-interface ConfigInterface {
-    CONFIG_FILE: string;
-    MAPPING_URL: string;
-    WMS: {
-        VERSION: string,
-        FORMAT: string,
-    };
-    WFS: {
-        VERSION: string,
-        FORMAT: string,
-    };
-    WCS: {
-        SERVICE: string,
-        VERSION: string,
-    };
-    DEBUG_MODE: {
-        WAVE: boolean,
-        MAPPING: boolean,
-    };
-    USER: {
-        GUEST: {
-            NAME: string,
-            PASSWORD: string,
-        },
-    };
-    DELAYS: {
-        LOADING: {
-            MIN: number,
-        },
-        DEBOUNCE: number,
-    };
-    REFRESH_LAYERS_ON_CHANGE: boolean;
-    PROJECT: 'GFBio' | 'IDESSA';
-    DEFAULTS: {
-        PROJECT: {
-            NAME: string,
-            TIME: string,
-            PROJECTION: 'EPSG:3857' | 'EPSG:4326',
-        },
-    };
-    MAP: {
-        BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted',
-        HOSTED_BACKGROUND_SERVICE: string,
-        HOSTED_BACKGROUND_LAYER_NAME: string,
-        HOSTED_BACKGROUND_SERVICE_VERSION: string,
-    };
-    GFBIO: {
-        LIFERAY_PORTAL_URL: string,
-    };
-}
-
-const Config = Record({
+/**
+ * The default config
+ * @type {any}
+ */
+const ConfigDefault = Immutable.fromJS({
     CONFIG_FILE: 'assets/config.json',
     MAPPING_URL: '/cgi-bin/mapping_cgi',
     WMS: {
@@ -104,56 +57,197 @@ const Config = Record({
     },
 });
 
-function load(http: Http): string {
-    console.log("HTTP", http);
-    return 'lalal';
-}
-
-@Injectable()
-export class ConfigService extends Config implements ConfigInterface {
-
-    CONFIG_FILE;
-    MAPPING_URL;
-    WMS;
-    WFS;
-    WCS;
-    DEBUG_MODE;
-    USER;
-    DELAYS;
-    REFRESH_LAYERS_ON_CHANGE;
-    PROJECT;
-    DEFAULTS;
-    MAP;
-    GFBIO;
-
-    constructor(private http: Http) {
-        // super(Config.defaultValues..merge({
-        //     GFBIO: load(http),
-        //     MAP: {
-        //         HOSTED_BACKGROUND_SERVICE: 'foobar',
-        //     }
-        // }));
-
-        super();
-
-        super();
-
-
-        // this.http.get(this.CONFIG_FILE)
-        //     .map(result => result.json())
-        //     .subscribe(data => this.load(data));
-
-        console.log("CONFIG!!!", this.GFBIO, this.MAP.BACKGROUND_LAYER);
+/**
+ * Calls a recursive Object.freeze on an object.
+ * @param o
+ * @returns {any}
+ */
+function deepFreeze(o) {
+    Object.freeze(o);
+    if (o === undefined) {
+        return o;
     }
 
-    // private load(data: {[key: string]: any}) {
-    //     for (const key in data) {
-    //         if (data.hasOwnProperty(key)) {
-    //             const value = data[key];
-    //
-    //             this.set(key, value);
-    //         }
-    //     }
-    // }
+    Object.getOwnPropertyNames(o).forEach(function (prop) {
+        if (o[prop] !== null
+            && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
+            && !Object.isFrozen(o[prop])) {
+            deepFreeze(o[prop]);
+        }
+    });
+
+    return o;
+}
+
+/**
+ * A service that provides config entries.
+ * Loads a custom file at startup.
+ */
+@Injectable()
+export class Config {
+
+    static get CONFIG_FILE(): string {
+        return 'assets/config.json';
+    };
+
+    private _MAPPING_URL: string;
+    private _WMS: {
+        VERSION: string,
+        FORMAT: string,
+    };
+    private _WFS: {
+        VERSION: string,
+        FORMAT: string,
+    };
+    private _WCS: {
+        SERVICE: string,
+        VERSION: string,
+    };
+    private _DEBUG_MODE: {
+        WAVE: boolean,
+        MAPPING: boolean,
+    };
+    private _USER: {
+        GUEST: {
+            NAME: string,
+            PASSWORD: string,
+        },
+    };
+    private _DELAYS: {
+        LOADING: {
+            MIN: number,
+        },
+        DEBOUNCE: number,
+    };
+    private _PROJECT: 'GFBio' | 'IDESSA';
+    private _DEFAULTS: {
+        PROJECT: {
+            NAME: string,
+            TIME: string,
+            PROJECTION: 'EPSG:3857' | 'EPSG:4326',
+        },
+    };
+    private _MAP: {
+        BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted',
+        HOSTED_BACKGROUND_SERVICE: string,
+        HOSTED_BACKGROUND_LAYER_NAME: string,
+        HOSTED_BACKGROUND_SERVICE_VERSION: string,
+        REFRESH_LAYERS_ON_CHANGE: boolean,
+    };
+    private _GFBIO: {
+        LIFERAY_PORTAL_URL: string,
+    };
+
+
+    get MAPPING_URL() {
+        return this._MAPPING_URL;
+    }
+
+    get WMS() {
+        return this._WMS;
+    }
+
+    get WFS() {
+        return this._WFS;
+    }
+
+    get WCS() {
+        return this._WCS;
+    }
+
+    get DEBUG_MODE() {
+        return this._DEBUG_MODE;
+    }
+
+    get USER() {
+        return this._USER;
+    }
+
+    get DELAYS() {
+        return this._DELAYS;
+    }
+
+    get PROJECT() {
+        return this._PROJECT;
+    }
+
+    get DEFAULTS() {
+        return this._DEFAULTS;
+    }
+
+    get MAP() {
+        return this._MAP;
+    }
+
+    get GFBIO() {
+        return this._GFBIO;
+    }
+
+    constructor(private http: Http) {
+    }
+
+    /**
+     * Initialize the config on app start.
+     */
+    load(): Promise < void > {
+        return this.http.get(Config.CONFIG_FILE)
+            .map(response => response.json())
+            .do(
+                appConfig => {
+                    const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
+
+                    this.handleConfig(config);
+                },
+                error => {
+                    this.handleConfig(ConfigDefault.toJS());
+                })
+            .toPromise();
+    }
+
+    private handleConfig(config: {[key: string]: any}) {
+        for (const key in config) {
+            if (config.hasOwnProperty(key)) {
+                const value = deepFreeze(config[key]);
+
+                switch (key) {
+                    case 'MAPPING_URL':
+                        this._MAPPING_URL = value;
+                        break;
+                    case 'WMS':
+                        this._WMS = value;
+                        break;
+                    case 'WFS':
+                        this._WFS = value;
+                        break;
+                    case 'WCS':
+                        this._WCS = value;
+                        break;
+                    case 'DEBUG_MODE':
+                        this._DEBUG_MODE = value;
+                        break;
+                    case 'USER':
+                        this._USER = value;
+                        break;
+                    case 'DELAYS':
+                        this._DELAYS = value;
+                        break;
+                    case 'PROJECT':
+                        this._PROJECT = value;
+                        break;
+                    case 'DEFAULTS':
+                        this._DEFAULTS = value;
+                        break;
+                    case 'MAP':
+                        this._MAP = value;
+                        break;
+                    case 'GFBIO':
+                        this._GFBIO = value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
 
 }
