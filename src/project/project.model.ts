@@ -1,22 +1,21 @@
-import * as moment from 'moment';
-
 import {Projection, Projections} from '../app/operators/projection.model';
+import {Time, TimeDict, timeFromDict} from '../app/time.model';
 
 export interface ProjectConfig {
     name: string;
     projection: Projection;
-    time: moment.Moment;
+    time: Time;
 }
 
 export interface ProjectDict {
     name: string;
     projection: string;
-    time: string;
+    time: TimeDict;
 }
 
 export class Project {
     projection: Projection;
-    time: moment.Moment;
+    time: Time;
     private _name: string;
 
     constructor(config: ProjectConfig) {
@@ -29,7 +28,7 @@ export class Project {
         return new Project({
             name: dict.name,
             projection: Projections.fromCode(dict.projection),
-            time: moment(dict.time),
+            time: timeFromDict(dict.time),
         });
     }
 
@@ -46,7 +45,7 @@ export class Project {
         return {
             name: this.name,
             projection: this.projection.getCode(),
-            time: this.time.toJSON(),
+            time: this.time.asDict(),
         };
     }
 

@@ -2,8 +2,6 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
-import {Moment} from 'moment';
-
 import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
@@ -24,6 +22,7 @@ import {LoadingState} from '../shared/loading-state.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
+import {Time} from '../app/time.model';
 
 export interface MappingColorizer {
     interpolation: string;
@@ -54,7 +53,7 @@ export class MappingQueryService {
      */
     getPlotQueryUrl(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
     }): string {
         if (!config.time) {
             config.time = this.projectService.getTime();
@@ -65,7 +64,7 @@ export class MappingQueryService {
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
                 query: encodeURIComponent(config.operator.toQueryJSON()),
-                time: config.time.toISOString(),
+                time: config.time.asRequestString(),
                 crs: config.operator.projection.getCode(),
             },
         });
@@ -84,7 +83,7 @@ export class MappingQueryService {
      * @param time the point in time
      * @returns a Promise of PlotData
      */
-    getPlotData(config: {operator: Operator, time?: Moment}): Promise<PlotData> {
+    getPlotData(config: {operator: Operator, time?: Time}): Promise<PlotData> {
         return this.http.get(this.getPlotQueryUrl(config))
                         .toPromise()
                         .then(response => response.json());
@@ -134,7 +133,7 @@ export class MappingQueryService {
      */
     getWFSQueryUrl(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: boolean | ViewportSize
@@ -158,7 +157,7 @@ export class MappingQueryService {
                            + ':'
                            + projectedOperator.toQueryJSON()),
                 srsname: config.projection.getCode(),
-                time: config.time.toISOString(),
+                time: config.time.asRequestString(),
                 outputFormat: config.outputFormat.getFormat(),
             },
         });
@@ -201,7 +200,7 @@ export class MappingQueryService {
      */
     getWFSData(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection,
         outputFormat: WFSOutputFormat,
     }): Promise<string> {
@@ -220,7 +219,7 @@ export class MappingQueryService {
      */
     getWFSDataAsJson(config: {
         operator: Operator,
-        time: Moment,
+        time: Time,
         projection: Projection,
         viewportSize?: (boolean | ViewportSize)
     }): Promise<GeoJsonFeatureCollection> {
@@ -310,7 +309,6 @@ export class MappingQueryService {
                 } as GeoJsonFeatureCollection;
             }
         }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
-        //}).share();
 
         return {
             data$: data$,
@@ -328,7 +326,7 @@ export class MappingQueryService {
      */
     getWMSQueryParameters(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection,
     }): MappingRequestParameters {
         if (!config.time) {
@@ -350,7 +348,7 @@ export class MappingQueryService {
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
-                time: config.time.toISOString(),
+                time: config.time.asRequestString(),
             },
         });
     }
@@ -364,7 +362,7 @@ export class MappingQueryService {
      */
     getWMSQueryUrl(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection
     }): string {
         const parameters = this.getWMSQueryParameters(config);
@@ -374,7 +372,7 @@ export class MappingQueryService {
 
     getWCSQueryUrl(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection,
         outputFormat: WCSOutputFormat,
         size: {
@@ -407,7 +405,7 @@ export class MappingQueryService {
                 size_x: config.size.x,
                 size_y: config.size.y,
                 debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
-                time: config.time.toISOString(),
+                time: config.time.asRequestString(),
             },
         });
 
@@ -415,7 +413,7 @@ export class MappingQueryService {
     }
 
     getColorizer(operator: Operator,
-                 time: Moment,
+                 time: Time,
                  projection: Projection): Promise<MappingColorizer> {
 
         const projectedOperator = operator.getProjectedOperator(projection);
@@ -426,7 +424,7 @@ export class MappingQueryService {
             + '&' + 'REQUEST=' + requestType
             + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
             + '&' + 'CRS=' + projection.getCode()
-            + '&' + 'TIME=' + time.toISOString(); // TODO: observable-isieren
+            + '&' + 'TIME=' + time.asRequestString(); // TODO: observable-isieren
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(colorizerRequest)
             .map((res: Response) => res.json())
@@ -443,7 +441,7 @@ export class MappingQueryService {
 
     getProvenance(config: {
         operator: Operator,
-        time?: Moment,
+        time?: Time,
         projection?: Projection
     }): Promise<Array<Provenance>> {
         // TODO: incorporate time and projection

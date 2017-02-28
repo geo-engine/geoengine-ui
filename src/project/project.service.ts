@@ -6,6 +6,7 @@ import {Projections, Projection} from '../app/operators/projection.model';
 
 import {Project} from './project.model';
 
+import {Time, TimePoint} from '../app/time.model';
 import * as moment from 'moment';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class ProjectService {
     private project$: BehaviorSubject<Project>;
     private projection$: BehaviorSubject<Projection>;
 
-    private time$: BehaviorSubject<moment.Moment>;
+    private time$: BehaviorSubject<Time>;
 
     constructor() {
         this.project$ = new BehaviorSubject(this.createDefaultProject());
@@ -37,7 +38,7 @@ export class ProjectService {
         return new Project({
             name: Config.DEFAULTS.PROJECT.NAME,
             projection: Projections.fromCode(Config.DEFAULTS.PROJECT.PROJECTION),
-            time: moment(Config.DEFAULTS.PROJECT.TIME),
+            time: new TimePoint(moment(Config.DEFAULTS.PROJECT.TIME)),
         });
     }
 
@@ -53,8 +54,9 @@ export class ProjectService {
         this.project$.next(project);
     }
 
-    setTime(time: moment.Moment) {
+    setTime(time: Time) {
         const value = this.project$.value;
+        console.log("setTime", time, value);
         if (time.isValid() && !time.isSame(value.time) ) {
             this.changeProjectConfig({
                 time: time,
@@ -63,7 +65,7 @@ export class ProjectService {
         }
     }
 
-    changeProjectConfig(config: {projection?: Projection, time?: moment.Moment}) {
+    changeProjectConfig(config: {projection?: Projection, time?: Time}) {
         const project = this.project$.value;
 
         if (config.projection) {
@@ -95,11 +97,11 @@ export class ProjectService {
         return this.projection$;
     }
 
-    getTimeStream(): Observable<moment.Moment> {
+    getTimeStream(): Observable<Time> {
         return this.time$;
     }
 
-    getTime(): moment.Moment {
+    getTime(): Time {
         return this.time$.getValue();
     }
 

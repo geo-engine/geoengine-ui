@@ -4,7 +4,6 @@ import {
 import {Subscription} from 'rxjs/Rx';
 
 import * as ol from 'openlayers';
-import {Moment} from 'moment';
 
 import Config from '../app/config.model';
 import {Projection} from '../app/operators/projection.model';
@@ -13,6 +12,7 @@ import {Symbology, AbstractVectorSymbology, RasterSymbology}
 
 import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
+import {Time} from '../app/time.model';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -36,7 +36,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     @Input() layer: L;
     @Input() projection: Projection;
     @Input() symbology: S;
-    @Input() time: Moment;
+    @Input() time: Time;
 
     protected _mapLayer: OlLayer;
     protected source: OlSource;
@@ -115,7 +115,7 @@ abstract class OlVectorLayerComponent
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ["layer", "projection", "symbology", "time"],
+    inputs: ['layer', 'projection', 'symbology', 'time'],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -128,7 +128,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ["layer", "projection", "symbology", "time"],
+    inputs: ['layer', 'projection', 'symbology', 'time'],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -141,7 +141,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ["layer", "projection", "symbology", "time"],
+    inputs: ['layer', 'projection', 'symbology', 'time'],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -154,7 +154,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ["layer", "projection", "symbology", "time"],
+    inputs: ['layer', 'projection', 'symbology', 'time'],
 })
 export class OlRasterLayerComponent
     extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS,

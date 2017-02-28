@@ -1,43 +1,45 @@
 <md-toolbar>Time Config</md-toolbar>
 <div fxFlex fxLayout="column">
-    <div fxLayout="row">
-        <md-input-container>
-            <input md-input placeholder="year" type="number" maxLength="4"
-                   [ngModel]="moment.year()" (ngModelChange)="updateYear($event)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
-        <md-input-container>
-            <input md-input placeholder="month" type="number" maxLength="2"
-                   [ngModel]="moment.month()+1" (ngModelChange)="updateMonth($event-1)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
-        <md-input-container>
-            <input md-input placeholder="day" type="number" maxLength="2"
-                   [ngModel]="moment.date()" (ngModelChange)="updateDate($event)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
-    </div>
-    <div fxLayout="row">
-        <md-input-container>
-            <input md-input placeholder="hour" type="number" maxLength="2"
-                   [ngModel]="moment.hour()" (ngModelChange)="updateHour($event)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
-        <md-input-container>
-            <input md-input placeholder="minute" type="number" maxLength="2"
-                   [ngModel]="moment.minute()" (ngModelChange)="updateMinute($event)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
-        <md-input-container>
-            <input md-input placeholder="second" type="number" maxLength="2"
-                   [ngModel]="moment.second()" (ngModelChange)="updateSecond($event)"
-                   (wheel)="$event.stopPropagation()"
-            >
-        </md-input-container>
+    <div>
+        <div fxLayout="row">
+            <md-input-container>
+                <input md-input placeholder="year" type="number" maxLength="4"
+                       [ngModel]="time.getStart().year()" (ngModelChange)="updateYear($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input md-input placeholder="month" type="number" maxLength="2"
+                       [ngModel]="time.getStart().month()+1" (ngModelChange)="updateMonth($event-1)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input md-input placeholder="day" type="number" maxLength="2"
+                       [ngModel]="time.getStart().date()" (ngModelChange)="updateDate($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+        </div>
+        <div fxLayout="row">
+            <md-input-container>
+                <input md-input placeholder="hour" type="number" maxLength="2"
+                       [ngModel]="time.getStart().hour()" (ngModelChange)="updateHour($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input md-input placeholder="minute" type="number" maxLength="2"
+                       [ngModel]="time.getStart().minute()" (ngModelChange)="updateMinute($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input md-input placeholder="second" type="number" maxLength="2"
+                       [ngModel]="time.getStart().second()" (ngModelChange)="updateSecond($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+        </div>
     </div>
 </div>
