@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
-import {ConfigService} from '../../../config.service';
+import {Config} from '../../../config.service';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
@@ -70,7 +70,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
     private iucnUnits = new Map<string, Unit>();
     private iucnDatatypes = new Map<string, DataType>();
 
-    constructor(private config: ConfigService,
+    constructor(private config: Config,
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private randomColorService: RandomColorService,

@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {MaterialModule, MdIconRegistry} from '@angular/material';
@@ -61,20 +61,24 @@ import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
-import { LayerSelectionComponent } from './operators/dialogs/helpers/layer-selection/layer-selection.component';
+import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
-import { OperatorOutputNameComponent } from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
-import { MultiLayerSelectionComponent } from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
-import { ReprojectionSelectionComponent } from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
-import { RasterValueExtractionOperatorComponent } from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
-import { TopToolbarComponent } from './top-toolbar/top-toolbar.component';
+import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
+import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
+import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
+import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
+import {TopToolbarComponent} from './top-toolbar/top-toolbar.component';
 import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
 import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
-import { TimeConfigComponent } from './time-config/time-config.component';
-import { ExpressionOperatorComponent } from './operators/dialogs/expression-operator/expression-operator.component';
-import { HistogramOperatorComponent } from './operators/dialogs/histogram-operator/histogram-operator.component';
-import { GbifOperatorComponent } from './operators/dialogs/gbif-operator/gbif-operator.component';
-import {ConfigService} from './config.service';
+import {TimeConfigComponent} from './time-config/time-config.component';
+import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
+import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
+import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
+import {Config} from './config.service';
+
+export function configInitializer(config: Config) {
+    return () => config.load();
+}
 
 @NgModule({
     declarations: [
@@ -182,7 +186,13 @@ import {ConfigService} from './config.service';
         MapService,
         NotificationService,
         UserService,
-        ConfigService,
+        Config,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: configInitializer,
+            deps: [Config],
+            multi: true,
+        }
     ],
     bootstrap: [AppComponent]
 })
