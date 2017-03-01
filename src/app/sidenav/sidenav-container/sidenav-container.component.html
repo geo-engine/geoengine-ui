@@ -1,0 +1,15 @@
+<md-toolbar color="primary" fxFlexLayout="row">
+    <button md-button (click)="$event.preventDefault();close()">
+        <md-icon>keyboard_arrow_right</md-icon>
+    </button>
+    <h2 fxFlex>{{sidenavRef.getTitleStream() | async}}</h2>
+    <button md-button
+            *ngIf="sidenavRef.getBackButtonComponentStream() | async"
+            (click)="$event.preventDefault();back()"
+    >
+        <md-icon>undo</md-icon>
+    </button>
+</md-toolbar>
+<div>
+    <template #target></template>
+</div>

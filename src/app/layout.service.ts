@@ -1,4 +1,4 @@
-import {Injectable, Type} from '@angular/core';
+import {Injectable, Type, Component} from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs/Rx';
 
 import {PlotService} from '../plots/plot.service';
@@ -70,7 +70,7 @@ export class LayoutService {
     /**
      *  Sidenav content
      */
-    private sidenavContentComponent$: Subject<any> = new ReplaySubject();
+    private sidenavContentComponent$: Subject<Type<Component>> = new ReplaySubject();
 
 
     /**
@@ -97,15 +97,15 @@ export class LayoutService {
     /**
      * Which component to show in the sidenav?
      */
-    getSidenavContentComponentStream<C>(): Observable<Type<C>> {
-        return this.sidenavContentComponent$;
+    getSidenavContentComponentStream(): Observable<Type<Component>> {
+        return this.sidenavContentComponent$.distinctUntilChanged();
     }
 
     /**
      * Set the new Component to show in the sidenav
      * @param component
      */
-    setSidenavContentComponent(component: any){
+    setSidenavContentComponent(component: any) {
         this.sidenavContentComponent$.next(component);
     }
 

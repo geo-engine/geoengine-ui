@@ -1,0 +1,19 @@
+h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 0.5rem;
+    font-size: 1.5rem;
+}
+
+button {
+    min-width: 36px;
+    width: 36px;
+    padding: 0;
+}
+
+div {
+    width: calc(33vw - 64px);
+    height: calc(100% - 64px);
+    overflow: auto;
+}
