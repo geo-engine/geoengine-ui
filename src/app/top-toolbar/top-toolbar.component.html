@@ -1,39 +1,39 @@
 <md-toolbar>
     <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-        <div fxLayoutAlign="start center">
-            <button md-button (click)="layoutService.setSidenavContentComponent(RRC)">
-                <md-icon>layers</md-icon>
-                <span>Environmental</span>
-            </button>
-            <button md-button (click)="layoutService.setSidenavContentComponent(ARC)">
-                <md-icon>storage</md-icon>
-                <span>ABCD Archives</span>
-            </button>
-            <button md-button (click)="layoutService.setSidenavContentComponent(CSV)">
-                <md-icon>grid_on</md-icon>
-                <span>CSV Data/Import</span>
-            </button>
-            <button md-button *ngIf="Config.PROJECT === 'GFBio' && (userService.getUserStream() | async).hasExternalIdPrefix('GFBIO')" (click)="layoutService.setSidenavContentComponent(GBC)">
-                <md-icon>add_shopping_cart</md-icon>
-                <span>GFBio Baskets</span>
-            </button>
-            <button md-button *ngIf="false" disabled>
-                <md-icon>file_upload</md-icon>
-                <span>Upload</span>
-            </button>
-            <button md-button (click)="dialog.open(GbifOperatorComponent)">
-                <md-icon>search</md-icon>
-                <span>Species Distribution</span>
-            </button>
-            <button md-button (click)="layoutService.setSidenavContentComponent(ORC)">
-                <md-icon>build</md-icon>
-                <span>Operators</span>
-            </button>
-            <button md-button *ngIf="false" disabled>
-                <md-icon>brush</md-icon>
-                <span>Draw</span>
-            </button>
-        </div>
+        <!--<div fxLayoutAlign="start center">-->
+            <!--<button md-button (click)="layoutService.setSidenavContentComponent(RRC)">-->
+                <!--<md-icon>layers</md-icon>-->
+                <!--<span>Environmental</span>-->
+            <!--</button>-->
+            <!--<button md-button (click)="layoutService.setSidenavContentComponent(ARC)">-->
+                <!--<md-icon>storage</md-icon>-->
+                <!--<span>ABCD Archives</span>-->
+            <!--</button>-->
+            <!--<button md-button (click)="layoutService.setSidenavContentComponent(CSV)">-->
+                <!--<md-icon>grid_on</md-icon>-->
+                <!--<span>CSV Data/Import</span>-->
+            <!--</button>-->
+            <!--<button md-button *ngIf="Config.PROJECT === 'GFBio' && (userService.getUserStream() | async).hasExternalIdPrefix('GFBIO')" (click)="layoutService.setSidenavContentComponent(GBC)">-->
+                <!--<md-icon>add_shopping_cart</md-icon>-->
+                <!--<span>GFBio Baskets</span>-->
+            <!--</button>-->
+            <!--<button md-button *ngIf="false" disabled>-->
+                <!--<md-icon>file_upload</md-icon>-->
+                <!--<span>Upload</span>-->
+            <!--</button>-->
+            <!--<button md-button (click)="layoutService.setSidenavContentComponent(GbifOperatorComponent)">-->
+                <!--<md-icon>search</md-icon>-->
+                <!--<span>Species Distribution</span>-->
+            <!--</button>-->
+            <!--<button md-button (click)="layoutService.setSidenavContentComponent(ORC)">-->
+                <!--<md-icon>build</md-icon>-->
+                <!--<span>Operators</span>-->
+            <!--</button>-->
+            <!--<button md-button *ngIf="false" disabled>-->
+                <!--<md-icon>brush</md-icon>-->
+                <!--<span>Draw</span>-->
+            <!--</button>-->
+        <!--</div>-->
 
         <wave-small-time-interaction fxLayoutAlign="center center"></wave-small-time-interaction>
 

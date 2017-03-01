@@ -1,22 +1,15 @@
 import {
-  Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener,
-  ChangeDetectorRef, Type
+    Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener, ChangeDetectorRef
 } from '@angular/core';
-import {MdTabGroup, MdSidenav} from "@angular/material";
-import {Observable, BehaviorSubject} from "rxjs";
-
-
-import {RasterRepositoryComponent} from '../components/raster-repository.component';
-import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
-import {CsvRepositoryComponent} from '../components/csv-repository.component';
-import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
+import {MdTabGroup, MdSidenav} from '@angular/material';
+import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {Symbology} from '../symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
 
 import {LayoutService} from './layout.service';
 import {NotificationService, NotificationType} from './notification.service';
-import {SidenavContainerComponent} from './sidenav-container.component';
+import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
@@ -30,8 +23,6 @@ import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 
 import {PlotService} from '../plots/plot.service';
-import {OperatorRepositoryComponent} from "../components/operator-repository.component";
-
 
 
 @Component({
@@ -147,8 +138,9 @@ import {OperatorRepositoryComponent} from "../components/operator-repository.com
                 </md-tab>
             </md-tab-group>
         </div>
-        <md-sidenav #sidenavRight align="end" layout="column" mode="over">
-            <wave-sidenav-container #sidenavContainer style='height:100%'></wave-sidenav-container>
+        <wave-navigation></wave-navigation>
+        <md-sidenav #sidenavRight align="end" mode="side">
+            <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
         </md-sidenav>
     </md-sidenav-container>
     `,
@@ -242,27 +234,27 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MdTabGroup) bottomTabs: MdTabGroup;
 
     @ViewChild(MdSidenav) rightSidenav: MdSidenav;
-    @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent<any>; //TODO: correct params?
+    @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent;
 
-    private layerListVisible$: Observable<boolean>;
-    private plotComponentVisible$: Observable<boolean>;
-    private dataTableVisible$: Observable<boolean>;
+    layerListVisible$: Observable<boolean>;
+    plotComponentVisible$: Observable<boolean>;
+    dataTableVisible$: Observable<boolean>;
 
-    private middleContainerHeight$: Observable<number>;
-    private bottomContainerHeight$: Observable<number>;
+    middleContainerHeight$: Observable<number>;
+    bottomContainerHeight$: Observable<number>;
 
-    private layersReverse$: Observable<Array<Layer<Symbology>>>;
-    private hasSelectedLayer$: Observable<boolean>;
+    layersReverse$: Observable<Array<Layer<Symbology>>>;
+    hasSelectedLayer$: Observable<boolean>;
 
     // for ng-switch
-    private ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
+    ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
 
     constructor(
-        private layerService: LayerService,
+        public layerService: LayerService,
         private plotService: PlotService,
-        private layoutService: LayoutService,
+        public layoutService: LayoutService,
         private notificationService: NotificationService,
-        private projectService: ProjectService,
+        public projectService: ProjectService,
         private mappingQueryService: MappingQueryService,
         private userService: UserService,
         private randomColorService: RandomColorService,
@@ -279,19 +271,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.plotComponentVisible$ = this.layoutService.getPlotComponentVisibilityStream();
         this.dataTableVisible$ = this.layoutService.getDataTableVisibilityStream();
 
-        // TODO: toasts for notifications
-        this.notificationService.getNotificationStream().subscribe(notification => {
-            switch (notification.type) {
-                case NotificationType.Info:
-                    console.info(NotificationType[notification.type], notification);
-                    break;
-                case NotificationType.Error:
-                    console.error(NotificationType[notification.type], notification);
-                    break;
-                default:
-                    // do nothing
-            }
-        });
     }
 
     ngOnInit() {
@@ -311,9 +290,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(c => {
-            this.rightSidenav.open();
-            this.rightSidenavContainer.load(c);
+        this.layoutService.getSidenavContentComponentStream().subscribe(type => {
+            this.rightSidenavContainer.load(type);
+            if (type) {
+                this.rightSidenav.open();
+            } else {
+                this.rightSidenav.close();
+            }
         });
 
         // set the stored tab index

@@ -18,7 +18,7 @@ import {
     OlPolygonLayerComponent
 } from '../map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from '../provenance/provenance.component';
-import {SidenavContainerComponent} from './sidenav-container.component';
+import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
 import {CsvRepositoryComponent} from '../components/csv-repository.component';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
@@ -82,6 +82,11 @@ import {ExpressionOperatorComponent} from './operators/dialogs/expression-operat
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
 import {Config} from './config.service';
+import {SidenavRef} from './sidenav/sidenav-ref.service';
+import { SidenavHeaderComponent } from './sidenav/sidenav-header/sidenav-header.component';
+import { NavigationComponent } from './sidenav/navigation/navigation.component';
+import { SourceOperatorListComponent } from './operators/dialogs/source-operator-list/source-operator-list.component';
+import { IfGfbioDirective } from './util/if-gfbio.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -159,6 +164,10 @@ export function configInitializer(config: Config) {
         ExpressionOperatorComponent,
         HistogramOperatorComponent,
         GbifOperatorComponent,
+        SidenavHeaderComponent,
+        NavigationComponent,
+        SourceOperatorListComponent,
+        IfGfbioDirective,
     ],
     imports: [
         BrowserModule,
@@ -185,6 +194,7 @@ export function configInitializer(config: Config) {
         RasterValueExtractionOperatorComponent,
         HistogramOperatorComponent,
         GbifOperatorComponent,
+        SourceOperatorListComponent,
     ],
     providers: [
         DragulaService,
@@ -201,6 +211,7 @@ export function configInitializer(config: Config) {
         MapService,
         NotificationService,
         UserService,
+        SidenavRef,
         Config,
         {
             provide: APP_INITIALIZER,

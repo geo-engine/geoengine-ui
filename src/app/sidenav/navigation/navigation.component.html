@@ -1,0 +1,14 @@
+<div>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, SourceOperatorListComponent)"
+            (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
+    >
+        <md-icon>add</md-icon>
+    </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, OperatorRepositoryComponent)"
+            (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)"
+    >
+        <md-icon>build</md-icon>
+    </button>
+</div>
