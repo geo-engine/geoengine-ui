@@ -189,7 +189,7 @@ export class Config {
     /**
      * Initialize the config on app start.
      */
-    load(): Promise < void > {
+    load(): Promise<void> {
         return this.http.get(Config.CONFIG_FILE)
             .map(response => response.json())
             .do(
@@ -209,7 +209,7 @@ export class Config {
             if (config.hasOwnProperty(key)) {
                 const value = deepFreeze(config[key]);
 
-                switch (key) {
+                switch (key.toUpperCase()) {
                     case 'MAPPING_URL':
                         this._MAPPING_URL = value;
                         break;
