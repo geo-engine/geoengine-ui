@@ -1,22 +1,42 @@
-<md-toolbar>Time Config</md-toolbar>
+<md-toolbar>
+    <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+        <div>Time Config</div>
+        <div>
+            <md-button-toggle-group #group="mdButtonToggleGroup" (change)="changeMode($event)">
+                <md-button-toggle value="TimePoint">
+                    <md-icon>pin_drop</md-icon>
+                </md-button-toggle>
+                <md-button-toggle value="TimeInterval">
+                    <md-icon>space_bar</md-icon>
+                </md-button-toggle>
+                <md-button-toggle value="complex" disabled>
+                    <md-icon>more_horiz</md-icon>
+                </md-button-toggle>
+            </md-button-toggle-group>
+        </div>
+    </md-toolbar-row>
+</md-toolbar>
 <div fxFlex fxLayout="column">
-    <div>
+    <div *ngIf="time?.getType() === 'TimePoint' || time?.getType() === 'TimeInterval'">
+
+        <h3 *ngIf="time?.getType() === 'TimePoint'">TimePoint</h3>
+        <h3 *ngIf="time?.getType() === 'TimeInterval'">TimeInterval Start</h3>
         <div fxLayout="row">
             <md-input-container>
                 <input mdInput placeholder="year" type="number" maxLength="4"
-                       [ngModel]="time.getStart().year()" (ngModelChange)="updateYear($event)"
+                       [ngModel]="time.getStart().year()" (ngModelChange)="updateStartYear($event)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
             <md-input-container>
                 <input mdInput placeholder="month" type="number" maxLength="2"
-                       [ngModel]="time.getStart().month()+1" (ngModelChange)="updateMonth($event-1)"
+                       [ngModel]="time.getStart().month()+1" (ngModelChange)="updateStartMonth($event-1)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
             <md-input-container>
                 <input mdInput placeholder="day" type="number" maxLength="2"
-                       [ngModel]="time.getStart().date()" (ngModelChange)="updateDate($event)"
+                       [ngModel]="time.getStart().date()" (ngModelChange)="updateStartDate($event)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
@@ -24,19 +44,64 @@
         <div fxLayout="row">
             <md-input-container>
                 <input mdInput placeholder="hour" type="number" maxLength="2"
-                       [ngModel]="time.getStart().hour()" (ngModelChange)="updateHour($event)"
+                       [ngModel]="time.getStart().hour()" (ngModelChange)="updateStartHour($event)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
             <md-input-container>
                 <input mdInput placeholder="minute" type="number" maxLength="2"
-                       [ngModel]="time.getStart().minute()" (ngModelChange)="updateMinute($event)"
+                       [ngModel]="time.getStart().minute()" (ngModelChange)="updateStartMinute($event)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
             <md-input-container>
                 <input mdInput placeholder="second" type="number" maxLength="2"
-                       [ngModel]="time.getStart().second()" (ngModelChange)="updateSecond($event)"
+                       [ngModel]="time.getStart().second()" (ngModelChange)="updateStartSecond($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+        </div>
+    </div>
+
+    <div *ngIf="time?.getType() === 'TimeInterval'">
+
+        <h3>TimeInterval End</h3>
+        <div fxLayout="row">
+            <md-input-container>
+                <input mdInput placeholder="year" type="number" maxLength="4"
+                       [ngModel]="time.getEnd().year()" (ngModelChange)="updateEndYear($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="month" type="number" maxLength="2"
+                       [ngModel]="time.getEnd().month()+1" (ngModelChange)="updateEndMonth($event-1)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="day" type="number" maxLength="2"
+                       [ngModel]="time.getEnd().date()" (ngModelChange)="updateEndDate($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+        </div>
+        <div fxLayout="row">
+            <md-input-container>
+                <input mdInput placeholder="hour" type="number" maxLength="2"
+                       [ngModel]="time.getEnd().hour()" (ngModelChange)="updateEndHour($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="minute" type="number" maxLength="2"
+                       [ngModel]="time.getEnd().minute()" (ngModelChange)="updateEndMinute($event)"
+                       (wheel)="$event.stopPropagation()"
+                >
+            </md-input-container>
+            <md-input-container>
+                <input mdInput placeholder="second" type="number" maxLength="2"
+                       [ngModel]="time.getEnd().second()" (ngModelChange)="updateEndSecond($event)"
                        (wheel)="$event.stopPropagation()"
                 >
             </md-input-container>
