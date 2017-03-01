@@ -7,7 +7,6 @@ import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {InfoAreaComponent} from '../components/info-area.component';
-import {RibbonsComponent} from '../ribbons/ribbons.component';
 import {LayerListComponent} from '../layers/layer-list.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
@@ -25,12 +24,6 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
 import {SymbologyRasterComponent} from '../symbology/symbology-raster.component';
-import {TimeRibbonComponent} from '../ribbons/time-ribbon.component';
-import {StartTabComponent} from '../ribbons/start-tab.component';
-import {OperatorsTabComponent} from '../ribbons/operators-tab.component';
-import {ProjectTabComponent} from '../ribbons/project-tab.component';
-import {DebugTabComponent} from '../ribbons/debug-tab.component';
-import {OperatorSelectionGroupComponent, OperatorButtonComponent} from '../ribbons/operator-selection-group.component';
 import {CodeEditorComponent} from '../components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
@@ -96,7 +89,6 @@ export function configInitializer(config: Config) {
     declarations: [
         AppComponent,
         InfoAreaComponent,
-        RibbonsComponent,
         LayerListComponent,
         InfoBarComponent,
         RasterRepositoryComponent,
@@ -115,13 +107,6 @@ export function configInitializer(config: Config) {
         SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyVectorComponent,
-        TimeRibbonComponent,
-        StartTabComponent,
-        OperatorsTabComponent,
-        ProjectTabComponent,
-        DebugTabComponent,
-        OperatorSelectionGroupComponent,
-        OperatorButtonComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,

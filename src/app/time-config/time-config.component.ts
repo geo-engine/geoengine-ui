@@ -1,70 +1,136 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
-import {Moment} from 'moment';
 import {Subscription} from 'rxjs/Rx';
+import {Time, TimeType, TimePoint, TimeInterval} from '../time.model';
+import {MdButtonToggleChange} from '@angular/material';
 
 @Component({
   selector: 'wave-time-config',
   templateUrl: './time-config.component.html',
-  styleUrls: ['./time-config.component.scss']
+  styleUrls: ['./time-config.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy {
 
 
-    private moment: Moment;
+    private time: Time;
     private subscriptions: Array<Subscription> = [];
 
-  constructor(private projectService: ProjectService) { }
+  constructor(private projectService: ProjectService, private changeDetectorRef: ChangeDetectorRef) { }
 
-    updateYear(event: string | number) {
+    updateStartYear(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.year(value);
+            this.time.getStart().year(value);
             this.push();
         }
     }
-    updateMonth(event: string | number) {
+    updateStartMonth(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.month(value);
+            this.time.getStart().month(value);
             this.push();
         }
     }
-    updateDate(event: string | number) {
+    updateStartDate(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.date(value);
+            this.time.getStart().date(value);
             this.push();
         }
     }
-    updateHour(event: string | number) {
+    updateStartHour(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.hour(value);
+            this.time.getStart().hour(value);
             this.push();
         }
     }
-    updateMinute(event: string | number) {
+    updateStartMinute(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.minute(value);
+            this.time.getStart().minute(value);
             this.push();
         }
     }
-    updateSecond(event: string | number) {
+    updateStartSecond(event: string | number) {
         const value = this.eventToNumber(event);
         if ( value && !isNaN(value)) {
-            this.moment.second(value);
+            this.time.getStart().second(value);
             this.push();
         }
+    }
+
+    updateEndYear(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().year(value);
+            this.push();
+        }
+    }
+    updateEndMonth(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().month(value);
+            this.push();
+        }
+    }
+    updateEndDate(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().date(value);
+            this.push();
+        }
+    }
+    updateEndHour(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().hour(value);
+            this.push();
+        }
+    }
+    updateEndMinute(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().minute(value);
+            this.push();
+        }
+    }
+    updateEndSecond(event: string | number) {
+        const value = this.eventToNumber(event);
+        if ( value && !isNaN(value)) {
+            this.time.getEnd().second(value);
+            this.push();
+        }
+    }
+
+    changeMode(event: MdButtonToggleChange){
+      console.log('time-config', event);
+      let requestedType = event.value as TimeType;
+      if(this.time.getType() === requestedType){
+          console.log(this.time.getType(), requestedType);
+      }
+      else {
+          switch(requestedType) {
+              case 'TimePoint': {
+                  this.time = new TimePoint(this.time.getStart());
+                  break;
+              }
+              case 'TimeInterval': {
+                  this.time = new TimeInterval(this.time.getStart(), this.time.getStart());
+                  break;
+              }
+          }
+          //this.changeDetectorRef.markForCheck();
+          this.push();
+      }
     }
 
     ngOnInit() {
         let sub = this.projectService.getTimeStream().subscribe(time => {
-            if (!time.isSame(this.moment)) {
-                this.moment = time.clone();
-                // this.changeDetectorRef.markForCheck();
-                // console.log("wave-time-ribbon", "projectService changed", this.moment);
+            if (!time.isSame(this.time)) {
+                this.time = time.clone();
+                this.changeDetectorRef.markForCheck();
             }
         });
 
@@ -89,8 +155,8 @@ export class TimeConfigComponent implements OnInit, OnDestroy {
     }
 
     private push() {
-        if (this.moment.isValid() && this.moment !== undefined) {
-            this.projectService.setTime(this.moment.clone());
+        if (!!this.time && this.time.isValid()) {
+            this.projectService.setTime(this.time.clone());
         }
     }
 
