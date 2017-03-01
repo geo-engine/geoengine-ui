@@ -79,7 +79,7 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
                             .join(', ');
                     }
 
-                    setTimeout(() => this.changeDetectorRef.markForCheck());
+                    setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
                     break;
                 default:
                 // do nothing

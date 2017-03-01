@@ -10,29 +10,28 @@ import {RasterSymbology} from './symbology.model';
         <tr>
             <td><label>Opacity</label></td>
             <td>
-                <md-input [(ngModel)]='symbology.opacity' (ngModelChange)='update()'>
-                </md-input>
+                <input mdInput [(ngModel)]='symbology.opacity' (ngModelChange)='update()'>
             </td>
         </tr>
 
         <tr>
             <td><label>Hue</label></td>
             <td>
-                <md-input disabled
+                <input mdInput disabled
                     type='number'
                     [(ngModel)]='symbology.hue'
                     (ngModelChange)='update()'>
-                </md-input>
+                
             </td>
         </tr>
         <tr>
             <td><label>Saturation</label></td>
             <td>
-                <md-input disabled
+                <input mdInput disabled
                     type='number'
                     [(ngModel)]='symbology.saturation'
                     (ngModelChange)='update()'>
-                </md-input>
+                
             </td>
         </tr>
     </table>

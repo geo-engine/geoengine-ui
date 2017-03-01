@@ -2,7 +2,7 @@
 
 
 
-wave-layer-list .no-layer >>> .md-list-item-inner {
+wave-layer-list .no-layer >>> .mat-list-item-inner {
   height: 24px;
   min-height: 24px;
   color: md-color($black-87-opacity); //${Config.COLORS.TEXT.DEFAULT};
@@ -12,9 +12,9 @@ wave-layer-list .no-layer >>> .md-list-item-inner {
 }
 
 wave-layer-list .active-layer {
-  background: md-color($md-background)//${Config.COLORS.DEFAULT};
+  background: mat-color($mat-background)//${Config.COLORS.DEFAULT};
 }
 
 wave-layer-list md-divider.md-active {
-  border-top-color: md-color($md-primary);//${Config.COLORS.PRIMARY};
+  border-top-color: mat-color($mat-primary);//${Config.COLORS.PRIMARY};
 }

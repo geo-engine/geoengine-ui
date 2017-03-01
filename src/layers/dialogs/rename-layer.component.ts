@@ -14,7 +14,7 @@ import {MdDialogRef} from '@angular/material';
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
         <md-dialog-content>
             <md-input-container class="flex-item" fxFlex>
-                <input md-input type="text" placeholder="Name" formControlName="layerName">
+                <input mdInput type="text" placeholder="Name" formControlName="layerName">
             </md-input-container>
         </md-dialog-content>
         <md-dialog-actions align="end">

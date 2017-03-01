@@ -72,6 +72,9 @@ import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.c
 import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
 import { TimeConfigComponent } from './time-config/time-config.component';
 import { ExpressionOperatorComponent } from './operators/dialogs/expression-operator/expression-operator.component';
+import { HistogramOperatorComponent } from './operators/dialogs/histogram-operator/histogram-operator.component';
+import { GbifOperatorComponent } from './operators/dialogs/gbif-operator/gbif-operator.component';
+import {ConfigService} from './config.service';
 
 @NgModule({
     declarations: [
@@ -135,12 +138,14 @@ import { ExpressionOperatorComponent } from './operators/dialogs/expression-oper
         NextLayerListComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
+        HistogramOperatorComponent,
+        GbifOperatorComponent,
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpModule,
-        MaterialModule.forRoot(),
+        MaterialModule,
         FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
@@ -159,6 +164,8 @@ import { ExpressionOperatorComponent } from './operators/dialogs/expression-oper
         TimeConfigComponent,
         ExpressionOperatorComponent,
         RasterValueExtractionOperatorComponent,
+        HistogramOperatorComponent,
+        GbifOperatorComponent,
     ],
     providers: [
         DragulaService,
@@ -175,6 +182,7 @@ import { ExpressionOperatorComponent } from './operators/dialogs/expression-oper
         MapService,
         NotificationService,
         UserService,
+        ConfigService,
     ],
     bootstrap: [AppComponent]
 })

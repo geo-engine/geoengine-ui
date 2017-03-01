@@ -15,7 +15,7 @@ import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
 } from '../../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
-import {Subscription, BehaviorSubject, Observable} from 'rxjs';
+import {Subscription, BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {MdDialogRef} from '@angular/material';
@@ -134,7 +134,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
     ngAfterViewInit() {
         // initially get attributes
-        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}));
+        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}), 0);
     }
 
     ngOnDestroy() {

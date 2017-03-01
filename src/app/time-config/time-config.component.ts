@@ -1,7 +1,6 @@
 import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
-import {Moment} from 'moment';
-import {Subscription} from 'rxjs';
+import {Subscription} from 'rxjs/Rx';
 import {Time} from '../time.model';
 
 @Component({
@@ -66,7 +65,6 @@ export class TimeConfigComponent implements OnInit, OnDestroy {
             if (!time.isSame(this.time)) {
                 this.time = time.clone();
                 this.changeDetectorRef.markForCheck();
-                // console.log("wave-time-ribbon", "projectService changed", this.moment);
             }
         });
 

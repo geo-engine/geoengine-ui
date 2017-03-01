@@ -25,7 +25,7 @@ import {ProjectService} from '../project/project.service';
               <span class="toolbar-fill-remaining-space"></span>
               <md-icon>search</md-icon>
               <md-input-container>
-                <input md-input placeholder="Layer" type="text" [(ngModel)]="_searchTerm">
+                <input mdInput placeholder="Layer" type="text" [(ngModel)]="_searchTerm">
               </md-input-container>
         </md-toolbar>
     <div flex="grow">

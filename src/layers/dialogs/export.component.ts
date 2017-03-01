@@ -25,19 +25,19 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
             placeholder="Export Name"
             value="export"
             [disabled]="true"
-        ></md-input>
+        >
         <div *ngIf="isRaster" ngControlGroup="resolution">
             <md-input
                 type="number"
                 placeholder="Resolution Width"
                 ngControl="width"
-            ></md-input>
+            >
             <md-input
                 type="number"
                 placeholder="Resolution Height"
                 ngControl="height"
                 [disabled]="true"
-            ></md-input>
+            >
         </div>
         <p>Data Output Type:</p>
         <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isVector">

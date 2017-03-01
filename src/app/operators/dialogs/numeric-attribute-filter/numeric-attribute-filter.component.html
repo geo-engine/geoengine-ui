@@ -30,13 +30,13 @@
             *ngIf="!!form.controls.attribute.value"
         >
             <md-input-container class="flex-item" fxFlex>
-                <input md-input type="number" step="any" placeholder="Min" formControlName="min">
+                <input mdInput type="number" step="any" placeholder="Min" formControlName="min">
                 <md-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
                     Specify at least minimum or maximum.
                 </md-hint>
             </md-input-container>
             <md-input-container class="flex-item" fxFlex>
-                <input md-input type="number" step="any" placeholder="Max" formControlName="max">
+                <input mdInput type="number" step="any" placeholder="Max" formControlName="max">
                 <md-hint class="error"  *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
                 </md-hint>

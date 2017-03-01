@@ -1,0 +1,69 @@
+<wave-dialog-header>Histogram</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <md-dialog-content>
+        <wave-layer-selection
+            [types]="ResultTypes.INPUT_TYPES"
+            formControlName="layer"
+        ></wave-layer-selection>
+        <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
+        <div fxLayout="row" *ngIf="isVectorLayer(form.controls.layer.valueChanges | async)">
+            <md-select placeholder="Attribute" formControlName="attribute" fxFlex>
+                <md-option
+                    *ngFor="let attribute of (attributes$ | async)"
+                    [value]="attribute"
+                >{{attribute}}
+                </md-option>
+            </md-select>
+        </div>
+        <div fxLayout="row">
+            <md-select placeholder="Range Type" formControlName="rangeType" fxFlex>
+                <md-option [value]="'custom'">Custom</md-option>
+                <md-option [value]="'unit'">Unit</md-option>
+                <md-option [value]="'data'">Data</md-option>
+            </md-select>
+        </div>
+        <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
+            <md-input-container fxFlex>
+                <input mdInput type="number" placeholder="Min" formControlName="min">
+                <md-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+                    Please specify the value.
+                </md-hint>
+            </md-input-container>
+            <div fxFlex="1rem"></div>
+            <md-input-container fxFlex>
+                <input mdInput type="number" placeholder="Max" formControlName="max">
+                <md-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
+                    The maximum must be greater or equal to the minimum.
+                </md-hint>
+                <md-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+                    Please specify the value.
+                </md-hint>
+            </md-input-container>
+        </div>
+        <md-checkbox type="checkbox" formControlName="autoBuckets">
+            Choose number of buckets automatically
+        </md-checkbox>
+        <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
+            <md-input-container fxFlex>
+                <input mdInput
+                       type="number"
+                       placeholder="Number of Buckets"
+                       formControlName="numberOfBuckets"
+                >
+            </md-input-container>
+        </div>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
+        ></wave-operator-output-name>
+    </md-dialog-content>
+    <md-dialog-actions align="end">
+        <button
+            type="submit"
+            md-raised-button
+            color="primary"
+            [disabled]="(form.statusChanges | async) !== 'VALID'"
+        >Apply
+        </button>
+    </md-dialog-actions>
+</form>
