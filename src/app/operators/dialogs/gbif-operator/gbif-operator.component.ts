@@ -13,7 +13,6 @@ import {
     SimpleVectorSymbology
 } from '../../../../symbology/symbology.model';
 import {RandomColorService} from '../../../../services/random-color.service';
-import {MdDialogRef} from '@angular/material';
 import {BasicColumns} from '../../../../models/csv.model';
 import {Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
@@ -21,6 +20,8 @@ import {Http} from '@angular/http';
 import {LayerService} from '../../../../layers/layer.service';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
+import {SidenavRef} from '../../../sidenav/sidenav-ref.service';
+import {SourceOperatorListComponent} from '../source-operator-list/source-operator-list.component';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     const errors: {
@@ -74,12 +75,14 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private randomColorService: RandomColorService,
-                private dialog: MdDialogRef<GbifOperatorComponent>,
+                private sidenavRef: SidenavRef,
                 private http: Http,
                 private layerService: LayerService) {
     }
 
     ngOnInit() {
+        this.sidenavRef.setBackButtonComponent(SourceOperatorListComponent);
+
         this.form = this.formBuilder.group({
             name: [undefined, Validators.required],
             searchString: [undefined, Validators.required],
@@ -240,7 +243,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
             }));
         }
 
-        this.dialog.close();
+        this.sidenavRef.close();
     }
 
 }

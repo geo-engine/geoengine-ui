@@ -1,5 +1,14 @@
+:host {
+    display: block;
+    padding: 1rem;
+}
+
 md-progress-circle {
     width: 25%;
     height: auto;
     margin: 0 auto;
+}
+
+button:last-child {
+    margin-top: 2rem;
 }

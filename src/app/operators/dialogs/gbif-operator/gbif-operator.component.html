@@ -1,6 +1,5 @@
-<wave-dialog-header>GBIF & IUCN Loader</wave-dialog-header>
+<wave-sidenav-header>GBIF & IUCN Loader</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
-    <md-dialog-content>
         <div>
             <wave-dialog-section-heading
                 title="1. Search Species"
@@ -60,14 +59,15 @@
             formControlName="name"
             [suggestion]="form.controls.searchString.valueChanges | async"
         ></wave-operator-output-name>
-    </md-dialog-content>
-    <md-dialog-actions align="end">
-        <button
-            type="submit"
-            md-raised-button
-            color="primary"
-            [disabled]="(form.statusChanges | async) !== 'VALID'"
-        >Add
-        </button>
-    </md-dialog-actions>
+        <div fxLayout="row">
+            <button
+                type="submit"
+                md-raised-button
+                fxFlex
+                color="primary"
+                [disabled]="(form.statusChanges | async) !== 'VALID'"
+            >
+                Add
+            </button>
+        </div>
 </form>
