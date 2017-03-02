@@ -36,9 +36,9 @@ export class SidenavContainerComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    load(type: Type<Component>) {
+    load(type: Type<Component>, backButtonType?: Type<Component>) {
         this.sidenavRef.setTitle(undefined);
-        this.sidenavRef.setBackButtonComponent(undefined);
+        this.sidenavRef.setBackButtonComponent(backButtonType);
 
         if (this.componentRef) {
             this.target.clear();

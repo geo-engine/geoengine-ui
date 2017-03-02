@@ -290,9 +290,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(type => {
-            this.rightSidenavContainer.load(type);
-            if (type) {
+        this.layoutService.getSidenavContentComponentStream().subscribe(([component, backButtonComponent]) => {
+            this.rightSidenavContainer.load(component, backButtonComponent);
+            if (component) {
                 this.rightSidenav.open();
             } else {
                 this.rightSidenav.close();

@@ -70,7 +70,7 @@ export class LayoutService {
     /**
      *  Sidenav content
      */
-    private sidenavContentComponent$: Subject<Type<Component>> = new ReplaySubject();
+    private sidenavContentComponent$: Subject<[Type<Component>, Type<Component>]> = new ReplaySubject();
 
 
     /**
@@ -97,7 +97,7 @@ export class LayoutService {
     /**
      * Which component to show in the sidenav?
      */
-    getSidenavContentComponentStream(): Observable<Type<Component>> {
+    getSidenavContentComponentStream(): Observable<[Type<Component>, Type<Component>]> {
         return this.sidenavContentComponent$.distinctUntilChanged();
     }
 
@@ -105,8 +105,8 @@ export class LayoutService {
      * Set the new Component to show in the sidenav
      * @param component
      */
-    setSidenavContentComponent(component: any) {
-        this.sidenavContentComponent$.next(component);
+    setSidenavContentComponent(component: Type<Component>, backButtonComponent?: Type<Component>) {
+        this.sidenavContentComponent$.next([component, backButtonComponent]);
     }
 
     /**

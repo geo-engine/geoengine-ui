@@ -22,8 +22,13 @@ export class NavigationComponent implements OnInit {
     ngOnInit() {
     }
 
-    buttonColor(selectedComponent: Type<Component>, component: Type<Component>) {
-        if (selectedComponent && selectedComponent === component) {
+    buttonColor(componentSelection: [Type<Component>, Type<Component>], component: Type<Component>) {
+        if (!componentSelection) {
+            return 'default';
+        }
+
+        const [selectedComponent, backButtonComponent] = componentSelection;
+        if (selectedComponent === component || backButtonComponent === component) {
             return 'primary';
         } else {
             return 'default';

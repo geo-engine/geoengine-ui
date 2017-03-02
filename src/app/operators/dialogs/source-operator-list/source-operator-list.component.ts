@@ -18,6 +18,8 @@ import {GfbioBasketsComponent} from '../../../../baskets/gfbio-baskets.component
 })
 export class SourceOperatorListComponent implements OnInit {
     // make available
+    SourceOperatorListComponent = SourceOperatorListComponent;
+
     RasterRepositoryComponent = RasterRepositoryComponent;
     RasterSourceType = RasterSourceType;
 

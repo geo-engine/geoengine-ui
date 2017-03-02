@@ -20,8 +20,6 @@ import {Http} from '@angular/http';
 import {LayerService} from '../../../../layers/layer.service';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
-import {SidenavRef} from '../../../sidenav/sidenav-ref.service';
-import {SourceOperatorListComponent} from '../source-operator-list/source-operator-list.component';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     const errors: {
@@ -75,14 +73,11 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private randomColorService: RandomColorService,
-                private sidenavRef: SidenavRef,
                 private http: Http,
                 private layerService: LayerService) {
     }
 
     ngOnInit() {
-        this.sidenavRef.setBackButtonComponent(SourceOperatorListComponent);
-
         this.form = this.formBuilder.group({
             name: [undefined, Validators.required],
             searchString: [undefined, Validators.required],
@@ -243,7 +238,6 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
             }));
         }
 
-        this.sidenavRef.close();
     }
 
 }
