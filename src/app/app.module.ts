@@ -80,6 +80,8 @@ import { SidenavHeaderComponent } from './sidenav/sidenav-header/sidenav-header.
 import { NavigationComponent } from './sidenav/navigation/navigation.component';
 import { SourceOperatorListComponent } from './operators/dialogs/source-operator-list/source-operator-list.component';
 import { IfGfbioDirective } from './util/if-gfbio.directive';
+import { IfGfbioLoggedInDirective } from './util/if-gfbio-logged-in.directive';
+import { IfLoggedInDirective } from './util/if-logged-in.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -153,6 +155,8 @@ export function configInitializer(config: Config) {
         NavigationComponent,
         SourceOperatorListComponent,
         IfGfbioDirective,
+        IfGfbioLoggedInDirective,
+        IfLoggedInDirective,
     ],
     imports: [
         BrowserModule,

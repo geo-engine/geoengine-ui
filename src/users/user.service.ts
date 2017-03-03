@@ -3,7 +3,6 @@ import {Http, Response} from '@angular/http';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
 import {User, Guest} from './user.model';
 
 import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
@@ -16,11 +15,13 @@ import {
 import {CsvFile, CsvColumn} from '../models/csv.model';
 
 import {Unit, UnitMappingDict} from '../app/operators/unit.model';
+import {Config} from '../app/config.service';
 
 export interface Session {
     user: string;
     sessionToken: string;
     staySignedIn?: boolean;
+    isExternallyConnected?: boolean;
 }
 
 class UserServiceRequestParameters extends MappingRequestParameters {
@@ -87,13 +88,14 @@ export class UserService {
     private isGuestUser$: Observable<boolean>;
 
     constructor(
+        private config: Config,
         private http: Http
     ) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
         );
 
-        this.isGuestUser$ = this.session$.map(s => s.user === Config.USER.GUEST.NAME);
+        this.isGuestUser$ = this.session$.map(s => s.user === this.config.USER.GUEST.NAME);
 
         // storage of the session
         this.session$.subscribe(newSession => this.saveSessionData(newSession));
@@ -139,6 +141,10 @@ export class UserService {
         return this.isGuestUser$;
     }
 
+    isGuestUser(): boolean {
+        return this.session$.getValue().user === this.config.USER.GUEST.NAME;
+    }
+
     /**
      * Login using user credentials. If it was successful, set a new user.
      * @param credentials.user The user name.
@@ -163,6 +169,7 @@ export class UserService {
                     user: credentials.user,
                     sessionToken: result.session,
                     staySignedIn: credentials.staySignedIn,
+                    isExternallyConnected: false,
                 });
             }
 
@@ -172,8 +179,8 @@ export class UserService {
 
     guestLogin(): Promise<boolean> {
         return this.login({
-            user: Config.USER.GUEST.NAME,
-            password: Config.USER.GUEST.PASSWORD,
+            user: this.config.USER.GUEST.NAME,
+            password: this.config.USER.GUEST.PASSWORD,
         });
     }
 
@@ -206,7 +213,7 @@ export class UserService {
      * @returns the user details.
      */
     getUserDetails(session: Session): Promise<User> {
-        if (session.user === Config.USER.GUEST.NAME) {
+        if (session.user === this.config.USER.GUEST.NAME) {
             return Promise.resolve(new Guest());
         }
 
@@ -414,7 +421,7 @@ export class UserService {
         const parameters = new GFBioPortalLoginRequestParameters(credentials);
 
         return this.http.get(
-            Config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
+            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
             {headers: parameters.getHeaders()}
         ).flatMap(response => {
             const json = response.json();
@@ -455,6 +462,7 @@ export class UserService {
                             user: credentials.user,
                             sessionToken: result.session,
                             staySignedIn: credentials.staySignedIn,
+                            isExternallyConnected: true,
                         });
                     }
 
@@ -486,7 +494,8 @@ export class UserService {
                     this.session$.next({
                         user: user.name,
                         sessionToken: result.session,
-                        staySignedIn: false, // TODO: think about good default value
+                        staySignedIn: false,
+                        isExternallyConnected: true,
                     });
                     return true;
                 });
@@ -518,7 +527,7 @@ export class UserService {
             const sessionData2 = JSON.parse(sessionStorage.getItem('session')) as Session;
             if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
                 return {
-                    user: Config.USER.GUEST.NAME,
+                    user: this.config.USER.GUEST.NAME,
                     sessionToken: '',
                 };
             } else {
@@ -541,7 +550,7 @@ export class UserService {
 
     protected request(requestParameters: MappingRequestParameters): Promise<Response> {
         return this.http.post(
-            Config.MAPPING_URL,
+            this.config.MAPPING_URL,
             requestParameters.toMessageBody(),
             {headers: requestParameters.getHeaders()}
         ).toPromise();
