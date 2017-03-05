@@ -1,0 +1,108 @@
+wave-navigation {
+    z-index: 1;
+}
+
+:host /deep/ .mat-sidenav-content {
+    overflow: hidden;
+}
+
+.top-container {
+    z-index: 1;
+
+    wave-next-layer-list {
+        width: 16vw;
+        min-width: 200px;
+    }
+}
+
+.mid-container {
+    z-index: 0;
+
+    wave-layer-list {
+        position: absolute;
+        z-index: 1;
+        width: 16vw;
+        min-width: 200px;
+        top: 4rem;
+        @media (max-width: 600px) and (orientation: portrait) {
+            top: 3.5rem;
+        }
+        @media (max-width: 960px) and (orientation: landscape) {
+            top: 3rem;
+        }
+        left: 0;
+        overflow: auto;
+    }
+}
+
+.bottom-container {
+    z-index: 1;
+
+    min-height: 3rem;
+    @media (max-width: 600px) and (orientation: portrait) {
+        min-height: 2.5rem;
+    }
+    @media (max-width: 960px) and (orientation: landscape) {
+        min-height: 2rem;
+    }
+
+    .toggle {
+        position: absolute;
+        z-index: 1;
+        padding: 0;
+        min-width: 3rem;
+        width: 3rem;
+        height: 3rem;
+        @media (max-width: 600px) and (orientation: portrait) {
+            min-width: 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+        @media (max-width: 960px) and (orientation: landscape) {
+            min-width: 2rem;
+            width: 2rem;
+            height: 2rem;
+        }
+    }
+
+    /deep/ .mat-tab-label-container {
+        margin-left: 3rem;
+        @media (max-width: 600px) and (orientation: portrait) {
+            margin-left: 2.5rem;
+        }
+        @media (max-width: 960px) and (orientation: landscape) {
+            margin-left: 2rem;
+        }
+    }
+
+    @media (max-width: 960px) and (orientation: landscape) {
+        /deep/ md-tab-header {
+            height: 2rem;
+        }
+        /deep/ .mat-tab-label {
+            line-height: 2rem;
+        }
+    }
+    @media (max-width: 600px) and (orientation: portrait) {
+        /deep/ md-tab-header {
+            height: 2.5rem;
+        }
+        /deep/ .mat-tab-label {
+            line-height: 2.5rem;
+        }
+    }
+}
+
+.bottom-container.small {
+    max-height: 3rem !important;
+    @media (max-width: 600px) and (orientation: portrait) {
+        max-height: 2.5rem !important;
+    }
+    @media (max-width: 960px) and (orientation: landscape) {
+        max-height: 2rem !important;
+    }
+
+    /deep/ md-tab-header {
+        border: 0;
+    }
+}

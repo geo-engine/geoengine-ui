@@ -10,7 +10,6 @@ import {InfoAreaComponent} from '../components/info-area.component';
 import {LayerListComponent} from '../layers/layer-list.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
-import {PlotListComponent} from '../plots/plot-list.component';
 import {MapComponent} from '../map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
@@ -94,7 +93,6 @@ export function configInitializer(config: Config) {
         LayerListComponent,
         InfoBarComponent,
         RasterRepositoryComponent,
-        PlotListComponent,
         MapComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,

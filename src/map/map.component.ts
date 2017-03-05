@@ -20,8 +20,8 @@ import {MapService} from './map.service';
 @Component({
     selector: 'wave-ol-map',
     template: `
-    <div #mapContainer style='background: black;'
-         [style.height.px]='height'>
+    <div #mapContainer style='background: black; overflow: auto; height: 100%;'>
+         <!--[style.height.px]='height'>-->
     </div>
     <ng-content></ng-content>
     `,
@@ -65,7 +65,8 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
      */
     resize() {
         // will be set to false after view checked event
-        this.isSizeChanged = true;
+        // this.isSizeChanged = true;
+        setTimeout(() =>  this.map.updateSize(), 0);
     }
 
     zoomIn() {

@@ -9,7 +9,7 @@ import {LayoutService} from '../app/layout.service';
     template: `
     <md-toolbar>
         <button md-icon-button aria-label="Toggle Data Table"
-                (click)="layoutService.toggleDataTableVisibility()"
+                (click)="layoutService.toggleLayerDetailViewVisibility()"
                 [ngSwitch]="dataTableVisible$ | async">
             <md-icon *ngSwitchCase="true">expand_more</md-icon>
             <md-icon *ngSwitchCase="false">expand_less</md-icon>
@@ -47,6 +47,6 @@ export class InfoBarComponent {
     constructor(
         private layoutService: LayoutService
     ) {
-        this.dataTableVisible$ = this.layoutService.getDataTableVisibilityStream();
+        this.dataTableVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
     }
 }
