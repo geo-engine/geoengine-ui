@@ -81,6 +81,8 @@ import { SourceOperatorListComponent } from './operators/dialogs/source-operator
 import { IfGfbioDirective } from './util/if-gfbio.directive';
 import { IfGfbioLoggedInDirective } from './util/if-gfbio-logged-in.directive';
 import { IfLoggedInDirective } from './util/if-logged-in.directive';
+import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import { FileUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -155,6 +157,8 @@ export function configInitializer(config: Config) {
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
         IfLoggedInDirective,
+        CsvDialogComponent,
+        FileUploadComponent,
     ],
     imports: [
         BrowserModule,
@@ -182,6 +186,7 @@ export function configInitializer(config: Config) {
         HistogramOperatorComponent,
         GbifOperatorComponent,
         SourceOperatorListComponent,
+        CsvDialogComponent,
     ],
     providers: [
         DragulaService,

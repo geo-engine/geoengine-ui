@@ -1,0 +1,72 @@
+.layer {
+  width:95%;
+  margin: 0 auto;
+}
+.layer md-input {
+  width:100%;
+}
+input[type=number]{
+  width:50px;
+}
+div.longitudeSelector,
+div.latitudeSelector {
+  display:inline-block;
+  vertical-align: top;
+  text-align: left;
+  white-space: nowrap;
+}
+.longitudeSelector span,
+.latitudeSelector span,
+.projectionSelector span {
+  white-space: nowrap;
+  display:inline-block;
+}
+
+div.longitudeSelector {
+  color:orange;
+}
+div.latitudeSelector{
+  color: #0039e6;
+}
+div.latitudeSelector .caption,
+div.longitudeSelector .caption,
+div.projectionSelector .caption {
+  display:block;
+  font-style: italic;
+}
+.projectionSelector table tr td:nth-child(even){
+  float: right;
+}
+.startSelector {
+  color: green;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+}
+.startSelector select {
+  float:right;
+  margin-left: 10px;
+}
+.startSelector strong, .startSelector i{
+  float:left;
+}
+.endSelector {
+  color: darkviolet;
+}
+.endSelector select{
+  float: right;
+  margin-left: 10px;
+}
+.endSelector strong, .startSelector i{
+  float: left;
+}
+.elementGroup {
+  display:inline-block;
+  text-align: center;
+}
+
+md-slide-toggle {
+  display: inline-block;
+}
+.spatialSelector div {
+  border: solid 1px gray;
+}
