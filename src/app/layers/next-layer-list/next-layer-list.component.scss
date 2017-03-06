@@ -1,7 +1,53 @@
+@import "../../../wave-app-theme";
+
+.container {
+    width: 200px;
+    background-color: white;
+}
+
 md-toolbar /deep/ md-toolbar-row:first-child {
     display: none !important;
 }
 
-.container {
-    width: 200px;
+md-list-item {
+    background-color: white;
+}
+
+md-list-item /deep/ .mat-list-item {
+}
+
+md-list-item /deep/ .mat-list-item-content{
+    height: unset !important;
+    min-height: 48px;
+    //padding: 2px 2px !important;
+}
+
+md-list-item /deep/ .mat-list-item-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.list-element-inner-container{
+    width: 100%;
+}
+
+mat-progress-bar {
+    width: 100% !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+md-progress-bar {
+    height: 2px;
+}
+
+button.error-button {
+    position: absolute;
+    left: calc(50% - 40px/2);
+}
+
+.active-layer {
+    background: whitesmoke;//${Config.COLORS.DEFAULT};
 }

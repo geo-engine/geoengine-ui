@@ -29,8 +29,8 @@ import {PlotService} from '../plots/plot.service';
     selector: 'wave-app',
     template: `
     <md-sidenav-container fullscreen>
+        <wave-next-layer-list></wave-next-layer-list>
         <div fxLayout="row">
-            <wave-next-layer-list></wave-next-layer-list>
             <wave-top-toolbar fxFlex></wave-top-toolbar>
         </div>
         <!--
@@ -46,12 +46,7 @@ import {PlotService} from '../plots/plot.service';
         <div
             class="middleContainer"
             [style.height.px]="middleContainerHeight$ | async"
-        >
-            <wave-layer-list
-                md-whiteframe
-                *ngIf="layerListVisible$ | async"
-                [style.max-height.px]="middleContainerHeight$ | async"
-            ></wave-layer-list>
+        >            
             <wave-ol-map
                 [height]="middleContainerHeight$ | async"
                 [projection]="projectService.getProjectionStream() | async"
@@ -209,6 +204,16 @@ import {PlotService} from '../plots/plot.service';
     wave-layer-list {
         left: 0px;
     }
+    
+    wave-next-layer-list {
+        position: absolute;
+        min-width: 200px;
+        z-index: 1;
+        overflow-y: auto;
+        top: 0;
+        left: 0;
+    }
+    
     wave-plot-list {
         right: 0px;
     }

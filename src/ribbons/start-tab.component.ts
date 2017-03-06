@@ -8,10 +8,10 @@ import {LayerService} from '../layers/layer.service';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
 
-import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
-import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
+import {OperatorGraphDialogComponent} from '../app/layers/dialogs/operator-graph.component';
+import {RenameLayerComponent} from '../app/layers/dialogs/rename-layer.component';
 import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
-import {ExportDialogComponent} from '../layers/dialogs/export.component';
+import {ExportDialogComponent} from '../app/layers/dialogs/export.component';
 
 import {ResultTypes} from '../app/operators/result-type.model';
 

@@ -1,0 +1,38 @@
+<form [ngFormModel]="form" layout="column">
+    <input mdInput
+        type="text"
+        placeholder="Export Name"
+        value="export"
+        [disabled]="true"
+    >
+    <div *ngIf="isRaster" ngControlGroup="resolution">
+        <input mdInput
+            type="number"
+            placeholder="Resolution Width"
+            ngControl="width"
+        >
+            <input mdInput
+                type="number"
+                placeholder="Resolution Height"
+                ngControl="height"
+                [disabled]="true"
+            >
+    </div>
+    <p>Data Output Type:</p>
+    <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isVector">
+        <md-radio-button
+            *ngFor="let type of WFSOutputFormats.EXPORT_TYPES"
+            [value]="type"
+        >{{type}}</md-radio-button>
+    </md-radio-group>
+    <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isRaster">
+        <md-radio-button
+            *ngFor="let type of WCSOutputFormats.EXPORT_TYPES"
+            [value]="type"
+        >{{type}}</md-radio-button>
+    </md-radio-group>
+    <p>Citation Type:</p>
+    <md-radio-group layout="column">
+        <md-radio-button value="json" checked="true">JSON</md-radio-button>
+    </md-radio-group>
+</form>

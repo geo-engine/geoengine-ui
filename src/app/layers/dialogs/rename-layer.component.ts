@@ -1,9 +1,9 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {LayerService} from '../../layers/layer.service';
+import {LayerService} from '../../../layers/layer.service';
 
-import {Layer} from '../../layers/layer.model';
-import {Symbology} from '../../symbology/symbology.model';
+import {Layer} from '../../../layers/layer.model';
+import {Symbology} from '../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
 

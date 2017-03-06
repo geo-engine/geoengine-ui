@@ -7,7 +7,6 @@ import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {InfoAreaComponent} from '../components/info-area.component';
-import {LayerListComponent} from '../layers/layer-list.component';
 import {InfoBarComponent} from '../components/info-bar.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {PlotListComponent} from '../plots/plot-list.component';
@@ -60,7 +59,7 @@ import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numer
 import {HistogramComponent} from '../plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
+import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
@@ -89,7 +88,6 @@ export function configInitializer(config: Config) {
     declarations: [
         AppComponent,
         InfoAreaComponent,
-        LayerListComponent,
         InfoBarComponent,
         RasterRepositoryComponent,
         PlotListComponent,

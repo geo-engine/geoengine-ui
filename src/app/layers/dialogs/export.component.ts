@@ -1,73 +1,26 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
 
-import {BehaviorSubject, Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs/Rx';
 
-import Config from '../../app/config.model';
+import Config from '../../config.model';
 
-import {ProjectService} from '../../project/project.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {ProjectService} from '../../../project/project.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
-import {WFSOutputFormats} from '../../queries/output-formats/wfs-output-format.model';
-import {WCSOutputFormats} from '../../queries/output-formats/wcs-output-format.model';
-import {ResultTypes} from '../../app/operators/result-type.model';
+import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
+import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 
-import {LayerService} from '../layer.service';
-import {Layer} from '../layer.model';
-import {Symbology} from '../../symbology/symbology.model';
+import {LayerService} from '../../../layers/layer.service';
+import {Layer} from '../../../layers/layer.model';
+import {Symbology} from '../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {ResultTypes} from '../../operators/result-type.model';
 
 @Component({
     selector: 'wave-export-dialog',
-    template: `
-    <form [ngFormModel]="form" layout="column">
-        <md-input
-            type="text"
-            placeholder="Export Name"
-            value="export"
-            [disabled]="true"
-        >
-        <div *ngIf="isRaster" ngControlGroup="resolution">
-            <md-input
-                type="number"
-                placeholder="Resolution Width"
-                ngControl="width"
-            >
-            <md-input
-                type="number"
-                placeholder="Resolution Height"
-                ngControl="height"
-                [disabled]="true"
-            >
-        </div>
-        <p>Data Output Type:</p>
-        <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isVector">
-            <md-radio-button
-                *ngFor="let type of WFSOutputFormats.EXPORT_TYPES"
-                [value]="type"
-            >{{type}}</md-radio-button>
-        </md-radio-group>
-        <md-radio-group ngControl="dataOutputType" layout="column" *ngIf="isRaster">
-            <md-radio-button
-                *ngFor="let type of WCSOutputFormats.EXPORT_TYPES"
-                [value]="type"
-            >{{type}}</md-radio-button>
-        </md-radio-group>
-        <p>Citation Type:</p>
-        <md-radio-group layout="column">
-            <md-radio-button value="json" checked="true">JSON</md-radio-button>
-        </md-radio-group>
-    </form>
-    `,
-    styles: [`
-    form {
-        margin-top: 16px;
-        margin-bottom: 16px;
-    }
-    md-radio-button >>> .md-radio-label-content {
-        float: none;
-    }
-    `],
-    changeDetection: ChangeDetectionStrategy.Default,
+    templateUrl: './export.html',
+    styleUrls: ['./export.scss'],
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class ExportDialogComponent implements OnInit, OnDestroy {
     // make this available in the template

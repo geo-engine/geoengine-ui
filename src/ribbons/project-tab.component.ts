@@ -8,7 +8,7 @@ import {UserService} from '../users/user.service';
 
 import {SaveAsDialogComponent} from '../storage/save-as.component';
 import {LoadDialogComponent} from '../storage/load.component';
-import {OperatorGraphDialogComponent} from '../layers/dialogs/operator-graph.component';
+import {OperatorGraphDialogComponent} from '../app/layers/dialogs/operator-graph.component';
 import {ProjectSettingsComponent} from '../project/project-settings.component';
 import {NewProjectDialogComponent} from '../project/new-project.component';
 
