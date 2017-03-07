@@ -19,7 +19,6 @@ import {UserService} from '../users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
 import {MdDialog} from '@angular/material';
-import {CsvDialogComponent} from '../app/operators/dialogs/csv/csv-dialog/csv-dialog.component';
 
 @Component({
     selector: 'wave-csv-repository',
@@ -28,7 +27,7 @@ import {CsvDialogComponent} from '../app/operators/dialogs/csv/csv-dialog/csv-di
         <md-toolbar>
           <label>CSV data / upload</label>            
           <span class="toolbar-fill-remaining-space"></span>
-           <button md-button (click)="dialog.open(CsvDialogComponent)">
+           <button md-button>
             <md-icon>cloud_upload</md-icon>
             upload
           </button>
@@ -69,7 +68,7 @@ import {CsvDialogComponent} from '../app/operators/dialogs/csv/csv-dialog/csv-di
 
 export class CsvRepositoryComponent {
 
-    CsvDialogComponent = CsvDialogComponent;
+    // CsvDialogComponent = CsvDialogComponent;
     private csvs: Observable<Array<CsvFile>>;
 
     constructor(
