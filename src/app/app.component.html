@@ -1,5 +1,5 @@
 <md-sidenav-container fullscreen>
-    <md-sidenav #sidenavRight align="end" mode="side">
+    <md-sidenav #sidenavRight align="end" mode="side" (close)="mapComponent.resize()" (open)="mapComponent.resize()">
         <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
     </md-sidenav>
     <wave-navigation></wave-navigation>

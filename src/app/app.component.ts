@@ -81,7 +81,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             } else {
                 this.rightSidenav.close();
             }
-            this.mapComponent.resize();
         });
 
         // set the stored tab index
