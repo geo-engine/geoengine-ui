@@ -1,0 +1,37 @@
+.close{
+  position: absolute;
+  top: -20px;
+  right: -20px;
+}
+
+.externalLink{
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+}
+
+.videoContainer {
+  min-width: 200px;
+  min-height: 200px;
+
+  p{
+    margin-top: 0;
+
+    &.pull-left{
+      float: left;
+      display: inline-block;
+    }
+    &.pull-right{
+      float: right;
+      display: inline-block;
+      margin-left: 10px;
+    }
+  }
+
+  video:not(.fullSize){
+    width: 100%;
+    height: auto;
+  }
+}
+
+
