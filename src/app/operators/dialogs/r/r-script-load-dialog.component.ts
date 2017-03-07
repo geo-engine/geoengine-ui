@@ -1,19 +1,18 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {BehaviorSubject, Observable, Subscription, Observer} from 'rxjs/Rx';
 
-import Config from '../../../config.model';
-
 import {StorageService} from '../../../../storage/storage.service';
 import {RScript} from '../../../../storage/storage-provider.model';
+import {Config} from '../../../config.service';
 
-type RScriptLoadDialogType = {
-    currentName: string,
-    newCurrentName$: Observer<string>,
-    script$: Observer<RScript>,
-    [index: string]: string | Observer<RScript> | Observer<string>,
-};
+interface RScriptLoadDialogType {
+    currentName: string;
+    newCurrentName$: Observer<string>;
+    script$: Observer<RScript>;
+    [index: string]: string | Observer<RScript> | Observer<string>;
+}
 
 @Component({
     selector: 'wave-r-script-load-dialog',
@@ -66,7 +65,8 @@ export class RScriptLoadDialogComponent
 
     constructor(
         private storageService: StorageService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private config: Config
     ) {
         // super();
 
@@ -83,7 +83,7 @@ export class RScriptLoadDialogComponent
 
         Observable.merge(
             this.scriptNames$,
-            Observable.timer(Config.DELAYS.LOADING.MIN)
+            Observable.timer(this.config.DELAYS.LOADING.MIN)
         ).last().subscribe(
             _ => this.loading$.next(false)
         );

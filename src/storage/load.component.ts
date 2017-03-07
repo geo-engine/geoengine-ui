@@ -1,10 +1,10 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
-import Config from '../app/config.model';
 
 import {ProjectService} from '../project/project.service';
 import {StorageService} from './storage.service';
+import {Config} from '../app/config.service';
 
 
 @Component({
@@ -56,6 +56,7 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
     private loadButtonSubscription: Subscription;
 
     constructor(
+        private config: Config,
         private projectService: ProjectService,
         private storageService: StorageService,
         private formBuilder: FormBuilder
@@ -70,7 +71,7 @@ export class LoadDialogComponent implements OnInit, OnDestroy {
 
         Observable.merge(
             this.projects$,
-            Observable.timer(Config.DELAYS.LOADING.MIN)
+            Observable.timer(this.config.DELAYS.LOADING.MIN)
         ).last().subscribe(
             _ => this.loading$.next(false)
         );

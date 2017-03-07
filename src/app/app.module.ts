@@ -6,9 +6,7 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {InfoAreaComponent} from '../components/info-area.component';
 import {LayerListComponent} from '../layers/layer-list.component';
-import {InfoBarComponent} from '../components/info-bar.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {MapComponent} from '../map/map.component';
 import {
@@ -89,9 +87,7 @@ export function configInitializer(config: Config) {
 @NgModule({
     declarations: [
         AppComponent,
-        InfoAreaComponent,
         LayerListComponent,
-        InfoBarComponent,
         RasterRepositoryComponent,
         MapComponent,
         OlPointLayerComponent,

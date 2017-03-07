@@ -3,8 +3,6 @@ import {Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, On
     } from '@angular/core';
 import * as ol from 'openlayers';
 
-import Config from '../app/config.model';
-
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../app/operators/projection.model';
@@ -12,6 +10,7 @@ import {Symbology, AbstractVectorSymbology} from '../symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {MapService} from './map.service';
+import {Config} from '../app/config.service';
 
 /**
  * The `ol-map` component represents an openLayers 3 map component.
@@ -53,6 +52,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     private _layers: Array<Layer<Symbology>> = []; // HACK
 
     constructor(
+        private config: Config,
         private mapService: MapService,
         private layerService: LayerService
     ) {
@@ -91,8 +91,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
 
         const extent = candidates[0].getExtent();
 
-        console.log("zoomToLayer", candidates, extent);
-
         if (extent === undefined) {
             this.zoomToMap();
         } else {
@@ -101,8 +99,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     }
 
     zoomToExtent(extent: [number, number, number, number] | ol.Extent) {
-
-        console.log("zoomToExtent", extent, this.map.getSize());
         this.map.getView().fit(extent, this.map.getSize());
     }
 
@@ -179,9 +175,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         this.map.setView(view);
-
-        console.log('ngAfterViewInit', 'this.map.getView().calculateExtent(this.map.getSize())', this.map.getView().calculateExtent(this.map.getSize()));
-        console.log('ngAfterViewInit', 'this.projection.getExtent()', this.projection.getExtent());
 
         // get resolution changes
         this.mapService.setViewportSize({
@@ -372,7 +365,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     }
 
     private createBackgroundLayer(projection: Projection): ol.layer.Image {
-        switch (Config.MAP.BACKGROUND_LAYER) {
+        switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 if (projection === Projections.WEB_MERCATOR) {
                     return new ol.layer.Tile({
@@ -409,11 +402,11 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 });
             case 'hosted':
                 const hostedSource = new ol.source.TileWMS({
-                    url: Config.MAP.HOSTED_BACKGROUND_SERVICE,
+                    url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
                     params: {
-                        layers: Config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
+                        layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
                         projection: projection.getCode(),
-                        version: Config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
+                        version: this.config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
                     },
                     wrapX: false,
                     projection: projection.getCode(),
@@ -423,7 +416,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 });
                 return hostedLayer;
             default:
-                throw 'Unknown Background Layer Name';
+                throw Error('Unknown Background Layer Name');
         }
     }
 }

@@ -3,8 +3,6 @@ import {Component, ChangeDetectionStrategy, Input}
 
 import {Observable} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
-
 import {PlotDetailsDialogComponent} from './plot-detail-dialog.component';
 
 import {PlotService} from './plot.service';
@@ -122,7 +120,7 @@ import {LoadingState} from '../shared/loading-state.model';
         margin-right: 0px;
     }
     .plot-header .error-button {
-        color: ${Config.COLORS.WARN};
+        color: red;
     }
     .plot-content {
         padding-right: 16px;
@@ -151,15 +149,13 @@ export class PlotListComponent {
 
     PlotDetailsDialogComponent = PlotDetailsDialogComponent; // tslint:disable-line:variable-name
 
-    plotListVisible$: Observable<boolean>;
+    plotListVisible$: Observable<boolean> = Observable.of(true);
     plots$: Observable<Array<Plot>>;
 
     constructor(
         private plotService: PlotService,
         private layoutService: LayoutService
     ) {
-        this.plotListVisible$ = this.layoutService.getPlotListVisibilityStream();
-
         this.plots$ = this.plotService.getPlotsStream();
     }
 

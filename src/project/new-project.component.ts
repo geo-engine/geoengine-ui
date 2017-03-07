@@ -5,8 +5,6 @@ import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 import * as moment from 'moment';
 
 
-import Config from '../app/config.model';
-
 import {ProjectService} from './project.service';
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
@@ -14,6 +12,7 @@ import {StorageService} from '../storage/storage.service';
 
 import {Project} from './project.model';
 import {Projections} from '../app/operators/projection.model';
+import {Config} from '../app/config.service';
 
 @Component({
     selector: 'wave-new-project-dialog',
@@ -50,10 +49,10 @@ import {Projections} from '../app/operators/projection.model';
         width: 100%;
     }
     md-hint {
-        color: ${Config.COLORS.WARN};
+        color: red; // TODO: change
     }
     md-hint.no-error {
-        color: ${Config.COLORS.TEXT.DEFAULT};
+        color: black; // TODO: change
     }
     div.select {
         margin-top: 25px;
@@ -85,6 +84,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(
+        private config: Config,
         private projectService: ProjectService,
         private storageService: StorageService,
         private layerService: LayerService,
@@ -107,7 +107,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
         });
 
         this.nameInUsage$ = this.form.controls['name'].valueChanges.debounceTime(
-            Config.DELAYS.DEBOUNCE
+            this.config.DELAYS.DEBOUNCE
         ).filter(
             value => value.length > 0
         ).switchMap(value => {
@@ -116,7 +116,7 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
             this.subscriptions.push(
                 Observable.merge(
                     promise,
-                    Observable.timer(Config.DELAYS.LOADING.MIN)
+                    Observable.timer(this.config.DELAYS.LOADING.MIN)
                 ).last().subscribe(
                     _ => this.nameLoading$.next(false)
                 )

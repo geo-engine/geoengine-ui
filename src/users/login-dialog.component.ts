@@ -1,12 +1,11 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
-import {FormBuilder, FormGroup, FormControl, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdDialogRef} from '@angular/material';
 
-import Config from '../app/config.model';
-
 import {User} from './user.model';
 import {UserService} from './user.service';
+import {Config} from '../app/config.service';
 
 enum FormStatus { LoggedOut, LoggedIn, Loading }
 
@@ -116,13 +115,13 @@ export class LoginDialogComponent implements OnInit, OnDestroy {
     invalidCredentials = false;
     user: Observable<User>;
 
-    config = Config;
     form: FormGroup;
 
     private subscriptions: Array<Subscription> = [];
     private dialogTitle: string;
 
     constructor(
+        public config: Config,
         public dialogRef: MdDialogRef<LoginDialogComponent>,
         private userService: UserService,
         private formBuilder: FormBuilder
@@ -134,7 +133,7 @@ export class LoginDialogComponent implements OnInit, OnDestroy {
                 Validators.required,
                 (control: FormControl) => {
                     // tslint:disable-next-line:no-null-keyword
-                    return control.value === Config.USER.GUEST.NAME ? {'keyword': true} : null;
+                    return control.value === this.config.USER.GUEST.NAME ? {'keyword': true} : null;
                 },
             ])],
             password: ['', Validators.required],
@@ -144,7 +143,7 @@ export class LoginDialogComponent implements OnInit, OnDestroy {
         this.userService.isSessionValid(this.userService.getSession()).then(valid => {
             // this.user = this.userService.getUser();
             // this.loggedIn = valid && !(this.user instanceof Guest);
-            const isNoGuest = this.userService.getSession().user !== Config.USER.GUEST.NAME;
+            const isNoGuest = this.userService.getSession().user !== this.config.USER.GUEST.NAME;
             this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
 
             // if (!(this.user instanceof Guest)) {
@@ -166,7 +165,7 @@ export class LoginDialogComponent implements OnInit, OnDestroy {
                 switch (status) {
                     case FormStatus.LoggedIn:
                         this.dialogTitle = 'User Info';
-                        //this.removeLoginButtons();
+                        // this.removeLoginButtons();
                     break;
                     case FormStatus.LoggedOut:
                         this.dialogTitle = 'Login';
@@ -175,7 +174,7 @@ export class LoginDialogComponent implements OnInit, OnDestroy {
                     case FormStatus.Loading:
                     /* falls through */
                     default:
-                        //this.removeLoginButtons();
+                        // this.removeLoginButtons();
                     break;
                 }
             })

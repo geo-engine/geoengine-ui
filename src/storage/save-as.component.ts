@@ -2,11 +2,10 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
-
 import {StorageService} from './storage.service';
 import {ProjectService} from '../project/project.service';
 import {Project} from '../project/project.model';
+import {Config} from '../app/config.service';
 
 @Component({
     selector: 'wave-save-as-dialog',
@@ -40,7 +39,7 @@ import {Project} from '../project/project.model';
         margin-bottom: 16px;
     }
     md-hint {
-        color: ${Config.COLORS.WARN};
+        color: red;
     }
     md-progress-circle {
         position: absolute;
@@ -63,6 +62,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
     private saveButtonSubscription: Subscription;
 
     constructor(
+        private config: Config,
         private storageService: StorageService,
         private projectService: ProjectService,
         private formBuilder: FormBuilder
@@ -84,7 +84,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
             this.invalidNewName$,
             (value, invalid) => invalid ? '' : value as string
         ).debounceTime(
-            Config.DELAYS.DEBOUNCE
+            this.config.DELAYS.DEBOUNCE
         ).filter(
             value => value.length > 0
         ).switchMap(value => {
@@ -92,7 +92,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
             const promise = this.storageService.projectExists(value);
             Observable.merge(
                 promise,
-                Observable.timer(Config.DELAYS.LOADING.MIN)
+                Observable.timer(this.config.DELAYS.LOADING.MIN)
             ).last().subscribe(
                 _ => this.loading$.next(false)
             );

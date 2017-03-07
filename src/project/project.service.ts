@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
 import {Projections, Projection} from '../app/operators/projection.model';
 
 import {Project} from './project.model';
 
 import {Time, TimePoint} from '../app/time.model';
 import * as moment from 'moment';
+import {Config} from '../app/config.service';
 
 @Injectable()
 export class ProjectService {
@@ -16,7 +16,7 @@ export class ProjectService {
 
     private time$: BehaviorSubject<Time>;
 
-    constructor() {
+    constructor(private config: Config) {
         this.project$ = new BehaviorSubject(this.createDefaultProject());
 
         this.projection$ = new BehaviorSubject(this.project$.value.projection);
@@ -36,9 +36,9 @@ export class ProjectService {
 
     createDefaultProject(): Project {
         return new Project({
-            name: Config.DEFAULTS.PROJECT.NAME,
-            projection: Projections.fromCode(Config.DEFAULTS.PROJECT.PROJECTION),
-            time: new TimePoint(moment(Config.DEFAULTS.PROJECT.TIME)),
+            name: this.config.DEFAULTS.PROJECT.NAME,
+            projection: Projections.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION),
+            time: new TimePoint(moment(this.config.DEFAULTS.PROJECT.TIME)),
         });
     }
 
@@ -56,7 +56,6 @@ export class ProjectService {
 
     setTime(time: Time) {
         const value = this.project$.value;
-        console.log("setTime", time, value);
         if (time.isValid() && !time.isSame(value.time) ) {
             this.changeProjectConfig({
                 time: time,

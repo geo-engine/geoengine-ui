@@ -2,8 +2,6 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
-import Config from '../../app/config.model';
-
 import {ProjectService} from '../../project/project.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 
@@ -15,6 +13,7 @@ import {LayerService} from '../layer.service';
 import {Layer} from '../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {Config} from '../../app/config.service';
 
 @Component({
     selector: 'wave-export-dialog',
@@ -85,6 +84,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(
+        private config: Config,
         private mappingQueryService: MappingQueryService,
         private layerService: LayerService,
         private projectService: ProjectService,
@@ -127,7 +127,7 @@ export class ExportDialogComponent implements OnInit, OnDestroy {
 
             this.subscriptions.push(
                 minResolutionControl.valueChanges.debounceTime(
-                    Config.DELAYS.DEBOUNCE
+                    this.config.DELAYS.DEBOUNCE
                 ).filter(
                     value => isNaN(value)
                 ).subscribe(

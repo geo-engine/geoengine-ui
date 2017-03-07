@@ -101,10 +101,10 @@ export class UserService {
         this.session$.subscribe(newSession => this.saveSessionData(newSession));
 
         // user info
-        this.user$ = new BehaviorSubject(new Guest());
+        this.user$ = new BehaviorSubject(new Guest(config));
         this.session$.subscribe(
             session => this.getUserDetails(session).then(
-                user => user ? this.user$.next(user) : new Guest()
+                user => user ? this.user$.next(user) : new Guest(config)
             )
         );
     }
@@ -214,7 +214,7 @@ export class UserService {
      */
     getUserDetails(session: Session): Promise<User> {
         if (session.user === this.config.USER.GUEST.NAME) {
-            return Promise.resolve(new Guest());
+            return Promise.resolve(new Guest(this.config));
         }
 
         const parameters = new UserServiceRequestParameters({
