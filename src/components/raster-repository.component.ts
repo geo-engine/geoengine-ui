@@ -12,7 +12,7 @@ import {Projections} from '../app/operators/projection.model';
 import {Unit} from '../app/operators/unit.model';
 import {MappingColorizerRasterSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {RasterSourceType} from '../app/operators/types/raster-source-type.model';
 import {ProjectService} from '../project/project.service';
 

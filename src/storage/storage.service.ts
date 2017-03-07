@@ -10,7 +10,7 @@ import {LayoutService} from '../app/layout.service';
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {PlotService} from '../plots/plot.service';
-import {UserService, Session} from '../users/user.service';
+import {UserService, Session} from '../app/users/user.service';
 import {Config} from '../app/config.service';
 
 /**
@@ -55,7 +55,7 @@ export class StorageService {
         // load stored values on session change
         this.userService.getSessionStream().subscribe(session => {
             // check validity
-            this.userService.isSessionValid(session).then(valid => {
+            this.userService.isSessionValid(session).subscribe(valid => {
                 // console.log('valid?', valid);
                 if (valid) {
                     this.resetStorageProvider(session);

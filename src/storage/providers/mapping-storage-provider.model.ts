@@ -9,7 +9,7 @@ import {ResultTypes} from '../../app/operators/result-type.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Project} from '../../project/project.model';
-import {Session} from '../../users/user.service';
+import {Session} from '../../app/users/user.service';
 
 import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';

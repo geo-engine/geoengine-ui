@@ -1,6 +1,6 @@
 import {Directive, ViewContainerRef, Component, TemplateRef} from '@angular/core';
 import {Config} from '../config.service';
-import {UserService} from '../../users/user.service';
+import {UserService} from '../users/user.service';
 
 @Directive({
   selector: '[waveIfGfbioLoggedIn]'

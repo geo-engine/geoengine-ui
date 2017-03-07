@@ -1,8 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, Type} from '@angular/core';
 import {LayoutService} from '../../layout.service';
-import {GbifOperatorComponent} from '../../operators/dialogs/gbif-operator/gbif-operator.component';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
+import {LoginComponent} from '../../users/login/login.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -15,6 +15,7 @@ export class NavigationComponent implements OnInit {
     // make available
     SourceOperatorListComponent = SourceOperatorListComponent;
     OperatorRepositoryComponent = OperatorRepositoryComponent;
+    LoginComponent = LoginComponent;
 
     constructor(public layoutService: LayoutService) {
     }

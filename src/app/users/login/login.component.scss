@@ -1,0 +1,36 @@
+@import '../../../wave-app-theme';
+
+form {
+    padding: 1rem;
+}
+
+md-button-toggle-group {
+    margin-bottom: 1rem;
+}
+
+img {
+    height: 1rem;
+}
+
+md-checkbox {
+    margin-top: 1rem;
+}
+
+md-spinner {
+    width: 25%;
+    height: auto;
+    margin: 1rem auto;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}
+
+.container {
+    margin: 1rem;
+}
+
+.label {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    margin-right: 1rem;
+}

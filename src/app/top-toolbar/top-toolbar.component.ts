@@ -2,11 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {MdDialog} from "@angular/material";
 import {Observable} from "rxjs";
 
-import {UserService} from "../../users/user.service";
+import {UserService} from "../users/user.service";
 import {LayoutService} from "../layout.service";
 
 import {IntroductionDialogComponent} from "../../components/introduction-dialog.component";
-import {LoginDialogComponent} from "../../users/login-dialog.component";
 import {RasterRepositoryComponent} from "../../components/raster-repository.component";
 import {AbcdRepositoryComponent} from "../../components/abcd-repository.component";
 import {CsvRepositoryComponent} from "../../components/csv-repository.component";
@@ -51,12 +50,6 @@ export class TopToolbarComponent implements OnInit {
               this.dialog.open(IntroductionDialogComponent, {});
           });
       }
-  }
-
-  openUserDialog() {
-      let dialogRef = this.dialog.open(LoginDialogComponent, {
-          disableClose: false
-      });
   }
 
 }

@@ -1,4 +1,5 @@
-import {Config} from '../app/config.service';
+import {Config} from '../config.service';
+
 interface UserConfig {
     name: string;
 

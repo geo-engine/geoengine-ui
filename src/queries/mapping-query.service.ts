@@ -7,7 +7,7 @@ import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
 
 import {ProjectService} from '../project/project.service';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
 import {NotificationService} from '../app/notification.service';
 

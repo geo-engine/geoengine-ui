@@ -1,0 +1,56 @@
+<template [ngIf]="isLoggedOut$ | async">
+    <wave-sidenav-header>Login</wave-sidenav-header>
+    <form [formGroup]="loginForm" (ngSubmit)="$event.preventDefault();login()">
+        <div fxLayout="row" fxLayoutAlign="space-around none">
+            <md-button-toggle-group *waveIfGfbio formControlName="loginAuthority">
+                <md-button-toggle value="system">
+                    System
+                </md-button-toggle>
+                <md-button-toggle value="gfbio">
+                    <img src="assets/logo_gfbio.png" alt="GFBio">
+                </md-button-toggle>
+            </md-button-toggle-group>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="space-around stretch">
+            <md-input-container fxFlex>
+                <input mdInput type="text" placeholder="Username" formControlName="username">
+            </md-input-container>
+            <md-input-container fxFlex>
+                <input mdInput type="password" placeholder="Password" formControlName="password">
+            </md-input-container>
+            <span class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</span>
+            <md-checkbox fxFlex formControlName="staySignedIn">Stay signed in</md-checkbox>
+        </div>
+        <div fxLayout="row">
+            <button md-raised-button
+                    type="submit"
+                    [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
+                    fxFlex
+                    color="primary"
+            >
+                Login
+            </button>
+        </div>
+    </form>
+</template>
+<template [ngIf]="isLoading$ | async">
+    <md-spinner></md-spinner>
+</template>
+<template [ngIf]="isLoggedIn$ | async">
+    <wave-sidenav-header>User Info</wave-sidenav-header>
+    <div fxLayout="row" class="container">
+        <div class="label">
+            <p>Username</p>
+            <p>Real Name</p>
+            <p>E-Mail</p>
+        </div>
+        <div>
+            <p>{{(user | async).name}}</p>
+            <p>{{(user | async).realName}}</p>
+            <p>{{(user | async).email}}</p>
+        </div>
+    </div>
+    <div fxLayout="row" class="container">
+        <button md-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
+    </div>
+</template>
