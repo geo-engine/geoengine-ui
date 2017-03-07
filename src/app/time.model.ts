@@ -157,7 +157,7 @@ export class TimeInterval implements Time {
     }
 
     asRequestString(): string {
-        return this.getStart().toISOString() + '\\' + this.getEnd().toISOString();
+        return this.getStart().toISOString() + '/' + this.getEnd().toISOString();
     }
 }
 
