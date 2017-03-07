@@ -1,0 +1,15 @@
+.progress {
+  width: 300px;
+  background-color: lightgray;
+  color: white;
+  padding:0px;
+  margin:0px;
+  text-align: center;
+  display:flex;
+}
+.progress > div {
+  background-color: lime;
+  border-radius: inherit;
+  vertical-align: top;
+  display: inline-block;
+}

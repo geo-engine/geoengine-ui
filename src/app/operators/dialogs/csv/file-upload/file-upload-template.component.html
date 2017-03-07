@@ -1,0 +1,37 @@
+<div>
+  <div>
+    Select file:
+    <input type="file" multiple="false" (change)="changeListener($event)" accept=".csv">
+  </div>
+  <table *ngIf="data !== null" cellspacing="0" cellpadding="0" style="margin-left: 30px;">
+    <tr>
+      <td style="border-bottom-left-radius: 5px; border-top-left-radius: 5px; background-color: #00acc1; color: white; padding: 5px 2px 5px 5px;">
+        {{data.file.name}}
+      </td>
+      <td>
+        <!--TODO: Progress bar-->
+      </td>
+      <td>
+        <div class="progress" style="height:100%">
+          <div [ngStyle]="{width: data.progress+'%'}" style="height: inherit;">
+            {{data.progress}}
+          </div>
+        </div>
+      </td>
+      <td>
+        <button color="primary" md-mini-fab (click)="upload()" [disabled]="data.progress !== 0">
+          <md-icon class="material-icons">backup</md-icon>
+        </button>
+        <button color="primary" (click)="configure()" md-mini-fab [disabled]="data.progress !== 100">
+          <md-icon class="material-icons">build</md-icon>
+        </button>
+        <button color="warn" md-mini-fab (click)="delete()">
+          <md-icon class="material-icons">delete forever</md-icon>
+        </button>
+      </td>
+    </tr>
+  </table>
+  <button md-raised-button (click)="submit()" [disabled]="!((data !== null)&&(data.progress === 100)&&(data.configured !== false))">Upload to Server</button>
+</div>
+
+<wave-csv-config *ngIf="editing" [data]="data" [cellSpacing]="10" [linesToParse]="15"></wave-csv-config>
