@@ -34,4 +34,4 @@
   <button md-raised-button (click)="submit()" [disabled]="!((data !== null)&&(data.progress === 100)&&(data.configured !== false))">Upload to Server</button>
 </div>
 
-<csv-config *ngIf="editing" [data]="data" [cellSpacing]="10" [linesToParse]="15"></csv-config>
+<wave-csv-config *ngIf="editing" [data]="data" [cellSpacing]="10" [linesToParse]="15"></wave-csv-config>

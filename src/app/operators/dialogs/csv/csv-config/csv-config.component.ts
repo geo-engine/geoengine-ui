@@ -41,9 +41,9 @@ export class CSV {
         'csv-config-styles-table-fixHeader.component.css',
         'csv-config-styles-table-form.component.css',
         'csv-config-styles-misc.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     isDataProperties$: Observable<boolean>;
@@ -51,50 +51,47 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     isTemporalProperties$: Observable<boolean>;
 
     xyColumn$: BehaviorSubject<{x: number, y: number}> = new BehaviorSubject<{x: number, y: number}>({x: 0, y: 0});
-    xColumn$ = this.xyColumn$.map(xy => xy.x);
-    yColumn$ = this.xyColumn$.map(xy => xy.y);
-
-    scrollBarWidth: number;
+    xColumn$: Observable<number>;
+    yColumn$: Observable<number>;
 
     resizeEvent$ = Observable.fromEvent(window, 'resize').map(() => {
         return document.documentElement.clientWidth;
     });
 
-    private subscriptions: Array<Subscription> = [];
-
-    delimitters: {def: string, value: string}[] = [{def: 'TAB', value: ' '}, {def: ',', value: ','}, {
+    private scrollBarWidth: number;
+    private delimitters: {def: string, value: string}[] = [{def: 'TAB', value: ' '}, {def: ',', value: ','}, {
         def: ';',
         value: ';'
     }];
-    timeFormats: {value: string, duration: boolean}[] = [{
+    private timeFormats: {value: string, duration: boolean}[] = [{
         value: 'yyyy-MM-ddTHH:mm:ssZ',
         duration: false
     }, {value: 'dd-MM-yyyy HH:mm:ss', duration: false}, {value: 's', duration: true}, {
         value: 'h',
         duration: true
     }, {value: 'd', duration: true}];
-    intervallTypes: string[] = ['[Start,+inf)', '[Start, End]', '[Start, Start+Duration]', '(-inf, End]'];
-    decsep: string[] = [',', '.'];
-    texqual: string[] = ['"', '\''];
-    projections: string[] = ['[EPSG:4326] WGS 84', '[EPSG:3857] WGS84 Web Mercator', '[SR-ORG:81] GEOS - GEOstationary Satellite'];
-    coordFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
-
-    @Input() data: {file: File, content: string, progress: number, configured: boolean};
-    @Input() cellSpacing: number;
-    @Input() linesToParse: number;
-
-    customHeader: string[] = [];
-    header: string[] = [];
-    elements: string[][] = [];
-
-    model: CSV;
-    dialogTitle: string;
+    @Input() private data: {file: File, content: string, progress: number, configured: boolean};
+    @Input() private cellSpacing: number;
+    @Input() private linesToParse: number;
+    private intervallTypes: string[] = ['[Start,+inf)', '[Start, End]', '[Start, Start+Duration]', '(-inf, End]'];
+    private decsep: string[] = [',', '.'];
+    private texqual: string[] = ['"', '\''];
+    private projections: string[] = ['[EPSG:4326] WGS 84', '[EPSG:3857] WGS84 Web Mercator', '[SR-ORG:81] GEOS - GEOstationary Satellite'];
+    private coordFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
+    private customHeader: string[] = [];
+    private header: string[] = [];
+    private elements: string[][] = [];
+    private model: CSV;
+    private subscriptions: Array<Subscription> = [];
+    private dialogTitle: string;
 
     constructor() {
         this.isDataProperties$ = this.formStatus$.map(status => status === FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === FormStatus.SpatialProperties);
         this.isTemporalProperties$ = this.formStatus$.map(status => status === FormStatus.TemporalProperties);
-    }
+        this.xColumn$ = this.xyColumn$.map(xy => xy.x);
+        this.yColumn$ = this.xyColumn$.map(xy => xy.y);
+    };
 
     ngAfterViewInit() {
         this.resizeTable();
@@ -217,29 +214,14 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     update(e: Event) {
         console.log('update');
         console.log(this.data);
-        let lines: string[];
-        if (this.model.isHeaderRow) {
-            lines = [];
-            // lines = this.data.content.split
-            // ('\n', this.linesToParse+1 + this.model.headerRow).slice(0, this.linesToParse+1 + this.model.headerRow);
-        } else {
-            lines = this.data.content.split('\n', this.linesToParse);
-        }
-        this.elements = [];
-        if (lines.length === 0) {
-            return;
-        }
-        let start: number = this.model.headerRow + 1;
-        if (this.model.isHeaderRow) {
-            this.header = this.split(lines[start - 1]);
-        } else {
-            start = 0;
-        }
-        for (let i: number = start; i < lines.length; i++) {
-            this.elements.push(this.split(lines[i]));
-        }
+        let val: {header: string[], elements: string[][]} = this.parseCsv();
+
+        this.header = val.header;
+        this.elements = val.elements;
 
         this.checkColumns();
+
+        // Cut out section
 
         if (this.formStatus$.getValue() === FormStatus.SpatialProperties) {
             this.xyColumn$.next({x: this.model.xCol, y: this.model.yCol});
@@ -266,7 +248,37 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * @param line string to split of.
      * @returns {string[]} an Array with the strings between the delimitters.
      */
-    split(line: string): string[] {
+    parseCsv(): {header: string[], elements: string[][]} {
+        let header: string[] = [];
+        let elements: string[][] = [];
+
+        if (!this.data || !this.data.content) {
+            return {header: header, elements: elements};
+        }
+        let amount = this.linesToParse;
+        if (this.model.isHeaderRow) {
+            amount += this.model.headerRow + 1;
+        }
+        console.log('before content.split');
+        let lines: string[] = this.data.content.split('\r\n?|\n', amount);
+        console.log('after content.split');
+        console.log(lines);
+        return {header: header, elements: elements};
+        /**
+        if (this.model.isHeaderRow) {
+            header = this.parseLine(lines[this.model.headerRow]);
+        }
+        for (let i = 0; i < amount - 1; i++) {
+            elements.push(this.parseLine(lines[i + amount - this.linesToParse - 1]));
+        }
+        return {header: header, elements: elements};
+         */
+    }
+
+    parseLine(line: string): string[] {
+        if (!line) {
+            return [];
+        }
         let result: string[] = [];
         let plainText = false;
         let last = 0;
@@ -354,8 +366,11 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.model.endCol = this.header.length - 1;
                 }
             }
-            // If not necessary both are needed, its possible to set every header column to start or end col. On change to 'both needed' check if start col was set to end col und change if necessary.
-            if (this.model.intervallType.indexOf('Start') >= 0 && (this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) && this.header.length > 1) {
+            // If not necessary both are needed, its possible to set every header column to start or end col.
+            // On change to 'both needed' check if start col was set to end col und change if necessary.
+            if (this.model.intervallType.indexOf('Start') >= 0 && (this.model.intervallType.indexOf('End') >= 0 ||
+                this.model.intervallType.indexOf('Duration') >= 0) && this.header.length > 1) {
+
                 if (this.model.startCol === this.model.endCol) {
                     if (this.model.startCol === 0) {
                         this.model.endCol = this.model.startCol + 1;
@@ -363,6 +378,7 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                         this.model.startCol = this.model.endCol - 1;
                     }
                 }
+
             }
         } else {
             this.model.endCol = this.model.startCol = 0;
@@ -434,7 +450,7 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * Causes a reload 'effect'
      */
     resetTableSize() {
-        let x = document.getElementsByTagName('table');
+        let x: NodeListOf<HTMLTableElement> = document.getElementsByTagName('table');
         if (x.length === 0) {
             return;
         }
@@ -443,8 +459,8 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!x.item(i).classList.contains('resizeTable') || x.item(i).rows.length === 0) {
                 continue;
             }
-            for (let j = 0; j < x.item(i).rows[0].cells.length; j++) {
-                x.item(i).rows[0].cells[j].style.minWidth = '0px';
+            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
+                x.item(i).rows.item(0).cells.item(j).style.minWidth = '0px';
             }
         }
     }
@@ -464,8 +480,8 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!x.item(i).classList.contains('resizeTable') || x.item(i).rows.length === 0) {
                 continue;
             }
-            for (let j = 0; j < x.item(i).rows[0].cells.length; j++) {
-                let cell = x.item(i).rows[0].cells[j];
+            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
+                let cell = x.item(i).rows.item(0).cells.item(j);
                 if (cell.getAttribute('name') === 'spacer') {
                     cell.style.minWidth = this.cellSpacing + 'px';
                     continue;
@@ -481,11 +497,11 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 continue;
             }
             x.item(i).style.borderCollapse = 'separate';
-            for (let j = 0; j < x.item(i).rows[0].cells.length; j++) {
-                if (x.item(i).rows[0].cells[j].getAttribute('name') === 'spacer') {
+            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
+                if (x.item(i).rows.item(0).cells.item(j).getAttribute('name') === 'spacer') {
                     continue;
                 }
-                x.item(i).rows[0].cells[j].style.minWidth = (maxCol[j]) + 'px';
+                x.item(i).rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
             }
         }
         this.resizeTableFrame();
@@ -500,8 +516,10 @@ export class CSVConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let i = 0; i < x.length; i++) {
             width = Math.max(width, x.item(i).clientWidth);
         }
-        document.getElementById('table-frame').style.maxWidth = Math.min(document.getElementById('table-frame').parentElement.clientWidth * 0.8, width) + 'px';
-        document.getElementById('table-frame').style.minWidth = Math.min(document.getElementById('table-frame').parentElement.clientWidth * 0.8, width) + 'px';
+        document.getElementById('table-frame').style.maxWidth =
+            Math.min(document.getElementById('table-frame').parentElement.clientWidth * 0.8, width) + 'px';
+        document.getElementById('table-frame').style.minWidth =
+            Math.min(document.getElementById('table-frame').parentElement.clientWidth * 0.8, width) + 'px';
     }
 
     /**Resets table size and delays then.

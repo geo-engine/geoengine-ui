@@ -8,7 +8,7 @@ import {Component} from '@angular/core';
     templateUrl: 'file-upload-template.component.html',
     styleUrls: ['file-upload-style.component.css']
 })
-export class FileUploadComponent {
+export class CsvUploadComponent {
 
     data: {file: File, content: string, progress: number, configured: boolean} = null;
 
