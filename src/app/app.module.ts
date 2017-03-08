@@ -124,7 +124,6 @@ export function configInitializer(config: Config) {
         GroupedAbcdBasketResultComponent,
         SafeStylePipe,
         MappingColorizerToGradientPipe,
-        IntroductionDialogComponent,
         GfbioBasketsComponent,
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
