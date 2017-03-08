@@ -39,7 +39,6 @@ import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '..
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
 import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
-import {IntroductionDialogComponent} from '../components/introduction-dialog.component';
 import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -80,6 +79,7 @@ import { IfGuestDirective } from './util/if-guest.directive';
 import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
+import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
 import { HelpComponent } from './help.component';
 
 export function configInitializer(config: Config) {
@@ -125,7 +125,6 @@ export function configInitializer(config: Config) {
         SafeStylePipe,
         SafeHtmlPipe,
         MappingColorizerToGradientPipe,
-        IntroductionDialogComponent,
         GfbioBasketsComponent,
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
@@ -154,6 +153,7 @@ export function configInitializer(config: Config) {
         IfGuestDirective,
         LoginComponent,
         PlotListComponent,
+        SplashDialogComponent,
         HelpComponent,
     ],
     imports: [
@@ -167,7 +167,6 @@ export function configInitializer(config: Config) {
         DataTableModule,
     ],
     entryComponents: [
-        IntroductionDialogComponent,
         RenameLayerComponent,
         RasterRepositoryComponent,
         AbcdRepositoryComponent,
@@ -184,6 +183,7 @@ export function configInitializer(config: Config) {
         SourceOperatorListComponent,
         LoginComponent,
         HelpComponent,
+        SplashDialogComponent,
     ],
     providers: [
         DragulaService,

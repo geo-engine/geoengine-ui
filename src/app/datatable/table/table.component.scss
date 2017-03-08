@@ -1,5 +1,9 @@
 @import '../../../wave-app-theme';
 
+:host {
+    font-size: 0.87rem;
+}
+
 table {
     .rowSelected {
         background: fade-out(mat-color($wave-app-accent), 0.6);
