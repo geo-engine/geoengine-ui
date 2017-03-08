@@ -1,0 +1,45 @@
+/*Table*/
+.table-frame {
+  align: center;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+  border: solid 1px darkgray;
+  min-width: 80vw;
+  max-width: 80vw;
+}
+.headerdiv {
+  overflow:hidden;
+  width: auto;
+  border-bottom: solid 1px dimgray;
+  background-color: #00acc1;
+  color: white;
+  font-weight: 300;
+}
+.headerdiv table td.custom md-input-container {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  font-size: 15px;
+  height:30px;
+  color: white;
+}
+.bodydiv{
+  overflow:scroll;
+  height:200px;
+}
+.bodydiv table tr:nth-child(even){
+  background-color: #b2ebf2;
+}
+.resizeTable {
+  table-layout: fixed;
+}
+.custom {
+  font-weight: normal;
+}
+.scrollbar-measure {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  position: absolute;
+  top: -9999px;
+}
