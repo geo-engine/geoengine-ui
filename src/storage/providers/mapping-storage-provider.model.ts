@@ -3,17 +3,17 @@ import {Http} from '@angular/http';
 import {
     StorageProvider, Workspace, WorkspaceDict, RScript, RScriptDict,
 } from '../storage-provider.model';
-import Config from '../../app/config.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
 import {Operator} from '../../app/operators/operator.model';
 import {ResultTypes} from '../../app/operators/result-type.model';
 
 import {LayoutDict} from '../../app/layout.service';
 import {Project} from '../../project/project.model';
-import {Session} from '../../users/user.service';
+import {Session} from '../../app/users/user.service';
 
 import {LayerService} from '../../layers/layer.service';
 import {PlotService} from '../../plots/plot.service';
+import {Config} from '../../app/config.service';
 
 class ArtifactServiceRequestParameters extends MappingRequestParameters {
     constructor(config: {
@@ -30,7 +30,11 @@ class ArtifactServiceRequestParameters extends MappingRequestParameters {
     }
 }
 
-type ArtifactDefinition = {name: string, type: string, user: string};
+interface ArtifactDefinition {
+    name: string;
+    type: string;
+    user: string;
+}
 
 /**
  * StorageProvider implementation that uses the mapping's artifact service.
@@ -49,6 +53,7 @@ export class MappingStorageProvider extends StorageProvider {
     private artifactName: string;
 
     constructor(config: {
+        config: Config,
         layerService: LayerService,
         plotService: PlotService,
         http: Http,
@@ -56,7 +61,7 @@ export class MappingStorageProvider extends StorageProvider {
         createDefaultProject: () => Project,
         artifactName?: string,
     }) {
-        super(config.layerService, config.plotService);
+        super(config.config, config.layerService, config.plotService);
         this.http = config.http;
 
         this.session = config.session;
@@ -88,7 +93,7 @@ export class MappingStorageProvider extends StorageProvider {
                 },
             });
             return this.http.get(
-                Config.MAPPING_URL + '?' + request.toMessageBody(true),
+                this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
             ).toPromise().then(response => {
                 const mappingResponse = response.json();
@@ -133,7 +138,7 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http.post(
-            Config.MAPPING_URL,
+            this.config.MAPPING_URL,
             updateRequest.toMessageBody(true),
             {headers: updateRequest.getHeaders()}
         ).toPromise().then(responseString => {
@@ -171,7 +176,7 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http.get(
-            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).toPromise().then(response => {
             return this.mappingResultToBoolean(response.json().result);
@@ -187,7 +192,7 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http.get(
-            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).toPromise().then(response => {
             const mappingResponse = response.json();
@@ -222,7 +227,7 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http.post(
-            Config.MAPPING_URL,
+            this.config.MAPPING_URL,
             updateRequest.toMessageBody(),
             {headers: updateRequest.getHeaders()}
         ).toPromise().then(responseString => {
@@ -240,7 +245,7 @@ export class MappingStorageProvider extends StorageProvider {
                 });
 
                 return this.http.post(
-                    Config.MAPPING_URL,
+                    this.config.MAPPING_URL,
                     createRequest.toMessageBody(),
                     {headers: createRequest.getHeaders()}
                 ).toPromise().then(newResponseString => {
@@ -264,7 +269,7 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http.get(
-            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).toPromise().then(response => {
             const mappingResponse = response.json();
@@ -286,7 +291,7 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http.get(
-            Config.MAPPING_URL + '?' + request.toMessageBody(true),
+            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).toPromise().then(response => {
             const mappingResponse = response.json();

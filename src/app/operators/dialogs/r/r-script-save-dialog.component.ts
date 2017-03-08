@@ -2,19 +2,16 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 
 import {BehaviorSubject, Subscription, Observer, Observable} from 'rxjs/Rx';
 
-
-import Config from '../../../config.model';
-
 import {StorageService} from '../../../../storage/storage.service';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
-type RScriptSaveDialogType = {
-    initialName: string,
-    script: RScript,
-    newName$: Observer<string>,
-    [index: string]: string | Observer<string> | RScript,
-};
+interface RScriptSaveDialogType {
+    initialName: string;
+    script: RScript;
+    newName$: Observer<string>;
+    [index: string]: string | Observer<string> | RScript;
+}
 
 @Component({
     selector: 'wave-r-script-save-dialog',
@@ -40,7 +37,7 @@ type RScriptSaveDialogType = {
         margin-bottom: 16px;
     }
     md-hint {
-        color: ${Config.COLORS.WARN};
+        color: red; // TODO: refactor
     }
     md-progress-circle {
         position: absolute;

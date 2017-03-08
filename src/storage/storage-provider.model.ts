@@ -7,6 +7,7 @@ import {ResultType} from '../app/operators/result-type.model';
 
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
+import {Config} from '../app/config.service';
 
 /**
  * A WAVE workspace consisting of a project, layers and plots.
@@ -47,6 +48,7 @@ export interface RScriptDict {
  */
 export abstract class StorageProvider {
     constructor(
+        protected config: Config,
         protected layerService: LayerService,
         protected plotService: PlotService
     ) {}

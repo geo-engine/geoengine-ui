@@ -15,9 +15,10 @@ import {
 import {Projections} from '../app/operators/projection.model';
 import {Unit} from '../app/operators/unit.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
+import {MdDialog} from '@angular/material';
 
 @Component({
     selector: 'wave-csv-repository',
@@ -26,7 +27,7 @@ import {RandomColorService} from '../services/random-color.service';
         <md-toolbar>
           <label>CSV data / upload</label>            
           <span class="toolbar-fill-remaining-space"></span>
-           <button md-button aria-label='upload' disabled>
+           <button md-button>
             <md-icon>cloud_upload</md-icon>
             upload
           </button>
@@ -67,6 +68,7 @@ import {RandomColorService} from '../services/random-color.service';
 
 export class CsvRepositoryComponent {
 
+    // CsvDialogComponent = CsvDialogComponent;
     private csvs: Observable<Array<CsvFile>>;
 
     constructor(
@@ -74,7 +76,8 @@ export class CsvRepositoryComponent {
         private layerService: LayerService,
         private projectService: ProjectService,
         private userService: UserService,
-        private randomColorService: RandomColorService
+        private randomColorService: RandomColorService,
+        public dialog: MdDialog,
     ) {
         this.csvs = this.userService.getCsvStream();
     }

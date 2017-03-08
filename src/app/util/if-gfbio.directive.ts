@@ -9,7 +9,8 @@ export class IfGfbioDirective {
     constructor(private config: Config,
                 private templateRef: TemplateRef<Component>,
                 private viewContainer: ViewContainerRef) {
-        if (this.config.PROJECT.toLowerCase() === 'gfbio') {
+        const projectIsGFBio = this.config.PROJECT.toLowerCase() === 'gfbio';
+        if (projectIsGFBio) {
             this.viewContainer.createEmbeddedView(this.templateRef);
         }
     }

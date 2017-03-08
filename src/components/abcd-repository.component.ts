@@ -13,7 +13,7 @@ import {SimplePointSymbology, ClusteredPointSymbology} from '../symbology/symbol
 import {Projections} from '../app/operators/projection.model';
 import {Unit} from '../app/operators/unit.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {ProjectService} from '../project/project.service';
 import {RandomColorService} from '../services/random-color.service';
 import {BasicColumns} from '../models/csv.model';

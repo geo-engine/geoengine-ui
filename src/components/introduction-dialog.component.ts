@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {MdCheckboxChange} from '@angular/material';
 
 @Component({

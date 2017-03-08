@@ -3,24 +3,25 @@ import {Http, Response} from '@angular/http';
 
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
 import {User, Guest} from './user.model';
 
-import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
-import {AbcdArchive} from '../models/abcd.model';
-import {IBasket} from '../baskets/gfbio-basket.model';
+import {RequestParameters, MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
+import {AbcdArchive} from '../../models/abcd.model';
+import {IBasket} from '../../baskets/gfbio-basket.model';
 
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
-} from '../models/mapping-source.model';
-import {CsvFile, CsvColumn} from '../models/csv.model';
+} from '../../models/mapping-source.model';
+import {CsvFile, CsvColumn} from '../../models/csv.model';
 
-import {Unit, UnitMappingDict} from '../app/operators/unit.model';
+import {Unit, UnitMappingDict} from '../operators/unit.model';
+import {Config} from '../config.service';
 
 export interface Session {
     user: string;
     sessionToken: string;
     staySignedIn?: boolean;
+    isExternallyConnected?: boolean;
 }
 
 class UserServiceRequestParameters extends MappingRequestParameters {
@@ -70,7 +71,7 @@ class GfbioServiceRequestParameters extends MappingRequestParameters {
 }
 
 class GFBioPortalLoginRequestParameters extends RequestParameters {
-    constructor(config: { username: string; password: string; }) {
+    constructor(config: {username: string, password: string}) {
         super();
         this.addAuthentication(config.username, config.password);
     }
@@ -86,25 +87,29 @@ export class UserService {
 
     private isGuestUser$: Observable<boolean>;
 
-    constructor(
-        private http: Http
-    ) {
+    constructor(private config: Config,
+                private http: Http) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
         );
 
-        this.isGuestUser$ = this.session$.map(s => s.user === Config.USER.GUEST.NAME);
+        this.isGuestUser$ = this.session$.map(s => s.user === this.config.USER.GUEST.NAME);
 
         // storage of the session
         this.session$.subscribe(newSession => this.saveSessionData(newSession));
 
         // user info
-        this.user$ = new BehaviorSubject(new Guest());
-        this.session$.subscribe(
-            session => this.getUserDetails(session).then(
-                user => user ? this.user$.next(user) : new Guest()
-            )
-        );
+        this.user$ = new BehaviorSubject(new Guest(config));
+        this.session$.subscribe(session => {
+            this.getUserDetails(session)
+                .subscribe(user => {
+                    if (user) {
+                        this.user$.next(user);
+                    } else {
+                        this.user$.next(new Guest(config));
+                    }
+                });
+        });
     }
 
     /**
@@ -139,13 +144,17 @@ export class UserService {
         return this.isGuestUser$;
     }
 
+    isGuestUser(): boolean {
+        return this.session$.getValue().user === this.config.USER.GUEST.NAME;
+    }
+
     /**
      * Login using user credentials. If it was successful, set a new user.
      * @param credentials.user The user name.
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    login(credentials: {user: string, password: string, staySignedIn?: boolean}): Promise<boolean> {
+    login(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
         if (credentials.staySignedIn === undefined) {
             credentials.staySignedIn = true;
         }
@@ -154,26 +163,29 @@ export class UserService {
             username: credentials.user,
             password: credentials.password,
         });
-        return this.request(parameters).then(response => {
-            const result = response.json() as {result: string | boolean, session: string};
-            const success = typeof result.result === 'boolean' && result.result === true;
+        return this.request(parameters)
+            .map(response => {
+                const result = response.json() as {result: string | boolean, session: string};
+                const success = typeof result.result === 'boolean' && result.result === true;
 
-            if (success) {
-                this.session$.next({
-                    user: credentials.user,
-                    sessionToken: result.session,
-                    staySignedIn: credentials.staySignedIn,
-                });
-            }
-
-            return success;
-        });
+                return [result.session, success];
+            }).do(([session, success]: [string, boolean]) => {
+                if (success) {
+                    this.session$.next({
+                        user: credentials.user,
+                        sessionToken: session,
+                        staySignedIn: credentials.staySignedIn,
+                        isExternallyConnected: false,
+                    });
+                }
+            })
+            .map(([session, success]) => success);
     }
 
-    guestLogin(): Promise<boolean> {
+    guestLogin(): Observable<boolean> {
         return this.login({
-            user: Config.USER.GUEST.NAME,
-            password: Config.USER.GUEST.PASSWORD,
+            user: this.config.USER.GUEST.NAME,
+            password: this.config.USER.GUEST.PASSWORD,
         });
     }
 
@@ -183,20 +195,19 @@ export class UserService {
      * @param session.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    isSessionValid(session: Session): Promise<boolean> {
+    isSessionValid(session: Session): Observable<boolean> {
         // use >>user info request<< for this
         const parameters = new UserServiceRequestParameters({
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters).then(response => {
-            const result = response.json() as {result: string | boolean};
-            const valid = typeof result.result === 'boolean' && result.result;
+        return this.request(parameters)
+            .map(response => {
+                const result = response.json() as {result: string | boolean};
+                const valid = typeof result.result === 'boolean' && result.result;
 
-            return valid;
-        });
-
-        // return this.getUserDetails(session).then(user => !!user);
+                return valid;
+            });
     }
 
     /**
@@ -205,16 +216,16 @@ export class UserService {
      * @param session.password The user's password.
      * @returns the user details.
      */
-    getUserDetails(session: Session): Promise<User> {
-        if (session.user === Config.USER.GUEST.NAME) {
-            return Promise.resolve(new Guest());
+    getUserDetails(session: Session): Observable<User> {
+        if (session.user === this.config.USER.GUEST.NAME) {
+            return Observable.of(new Guest(this.config));
         }
 
         const parameters = new UserServiceRequestParameters({
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters).then(response => {
+        return this.request(parameters).map(response => {
             const result = response.json() as {result: string | boolean};
             const valid = typeof result.result === 'boolean' && result.result;
 
@@ -286,55 +297,55 @@ export class UserService {
                     offset: number,
                 },
             }];
-        };
+        }
+        ;
 
         return this.session$.switchMap(session => {
             const parameters = new UserServiceRequestParameters({
                 request: 'sourcelist',
                 sessionToken: session.sessionToken,
             });
-            return this.request(parameters).then(
-                response => response.json()
-            ).then((json: MappingSourceResponse) => {
-                const sources: Array<MappingSource> = [];
+            return this.request(parameters)
+                .map(response => response.json())
+                .map((json: MappingSourceResponse) => {
+                    const sources: Array<MappingSource> = [];
 
-                for (const sourceId in json.sourcelist) {
-                    const source: MappingSourceDict = json.sourcelist[sourceId];
-                    sources.push({
-                        source: sourceId,
-                        name: (source.name) ? source.name : sourceId,
-                        uri: (source.provenance) ? source.provenance.uri : '',
-                        citation: source.provenance ? source.provenance.citation : '',
-                        license: source.provenance ? source.provenance.license : '',
-                        colorizer: source.colorizer,
-                        coords: source.coords,
-                        channels: source.channels.map((channel, index) => {
-                            return {
-                                id: index,
-                                name: channel.name || 'Channel #' + index,
-                                datatype: channel.datatype,
-                                nodata: channel.nodata,
-                                unit: channel.unit ?
-                                    Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
-                                hasTransform: !!channel.transform,
-                                isSwitchable: !!channel.transform &&
-                                                        !!channel.transform.unit && !!channel.unit,
-                                transform: channel.transform === undefined ?
-                                    undefined : {
-                                        unit: channel.transform.unit ?
-                                            Unit.fromMappingDict(channel.transform.unit)
-                                            : Unit.defaultUnit,
-                                        datatype: channel.transform.datatype,
-                                        offset: channel.transform.offset,
-                                        scale: channel.transform.scale,
-                                    } as MappingTransform,
-                            } as MappingSourceChannel;
-                        }),
-                    });
-                }
+                    for (const sourceId in json.sourcelist) {
+                        const source: MappingSourceDict = json.sourcelist[sourceId];
+                        sources.push({
+                            source: sourceId,
+                            name: (source.name) ? source.name : sourceId,
+                            uri: (source.provenance) ? source.provenance.uri : '',
+                            citation: source.provenance ? source.provenance.citation : '',
+                            license: source.provenance ? source.provenance.license : '',
+                            colorizer: source.colorizer,
+                            coords: source.coords,
+                            channels: source.channels.map((channel, index) => {
+                                return {
+                                    id: index,
+                                    name: channel.name || 'Channel #' + index,
+                                    datatype: channel.datatype,
+                                    nodata: channel.nodata,
+                                    unit: channel.unit ?
+                                        Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                    hasTransform: !!channel.transform,
+                                    isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+                                    transform: channel.transform === undefined ?
+                                        undefined : {
+                                            unit: channel.transform.unit ?
+                                                Unit.fromMappingDict(channel.transform.unit)
+                                                : Unit.defaultUnit,
+                                            datatype: channel.transform.datatype,
+                                            offset: channel.transform.offset,
+                                            scale: channel.transform.scale,
+                                        } as MappingTransform,
+                                } as MappingSourceChannel;
+                            }),
+                        });
+                    }
 
-                return sources;
-            });
+                    return sources;
+                });
         });
 
     }
@@ -379,9 +390,9 @@ export class UserService {
                 request: 'abcd',
                 sessionToken: session.sessionToken,
             });
-            return this.request(parameters).then(
-                response => response.json()
-            ).then((abcdResponse: AbcdResponse) => abcdResponse.archives);
+            return this.request(parameters)
+                .map(response => response.json())
+                .map((abcdResponse: AbcdResponse) => abcdResponse.archives);
 
         });
     }
@@ -400,9 +411,9 @@ export class UserService {
                 request: 'baskets',
                 sessionToken: session.sessionToken,
             });
-            return this.request(parameters).then(
-                response => response.json()
-            ).then((gfbioBasketResponse: GfbioBasketResponse) => gfbioBasketResponse.baskets);
+            return this.request(parameters)
+                .map(response => response.json())
+                .map((gfbioBasketResponse: GfbioBasketResponse) => gfbioBasketResponse.baskets);
 
         });
     }
@@ -410,21 +421,21 @@ export class UserService {
     /**
      * Get the GFBio login token from the portal.
      */
-    getGFBioToken(credentials: {username: string, password: string}): Promise<string> {
+    getGFBioToken(credentials: {username: string, password: string}): Observable<string> {
         const parameters = new GFBioPortalLoginRequestParameters(credentials);
 
         return this.http.get(
-            Config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
+            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
             {headers: parameters.getHeaders()}
         ).flatMap(response => {
             const json = response.json();
             if (typeof json === 'string') {
                 return Observable.of(json); // token
             } else {
-                const result: { exception: string, message: string } = json;
+                const result: {exception: string, message: string} = json;
                 return Observable.throw(result.message);
             }
-        }).toPromise();
+        });
     }
 
     /**
@@ -433,20 +444,19 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Promise<boolean> {
+    gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
         const tokenPromise = this.getGFBioToken({
             username: credentials.user,
             password: credentials.password,
         });
-        return tokenPromise.then(
-            token => {
+        return tokenPromise.flatMap(token => {
                 const parameters = new MappingRequestParameters({
                     service: 'gfbio',
                     sessionToken: undefined,
                     request: 'login',
                     parameters: {token: token},
                 });
-                return this.request(parameters).then(response => {
+                return this.request(parameters).map(response => {
                     const result = response.json() as {result: string | boolean, session: string};
                     const success = typeof result.result === 'boolean' && result.result === true;
 
@@ -455,13 +465,13 @@ export class UserService {
                             user: credentials.user,
                             sessionToken: result.session,
                             staySignedIn: credentials.staySignedIn,
+                            isExternallyConnected: true,
                         });
                     }
 
                     return success;
                 });
-            },
-            error => Promise.resolve(false)
+            }
         );
     }
 
@@ -470,28 +480,30 @@ export class UserService {
      * @param token The user's token.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    gfbioTokenLogin(token: string): Promise<boolean> {
+    gfbioTokenLogin(token: string): Observable<boolean> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
             sessionToken: undefined,
             request: 'login',
             parameters: {token: token},
         });
-        return this.request(parameters).then(response => {
+        return this.request(parameters).flatMap(response => {
             const result = response.json() as {result: string | boolean, session: string};
             const success = typeof result.result === 'boolean' && result.result === true;
 
             if (success) {
-                return this.getUserDetails({user: undefined, sessionToken: result.session}).then(user => {
-                    this.session$.next({
-                        user: user.name,
-                        sessionToken: result.session,
-                        staySignedIn: false, // TODO: think about good default value
-                    });
-                    return true;
-                });
+                return this.getUserDetails({user: undefined, sessionToken: result.session})
+                    .do(user => {
+                        this.session$.next({
+                            user: user.name,
+                            sessionToken: result.session,
+                            staySignedIn: false,
+                            isExternallyConnected: true,
+                        });
+                    })
+                    .map(user => true);
             } else {
-                return false;
+                return Observable.of(false);
             }
         });
     }
@@ -518,7 +530,7 @@ export class UserService {
             const sessionData2 = JSON.parse(sessionStorage.getItem('session')) as Session;
             if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
                 return {
-                    user: Config.USER.GUEST.NAME,
+                    user: this.config.USER.GUEST.NAME,
                     sessionToken: '',
                 };
             } else {
@@ -539,12 +551,12 @@ export class UserService {
         }
     }
 
-    protected request(requestParameters: MappingRequestParameters): Promise<Response> {
+    protected request(requestParameters: MappingRequestParameters): Observable<Response> {
         return this.http.post(
-            Config.MAPPING_URL,
+            this.config.MAPPING_URL,
             requestParameters.toMessageBody(),
             {headers: requestParameters.getHeaders()}
-        ).toPromise();
+        );
     }
 
 }

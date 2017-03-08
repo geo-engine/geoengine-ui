@@ -15,7 +15,7 @@ import {LayerService} from '../layers/layer.service';
 import {RandomColorService} from '../services/random-color.service';
 import {PangaeaSourceType} from '../app/operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {Subscription} from "rxjs";
 
 export class BasketResult<T extends IBasketResult>  {

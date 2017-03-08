@@ -6,10 +6,7 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {InfoAreaComponent} from '../components/info-area.component';
-import {InfoBarComponent} from '../components/info-bar.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
-import {PlotListComponent} from '../plots/plot-list.component';
 import {MapComponent} from '../map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
@@ -32,7 +29,7 @@ import {
     LegendaryComponent
 } from '../symbology/legendary.component';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {UserService} from '../users/user.service';
+import {UserService} from './users/user.service';
 import {VatLogoComponent, IdessaLogoComponent} from './logo.component';
 import {MappingDataSourceFilter} from '../pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from '../pipes/highlight.pipe';
@@ -42,7 +39,6 @@ import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '..
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {IntroductionDialogComponent} from '../components/introduction-dialog.component';
-import {LoginDialogComponent} from '../users/login-dialog.component';
 import {ProjectService} from '../project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -79,6 +75,10 @@ import { SidenavHeaderComponent } from './sidenav/sidenav-header/sidenav-header.
 import { NavigationComponent } from './sidenav/navigation/navigation.component';
 import { SourceOperatorListComponent } from './operators/dialogs/source-operator-list/source-operator-list.component';
 import { IfGfbioDirective } from './util/if-gfbio.directive';
+import { IfGfbioLoggedInDirective } from './util/if-gfbio-logged-in.directive';
+import { IfLoggedInDirective } from './util/if-logged-in.directive';
+import { IfGuestDirective } from './util/if-guest.directive';
+import { LoginComponent } from './users/login/login.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -87,10 +87,7 @@ export function configInitializer(config: Config) {
 @NgModule({
     declarations: [
         AppComponent,
-        InfoAreaComponent,
-        InfoBarComponent,
         RasterRepositoryComponent,
-        PlotListComponent,
         MapComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,
@@ -126,7 +123,6 @@ export function configInitializer(config: Config) {
         SafeStylePipe,
         MappingColorizerToGradientPipe,
         IntroductionDialogComponent,
-        LoginDialogComponent,
         GfbioBasketsComponent,
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
@@ -151,6 +147,10 @@ export function configInitializer(config: Config) {
         NavigationComponent,
         SourceOperatorListComponent,
         IfGfbioDirective,
+        IfGfbioLoggedInDirective,
+        IfLoggedInDirective,
+        IfGuestDirective,
+        LoginComponent,
     ],
     imports: [
         BrowserModule,
@@ -163,7 +163,6 @@ export function configInitializer(config: Config) {
     ],
     entryComponents: [
         IntroductionDialogComponent,
-        LoginDialogComponent,
         RenameLayerComponent,
         RasterRepositoryComponent,
         AbcdRepositoryComponent,
@@ -178,6 +177,7 @@ export function configInitializer(config: Config) {
         HistogramOperatorComponent,
         GbifOperatorComponent,
         SourceOperatorListComponent,
+        LoginComponent,
     ],
     providers: [
         DragulaService,

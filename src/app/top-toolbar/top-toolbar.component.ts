@@ -2,19 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import {MdDialog} from "@angular/material";
 import {Observable} from "rxjs";
 
-import {UserService} from "../../users/user.service";
+import {UserService} from "../users/user.service";
 import {LayoutService} from "../layout.service";
 
 import {IntroductionDialogComponent} from "../../components/introduction-dialog.component";
-import {LoginDialogComponent} from "../../users/login-dialog.component";
 import {RasterRepositoryComponent} from "../../components/raster-repository.component";
 import {AbcdRepositoryComponent} from "../../components/abcd-repository.component";
 import {CsvRepositoryComponent} from "../../components/csv-repository.component";
 import {GfbioBasketsComponent} from "../../baskets/gfbio-baskets.component";
 import {OperatorRepositoryComponent} from "../../components/operator-repository.component";
 
-import Config from '../config.model';
 import {GbifOperatorComponent} from '../operators/dialogs/gbif-operator/gbif-operator.component';
+import {Config} from '../config.service';
 
 @Component({
   selector: 'wave-top-toolbar',
@@ -31,9 +30,9 @@ export class TopToolbarComponent implements OnInit {
     private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
     private GBC = GfbioBasketsComponent; // tslint:disable-line:no-unused-variable variable-name
     private ORC = OperatorRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private Config = Config; // tslint:disable-line:no-unused-variable variable-name
 
   constructor(
+      public config: Config,
       public dialog: MdDialog,
       private userService: UserService,
       private layoutService: LayoutService
@@ -41,7 +40,7 @@ export class TopToolbarComponent implements OnInit {
 
   ngOnInit() {
       this.username$ = this.userService.getSessionStream().map(
-          session =>  session.user === Config.USER.GUEST.NAME ? 'login' : session.user
+          session =>  session.user === this.config.USER.GUEST.NAME ? 'login' : session.user
       );
   }
 
@@ -51,12 +50,6 @@ export class TopToolbarComponent implements OnInit {
               this.dialog.open(IntroductionDialogComponent, {});
           });
       }
-  }
-
-  openUserDialog() {
-      let dialogRef = this.dialog.open(LoginDialogComponent, {
-          disableClose: false
-      });
   }
 
 }

@@ -38,6 +38,7 @@
         <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
             <md-list-item (click)="layerService.setSelectedLayer(layer)"
                           [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
+                          [class.list-item-extended]="layer.expanded"
                           [title]="layer.name"
             >
                 <md-menu #layerMenu="mdMenu">

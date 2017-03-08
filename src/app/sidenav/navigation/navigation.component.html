@@ -11,4 +11,11 @@
     >
         <md-icon>build</md-icon>
     </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, LoginComponent)"
+            (click)="layoutService.setSidenavContentComponent(LoginComponent)"
+    >
+        <md-icon *waveIfLoggedIn>person</md-icon>
+        <md-icon *waveIfGuest>person_outline</md-icon>
+    </button>
 </div>

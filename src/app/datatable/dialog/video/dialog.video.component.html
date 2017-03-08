@@ -1,0 +1,18 @@
+<div class="videoContainer">
+  <div>
+    <p class="pull-left">{{videoURLs[currentVideo] | fileName}}</p>
+    <p class="pull-right">Video {{currentVideo + 1}} of {{videoURLs.length}}</p>
+  </div>
+
+  <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
+
+  <dialog-playlist [tracks]="videoURLs" [currentTrack]="currentVideo" (gotoTrack)="goToVideo($event)"></dialog-playlist>
+</div>
+
+<button md-mini-fab color="primary" (click)="dialogRef.close()" class="close" [title]="'close popup'">
+  <md-icon class="md-24">close</md-icon>
+</button>
+
+<a md-mini-fab color="primary" [href]="videoURLs[currentVideo]" target="_blank" class="externalLink" [title]="'open in new tab'">
+  <md-icon class="md-24">open_in_new</md-icon>
+</a>

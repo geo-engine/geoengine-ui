@@ -64,8 +64,15 @@ function conditionalValidator(validator: (control: AbstractControl) => {[key: st
         }
     };
 }
+function keywordValidator(keywords: Array<string>) {
+    return (control: AbstractControl) => {
+        return keywords.indexOf(control.value) >= 0 ? {'keyword': true} : null;
+    };
+}
+
 
 export const WaveValidators = {
     minAndMax: minAndMax,
     conditionalValidator: conditionalValidator,
+    keyword: keywordValidator,
 };

@@ -2,8 +2,6 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
-import Config from '../app/config.model';
-
 import {StorageProvider, RScript} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
 import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
@@ -12,7 +10,8 @@ import {LayoutService} from '../app/layout.service';
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {PlotService} from '../plots/plot.service';
-import {UserService, Session} from '../users/user.service';
+import {UserService, Session} from '../app/users/user.service';
+import {Config} from '../app/config.service';
 
 /**
  * A service that is responsible for saving the app state.
@@ -22,6 +21,7 @@ export class StorageService {
     private storageProvider: StorageProvider;
 
     constructor(
+        private config: Config,
         private layerService: LayerService,
         private projectService: ProjectService,
         private plotService: PlotService,
@@ -55,7 +55,7 @@ export class StorageService {
         // load stored values on session change
         this.userService.getSessionStream().subscribe(session => {
             // check validity
-            this.userService.isSessionValid(session).then(valid => {
+            this.userService.isSessionValid(session).subscribe(valid => {
                 // console.log('valid?', valid);
                 if (valid) {
                     this.resetStorageProvider(session);
@@ -104,10 +104,11 @@ export class StorageService {
         this.storageProvider = undefined;
 
         let storageProvider: StorageProvider;
-        if (session.user === Config.USER.GUEST.NAME) {
-            storageProvider = new BrowserStorageProvider(this.layerService, this.plotService);
+        if (session.user === this.config.USER.GUEST.NAME) {
+            storageProvider = new BrowserStorageProvider(this.config, this.layerService, this.plotService);
         } else {
             storageProvider = new MappingStorageProvider({
+                config: this.config,
                 layerService: this.layerService,
                 plotService: this.plotService,
                 http: this.http,

@@ -7,7 +7,7 @@ import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
 
 import {ProjectService} from '../project/project.service';
-import {UserService} from '../users/user.service';
+import {UserService} from '../app/users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
 import {NotificationService} from '../app/notification.service';
 
@@ -15,7 +15,6 @@ import {Operator} from '../app/operators/operator.model';
 import {Projection} from '../app/operators/projection.model';
 import {ResultTypes} from '../app/operators/result-type.model';
 
-import Config from '../app/config.model';
 import {PlotData, PlotDataStream} from '../plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
 import {LoadingState} from '../shared/loading-state.model';
@@ -23,6 +22,7 @@ import {LoadingState} from '../shared/loading-state.model';
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {Time} from '../app/time.model';
+import {Config} from '../app/config.service';
 
 export interface MappingColorizer {
     interpolation: string;
@@ -38,6 +38,7 @@ export class MappingQueryService {
      * Inject the Http-Provider for asynchronous requests.
      */
     constructor(
+        private config: Config,
         private http: Http,
         private userService: UserService,
         private projectService: ProjectService,
@@ -74,7 +75,7 @@ export class MappingQueryService {
             parameters.setParameter('width', 1024); // magic number
         }
 
-        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     /**
@@ -152,7 +153,7 @@ export class MappingQueryService {
             request: 'GetFeature',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                version: Config.WFS.VERSION,
+                version: this.config.WFS.VERSION,
                 typeNames: encodeURIComponent(projectedOperator.resultType.getCode()
                            + ':'
                            + projectedOperator.toQueryJSON()),
@@ -173,7 +174,7 @@ export class MappingQueryService {
             // parameters.setParameter('width', Math.max(1, resolution));
         }
 
-        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     /**
@@ -262,7 +263,7 @@ export class MappingQueryService {
     }): VectorLayerData {
         const viewportSize$: Observable<boolean | ViewportSize> =
             config.clustered ?
-                this.mapService.getViewportSizeStream().debounceTime(Config.DELAYS.DEBOUNCE)
+                this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
                 : Observable.of(false);
 
         const reload$ = new BehaviorSubject<void>(undefined);
@@ -343,11 +344,11 @@ export class MappingQueryService {
             request: 'GetMap',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                version: Config.WMS.VERSION,
-                format: Config.WMS.FORMAT,
+                version: this.config.WMS.VERSION,
+                format: this.config.WMS.FORMAT,
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
-                debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
+                debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
                 time: config.time.asRequestString(),
             },
         });
@@ -367,7 +368,7 @@ export class MappingQueryService {
     }): string {
         const parameters = this.getWMSQueryParameters(config);
 
-        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     getWCSQueryUrl(config: {
@@ -392,11 +393,11 @@ export class MappingQueryService {
         const extent = this.projectService.getProjection().getExtent();
 
         const parameters = new MappingRequestParameters({
-            service: Config.WCS.SERVICE,
+            service: this.config.WCS.SERVICE,
             request: 'getcoverage',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                version: Config.WCS.VERSION,
+                version: this.config.WCS.VERSION,
                 format: config.outputFormat.getFormat(),
                 coverageid: encodeURIComponent(projectedOperator.toQueryJSON()),
                 subset_x: `(${extent[0]},${extent[2]})`,
@@ -404,12 +405,12 @@ export class MappingQueryService {
                 outputcrs: this.projectService.getProjection().getCrsURI(),
                 size_x: config.size.x,
                 size_y: config.size.y,
-                debug: (Config.MAPPING_DEBUG_MODE ? 1 : 0),
+                debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
                 time: config.time.asRequestString(),
             },
         });
 
-        return Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     getColorizer(operator: Operator,
@@ -418,9 +419,9 @@ export class MappingQueryService {
 
         const projectedOperator = operator.getProjectedOperator(projection);
         const requestType = 'GetColorizer';
-        const colorizerRequest = Config.MAPPING_URL
+        const colorizerRequest = this.config.MAPPING_URL
             + '?' + 'SERVICE=WMS'
-            + '&' + 'VERSION=' + Config.WMS.VERSION
+            + '&' + 'VERSION=' + this.config.WMS.VERSION
             + '&' + 'REQUEST=' + requestType
             + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
             + '&' + 'CRS=' + projection.getCode()
@@ -459,7 +460,7 @@ export class MappingQueryService {
             },
         });
         return this.http.get(
-            Config.MAPPING_URL + '?' + request.toMessageBody()
+            this.config.MAPPING_URL + '?' + request.toMessageBody()
         ).map(
             (res: Response) => res.json()
         ).map(
@@ -507,7 +508,7 @@ export class MappingQueryService {
             },
         });
 
-        const queryUrl = Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
         return this.http.get(queryUrl).toPromise().then(
@@ -525,7 +526,7 @@ export class MappingQueryService {
             },
         });
 
-        const queryUrl = Config.MAPPING_URL + '?' + parameters.toMessageBody();
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
         return this.http.get(queryUrl).toPromise().then(

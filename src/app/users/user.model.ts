@@ -1,4 +1,4 @@
-import Config from '../app/config.model';
+import {Config} from '../config.service';
 
 interface UserConfig {
     name: string;
@@ -35,9 +35,9 @@ export class User {
 }
 
 export class Guest extends User {
-    constructor() {
+    constructor(config: Config) {
         super({
-            name: Config.USER.GUEST.NAME,
+            name: config.USER.GUEST.NAME,
             realName: 'Guest',
             email: 'guest@mapping',
         });
