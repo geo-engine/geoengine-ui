@@ -3,13 +3,13 @@
     display: block;
     right: 0;
 
-    top: 5rem;
-    @media (max-width: 600px) and (orientation: portrait) {
-        top: 4.5rem;
-    }
-    @media (max-width: 960px) and (orientation: landscape) {
-        top: 4rem;
-    }
+    top: 1rem;
+    //@media (max-width: 600px) and (orientation: portrait) {
+    //    top: 4.5rem;
+    //}
+    //@media (max-width: 960px) and (orientation: landscape) {
+    //    top: 4rem;
+    //}
 }
 
 button {

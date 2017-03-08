@@ -4,6 +4,7 @@ import {SourceOperatorListComponent} from '../../operators/dialogs/source-operat
 import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from "../../help.component";
+import {TimeConfigComponent} from '../../time-config/time-config.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -18,6 +19,7 @@ export class NavigationComponent implements OnInit {
     OperatorRepositoryComponent = OperatorRepositoryComponent;
     LoginComponent = LoginComponent;
     HelpComponent = HelpComponent;
+    TimeConfigComponent = TimeConfigComponent;
 
     constructor(public layoutService: LayoutService) {
     }
