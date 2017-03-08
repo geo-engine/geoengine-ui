@@ -3,8 +3,9 @@ import {LayoutService} from '../../layout.service';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoginComponent} from '../../users/login/login.component';
-import {HelpComponent} from "../../help.component";
+import {HelpComponent} from '../../help.component';
 import {TimeConfigComponent} from '../../time-config/time-config.component';
+import {PlotListComponent} from '../../plots/plot-list/plot-list.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -20,6 +21,7 @@ export class NavigationComponent implements OnInit {
     LoginComponent = LoginComponent;
     HelpComponent = HelpComponent;
     TimeConfigComponent = TimeConfigComponent;
+    PlotListComponent = PlotListComponent;
 
     constructor(public layoutService: LayoutService) {
     }
@@ -27,7 +29,7 @@ export class NavigationComponent implements OnInit {
     ngOnInit() {
     }
 
-    buttonColor(componentSelection: [Type<Component>, Type<Component>], component: Type<Component>) {
+    buttonColor(componentSelection: [Type<Component>, Type<Component>], component: Type<Component>): string {
         if (!componentSelection) {
             return 'default';
         }

@@ -8,7 +8,7 @@ import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {OperatorGraphDialogComponent} from '../dialogs/operator-graph.component';
 import {ExportDialogComponent} from '../dialogs/export.component';
 import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
-import {LoadingState} from '../../../shared/loading-state.model';
+import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../../../layers/layer.service';
 import {MapService} from '../../../map/map.service';

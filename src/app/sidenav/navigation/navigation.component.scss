@@ -42,3 +42,23 @@ button {
 button:not(:last-child) {
     margin-bottom: 1rem;
 }
+
+.icon-cogs {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-cogs:before {
+    content: "\e900";
+    font-size: 1.25rem;
+}

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, Subscription} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, ReplaySubject, Subscription, Observer} from 'rxjs/Rx';
 
 import {Projections, Projection} from '../operators/projection.model';
 
@@ -9,7 +9,7 @@ import {Time, TimePoint} from '../time.model';
 import * as moment from 'moment';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';
-import {LoadingState} from '../../shared/loading-state.model';
+import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Response} from '@angular/http';
@@ -91,7 +91,7 @@ export class ProjectService {
         }
     }
 
-    changeProjectConfig(config: {name?: string, projection?: Projection, time?: Time, plots?: Array<Plot>}) {
+    private changeProjectConfig(config: {name?: string, projection?: Projection, time?: Time, plots?: Array<Plot>}) {
         const project = this.project$.value;
 
         this.project$.next(new Project({
@@ -130,21 +130,7 @@ export class ProjectService {
         const loadingState$ = new ReplaySubject(1);
         const data$ = new ReplaySubject(1);
 
-        const subscription = this.getTimeStream()
-            .do(() => loadingState$.next(LoadingState.LOADING))
-            .switchMap(time => {
-                return this.mappingQueryService.getPlotData({
-                    operator: plot.operator,
-                    time: time,
-                });
-            })
-            .do(
-                () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
-                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
-                    loadingState$.next(LoadingState.ERROR);
-                }
-            ).subscribe(data$);
+        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
 
         this.plotSubscriptions.set(plot, subscription);
 
@@ -160,10 +146,12 @@ export class ProjectService {
      * @param plot
      */
     removePlot(plot: Plot) {
-        const plotIndex = this.getProject().plots.indexOf(plot);
+        const plots = this.getProject().plots;
+        const plotIndex = plots.indexOf(plot);
         if (plotIndex >= 0) {
+            plots.splice(plotIndex);
             this.changeProjectConfig({
-                plots: this.getProject().plots.splice(plotIndex)
+                plots: plots
             });
 
             this.plotSubscriptions.get(plot).unsubscribe();
@@ -182,12 +170,27 @@ export class ProjectService {
      * @param plot
      */
     reloadPlot(plot: Plot) {
+        this.plotData$.get(plot).next(undefined); // send empty data
+
         this.plotSubscriptions.get(plot).unsubscribe();
         this.plotSubscriptions.delete(plot);
 
         const loadingState$ = this.plotDataState$.get(plot);
 
-        const subscription = this.getTimeStream()
+        const subscription = this.createPlotSubscription(plot, this.plotData$.get(plot), loadingState$);
+
+        this.plotSubscriptions.set(plot, subscription);
+    }
+
+    /**
+     * Create a subscription for plot data with loading state checks and error handling
+     * @param plot
+     * @param data$
+     * @param loadingState$
+     * @returns {Subscription}
+     */
+    private createPlotSubscription(plot: Plot, data$: Observer<PlotData>, loadingState$: Observer<LoadingState>): Subscription {
+        return this.getTimeStream()
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(time => {
                 return this.mappingQueryService.getPlotData({
@@ -198,12 +201,14 @@ export class ProjectService {
             .do(
                 () => loadingState$.next(LoadingState.OK),
                 (reason: Response) => {
-                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
+                    this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ).subscribe(this.plotData$.get(plot));
-
-        this.plotSubscriptions.set(plot, subscription);
+            )
+            .subscribe(
+                data => data$.next(data),
+                error => error // ignore error
+            );
     }
 
     /**

@@ -19,7 +19,7 @@
             (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)"
             mdTooltip="Operators" mdTooltipPosition="before"
     >
-        <img src="assets/cogs.svg" alt="processing">
+        <span class="icon-cogs"></span>
     </button>
     <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, TimeConfigComponent)"
@@ -29,7 +29,8 @@
         <md-icon>access_time</md-icon>
     </button>
     <button md-raised-button
-            [disabled]="true"
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, PlotListComponent)"
+            (click)="layoutService.setSidenavContentComponent(PlotListComponent)"
             mdTooltip="Plots" mdTooltipPosition="before"
     >
         <md-icon>equalizer</md-icon>

@@ -81,6 +81,7 @@ import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
 import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
 import { HelpComponent } from './help.component';
+import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -155,6 +156,7 @@ export function configInitializer(config: Config) {
         PlotListComponent,
         SplashDialogComponent,
         HelpComponent,
+        PlotDetailViewComponent,
     ],
     imports: [
         BrowserModule,
@@ -184,6 +186,8 @@ export function configInitializer(config: Config) {
         LoginComponent,
         HelpComponent,
         SplashDialogComponent,
+        PlotListComponent,
+        PlotDetailViewComponent,
     ],
     providers: [
         DragulaService,

@@ -17,7 +17,7 @@ import {ResultTypes} from '../app/operators/result-type.model';
 
 import {PlotData} from '../app/plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
-import {LoadingState} from '../shared/loading-state.model';
+import {LoadingState} from '../app/project/loading-state.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../app/provenance/provenance.model';
