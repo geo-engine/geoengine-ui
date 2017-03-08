@@ -67,9 +67,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             .map(_ => window.innerHeight)
             .subscribe(windowHeight$);
 
-        const remainingHeight$ = windowHeight$.map(
+        const remainingHeight$ = windowHeight$;
+            /*.map(
             height => Math.max(height - LayoutService.getToolbarHeightPx(), 0)
-        );
+        );*/
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$)
             .do(() => this.mapComponent.resize());

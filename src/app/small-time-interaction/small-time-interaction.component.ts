@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@an
 import {ProjectService} from '../project/project.service';
 import {LayoutService} from '../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
+import {Time} from "../time.model";
 
 @Component({
   selector: 'wave-small-time-interaction',
@@ -12,7 +13,7 @@ import {TimeConfigComponent} from '../time-config/time-config.component';
 export class SmallTimeInteractionComponent implements OnInit {
 
   private timeRepresentation: string;
-  private timeIsPlaying = false;
+  //private timeIsPlaying = false;
 
   constructor(
       private projectService: ProjectService,
@@ -24,9 +25,17 @@ export class SmallTimeInteractionComponent implements OnInit {
 
   ngOnInit() {
       this.projectService.getTimeStream().subscribe(t => {
-         this.timeRepresentation = t.asRequestString();
+         this.timeRepresentation = SmallTimeInteractionComponent.formatTime(t);
          this.changeDetectorRef.markForCheck();
       });
+  }
+
+  static formatTime(time: Time): string {
+      let s =  time.getStart().format('DD-MM-YYYY hh:mm:ss');
+      if (!time.getStart().isSame(time.getEnd())) {
+          s += ' <-> ' + time.getEnd().format('DD-MM-YYYY hh:mm:ss');
+      }
+      return s;
   }
 
   timeFwd() {
@@ -38,6 +47,7 @@ export class SmallTimeInteractionComponent implements OnInit {
       this.projectService.setTime(this.projectService.getTime().clone().subtract(1, 'month'));
   }
 
+  /*
   timePlay() {
       this.timeIsPlaying = true;
   }
@@ -45,6 +55,7 @@ export class SmallTimeInteractionComponent implements OnInit {
   timeStop() {
       this.timeIsPlaying = false;
   }
+  **/
 
   openTimeConfig() {
     this.layoutService.setSidenavContentComponent(TimeConfigComponent);

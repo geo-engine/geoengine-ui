@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {MdDialog} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs';
@@ -21,7 +21,9 @@ import {Layer} from '../../../layers/layer.model';
 })
 export class NextLayerListComponent implements OnInit, OnDestroy {
 
+    LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
+    @Input() height: number;
 
     // make visible in template
     // tslint:disable:variable-name

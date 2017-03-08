@@ -37,6 +37,7 @@ import {BasketResultGroupByDatasetPipe} from '../baskets/gfbio-basket.pipe';
 import {TrimPipe} from '../pipes/trim.pipe';
 import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '../baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
+import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
@@ -60,7 +61,6 @@ import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
-import {TopToolbarComponent} from './top-toolbar/top-toolbar.component';
 import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
 import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time-config/time-config.component';
@@ -124,6 +124,7 @@ export function configInitializer(config: Config) {
         PangaeaBasketResultComponent,
         GroupedAbcdBasketResultComponent,
         SafeStylePipe,
+        SafeHtmlPipe,
         MappingColorizerToGradientPipe,
         GfbioBasketsComponent,
         HistogramComponent,
@@ -139,7 +140,6 @@ export function configInitializer(config: Config) {
         ReprojectionSelectionComponent,
         RasterValueExtractionOperatorComponent,
         SmallTimeInteractionComponent,
-        TopToolbarComponent,
         NextLayerListComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
