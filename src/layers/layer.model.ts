@@ -5,7 +5,7 @@ import {
     Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer, ClusteredPointSymbology
 } from '../symbology/symbology.model';
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
-import {Provenance} from '../provenance/provenance.model';
+import {Provenance} from '../app/provenance/provenance.model';
 import {LoadingState} from '../shared/loading-state.model';
 
 export interface VectorLayerData {

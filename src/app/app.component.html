@@ -67,25 +67,19 @@
                 <template md-tab-label>
                     <div (click)="setTabIndex(0)">Data Table</div>
                 </template>
-                <template md-tab-content>
-                    <!--<wave-data-table
-                        *ngIf= "layerDetailViewVisible$ | async"
-                        [style.height.px]="(bottomContainerHeight$ | async)"
-                        [height]="(bottomContainerHeight$ | async)">
-                    </wave-data-table>-->
-                </template>
+                <wave-data-table
+                    *ngIf="layerDetailViewVisible$ | async"
+                    [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"
+                ></wave-data-table>
             </md-tab>
             <md-tab>
                 <template md-tab-label>
-                    <div (click)="setTabIndex(1)">Citation</div>
+                    <div (click)="setTabIndex(1)">Citations</div>
                 </template>
-                <template md-tab-content>
-                    <wave-provenance-list
-                        *ngIf="layerDetailViewVisible$ | async"
-                        <!--[style.height.px]="(bottomContainerHeight$ | async)"-->
-                        [height]="(bottomContainerHeight$ | async)"
-                    ></wave-provenance-list>
-                </template>
+                <wave-provenance-list
+                    *ngIf="layerDetailViewVisible$ | async"
+                    [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"
+                ></wave-provenance-list>
             </md-tab>
         </md-tab-group>
     </div>

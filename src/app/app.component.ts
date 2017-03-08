@@ -10,7 +10,7 @@ import {ResultTypes} from './operators/result-type.model';
 import {LayoutService} from './layout.service';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 
-import {ProjectService} from '../project/project.service';
+import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
 import {StorageService} from '../storage/storage.service';
 
@@ -42,6 +42,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     // for ng-switch
     ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
+    LayoutService = LayoutService;
 
     constructor(public layerService: LayerService,
                 public layoutService: LayoutService,

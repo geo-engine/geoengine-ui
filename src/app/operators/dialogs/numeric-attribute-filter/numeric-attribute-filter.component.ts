@@ -2,7 +2,7 @@ import {
     Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit,
 } from '@angular/core';
 
-import {HistogramData} from '../../../../plots/histogram.component';
+import {HistogramData} from '../../../plots/histogram.component';
 
 import {LayerService} from '../../../../layers/layer.service';
 import {RandomColorService} from '../../../../services/random-color.service';
@@ -21,7 +21,7 @@ import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-t
 import {MdDialogRef} from '@angular/material';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Unit} from '../../unit.model';
-import {ProjectService} from '../../../../project/project.service';
+import {ProjectService} from '../../../project/project.service';
 
 function minMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;
@@ -65,14 +65,12 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
     dataLoading$ = new BehaviorSubject(false);
 
-    constructor(
-        private layerService: LayerService,
-        private randomColorService: RandomColorService,
-        private mappingQueryService: MappingQueryService,
-        private projectService: ProjectService,
-        private formBuilder: FormBuilder,
-        private dialogRef: MdDialogRef<NumericAttributeFilterOperatorComponent>
-    ) {
+    constructor(private layerService: LayerService,
+                private randomColorService: RandomColorService,
+                private mappingQueryService: MappingQueryService,
+                private projectService: ProjectService,
+                private formBuilder: FormBuilder,
+                private dialogRef: MdDialogRef<NumericAttributeFilterOperatorComponent>) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
             pointLayer: [undefined, Validators.required],
@@ -111,11 +109,10 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             this.mappingQueryService.getPlotData({
                 operator: operator,
                 time: this.projectService.getTime(),
-            }).then(
-                data => this.data$.next(data as HistogramData)
-            ).then(
-                _ => this.dataLoading$.next(false)
-            );
+            }).subscribe(data => {
+                this.data$.next(data as HistogramData);
+                this.dataLoading$.next(false);
+            });
         }));
 
         this.attributes$ = this.form.controls['pointLayer'].valueChanges.map(layer => {
@@ -152,7 +149,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         const noData: boolean = this.form.controls['noData'].value;
         const attributeName: string = this.form.controls['attribute'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
-        const boundsMax: number =  this.form.controls['bounds'].value.max;
+        const boundsMax: number = this.form.controls['bounds'].value.max;
 
         const name: string = this.form.controls['name'].value;
 
@@ -184,7 +181,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 dict.polygonSources.push(vectorOperator);
                 break;
             default:
-                throw 'Incompatible Input Type';
+                throw Error('Incompatible Input Type');
         }
 
         const operator = new Operator(dict);

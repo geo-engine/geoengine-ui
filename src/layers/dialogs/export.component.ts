@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
-import {ProjectService} from '../../project/project.service';
+import {ProjectService} from '../../app/project/project.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 
 import {WFSOutputFormats} from '../../queries/output-formats/wfs-output-format.model';

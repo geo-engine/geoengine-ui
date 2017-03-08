@@ -4,8 +4,7 @@ import {
 
 import {LayoutDict} from '../../app/layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
-import {Project} from '../../project/project.model';
-import {Plot, PlotDict} from '../../plots/plot.model';
+import {Project} from '../../app/project/project.model';
 import {Symbology} from '../../symbology/symbology.model';
 import {Operator} from '../../app/operators/operator.model';
 import {ResultTypes} from '../../app/operators/result-type.model';
@@ -20,20 +19,17 @@ export class BrowserStorageProvider extends StorageProvider {
 
         const promises: [
             Promise<Project>,
-            Promise<Array<Layer<Symbology>>>,
-            Promise<Array<Plot>>
+            Promise<Array<Layer<Symbology>>>
         ] = [
-            this.loadProject(),
+            this.loadProject(operatorMap),
             this.loadLayers(operatorMap),
-            this.loadPlots(operatorMap),
         ];
         return Promise.all(
             promises
-        ).then(([project, layers, plots]: [Project, Array<Layer<Symbology>>, Array<Plot>]) => {
+        ).then(([project, layers]: [Project, Array<Layer<Symbology>>]) => {
             return {
                 project: project,
                 layers: layers,
-                plots: plots,
             };
         });
     };
@@ -42,18 +38,17 @@ export class BrowserStorageProvider extends StorageProvider {
         return Promise.all([
             this.saveProject(workspace.project),
             this.saveLayers(workspace.layers),
-            this.savePlots(workspace.plots),
         ]).then(
             _ => undefined
         );
     }
 
-    loadProject(): Promise<Project> {
+    loadProject(operatorMap: Map<number, Operator>): Promise<Project> {
         const projectJSON = localStorage.getItem('project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
             return Promise.resolve(undefined);
         } else {
-            const project = Project.fromJSON(projectJSON);
+            const project = Project.fromJSON(projectJSON, operatorMap);
             return Promise.resolve(project);
         }
     }
@@ -89,35 +84,6 @@ export class BrowserStorageProvider extends StorageProvider {
         }
 
         localStorage.setItem('layers', JSON.stringify(layerDicts));
-        return Promise.resolve();
-    }
-
-    loadPlots(operatorMap: Map<number, Operator>): Promise<Array<Plot>> {
-        const plotsJSON = localStorage.getItem('plots');
-        if (plotsJSON === null) { // tslint:disable-line:no-null-keyword
-            return Promise.resolve(undefined);
-        } else {
-            const plots: Array<Plot> = [];
-            const plotDicts: Array<PlotDict> = JSON.parse(plotsJSON);
-
-            for (const plotDict of plotDicts) {
-                plots.push(
-                    this.plotService.createPlotFromDict(plotDict, operatorMap)
-                );
-            }
-
-            return Promise.resolve(plots);
-        }
-    }
-
-    savePlots(plots: Array<Plot>): Promise<void> {
-        const plotDicts: Array<PlotDict> = [];
-
-        for (const plot of plots) {
-            plotDicts.push(plot.toDict());
-        }
-
-        localStorage.setItem('plots', JSON.stringify(plotDicts));
         return Promise.resolve();
     }
 

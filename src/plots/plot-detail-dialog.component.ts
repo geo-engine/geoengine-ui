@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {Plot} from './plot.model';
+import {Plot} from '../app/plots/plot.model';
 
 type PlotDetailsDialogType = {plot: Plot, [index: string]: Plot};
 

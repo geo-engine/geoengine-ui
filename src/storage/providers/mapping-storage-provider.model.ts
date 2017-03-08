@@ -8,12 +8,12 @@ import {Operator} from '../../app/operators/operator.model';
 import {ResultTypes} from '../../app/operators/result-type.model';
 
 import {LayoutDict} from '../../app/layout.service';
-import {Project} from '../../project/project.model';
+import {Project} from '../../app/project/project.model';
 import {Session} from '../../app/users/user.service';
 
 import {LayerService} from '../../layers/layer.service';
-import {PlotService} from '../../plots/plot.service';
 import {Config} from '../../app/config.service';
+import {ProjectService} from '../../app/project/project.service';
 
 class ArtifactServiceRequestParameters extends MappingRequestParameters {
     constructor(config: {
@@ -55,13 +55,13 @@ export class MappingStorageProvider extends StorageProvider {
     constructor(config: {
         config: Config,
         layerService: LayerService,
-        plotService: PlotService,
+        projectService: ProjectService,
         http: Http,
         session: Session,
         createDefaultProject: () => Project,
         artifactName?: string,
     }) {
-        super(config.config, config.layerService, config.plotService);
+        super(config.config, config.layerService, config.projectService);
         this.http = config.http;
 
         this.session = config.session;
@@ -102,12 +102,9 @@ export class MappingStorageProvider extends StorageProvider {
                 const operatorMap = new Map<number, Operator>();
 
                 return {
-                    project: Project.fromDict(workspace.project),
+                    project: Project.fromDict(workspace.project, operatorMap),
                     layers: workspace.layers.map(
                         layer => this.layerService.createLayerFromDict(layer, operatorMap)
-                    ),
-                    plots: workspace.plots.map(
-                        plot => this.plotService.createPlotFromDict(plot, operatorMap)
                     ),
                 };
             });
@@ -132,7 +129,6 @@ export class MappingStorageProvider extends StorageProvider {
                 value: JSON.stringify({
                     project: workspace.project.toDict(),
                     layers: workspace.layers.map(layer => layer.toDict()),
-                    plots: workspace.plots.map(plot => plot.toDict()),
                 }),
             },
         });

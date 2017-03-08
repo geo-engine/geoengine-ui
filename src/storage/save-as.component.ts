@@ -3,8 +3,8 @@ import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
 import {StorageService} from './storage.service';
-import {ProjectService} from '../project/project.service';
-import {Project} from '../project/project.model';
+import {ProjectService} from '../app/project/project.service';
+import {Project} from '../app/project/project.model';
 import {Config} from '../app/config.service';
 
 @Component({
@@ -130,7 +130,7 @@ export class SaveAsDialogComponent implements OnInit, OnDestroy {
     }
 
     saveAs() {
-        this.projectService.renameProject(this.form.controls['name'].value);
+        this.projectService.setName(this.form.controls['name'].value);
 
         // this.dialog.close();
     }

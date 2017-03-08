@@ -1,20 +1,30 @@
-// Import theming functions
-@import '~@angular/material/core/theming/theming';
-// Import your custom theme
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
+@import '../../../wave-app-theme';
 
 table {
-  .rowSelected{
-    background: fade-out(md-color($accent), 0.6);
+    .rowSelected {
+        background: fade-out(mat-color($wave-app-accent), 0.6);
 
-    .tableFixed::before{
-      content: " ";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: fade-out(md-color($accent), 0.6);
+        .tableFixed::before {
+            content: " ";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: fade-out(mat-color($wave-app-accent), 0.6);
+        }
     }
-  }
+}
+
+.no-layer {
+    display: table;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}
+
+.no-layer span {
+    display: table-cell;
+    vertical-align: middle;
 }

@@ -8,8 +8,7 @@ import {MappingStorageProvider} from './providers/mapping-storage-provider.model
 
 import {LayoutService} from '../app/layout.service';
 import {LayerService} from '../layers/layer.service';
-import {ProjectService} from '../project/project.service';
-import {PlotService} from '../plots/plot.service';
+import {ProjectService} from '../app/project/project.service';
 import {UserService, Session} from '../app/users/user.service';
 import {Config} from '../app/config.service';
 
@@ -24,7 +23,6 @@ export class StorageService {
         private config: Config,
         private layerService: LayerService,
         private projectService: ProjectService,
-        private plotService: PlotService,
         private layoutService: LayoutService,
         private userService: UserService,
         private http: Http
@@ -34,15 +32,13 @@ export class StorageService {
         Observable.combineLatest(
             this.projectService.getProjectStream(),
             this.layerService.getLayersStream(),
-            this.plotService.getPlotsStream()
         ).debounceTime(
             debounceTime
-        ).subscribe(([project, layers, plots]) => {
+        ).subscribe(([project, layers]) => {
             if (this.storageProvider) {
                 this.storageProvider.saveWorkspace({
                     project: project,
                     layers: layers,
-                    plots: plots,
                 });
             }
         });
@@ -105,12 +101,12 @@ export class StorageService {
 
         let storageProvider: StorageProvider;
         if (session.user === this.config.USER.GUEST.NAME) {
-            storageProvider = new BrowserStorageProvider(this.config, this.layerService, this.plotService);
+            storageProvider = new BrowserStorageProvider(this.config, this.layerService, this.projectService);
         } else {
             storageProvider = new MappingStorageProvider({
                 config: this.config,
                 layerService: this.layerService,
-                plotService: this.plotService,
+                projectService: this.projectService,
                 http: this.http,
                 session: this.userService.getSession(),
                 createDefaultProject: this.projectService.createDefaultProject,
@@ -124,9 +120,6 @@ export class StorageService {
             }
             if (workspace.layers) {
                 this.layerService.setLayers(workspace.layers);
-            }
-            if (workspace.plots) {
-                this.plotService.setPlots(workspace.plots);
             }
         });
 
