@@ -1,5 +1,11 @@
 <div>
     <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, HelpComponent)"
+            (click)="layoutService.setSidenavContentComponent(HelpComponent)"
+    >
+        <md-icon>help</md-icon>
+    </button>
+    <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, SourceOperatorListComponent)"
             (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
     >

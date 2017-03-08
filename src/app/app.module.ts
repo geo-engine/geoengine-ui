@@ -6,7 +6,6 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {LayerListComponent} from '../layers/layer-list.component';
 import {RasterRepositoryComponent} from '../components/raster-repository.component';
 import {MapComponent} from '../map/map.component';
 import {
@@ -54,7 +53,7 @@ import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numer
 import {HistogramComponent} from './plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {RenameLayerComponent} from '../layers/dialogs/rename-layer.component';
+import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {OperatorRepositoryComponent} from '../components/operator-repository.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
@@ -81,6 +80,7 @@ import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
 import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
+import { HelpComponent } from './help.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -89,7 +89,6 @@ export function configInitializer(config: Config) {
 @NgModule({
     declarations: [
         AppComponent,
-        LayerListComponent,
         RasterRepositoryComponent,
         MapComponent,
         OlPointLayerComponent,
@@ -125,6 +124,7 @@ export function configInitializer(config: Config) {
         GroupedAbcdBasketResultComponent,
         SafeStylePipe,
         MappingColorizerToGradientPipe,
+        IntroductionDialogComponent,
         GfbioBasketsComponent,
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
@@ -155,6 +155,7 @@ export function configInitializer(config: Config) {
         LoginComponent,
         PlotListComponent,
         SplashDialogComponent,
+        HelpComponent,
     ],
     imports: [
         BrowserModule,
@@ -182,6 +183,7 @@ export function configInitializer(config: Config) {
         GbifOperatorComponent,
         SourceOperatorListComponent,
         LoginComponent,
+        HelpComponent,
         SplashDialogComponent,
     ],
     providers: [

@@ -2,37 +2,24 @@ wave-navigation {
     z-index: 1;
 }
 
+wave-next-layer-list {
+    position: absolute;
+    z-index: 1;
+    width: 16vw;
+    min-width: 200px;
+    left: 0;
+}
+
 :host /deep/ .mat-sidenav-content {
     overflow: hidden;
 }
 
 .top-container {
     z-index: 1;
-
-    wave-next-layer-list {
-        width: 16vw;
-        min-width: 200px;
-    }
 }
 
 .mid-container {
     z-index: 0;
-
-    wave-layer-list {
-        position: absolute;
-        z-index: 1;
-        width: 16vw;
-        min-width: 200px;
-        top: 4rem;
-        @media (max-width: 600px) and (orientation: portrait) {
-            top: 3.5rem;
-        }
-        @media (max-width: 960px) and (orientation: landscape) {
-            top: 3rem;
-        }
-        left: 0;
-        overflow: auto;
-    }
 }
 
 .bottom-container {

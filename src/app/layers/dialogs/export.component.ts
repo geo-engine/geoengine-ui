@@ -2,18 +2,18 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 
-import {ProjectService} from '../../app/project/project.service';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {ProjectService} from '../../project/project.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
-import {WFSOutputFormats} from '../../queries/output-formats/wfs-output-format.model';
-import {WCSOutputFormats} from '../../queries/output-formats/wcs-output-format.model';
-import {ResultTypes} from '../../app/operators/result-type.model';
+import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
+import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
+import {ResultTypes} from '../../operators/result-type.model';
 
-import {LayerService} from '../layer.service';
-import {Layer} from '../layer.model';
-import {Symbology} from '../../symbology/symbology.model';
+import {LayerService} from '../../../layers/layer.service';
+import {Layer} from '../../../layers/layer.model';
+import {Symbology} from '../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {Config} from '../../app/config.service';
+import {Config} from '../../config.service';
 
 @Component({
     selector: 'wave-export-dialog',

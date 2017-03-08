@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {MdDialog} from "@angular/material";
-import {Observable} from "rxjs";
+import {MdDialog} from '@angular/material';
+import {Observable} from 'rxjs/Rx';
 
-import {UserService} from "../users/user.service";
-import {LayoutService} from "../layout.service";
+import {UserService} from '../users/user.service';
+import {LayoutService} from '../layout.service';
 
 import {RasterRepositoryComponent} from "../../components/raster-repository.component";
 import {AbcdRepositoryComponent} from "../../components/abcd-repository.component";
@@ -20,27 +20,16 @@ import {Config} from '../config.service';
   styleUrls: ['./top-toolbar.component.scss']
 })
 export class TopToolbarComponent implements OnInit {
-    GbifOperatorComponent = GbifOperatorComponent;
 
-    private username$: Observable<string>;
-
-    private RRC = RasterRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private ARC = AbcdRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private CSV = CsvRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
-    private GBC = GfbioBasketsComponent; // tslint:disable-line:no-unused-variable variable-name
-    private ORC = OperatorRepositoryComponent; // tslint:disable-line:no-unused-variable variable-name
 
   constructor(
       public config: Config,
-      public dialog: MdDialog,
-      private userService: UserService,
       private layoutService: LayoutService
   ) { }
 
   ngOnInit() {
-      this.username$ = this.userService.getSessionStream().map(
-          session =>  session.user === this.config.USER.GUEST.NAME ? 'login' : session.user
-      );
   }
+
+
 
 }

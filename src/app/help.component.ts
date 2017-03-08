@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
 @Component({
-    selector: 'wave-help-dialog',
+    selector: 'wave-help',
     template: `
     <md-card>
         <md-card-title>About</md-card-title>
@@ -313,8 +313,7 @@ import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HelpDialogComponent implements OnInit {
+export class HelpComponent implements OnInit {
     ngOnInit() {
-        // this.dialog.setTitle('Help');
     }
 }
