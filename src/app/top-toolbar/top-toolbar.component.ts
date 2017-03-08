@@ -5,7 +5,6 @@ import {Observable} from "rxjs";
 import {UserService} from "../users/user.service";
 import {LayoutService} from "../layout.service";
 
-import {IntroductionDialogComponent} from "../../components/introduction-dialog.component";
 import {RasterRepositoryComponent} from "../../components/raster-repository.component";
 import {AbcdRepositoryComponent} from "../../components/abcd-repository.component";
 import {CsvRepositoryComponent} from "../../components/csv-repository.component";
@@ -42,14 +41,6 @@ export class TopToolbarComponent implements OnInit {
       this.username$ = this.userService.getSessionStream().map(
           session =>  session.user === this.config.USER.GUEST.NAME ? 'login' : session.user
       );
-  }
-
-  ngAfterContentInit() {
-      if (this.userService.shouldShowIntroductoryPopup()) {
-          setTimeout(() => {
-              this.dialog.open(IntroductionDialogComponent, {});
-          });
-      }
   }
 
 }

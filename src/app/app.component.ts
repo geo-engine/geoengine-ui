@@ -1,7 +1,7 @@
 import {
     Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener, ChangeDetectorRef
 } from '@angular/core';
-import {MdTabGroup, MdSidenav} from '@angular/material';
+import {MdTabGroup, MdSidenav, MdDialog} from '@angular/material';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {Symbology} from '../symbology/symbology.model';
@@ -18,6 +18,7 @@ import {MapComponent} from '../map/map.component';
 
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
+import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 
 @Component({
     selector: 'wave-app',
@@ -49,7 +50,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 public projectService: ProjectService,
                 private userService: UserService,
                 private storageService: StorageService,
-                private changeDetectorRef: ChangeDetectorRef) {
+                private changeDetectorRef: ChangeDetectorRef,
+                private dialog: MdDialog) {
         this.storageService.toString(); // just register
 
         this.layersReverse$ = this.layerService.getLayersStream()
@@ -91,6 +93,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 setTimeout(() => this.changeDetectorRef.markForCheck());
             }
         });
+
+        // show splash screen
+        if (this.userService.shouldShowIntroductoryPopup()) {
+            setTimeout(() => {
+                this.dialog.open(SplashDialogComponent, {});
+            });
+        }
 
         // notify window parent that this component is ready
         if (parent !== window) {

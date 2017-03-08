@@ -10,6 +10,6 @@ md-toolbar[md-dialog-title] span {
 }
 
 md-toolbar button {
-    background-color: transparent;
-    box-shadow: none;
+    padding: 0;
+    min-width: 2.25rem;
 }

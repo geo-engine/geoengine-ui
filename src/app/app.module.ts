@@ -39,7 +39,6 @@ import {TrimPipe} from '../pipes/trim.pipe';
 import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '../baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
-import {IntroductionDialogComponent} from '../components/introduction-dialog.component';
 import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -81,6 +80,7 @@ import { IfGuestDirective } from './util/if-guest.directive';
 import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
+import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -125,7 +125,6 @@ export function configInitializer(config: Config) {
         GroupedAbcdBasketResultComponent,
         SafeStylePipe,
         MappingColorizerToGradientPipe,
-        IntroductionDialogComponent,
         GfbioBasketsComponent,
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
@@ -155,6 +154,7 @@ export function configInitializer(config: Config) {
         IfGuestDirective,
         LoginComponent,
         PlotListComponent,
+        SplashDialogComponent,
     ],
     imports: [
         BrowserModule,
@@ -167,7 +167,6 @@ export function configInitializer(config: Config) {
         DataTableModule,
     ],
     entryComponents: [
-        IntroductionDialogComponent,
         RenameLayerComponent,
         RasterRepositoryComponent,
         AbcdRepositoryComponent,
@@ -183,6 +182,7 @@ export function configInitializer(config: Config) {
         GbifOperatorComponent,
         SourceOperatorListComponent,
         LoginComponent,
+        SplashDialogComponent,
     ],
     providers: [
         DragulaService,
