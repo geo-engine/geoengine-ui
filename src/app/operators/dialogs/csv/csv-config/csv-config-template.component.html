@@ -89,7 +89,8 @@
                                         <td style="padding: 0px;">
                                             <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
                                                    name="headerRowC" id="headerRowC" [disabled]="!model.isHeaderRow"
-                                                   ><!-- TODO: Need to add line count, so you cant expire. -->
+                                                   (change)="update(true)"
+                                                    ><!-- TODO: Need to add line count, so you cant expire. -->
                                         </td>
                                     </tr>
                                 </table>
