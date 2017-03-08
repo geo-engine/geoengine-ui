@@ -1,7 +1,7 @@
 @import "../../../wave-app-theme";
 
 .container {
-    width: 200px;
+    //width: 200px;
     background-color: white;
 }
 
@@ -11,6 +11,11 @@ md-toolbar /deep/ md-toolbar-row:first-child {
 
 .container {
     //width: 200px;
+}
+
+md-list {
+    padding-top: 0;
+    overflow: auto;
 }
 
 md-list-item /deep/ .mat-list-item {

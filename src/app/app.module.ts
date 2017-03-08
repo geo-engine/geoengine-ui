@@ -80,6 +80,7 @@ import { IfGuestDirective } from './util/if-guest.directive';
 import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
+import { HelpComponent } from './help.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -153,6 +154,7 @@ export function configInitializer(config: Config) {
         IfGuestDirective,
         LoginComponent,
         PlotListComponent,
+        HelpComponent,
     ],
     imports: [
         BrowserModule,
@@ -181,6 +183,7 @@ export function configInitializer(config: Config) {
         GbifOperatorComponent,
         SourceOperatorListComponent,
         LoginComponent,
+        HelpComponent,
     ],
     providers: [
         DragulaService,

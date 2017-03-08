@@ -7,15 +7,7 @@ wave-next-layer-list {
     z-index: 1;
     width: 16vw;
     min-width: 200px;
-    top: 4rem;
-    @media (max-width: 600px) and (orientation: portrait) {
-        top: 3.5rem;
-    }
-    @media (max-width: 960px) and (orientation: landscape) {
-        top: 3rem;
-    }
     left: 0;
-    overflow: auto;
 }
 
 :host /deep/ .mat-sidenav-content {

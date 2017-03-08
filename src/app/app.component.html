@@ -3,10 +3,10 @@
         <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
     </md-sidenav>
     <wave-navigation></wave-navigation>
-    <div class="top-container mat-elevation-z4" fxLayout="row">
-        <wave-top-toolbar fxFlex></wave-top-toolbar>
-    </div>
-    <wave-next-layer-list [style.max-height.px]="middleContainerHeight$ | async"></wave-next-layer-list>
+
+    <wave-next-layer-list class="mat-elevation-z4" [style.max-height.px]="middleContainerHeight$ | async"></wave-next-layer-list>
+    <wave-small-time-interaction fxLayoutAlign="center center"></wave-small-time-interaction>
+
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
         <wave-ol-map [projection]="projectService.getProjectionStream() | async">
