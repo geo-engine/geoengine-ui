@@ -60,7 +60,7 @@ export class LayoutService {
         return 64;
     }
 
-    private static getLayerDetailViewBarHeightPx(): number {
+    static getLayerDetailViewBarHeightPx(): number {
         const mobileLandscape = window.matchMedia('(max-width: 960px) and (orientation: landscape)').matches;
         if (mobileLandscape) {
             return 2 * LayoutService.remInPx();

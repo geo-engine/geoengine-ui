@@ -5,7 +5,7 @@ import {
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {ProjectService} from '../../../project/project.service';
+import {ProjectService} from '../../project/project.service';
 
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {Operator} from '../operator.model';

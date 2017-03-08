@@ -6,7 +6,7 @@ import {Observable} from 'rxjs/Rx';
 import {PlotDetailsDialogComponent} from './plot-detail-dialog.component';
 
 import {PlotService} from './plot.service';
-import {Plot} from './plot.model';
+import {Plot} from '../app/plots/plot.model';
 
 import {LayoutService} from '../app/layout.service';
 import {LoadingState} from '../shared/loading-state.model';

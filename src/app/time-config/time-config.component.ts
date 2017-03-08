@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
-import {ProjectService} from '../../project/project.service';
+import {ProjectService} from '../project/project.service';
 import {Subscription} from 'rxjs/Rx';
 import {Time, TimeType, TimePoint, TimeInterval} from '../time.model';
 import {MdButtonToggleChange} from '@angular/material';

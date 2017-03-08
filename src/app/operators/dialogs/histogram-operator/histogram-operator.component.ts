@@ -4,15 +4,14 @@ import {Subscription, ReplaySubject} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {MdDialogRef} from '@angular/material';
-import {PlotService} from '../../../../plots/plot.service';
 import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {Unit} from '../../unit.model';
-import {Plot} from '../../../../plots/plot.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {Plot} from '../../../plots/plot.model';
+import {ProjectService} from '../../../project/project.service';
 
 function isVectorLayer(layer: Layer<Symbology>): boolean {
     return layer ? ResultTypes.VECTOR_TYPES.indexOf(layer.operator.resultType) >= 0 : false;
@@ -36,8 +35,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private plotService: PlotService,
-                private mappingQueryService: MappingQueryService,
+    constructor(private projectService: ProjectService,
                 private formBuilder: FormBuilder,
                 private dialogRef: MdDialogRef<HistogramOperatorComponent>) {
     }
@@ -130,10 +128,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             polygonSources: inputOperator.resultType === ResultTypes.POLYGONS ? [inputOperator] : [],
         });
 
-        this.plotService.addPlot(new Plot({
+        this.projectService.addPlot(new Plot({
             name: outputName,
             operator: operator,
-            data: this.mappingQueryService.getPlotDataStream(operator),
         }));
 
         this.dialogRef.close();

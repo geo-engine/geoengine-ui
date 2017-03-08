@@ -1,13 +1,12 @@
 import {LayoutDict} from '../app/layout.service';
 import {Layer, LayerDict} from '../layers/layer.model';
-import {Project, ProjectDict} from '../project/project.model';
-import {Plot, PlotDict} from '../plots/plot.model';
+import {Project, ProjectDict} from '../app/project/project.model';
 import {Symbology} from '../symbology/symbology.model';
 import {ResultType} from '../app/operators/result-type.model';
 
 import {LayerService} from '../layers/layer.service';
-import {PlotService} from '../plots/plot.service';
 import {Config} from '../app/config.service';
+import {ProjectService} from '../app/project/project.service';
 
 /**
  * A WAVE workspace consisting of a project, layers and plots.
@@ -15,7 +14,6 @@ import {Config} from '../app/config.service';
 export interface Workspace {
     project: Project;
     layers: Array<Layer<Symbology>>;
-    plots: Array<Plot>;
 }
 
 /**
@@ -24,7 +22,6 @@ export interface Workspace {
 export interface WorkspaceDict {
     project: ProjectDict;
     layers: Array<LayerDict>;
-    plots: Array<PlotDict>;
 }
 
 /**
@@ -50,7 +47,7 @@ export abstract class StorageProvider {
     constructor(
         protected config: Config,
         protected layerService: LayerService,
-        protected plotService: PlotService
+        protected projectService: ProjectService
     ) {}
 
     /**

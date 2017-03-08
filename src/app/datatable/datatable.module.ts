@@ -22,7 +22,7 @@ import { TableService } from './table/table.service';
         CommonModule,
         FormsModule,
         HttpModule,
-        MaterialModule.forRoot()
+        MaterialModule
     ],
     declarations: [
         TableComponent,

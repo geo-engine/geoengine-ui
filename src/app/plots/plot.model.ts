@@ -1,7 +1,4 @@
-import {Observable, Observer} from 'rxjs/Rx';
-
-import {Operator, OperatorDict} from '../app/operators/operator.model';
-import {LoadingState} from '../shared/loading-state.model';
+import {Operator, OperatorDict} from '../operators/operator.model';
 
 /**
  * Schema for plot data.
@@ -18,16 +15,12 @@ export interface PlotData {
    };
 }
 
-export interface PlotDataStream {
-    data$: Observable<PlotData>;
-    state$: Observable<LoadingState>;
-    reload$: Observer<void>;
-}
-
+/**
+ * Dictionary for instantiating plot.
+ */
 interface PlotConfig {
     name: string;
     operator: Operator;
-    data: PlotDataStream;
 }
 
 /**
@@ -42,34 +35,26 @@ export interface PlotDict {
  * A model for plots and text outputs
  */
 export class Plot {
-    name: string;
+    private _name: string;
     private _operator: Operator;
-
-    /**
-     * A data stream object that contains observables for data.
-     */
-    private _data: PlotDataStream;
-
-    constructor(config: PlotConfig) {
-        this.name = config.name;
-        this._operator = config.operator;
-        this._data = config.data;
-    }
 
     /**
      * De-Serialization
      */
     static fromDict(
         dict: PlotDict,
-        dataCallback: (operator: Operator) => PlotDataStream,
         operatorMap = new Map<number, Operator>()
     ): Plot {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         return new Plot({
             name: dict.name,
             operator: operator,
-            data: dataCallback(operator),
         });
+    }
+
+    constructor(config: PlotConfig) {
+        this._name = config.name;
+        this._operator = config.operator;
     }
 
     /**
@@ -82,15 +67,8 @@ export class Plot {
     /**
      * @returns the data observable.
      */
-    get data(): PlotDataStream {
-        return this._data;
-    }
-
-    /**
-     * Reload the data.
-     */
-    reload() {
-        this.data.reload$.next(undefined);
+    get name(): string {
+        return this._name;
     }
 
     /**

@@ -5,12 +5,12 @@ import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 import * as moment from 'moment';
 
 
-import {ProjectService} from './project.service';
+import {ProjectService} from '../app/project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
 import {StorageService} from '../storage/storage.service';
 
-import {Project} from './project.model';
+import {Project} from '../app/project/project.model';
 import {Projections} from '../app/operators/projection.model';
 import {Config} from '../app/config.service';
 

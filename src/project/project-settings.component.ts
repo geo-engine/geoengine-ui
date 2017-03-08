@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {ProjectService} from './project.service';
-import {Project} from './project.model';
+import {ProjectService} from '../app/project/project.service';
+import {Project} from '../app/project/project.model';
 import {Projection, Projections} from '../app/operators/projection.model';
 
 import * as moment from 'moment';

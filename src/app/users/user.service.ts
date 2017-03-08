@@ -96,7 +96,15 @@ export class UserService {
         this.isGuestUser$ = this.session$.map(s => s.user === this.config.USER.GUEST.NAME);
 
         // storage of the session
-        this.session$.subscribe(newSession => this.saveSessionData(newSession));
+        this.session$.subscribe(newSession => {
+            this.isSessionValid(newSession).subscribe(isValid => {
+                if (isValid) {
+                    this.saveSessionData(newSession);
+                } else {
+                    this.guestLogin().subscribe();
+                }
+            });
+        });
 
         // user info
         this.user$ = new BehaviorSubject(new Guest(config));

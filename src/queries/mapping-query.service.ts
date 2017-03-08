@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Inject, forwardRef, Injector} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
@@ -6,7 +6,7 @@ import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-for
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
 
-import {ProjectService} from '../project/project.service';
+import {ProjectService} from '../app/project/project.service';
 import {UserService} from '../app/users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
 import {NotificationService} from '../app/notification.service';
@@ -15,14 +15,15 @@ import {Operator} from '../app/operators/operator.model';
 import {Projection} from '../app/operators/projection.model';
 import {ResultTypes} from '../app/operators/result-type.model';
 
-import {PlotData, PlotDataStream} from '../plots/plot.model';
+import {PlotData} from '../app/plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
 import {LoadingState} from '../shared/loading-state.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
-import {Provenance} from '../provenance/provenance.model';
+import {Provenance} from '../app/provenance/provenance.model';
 import {Time} from '../app/time.model';
 import {Config} from '../app/config.service';
+import Extent = ol.Extent;
 
 export interface MappingColorizer {
     interpolation: string;
@@ -34,31 +35,34 @@ export interface MappingColorizer {
  */
 @Injectable()
 export class MappingQueryService {
+
+    private projectService: ProjectService;
+
     /**
      * Inject the Http-Provider for asynchronous requests.
      */
-    constructor(
-        private config: Config,
-        private http: Http,
-        private userService: UserService,
-        private projectService: ProjectService,
-        private mapService: MapService,
-        private notificationService: NotificationService
-    ) {}
+    constructor(private config: Config,
+                private http: Http,
+                private userService: UserService,
+                // @Inject(forwardRef(() => ProjectService)) private projectService: ProjectService,
+                private injector: Injector,
+                private mapService: MapService,
+                private notificationService: NotificationService) {
+    }
+
+    getProjectService(): ProjectService {
+        if (!this.projectService) {
+            this.projectService = this.injector.get(ProjectService);
+        }
+        return this.projectService;
+    }
 
     /**
      * Get a MAPPING url for the plot operator and time.
-     * @param operator the operator graph
-     * @param time the point in time
+     * @param config
      * @returns the query url
      */
-    getPlotQueryUrl(config: {
-        operator: Operator,
-        time?: Time,
-    }): string {
-        if (!config.time) {
-            config.time = this.projectService.getTime();
-        }
+    getPlotQueryUrl(config: {operator: Operator, time: Time}): string {
         const parameters = new MappingRequestParameters({
             service: 'plot',
             request: '',
@@ -71,8 +75,9 @@ export class MappingQueryService {
         });
 
         if (config.operator.getSources(ResultTypes.RASTER).size > 0) {
-            parameters.setParameter('height', 1024); // magic number
-            parameters.setParameter('width', 1024); // magic number
+            // TODO: magic numbers
+            parameters.setParameter('height', 1024);
+            parameters.setParameter('width', 1024);
         }
 
         return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
@@ -80,48 +85,12 @@ export class MappingQueryService {
 
     /**
      * Retrieve the plot data by querying MAPPING.
-     * @param operator the operator graph
-     * @param time the point in time
+     * @param config
      * @returns a Promise of PlotData
      */
-    getPlotData(config: {operator: Operator, time?: Time}): Promise<PlotData> {
+    getPlotData(config: {operator: Operator, time: Time}): Observable<PlotData> {
         return this.http.get(this.getPlotQueryUrl(config))
-                        .toPromise()
-                        .then(response => response.json());
-    }
-
-    /**
-     * Create a stream of PlotData that emits data on every time change.
-     * @param operator the operator graph
-     * @returns an Observable of PlotData
-     */
-    getPlotDataStream(operator: Operator): PlotDataStream {
-        const reload$ = new BehaviorSubject<void>(undefined);
-        const state$ = new ReplaySubject<LoadingState>(1);
-        const data$ = Observable.combineLatest(
-            this.projectService.getTimeStream(),
-            reload$,
-            (time, _) => time
-        ).switchMap(time => {
-            state$.next(LoadingState.LOADING);
-            const promise = this.getPlotData({operator, time});
-            return promise.then(
-                result => {
-                    state$.next(LoadingState.OK);
-                    return result;
-                },
-                (reason: Response) => {
-                    state$.next(LoadingState.ERROR);
-                    this.notificationService.error(`${reason.status} ${reason.statusText}`);
-                    return undefined;
-                }
-            );
-        });
-        return {
-            data$: data$.publishReplay(1).refCount(),
-            state$: state$,
-            reload$: reload$,
-        };
+            .map(response => response.json());
     }
 
     /**
@@ -140,10 +109,10 @@ export class MappingQueryService {
         viewportSize?: boolean | ViewportSize
     }): string {
         if (!config.time) {
-            config.time = this.projectService.getTime();
+            config.time = this.getProjectService().getTime();
         }
         if (!config.projection) {
-            config.projection = this.projectService.getProject().projection;
+            config.projection = this.getProjectService().getProject().projection;
         }
 
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
@@ -155,8 +124,8 @@ export class MappingQueryService {
             parameters: {
                 version: this.config.WFS.VERSION,
                 typeNames: encodeURIComponent(projectedOperator.resultType.getCode()
-                           + ':'
-                           + projectedOperator.toQueryJSON()),
+                    + ':'
+                    + projectedOperator.toQueryJSON()),
                 srsname: config.projection.getCode(),
                 time: config.time.asRequestString(),
                 outputFormat: config.outputFormat.getFormat(),
@@ -185,7 +154,7 @@ export class MappingQueryService {
      */
     getWFSQueryUrlStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
         return Observable.combineLatest(
-            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
         ).map(
             ([time, projection]) => this.getWFSQueryUrl({operator, time, projection, outputFormat})
         );
@@ -206,8 +175,8 @@ export class MappingQueryService {
         outputFormat: WFSOutputFormat,
     }): Promise<string> {
         return this.http.get(this.getWFSQueryUrl(config))
-                        .toPromise()
-                        .then(response => response.text());
+            .toPromise()
+            .then(response => response.text());
     }
 
     /**
@@ -246,7 +215,7 @@ export class MappingQueryService {
         outputFormat: WFSOutputFormat
     }): Observable<string> {
         return Observable.combineLatest(
-            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
         ).switchMap(
             ([time, projection]) => this.getWFSData({
                 operator: config.operator,
@@ -269,8 +238,8 @@ export class MappingQueryService {
         const reload$ = new BehaviorSubject<void>(undefined);
         const state$ = new ReplaySubject<LoadingState>(1);
         const data$ = Observable.combineLatest(
-            this.projectService.getTimeStream(),
-            this.projectService.getProjectionStream(),
+            this.getProjectService().getTimeStream(),
+            this.getProjectService().getProjectionStream(),
             viewportSize$,
             reload$
         ).switchMap(([time, projection, optionalViewport]) => {
@@ -331,10 +300,10 @@ export class MappingQueryService {
         projection?: Projection,
     }): MappingRequestParameters {
         if (!config.time) {
-            config.time = this.projectService.getTime();
+            config.time = this.getProjectService().getTime();
         }
         if (!config.projection) {
-            config.projection = this.projectService.getProject().projection;
+            config.projection = this.getProjectService().getProject().projection;
         }
 
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
@@ -382,15 +351,15 @@ export class MappingQueryService {
         },
     }): string {
         if (!config.time) {
-            config.time = this.projectService.getTime();
+            config.time = this.getProjectService().getTime();
         }
         if (!config.projection) {
-            config.projection = this.projectService.getProject().projection;
+            config.projection = this.getProjectService().getProject().projection;
         }
 
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
-        const extent = this.projectService.getProjection().getExtent();
+        const extent = this.getProjectService().getProjection().getExtent();
 
         const parameters = new MappingRequestParameters({
             service: this.config.WCS.SERVICE,
@@ -402,7 +371,7 @@ export class MappingQueryService {
                 coverageid: encodeURIComponent(projectedOperator.toQueryJSON()),
                 subset_x: `(${extent[0]},${extent[2]})`,
                 subset_y: `(${extent[1]},${extent[3]})`,
-                outputcrs: this.projectService.getProjection().getCrsURI(),
+                outputcrs: this.getProjectService().getProjection().getCrsURI(),
                 size_x: config.size.x,
                 size_y: config.size.y,
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
@@ -429,12 +398,14 @@ export class MappingQueryService {
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(colorizerRequest)
             .map((res: Response) => res.json())
-            .map((json: MappingColorizer) => { return json; }).toPromise();
+            .map((json: MappingColorizer) => {
+                return json;
+            }).toPromise();
     }
 
     getColorizerStream(operator: Operator): Observable<MappingColorizer> {
         return Observable.combineLatest(
-            this.projectService.getTimeStream(), this.projectService.getProjectionStream()
+            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
         ).switchMap(
             ([time, projection]) => this.getColorizer(operator, time, projection)
         ).publishReplay(1).refCount();
@@ -442,23 +413,29 @@ export class MappingQueryService {
 
     getProvenance(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection
+        time: Time,
+        projection: Projection,
+        extent: Extent,
     }): Promise<Array<Provenance>> {
-        // TODO: incorporate time and projection
-
-        // const projectedOperator = operator.getProjectedOperator(projection);
-
         const request = new MappingRequestParameters({
             service: 'provenance',
             request: '',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                query: encodeURIComponent(config.operator.toQueryJSON()),
-                // crs: projection.getCode(),
-                // time: time.toISOString(),
+                query: encodeURIComponent(config.operator.getProjectedOperator(config.projection).toQueryJSON()),
+                crs: config.projection.getCode(),
+                time: config.time.asRequestString(),
+                bbox: config.extent.join(','),
+                type: config.operator.resultType.getCode(),
             },
         });
+
+        if (config.operator.resultType === ResultTypes.RASTER) {
+            // TODO: magic numbers
+            request.setParameter('height', 1024);
+            request.setParameter('width', 1024);
+        }
+
         return this.http.get(
             this.config.MAPPING_URL + '?' + request.toMessageBody()
         ).map(
@@ -474,11 +451,17 @@ export class MappingQueryService {
         const state$ = new BehaviorSubject<LoadingState>(LoadingState.OK); // TODO: good default?
         const reload$ = new BehaviorSubject<void>(undefined);
         const provenanceStream = Observable.combineLatest(
+            this.getProjectService().getTimeStream(),
+            this.getProjectService().getProjectionStream(),
+            this.mapService.getViewportSizeStream(),
             reload$
-        ).switchMap(([]) => {
+        ).switchMap(([time, projection, viewportSize]) => {
             state$.next(LoadingState.LOADING);
             return this.getProvenance({
                 operator: operator,
+                time: time,
+                projection: projection,
+                extent: viewportSize.extent,
             }).then(
                 result => {
                     state$.next(LoadingState.OK);

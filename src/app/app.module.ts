@@ -12,7 +12,7 @@ import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
     OlPolygonLayerComponent
 } from '../map/map-layer.component';
-import {ProvenanceListComponent, NbspPipe} from '../provenance/provenance.component';
+import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
 import {CsvRepositoryComponent} from '../components/csv-repository.component';
@@ -39,20 +39,19 @@ import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '..
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {IntroductionDialogComponent} from '../components/introduction-dialog.component';
-import {ProjectService} from '../project/project.service';
+import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {LayoutService} from './layout.service';
 import {StorageService} from '../storage/storage.service';
 import {RandomColorService} from '../services/random-color.service';
 import {MapService} from '../map/map.service';
 import {NotificationService} from './notification.service';
-import {PlotService} from '../plots/plot.service';
 import {ColorPickerService} from 'ct-angular2-color-picker/lib/color-picker.service';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
 import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
-import {HistogramComponent} from '../plots/histogram.component';
+import {HistogramComponent} from './plots/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
@@ -79,6 +78,8 @@ import { IfGfbioLoggedInDirective } from './util/if-gfbio-logged-in.directive';
 import { IfLoggedInDirective } from './util/if-logged-in.directive';
 import { IfGuestDirective } from './util/if-guest.directive';
 import { LoginComponent } from './users/login/login.component';
+import {DataTableModule} from './datatable/datatable.module';
+import { PlotListComponent } from './plots/plot-list/plot-list.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -151,6 +152,7 @@ export function configInitializer(config: Config) {
         IfLoggedInDirective,
         IfGuestDirective,
         LoginComponent,
+        PlotListComponent,
     ],
     imports: [
         BrowserModule,
@@ -160,6 +162,7 @@ export function configInitializer(config: Config) {
         FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
+        DataTableModule,
     ],
     entryComponents: [
         IntroductionDialogComponent,
@@ -186,7 +189,6 @@ export function configInitializer(config: Config) {
         ProjectService,
         MappingQueryService,
         LayerService,
-        PlotService,
         LayoutService,
         StorageService,
         RandomColorService,
