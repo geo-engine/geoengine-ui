@@ -3,14 +3,17 @@
 .container {
     //width: 200px;
     //background-color: white;
+    max-height: inherit;
+    height: inherit;
+}
+
+.layer-list {
+    max-height: inherit;
+    overflow-y: auto;
 }
 
 md-toolbar /deep/ md-toolbar-row:first-child {
     display: none !important;
-}
-
-.container {
-    //width: 200px;
 }
 
 md-list {

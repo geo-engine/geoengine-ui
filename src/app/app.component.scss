@@ -38,9 +38,11 @@ wave-next-layer-list {
 
 .mid-container {
     z-index: 0;
+    position: relative;
 }
 
 .bottom-container {
+    position: relative;
     z-index: 1;
 
     min-height: 3rem;
