@@ -2,7 +2,7 @@
 
 .container {
     //width: 200px;
-    background-color: white;
+    //background-color: white;
 }
 
 md-toolbar /deep/ md-toolbar-row:first-child {
@@ -15,7 +15,6 @@ md-toolbar /deep/ md-toolbar-row:first-child {
 
 md-list {
     padding-top: 0;
-    overflow: auto;
 }
 
 md-list-item /deep/ .mat-list-item {

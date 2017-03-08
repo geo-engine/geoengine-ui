@@ -2,8 +2,6 @@
 
     <md-toolbar color="primary">
         <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <span>Layers</span>
-
             <md-menu #layerListMenu="mdMenu">
                 <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
                     <md-icon *ngSwitchCase="true">expand_less</md-icon>
@@ -24,17 +22,24 @@
                 </button>
             </md-menu>
 
+            <span>VAT</span>
+
             <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
                 <md-icon>more_vert</md-icon>
             </button>
+
         </md-toolbar-row>
     </md-toolbar>
 
+
+
     <md-list [dragula]="layer-bag">
-        <md-list-item
-            *ngIf="(layerService.getLayersStream() | async).length === 0"
-            class="no-layer"
-        >no layer available</md-list-item>
+        <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
+            <button md-button>
+                <md-icon>add</md-icon> add layer
+            </button>
+        </md-list-item>
+
         <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
             <md-list-item (click)="layerService.setSelectedLayer(layer)"
                           [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
@@ -95,7 +100,7 @@
                 </md-menu>
 
                 <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                    <div fxLayout="row" fxLayoutAlign="space-between center" >
                         <button md-icon-button
                                 aria-label="Show Legend"
                                 (click)="toggleLayer(layer)">
@@ -103,7 +108,7 @@
                             <md-icon *ngIf="layer.expanded">expand_less</md-icon>
                         </button>
 
-                        <div #layerName class="mat-list-item-text">
+                        <div #layerName class="mat-list-item-text" fxFlex="grow">
                             {{layer.name}}
                         </div>
 

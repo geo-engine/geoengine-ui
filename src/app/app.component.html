@@ -3,9 +3,11 @@
         <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
     </md-sidenav>
     <wave-navigation></wave-navigation>
-
     <wave-next-layer-list class="mat-elevation-z4" [style.max-height.px]="middleContainerHeight$ | async"></wave-next-layer-list>
-    <wave-small-time-interaction fxLayoutAlign="center center"></wave-small-time-interaction>
+    <div class="time-container" fxLayoutAlign="space-around center">
+        <wave-small-time-interaction class="mat-elevation-z4"></wave-small-time-interaction>
+    </div>
+
 
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
