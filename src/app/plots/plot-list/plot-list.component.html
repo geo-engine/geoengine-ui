@@ -24,7 +24,7 @@
                 [data]="(projectService.getPlotDataStream(plot) | async)"
                 [height]="(cardWidth$ | async) / 2"
                 [width]="cardWidth$ | async"
-                [interactable]="true"
+                [interactable]="false"
             ></wave-histogram>
         </template>
         <template ngSwitchDefault>

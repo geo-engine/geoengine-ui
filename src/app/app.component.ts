@@ -19,6 +19,7 @@ import {MapComponent} from '../map/map.component';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
+import {PlotListComponent} from './plots/plot-list/plot-list.component';
 
 @Component({
     selector: 'wave-app',
@@ -68,9 +69,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             .subscribe(windowHeight$);
 
         const remainingHeight$ = windowHeight$;
-            /*.map(
-            height => Math.max(height - LayoutService.getToolbarHeightPx(), 0)
-        );*/
+        /*.map(
+         height => Math.max(height - LayoutService.getToolbarHeightPx(), 0)
+         );*/
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$)
             .do(() => this.mapComponent.resize());
@@ -86,6 +87,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.rightSidenav.close();
             }
         });
+        this.projectService.getNewPlotStream().subscribe(() => this.layoutService.setSidenavContentComponent(PlotListComponent));
 
         // set the stored tab index
         this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {

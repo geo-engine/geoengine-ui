@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, Subscription, Observer} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, ReplaySubject, Subscription, Observer, Subject} from 'rxjs/Rx';
 
 import {Projections, Projection} from '../operators/projection.model';
 
@@ -25,6 +25,7 @@ export class ProjectService {
     private plotData$: Map<Plot, ReplaySubject<PlotData>>;
     private plotDataState$: Map<Plot, ReplaySubject<LoadingState>>;
     private plotSubscriptions: Map<Plot, Subscription>;
+    private newPlot$: Subject<void>;
 
     constructor(private config: Config,
                 private notificationService: NotificationService,
@@ -38,6 +39,7 @@ export class ProjectService {
         this.plotData$ = new Map();
         this.plotDataState$ = new Map();
         this.plotSubscriptions = new Map();
+        this.newPlot$ = new Subject<void>();
 
         this.project$.subscribe(project => {
             if (project.projection !== this.projection$.value) {
@@ -77,8 +79,8 @@ export class ProjectService {
             time: project.time,
             plots: [],
         }));
-        for (const plot of project.plots) {
-            this.addPlot(plot);
+        for (const plot of project.plots.reverse()) {
+            this.addPlot(plot, false);
         }
     }
 
@@ -125,8 +127,9 @@ export class ProjectService {
     /**
      * Add a plot to the project.
      * @param plot
+     * @param notify
      */
-    addPlot(plot: Plot) {
+    addPlot(plot: Plot, notify = true) {
         const loadingState$ = new ReplaySubject(1);
         const data$ = new ReplaySubject(1);
 
@@ -134,11 +137,16 @@ export class ProjectService {
 
         this.plotSubscriptions.set(plot, subscription);
 
+        const currentPlots = this.getProject().plots;
         this.changeProjectConfig({
-            plots: this.getProject().plots.concat([plot])
+            plots: [plot, ...currentPlots]
         });
         this.plotDataState$.set(plot, loadingState$);
         this.plotData$.set(plot, data$);
+
+        if (notify) {
+            this.newPlot$.next();
+        }
     }
 
     /**
@@ -244,6 +252,10 @@ export class ProjectService {
         for (const plot of this.plots$.getValue().slice(0)) {
             this.removePlot(plot);
         }
+    }
+
+    getNewPlotStream(): Observable<void> {
+        return this.newPlot$;
     }
 
     /**
