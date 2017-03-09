@@ -1,12 +1,14 @@
 /**
  * Created by Julian on 24.02.2017.
  */
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {CSV} from '../csv-config/csv-config.component';
-import {BehaviorSubject, Observable} from "rxjs";
+import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 enum FormStatus {
     Selection,
+    Error,
     Loading,
     Finished
 }
@@ -22,6 +24,9 @@ export class CsvUploadComponent {
     isSelecting$: Observable<boolean>;
     isLoading$: Observable<boolean>;
     isFinished$: Observable<boolean>;
+    isError$: Observable<boolean>;
+
+    @Input() file_size_limit: number;
 
     data: {
         file: File,
@@ -37,14 +42,15 @@ export class CsvUploadComponent {
 
     result: CSV;
 
-    constructor(){
+    constructor() {
         this.isSelecting$ = this.status$.map((status) => status === FormStatus.Selection);
         this.isLoading$ = this.status$.map((status) => status === FormStatus.Loading);
         this.isFinished$ = this.status$.map((status) => status === FormStatus.Finished);
+        this.isError$ = this.status$.map((status) => status === FormStatus.Error);
     }
 
     changeListener($event): void {
-        if ($event.target.files.length > 0) {
+        if ($event.target.files.length > 0 && $event.target.files[0].size <= this.file_size_limit) {
             this.data = {
                 file: $event.target.files[0],
                 content: '',
@@ -61,6 +67,10 @@ export class CsvUploadComponent {
                 progress: 0,
                 isNull: true
             };
+            if ($event.target.files[0].size > this.file_size_limit) {
+                $event.target.value = '';
+                this.status$.next(FormStatus.Error);
+            }
         }
     }
 
@@ -84,6 +94,10 @@ export class CsvUploadComponent {
         });
 
         reader.readAsText(this.data.file);
+    }
+
+    unerror() {
+        this.status$.next(FormStatus.Selection);
     }
 
     submit(e: CSV) {

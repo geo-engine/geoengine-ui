@@ -2,7 +2,7 @@
   width:95%;
   margin: 0 auto;
 }
-.layer md-input {
+.layer md-input-container {
   width:100%;
 }
 input[type=number]{
@@ -26,7 +26,7 @@ div.longitudeSelector {
   color:orange;
 }
 div.latitudeSelector{
-  color: #0039e6;
+  color: #26c5ff;
 }
 div.latitudeSelector .caption,
 div.longitudeSelector .caption,

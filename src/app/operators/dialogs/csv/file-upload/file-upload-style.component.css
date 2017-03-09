@@ -1,15 +1,17 @@
-.progress {
-  width: 300px;
-  background-color: lightgray;
-  color: white;
-  padding:0px;
-  margin:0px;
-  text-align: center;
-  display:flex;
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
 }
-.progress > div {
-  background-color: lime;
-  border-radius: inherit;
-  vertical-align: top;
-  display: inline-block;
+
+.file-upload input.file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
 }

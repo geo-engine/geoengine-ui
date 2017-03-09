@@ -297,7 +297,7 @@
                     <tr>
                         <template ngFor let-i [ngForOf]="range(0,header.length)">
                             <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;">
-                                <md-select placeholder="Typing" style="width: 100%;" id="isNumber_{{i}}" name="isNumber_{{i}}" *ngIf="[model.xCol, model.yCol, model.startCol, model.endCol].indexOf(i) < 0" [(ngModel)]="model.isNumberArr[i]">
+                                <md-select placeholder="Typing" style="width: 100%; margin-top: 15px;" id="isNumber_{{i}}" name="isNumber_{{i}}" *ngIf="typedCols.indexOf(i) < 0" [(ngModel)]="model.isNumberArr[i]">
                                     <md-option [value]="true">
                                         Number
                                     </md-option>
@@ -377,7 +377,7 @@
     </span>
         <span *ngIf="(isSpatialProperties$ | async) || (isDataProperties$ | async) || (isTemporalProperties$ | async)">
       <button md-raised-button color="primary" (click)="next()"
-              [disabled]="((isSpatialProperties$ && (xColumn$ | async) === (yColumn$ | async)) || (isTemporalProperties$ && ((xColumn$ | async) === (yColumn$ | async) && ((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && model.intervallType.indexOf('Start') >= 0))) && header.length > 1)">Next</button>
+              [disabled]="(((isSpatialProperties$ | async) && (xColumn$ | async) === (yColumn$ | async)) || ((isTemporalProperties$ | async) && (((xColumn$ | async) === (yColumn$ | async)) && ((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && model.intervallType.indexOf('Start') >= 0))) && header.length > 1)">Next</button>
     </span>
         <button md-raised-button color="accent" (click)="submit()" *ngIf="isTypingProperties$ | async"
                 [disabled]="(xColumn$ | async) === (yColumn$ | async) && ((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && model.intervallType.indexOf('Start') >= 0)">

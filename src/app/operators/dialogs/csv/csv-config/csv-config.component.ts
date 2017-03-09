@@ -1,11 +1,19 @@
 /**
  * Created by Julian Märte on 20.09.2016.
  */
-import {Component, Input, Output, OnInit, AfterViewInit, OnDestroy, ChangeDetectionStrategy, EventEmitter} from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    AfterViewInit,
+    OnDestroy,
+    ChangeDetectionStrategy,
+    EventEmitter
+} from '@angular/core';
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
-import {async} from "rxjs/scheduler/async";
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -36,7 +44,7 @@ export class CSV {
     public endCol: number;
 
     public content: string;
-    public isNumberArr: string[];
+    public isNumberArr: boolean[];
 }
 
 @Component({
@@ -74,7 +82,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {def: 'TAB', value: '\t'},
         {def: 'COMMA', value: ','},
         {def: 'SEMICOLON', value: ';'}
-        ];
+    ];
     timeFormats: {value: string, duration: boolean}[] = [{
         value: 'yyyy-MM-ddTHH:mm:ssZ',
         duration: false
@@ -85,7 +93,11 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     intervallTypes: string[] = ['[Start,+inf)', '[Start, End]', '[Start, Start+Duration]', '(-inf, End]'];
     decsep: string[] = [',', '.'];
     texqual: string[] = ['"', '\''];
-    projections: string[] = ['[EPSG:4326] WGS 84', '[EPSG:3857] WGS84 Web Mercator', '[SR-ORG:81] GEOS - GEOstationary Satellite'];
+    projections: string[] = [
+        '[EPSG:4326] WGS 84',
+        '[EPSG:3857] WGS84 Web Mercator',
+        '[SR-ORG:81] GEOS - GEOstationary Satellite'
+    ];
     coordFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean};
@@ -115,10 +127,6 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scrollBarWidth = this.getScrollBarWidth();
         let headerdiv: HTMLElement = document.getElementById('headerdiv');
         headerdiv.style.marginRight = this.scrollBarWidth + 'px';
-        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
-            let typingdiv: HTMLElement = document.getElementById('typingdiv');
-            typingdiv.style.marginRight = this.scrollBarWidth + 'px';
-        }
         this.update(true);
     }
 
@@ -194,6 +202,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.resize();
         }
         this.update(false);
+        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
+            this.scrollBarWidth = this.getScrollBarWidth();
+            setTimeout(() => document.getElementById('typingdiv').style.marginRight = this.scrollBarWidth + 'px');
+        }
     }
 
     prev() {
@@ -243,15 +255,20 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     /**Gets called every time, anything is changed. Checks if everything is valid and reloads the table
      * Probably should save last table properties and only reload table, if they got changed.
      */
-    update(reparse: boolean) {
+    update (reparse: boolean) {
         if (reparse) {
             this.parsedData = this.parse();
             if (this.model.isHeaderRow) {
                 this.header = this.parsedData[this.model.headerRow];
-                this.elements = this.parsedData.slice(this.model.headerRow + 1, this.model.headerRow + this.linesToParse + 1);
+                this.elements = this.parsedData.slice(this.model.headerRow + 1,
+                    this.model.headerRow + this.linesToParse + 1);
             } else {
                 this.elements = this.parsedData;
             }
+            if (!this.header || !this.elements) {
+                console.log('to large data');
+            }
+            this.resetNumberArr();
         }
 
         this.checkColumns();
@@ -262,7 +279,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.xyColumn$.next({x: this.model.startCol, y: this.model.endCol});
         }
 
-        if(reparse){
+        if (reparse) {
             this.resetTableSize();
             setTimeout(() => this.resizeTable());
         }
@@ -282,7 +299,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
 
-    bodyScroll(){
+    bodyScroll() {
         let scrollLeft = document.getElementById('bodydiv').scrollLeft;
         document.getElementById('headerdiv').scrollLeft = scrollLeft;
         if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
@@ -310,7 +327,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.header[i] = '';
             }
         }
-        // Check if table was changed in a way, that the new header length doesnt support the old x/y col. Change them if needed.
+        // Check if table was changed in a way, that the new header
+        // length doesnt support the old x/y col. Change them if needed.
         if (!(this.header.length <= 1)) {
             if (this.model.xCol >= this.header.length) {
                 if (this.model.yCol === this.header.length - 1) {
@@ -341,7 +359,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
 
-        // Check if table got changed in a way that the new header length doesnt support the start/end col settings. Change them if needed.
+        // Check if table got changed in a way that the new header length doesnt
+        // support the start/end col settings. Change them if needed.
         if (!(this.header.length <= 1)) {
             if (this.model.startCol >= this.header.length) {
                 if (this.model.endCol === this.header.length - 1) {
@@ -407,6 +426,13 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    resetNumberArr() {
+        this.model.isNumberArr = [];
+        for (let i = 0; i < this.header.length; i++) {
+            this.model.isNumberArr.push(false);
+        }
+    }
+
     getScrollBarWidth() {
         let inner = document.createElement('p');
         inner.style.width = '100%';
@@ -455,7 +481,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     /**Gets called on table property change with some delay, so the view can reload first.
-     * Sets the min-width property of every tables first rows cells to the maximum of every tables first rows cells(Column-wise),
+     * Sets the min-width property of every tables first rows cells to the maximum
+     * of every tables first rows cells(Column-wise),
      * if table assigned to class "resizeTable".
      */
     resizeTable() {
@@ -491,6 +518,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                     continue;
                 }
                 x.item(i).rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
+                x.item(i).rows.item(0).cells.item(j).style.maxWidth = (maxCol[j]) + 'px';
             }
         }
         this.resizeTableFrame();
@@ -510,8 +538,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let i = 0; i < x.length; i++) {
             width = Math.max(width, x.item(i).clientWidth);
         }
-        document.getElementById('table-frame').style.maxWidth = Math.min(window.innerWidth/100*80*0.8, width)+'px';
-        document.getElementById('table-frame').style.minWidth = Math.min(window.innerWidth/100*80*0.8, width)+'px';
+        document.getElementById('table-frame').style.maxWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
+        document.getElementById('table-frame').style.minWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
     }
 
     /**Resets table size and delays then.
@@ -528,5 +556,19 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     submit() {
         this.model.content = this.data.content;
         this.finish.emit(this.model);
+    }
+
+    get typedCols(): number[] {
+        let arr: number[] = [
+            this.model.xCol,
+            this.model.yCol
+        ];
+        if (this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) {
+            arr.push(this.model.endCol);
+        }
+        if(this.model.intervallType.indexOf('Start') >= 0) {
+            arr.push(this.model.startCol);
+        }
+        return arr;
     }
 }
