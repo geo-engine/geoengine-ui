@@ -305,6 +305,18 @@
                                         Text
                                     </md-option>
                                 </md-select>
+                                <p *ngIf="i === model.xCol" class="coordinate_orange">
+                                    Coordinate
+                                </p>
+                                <p *ngIf="i === model.yCol" class="coordinate_blue">
+                                    Coordinate
+                                </p>
+                                <p *ngIf="(i === model.startCol) && model.intervallType.indexOf('Start') >= 0" class="time_green">
+                                    Time
+                                </p>
+                                <p class="time_violet" *ngIf="(i === model.endCol) && (model.intervallType.indexOf('Duration') >= 0 || model.intervallType.indexOf('End') >= 0)">
+                                    Time
+                                </p>
                             </td>
                             <td *ngIf="i !== header.length-1" name="spacer"></td>
                         </template>

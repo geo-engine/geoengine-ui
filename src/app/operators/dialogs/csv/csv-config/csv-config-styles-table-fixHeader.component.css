@@ -1,53 +1,98 @@
 /*Table*/
 .table-frame {
-  align: center;
-  overflow: hidden;
-  margin-left: auto;
-  margin-right: auto;
-  border: solid 1px darkgray;
-  min-width: 80vw;
-  max-width: 80vw;
+    align: center;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px darkgray;
+    min-width: 80vw;
+    max-width: 80vw;
 }
+
 .typingdiv {
-    overflow:hidden;
+    overflow: hidden;
     width: auto;
     border-bottom: solid 1px dimgray;
     background-color: #FFFFFF;
     font-weight: 300;
 }
+
 .headerdiv {
-  overflow:hidden;
-  width: auto;
-  border-bottom: solid 1px dimgray;
-  background-color: #00acc1;
-  color: white;
-  font-weight: 300;
+    overflow: hidden;
+    width: auto;
+    border-bottom: solid 1px dimgray;
+    border-right: solid 1px dimgray;
+    background-color: #00acc1;
+    color: white;
+    font-weight: 300;
 }
+
 .headerdiv table td.custom md-input-container {
-  margin-bottom: 0px;
-  padding-bottom: 0px;
-  font-size: 15px;
-  height:30px;
-  color: white;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    font-size: 15px;
+    height: 30px;
+    color: white;
 }
-.bodydiv{
-  overflow:scroll;
-  height:200px;
+
+.bodydiv {
+    overflow: scroll;
+    height: 200px;
 }
-.bodydiv table tr:nth-child(even){
-  background-color: #b2ebf2;
+
+.bodydiv table tr:nth-child(even) {
+    background-color: #b2ebf2;
 }
+
 .resizeTable {
-  table-layout: fixed;
+    table-layout: fixed;
 }
+
 .custom {
-  font-weight: normal;
+    font-weight: normal;
     padding-bottom: 0px;
 }
+
 .scrollbar-measure {
-  width: 100px;
-  height: 100px;
-  overflow: scroll;
-  position: absolute;
-  top: -9999px;
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
+}
+
+.time_green {
+    border: solid green;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.time_violet {
+    border: solid darkviolet;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_orange {
+    border: solid orange;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_blue {
+    border: solid #0039e6;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
 }
