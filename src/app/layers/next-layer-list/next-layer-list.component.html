@@ -101,12 +101,34 @@
 
                     <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
                         <div fxLayout="row" fxLayoutAlign="space-between center" >
+
                             <button md-icon-button
-                                    aria-label="Show Legend"
-                                    (click)="toggleLayer(layer)">
-                                <md-icon *ngIf="!layer.expanded">expand_more</md-icon>
-                                <md-icon *ngIf="layer.expanded">expand_less</md-icon>
+                                aria-label="Show Legend"
+                                (click)="toggleLayer(layer)">
+
+                                <template [ngIf]="layer.symbology.getSymbologyType() === _enumSymbologyType.CLUSTERED_POINT || layer.symbology.getSymbologyType() === _enumSymbologyType.SIMPLE_POINT">
+                                    <md-icon md-list-icon svgIcon="symbology:point"
+                                             [style.stroke-width.px]='layer.symbology.strokeWidth'
+                                             [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                             [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                    ></md-icon>
+                                </template>
+                                <template [ngIf]="false">
+                                    <md-icon md-list-icon svgIcon="symbology:line"></md-icon>
+                                </template>
+                                <template [ngIf]="layer.symbology.getSymbologyType() === _enumSymbologyType.SIMPLE_VECTOR">
+                                    <md-icon md-list-icon svgIcon="symbology:polygon"
+                                             [style.stroke-width.px]='layer.symbology.strokeWidth'
+                                             [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                             [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                    ></md-icon>
+                                </template>
+                                <template [ngIf]="layer.symbology.getSymbologyType() === _enumSymbologyType.MAPPING_COLORIZER_RASTER || layer.symbology.getSymbologyType() === _enumSymbologyType.RASTER">
+                                    <md-icon md-list-icon svgIcon="symbology:grid4" *ngIf="!layer.expanded"></md-icon>
+                                    <md-icon md-list-icon *ngIf="layer.expanded">expand_less</md-icon>
+                                </template>
                             </button>
+
 
                             <div #layerName class="mat-list-item-text" fxFlex="grow">
                                 {{layer.name}}

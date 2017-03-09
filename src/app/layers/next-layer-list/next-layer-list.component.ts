@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, Input} from '@angular/core';
-import {MdDialog} from '@angular/material';
+import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs';
 import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
@@ -13,6 +13,7 @@ import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../../../layers/layer.service';
 import {MapService} from '../../../map/map.service';
 import {Layer} from '../../../layers/layer.model';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'wave-next-layer-list',
@@ -43,8 +44,19 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      private layoutService: LayoutService,
      private dragulaService: DragulaService,
      private layerService: LayerService,
-     private mapService: MapService
+     private mapService: MapService,
+     private iconRegistry: MdIconRegistry,
+     private sanitizer: DomSanitizer
     ) {
+        iconRegistry.addSvgIconInNamespace('symbology','polygon',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/polygon_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','line',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/line_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','point',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/point_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','grid4',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/grid4_24.svg'));
+
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
       dragulaService.setOptions('layer-bag', {
