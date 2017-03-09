@@ -29,7 +29,8 @@
                                 Delimitter/Seperator:
                             </td>
                             <td>
-                                <md-select name="delimitter" id="delimitter" (change)="update(true)" [(ngModel)]="model.delimitter">
+                                <md-select name="delimitter" id="delimitter" (change)="update(true)"
+                                           [(ngModel)]="model.delimitter">
                                     <md-option *ngFor="let del of delimitters" [value]="del.value">
                                         {{del.def}}
                                     </md-option>
@@ -49,7 +50,9 @@
                                             </md-slide-toggle>
                                         </td>
                                         <td style="padding: 0px;">
-                                            <md-select name="texqual" id="texqual" (change)="update(true)" [(ngModel)]="model.textQualifier" [disabled]="!model.isTextQualifier">
+                                            <md-select name="texqual" id="texqual" (change)="update(true)"
+                                                       [(ngModel)]="model.textQualifier"
+                                                       [disabled]="!model.isTextQualifier">
                                                 <md-option *ngFor="let tq of texqual" [value]="tq">
                                                     {{tq}}
                                                 </md-option>
@@ -67,8 +70,10 @@
                                 Decimal seperator:
                             </td>
                             <td>
-                                <md-select name="decsep" id="decsep" (change)="update(false)" [(ngModel)]="model.decimalSeperator">
-                                    <md-option *ngFor="let ds of decsep" [value]="ds"><!-- TODO: Disable Comma, if comma is already used for delimiting purposes -->
+                                <md-select name="decsep" id="decsep" (change)="update(false)"
+                                           [(ngModel)]="model.decimalSeperator">
+                                    <md-option *ngFor="let ds of decsep" [value]="ds">
+                                        <!-- TODO: Disable Comma, if comma is already used for delimiting purposes -->
                                         {{ds}}
                                     </md-option>
                                 </md-select>
@@ -90,7 +95,7 @@
                                             <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
                                                    name="headerRowC" id="headerRowC" [disabled]="!model.isHeaderRow"
                                                    (change)="update(true)"
-                                                    ><!-- TODO: Need to add line count, so you cant expire. -->
+                                            ><!-- TODO: Need to add line count, so you cant expire. -->
                                         </td>
                                     </tr>
                                 </table>
@@ -149,8 +154,10 @@
                                     <strong>Spatial Reference System:</strong>
                                 </td>
                                 <td>
-                                    <md-select name="spatialRefSys" id="spatialRefSys" (change)="update(false)" [(ngModel)]="model.spatialRefSys">
-                                        <md-option *ngFor="let i of range(0,projections.length)" [value]="projections[i]">
+                                    <md-select name="spatialRefSys" id="spatialRefSys" (change)="update(false)"
+                                               [(ngModel)]="model.spatialRefSys">
+                                        <md-option *ngFor="let i of range(0,projections.length)"
+                                                   [value]="projections[i]">
                                             {{projections[i]}}
                                         </md-option>
                                     </md-select>
@@ -161,8 +168,10 @@
                                     Coordinate Format:
                                 </td>
                                 <td>
-                                    <md-select style="align: right;" name="coordForm" id="coordForm" (change)="update(false)" [(ngModel)]="model.coordForm">
-                                        <md-option *ngFor="let i of range(0,coordFormats.length)" [value]="coordFormats[i]">
+                                    <md-select style="align: right;" name="coordForm" id="coordForm"
+                                               (change)="update(false)" [(ngModel)]="model.coordForm">
+                                        <md-option *ngFor="let i of range(0,coordFormats.length)"
+                                                   [value]="coordFormats[i]">
                                             {{coordFormats[i]}}
                                         </md-option>
                                     </md-select>
@@ -181,7 +190,8 @@
                 <div class="temporalProperties">
                     <div class="elementGroup">
                         <strong>Intervall Type</strong>
-                        <md-select name="intervallType" id="intervallType" (change)="update(false)" [(ngModel)]="model.intervallType">
+                        <md-select name="intervallType" id="intervallType" (change)="update(false)"
+                                   [(ngModel)]="model.intervallType">
                             <md-option *ngFor="let it of intervallTypes" [value]="it">
                                 {{it}}
                             </md-option>
@@ -194,7 +204,9 @@
                                     <strong>Start Column</strong>
                                 </td>
                                 <td>
-                                    <md-select name="startCol" id="startCol" (change)="update(false)" [(ngModel)]="model.startCol" [disabled]="model.intervallType.indexOf('Start') < 0">
+                                    <md-select name="startCol" id="startCol" (change)="update(false)"
+                                               [(ngModel)]="model.startCol"
+                                               [disabled]="model.intervallType.indexOf('Start') < 0">
                                         <template ngFor let-i [ngForOf]="range(0,header.length)">
                                             <md-option
                                                 [disabled]="(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && i === (yColumn$ | async)"
@@ -216,7 +228,7 @@
                                 </td>
                                 <td>
                                     <md-select name="endCol" id="0" (change)="update(false)" [(ngModel)]="model.endCol"
-                                            [disabled]="!(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0)">
+                                               [disabled]="!(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0)">
                                         <template ngFor let-i [ngForOf]="range(0,header.length)">
                                             <md-option
                                                 [disabled]="model.intervallType.indexOf('Start') >= 0 && i === (xColumn$ | async)"
@@ -242,8 +254,9 @@
                                     <i>Start Format</i>
                                 </td>
                                 <td>
-                                    <md-select name="startFormat" id="startFormat" (change)="update(false)" [(ngModel)]="model.startFormat"
-                                            [disabled]="model.intervallType.indexOf('Start') < 0">
+                                    <md-select name="startFormat" id="startFormat" (change)="update(false)"
+                                               [(ngModel)]="model.startFormat"
+                                               [disabled]="model.intervallType.indexOf('Start') < 0">
                                         <template ngFor let-i [ngForOf]="range(0,timeFormats.length)">
                                             <md-option *ngIf="this.timeFormats[i].duration === false" [value]="i">
                                                 {{this.timeFormats[i].value}}
@@ -257,8 +270,9 @@
                                     <i>End/Duration Format</i>
                                 </td>
                                 <td>
-                                    <md-select name="endFormat" id="endFormat" (change)="update(false)" [(ngModel)]="model.endFormat"
-                                            [disabled]="!(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0)">
+                                    <md-select name="endFormat" id="endFormat" (change)="update(false)"
+                                               [(ngModel)]="model.endFormat"
+                                               [disabled]="!(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0)">
                                         <template ngFor let-i [ngForOf]="range(0,timeFormats.length)">
                                             <md-option
                                                 *ngIf="this.timeFormats[i].duration === (model.intervallType.indexOf('Duration') >= 0)"
@@ -278,6 +292,25 @@
         <!-- Table -->
 
         <div id="table-frame" class="table-frame" style="width:500px;" (window:resize)="resizeTableFrame()">
+            <div id="typingdiv" class="typingdiv" *ngIf="(isTypingProperties$ | async)">
+                <table class="resizeTable" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <template ngFor let-i [ngForOf]="range(0,header.length)">
+                            <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;">
+                                <md-select placeholder="Typing" style="width: 100%;" id="isNumber_{{i}}" name="isNumber_{{i}}" *ngIf="[model.xCol, model.yCol, model.startCol, model.endCol].indexOf(i) < 0" [(ngModel)]="model.isNumberArr[i]">
+                                    <md-option [value]="true">
+                                        Number
+                                    </md-option>
+                                    <md-option [value]="false">
+                                        Text
+                                    </md-option>
+                                </md-select>
+                            </td>
+                            <td *ngIf="i !== header.length-1" name="spacer"></td>
+                        </template>
+                    </tr>
+                </table>
+            </div>
             <div id="headerdiv" class="headerdiv">
                 <table class="resizeTable" cellspacing="0" cellpadding="0">
                     <tr>
@@ -307,7 +340,7 @@
                 </table>
             </div>
             <div id="bodydiv" class="bodydiv"
-                 onscroll="document.getElementById('headerdiv').scrollLeft = this.scrollLeft;">
+                 (scroll)="bodyScroll()">
                 <table class="resizeTable" cellspacing="0" cellpadding="0">
                     <!-- body goes here -->
                     <tr *ngFor="let i of range(0,elements.length)" style="white-space: nowrap;">
@@ -327,14 +360,14 @@
     <!-- Buttons -->
 
     <div class="buttons">
-    <span *ngIf="(isSpatialProperties$ | async) || (isTemporalProperties$ | async)">
+    <span *ngIf="(isSpatialProperties$ | async) || (isTemporalProperties$ | async) || (isTypingProperties$ | async)">
       <button md-raised-button color="primary" (click)="prev()">Prev</button>
     </span>
-        <span *ngIf="(isSpatialProperties$ | async) || (isDataProperties$ | async)">
+        <span *ngIf="(isSpatialProperties$ | async) || (isDataProperties$ | async) || (isTemporalProperties$ | async)">
       <button md-raised-button color="primary" (click)="next()"
-              [disabled]="(isSpatialProperties$ | async) && ((xColumn$ | async) === (yColumn$ | async) && header.length > 1)">Next</button>
+              [disabled]="((isSpatialProperties$ && (xColumn$ | async) === (yColumn$ | async)) || (isTemporalProperties$ && ((xColumn$ | async) === (yColumn$ | async) && ((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && model.intervallType.indexOf('Start') >= 0))) && header.length > 1)">Next</button>
     </span>
-        <button md-raised-button color="accent" (click)="submit()" *ngIf="isTemporalProperties$ | async"
+        <button md-raised-button color="accent" (click)="submit()" *ngIf="isTypingProperties$ | async"
                 [disabled]="(xColumn$ | async) === (yColumn$ | async) && ((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && model.intervallType.indexOf('Start') >= 0)">
             Submit
         </button>

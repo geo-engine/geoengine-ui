@@ -5,8 +5,9 @@ import {Component, Input, Output, OnInit, AfterViewInit, OnDestroy, ChangeDetect
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
+import {async} from "rxjs/scheduler/async";
 
-enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, Loading }
+enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
 export class CSV {
     public layerName: string;
@@ -33,7 +34,9 @@ export class CSV {
     public startCol: number;
     public endFormat: number;
     public endCol: number;
+
     public content: string;
+    public isNumberArr: string[];
 }
 
 @Component({
@@ -51,6 +54,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     isDataProperties$: Observable<boolean>;
     isSpatialProperties$: Observable<boolean>;
     isTemporalProperties$: Observable<boolean>;
+    isTypingProperties$: Observable<boolean>;
 
     parsedData: Array<Array<string>>;
 
@@ -103,6 +107,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isDataProperties$ = this.formStatus$.map(status => status === FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === FormStatus.SpatialProperties);
         this.isTemporalProperties$ = this.formStatus$.map(status => status === FormStatus.TemporalProperties);
+        this.isTypingProperties$ = this.formStatus$.map(status => status === FormStatus.TypingProperties);
     }
 
     ngAfterViewInit() {
@@ -110,6 +115,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scrollBarWidth = this.getScrollBarWidth();
         let headerdiv: HTMLElement = document.getElementById('headerdiv');
         headerdiv.style.marginRight = this.scrollBarWidth + 'px';
+        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
+            let typingdiv: HTMLElement = document.getElementById('typingdiv');
+            typingdiv.style.marginRight = this.scrollBarWidth + 'px';
+        }
         this.update(true);
     }
 
@@ -134,6 +143,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.endFormat = 0;
             this.model.endCol = 0;
             this.model.content = this.data.content;
+            this.model.isNumberArr = [];
         } else {
             this.model = this.config;
         }
@@ -149,6 +159,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                         break;
                     case FormStatus.TemporalProperties:
                         this.dialogTitle = 'Temporal Properties';
+                        break;
+                    case FormStatus.TypingProperties:
+                        this.dialogTitle = 'Typing Properties';
                         break;
                     case FormStatus.Loading:
                     /* falls through */
@@ -177,23 +190,24 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.formStatus$.next(FormStatus.TemporalProperties);
                 break;
             default:
-                this.formStatus$.next(FormStatus.TemporalProperties);
+                this.formStatus$.next(FormStatus.TypingProperties);
+                this.resize();
         }
-        this.update(true);
+        this.update(false);
     }
 
     prev() {
         switch (this.formStatus$.getValue()) {
-            case FormStatus.SpatialProperties:
-                this.formStatus$.next(FormStatus.DataProperties);
-                break;
             case FormStatus.TemporalProperties:
                 this.formStatus$.next(FormStatus.SpatialProperties);
+                break;
+            case FormStatus.TypingProperties:
+                this.formStatus$.next(FormStatus.TemporalProperties);
                 break;
             default:
                 this.formStatus$.next(FormStatus.DataProperties);
         }
-        this.update(true);
+        this.update(false);
     }
 
     ngOnDestroy() {
@@ -255,7 +269,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     parse() {
-        let textQualifier: string = this.model.isTextQualifier ? this.model.textQualifier : undefined;
+        let textQualifier: string = this.model.isTextQualifier ? this.model.textQualifier : null;
         let prev: number = this.model.isHeaderRow ? this.model.headerRow + this.linesToParse + 1 : this.linesToParse;
         return Papa.parse(this.data.content as string, {
             delimiter: this.model.delimitter,
@@ -268,30 +282,12 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     }
 
-    /** Splits the given string line on each character, taken from user setting "this.model.delimitter".
-     *  Optional the user can set a textQualifier, which are used to not interpret the delimitters in between.
-     *
-     * @param line string to split of.
-     * @returns {string[]} an Array with the strings between the delimitters.
-     */
-    split(line: string): string[] {
-        let result: string[] = [];
-        let plainText = false;
-        let last = 0;
-        for (let j = 0; j < line.length; j++) {
-            if (line.charCodeAt(j) === this.model.textQualifier.charCodeAt(0) && this.model.isTextQualifier) {
-                plainText = !plainText;
-                line = line.slice(0, j) + line.slice(j + 1);
-            }
-            if (line.charAt(j) === this.model.delimitter && !plainText) {
-                result.push(line.slice(last, j));
-                last = j + 1;
-            }
+    bodyScroll(){
+        let scrollLeft = document.getElementById('bodydiv').scrollLeft;
+        document.getElementById('headerdiv').scrollLeft = scrollLeft;
+        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
+            document.getElementById('typingdiv').scrollLeft = scrollLeft;
         }
-        if (last <= line.length - 1) {
-            result.push(line.slice(last, line.length));
-        }
-        return result;
     }
 
     /** Some extra case checks, if the user changes some properties and old settings are still in model,
@@ -500,6 +496,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.resizeTableFrame();
         // Reset the headerdiv to body divs scroll.
         document.getElementById('headerdiv').scrollLeft = document.getElementById('bodydiv').scrollLeft;
+        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
+            document.getElementById('typingdiv').scrollLeft = document.getElementById('bodydiv').scrollLeft;
+        }
     }
 
     /**Gets called on window size changes.
