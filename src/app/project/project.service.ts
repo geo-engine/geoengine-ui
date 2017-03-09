@@ -157,7 +157,7 @@ export class ProjectService {
         const plots = this.getProject().plots;
         const plotIndex = plots.indexOf(plot);
         if (plotIndex >= 0) {
-            plots.splice(plotIndex);
+            plots.splice(plotIndex, 1);
             this.changeProjectConfig({
                 plots: plots
             });
