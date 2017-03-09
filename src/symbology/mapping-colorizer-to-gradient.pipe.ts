@@ -9,7 +9,7 @@ export class MappingColorizerToGradientPipe implements PipeTransform {
         const halfElementSize = elementSize / 2.0;
         const breaks = colorizer.breakpoints;
         let colorStr = '';
-        for (let i = 0; i < colorizer.breakpoints.length; i++) {
+        for (let i = 0; i < breaks.length; i++) {
             colorStr += ', ' + breaks[i][1] + ' ' + (i * elementSize + halfElementSize) + '%';
         }
 

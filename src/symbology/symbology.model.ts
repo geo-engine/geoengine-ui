@@ -388,7 +388,12 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     constructor(config: IRasterSymbology,
                 colorizer$: Observable<MappingColorizer>) {
         super(config);
-        this.colorizer$ = colorizer$;
+        this.colorizer$ = colorizer$.map(c => {
+            return (c.breakpoints[0][0] >= c.breakpoints[c.breakpoints.length-1][0])? c : {
+                    interpolation: c.interpolation,
+                    breakpoints: c.breakpoints.reverse()
+                }
+        });
     }
 
     getSymbologyType(): SymbologyType {
