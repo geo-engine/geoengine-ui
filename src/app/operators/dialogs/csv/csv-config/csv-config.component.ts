@@ -9,7 +9,9 @@ import {
     AfterViewInit,
     OnDestroy,
     ChangeDetectionStrategy,
-    EventEmitter
+    EventEmitter,
+    SimpleChanges,
+    OnChanges
 } from '@angular/core';
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
@@ -268,7 +270,6 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             if (!this.header || !this.elements) {
                 console.log('to large data');
             }
-            this.resetNumberArr();
         }
 
         this.checkColumns();
@@ -391,29 +392,42 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
             this.model.endCol = this.model.startCol = 0;
         }
+
+        if (this.header.length >= 2 + ((this.model.intervallType.indexOf('Start') >= 0) ? 1 : 0)
+            + ((this.model.intervallType.indexOf('End') >= 0 ||
+            this.model.intervallType.indexOf('Duration') >= 0) ? 1 : 0)) {
+            // TODO: check if temporal properties overlap with spatial properties.
+            // To avoid time and coordinate format fall in one column.
+        }
     }
 
     /**This method organizes the custom header saving, so the changes wont get discarded on change to load header.
      *
      * @param e Toggle event for change property
      */
-    changeHeaderMode(e: MdSlideToggleChange): void {
-        if (e.checked) {
+    changeHeaderMode(e?: MdSlideToggleChange): void {
+        this.update(true);
+        let checked = false;
+        if (e) {
+            checked = e.checked;
+        } else {
+            checked = this.model.isHeaderRow;
+        }
+        if (checked) {
             this.customHeader = new Array(this.header.length);
             for (let i = 0; i < this.header.length; i++) {
                 this.customHeader[i] = this.header[i];
             }
         }
-        this.model.isHeaderRow = e.checked;
-        this.update(true);
-        this.resize();
+        this.model.isHeaderRow = checked;
+
         if (this.customHeader.length === 0) {
             this.customHeader = new Array(this.elements[0].length);
             for (let i = 0; i < this.customHeader.length; i++) {
                 this.customHeader[i] = '';
             }
         }
-        if (!e.checked) {
+        if (!checked) {
             if (this.elements[0].length !== this.customHeader.length) {
                 this.customHeader = new Array(this.elements[0].length);
                 for (let i = 0; i < this.customHeader.length; i++) {
@@ -424,6 +438,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.header[i] = this.customHeader[i];
             }
         }
+        this.resize();
+        this.resetNumberArr();
     }
 
     resetNumberArr() {
@@ -476,6 +492,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             }
             for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
                 x.item(i).rows.item(0).cells.item(j).style.minWidth = '0px';
+                x.item(i).rows.item(0).cells.item(j).style.maxWidth = null;
             }
         }
     }

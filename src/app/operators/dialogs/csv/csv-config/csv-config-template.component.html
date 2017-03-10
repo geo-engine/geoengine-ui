@@ -94,7 +94,7 @@
                                         <td style="padding: 0px;">
                                             <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
                                                    name="headerRowC" id="headerRowC" [disabled]="!model.isHeaderRow"
-                                                   (change)="update(true)"
+                                                   (change)="changeHeaderMode()"
                                             ><!-- TODO: Need to add line count, so you cant expire. -->
                                         </td>
                                     </tr>
@@ -329,7 +329,7 @@
                         <!-- header goes here -->
                         <template [ngIf]="model.isHeaderRow">
                             <template ngFor let-i [ngForOf]="range(0,header.length)">
-                                <td style="margin-left:0; margin-right:0; padding-bottom: 3px;" title="{{header[i]}}"
+                                <td style="margin-left:0; margin-right:0; padding-bottom: 3px; white-space: nowrap;" title="{{header[i]}}"
                                     [ngClass]="{'orangeHead': (isSpatialProperties$ | async) && (i === (xColumn$ | async)), 'blueHead': (isSpatialProperties$ | async) && (i === (yColumn$ | async)), 'greenHead': (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervallType.indexOf('Start') >= 0, 'violetHead': (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervallType.indexOf('Duration') >= 0 || model.intervallType.indexOf('End') >= 0)}">
                                     {{header[i]}}
                                 </td>
@@ -357,7 +357,7 @@
                     <!-- body goes here -->
                     <tr *ngFor="let i of range(0,elements.length)" style="white-space: nowrap;">
                         <template ngFor let-j [ngForOf]="range(0,header.length)">
-                            <td style="margin-left:0; margin-right:0;"
+                            <td style="margin-left:0; margin-right:0; white-space: nowrap;"
                                 [ngClass]="{orange: (isSpatialProperties$ | async) && (j === (xColumn$ | async)), blue: (isSpatialProperties$ | async) && (j === (yColumn$ | async)), green: (isTemporalProperties$ |async) && (j === (xColumn$ | async)) && model.intervallType.indexOf('Start') >= 0, violet: (isTemporalProperties$ | async) && (j === (yColumn$ | async)) && (model.intervallType.indexOf('Duration') >= 0 || model.intervallType.indexOf('End') >= 0)}">
                                 {{elements[i][j]}}
                             </td>
