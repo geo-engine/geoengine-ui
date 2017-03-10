@@ -209,7 +209,7 @@
                                                [disabled]="model.intervallType.indexOf('Start') < 0">
                                         <template ngFor let-i [ngForOf]="range(0,header.length)">
                                             <md-option
-                                                [disabled]="((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && i === (yColumn$ | async)) || i === model.xCol || i === model.yCol"
+                                                [disabled]="((model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0) && i === (yColumn$ | async)) || ((i === model.xCol || i === model.yCol) && header.length > 2 + ((this.model.intervallType.indexOf('Start') >= 0) ? 1 : 0) + ((this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) ? 1 : 0))"
                                                 [value]="i">
                                                 <template [ngIf]="header[i] !== ''">
                                                     {{(i+1) + ' - ' + header[i]}}
@@ -231,7 +231,7 @@
                                                [disabled]="!(model.intervallType.indexOf('End') >= 0 || model.intervallType.indexOf('Duration') >= 0)">
                                         <template ngFor let-i [ngForOf]="range(0,header.length)">
                                             <md-option
-                                                [disabled]="(model.intervallType.indexOf('Start') >= 0 && i === (xColumn$ | async)) || i === model.xCol || i === model.yCol"
+                                                [disabled]="(model.intervallType.indexOf('Start') >= 0 && i === (xColumn$ | async)) || ((i === model.xCol || i === model.yCol) && header.length > 2 + ((this.model.intervallType.indexOf('Start') >= 0) ? 1 : 0) + ((this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) ? 1 : 0))"
                                                 [value]="i">
                                                 <template [ngIf]="header[i] !== ''">
                                                     {{(i+1) + ' - ' + header[i]}}
