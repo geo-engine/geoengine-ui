@@ -396,8 +396,36 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.header.length >= 2 + ((this.model.intervallType.indexOf('Start') >= 0) ? 1 : 0)
             + ((this.model.intervallType.indexOf('End') >= 0 ||
             this.model.intervallType.indexOf('Duration') >= 0) ? 1 : 0)) {
-            // TODO: check if temporal properties overlap with spatial properties.
-            // To avoid time and coordinate format fall in one column.
+            // check if temporalproperties overlap with spatial properties.
+            let arr = [this.model.xCol, this.model.yCol];
+            if (this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) {
+                arr.push(this.model.endCol);
+            }
+            if (this.model.intervallType.indexOf('Start') >= 0 && arr.indexOf(this.model.startCol) >= 0) {
+                while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol < this.header.length - 1) {
+                    this.model.startCol++;
+                }
+                if (arr.indexOf(this.model.startCol) >= 0) {
+                    while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol > 1) {
+                        this.model.startCol--;
+                    }
+                }
+            }
+            arr = [this.model.xCol, this.model.yCol];
+            if (this.model.intervallType.indexOf('Start') >= 0) {
+                arr.push(this.model.startCol);
+            }
+            if ((this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) &&
+                arr.indexOf(this.model.endCol) >= 0) {
+                while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol < this.header.length - 1) {
+                    this.model.endCol++;
+                }
+                if (arr.indexOf(this.model.endCol) >= 0) {
+                    while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol > 1) {
+                        this.model.endCol--;
+                    }
+                }
+            }
         }
     }
 
