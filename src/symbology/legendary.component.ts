@@ -29,7 +29,7 @@ export class LegendaryComponent<S extends Symbology> {
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
                 </md-icon>
-                <p class='md-list-item-text'>Point</p>
+                <p class='md-list-item-text'> Point</p>
             </md-list-item>
         </md-list>
         `,
@@ -65,7 +65,7 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
                 </md-icon>
-                <p class='md-list-item-text'>Point</p>
+                <p class='md-list-item-text'> Point</p>
             </md-list-item>
         </md-list>
         `,
@@ -99,7 +99,7 @@ export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
                     [style.border-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
                 </md-icon>
-                <p class='md-list-item-text'>Vector</p>
+                <p class='md-list-item-text'> Vector</p>
             </md-list-item>
         </md-list>
         `,

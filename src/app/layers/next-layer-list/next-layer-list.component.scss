@@ -1,5 +1,7 @@
 @import "../../../wave-app-theme";
 
+$accent: map-get($wave-app-theme, accent);
+
 .container {
     //width: 200px;
     //background-color: white;
@@ -12,6 +14,29 @@
     overflow-y: auto;
 }
 
+.logo {
+    text-align: center;
+    font-family: 'Pacifico', cursive;
+}
+
+.grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+/* (Optional) Apply a "closed-hand" cursor during drag operation. */
+.grabbable:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.mat-toolbar {
+    padding: 0 !important;
+}
+
 md-toolbar /deep/ md-toolbar-row:first-child {
     display: none !important;
 }
@@ -21,10 +46,11 @@ md-list {
 }
 
 md-list-item /deep/ .mat-list-item {
+
 }
 
 md-list-item /deep/ .mat-list-item-content {
-    padding: 0 1rem !important;
+    padding: 0 !important;
 }
 
 .list-item-extended /deep/ .mat-list-item-content {
@@ -53,11 +79,6 @@ md-progress-bar {
     height: 2px;
 }
 
-button.error-button {
-    position: absolute;
-    left: calc(50% - 40px/2);
-}
-
 .active-layer {
-    background: whitesmoke;//${Config.COLORS.DEFAULT};
+    background-color: mat-color($accent, 0.32);
 }

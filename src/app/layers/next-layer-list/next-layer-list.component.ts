@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs';
@@ -16,9 +16,10 @@ import {Layer} from '../../../layers/layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
-  selector: 'wave-next-layer-list',
-  templateUrl: './next-layer-list.component.html',
-  styleUrls: ['./next-layer-list.component.scss']
+    selector: 'wave-next-layer-list',
+    templateUrl: './next-layer-list.component.html',
+    styleUrls: ['./next-layer-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NextLayerListComponent implements OnInit, OnDestroy {
 

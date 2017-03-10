@@ -1,7 +1,7 @@
 import {
     Component, ViewChild, OnInit, AfterViewInit, ChangeDetectionStrategy, HostListener, ChangeDetectorRef
 } from '@angular/core';
-import {MdTabGroup, MdSidenav, MdDialog} from '@angular/material';
+import {MdTabGroup, MdSidenav, MdDialog, MdIconRegistry} from '@angular/material';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
 import {Symbology} from '../symbology/symbology.model';
@@ -20,6 +20,7 @@ import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
     selector: 'wave-app',
@@ -52,7 +53,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private storageService: StorageService,
                 private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MdDialog) {
+                private dialog: MdDialog,
+                private iconRegistry: MdIconRegistry,
+                private sanitizer: DomSanitizer ) {
+        iconRegistry.addSvgIconInNamespace('vat','logo',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/vat_logo.svg'));
+
         this.storageService.toString(); // just register
 
         this.layersReverse$ = this.layerService.getLayersStream()

@@ -1,28 +1,30 @@
 <div class="container">
+    <md-menu #layerListMenu="mdMenu">
+        <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
+            <md-icon *ngSwitchCase="true">expand_less</md-icon>
+            <md-icon *ngSwitchCase="false">expand_more</md-icon>
+            <span>Show/Hide</span>
+        </button>
+        <button md-menu-item (click)="dialog.open(LineageComponent)">
+            <md-icon>merge_type</md-icon>
+            <span>Lineage</span>
+        </button>
+        <!--
+        <button md-menu-item [disabled]="true">
+            <md-icon>fullscreen</md-icon>
+            <span>Zoom to All</span>
+        </button>
+        -->
+        <button md-menu-item [disabled]="true">
+            <md-icon>delete_sweep</md-icon>
+            <span>Remove All</span>
+        </button>
+    </md-menu>
 
     <md-toolbar color="primary">
         <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <md-menu #layerListMenu="mdMenu">
-                <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
-                    <md-icon *ngSwitchCase="true">expand_less</md-icon>
-                    <md-icon *ngSwitchCase="false">expand_more</md-icon>
-                    <span>Show/Hide</span>
-                </button>
-                <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
-                    <md-icon>merge_type</md-icon>
-                    <div>Project Lineage</div>
-                </button>
-                <button md-menu-item [disabled]="true">
-                    <md-icon>fullscreen</md-icon>
-                    <span>Zoom to All</span>
-                </button>
-                <button md-menu-item [disabled]="true">
-                    <md-icon>delete_sweep</md-icon>
-                    <span>Remove All</span>
-                </button>
-            </md-menu>
-
-            <span>VAT</span>
+            <div></div>
+            <div class="logo"><md-icon md-list-icon svgIcon="vat:logo" alt="VAT"></md-icon> VAT</div>
 
             <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
                 <md-icon>more_vert</md-icon>
@@ -30,7 +32,6 @@
 
         </md-toolbar-row>
     </md-toolbar>
-
 
     <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">
         <md-list [dragula]="layer-bag" *ngIf="layoutService.getLayerListVisibilityStream() | async">
@@ -45,13 +46,14 @@
                               [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
                               [class.list-item-extended]="layer.expanded"
                               [title]="layer.name"
+                              class="grabbable"
                 >
                     <md-menu #layerMenu="mdMenu">
+                        <!--
                         <button md-menu-item [disabled]="true">
                             <md-icon >visibility_off</md-icon>
                             <span>Hide Layer</span>
                         </button>
-                        <!--
                         <button md-menu-item *ngIf="layer.expanded" [disabled]="true">
                             <md-icon >visibility</md-icon>
                             <span>Show Layer</span>
@@ -65,7 +67,7 @@
                             <md-icon >expand_less</md-icon>
                             <span>Hide Legend</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})"  [disabled]="true">
+                        <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})">
                             <md-icon>merge_type</md-icon>
                             <span>Lineage</span>
                         </button>
@@ -77,7 +79,7 @@
                             <md-icon>mode_edit</md-icon>
                             <span>Rename</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)"  [disabled]="true">
+                        <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)">
                             <md-icon>color_lens</md-icon>
                             <span>Edit Symbology</span>
                         </button>
@@ -85,30 +87,30 @@
                             <md-icon>fullscreen</md-icon>
                             <span>Zoom to Extent</span>
                         </button>
-                        <button md-menu-item (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)">
-                            <md-icon>input</md-icon>
-                            <span>Matching Operators</span>
-                        </button>
-                        <button md-menu-item (click)="dialog.open(ExportDialogComponent)"  [disabled]="true">
+                        <button md-menu-item (click)="dialog.open(ExportDialogComponent)">
                             <md-icon>file_download</md-icon>
                             <span>Export</span>
-                        </button>
-                        <button md-menu-item [disabled]="true">
-                            <md-icon>share</md-icon>
-                            <span>Share</span>
                         </button>
                     </md-menu>
 
                     <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
                         <div fxLayout="row" fxLayoutAlign="space-between center" >
 
+                            <button md-icon-button class="mat-warn error-button" aria-label="Reload"
+                                    *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
+                                    (click)="layer.reload()"
+                            >
+                                <md-icon>replay</md-icon>
+                            </button>
+
                             <button md-icon-button
+                                *ngIf="(layer.loadingState| async) !== LoadingState.ERROR"
                                 aria-label="Show Legend"
                                 (click)="toggleLayer(layer)">
 
                                 <template [ngIf]="layer.symbology.getSymbologyType() === _enumSymbologyType.CLUSTERED_POINT || layer.symbology.getSymbologyType() === _enumSymbologyType.SIMPLE_POINT">
                                     <md-icon md-list-icon svgIcon="symbology:point"
-                                             [style.stroke-width.px]='layer.symbology.strokeWidth'
+                                             [style.stroke-width.px]='2'
                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
                                     ></md-icon>
@@ -118,7 +120,7 @@
                                 </template>
                                 <template [ngIf]="layer.symbology.getSymbologyType() === _enumSymbologyType.SIMPLE_VECTOR">
                                     <md-icon md-list-icon svgIcon="symbology:polygon"
-                                             [style.stroke-width.px]='layer.symbology.strokeWidth'
+                                             [style.stroke-width.px]='2'
                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
                                     ></md-icon>
@@ -136,14 +138,6 @@
 
                             <button md-icon-button class="secondary_action" #menuTrigger [mdMenuTriggerFor]="layerMenu" aria-label="More">
                                 <md-icon>more_vert</md-icon>
-                            </button>
-
-
-                            <button md-icon-button class="mat-warn error-button" aria-label="Reload"
-                                    *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
-                                    (click)="layer.reload()"
-                            >
-                                <md-icon>replay</md-icon>
                             </button>
                         </div>
 
