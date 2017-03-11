@@ -1,0 +1,23 @@
+<wave-sidenav-header>Custom Features</wave-sidenav-header>
+<md-toolbar>
+    <md-toolbar-row fxLayout="row">
+        <span fxFlex></span>
+        <button md-icon-button [mdMenuTriggerFor]="addMenu">
+            <md-icon>add</md-icon>
+        </button>
+        <md-menu #addMenu="mdMenu">
+            <button md-menu-item (click)="dialog.open(CsvDialogComponent)">CSV</button>
+        </md-menu>
+        <button md-icon-button (click)="refresh()"><md-icon>refresh</md-icon></button>
+    </md-toolbar-row>
+</md-toolbar>
+<md-list>
+    <md-list-item
+        *ngFor="let entry of entries$ | async"
+        (click)="add(entry)"
+    >
+        <img md-list-icon [src]="entry.operator.operatorType.getIconUrl()">
+        <h4 md-line>{{entry.name}}</h4>
+        <p md-line>Add this {{entry.operator.resultType}} data set.</p>
+    </md-list-item>
+</md-list>

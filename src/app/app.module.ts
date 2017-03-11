@@ -82,6 +82,9 @@ import { PlotListComponent } from './plots/plot-list/plot-list.component';
 import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
 import { HelpComponent } from './help.component';
 import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
+import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
+import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -157,6 +160,9 @@ export function configInitializer(config: Config) {
         SplashDialogComponent,
         HelpComponent,
         PlotDetailViewComponent,
+        CsvDialogComponent,
+        CsvConfigComponent,
+        CsvUploadComponent,
     ],
     imports: [
         BrowserModule,
@@ -186,6 +192,7 @@ export function configInitializer(config: Config) {
         LoginComponent,
         HelpComponent,
         SplashDialogComponent,
+        CsvDialogComponent,
         PlotListComponent,
         PlotDetailViewComponent,
     ],

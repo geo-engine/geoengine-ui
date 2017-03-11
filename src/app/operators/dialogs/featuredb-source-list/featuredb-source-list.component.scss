@@ -1,0 +1,13 @@
+@import '../../../../wave-app-theme';
+
+md-toolbar /deep/ md-toolbar-row:first-child {
+    display: none;
+}
+
+md-list-item {
+    cursor: pointer;
+}
+
+p {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}
