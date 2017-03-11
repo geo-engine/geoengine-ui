@@ -1,6 +1,3 @@
-/**
- * Created by Julian Märte on 20.09.2016.
- */
 import {
     Component,
     Input,
@@ -14,6 +11,7 @@ import {
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
+import {Projections, Projection} from '../../../projection.model';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -27,20 +25,21 @@ export class CSV {
     public textQualifier: string;
     public isHeaderRow: boolean;
     public headerRow: number;
+    header: Array<string>;
     /**Spatial Properties
      * */
         // public isSpatialProperties:boolean; Laut Folie optional, nach Absprache nicht.
     public xCol: number;
     public yCol: number;
-    public spatialRefSys: string/**:Typ Einfügen(Enum)*/;
+    public spatialRefSys: Projection/**:Typ Einfügen(Enum)*/;
     public coordForm: string/**:Typ Einfügen(Enum)*/;
     /**Temporal Properties
      * */
-    public intervallType: string;
+    public intervalType: string;
     /**:element of {[Start, +inf), [Start, End], [Start, Start+Duration], (-inf, End]}*/
-    public startFormat: number;
+    public startFormat: string;
     public startCol: number;
-    public endFormat: number;
+    public endFormat: string;
     public endCol: number;
 
     public content: string;
@@ -57,6 +56,8 @@ export class CSV {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
+
+    Projections = Projections;
 
     formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     isDataProperties$: Observable<boolean>;
@@ -83,31 +84,38 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {def: 'COMMA', value: ','},
         {def: 'SEMICOLON', value: ';'}
     ];
-    timeFormats: {value: string, duration: boolean}[] = [{
-        value: 'yyyy-MM-ddTHH:mm:ssZ',
-        duration: false
-    }, {value: 'dd-MM-yyyy HH:mm:ss', duration: false}, {value: 's', duration: true}, {
-        value: 'h',
-        duration: true
-    }, {value: 'd', duration: true}];
-    intervallTypes: string[] = ['[Start,+inf)', '[Start, End]', '[Start, Start+Duration]', '(-inf, End]'];
+
+    // http://man7.org/linux/man-pages/man3/strptime.3.html
+    timeFormats: Array<{display: string, value: string}> = [
+        {display: 'yyyy-MM-ddTHH:mm:ssZ', value: '%Y-%m-%dT%H:%M:%SZ'},
+        {display: 'yyyy-MM-ddTHH:mmZ', value: '%Y-%m-%dT%H:%MZ'},
+        {display: 'dd-MM-yyyy HH:mm:ss', value: '%d-%m-%Y %H:%M:%S'},
+        {display: 'dd.MM.yyyy HH:mm:ss', value: '%d.%m.%Y %H:%M:%S'},
+        {display: 'dd.MM.yyyy', value: '%d.%m.%Y'},
+        {display: 'yyyy-MM-dd', value: '%Y-%m-%d'},
+    ];
+    durationFormats: Array<{display: string, value: string}> = [
+        {display: 'days', value: 'd'},
+        {display: 'hours', value: 'h'},
+        {display: 'seconds', value: 's'},
+    ];
+    intervalTypes: Array<{display: string, value: string}> = [
+        {display: 'no time', value: 'none'},
+        {display: '[Start,+inf)', value: 'start+inf'},
+        {display: '[Start, End]', value: 'start+end'},
+        {display: '[Start, Start+Duration]', value: 'start+duration'},
+    ];
+
     decsep: string[] = [',', '.'];
     texqual: string[] = ['"', '\''];
-    projections: string[] = [
-        '[EPSG:4326] WGS 84',
-        '[EPSG:3857] WGS84 Web Mercator',
-        '[SR-ORG:81] GEOS - GEOstationary Satellite'
-    ];
     coordFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean};
     @Input() cellSpacing: number;
     @Input() linesToParse: number;
-    @Input() config: CSV;
     @Output() finish: EventEmitter<CSV> = new EventEmitter<CSV>();
 
     customHeader: string[] = [];
-    header: string[] = [];
     elements: string[][] = [];
 
     model: CSV;
@@ -131,30 +139,26 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit() {
-        if (this.config == null || !this.config) {
-            this.model = new CSV();
+        this.model = new CSV();
 
-            this.model.layerName = this.data.file.name;
-            this.model.delimitter = this.delimitters[1].value;
-            this.model.decimalSeperator = this.decsep[1];
-            this.model.isTextQualifier = false;
-            this.model.textQualifier = this.texqual[0];
-            this.model.isHeaderRow = true;
-            this.model.headerRow = 0;
-            this.model.xCol = 0;
-            this.model.yCol = 0;
-            this.model.spatialRefSys = this.projections[0];
-            this.model.coordForm = this.coordFormats[0];
-            this.model.intervallType = this.intervallTypes[0];
-            this.model.startFormat = 0;
-            this.model.startCol = 0;
-            this.model.endFormat = 0;
-            this.model.endCol = 0;
-            this.model.content = this.data.content;
-            this.model.isNumberArr = [];
-        } else {
-            this.model = this.config;
-        }
+        this.model.layerName = this.data.file.name;
+        this.model.delimitter = this.delimitters[1].value;
+        this.model.decimalSeperator = this.decsep[1];
+        this.model.isTextQualifier = false;
+        this.model.textQualifier = this.texqual[0];
+        this.model.isHeaderRow = true;
+        this.model.headerRow = 0;
+        this.model.xCol = 0;
+        this.model.yCol = 0;
+        this.model.spatialRefSys = Projections.WGS_84;
+        this.model.coordForm = this.coordFormats[0];
+        this.model.intervalType = this.intervalTypes[0].value;
+        this.model.startFormat = this.timeFormats[0].value;
+        this.model.startCol = 0;
+        this.model.endFormat = this.timeFormats[0].value;
+        this.model.endCol = 0;
+        this.model.content = this.data.content;
+        this.model.isNumberArr = [];
 
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
@@ -182,7 +186,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.formStatus$.next(FormStatus.DataProperties);
         this.update(true);
-        if (this.header.length > 1) {
+        if (this.model.header.length > 1) {
             this.model.yCol = 1;
             this.model.endCol = 1;
             this.xyColumn$.next({x: this.model.xCol, y: this.model.yCol});
@@ -255,17 +259,17 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     /**Gets called every time, anything is changed. Checks if everything is valid and reloads the table
      * Probably should save last table properties and only reload table, if they got changed.
      */
-    update (reparse: boolean) {
+    update(reparse: boolean) {
         if (reparse) {
             this.parsedData = this.parse();
             if (this.model.isHeaderRow) {
-                this.header = this.parsedData[this.model.headerRow];
+                this.model.header = this.parsedData[this.model.headerRow];
                 this.elements = this.parsedData.slice(this.model.headerRow + 1,
                     this.model.headerRow + this.linesToParse + 1);
             } else {
                 this.elements = this.parsedData;
             }
-            if (!this.header || !this.elements) {
+            if (!this.model.header || !this.elements) {
                 console.log('to large data');
             }
             this.resetNumberArr();
@@ -311,41 +315,41 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * so it will get set to default or gets back to validated status.
      */
     checkColumns(): void {
-        // Check if intervallType was changed, set the end time format to a valid time format then.
-        if (this.timeFormats[this.model.endFormat].duration !== this.model.intervallType.indexOf('Duration') >= 0) {
-            for (let i = 0; i < this.timeFormats.length; i++) {
-                if (this.timeFormats[i].duration === this.model.intervallType.indexOf('Duration') >= 0) {
-                    this.model.endFormat = i;
-                    break;
-                }
-            }
+        // Check if intervalType was changed, set the end time format to a valid time format then.
+        if (this.durationFormats.map(format => format.value).indexOf(this.model.endFormat) < 0
+            && this.model.intervalType.indexOf('duration') >= 0) {
+            this.model.endFormat = this.durationFormats[0].value;
+        }
+        if (this.durationFormats.map(format => format.value).indexOf(this.model.endFormat) >= 0
+            && this.model.intervalType.indexOf('duration') < 0) {
+            this.model.endFormat = this.timeFormats[0].value;
         }
 
-        if (!this.model.isHeaderRow && this.elements[0].length !== this.header.length) {
-            this.header = new Array(this.elements[0].length);
+        if (!this.model.isHeaderRow && this.elements[0].length !== this.model.header.length) {
+            this.model.header = new Array(this.elements[0].length);
             for (let i = 0; i < this.elements[0].length; i++) {
-                this.header[i] = '';
+                this.model.header[i] = '';
             }
         }
         // Check if table was changed in a way, that the new header
         // length doesnt support the old x/y col. Change them if needed.
-        if (!(this.header.length <= 1)) {
-            if (this.model.xCol >= this.header.length) {
-                if (this.model.yCol === this.header.length - 1) {
-                    this.model.xCol = this.header.length - 2;
+        if (!(this.model.header.length <= 1)) {
+            if (this.model.xCol >= this.model.header.length) {
+                if (this.model.yCol === this.model.header.length - 1) {
+                    this.model.xCol = this.model.header.length - 2;
                 } else {
-                    this.model.xCol = this.header.length - 1;
+                    this.model.xCol = this.model.header.length - 1;
                 }
             }
-            if (this.model.yCol >= this.header.length) {
-                if (this.model.xCol === this.header.length - 1) {
-                    this.model.yCol = this.header.length - 2;
+            if (this.model.yCol >= this.model.header.length) {
+                if (this.model.xCol === this.model.header.length - 1) {
+                    this.model.yCol = this.model.header.length - 2;
                 } else {
-                    this.model.yCol = this.header.length - 1;
+                    this.model.yCol = this.model.header.length - 1;
                 }
             }
             // Check on an equality bug, fix it then.
-            if (this.header.length > 1) {
+            if (this.model.header.length > 1) {
                 if (this.model.xCol === this.model.yCol) {
                     if (this.model.xCol === 0) {
                         this.model.yCol = this.model.xCol + 1;
@@ -361,25 +365,25 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Check if table got changed in a way that the new header length doesnt
         // support the start/end col settings. Change them if needed.
-        if (!(this.header.length <= 1)) {
-            if (this.model.startCol >= this.header.length) {
-                if (this.model.endCol === this.header.length - 1) {
-                    this.model.startCol = this.header.length - 2;
+        if (!(this.model.header.length <= 1)) {
+            if (this.model.startCol >= this.model.header.length) {
+                if (this.model.endCol === this.model.header.length - 1) {
+                    this.model.startCol = this.model.header.length - 2;
                 } else {
-                    this.model.startCol = this.header.length - 1;
+                    this.model.startCol = this.model.header.length - 1;
                 }
             }
-            if (this.model.endCol >= this.header.length) {
-                if (this.model.startCol === this.header.length - 1) {
-                    this.model.endCol = this.header.length - 2;
+            if (this.model.endCol >= this.model.header.length) {
+                if (this.model.startCol === this.model.header.length - 1) {
+                    this.model.endCol = this.model.header.length - 2;
                 } else {
-                    this.model.endCol = this.header.length - 1;
+                    this.model.endCol = this.model.header.length - 1;
                 }
             }
             // If not necessary both are needed, its possible to set every header column to start or end col.
             // On change to "both needed" check if start col was set to end col und change if necessary.
-            if (this.model.intervallType.indexOf('Start') >= 0 && (this.model.intervallType.indexOf('End') >= 0
-                || this.model.intervallType.indexOf('Duration') >= 0) && this.header.length > 1) {
+            if (this.model.intervalType.indexOf('Start') >= 0 && (this.model.intervalType.indexOf('End') >= 0
+                || this.model.intervalType.indexOf('Duration') >= 0) && this.model.header.length > 1) {
                 if (this.model.startCol === this.model.endCol) {
                     if (this.model.startCol === 0) {
                         this.model.endCol = this.model.startCol + 1;
@@ -399,9 +403,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     changeHeaderMode(e: MdSlideToggleChange): void {
         if (e.checked) {
-            this.customHeader = new Array(this.header.length);
-            for (let i = 0; i < this.header.length; i++) {
-                this.customHeader[i] = this.header[i];
+            this.customHeader = new Array(this.model.header.length);
+            for (let i = 0; i < this.model.header.length; i++) {
+                this.customHeader[i] = this.model.header[i];
             }
         }
         this.model.isHeaderRow = e.checked;
@@ -421,14 +425,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             }
             for (let i = 0; i < this.customHeader.length; i++) {
-                this.header[i] = this.customHeader[i];
+                this.model.header[i] = this.customHeader[i];
             }
         }
     }
 
     resetNumberArr() {
         this.model.isNumberArr = [];
-        for (let i = 0; i < this.header.length; i++) {
+        for (let i = 0; i < this.model.header.length; i++) {
             this.model.isNumberArr.push(false);
         }
     }
@@ -563,10 +567,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.xCol,
             this.model.yCol
         ];
-        if (this.model.intervallType.indexOf('End') >= 0 || this.model.intervallType.indexOf('Duration') >= 0) {
+        if (this.model.intervalType.indexOf('End') >= 0 || this.model.intervalType.indexOf('Duration') >= 0) {
             arr.push(this.model.endCol);
         }
-        if(this.model.intervallType.indexOf('Start') >= 0) {
+        if (this.model.intervalType.indexOf('Start') >= 0) {
             arr.push(this.model.startCol);
         }
         return arr;

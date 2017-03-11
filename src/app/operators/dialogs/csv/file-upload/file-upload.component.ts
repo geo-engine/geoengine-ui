@@ -1,10 +1,5 @@
-/**
- * Created by Julian on 24.02.2017.
- */
-import {Component, Input} from '@angular/core';
-import {CSV} from '../csv-config/csv-config.component';
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Component, Input, Output, EventEmitter, OnDestroy, OnInit} from '@angular/core';
+import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 
 enum FormStatus {
     Selection,
@@ -13,12 +8,19 @@ enum FormStatus {
     Finished
 }
 
+export interface UploadData {
+    file: File;
+    content: string;
+    progress: number;
+    isNull: boolean;
+}
+
 @Component({
     selector: 'wave-csv-upload',
     templateUrl: 'file-upload-template.component.html',
     styleUrls: ['file-upload-style.component.css']
 })
-export class CsvUploadComponent {
+export class CsvUploadComponent implements OnInit, OnDestroy {
 
     status$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Selection);
     isSelecting$: Observable<boolean>;
@@ -27,26 +29,32 @@ export class CsvUploadComponent {
     isError$: Observable<boolean>;
 
     @Input() file_size_limit: number;
+    @Output() onData = new EventEmitter<UploadData>();
 
-    data: {
-        file: File,
-        content: string,
-        progress: number,
-        isNull: boolean
-    } = {
+    data: UploadData = {
         file: null,
         content: '',
         progress: 0,
         isNull: true
     };
 
-    result: CSV;
+    private subscriptions: Array<Subscription> = [];
 
     constructor() {
         this.isSelecting$ = this.status$.map((status) => status === FormStatus.Selection);
         this.isLoading$ = this.status$.map((status) => status === FormStatus.Loading);
-        this.isFinished$ = this.status$.map((status) => status === FormStatus.Finished);
+        this.isFinished$ = this.status$.filter((status) => status === FormStatus.Finished).mapTo(true);
         this.isError$ = this.status$.map((status) => status === FormStatus.Error);
+    }
+
+    ngOnInit() {
+        this.subscriptions.push(
+            this.isFinished$.subscribe(() => this.onData.emit(this.data))
+        );
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     changeListener($event): void {
@@ -98,11 +106,6 @@ export class CsvUploadComponent {
 
     unerror() {
         this.status$.next(FormStatus.Selection);
-    }
-
-    submit(e: CSV) {
-        console.log(e);
-        this.result = e;
     }
 
     /**This method generates an number array containing all integers i with n <= i < m

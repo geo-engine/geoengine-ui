@@ -15,7 +15,6 @@ import {
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
-import {CsvRepositoryComponent} from '../components/csv-repository.component';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
@@ -85,6 +84,8 @@ import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-vi
 import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
 import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
+import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
+import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -102,7 +103,6 @@ export function configInitializer(config: Config) {
         ProvenanceListComponent,
         SidenavContainerComponent,
         AbcdRepositoryComponent,
-        CsvRepositoryComponent,
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
         SymbologyPointsComponent,
@@ -163,6 +163,8 @@ export function configInitializer(config: Config) {
         CsvDialogComponent,
         CsvConfigComponent,
         CsvUploadComponent,
+        FeaturedbSourceListComponent,
+        WorkspaceSettingsComponent,
     ],
     imports: [
         BrowserModule,
@@ -178,7 +180,6 @@ export function configInitializer(config: Config) {
         RenameLayerComponent,
         RasterRepositoryComponent,
         AbcdRepositoryComponent,
-        CsvRepositoryComponent,
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,
         NumericAttributeFilterOperatorComponent,
@@ -195,6 +196,8 @@ export function configInitializer(config: Config) {
         CsvDialogComponent,
         PlotListComponent,
         PlotDetailViewComponent,
+        FeaturedbSourceListComponent,
+        WorkspaceSettingsComponent,
     ],
     providers: [
         DragulaService,

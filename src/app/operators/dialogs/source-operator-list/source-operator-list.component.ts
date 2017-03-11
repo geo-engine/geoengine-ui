@@ -6,9 +6,9 @@ import {RasterRepositoryComponent} from '../../../../components/raster-repositor
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {AbcdRepositoryComponent} from '../../../../components/abcd-repository.component';
 import {ABCDSourceType} from '../../types/abcd-source-type.model';
-import {CsvRepositoryComponent} from '../../../../components/csv-repository.component';
 import {CsvSourceType} from '../../types/csv-source-type.model';
 import {GfbioBasketsComponent} from '../../../../baskets/gfbio-baskets.component';
+import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
 
 @Component({
     selector: 'wave-source-operator-list',
@@ -26,7 +26,7 @@ export class SourceOperatorListComponent implements OnInit {
     AbcdRepositoryComponent = AbcdRepositoryComponent;
     ABCDSourceType = ABCDSourceType;
 
-    CsvRepositoryComponent = CsvRepositoryComponent;
+    FeaturedbSourceListComponent = FeaturedbSourceListComponent;
     CsvSourceType = CsvSourceType;
 
     GfbioBasketsComponent = GfbioBasketsComponent;

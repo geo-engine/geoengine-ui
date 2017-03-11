@@ -10,12 +10,23 @@
         <h4 md-line>ABCD Archives</h4>
         <p md-line>Lookup GFBio ABCD archives</p>
     </md-list-item>
-    <md-list-item (click)="layoutService.setSidenavContentComponent(CsvRepositoryComponent, SourceOperatorListComponent)">
+    <md-list-item *waveIfGuest class="disabled">
         <img md-list-icon [src]="CsvSourceType.ICON_URL">
-        <h4 md-line>CSV Data</h4>
-        <p md-line>Add CSV data</p>
+        <h4 md-line>Custom Features</h4>
+        <p md-line>Log in to use custom vector data from e.g. CSV files</p>
     </md-list-item>
-    <md-list-item (click)="layoutService.setSidenavContentComponent(GfbioBasketsComponent, SourceOperatorListComponent)" *waveIfGfbio>
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent(FeaturedbSourceListComponent, SourceOperatorListComponent)"
+        *waveIfLoggedIn
+    >
+        <img md-list-icon [src]="CsvSourceType.ICON_URL">
+        <h4 md-line>Custom Features</h4>
+        <p md-line>Add and use custom vector features like CSV</p>
+    </md-list-item>
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent(GfbioBasketsComponent, SourceOperatorListComponent)"
+        *waveIfGfbioLoggedIn
+    >
         <md-icon md-list-icon>add_shopping_cart</md-icon>
         <h4 md-line>GFBio Baskets</h4>
         <p md-line>Display the GFBio Search Results</p>

@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, Subject} from 'rxjs/Rx';
 
 import {User, Guest} from './user.model';
 
-import {RequestParameters, MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
+import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
 import {AbcdArchive} from '../../models/abcd.model';
 import {IBasket} from '../../baskets/gfbio-basket.model';
 
@@ -16,6 +16,15 @@ import {CsvFile, CsvColumn} from '../../models/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 import {Config} from '../config.service';
+import {Operator} from '../operators/operator.model';
+import {
+    FeatureDBServiceListParameters, FeatureDBList, FeatureDBServiceUploadParameters,
+    FeatureDBListEntry, featureDBListEntryToOperator
+} from '../queries/feature-db.model';
+import {FeatureCollectionDBSourceType} from '../operators/types/feature-collection-db-source-type.model';
+import {ResultTypes} from '../operators/result-type.model';
+import {Projections} from '../operators/projection.model';
+import {DataTypes} from '../operators/datatype.model';
 
 export interface Session {
     user: string;
@@ -306,7 +315,6 @@ export class UserService {
                 },
             }];
         }
-        ;
 
         return this.session$.switchMap(session => {
             const parameters = new UserServiceRequestParameters({
@@ -525,6 +533,46 @@ export class UserService {
         return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
     }
 
+    getFeatureDBList(): Observable<Array<{name: string, operator: Operator}>> {
+        if (this.isGuestUser()) {
+            return Observable.of([]);
+        }
+
+        return this.request(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken}))
+            .map(response => response.json() as FeatureDBList)
+            .map(list => list.data_sets.map(featureDBListEntryToOperator));
+    }
+
+    addFeatureToDB(name: string, operator: Operator): Observable<{name: string, operator: Operator}> {
+        if (this.isGuestUser()) {
+            return Observable.empty();
+        }
+
+        const subject = new Subject<{name: string, operator: Operator}>();
+
+        this.request(
+            new FeatureDBServiceUploadParameters({
+                sessionToken: this.session$.getValue().sessionToken,
+                name: name,
+                crs: operator.projection,
+                query: operator.toQueryJSON(),
+                type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
+            }),
+            true,
+        )
+            .map(response => response.json() as FeatureDBListEntry)
+            .map(featureDBListEntryToOperator)
+            .subscribe(
+                data => {
+                    subject.next(data);
+                    subject.complete();
+                },
+                error => subject.error(error)
+            );
+
+        return subject;
+    }
+
     /**
      * Get the session data.
      * @returns the session data
@@ -559,10 +607,10 @@ export class UserService {
         }
     }
 
-    protected request(requestParameters: MappingRequestParameters): Observable<Response> {
+    protected request(requestParameters: MappingRequestParameters, encode = false): Observable<Response> {
         return this.http.post(
             this.config.MAPPING_URL,
-            requestParameters.toMessageBody(),
+            requestParameters.toMessageBody(encode),
             {headers: requestParameters.getHeaders()}
         );
     }

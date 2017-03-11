@@ -21,10 +21,3 @@
         {{data.progress}}%
     </md-progress-circle>
 </div>
-
-<wave-csv-config *ngIf="isFinished$ | async" [data]="data"
-                 [cellSpacing]="10"
-                 [linesToParse]="15"
-                 [config]="result"
-                 (finish)="submit($event)"
-></wave-csv-config>

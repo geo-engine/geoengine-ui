@@ -122,8 +122,8 @@ export class CsvRepositoryComponent {
 
         const operator = new Operator({
             operatorType: new CsvSourceType({
-                csvParameters: csv.params,
-                filename: csv.filename,
+                parameters: csv.params,
+                dataURI: csv.filename,
             }),
             resultType: resultType,
             projection: Projections.WGS_84,

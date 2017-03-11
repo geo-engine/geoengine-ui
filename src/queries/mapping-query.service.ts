@@ -4,7 +4,7 @@ import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
 import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
-import {MappingRequestParameters} from './request-parameters.model';
+import {MappingRequestParameters} from '../app/queries/request-parameters.model';
 
 import {ProjectService} from '../app/project/project.service';
 import {UserService} from '../app/users/user.service';
