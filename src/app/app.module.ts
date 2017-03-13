@@ -86,6 +86,7 @@ import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-confi
 import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
 import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
+import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -165,6 +166,7 @@ export function configInitializer(config: Config) {
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
+        LineageGraphComponent,
     ],
     imports: [
         BrowserModule,
@@ -198,6 +200,7 @@ export function configInitializer(config: Config) {
         PlotDetailViewComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
+        LineageGraphComponent,
     ],
     providers: [
         DragulaService,

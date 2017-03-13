@@ -1,0 +1,26 @@
+<wave-dialog-header>{{title$ | async}}</wave-dialog-header>
+<div fxLayout="row">
+    <svg #svg class="graph" [style.width.px]="svgWidth$ | async" [style.height.px]="svgHeight$ | async">
+        <g #g></g>
+    </svg>
+    <div [style.max-height.px]="svgHeight$ | async" fxFlex class="detail">
+        <wave-dialog-section-heading>Operator Type</wave-dialog-section-heading>
+        <md-list>
+            <md-list-item *ngIf="selectedOperator$ | async">
+                <img md-list-avatar [src]="(selectedOperator$ | async)?.operatorType.getIconUrl()">
+                <h4 md-line>{{(selectedOperator$ | async)?.operatorType}}</h4>
+                <p md-line>{{(selectedOperator$ | async)?.resultType}}</p>
+            </md-list-item>
+        </md-list>
+        <wave-dialog-section-heading>Parameters</wave-dialog-section-heading>
+        <md-list>
+            <template ngFor let-parameter [ngForOf]="parameters$ | async">
+                <h3 md-subheader>{{parameter.key}}</h3>
+                <md-list-item>
+                    <p md-line>{{parameter.value}}</p>
+                </md-list-item>
+                <md-divider></md-divider>
+            </template>
+        </md-list>
+    </div>
+</div>

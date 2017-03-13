@@ -7,7 +7,7 @@
             <md-icon *ngSwitchCase="false">expand_more</md-icon>
             <span>Show/Hide Layerlist</span>
         </button>
-        <button md-menu-item (click)="dialog.open(LineageComponent)">
+        <button md-menu-item (click)="dialog.open(LineageGraphComponent)">
             <md-icon>merge_type</md-icon>
             <span>Lineage</span>
         </button>
@@ -73,7 +73,7 @@
                             <md-icon >expand_less</md-icon>
                             <span>Hide Legend</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})">
+                        <button md-menu-item (click)="dialog.open(LineageGraphComponent, {layer: layer})">
                             <md-icon>merge_type</md-icon>
                             <span>Lineage</span>
                         </button>
