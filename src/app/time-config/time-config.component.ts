@@ -1,8 +1,9 @@
-import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project/project.service';
 import {Subscription} from 'rxjs/Rx';
 import {Time, TimeType, TimePoint, TimeInterval} from '../time.model';
-import {MdButtonToggleChange} from '@angular/material';
+import {MdButtonToggleChange, MdSlideToggleChange} from '@angular/material';
+import {unitOfTime} from 'Moment';
 
 @Component({
   selector: 'wave-time-config',
@@ -10,120 +11,54 @@ import {MdButtonToggleChange} from '@angular/material';
   styleUrls: ['./time-config.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeConfigComponent implements OnInit, OnDestroy {
+export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
-
+    private timeAsPoint: boolean;
     private time: Time;
     private subscriptions: Array<Subscription> = [];
 
+
   constructor(private projectService: ProjectService, private changeDetectorRef: ChangeDetectorRef) { }
 
-    updateStartYear(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().year(value);
-            this.push();
-        }
-    }
-    updateStartMonth(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().month(value);
-            this.push();
-        }
-    }
-    updateStartDate(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().date(value);
-            this.push();
-        }
-    }
-    updateStartHour(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().hour(value);
-            this.push();
-        }
-    }
-    updateStartMinute(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().minute(value);
-            this.push();
-        }
-    }
-    updateStartSecond(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getStart().second(value);
-            this.push();
+    updateStart(timeUnit: unitOfTime.Base, value: number) {
+        if ( timeUnit && value && !isNaN(value)) {
+            const next = this.time.getStart().clone().set(timeUnit, value);
+            const asPoint = !!this.timeAsPoint || next.isSameOrAfter(this.time.getEnd());
+
+            if(asPoint) {
+                this.timeAsPoint = true;
+                this.push(new TimePoint(next));
+            } else {
+                this.push(new TimeInterval(next, this.time.getEnd()));
+            }
         }
     }
 
-    updateEndYear(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().year(value);
-            this.push();
-        }
-    }
-    updateEndMonth(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().month(value);
-            this.push();
-        }
-    }
-    updateEndDate(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().date(value);
-            this.push();
-        }
-    }
-    updateEndHour(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().hour(value);
-            this.push();
-        }
-    }
-    updateEndMinute(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().minute(value);
-            this.push();
-        }
-    }
-    updateEndSecond(event: string | number) {
-        const value = this.eventToNumber(event);
-        if ( value && !isNaN(value)) {
-            this.time.getEnd().second(value);
-            this.push();
+    updateEnd(timeUnit: unitOfTime.Base, value: number) {
+        if ( timeUnit && value && !isNaN(value)) {
+            const next = this.time.getEnd().clone().set(timeUnit, value);
+            const asPoint = next.isSameOrBefore(this.time.getStart());
+
+            if(asPoint) {
+                this.timeAsPoint = true;
+                this.push(new TimePoint(next));
+            }
+            else {
+                this.push(new TimeInterval(this.time.getStart(), next));
+            }
         }
     }
 
-    changeMode(event: MdButtonToggleChange){
+    changeMode(event: MdSlideToggleChange){
       console.log('time-config', event);
-      let requestedType = event.value as TimeType;
-      if(this.time.getType() === requestedType){
-          console.log(this.time.getType(), requestedType);
+      this.timeAsPoint = !!event.checked;
+      if(event.checked) {
+          this.push(new TimePoint(this.time.getStart()));
       }
       else {
-          switch(requestedType) {
-              case 'TimePoint': {
-                  this.time = new TimePoint(this.time.getStart());
-                  break;
-              }
-              case 'TimeInterval': {
-                  this.time = new TimeInterval(this.time.getStart(), this.time.getStart());
-                  break;
-              }
-          }
-          //this.changeDetectorRef.markForCheck();
-          this.push();
+          this.push(this.time = new TimeInterval(this.time.getStart(), this.time.getStart()));
       }
+      //this.changeDetectorRef.markForCheck();
     }
 
     ngOnInit() {
@@ -132,34 +67,24 @@ export class TimeConfigComponent implements OnInit, OnDestroy {
                 this.time = time.clone();
                 this.changeDetectorRef.markForCheck();
             }
+
+            this.timeAsPoint = time.getType() === 'TimePoint';
         });
 
         this.subscriptions.push(sub);
+    }
+
+    ngAfterViewInit() {
+      setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
     ngOnDestroy(): void {
       this.subscriptions.forEach(s => s.unsubscribe());
     }
 
-    private eventToNumber(event: string | number): number {
-        if (typeof event === 'string') {
-            if ( event === '' ) {
-                return 0;
-            }
-            return parseInt(event, 10);
-        }
-        if (typeof event === 'number') {
-            return event;
-        }
-        return NaN;
-    }
-
-    private push() {
-        if (!!this.time && this.time.isValid()) {
-            this.projectService.setTime(this.time.clone());
+    private push(time: Time) {
+        if (!!time && !!this.time && time.isValid() && this.time.isValid() && !time.isSame(this.time)) {
+            this.projectService.setTime(time);
         }
     }
-
-
-
 }
