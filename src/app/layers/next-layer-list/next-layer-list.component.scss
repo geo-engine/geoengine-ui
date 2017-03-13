@@ -59,7 +59,8 @@ md-list-item /deep/ .mat-list-item-content {
 
 .list-item-extended /deep/ .mat-list-item-content {
     height: unset !important;
-    min-height: 48px;
+    min-height: 48px !important;
+    padding-top: 3px !important;
 }
 
 md-list-item /deep/ .mat-list-item-text {

@@ -30,7 +30,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
 
     // make visible in template
     // tslint:disable:variable-name
-    _enumSymbologyType = SymbologyType;
+    ST = SymbologyType;
     LoadingState = LoadingState;
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
