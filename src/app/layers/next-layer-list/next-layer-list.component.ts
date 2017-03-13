@@ -14,6 +14,7 @@ import {LayerService} from '../../../layers/layer.service';
 import {MapService} from '../../../map/map.service';
 import {Layer} from '../../../layers/layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
+import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -35,7 +36,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
     SymbologyDialogComponent = SymbologyDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     ExportDialogComponent = ExportDialogComponent;
-    OperatorRepositoryComponent = OperatorRepositoryComponent;
+    SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
     private subscriptions: Array<Subscription> = [];

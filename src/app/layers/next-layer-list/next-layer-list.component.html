@@ -35,9 +35,13 @@
 
     <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">
         <md-list [dragula]="layer-bag" *ngIf="layoutService.getLayerListVisibilityStream() | async">
+
             <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
-                <button md-button>
-                    <md-icon>add</md-icon> add layer
+                <button md-button class="no-layer"
+                        (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
+                        mdTooltip="Add New Data" mdTooltipPosition="after"
+                >
+                    <md-icon>add</md-icon> add a first layer
                 </button>
             </md-list-item>
 
@@ -141,7 +145,7 @@
                             </button>
                         </div>
 
-                        <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" fxLayout="row">
+                        <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" fxLayout="row" class="legendary">
 
                             <wave-legendary-points
                                 *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"

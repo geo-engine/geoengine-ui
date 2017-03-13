@@ -14,6 +14,10 @@ $accent: map-get($wave-app-theme, accent);
     overflow-y: auto;
 }
 
+.no-layer {
+    width: 100%;
+}
+
 .logo {
     text-align: center;
     font-family: 'Pacifico', cursive;
@@ -64,8 +68,14 @@ md-list-item /deep/ .mat-list-item-text {
     overflow: hidden;
 }
 
+
+
 .list-element-inner-container{
     width: 100%;
+
+    .legendary {
+        margin-left: 8px;
+    }
 }
 
 mat-progress-bar {
