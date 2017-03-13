@@ -129,6 +129,10 @@ export class TimeInterval implements Time {
     constructor(start: moment.MomentInput, end: moment.MomentInput) {
         this.start = moment(start);
         this.end = moment(end);
+
+        if( this.start == this.end ){
+            this.end = this.end.clone();
+        }
     }
 
     getType(): TimeType {
@@ -179,7 +183,9 @@ export class TimeInterval implements Time {
     }
 
     asRequestString(): string {
-        return this.getStart().toISOString() + '/' + this.getEnd().toISOString();
+        return this.getStart().toISOString() + '/'
+            + ((this.getStart().isSame(this.getEnd()))
+                ? this.getEnd().add(1, 'millisecond').toISOString() : this.getEnd().toISOString());
     }
 }
 
