@@ -90,6 +90,12 @@ export class LayerService {
         this.notificationService.info('Removed Layer »' + layer.name + '«');
     }
 
+    removeAllLayers() {
+        this.setLayers([]);
+
+        this.notificationService.info('Removed All Layers');
+    }
+
     /**
      * Changes the display name of a layer.
      * @param layer The layer to modify

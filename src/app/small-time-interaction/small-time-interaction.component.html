@@ -2,7 +2,7 @@
     <button md-icon-button (click)="timeRwd()">
         <md-icon>navigate_before</md-icon>
     </button>
-    <span (click)="openTimeConfig()" [innerHtml] = 'timeRepresentation | waveSafeHtml'> </span>
+    <button md-button (click)="openTimeConfig()" [innerHtml] = 'timeRepresentation | waveSafeHtml'></button>
     <button md-icon-button (click)="timeFwd()">
         <md-icon>navigate_next</md-icon>
     </button>

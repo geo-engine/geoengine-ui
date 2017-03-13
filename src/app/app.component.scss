@@ -16,17 +16,16 @@ wave-next-layer-list {
 .time-container {
     position: absolute;
     left: 16vw;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-    z-index: 1;
+    right: 3rem;
 
     wave-small-time-interaction {
-        background-color: rgba(255,255,255,0.87);
+        background-color: rgba(255, 255, 255, 0.87);
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
+        z-index: 10;
     }
 }
+
 
 :host /deep/ .mat-sidenav-content {
     overflow: hidden;

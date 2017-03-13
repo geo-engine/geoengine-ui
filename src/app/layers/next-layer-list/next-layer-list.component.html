@@ -3,7 +3,7 @@
         <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
             <md-icon *ngSwitchCase="true">expand_less</md-icon>
             <md-icon *ngSwitchCase="false">expand_more</md-icon>
-            <span>Show/Hide</span>
+            <span>Show/Hide Layerlist</span>
         </button>
         <button md-menu-item (click)="dialog.open(LineageComponent)">
             <md-icon>merge_type</md-icon>
@@ -15,9 +15,9 @@
             <span>Zoom to All</span>
         </button>
         -->
-        <button md-menu-item [disabled]="true">
+        <button md-menu-item (click)="layerService.removeAllLayers()">
             <md-icon>delete_sweep</md-icon>
-            <span>Remove All</span>
+            <span>Remove All Layers</span>
         </button>
     </md-menu>
 
