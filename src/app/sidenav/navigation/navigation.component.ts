@@ -6,6 +6,7 @@ import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from '../../help.component';
 import {TimeConfigComponent} from '../../time-config/time-config.component';
 import {PlotListComponent} from '../../plots/plot-list/plot-list.component';
+import {WorkspaceSettingsComponent} from '../../project/workspace-settings/workspace-settings.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -22,6 +23,7 @@ export class NavigationComponent implements OnInit {
     HelpComponent = HelpComponent;
     TimeConfigComponent = TimeConfigComponent;
     PlotListComponent = PlotListComponent;
+    WorkspaceSettingsComponent = WorkspaceSettingsComponent;
 
     constructor(public layoutService: LayoutService) {
     }

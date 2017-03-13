@@ -36,8 +36,9 @@
         <md-icon>equalizer</md-icon>
     </button>
     <button md-raised-button
-            [disabled]="true"
-            mdTooltip="Project Settings" mdTooltipPosition="before"
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, WorkspaceSettingsComponent)"
+            (click)="layoutService.setSidenavContentComponent(WorkspaceSettingsComponent)"
+            mdTooltip="Workspace Settings" mdTooltipPosition="before"
     >
         <md-icon>settings</md-icon>
     </button>

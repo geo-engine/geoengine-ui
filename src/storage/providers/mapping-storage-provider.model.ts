@@ -3,7 +3,7 @@ import {Http} from '@angular/http';
 import {
     StorageProvider, Workspace, WorkspaceDict, RScript, RScriptDict,
 } from '../storage-provider.model';
-import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
+import {MappingRequestParameters, ParametersType} from '../../app/queries/request-parameters.model';
 import {Operator} from '../../app/operators/operator.model';
 import {ResultTypes} from '../../app/operators/result-type.model';
 

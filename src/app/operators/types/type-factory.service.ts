@@ -1,27 +1,16 @@
 import {OperatorType, OperatorTypeDict} from '../operator-type.model';
 
-import {NumericAttributeFilterType, NumericAttributeFilterTypeDict}
-  from './numeric-attribute-filter-type.model';
-import {RasterValueExtractionType, RasterValueExtractionTypeDict}
-  from './raster-value-extraction-type.model';
-import {ExpressionType, ExpressionTypeDict}
-  from './expression-type.model';
-import {ProjectionType, ProjectionTypeDict}
-  from './projection-type.model';
-import {GFBioSourceType, GFBioSourceTypeDict}
-  from './gfbio-source-type.model';
-import {RasterSourceType, RasterSourceTypeDict}
-  from './raster-source-type.model';
-import {HistogramType, HistogramTypeDict}
-  from './histogram-type.model';
-import {RScriptType, RScriptTypeDict}
-  from './r-script-type.model';
-import {PointInPolygonFilterType, PointInPolygonFilterTypeDict}
-  from './point-in-polygon-filter-type.model';
-import {WKTSourceType, WKTSourceTypeDict}
-  from './wkt-source-type.model';
-import {ABCDSourceType, ABCDSourceTypeDict}
-    from './abcd-source-type.model';
+import {NumericAttributeFilterType, NumericAttributeFilterTypeDict} from './numeric-attribute-filter-type.model';
+import {RasterValueExtractionType, RasterValueExtractionTypeDict} from './raster-value-extraction-type.model';
+import {ExpressionType, ExpressionTypeDict} from './expression-type.model';
+import {ProjectionType, ProjectionTypeDict} from './projection-type.model';
+import {GFBioSourceType, GFBioSourceTypeDict} from './gfbio-source-type.model';
+import {RasterSourceType, RasterSourceTypeDict} from './raster-source-type.model';
+import {HistogramType, HistogramTypeDict} from './histogram-type.model';
+import {RScriptType, RScriptTypeDict} from './r-script-type.model';
+import {PointInPolygonFilterType, PointInPolygonFilterTypeDict} from './point-in-polygon-filter-type.model';
+import {WKTSourceType, WKTSourceTypeDict} from './wkt-source-type.model';
+import {ABCDSourceType, ABCDSourceTypeDict} from './abcd-source-type.model';
 import {
     MsgRadianceType,
     MsgReflectanceType, MsgReflectanceTypeDict,
@@ -31,9 +20,10 @@ import {
     MsgCo2CorrectionType,
     MsgSofosGccThermalThresholdType,
 } from './msg-types.model';
-import { CsvSourceType, CsvSourceTypeDict } from './csv-source-type.model';
-import { PangaeaSourceType, PangaeaSourceTypeDict } from './pangaea-source-type.model';
-import { ClassificationTypeDict, ClassificationType} from './classification-type.model';
+import {CsvSourceType, CsvSourceTypeDict} from './csv-source-type.model';
+import {PangaeaSourceType, PangaeaSourceTypeDict} from './pangaea-source-type.model';
+import {ClassificationTypeDict, ClassificationType} from './classification-type.model';
+import {FeatureCollectionDBSourceType, FeatureCollectionDBSourceTypeDict} from './feature-collection-db-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -86,8 +76,10 @@ export abstract class OperatorTypeFactory {
                 return ClassificationType.fromDict(dict as ClassificationTypeDict);
             case PangaeaSourceType.TYPE:
                 return PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict);
+            case FeatureCollectionDBSourceType.TYPE:
+                return FeatureCollectionDBSourceType.fromDict(dict as FeatureCollectionDBSourceTypeDict);
             default:
-                throw 'There is not factory method defined for this operator.';
+                throw Error('There is not factory method defined for this operator.');
         }
     }
 }

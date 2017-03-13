@@ -1,3 +1,5 @@
+@import '../../../../wave-app-theme';
+
 md-list-item {
     cursor: pointer;
 }
@@ -8,5 +10,17 @@ img {
 }
 
 p {
-    color: rgba(0, 0, 0, .54);
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}
+
+.disabled {
+    /deep/ .mat-list-item-content {
+        cursor: auto;
+    }
+    h4 {
+        color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    }
+    img {
+        filter: grayscale(100%);
+    }
 }
