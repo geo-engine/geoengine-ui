@@ -1,5 +1,5 @@
-<div [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type">
-    <wave-dialog-header>{{plot.name}}</wave-dialog-header>
+<wave-dialog-header>{{plot.name}}</wave-dialog-header>
+<md-dialog-content [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type">
     <template ngSwitchCase="text">
         <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
     </template>
@@ -18,4 +18,4 @@
     <template ngSwitchDefault>
         <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
     </template>
-</div>
+</md-dialog-content>
