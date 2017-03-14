@@ -1,2 +1,15 @@
 <wave-dialog-header>CSV-Upload</wave-dialog-header>
-<wave-csv-upload [file_size_limit]="100000000"></wave-csv-upload>
+<md-dialog-content>
+    <wave-csv-upload
+        *ngIf="!data"
+        [file_size_limit]="100000000"
+        (onData)="data = $event"
+    ></wave-csv-upload>
+    <wave-csv-config
+        *ngIf="!!data"
+        [data]="data"
+        [cellSpacing]="10"
+        [linesToParse]="15"
+        (finish)="submit($event)"
+    ></wave-csv-config>
+</md-dialog-content>

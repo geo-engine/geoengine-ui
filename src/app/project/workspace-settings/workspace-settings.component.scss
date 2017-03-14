@@ -1,0 +1,31 @@
+@import '../../../wave-app-theme';
+
+$secondary-color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+
+md-list-item {
+    cursor: pointer;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+p {
+    color: $secondary-color;
+}
+
+.disabled {
+    /deep/ .mat-list-item-content {
+        cursor: auto;
+    }
+    h4 {
+        color: $secondary-color;
+    }
+    img {
+        filter: grayscale(100%);
+    }
+    md-icon {
+        color: $secondary-color;
+    }
+}

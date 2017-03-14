@@ -15,7 +15,6 @@ import {
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
-import {CsvRepositoryComponent} from '../components/csv-repository.component';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
@@ -37,6 +36,7 @@ import {BasketResultGroupByDatasetPipe} from '../baskets/gfbio-basket.pipe';
 import {TrimPipe} from '../pipes/trim.pipe';
 import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '../baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from '../pipes/safe-style.pipe';
+import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
@@ -60,7 +60,6 @@ import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
-import {TopToolbarComponent} from './top-toolbar/top-toolbar.component';
 import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
 import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time-config/time-config.component';
@@ -81,9 +80,12 @@ import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
 import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
 import { HelpComponent } from './help.component';
+import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
 import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
 import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
+import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
+import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -101,7 +103,6 @@ export function configInitializer(config: Config) {
         ProvenanceListComponent,
         SidenavContainerComponent,
         AbcdRepositoryComponent,
-        CsvRepositoryComponent,
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
         SymbologyPointsComponent,
@@ -126,6 +127,7 @@ export function configInitializer(config: Config) {
         PangaeaBasketResultComponent,
         GroupedAbcdBasketResultComponent,
         SafeStylePipe,
+        SafeHtmlPipe,
         MappingColorizerToGradientPipe,
         GfbioBasketsComponent,
         HistogramComponent,
@@ -141,7 +143,6 @@ export function configInitializer(config: Config) {
         ReprojectionSelectionComponent,
         RasterValueExtractionOperatorComponent,
         SmallTimeInteractionComponent,
-        TopToolbarComponent,
         NextLayerListComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
@@ -158,9 +159,12 @@ export function configInitializer(config: Config) {
         PlotListComponent,
         SplashDialogComponent,
         HelpComponent,
+        PlotDetailViewComponent,
         CsvDialogComponent,
         CsvConfigComponent,
         CsvUploadComponent,
+        FeaturedbSourceListComponent,
+        WorkspaceSettingsComponent,
     ],
     imports: [
         BrowserModule,
@@ -176,7 +180,6 @@ export function configInitializer(config: Config) {
         RenameLayerComponent,
         RasterRepositoryComponent,
         AbcdRepositoryComponent,
-        CsvRepositoryComponent,
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,
         NumericAttributeFilterOperatorComponent,
@@ -191,6 +194,10 @@ export function configInitializer(config: Config) {
         HelpComponent,
         SplashDialogComponent,
         CsvDialogComponent,
+        PlotListComponent,
+        PlotDetailViewComponent,
+        FeaturedbSourceListComponent,
+        WorkspaceSettingsComponent,
     ],
     providers: [
         DragulaService,

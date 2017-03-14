@@ -1,7 +1,7 @@
 /**
  * Dictionary for querying the server.
  */
-export interface OperatorTypeMappingDict {}
+export interface OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.

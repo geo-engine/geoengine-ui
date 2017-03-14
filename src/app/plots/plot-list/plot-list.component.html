@@ -1,3 +1,42 @@
-<p>
-  plot-list works!
-</p>
+<wave-sidenav-header>Plots</wave-sidenav-header>
+<md-card *ngFor="let plot of (projectService.getPlotStream() | async)">
+    <md-card-header>
+        <img md-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()">
+        <md-card-title>{{plot.name}}</md-card-title>
+        <md-card-subtitle>{{plot.operator.operatorType.toString()}}</md-card-subtitle>
+    </md-card-header>
+    <md-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.LOADING">
+        <md-spinner></md-spinner>
+    </md-card-content>
+    <md-card-content
+        *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
+        [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type"
+    >
+        <template ngSwitchCase="text">
+            <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+        </template>
+        <template ngSwitchCase="png">
+            <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" alt="{{plot.name}}">
+        </template>
+        <template ngSwitchCase="histogram">
+            <wave-histogram
+                *ngIf="cardWidth$ | async"
+                [data]="(projectService.getPlotDataStream(plot) | async)"
+                [height]="(cardWidth$ | async) / 2"
+                [width]="cardWidth$ | async"
+                [interactable]="false"
+            ></wave-histogram>
+        </template>
+        <template ngSwitchDefault>
+            <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+        </template>
+    </md-card-content>
+    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
+        <button md-button (click)="dialog.open(PlotDetailViewComponent, {data: plot})"><md-icon>fullscreen</md-icon></button>
+        <span fxFlex></span>
+        <button md-button (click)="projectService.removePlot(plot)"><md-icon>remove_circle_outline</md-icon></button>
+    </md-card-actions>
+    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" class="error">
+        <button md-button (click)="projectService.reloadPlot(plot)"><md-icon>replay</md-icon></button>
+    </md-card-actions>
+</md-card>

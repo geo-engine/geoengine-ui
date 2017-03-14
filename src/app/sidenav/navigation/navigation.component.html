@@ -1,27 +1,52 @@
 <div>
     <button md-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, HelpComponent)"
-            (click)="layoutService.setSidenavContentComponent(HelpComponent)"
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, LoginComponent)"
+            (click)="layoutService.setSidenavContentComponent(LoginComponent)"
+            mdTooltip="User Account / Login" mdTooltipPosition="before"
     >
-        <md-icon>help</md-icon>
+        <md-icon *waveIfLoggedIn>person</md-icon>
+        <md-icon *waveIfGuest>person_outline</md-icon>
     </button>
     <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, SourceOperatorListComponent)"
             (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
+            mdTooltip="Add Data" mdTooltipPosition="before"
     >
         <md-icon>add</md-icon>
     </button>
     <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, OperatorRepositoryComponent)"
             (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)"
+            mdTooltip="Operators" mdTooltipPosition="before"
     >
-        <md-icon>build</md-icon>
+        <span class="icon-cogs"></span>
     </button>
     <button md-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, LoginComponent)"
-            (click)="layoutService.setSidenavContentComponent(LoginComponent)"
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, TimeConfigComponent)"
+            (click)="layoutService.setSidenavContentComponent(TimeConfigComponent)"
+            mdTooltip="Time" mdTooltipPosition="before"
     >
-        <md-icon *waveIfLoggedIn>person</md-icon>
-        <md-icon *waveIfGuest>person_outline</md-icon>
+        <md-icon>access_time</md-icon>
+    </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, PlotListComponent)"
+            (click)="layoutService.setSidenavContentComponent(PlotListComponent)"
+            mdTooltip="Plots" mdTooltipPosition="before"
+    >
+        <md-icon>equalizer</md-icon>
+    </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, WorkspaceSettingsComponent)"
+            (click)="layoutService.setSidenavContentComponent(WorkspaceSettingsComponent)"
+            mdTooltip="Workspace Settings" mdTooltipPosition="before"
+    >
+        <md-icon>settings</md-icon>
+    </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, HelpComponent)"
+            (click)="layoutService.setSidenavContentComponent(HelpComponent)"
+            mdTooltip="Help" mdTooltipPosition="before"
+    >
+        <md-icon>help</md-icon>
     </button>
 </div>

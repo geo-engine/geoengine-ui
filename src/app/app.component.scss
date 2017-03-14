@@ -1,5 +1,5 @@
 wave-navigation {
-    z-index: 1;
+    z-index: 10;
 }
 
 wave-next-layer-list {
@@ -8,7 +8,24 @@ wave-next-layer-list {
     width: 16vw;
     min-width: 200px;
     left: 0;
+    top: 0;
+    background-color: rgba(255,255,255,0.87);
+    border-bottom-right-radius: 2px;
 }
+
+.time-container {
+    position: absolute;
+    left: 16vw;
+    right: 3rem;
+
+    wave-small-time-interaction {
+        background-color: rgba(255, 255, 255, 0.87);
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        z-index: 2;
+    }
+}
+
 
 :host /deep/ .mat-sidenav-content {
     overflow: hidden;
@@ -20,9 +37,11 @@ wave-next-layer-list {
 
 .mid-container {
     z-index: 0;
+    position: relative;
 }
 
 .bottom-container {
+    position: relative;
     z-index: 1;
 
     min-height: 3rem;

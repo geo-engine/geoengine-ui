@@ -3,7 +3,9 @@ import {Headers} from '@angular/http';
 import {Map} from 'immutable';
 
 export type ParameterType = string | number | boolean;
-export type ParametersType = {[index: string]: ParameterType};
+export interface ParametersType {
+    [index: string]: ParameterType;
+}
 
 export class RequestParameters {
     protected immutable = false;
@@ -79,7 +81,7 @@ export class MappingRequestParameters extends RequestParameters {
 
     setParameter(key: string, value: ParameterType) {
         if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
-            throw 'You must not reset "service", "request" or "sessionToken"';
+            throw Error('You must not reset "service", "request" or "sessionToken"');
         }
         this.parameters = this.parameters.set(key, value);
     }
@@ -87,7 +89,7 @@ export class MappingRequestParameters extends RequestParameters {
     setParameters(parameters: ParametersType) {
         Object.keys(parameters).forEach(key => {
             if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
-                throw 'You must not reset "service", "request" or "sessionToken"';
+                throw Error('You must not reset "service", "request" or "sessionToken"');
             }
         });
 

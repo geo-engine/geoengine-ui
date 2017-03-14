@@ -6,7 +6,7 @@ import {
 } from '../symbology/symbology.model';
 import {GeoJsonFeatureCollection} from '../models/geojson.model';
 import {Provenance} from '../app/provenance/provenance.model';
-import {LoadingState} from '../shared/loading-state.model';
+import {LoadingState} from '../app/project/loading-state.model';
 
 export interface VectorLayerData {
     data$: Observable<GeoJsonFeatureCollection>;

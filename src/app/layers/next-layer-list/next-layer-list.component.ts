@@ -1,5 +1,5 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {MdDialog} from '@angular/material';
+import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
+import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs';
 import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
@@ -8,30 +8,35 @@ import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {OperatorGraphDialogComponent} from '../dialogs/operator-graph.component';
 import {ExportDialogComponent} from '../dialogs/export.component';
 import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
-import {LoadingState} from '../../../shared/loading-state.model';
+import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../../../layers/layer.service';
 import {MapService} from '../../../map/map.service';
 import {Layer} from '../../../layers/layer.model';
+import {DomSanitizer} from '@angular/platform-browser';
+import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 
 @Component({
-  selector: 'wave-next-layer-list',
-  templateUrl: './next-layer-list.component.html',
-  styleUrls: ['./next-layer-list.component.scss']
+    selector: 'wave-next-layer-list',
+    templateUrl: './next-layer-list.component.html',
+    styleUrls: ['./next-layer-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NextLayerListComponent implements OnInit, OnDestroy {
 
+    LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
+    @Input() height: number;
 
     // make visible in template
     // tslint:disable:variable-name
-    _enumSymbologyType = SymbologyType;
+    ST = SymbologyType;
     LoadingState = LoadingState;
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
     OperatorGraphDialogComponent = OperatorGraphDialogComponent;
     ExportDialogComponent = ExportDialogComponent;
-    OperatorRepositoryComponent = OperatorRepositoryComponent;
+    SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
     private subscriptions: Array<Subscription> = [];
@@ -41,8 +46,19 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      private layoutService: LayoutService,
      private dragulaService: DragulaService,
      private layerService: LayerService,
-     private mapService: MapService
+     private mapService: MapService,
+     private iconRegistry: MdIconRegistry,
+     private sanitizer: DomSanitizer
     ) {
+        iconRegistry.addSvgIconInNamespace('symbology','polygon',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/polygon_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','line',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/line_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','point',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/point_24.svg'));
+        iconRegistry.addSvgIconInNamespace('symbology','grid4',
+            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/grid4_24.svg'));
+
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
       dragulaService.setOptions('layer-bag', {

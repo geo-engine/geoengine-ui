@@ -42,7 +42,8 @@ export class LayoutService {
      */
     private sidenavContentComponent$: Subject<[Type<Component>, Type<Component>]> = new ReplaySubject();
 
-    private static remInPx(): number {
+    static remInPx(): number {
+        // TODO: calculate
         return 16;
     }
 

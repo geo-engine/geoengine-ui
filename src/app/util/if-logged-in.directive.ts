@@ -13,10 +13,9 @@ export class IfLoggedInDirective implements OnDestroy {
                 private templateRef: TemplateRef<Component>,
                 private viewContainer: ViewContainerRef) {
         this.subscription = this.userService.isGuestUserStream().subscribe(isGuest => {
+            this.viewContainer.clear();
             if (!isGuest) {
                 this.viewContainer.createEmbeddedView(this.templateRef).markForCheck();
-            } else {
-                this.viewContainer.clear();
             }
         });
     }

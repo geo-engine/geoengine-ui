@@ -1,33 +1,66 @@
 @import "../../../wave-app-theme";
 
+$accent: map-get($wave-app-theme, accent);
+
 .container {
     //width: 200px;
-    background-color: white;
+    //background-color: white;
+    max-height: inherit;
+    height: inherit;
+}
+
+.layer-list {
+    max-height: inherit;
+    overflow-y: auto;
+}
+
+.no-layer {
+    width: 100%;
+}
+
+.logo {
+    text-align: center;
+    font-family: 'Pacifico', cursive;
+}
+
+.grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+/* (Optional) Apply a "closed-hand" cursor during drag operation. */
+.grabbable:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.mat-toolbar {
+    padding: 0 !important;
 }
 
 md-toolbar /deep/ md-toolbar-row:first-child {
     display: none !important;
 }
 
-.container {
-    //width: 200px;
-}
-
 md-list {
     padding-top: 0;
-    overflow: auto;
 }
 
 md-list-item /deep/ .mat-list-item {
+
 }
 
 md-list-item /deep/ .mat-list-item-content {
-    padding: 0 1rem !important;
+    padding: 0 !important;
 }
 
 .list-item-extended /deep/ .mat-list-item-content {
     height: unset !important;
-    min-height: 48px;
+    min-height: 48px !important;
+    padding-top: 3px !important;
 }
 
 md-list-item /deep/ .mat-list-item-text {
@@ -36,8 +69,14 @@ md-list-item /deep/ .mat-list-item-text {
     overflow: hidden;
 }
 
+
+
 .list-element-inner-container{
     width: 100%;
+
+    .legendary {
+        margin-left: 8px;
+    }
 }
 
 mat-progress-bar {
@@ -51,11 +90,6 @@ md-progress-bar {
     height: 2px;
 }
 
-button.error-button {
-    position: absolute;
-    left: calc(50% - 40px/2);
-}
-
 .active-layer {
-    background: whitesmoke;//${Config.COLORS.DEFAULT};
+    background-color: mat-color($accent, 0.32);
 }

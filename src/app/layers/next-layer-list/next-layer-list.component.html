@@ -1,165 +1,202 @@
 <div class="container">
+    <md-menu #layerListMenu="mdMenu">
+        <button md-menu-item aria-label="Toggle Layer List Visibility"
+                (click)="layoutService.toggleLayerListVisibility()"
+                [ngSwitch]="layerListVisibility$ | async">
+            <md-icon *ngSwitchCase="true">expand_less</md-icon>
+            <md-icon *ngSwitchCase="false">expand_more</md-icon>
+            <span>Show/Hide Layerlist</span>
+        </button>
+        <button md-menu-item (click)="dialog.open(LineageComponent)">
+            <md-icon>merge_type</md-icon>
+            <span>Lineage</span>
+        </button>
+        <!--
+        <button md-menu-item [disabled]="true">
+            <md-icon>fullscreen</md-icon>
+            <span>Zoom to All</span>
+        </button>
+        -->
+        <button md-menu-item (click)="layerService.removeAllLayers()">
+            <md-icon>delete_sweep</md-icon>
+            <span>Remove All Layers</span>
+        </button>
+    </md-menu>
 
     <md-toolbar color="primary">
         <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <span>Layers</span>
-
-            <md-menu #layerListMenu="mdMenu">
-                <button md-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()" [ngSwitch]="layerListVisibility$ | async">
-                    <md-icon *ngSwitchCase="true">expand_less</md-icon>
-                    <md-icon *ngSwitchCase="false">expand_more</md-icon>
-                    <span>Show/Hide</span>
-                </button>
-                <button md-menu-item (click)="dialog.open(LineageComponent)" [disabled]="true">
-                    <md-icon>merge_type</md-icon>
-                    <div>Project Lineage</div>
-                </button>
-                <button md-menu-item [disabled]="true">
-                    <md-icon>fullscreen</md-icon>
-                    <span>Zoom to All</span>
-                </button>
-                <button md-menu-item [disabled]="true">
-                    <md-icon>delete_sweep</md-icon>
-                    <span>Remove All</span>
-                </button>
-            </md-menu>
+            <div></div>
+            <div class="logo"><md-icon md-list-icon svgIcon="vat:logo" alt="VAT"></md-icon> VAT</div>
 
             <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
                 <md-icon>more_vert</md-icon>
             </button>
+
         </md-toolbar-row>
     </md-toolbar>
 
-    <md-list [dragula]="layer-bag">
-        <md-list-item
-            *ngIf="(layerService.getLayersStream() | async).length === 0"
-            class="no-layer"
-        >no layer available</md-list-item>
-        <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
-            <md-list-item (click)="layerService.setSelectedLayer(layer)"
-                          [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
-                          [class.list-item-extended]="layer.expanded"
-                          [title]="layer.name"
-            >
-                <md-menu #layerMenu="mdMenu">
-                    <button md-menu-item [disabled]="true">
-                        <md-icon >visibility_off</md-icon>
-                        <span>Hide Layer</span>
-                    </button>
-                    <!--
-                    <button md-menu-item *ngIf="layer.expanded" [disabled]="true">
-                        <md-icon >visibility</md-icon>
-                        <span>Show Layer</span>
-                    </button>
-                    -->
-                    <button md-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
-                        <md-icon >expand_more</md-icon>
-                        <span>Show Legend</span>
-                    </button>
-                    <button md-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">
-                        <md-icon >expand_less</md-icon>
-                        <span>Hide Legend</span>
-                    </button>
-                    <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})"  [disabled]="true">
-                        <md-icon>merge_type</md-icon>
-                        <span>Lineage</span>
-                    </button>
-                    <button md-menu-item (click)="layerService.removeLayer(layer)">
-                        <md-icon>delete</md-icon>
-                        <span>Remove</span>
-                    </button>
-                    <button md-menu-item (click)="dialog.open(RenameLayerComponent)">
-                        <md-icon>mode_edit</md-icon>
-                        <span>Rename</span>
-                    </button>
-                    <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)"  [disabled]="true">
-                        <md-icon>color_lens</md-icon>
-                        <span>Edit Symbology</span>
-                    </button>
-                    <button md-menu-item (click)="mapService.zoomToLayer(layer)">
-                        <md-icon>fullscreen</md-icon>
-                        <span>Zoom to Extent</span>
-                    </button>
-                    <button md-menu-item (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)">
-                        <md-icon>input</md-icon>
-                        <span>Matching Operators</span>
-                    </button>
-                    <button md-menu-item (click)="dialog.open(ExportDialogComponent)"  [disabled]="true">
-                        <md-icon>file_download</md-icon>
-                        <span>Export</span>
-                    </button>
-                    <button md-menu-item [disabled]="true">
-                        <md-icon>share</md-icon>
-                        <span>Share</span>
-                    </button>
-                </md-menu>
+    <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">
+        <md-list [dragula]="layer-bag" *ngIf="layoutService.getLayerListVisibilityStream() | async">
 
-                <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
-                        <button md-icon-button
-                                aria-label="Show Legend"
-                                (click)="toggleLayer(layer)">
-                            <md-icon *ngIf="!layer.expanded">expand_more</md-icon>
-                            <md-icon *ngIf="layer.expanded">expand_less</md-icon>
-                        </button>
-
-                        <div #layerName class="mat-list-item-text">
-                            {{layer.name}}
-                        </div>
-
-                        <button md-icon-button class="secondary_action" #menuTrigger [mdMenuTriggerFor]="layerMenu" aria-label="More">
-                            <md-icon>more_vert</md-icon>
-                        </button>
-
-
-                        <button md-icon-button class="mat-warn error-button" aria-label="Reload"
-                                *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
-                                (click)="layer.reload()"
-                        >
-                            <md-icon>replay</md-icon>
-                        </button>
-                    </div>
-
-                    <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" fxLayout="row">
-
-                        <wave-legendary-points
-                            *ngSwitchCase="_enumSymbologyType.SIMPLE_POINT"
-                            [symbology]="layer.symbology">
-                        </wave-legendary-points>
-
-                        <wave-legendary-clustered-points
-                            *ngSwitchCase="_enumSymbologyType.CLUSTERED_POINT"
-                            [symbology]="layer.symbology">
-                        </wave-legendary-clustered-points>
-
-                        <wave-legendary-vector
-                            *ngSwitchCase="_enumSymbologyType.SIMPLE_VECTOR"
-                            [symbology]="layer.symbology">
-                        </wave-legendary-vector>
-
-                        <wave-legendary-raster
-                            *ngSwitchCase="_enumSymbologyType.RASTER"
-                            [symbology]="layer.symbology">
-                        </wave-legendary-raster>
-
-                        <wave-legendary-mapping-colorizer-raster
-                            *ngSwitchCase="_enumSymbologyType.MAPPING_COLORIZER_RASTER"
-                            [symbology]="layer.symbology">
-                        </wave-legendary-mapping-colorizer-raster>
-
-                        <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
-                    </div>
-
-                    <md-progress-bar
-                        [mode]="(layer.loadingState | async) === LoadingState.LOADING ? 'query' : 'determinate'"
-                        [value]="100"
-                        [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : ''"
-                    ></md-progress-bar>
-
-                </div>
+            <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
+                <button md-button class="no-layer"
+                        (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
+                        mdTooltip="Add New Data" mdTooltipPosition="after"
+                >
+                    <md-icon>add</md-icon> add a first layer
+                </button>
             </md-list-item>
 
-        </template>
-    </md-list>
+            <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
+                <md-list-item (click)="layerService.setSelectedLayer(layer)"
+                              [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
+                              [class.list-item-extended]="layer.expanded"
+                              [title]="layer.name"
+                              class="grabbable"
+                >
+                    <md-menu #layerMenu="mdMenu">
+                        <!--
+                        <button md-menu-item [disabled]="true">
+                            <md-icon >visibility_off</md-icon>
+                            <span>Hide Layer</span>
+                        </button>
+                        <button md-menu-item *ngIf="layer.expanded" [disabled]="true">
+                            <md-icon >visibility</md-icon>
+                            <span>Show Layer</span>
+                        </button>
+                        -->
+                        <button md-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
+                            <md-icon >expand_more</md-icon>
+                            <span>Show Legend</span>
+                        </button>
+                        <button md-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">
+                            <md-icon >expand_less</md-icon>
+                            <span>Hide Legend</span>
+                        </button>
+                        <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})">
+                            <md-icon>merge_type</md-icon>
+                            <span>Lineage</span>
+                        </button>
+                        <button md-menu-item (click)="layerService.removeLayer(layer)">
+                            <md-icon>delete</md-icon>
+                            <span>Remove</span>
+                        </button>
+                        <button md-menu-item (click)="dialog.open(RenameLayerComponent)">
+                            <md-icon>mode_edit</md-icon>
+                            <span>Rename</span>
+                        </button>
+                        <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)">
+                            <md-icon>color_lens</md-icon>
+                            <span>Edit Symbology</span>
+                        </button>
+                        <button md-menu-item (click)="mapService.zoomToLayer(layer)">
+                            <md-icon>fullscreen</md-icon>
+                            <span>Zoom to Extent</span>
+                        </button>
+                        <button md-menu-item (click)="dialog.open(ExportDialogComponent)">
+                            <md-icon>file_download</md-icon>
+                            <span>Export</span>
+                        </button>
+                    </md-menu>
+
+                    <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
+                        <div fxLayout="row" fxLayoutAlign="space-between center" >
+
+                            <button md-icon-button class="mat-warn error-button" aria-label="Reload"
+                                    *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
+                                    (click)="layer.reload()"
+                            >
+                                <md-icon>replay</md-icon>
+                            </button>
+
+                            <button md-icon-button
+                                *ngIf="(layer.loadingState| async) !== LoadingState.ERROR"
+                                aria-label="Show Legend"
+                                (click)="toggleLayer(layer)">
+
+                                <template [ngIf]="layer.expanded">
+                                    <md-icon md-list-icon >expand_less</md-icon>
+                                </template>
+
+                                <template [ngIf]="!layer.expanded">
+                                    <template [ngIf]="layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
+                                        || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
+                                        <md-icon md-list-icon svgIcon="symbology:point"
+                                                 [style.stroke-width.px]='2'
+                                                 [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                                 [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                        ></md-icon>
+                                    </template>
+                                    <template [ngIf]="false">
+                                        <md-icon md-list-icon svgIcon="symbology:line"></md-icon>
+                                    </template>
+                                    <template [ngIf]="layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
+                                        <md-icon md-list-icon svgIcon="symbology:polygon"
+                                                 [style.stroke-width.px]='2'
+                                                 [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                                 [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                        ></md-icon>
+                                    </template>
+                                    <template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
+                                        || layer.symbology.getSymbologyType() === ST.RASTER">
+                                        <md-icon md-list-icon svgIcon="symbology:grid4"></md-icon>
+                                    </template>
+                                </template>
+                            </button>
+
+
+                            <div #layerName class="mat-list-item-text" fxFlex="grow">
+                                {{layer.name}}
+                            </div>
+
+                            <button md-icon-button class="secondary_action"
+                                    #menuTrigger [mdMenuTriggerFor]="layerMenu" aria-label="More">
+                                <md-icon>more_vert</md-icon>
+                            </button>
+                        </div>
+
+                        <div *ngIf="layer.expanded"
+                             [ngSwitch]="layer.symbology.getSymbologyType()" fxLayout="row" class="legendary">
+
+                            <wave-legendary-points
+                                *ngSwitchCase="ST.SIMPLE_POINT"
+                                [symbology]="layer.symbology">
+                            </wave-legendary-points>
+
+                            <wave-legendary-clustered-points
+                                *ngSwitchCase="ST.CLUSTERED_POINT"
+                                [symbology]="layer.symbology">
+                            </wave-legendary-clustered-points>
+
+                            <wave-legendary-vector
+                                *ngSwitchCase="ST.SIMPLE_VECTOR"
+                                [symbology]="layer.symbology">
+                            </wave-legendary-vector>
+
+                            <wave-legendary-raster
+                                *ngSwitchCase="ST.RASTER"
+                                [symbology]="layer.symbology">
+                            </wave-legendary-raster>
+
+                            <wave-legendary-mapping-colorizer-raster
+                                *ngSwitchCase="ST.MAPPING_COLORIZER_RASTER"
+                                [symbology]="layer.symbology">
+                            </wave-legendary-mapping-colorizer-raster>
+
+                            <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
+                        </div>
+
+                        <md-progress-bar
+                            [mode]="(layer.loadingState | async) === LoadingState.LOADING ? 'query' : 'determinate'"
+                            [value]="100"
+                            [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : ''"
+                        ></md-progress-bar>
+
+                    </div>
+                </md-list-item>
+
+            </template>
+        </md-list>
+    </div>
 
 </div>
