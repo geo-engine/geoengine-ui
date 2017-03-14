@@ -1,0 +1,15 @@
+<svg width="100%" height="100%" viewbox="0,0,24,24" xmlns="http://www.w3.org/2000/svg">
+    <template ngFor let-yCellStart [ngForOf]="yCellStarts" let-y="index">
+        <template ngFor let-xCellStart [ngForOf]="xCellStarts" let-x="index">
+            <svg:rect
+                [attr.stroke]="none"
+                [attr.height]="24/yCells"
+                [attr.width]="24/yCells"
+                [attr.x]="x*(24/xCells)"
+                [attr.y]="y*(24/yCells)"
+                [attr.fill]="cellColor(x,y)"
+                [attr.id]="x + '_' + y"
+            />
+        </template>
+    </template>
+</svg>

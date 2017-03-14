@@ -139,7 +139,10 @@
                                     </template>
                                     <template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
                                         || layer.symbology.getSymbologyType() === ST.RASTER">
-                                        <md-icon md-list-icon svgIcon="symbology:grid4"></md-icon>
+                                        <md-icon md-list-icon>
+                                            <wave-raster-icon [colorizer]="layer.symbology.colorizer$ | async" [xCells]="4" [yCells]="4">
+                                            </wave-raster-icon>
+                                        </md-icon>
                                     </template>
                                 </template>
                             </button>
