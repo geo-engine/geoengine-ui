@@ -88,6 +88,7 @@ import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-sour
 import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
+import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -169,6 +170,7 @@ export function configInitializer(config: Config) {
         WorkspaceSettingsComponent,
         LineageGraphComponent,
         LayerExportComponent,
+        ChangeProjectionComponent,
     ],
     imports: [
         BrowserModule,
@@ -204,6 +206,7 @@ export function configInitializer(config: Config) {
         WorkspaceSettingsComponent,
         LineageGraphComponent,
         LayerExportComponent,
+        ChangeProjectionComponent,
     ],
     providers: [
         DragulaService,

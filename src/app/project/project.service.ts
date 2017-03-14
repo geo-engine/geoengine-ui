@@ -108,6 +108,12 @@ export class ProjectService {
         this.changeProjectConfig({name: name});
     }
 
+    setProjection(projection: Projection) {
+        this.changeProjectConfig({
+            projection: projection
+        });
+    }
+
     getProjection(): Projection {
         return this.projection$.value;
     }
