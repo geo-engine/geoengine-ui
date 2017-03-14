@@ -86,7 +86,6 @@ import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-confi
 import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
 import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
-import {MappingColorizerToCellsPipe} from '../symbology/mapping-colorizer-to-cells.pipe';
 import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
@@ -170,7 +169,6 @@ export function configInitializer(config: Config) {
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
-        MappingColorizerToCellsPipe,
         RasterIconComponent,
         LineageGraphComponent,
         LayerExportComponent,
