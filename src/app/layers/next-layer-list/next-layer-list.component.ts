@@ -5,7 +5,6 @@ import {Observable, Subscription} from 'rxjs/Rx';
 import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
 import {SymbologyDialogComponent} from '../../../symbology/symbology-dialog.component';
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
-import {ExportDialogComponent} from '../dialogs/export.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../../../layers/layer.service';
@@ -14,6 +13,7 @@ import {Layer} from '../../../layers/layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
+import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -34,7 +34,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
     LineageGraphComponent = LineageGraphComponent;
-    ExportDialogComponent = ExportDialogComponent;
+    LayerExportComponent = LayerExportComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 

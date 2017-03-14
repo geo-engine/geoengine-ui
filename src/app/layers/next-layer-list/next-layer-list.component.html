@@ -93,7 +93,7 @@
                             <md-icon>fullscreen</md-icon>
                             <span>Zoom to Extent</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(ExportDialogComponent)">
+                        <button md-menu-item (click)="dialog.open(LayerExportComponent, {layer: layer})">
                             <md-icon>file_download</md-icon>
                             <span>Export</span>
                         </button>

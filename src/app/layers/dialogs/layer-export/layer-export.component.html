@@ -1,0 +1,42 @@
+<wave-dialog-header>Export: {{layer.name}}</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();download()">
+    <div fxLayout="row">
+        <md-input-container fxFlex>
+            <input mdInput
+                   type="text"
+                   placeholder="Export Name"
+                   formControlName="outputName"
+            >
+        </md-input-container>
+    </div>
+    <div *ngIf="isRaster" formGroupName="rasterResolution" fxLayout="row">
+        <md-input-container fxFlex>
+            <input mdInput
+                   type="number"
+                   placeholder="Resolution Width"
+                   formControlName="width"
+            >
+        </md-input-container>
+        <md-input-container fxFlex>
+            <input mdInput
+                   type="number"
+                   placeholder="Resolution Height"
+                   formControlName="height"
+            >
+        </md-input-container>
+    </div>
+    <div fxLayout="row">
+        <md-select formControlName="dataOutputFormat" *ngIf="isVector" placeholder="Data Output Type" fxFlex>
+            <md-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</md-option>
+        </md-select>
+        <md-select formControlName="dataOutputFormat" *ngIf="isRaster" placeholder="Data Output Type" fxFlex>
+            <md-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</md-option>
+        </md-select>
+    </div>
+    <div fxLayout="row">
+        <md-select placeholder="Citation Type" formControlName="citationFormat" fxFlex>
+            <md-option [value]="'json'">JSON</md-option>
+        </md-select>
+    </div>
+    <button md-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Export</button>
+</form>

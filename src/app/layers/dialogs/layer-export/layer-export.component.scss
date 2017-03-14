@@ -1,0 +1,11 @@
+div:first-child {
+    margin-top: 1rem;
+}
+
+div:not(:first-child) {
+    margin-bottom: 1rem;
+}
+
+md-select {
+    margin-bottom: 1rem;
+}
