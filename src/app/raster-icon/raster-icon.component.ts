@@ -1,6 +1,5 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, AfterViewInit} from '@angular/core';
-import {MappingColorizer, MappingColorizerRasterSymbology} from '../../symbology/symbology.model';
-import {Layer} from '../../layers/layer.model';
+import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChange} from '@angular/core';
+import {MappingColorizer} from '../../symbology/symbology.model';
 
 @Component({
   selector: 'wave-raster-icon',
@@ -8,7 +7,7 @@ import {Layer} from '../../layers/layer.model';
   styleUrls: ['./raster-icon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RasterIconComponent implements AfterViewInit {
+export class RasterIconComponent implements OnInit, OnChanges {
 
   @Input() xCells: number;
   @Input() yCells: number;
@@ -17,7 +16,8 @@ export class RasterIconComponent implements AfterViewInit {
   xCellStarts: Array<number> = [];
   yCellStarts: Array<number> = [];
   colorMapping: Array<number>;
-  colors = ['#bfbfbf', '#7f7f7f'];
+  colors: Array<string>;
+  grays = ['#bfbfbf', '#7f7f7f'];
 
   constructor() {}
 
@@ -25,32 +25,47 @@ export class RasterIconComponent implements AfterViewInit {
       const idx = this.xCells*y + x;
       const mapIdx = this.colorMapping[idx];
       const clr = this.colors[mapIdx];
-      console.log("RasterIconComponent", idx, mapIdx, clr);
       return clr;
+  }
+
+  ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+      const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
+      if (validSymbology) {
+        this.updateColorMapping(this.colorizer.breakpoints.map(b => b[1]), this.colorizer.interpolation==='linear');
+      }
+      else {
+          this.updateColorMapping(this.grays);
+      }
   }
 
   ngOnInit() {
       this.xCellStarts = Array.from({length: this.xCells},(v,k)=>k);
       this.yCellStarts = Array.from({length: this.yCells},(v,k)=>k);
-      this.updateColorMapping(this.colors.length);
+      this.updateColorMapping(this.grays);
   }
 
-    updateColorMapping(nclr: number) {
+  updateColorMapping(clrs: Array<string>, gradient?: boolean) {
+      const nclr = clrs.length;
+
       if ( !this.colorMapping || nclr !== this.colors.length ) {
           const ncells = this.xCells * this.yCells;
-          const scale = ( ncells < nclr) ? nclr / ncells : 1;
-          this.colorMapping = Array.from({length: ncells}, (v, k) => (k % nclr));
-          console.log("RasterIconComponent", nclr, nclr, ncells, scale, this.colorMapping);
-      }
-  }
+          let clrm = new Array(ncells);
 
-  ngAfterViewInit() {
-      const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
-      if (validSymbology) {
-          this.updateColorMapping(this.colorizer.breakpoints.length);
-          this.colors = this.colorizer.breakpoints.map(b => b[1]);
-      }
-      console.log("RasterIconComponent", validSymbology, this.xCellStarts, this.yCellStarts, this.colorMapping, this.colors);
-  }
+          const scale = ( !!gradient) ? nclr / this.yCells: nclr / ncells;
 
+          for (let y = 0; y < this.yCells; y++) {
+              for (let x = 0; x < this.xCells; x++) {
+                  const idx = y*this.xCells + x;
+                  if (nclr === 2) {
+                      clrm[idx] = (y%2 == 0) ? (x%2) : ((x+1)%2);
+                  } else {
+                      const uidx = (!!gradient) ? y : idx;
+                      clrm[idx] = Math.trunc(uidx*scale) % nclr;
+                  }
+              }
+          }
+          this.colorMapping = clrm;
+          this.colors = clrs;
+    }
+  }
 }

@@ -172,6 +172,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
             time: this.time,
             projection: this.projection,
         });
+        console.log("OlRasterLayerComponent", changes, params);
+
         if (this.isFirstChange(changes)) {
             this.source = new ol.source.TileWMS({
                 url: this.config.MAPPING_URL,

@@ -7,7 +7,7 @@
             <md-icon *ngSwitchCase="false">expand_more</md-icon>
             <span>Show/Hide Layerlist</span>
         </button>
-        <button md-menu-item (click)="dialog.open(LineageComponent)">
+        <button md-menu-item (click)="dialog.open(LineageGraphComponent)">
             <md-icon>merge_type</md-icon>
             <span>Lineage</span>
         </button>
@@ -73,7 +73,7 @@
                             <md-icon >expand_less</md-icon>
                             <span>Hide Legend</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(OperatorGraphDialogComponent, {layers: [layer]})">
+                        <button md-menu-item (click)="dialog.open(LineageGraphComponent, {layer: layer})">
                             <md-icon>merge_type</md-icon>
                             <span>Lineage</span>
                         </button>
@@ -93,7 +93,7 @@
                             <md-icon>fullscreen</md-icon>
                             <span>Zoom to Extent</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(ExportDialogComponent)">
+                        <button md-menu-item (click)="dialog.open(LayerExportComponent, {layer: layer})">
                             <md-icon>file_download</md-icon>
                             <span>Export</span>
                         </button>
@@ -140,7 +140,7 @@
                                     <template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
                                         || layer.symbology.getSymbologyType() === ST.RASTER">
                                         <md-icon md-list-icon>
-                                            <wave-raster-icon [colorizer]="layer.symbology.colorizer$ | async" [xCells]="4" [yCells]="4">
+                                            <wave-raster-icon [colorizer]="layer.symbology.colorizer$ | async" [xCells]="6" [yCells]="6">
                                             </wave-raster-icon>
                                         </md-icon>
                                     </template>

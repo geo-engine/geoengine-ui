@@ -17,9 +17,9 @@
         <h4 md-line>New</h4>
         <p md-line>Create a new project</p>
     </md-list-item>
-    <md-list-item>
-        <md-icon md-list-icon color="default">settings</md-icon>
-        <h4 md-line>Settings</h4>
-        <p md-line>Modify the current project</p>
+    <md-list-item (click)="layoutService.setSidenavContentComponent(ChangeProjectionComponent, Self)">
+        <md-icon md-list-icon color="default">map</md-icon>
+        <h4 md-line>Projection</h4>
+        <p md-line>Change the current projection</p>
     </md-list-item>
 </md-nav-list>

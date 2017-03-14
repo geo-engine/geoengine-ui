@@ -1,13 +1,10 @@
 import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs/Rx';
 import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
 import {SymbologyDialogComponent} from '../../../symbology/symbology-dialog.component';
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
-import {OperatorGraphDialogComponent} from '../dialogs/operator-graph.component';
-import {ExportDialogComponent} from '../dialogs/export.component';
-import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../../../layers/layer.service';
@@ -15,6 +12,8 @@ import {MapService} from '../../../map/map.service';
 import {Layer} from '../../../layers/layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
+import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
+import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -34,8 +33,8 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
     LoadingState = LoadingState;
     RenameLayerComponent = RenameLayerComponent;
     SymbologyDialogComponent = SymbologyDialogComponent;
-    OperatorGraphDialogComponent = OperatorGraphDialogComponent;
-    ExportDialogComponent = ExportDialogComponent;
+    LineageGraphComponent = LineageGraphComponent;
+    LayerExportComponent = LayerExportComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
