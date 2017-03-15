@@ -31,7 +31,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
     form: FormGroup;
 
-    attributes$ = new ReplaySubject<Array<string>>();
+    attributes$ = new ReplaySubject<Array<string>>(1);
 
     private subscriptions: Array<Subscription> = [];
 
