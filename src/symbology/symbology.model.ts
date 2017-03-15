@@ -264,7 +264,7 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
             const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
             const radius = parseFloat(feature.get('___radius'));
 
-            const style = new ol.style.Style({
+            return new ol.style.Style({
                 image: new ol.style.Circle({
                     radius: radius,
                     fill: new ol.style.Fill({
@@ -286,8 +286,6 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
                     }),
                 }),
             });
-
-            return style;
         };
     }
 
@@ -352,6 +350,10 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
         return this.unit.interpolation === Interpolation.Discrete;
     }
 
+    isUnknown() {
+        return !this.unit || !this.unit.interpolation || this.unit.interpolation === 0;
+    }
+
     getSymbologyType(): SymbologyType {
         return SymbologyType.RASTER;
     }
@@ -383,21 +385,17 @@ export interface MappingColorizer {
 export class MappingColorizerRasterSymbology extends RasterSymbology
     implements IRasterSymbology {
 
-    colorizer$: Observable<MappingColorizer>;
-
     constructor(config: IRasterSymbology,
-                colorizer$: Observable<MappingColorizer>) {
+                private colorizer$: Observable<MappingColorizer>) {
         super(config);
-        this.colorizer$ = colorizer$.map(c => {
-            return (c.breakpoints[0][0] >= c.breakpoints[c.breakpoints.length-1][0])? c : {
-                    interpolation: c.interpolation,
-                    breakpoints: c.breakpoints.reverse()
-                }
-        });
     }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.MAPPING_COLORIZER_RASTER;
+    }
+
+    isUnknown(): boolean {
+        return super.isUnknown() || !this.colorizer$;
     }
 
     toConfig(): IRasterSymbology {
@@ -417,5 +415,4 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
             unit: this.unit.toDict(),
         };
     }
-
 }
