@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Rx';
 
 import {
     Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
-    MappingColorizerRasterSymbology, MappingColorizer, ClusteredPointSymbology,
+    MappingColorizerRasterSymbology, ClusteredPointSymbology,
 } from './symbology.model';
 
 @Component({
@@ -104,24 +104,25 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
         <div class='legend'>
             <tbody>
                 <tr
-                    *ngFor='let breakpoint of (colorizer$ | async)?.breakpoints;
+                    *ngFor='let breakpoint of (symbology.colorizer$ | async)?.breakpoints;
                             let isFirst = first'
                 >
                     <template [ngIf]='symbology.isContinuous()'>
                         <td class='gradient'
                             *ngIf='isFirst'
-                            [rowSpan]='(colorizer$ | async)?.breakpoints.length'
-                            [style.background]='colorizer$ | async | waveWappingColorizerToGradient
+                            [rowSpan]='(symbology.colorizer$ | async)?.breakpoints.length'
+                            [style.background]='symbology.colorizer$ | async | waveWappingColorizerToGradient
                                                 | waveSafeStyle'
                         ></td>
                         <td>{{breakpoint[0]}}</td>
+                        <td *ngIf='isFirst'>{{symbology?.unit.unit}}</td>
                     </template>
                     <template [ngIf]='symbology.isDiscrete()'>
                         <td class ='classes'><div
                             class='icon'
                             [style.background-color]='breakpoint[1]'
                         ></div></td>
-                        <td>{{symbology.unit.classes.get(breakpoint[0])}}</td>
+                        <td>{{symbology?.unit.classes.get(breakpoint[0])}}</td>                        
                     </template>
                 </tr>
             </tbody>
@@ -166,10 +167,5 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
     extends LegendaryRasterComponent<S> implements OnInit {
-
-    private colorizer$: Observable<MappingColorizer>;
-
-    ngOnInit() {
-        this.colorizer$ = this.symbology.colorizer$;
-    }
+    ngOnInit() {    }
 }
