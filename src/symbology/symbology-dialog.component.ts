@@ -5,39 +5,40 @@ import {LayerService} from '../layers/layer.service';
 import {Symbology, SymbologyType} from './symbology.model';
 
 import {Layer} from '../layers/layer.model';
+import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-layer-symbology-dialog',
     template: `
-    <wave-dialog-container [title]='_layer?.name' >
-        <div class='symbologyContainer' [ngSwitch]='_symbology.getSymbologyType()'>
-            <wave-symbology-points
-                *ngSwitchCase='enumSymbologyType.SIMPLE_POINT'
-                [symbology]='_symbology'
-                (symbologyChanged)='update_symbology($event)'>
-            </wave-symbology-points>
-            <wave-symbology-points
-                *ngSwitchCase='enumSymbologyType.CLUSTERED_POINT'
-                [symbology]='_symbology'
-                (symbologyChanged)='update_symbology($event)'>
-            </wave-symbology-points>
-            <wave-symbology-vector
-                *ngSwitchCase='enumSymbologyType.SIMPLE_VECTOR'
-                [symbology]='_symbology'
-                (symbologyChanged)='update_symbology($event)'>
-            </wave-symbology-vector>
-            <wave-symbology-raster
-                *ngSwitchCase='enumSymbologyType.RASTER'
-                [symbology]='_symbology'
-                (symbologyChanged)='update_symbology($event)'>
-            </wave-symbology-raster>
-            <wave-symbology-raster
-                *ngSwitchCase='enumSymbologyType.MAPPING_COLORIZER_RASTER'
-                [symbology]='_symbology'
-                (symbologyChanged)='update_symbology($event)'>
-            </wave-symbology-raster>
-        </div>
-    </wave-dialog-container>
+    <wave-dialog-header>{{_layer?.name}}</wave-dialog-header>
+    <div class='symbologyContainer' [ngSwitch]='_symbology.getSymbologyType()'>
+        <wave-symbology-points
+            *ngSwitchCase='enumSymbologyType.SIMPLE_POINT'
+            [symbology]='_symbology'
+            (symbologyChanged)='update_symbology($event)'>
+        </wave-symbology-points>
+        <wave-symbology-points
+            *ngSwitchCase='enumSymbologyType.CLUSTERED_POINT'
+            [symbology]='_symbology'
+            (symbologyChanged)='update_symbology($event)'>
+        </wave-symbology-points>
+        <wave-symbology-vector
+            *ngSwitchCase='enumSymbologyType.SIMPLE_VECTOR'
+            [symbology]='_symbology'
+            (symbologyChanged)='update_symbology($event)'>
+        </wave-symbology-vector>
+        <wave-symbology-raster
+            *ngSwitchCase='enumSymbologyType.RASTER'
+            [symbology]='_symbology'
+            (symbologyChanged)='update_symbology($event)'>
+        </wave-symbology-raster>
+        <wave-symbology-raster
+            *ngSwitchCase='enumSymbologyType.MAPPING_COLORIZER_RASTER'
+            [symbology]='_symbology'
+            (symbologyChanged)='update_symbology($event)'>
+        </wave-symbology-raster>
+    </div>
+    
     `,
     styles: [`
         .symbologyContainer {
@@ -47,6 +48,8 @@ import {Layer} from '../layers/layer.model';
     `],
 })
 export class SymbologyDialogComponent implements OnInit {
+    ngOnInit(): void {
+    }
     // for ng-switch
     public enumSymbologyType = SymbologyType;
 
@@ -54,19 +57,11 @@ export class SymbologyDialogComponent implements OnInit {
     private _symbology: Symbology;
 
     constructor(
-        private layerService: LayerService
+        private layerService: LayerService,
+        private dialogRef: MdDialogRef<SymbologyDialogComponent>
     ) {
-        // super();
-
         this._layer = this.layerService.getSelectedLayer();
         this._symbology = this._layer.symbology.clone();
-    }
-
-    ngOnInit() {
-        // this.dialog.setTitle('Change the Symbology of the current Layer');
-        // this.dialog.setButtons([
-        //     { title: 'Close', action: () => this.dialog.close() },
-        // ]);
     }
 
     update_symbology(symbology: Symbology) {

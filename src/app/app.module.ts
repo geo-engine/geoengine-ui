@@ -6,7 +6,7 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {RasterRepositoryComponent} from '../components/raster-repository.component';
+import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
 import {MapComponent} from '../map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
@@ -14,7 +14,7 @@ import {
 } from '../map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
-import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
+import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
@@ -90,6 +90,7 @@ import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
 import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
+import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
@@ -115,6 +116,7 @@ export function configInitializer(config: Config) {
         SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyVectorComponent,
+        SymbologyDialogComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,
@@ -215,6 +217,7 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LayerExportComponent,
         ChangeProjectionComponent,
+        SymbologyDialogComponent,
         NewProjectComponent,
         LoadProjectComponent,
         SaveProjectAsComponent,

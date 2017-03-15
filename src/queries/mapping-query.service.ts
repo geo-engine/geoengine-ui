@@ -14,6 +14,7 @@ import {NotificationService} from '../app/notification.service';
 import {Operator} from '../app/operators/operator.model';
 import {Projection} from '../app/operators/projection.model';
 import {ResultTypes} from '../app/operators/result-type.model';
+import {MappingColorizer} from '../symbology/symbology.model';
 
 import {PlotData} from '../app/plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
@@ -24,11 +25,6 @@ import {Provenance} from '../app/provenance/provenance.model';
 import {Time} from '../app/time.model';
 import {Config} from '../app/config.service';
 import Extent = ol.Extent;
-
-export interface MappingColorizer {
-    interpolation: string;
-    breakpoints: Array<[number, string, string]>;
-}
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -386,21 +382,30 @@ export class MappingQueryService {
                  time: Time,
                  projection: Projection): Promise<MappingColorizer> {
 
-        const projectedOperator = operator.getProjectedOperator(projection);
-        const requestType = 'GetColorizer';
-        const colorizerRequest = this.config.MAPPING_URL
-            + '?' + 'SERVICE=WMS'
-            + '&' + 'VERSION=' + this.config.WMS.VERSION
-            + '&' + 'REQUEST=' + requestType
-            + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
-            + '&' + 'CRS=' + projection.getCode()
-            + '&' + 'TIME=' + time.asRequestString(); // TODO: observable-isieren
+        const request = new MappingRequestParameters({
+            service: 'WMS',
+            request: 'GetColorizer',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                version: this.config.WMS.VERSION,
+                layers: operator.getProjectedOperator(projection).toQueryJSON(),
+                debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
+                time: time.asRequestString(),
+            },
+        });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get(colorizerRequest)
-            .map((res: Response) => res.json())
-            .map((json: MappingColorizer) => {
-                return json;
-            }).toPromise();
+        return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
+            .map((res: Response) => res.json() as MappingColorizer)
+            .catch((err, cought) => {
+                console.log("getColorizer", err, cought); //TODO: notification?
+                return Observable.of({interpolation: 'unknown', breakpoints: []});
+            }).map(c => {
+                if(c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {
+                    c.breakpoints = c.breakpoints.reverse();
+                }
+                return c;
+            })
+            .toPromise();
     }
 
     getColorizerStream(operator: Operator): Observable<MappingColorizer> {

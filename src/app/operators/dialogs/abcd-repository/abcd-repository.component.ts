@@ -2,116 +2,41 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {LayerService} from '../layers/layer.service';
-import {VectorLayer} from '../layers/layer.model';
-import {Operator} from '../app/operators/operator.model';
-import {ResultTypes} from '../app/operators/result-type.model';
-import {DataType, DataTypes} from '../app/operators/datatype.model';
-import {AbcdArchive} from '../models/abcd.model';
-import {ABCDSourceType, ABCDSourceTypeConfig} from '../app/operators/types/abcd-source-type.model';
-import {SimplePointSymbology, ClusteredPointSymbology} from '../symbology/symbology.model';
-import {Projections} from '../app/operators/projection.model';
-import {Unit} from '../app/operators/unit.model';
-import {MappingQueryService} from '../queries/mapping-query.service';
-import {UserService} from '../app/users/user.service';
-import {ProjectService} from '../app/project/project.service';
-import {RandomColorService} from '../services/random-color.service';
-import {BasicColumns} from '../models/csv.model';
+import {LayerService} from '../../../../layers/layer.service';
+import {VectorLayer} from '../../../../layers/layer.model';
+import {Operator} from '../../operator.model';
+import {ResultTypes} from '../../result-type.model';
+import {DataType, DataTypes} from '../../datatype.model';
+import {AbcdArchive} from '../../../../models/abcd.model';
+import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
+import {Projections} from '../../projection.model';
+import {Unit} from '../../unit.model';
+import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {UserService} from '../../../users/user.service';
+import {RandomColorService} from '../../../../services/random-color.service';
+import {BasicColumns} from '../../../../models/csv.model';
+import {ClusteredPointSymbology} from '../../../../symbology/symbology.model';
 
 type Grouped<T> = Iterable<Group<T>>;
-
 interface Group<T> {
-        group: Array<T>;
-        name: string;
-    }
+    group: Array<T>;
+    name: string;
+}
 
 @Component({
     selector: 'wave-abcd-repository',
-    template: `
-    <div style='height:100%' layout='column'>
-    <div flex='grow'>
-      <md-toolbar>
-        <label>ABCD</label>            
-        <span class="toolbar-fill-remaining-space"></span>
-        <md-icon>search</md-icon>
-        <md-input-container>
-          <input mdInput placeholder="Layer" type="text" [(ngModel)]="_searchTerm" disabled>
-        </md-input-container>
-      </md-toolbar>
-      <md-list>
-        <template ngFor let-group [ngForOf]='groups | async'>
-            <h3 md-subheader class="datagroup">
-              {{group.name}} <a md-icon-button target='_blank' href={{group?.uri}} *ngIf="!!group.uri"><md-icon>open_in_new</md-icon></a>
-            </h3>
-            <template ngFor let-archive [ngForOf]='group.group'>
-                <md-list-item>
-                    <a  md-icon-button
-                        class="secondary_action"
-                        target='_blank'
-                        href={{archive.link}}
-                        *ngIf="!!archive.link"
-                        mdTooltip="landingpage"
-                        >
-                            <md-icon>open_in_new</md-icon>
-                    </a>
-                    <p md-line (click)='add(archive)'>
-                        {{archive.dataset}}<span *ngIf="!archive.available" style="color: red;"> (not available)</span>                        
-                    </p>
-              </md-list-item>
-              <md-divider></md-divider>
-          </template>
-      </template>
-      </md-list>
-    </div>
-    </div>
-    `,
-    styles: [`
-    .toolbar-fill-remaining-space {
-        flex: 1 1 auto;
-    }
-    
-    .datagroup {
-        color: white;
-        background-color: #009688;
-    }
-    
-    .datagroup a {
-        color: white;
-        font-family: Roboto, "Helvetica Neue";
-    }
-    
-    .searchInput {
-        width: 100%;
-    }
-    md-list-item {
-        cursor: pointer;
-    }
-    
-    .secondary_action {
-        float: right;
-    }
-    
-    img {
-      padding: 5px 5px 5px 0px;
-    }
-    .link {
-        max-width: 300px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    `],
+    templateUrl: 'abcd-repository.component.html',
+    styleUrls: ['abcd-repository.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class AbcdRepositoryComponent {
 
+    private _searchTerm: String = '';
     private groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
         private mappingQueryService: MappingQueryService,
         private layerService: LayerService,
-        private projectService: ProjectService,
         private userService: UserService,
         private randomColorService: RandomColorService
     ) {
@@ -121,14 +46,14 @@ export class AbcdRepositoryComponent {
             for (let a of archives) {
                 if ( !groups[a.provider] ) {
                     groups[a.provider] = {
-                        group: new Array<AbcdArchive>(),
+                        group: [],
                         name: a.provider,
                     };
                 }
                 groups[a.provider].group.push(a);
             }
 
-            const iterableGroups: Array<Group<AbcdArchive>> = new Array();
+            const iterableGroups: Array<Group<AbcdArchive>> = [];
             const keys = Object.keys(groups).sort();
             for (let key of keys) {
                 const value = groups[key];

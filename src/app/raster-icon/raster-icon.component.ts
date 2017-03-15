@@ -47,11 +47,11 @@ export class RasterIconComponent implements OnInit, OnChanges {
   updateColorMapping(clrs: Array<string>, gradient?: boolean) {
       const nclr = clrs.length;
 
-      if ( !this.colorMapping || nclr !== this.colors.length ) {
+      if ( !this.colorMapping || clrs != this.colors ) {
           const ncells = this.xCells * this.yCells;
           let clrm = new Array(ncells);
 
-          const scale = ( !!gradient) ? nclr / this.yCells: nclr / ncells;
+          const scale = ( !!gradient) ? nclr / (this.xCells + this.yCells - 1 ): nclr / ncells;
 
           for (let y = 0; y < this.yCells; y++) {
               for (let x = 0; x < this.xCells; x++) {
@@ -59,7 +59,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
                   if (nclr === 2) {
                       clrm[idx] = (y%2 == 0) ? (x%2) : ((x+1)%2);
                   } else {
-                      const uidx = (!!gradient) ? y : idx;
+                      const uidx = (!!gradient) ? this.xCells -1 -x +y : idx;
                       clrm[idx] = Math.trunc(uidx*scale) % nclr;
                   }
               }

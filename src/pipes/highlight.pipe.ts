@@ -8,7 +8,7 @@ export class HighlightPipe implements PipeTransform {
         if (term) {
             let rexp = new RegExp('(' + term + ')', 'gi');
             text = text.replace(rexp,
-                '<span style=\'color:#e91e63;text-decoration:underline;\'>$1</span>');
+                '<span class="highlight">$1</span>');
         }
         return text;
     }

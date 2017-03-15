@@ -18,6 +18,8 @@ export class RandomColorService {
     ];
     private colorIndex: number = 0;
 
+    constructor() {}
+
     getRandomColor(): [number, number, number, number] {
         let color = RandomColorService.colorWheel[this.colorIndex];
         this.colorIndex = (this.colorIndex + 1) % RandomColorService.colorWheel.length;
