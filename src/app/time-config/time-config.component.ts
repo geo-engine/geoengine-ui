@@ -3,7 +3,7 @@ import {ProjectService} from '../project/project.service';
 import {Subscription} from 'rxjs/Rx';
 import {Time, TimeType, TimePoint, TimeInterval} from '../time.model';
 import {MdButtonToggleChange, MdSlideToggleChange} from '@angular/material';
-import {unitOfTime} from 'Moment';
+import {unitOfTime} from 'moment';
 
 @Component({
   selector: 'wave-time-config',

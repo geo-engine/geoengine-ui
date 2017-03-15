@@ -218,11 +218,6 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 oldProjection, newProjection
             ) as ol.geom.Point;
 
-            // console.log(
-            //     'oldcenter:', oldCenterPoint.getCoordinates(),
-            //     'newcenter:', newCenterPoint.getCoordinates()
-            // );
-
             const view = new ol.View({
                 projection: this.projection.getOpenlayersProjection(),
                 center: newCenterPoint.getCoordinates(),

@@ -80,7 +80,10 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
     }
 
     ngOnChanges(changes: {[propName: string]: SimpleChange}) {
-        if (this.isFirstChange(changes)) {
+        if (this.isFirstChange(changes) || changes['projection']) {
+            if (this.dataSubscription) {
+                this.dataSubscription.unsubscribe();
+            }
             this.dataSubscription = this.layer.data.data$.subscribe(data => {
                 this.source.clear(); // TODO: check if this is needed always...
                 this.source.addFeatures(this.format.readFeatures(data));
@@ -172,9 +175,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
             time: this.time,
             projection: this.projection,
         });
-        console.log("OlRasterLayerComponent", changes, params);
 
-        if (this.isFirstChange(changes)) {
+        if (this.isFirstChange(changes) || changes['projection']) {
             this.source = new ol.source.TileWMS({
                 url: this.config.MAPPING_URL,
                 params: params.asObject(),
@@ -189,6 +191,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
 
         if (changes['projection'] || changes['time']) {
             this.source.updateParams(params.asObject());
+
             if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
                 this.source.refresh();
             }
