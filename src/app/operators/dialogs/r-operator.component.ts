@@ -32,7 +32,7 @@ import {RScriptType} from '../types/r-script-type.model';
 
 import {RScriptLoadDialogComponent} from './r/r-script-load-dialog.component';
 import {RScriptSaveDialogComponent} from './r/r-script-save-dialog.component';
-import {RScript} from '../../../storage/storage-provider.model';
+import {RScript} from '../../storage/storage-provider.model';
 
 /**
  * This component allows creating the R operator.

@@ -3,7 +3,7 @@ import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
 import {ProjectService} from '../app/project/project.service';
-import {StorageService} from './storage.service';
+import {StorageService} from '../app/storage/storage.service';
 import {Config} from '../app/config.service';
 
 

@@ -36,6 +36,7 @@ const ConfigDefault = Immutable.fromJS({
             MIN: 500,
         },
         DEBOUNCE: 400,
+        STORAGE_DEBOUNCE: 2000,
     },
     REFRESH_LAYERS_ON_CHANGE: false,
     PROJECT: 'GFBio',
@@ -118,6 +119,7 @@ export class Config {
             MIN: number,
         },
         DEBOUNCE: number,
+        STORAGE_DEBOUNCE: number,
     };
     private _PROJECT: 'GFBio' | 'IDESSA';
     private _DEFAULTS: {

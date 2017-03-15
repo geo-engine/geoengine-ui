@@ -41,7 +41,7 @@ import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-
 import {ProjectService} from './project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {LayoutService} from './layout.service';
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from './storage/storage.service';
 import {RandomColorService} from '../services/random-color.service';
 import {MapService} from '../map/map.service';
 import {NotificationService} from './notification.service';
@@ -90,6 +90,9 @@ import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
 import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
+import { NewProjectComponent } from './project/new-project/new-project.component';
+import { LoadProjectComponent } from './project/load-project/load-project.component';
+import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -173,6 +176,9 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LayerExportComponent,
         ChangeProjectionComponent,
+        NewProjectComponent,
+        LoadProjectComponent,
+        SaveProjectAsComponent,
     ],
     imports: [
         BrowserModule,
@@ -209,6 +215,9 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LayerExportComponent,
         ChangeProjectionComponent,
+        NewProjectComponent,
+        LoadProjectComponent,
+        SaveProjectAsComponent,
     ],
     providers: [
         DragulaService,

@@ -1,0 +1,27 @@
+:host {
+    display: block;
+    padding: 1rem;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+form {
+    height: 100%;
+}
+
+md-radio-group {
+    overflow-y: auto;
+}
+
+md-radio-button {
+    display: block;
+}
+
+button {
+    width: 100%;
+    margin-top: 2rem;
+}
+
+md-progress-circle {
+    margin: 0 auto;
+}

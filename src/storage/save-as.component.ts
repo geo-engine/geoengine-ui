@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 import {FormGroup, FormBuilder, Validators} from "@angular/forms";
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 
-import {StorageService} from './storage.service';
+import {StorageService} from '../app/storage/storage.service';
 import {ProjectService} from '../app/project/project.service';
 import {Project} from '../app/project/project.model';
 import {Config} from '../app/config.service';

@@ -2,8 +2,8 @@ import {Component, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/co
 
 import {BehaviorSubject, Subscription, Observer, Observable} from 'rxjs/Rx';
 
-import {StorageService} from '../../../../storage/storage.service';
-import {RScript} from '../../../../storage/storage-provider.model';
+import {StorageService} from '../../../storage/storage.service';
+import {RScript} from '../../../storage/storage-provider.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 interface RScriptSaveDialogType {

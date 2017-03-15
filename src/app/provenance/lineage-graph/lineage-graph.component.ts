@@ -43,8 +43,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     title$ = new BehaviorSubject<string>('Operator Lineage');
 
-    selectedOperator$ = new ReplaySubject<Operator>();
-    parameters$ = new ReplaySubject<Array<{key: string, value: string}>>();
+    selectedOperator$ = new ReplaySubject<Operator>(1);
+    parameters$ = new ReplaySubject<Array<{key: string, value: string}>>(1);
 
     private selectedLayer: Layer<Symbology> = undefined;
 

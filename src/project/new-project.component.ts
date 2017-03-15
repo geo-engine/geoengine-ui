@@ -8,7 +8,7 @@ import * as moment from 'moment';
 import {ProjectService} from '../app/project/project.service';
 import {LayerService} from '../layers/layer.service';
 import {PlotService} from '../plots/plot.service';
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from '../app/storage/storage.service';
 
 import {Project} from '../app/project/project.model';
 import {Projections} from '../app/operators/projection.model';
@@ -161,8 +161,8 @@ export class NewProjectDialogComponent implements OnInit, OnDestroy {
     newAndSwitch() {
         this.projectService.setProject(
             new Project({
-                name: this.form.controls['name'].value,
-                projection: this.form.controls['projection'].value,
+                name: this.form.controls['name'].value as string,
+                projection: this.form.controls['projection'].value as Projection,
                 time: moment(this.form.controls['time'].value, moment.ISO_8601),
             })
         );
