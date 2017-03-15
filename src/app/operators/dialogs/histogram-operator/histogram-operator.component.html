@@ -6,7 +6,7 @@
             formControlName="layer"
         ></wave-layer-selection>
         <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
-        <div fxLayout="row" *ngIf="isVectorLayer(form.controls.layer.valueChanges | async)">
+        <div fxLayout="row" *ngIf="isVectorLayer$ | async">
             <md-select placeholder="Attribute" formControlName="attribute" fxFlex>
                 <md-option
                     *ngFor="let attribute of (attributes$ | async)"
