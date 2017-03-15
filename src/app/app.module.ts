@@ -14,7 +14,7 @@ import {
 } from '../map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
-import {AbcdRepositoryComponent} from '../components/abcd-repository.component';
+import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';

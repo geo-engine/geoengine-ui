@@ -1,0 +1,31 @@
+
+.datagroup {
+    color: white;
+    background-color: #009688;
+}
+
+.datagroup a {
+    color: white;
+    font-family: Roboto, "Helvetica Neue";
+}
+
+.searchInput {
+    width: 100%;
+}
+md-list-item {
+    cursor: pointer;
+}
+
+.secondary_action {
+    float: right;
+}
+
+img {
+    padding: 5px 5px 5px 0px;
+}
+.link {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

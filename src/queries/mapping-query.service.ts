@@ -382,20 +382,22 @@ export class MappingQueryService {
                  time: Time,
                  projection: Projection): Promise<MappingColorizer> {
 
-        const projectedOperator = operator.getProjectedOperator(projection);
-        const requestType = 'GetColorizer';
-        const colorizerRequest = this.config.MAPPING_URL
-            + '?' + 'SERVICE=WMS'
-            + '&' + 'VERSION=' + this.config.WMS.VERSION
-            + '&' + 'REQUEST=' + requestType
-            + '&' + 'LAYERS=' + projectedOperator.toQueryJSON()
-            + '&' + 'CRS=' + projection.getCode()
-            + '&' + 'TIME=' + time.asRequestString();
+        const request = new MappingRequestParameters({
+            service: 'WMS',
+            request: 'GetColorizer',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                version: this.config.WMS.VERSION,
+                layers: operator.getProjectedOperator(projection).toQueryJSON(),
+                debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
+                time: time.asRequestString(),
+            },
+        });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get(colorizerRequest)
+        return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
             .map((res: Response) => res.json() as MappingColorizer)
             .catch((err, cought) => {
-                console.log("getColorizer", "err", err, cought); //TODO: notification?
+                console.log("getColorizer", err, cought); //TODO: notification?
                 return Observable.of({interpolation: 'unknown', breakpoints: []});
             }).map(c => {
                 if(c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {

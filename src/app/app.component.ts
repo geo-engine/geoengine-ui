@@ -21,6 +21,7 @@ import {LayerService} from '../layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {DomSanitizer} from "@angular/platform-browser";
+import {RandomColorService} from "../services/random-color.service";
 
 @Component({
     selector: 'wave-app',
@@ -55,7 +56,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MdDialog,
                 private iconRegistry: MdIconRegistry,
-                private sanitizer: DomSanitizer ) {
+                private sanitizer: DomSanitizer,
+                private randomColorService: RandomColorService) {
         iconRegistry.addSvgIconInNamespace('vat','logo',
             sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'));
 
