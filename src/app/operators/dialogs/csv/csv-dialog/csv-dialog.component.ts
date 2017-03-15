@@ -10,6 +10,7 @@ import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology}
 import {VectorLayer} from '../../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../../services/random-color.service';
+import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -24,7 +25,8 @@ export class CsvDialogComponent implements OnInit {
     constructor(private userService: UserService,
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
-                private randomColorService: RandomColorService) {
+                private randomColorService: RandomColorService,
+                private dialogRef: MdDialogRef<CsvDialogComponent>) {
     }
 
     ngOnInit() {
@@ -108,9 +110,13 @@ export class CsvDialogComponent implements OnInit {
             projection: config.spatialRefSys,
         });
 
-        console.log("SAVE", config, csvSourceType);
+        // console.log("SAVE", config, csvSourceType);
         this.userService.addFeatureToDB(config.layerName, operator)
-            .subscribe(data => this.addLayer(data));
+            .subscribe(data => {
+                this.addLayer(data);
+
+                this.dialogRef.close();
+            });
     }
 
     private addLayer(entry: {name: string, operator: Operator}) {

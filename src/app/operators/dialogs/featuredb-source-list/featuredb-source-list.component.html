@@ -6,14 +6,14 @@
             <md-icon>add</md-icon>
         </button>
         <md-menu #addMenu="mdMenu">
-            <button md-menu-item (click)="dialog.open(CsvDialogComponent)">CSV</button>
+            <button md-menu-item (click)="$event.preventDefault();openCSVDialog()">CSV</button>
         </md-menu>
         <button md-icon-button (click)="refresh()"><md-icon>refresh</md-icon></button>
     </md-toolbar-row>
 </md-toolbar>
 <md-list>
     <md-list-item
-        *ngFor="let entry of entries$ | async"
+        *ngFor="let entry of (entries$ | async)"
         (click)="add(entry)"
     >
         <img md-list-icon [src]="entry.operator.operatorType.getIconUrl()">
