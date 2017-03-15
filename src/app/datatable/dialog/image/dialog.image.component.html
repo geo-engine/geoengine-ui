@@ -1,37 +1,37 @@
 <div [class.fullSize]="imageFullSize" class="imageContainer">
-  <div *ngIf="!imageFullSize">
-    <p class="pull-left">{{imageURLs[currentImage] | fileName}}</p>
-    <p class="pull-right">Image {{currentImage + 1}} of {{imageURLs.length}}</p>
-  </div>
-
-  <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
-
-  <div *ngIf="loading" class="loading">
-    <div class="spinner">
-      <md-spinner color="primary"></md-spinner>
+    <div *ngIf="!imageFullSize">
+        <p class="pull-left">{{imageURLs[currentImage] | fileName}}</p>
+        <p class="pull-right">Image {{currentImage + 1}} of {{imageURLs.length}}</p>
     </div>
-  </div>
+
+    <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+
+    <div *ngIf="loading" class="loading">
+        <div class="spinner">
+            <md-spinner color="primary"></md-spinner>
+        </div>
+    </div>
 </div>
 
 <button md-mini-fab color="primary" (click)="dialogRef.close()" class="close" [title]="'close popup'">
-  <md-icon class="md-24">close</md-icon>
+    <md-icon class="md-24">close</md-icon>
 </button>
 
 <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="previousImage()" class="previous" [title]="'previous image'">
-  <md-icon class="md-24">chevron_left</md-icon>
+    <md-icon class="md-24">chevron_left</md-icon>
 </button>
 
 <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="nextImage()" class="next" [title]="'next image'">
-  <md-icon class="md-24">chevron_right</md-icon>
+    <md-icon class="md-24">chevron_right</md-icon>
 </button>
 
 <a md-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
-  <md-icon class="md-24">open_in_new</md-icon>
+    <md-icon class="md-24">open_in_new</md-icon>
 </a>
 
 <button md-mini-fab color="primary" (click)="toggleImageSize()" class="imageSize" [title]="'toggle Fullscreen'">
-  <md-icon class="md-24" *ngIf="!imageFullSize">fullscreen</md-icon>
-  <md-icon class="md-24" *ngIf="imageFullSize">fullscreen_exit</md-icon>
+    <md-icon class="md-24" *ngIf="!imageFullSize">fullscreen</md-icon>
+    <md-icon class="md-24" *ngIf="imageFullSize">fullscreen_exit</md-icon>
 </button>
 
 
