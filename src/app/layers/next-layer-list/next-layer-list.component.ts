@@ -50,13 +50,13 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      private sanitizer: DomSanitizer
     ) {
         iconRegistry.addSvgIconInNamespace('symbology','polygon',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/polygon_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','line',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/line_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/line_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','point',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/point_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/point_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','grid4',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/grid4_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 

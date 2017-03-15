@@ -57,7 +57,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private iconRegistry: MdIconRegistry,
                 private sanitizer: DomSanitizer ) {
         iconRegistry.addSvgIconInNamespace('vat','logo',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/vat_logo.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'));
 
         this.storageService.toString(); // just register
 
