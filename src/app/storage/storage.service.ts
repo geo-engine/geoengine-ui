@@ -11,6 +11,9 @@ import {LayerService} from '../../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
+import {Project} from '../project/project.model';
+import {Layer} from '../../layers/layer.model';
+import {Symbology} from '../../symbology/symbology.model';
 
 /**
  * A service that is responsible for saving the app state.
@@ -21,6 +24,9 @@ export class StorageService {
 
     private projectSubscription: Subscription;
     private layoutSubscription: Subscription;
+
+    private pendingWorkspace: {project: Project, layers: Array<Layer<Symbology>>};
+    private pendingWorkspaceSubscription: Subscription;
 
     constructor(private config: Config,
                 private layerService: LayerService,
@@ -79,11 +85,15 @@ export class StorageService {
     private resetStorageProvider(projectName: string = undefined) {
         // clean up old provider stuff
         this.storageProvider = undefined;
+        this.pendingWorkspace = undefined;
         if (this.projectSubscription) {
             this.projectSubscription.unsubscribe();
         }
         if (this.layoutSubscription) {
             this.layoutSubscription.unsubscribe();
+        }
+        if (this.pendingWorkspaceSubscription) {
+            this.pendingWorkspaceSubscription.unsubscribe();
         }
 
         // create suitable provider
@@ -117,13 +127,42 @@ export class StorageService {
                     this.layerService.getLayersStream(),
                 )
                 .skip(1) // don't save the loaded stuff directly again
+                .do(([project, layers]) => {
+                    // save pending change
+                    this.pendingWorkspace = {
+                        project: project,
+                        layers: layers,
+                    };
+                })
                 .debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE)
+                .do(() => {
+                    // store pending change
+                    this.pendingWorkspace = undefined;
+                })
                 .subscribe(([project, layers]) => {
-                    if (this.storageProvider) {
-                        this.storageProvider.saveWorkspace({
-                            project: project,
-                            layers: layers,
-                        });
+                    this.storageProvider.saveWorkspace({
+                        project: project,
+                        layers: layers,
+                    });
+                });
+
+            this.pendingWorkspaceSubscription = Observable
+                .fromEvent(window, 'beforeunload')
+                .subscribe(() => {
+                    if (this.pendingWorkspace) {
+                        this.storageProvider.saveWorkspace(this.pendingWorkspace)
+                            .subscribe(() => this.pendingWorkspace = undefined);
+
+                        // this is basically sleep via busy waiting
+                        let start = new Date().getTime();
+                        for (let i = 0; i < 1e7; i++) {
+                            if (!this.pendingWorkspace) {
+                                break;
+                            }
+                            if ((new Date().getTime() - start) > this.config.DELAYS.STORAGE_DEBOUNCE) {
+                                break;
+                            }
+                        }
                     }
                 });
         });
@@ -138,9 +177,7 @@ export class StorageService {
             this.layoutSubscription = this.layoutService.getLayoutDictStream()
                 .skip(1) // don't save the loaded stuff directly again
                 .subscribe(layout => {
-                    if (this.storageProvider) {
-                        this.storageProvider.saveLayoutSettings(layout).subscribe();
-                    }
+                    this.storageProvider.saveLayoutSettings(layout).subscribe();
                 });
         });
     }

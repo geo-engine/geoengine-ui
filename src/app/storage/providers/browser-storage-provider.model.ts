@@ -92,7 +92,7 @@ export class BrowserStorageProvider extends StorageProvider {
 
     saveLayoutSettings(dict: LayoutDict): Observable<{}> {
         localStorage.setItem('layoutSettings', JSON.stringify(dict));
-        return Observable.empty();
+        return Observable.of({});
     };
 
     projectExists(name: string): Observable<boolean> {
