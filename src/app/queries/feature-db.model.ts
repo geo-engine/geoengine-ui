@@ -13,8 +13,8 @@ export interface FeatureDBList {
 
 export interface FeatureDBListEntry {
     has_time: boolean;
-    id: number;
-    name: string;
+    owner: string;
+    data_set_name: string;
     numeric_attributes: Array<string>;
     textual_attributes: Array<string>;
     type: 'points' | 'lines' | 'polygons';
@@ -79,10 +79,11 @@ export function featureDBListEntryToOperator(entry: FeatureDBListEntry) {
     }
 
     return {
-        name: entry.name,
+        name: entry.data_set_name,
         operator: new Operator({
             operatorType: new FeatureCollectionDBSourceType({
-                id: entry.id,
+                owner: entry.owner,
+                data_set_name: entry.data_set_name,
             }),
             resultType: ResultTypes.fromCode(entry.type),
             projection: Projections.WGS_84, // TODO: this must be changed on mapping first and then here
