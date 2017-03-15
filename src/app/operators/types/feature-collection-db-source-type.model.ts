@@ -1,15 +1,18 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface FeatureCollectionDBSourceTypeConfig {
-    id: number;
+    owner: string;
+    data_set_name: string;
 }
 
 interface FeatureCollectionDBSourceTypeMappingDict extends OperatorTypeMappingDict {
-    id: number;
+    owner: string;
+    data_set_name: string;
 }
 
 export interface FeatureCollectionDBSourceTypeDict extends OperatorTypeDict {
-    id: number;
+    owner: string;
+    data_set_name: string;
 }
 
 /**
@@ -24,17 +27,21 @@ export class FeatureCollectionDBSourceType extends OperatorType {
     static get ICON_URL(): string { return FeatureCollectionDBSourceType._ICON_URL; }
     static get NAME(): string { return FeatureCollectionDBSourceType._NAME; }
 
-    private id: number;
+    private owner: string;
+    private data_set_name: string;
 
     static fromDict(dict: FeatureCollectionDBSourceTypeDict): FeatureCollectionDBSourceType {
         return new FeatureCollectionDBSourceType({
-            id: dict.id,
+            owner: dict.owner,
+            data_set_name: dict.data_set_name,
         });
     }
 
     constructor(config: FeatureCollectionDBSourceTypeConfig) {
         super();
-        this.id = config.id;
+        this.owner = config.owner;
+        this.data_set_name = config.data_set_name;
+
     }
 
     getMappingName(): string {
@@ -51,20 +58,23 @@ export class FeatureCollectionDBSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['id', this.id.toString()],
+            ['owner', this.owner],
+            ['data_set_name', this.data_set_name],
         ];
     }
 
     toMappingDict(): FeatureCollectionDBSourceTypeMappingDict {
         return {
-            id: this.id,
+            owner: this.owner,
+            data_set_name: this.data_set_name,
         };
     }
 
     toDict(): FeatureCollectionDBSourceTypeDict {
         return {
             operatorType: FeatureCollectionDBSourceType.TYPE,
-            id: this.id,
+            owner: this.owner,
+            data_set_name: this.data_set_name,
         };
     }
 
