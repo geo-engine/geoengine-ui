@@ -6,7 +6,7 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {RasterRepositoryComponent} from '../components/raster-repository.component';
+import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
 import {MapComponent} from '../map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,

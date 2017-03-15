@@ -31,6 +31,7 @@ interface Group<T> {
 })
 export class AbcdRepositoryComponent {
 
+    private _searchTerm: String = '';
     private groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
