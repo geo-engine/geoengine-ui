@@ -90,6 +90,7 @@ import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
 import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
+import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -112,6 +113,7 @@ export function configInitializer(config: Config) {
         SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyVectorComponent,
+        SymbologyDialogComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,
@@ -209,6 +211,7 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LayerExportComponent,
         ChangeProjectionComponent,
+        SymbologyDialogComponent,
     ],
     providers: [
         DragulaService,
