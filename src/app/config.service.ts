@@ -2,6 +2,71 @@ import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
 import {Http} from '@angular/http';
 
+type MappingUrlType = string;
+interface WmsInterface {
+    VERSION: string;
+    FORMAT: string;
+}
+interface WfsInterface {
+    VERSION: string;
+    FORMAT: string;
+}
+interface WcsInterface {
+    SERVICE: string;
+    VERSION: string;
+}
+interface DebugModeInterface {
+    WAVE: boolean;
+    MAPPING: boolean;
+}
+interface UserInterface {
+    GUEST: {
+        NAME: string,
+        PASSWORD: string,
+    };
+}
+interface DelaysInterface {
+    LOADING: {
+        MIN: number,
+    };
+    DEBOUNCE: number;
+    STORAGE_DEBOUNCE: number;
+    GUEST_LOGIN_HINT: number;
+}
+type ProjectType = 'GFBio' | 'IDESSA';
+interface DefaultsInterface {
+    PROJECT: {
+        NAME: string,
+        TIME: string,
+        PROJECTION: 'EPSG:3857' | 'EPSG:4326',
+    };
+}
+interface MapInterface {
+    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted';
+    HOSTED_BACKGROUND_SERVICE: string;
+    HOSTED_BACKGROUND_LAYER_NAME: string;
+    HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    REFRESH_LAYERS_ON_CHANGE: boolean;
+}
+interface GfbioInterface {
+    LIFERAY_PORTAL_URL: string;
+}
+
+interface ConfigInterface {
+    CONFIG_FILE: string;
+    MAPPING_URL: MappingUrlType;
+    WMS: WmsInterface;
+    WFS: WfsInterface;
+    WCS: WcsInterface;
+    DEBUG_MODE: DebugModeInterface;
+    USER: UserInterface;
+    DELAYS: DelaysInterface;
+    PROJECT: ProjectType;
+    DEFAULTS: DefaultsInterface;
+    MAP: MapInterface;
+    GFBIO: GfbioInterface;
+}
+
 /**
  * The default config
  * @type {any}
@@ -37,8 +102,8 @@ const ConfigDefault = Immutable.fromJS({
         },
         DEBOUNCE: 400,
         STORAGE_DEBOUNCE: 5000,
+        GUEST_LOGIN_HINT: 5000,
     },
-    REFRESH_LAYERS_ON_CHANGE: false,
     PROJECT: 'GFBio',
     DEFAULTS: {
         PROJECT: {
@@ -52,11 +117,12 @@ const ConfigDefault = Immutable.fromJS({
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
+        REFRESH_LAYERS_ON_CHANGE: false,
     },
     GFBIO: {
         LIFERAY_PORTAL_URL: 'http://gfbio-dev1.inf-bb.uni-jena.de:8080/',
     },
-});
+} as ConfigInterface);
 
 /**
  * Calls a recursive Object.freeze on an object.
@@ -91,97 +157,60 @@ export class Config {
         return 'assets/config.json';
     };
 
-    private _MAPPING_URL: string;
-    private _WMS: {
-        VERSION: string,
-        FORMAT: string,
-    };
-    private _WFS: {
-        VERSION: string,
-        FORMAT: string,
-    };
-    private _WCS: {
-        SERVICE: string,
-        VERSION: string,
-    };
-    private _DEBUG_MODE: {
-        WAVE: boolean,
-        MAPPING: boolean,
-    };
-    private _USER: {
-        GUEST: {
-            NAME: string,
-            PASSWORD: string,
-        },
-    };
-    private _DELAYS: {
-        LOADING: {
-            MIN: number,
-        },
-        DEBOUNCE: number,
-        STORAGE_DEBOUNCE: number,
-    };
-    private _PROJECT: 'GFBio' | 'IDESSA';
-    private _DEFAULTS: {
-        PROJECT: {
-            NAME: string,
-            TIME: string,
-            PROJECTION: 'EPSG:3857' | 'EPSG:4326',
-        },
-    };
-    private _MAP: {
-        BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted',
-        HOSTED_BACKGROUND_SERVICE: string,
-        HOSTED_BACKGROUND_LAYER_NAME: string,
-        HOSTED_BACKGROUND_SERVICE_VERSION: string,
-        REFRESH_LAYERS_ON_CHANGE: boolean,
-    };
-    private _GFBIO: {
-        LIFERAY_PORTAL_URL: string,
-    };
+    private _MAPPING_URL: MappingUrlType;
+    private _WMS: WmsInterface;
+    private _WFS: WfsInterface;
+    private _WCS: WcsInterface;
+    private _DEBUG_MODE: DebugModeInterface;
+    private _USER: UserInterface;
+    private _DELAYS: DelaysInterface;
+    private _PROJECT: ProjectType;
+    private _DEFAULTS: DefaultsInterface;
+    private _MAP: MapInterface;
+    private _GFBIO: GfbioInterface;
 
 
-    get MAPPING_URL() {
+    get MAPPING_URL(): MappingUrlType {
         return this._MAPPING_URL;
     }
 
-    get WMS() {
+    get WMS(): WmsInterface {
         return this._WMS;
     }
 
-    get WFS() {
+    get WFS(): WfsInterface {
         return this._WFS;
     }
 
-    get WCS() {
+    get WCS(): WcsInterface {
         return this._WCS;
     }
 
-    get DEBUG_MODE() {
+    get DEBUG_MODE(): DebugModeInterface {
         return this._DEBUG_MODE;
     }
 
-    get USER() {
+    get USER(): UserInterface {
         return this._USER;
     }
 
-    get DELAYS() {
+    get DELAYS(): DelaysInterface {
         return this._DELAYS;
     }
 
-    get PROJECT() {
+    get PROJECT(): ProjectType {
         return this._PROJECT;
     }
 
-    get DEFAULTS() {
+    get DEFAULTS(): DefaultsInterface {
         return this._DEFAULTS;
     }
 
-    get MAP() {
+    get MAP(): MapInterface {
         return this._MAP;
     }
 
-    get GFBIO() {
+    get GFBIO(): GfbioInterface {
         return this._GFBIO;
     }
 

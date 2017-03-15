@@ -1,6 +1,6 @@
 <div>
     <button md-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, LoginComponent)"
+            [color]="loginColor$ | async"
             (click)="layoutService.setSidenavContentComponent(LoginComponent)"
             mdTooltip="User Account / Login" mdTooltipPosition="before"
     >
