@@ -83,7 +83,7 @@ import { HelpComponent } from './help.component';
 import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
 import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
-import { CsvUploadComponent } from './operators/dialogs/csv/file-upload/file-upload.component';
+import { CsvUploadComponent } from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
 

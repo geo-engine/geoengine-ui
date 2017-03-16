@@ -1,8 +1,8 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {UploadData} from '../file-upload/file-upload.component';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {CSV} from '../csv-config/csv-config.component';
+import {CSV, CsvConfigComponent} from '../csv-config/csv-config.component';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../../layers/layer.service';
@@ -19,6 +19,7 @@ import {RandomColorService} from '../../../../../services/random-color.service';
 })
 export class CsvDialogComponent implements OnInit {
 
+    @ViewChild(CsvConfigComponent) csvConfig;
     data: UploadData = undefined;
 
     constructor(private userService: UserService,
