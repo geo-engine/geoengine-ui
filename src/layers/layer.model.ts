@@ -51,6 +51,7 @@ export interface LayerDict {
     name: string;
     operator: OperatorDict;
     expanded: boolean;
+    editSymbology: boolean;
     symbology: SymbologyDict;
     type: LayerType;
     typeOptions?: LayerTypeOptionsDict;
@@ -59,6 +60,7 @@ export interface LayerDict {
 export abstract class Layer<S extends Symbology> {
     name: string;
     expanded = false;
+    editSymbology = false;
     symbology: S;
     protected _operator: Operator;
     protected _provenance: LayerProvenance;
@@ -102,6 +104,7 @@ export abstract class Layer<S extends Symbology> {
             name: this.name,
             operator: this._operator.toDict(),
             expanded: this.expanded,
+            editSymbology: this.editSymbology,
             symbology: this.symbology.toDict(),
             type: this.getLayerType(),
             typeOptions: this.typeOptions,
@@ -141,6 +144,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
         });
 
         layer.expanded = dict.expanded;
+        layer.editSymbology = dict.editSymbology;
 
         return layer;
     }

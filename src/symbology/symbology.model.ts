@@ -22,6 +22,9 @@ export interface ISymbology {
 }
 
 export abstract class Symbology implements ISymbology {
+
+    show = false;
+
     static fromDict(
         dict: SymbologyDict, colorizerObservable?: Observable<MappingColorizer>
     ): Symbology {

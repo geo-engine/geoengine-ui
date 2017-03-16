@@ -8,6 +8,11 @@
     color: mat-color($wave-app-primary) !important;
 }
 
+.item {
+    width: 100%;
+    cursor: pointer;
+}
+
 .highlight,
 md-list-item /deep/ .highlight {
     color: mat-color($wave-app-accent);
@@ -15,7 +20,6 @@ md-list-item /deep/ .highlight {
 }
 
 md-list-item {
-    cursor: pointer;
 }
 
 img {

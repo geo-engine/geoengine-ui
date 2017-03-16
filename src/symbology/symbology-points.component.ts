@@ -2,6 +2,8 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
 import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
+import {MdSliderChange} from '@angular/material';
+import {LayerService} from '../layers/layer.service';
 
 @Component({
     selector: 'wave-symbology-points',
@@ -9,61 +11,65 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
         <table>
             <tr>
                 <td>
-                    <label>Fill color</label>
+                    <span>Fill</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateFillRgba($event)'>
-                        </md-input-container>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Stroke color</label>
-                </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input-container>
+                <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                 [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
+                 (colorPickerChange)='updateFillRgba($event)'
+                 [cpSaveClickOutside]="false"
+                 [cpOKButton]="true"
+                 [cpOutputFormat]="'rgba'">
+                    {{symbology.fillRGBA}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Stroke width</label>
+                    <span>Stroke</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.strokeWidth'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                <td class="color_cell"
+                    [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    (colorPickerChange)='updateStrokeRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
+                    [cpOutputFormat]="'rgba'">
+                    {{symbology.strokeRGBA}}                    
                 </td>
             </tr>
             <tr>
-                <td><label>Radius</label></td>
+                <td>                    
+                </td>
                 <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.radius'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                    <md-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                        (change)="updateStrokeWidth($event)">
+                    </md-slider>
+                    <span>{{sls.displayValue}} px</span>
+                </td>
+            </tr>
+            <tr *ngIf="editRadius">
+                <td>
+                    <span>Radius</span>
+                </td>
+                <td>
+                    <md-slider #slr thumbLabel min="0" max="10" step="1" [value]="symbology.radius"
+                        (change)="updateRadius($event)">
+                    </md-slider>
+                    <span>{{slr.displayValue}} px</span>
                 </td>
             </tr>
         </table>
         `,
     styles: [`
-        form {
-            padding-top: 16px;
+        table {
+            width: 100%;
+            font-size: 0.8em;
         }
-        md-input >>> input {
+    
+        .color_cell {
+            cursor: pointer;
+            text-align: center;          
+            min-width: 2rem;
+            min-height: 2rem;
             color: black !important;
             text-shadow:
             -1px -1px 0 #fff,
@@ -75,18 +81,18 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
 })
 export class SymbologyPointsComponent {
 
-    static minStrokeWidth: number = 1;
+    static minStrokeWidth: number = 0;
     static minRadius: number = 1;
 
-    // @Input() layer: Layer;
+    @Input() editRadius: boolean = true;
     @Input() symbology: SimplePointSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimplePointSymbology>();
 
     private _cssStringToRgbaTransformer = new CssStringToRgbaPipe();
 
-    update() {
-        // console.log('wave-symbology-points', 'update', this.symbology);
+    constructor(private layerService: LayerService) {}
 
+    update() {
         // guard against negative values
         if (this.symbology.radius < SymbologyPointsComponent.minRadius) {
             this.symbology.radius = SymbologyPointsComponent.minRadius;
@@ -97,6 +103,16 @@ export class SymbologyPointsComponent {
 
         // return a clone (immutablility)
         this.symbologyChanged.emit(this.symbology.clone());
+    }
+
+    updateStrokeWidth(event: MdSliderChange) {
+        this.symbology.strokeWidth = event.value;
+        this.update();
+    }
+
+    updateRadius(event: MdSliderChange) {
+        this.symbology.radius = event.value;
+        this.update();
     }
 
     updateFillRgba(rgba: string) {
@@ -118,52 +134,55 @@ export class SymbologyPointsComponent {
     selector: 'wave-symbology-vector',
     template: `
         <table>
-            <template [ngIf]='symbology.describesArea()'>
-            <tr>
+            <tr *ngIf="symbology.describesArea()">
                 <td>
-                    <label>Fill color</label>
+                    <span>Fill</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateFillRgba($event)'>
-                    </md-input-container>
-                </td>
-            </tr>
-            </template>
-            <tr>
-                <td>
-                    <label>Stroke color</label>
-                </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input-container>
+                <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+                    [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
+                    (colorPickerChange)='updateFillRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
+                    [cpOutputFormat]="'rgba'">
+                    {{symbology.fillRGBA}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Stroke width</label>
+                    <span>Stroke</span>
+                </td>
+                <td class="color_cell" [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                    (colorPickerChange)='updateStrokeRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
+                    [cpOutputFormat]="'rgba'">
+                    {{symbology.strokeRGBA}}                    
+                </td>
+            </tr>
+            <tr>
+                <td>                    
                 </td>
                 <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.strokeWidth'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                    <md-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                        (change)="updateStrokeWidth($event)">
+                    </md-slider>
+                    <span>{{sls.displayValue}} px</span>
                 </td>
             </tr>
         </table>
      `,
     styles: [`
-        .mat-input >>> input {
+        table {
+            width: 100%;
+            font-size: 0.8em;
+        }
+    
+        .color_cell {
+            cursor: pointer;
+            text-align: center;          
+            min-width: 2rem;
+            min-height: 2rem;
             color: black !important;
             text-shadow:
             -1px -1px 0 #fff,
@@ -175,7 +194,7 @@ export class SymbologyPointsComponent {
 })
 export class SymbologyVectorComponent {
 
-    static minStrokeWidth: number = 1;
+    static minStrokeWidth: number = 0;
 
     @Input() symbology: SimpleVectorSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimpleVectorSymbology>();
@@ -194,6 +213,11 @@ export class SymbologyVectorComponent {
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
+    updateStrokeWidth(event: MdSliderChange) {
+        this.symbology.strokeWidth = event.value;
+        this.update();
+    }
+
     updateFillRgba(rgba: string) {
         if (rgba) {
             this.symbology.fillRGBA = this._cssStringToRgbaTransformer.transform(rgba);
@@ -208,21 +232,3 @@ export class SymbologyVectorComponent {
         }
     }
 }
-
-
-/* TODO: FIXME:
- [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
- (colorPickerChange)='updateFillRgba($event)'
-
- [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
- (colorPickerChange)='updateStrokeRgba($event)'
- [cpOutputFormat]="'rgba'"
-
-
- [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
- (colorPickerChange)='updateStrokeRgba($event)'
- [cpOutputFormat]="'rgba'"
-
- [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
- (colorPickerChange)='updateFillRgba($event)'
- */

@@ -46,6 +46,10 @@ $accent: map-get($wave-app-theme, accent);
     cursor: -webkit-grabbing;
 }
 
+.small {
+    font-size: 0.8rem;
+}
+
 .mat-toolbar {
     padding: 0 !important;
 }
