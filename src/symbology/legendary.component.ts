@@ -18,16 +18,14 @@ export class LegendaryComponent<S extends Symbology> {
 @Component({
     selector: 'wave-legendary-points',
     template: `
-        <md-list>
-            <md-list-item>
-                <md-icon md-list-icon svgIcon="symbology:point"
-                    [style.stroke-width.px]='symbology.strokeWidth'
-                    [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                    [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
-                ></md-icon>
-                <span>Points</span>
-            </md-list-item>
-        </md-list>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <md-icon md-list-icon svgIcon="symbology:point"
+                [style.stroke-width.px]='symbology.strokeWidth'
+                [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
+            ></md-icon>
+            <span fxFlex>Points</span>
+        </div>
         `,
     styles: [`
         wave-legendary-points {
@@ -43,16 +41,14 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
 @Component({
     selector: 'wave-legendary-clustered-points',
     template: `
-        <md-list>
-            <md-list-item>
-                <md-icon md-list-icon svgIcon="symbology:point"
-                    [style.stroke-width.px]='symbology.strokeWidth'
-                    [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                    [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
-                ></md-icon>
-                <span>Clustered Points</span>
-            </md-list-item>
-        </md-list>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <md-icon md-list-icon svgIcon="symbology:point"
+                [style.stroke-width.px]='symbology.strokeWidth'
+                [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
+                [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
+            ></md-icon>
+            <span>Clustered Points</span>
+        </div>
         `,
     styles: [`
         wave-legendary-points {
@@ -68,16 +64,14 @@ export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
 @Component({
     selector: 'wave-legendary-vector',
     template: `
-        <md-list>
-            <md-list-item>
-                <md-icon md-list-icon svgIcon="symbology:polygon"
-                    [style.stroke-width.px]='symbology?.strokeWidth'
-                    [style.stroke]='symbology?.strokeRGBA | rgbaToCssStringPipe'
-                    [style.fill]='symbology?.fillRGBA | rgbaToCssStringPipe'
-                ></md-icon>
-                <span>Vectors</span>
-            </md-list-item>
-        </md-list>
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <md-icon md-list-icon svgIcon="symbology:polygon"
+                [style.stroke-width.px]='symbology?.strokeWidth'
+                [style.stroke]='symbology?.strokeRGBA | rgbaToCssStringPipe'
+                [style.fill]='symbology?.fillRGBA | rgbaToCssStringPipe'
+            ></md-icon>
+            <span>Vectors</span>
+        </div>
         `,
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush

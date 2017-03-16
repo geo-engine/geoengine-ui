@@ -9,61 +9,49 @@ import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
         <table>
             <tr>
                 <td>
-                    <label>Fill color</label>
+                    <span>Fill</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateFillRgba($event)'>
-                        </md-input-container>
+                <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
+                    {{symbology.fillRGBA}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Stroke color</label>
+                    <span>Stroke</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input-container>
+                <td class="color_cell" [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'>
+                    {{symbology.strokeRGBA}}                    
                 </td>
             </tr>
             <tr>
-                <td>
-                    <label>Stroke width</label>
+                <td>                    
                 </td>
                 <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.strokeWidth'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                    <md-slider #sls thumbLabel min="0" max="10" step="1" value="1"></md-slider>
+                    <span>{{sls.displayValue}} px</span>
                 </td>
             </tr>
-            <tr>
-                <td><label>Radius</label></td>
+            <tr *ngIf="editRadius">
                 <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.radius'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                    <span>Radius</span>
+                </td>
+                <td>
+                    <md-slider #slr thumbLabel min="0" max="10" step="1" value="1"></md-slider>
+                    <span>{{slr.displayValue}} px</span>
                 </td>
             </tr>
         </table>
         `,
     styles: [`
-        form {
-            padding-top: 16px;
+        table {
+            width: 100%;
+            font-size: 0.8em;
         }
-        md-input >>> input {
+    
+        .color_cell {
+            text-align: center;          
+            min-width: 2rem;
+            min-height: 2rem;
             color: black !important;
             text-shadow:
             -1px -1px 0 #fff,
@@ -78,7 +66,7 @@ export class SymbologyPointsComponent {
     static minStrokeWidth: number = 1;
     static minRadius: number = 1;
 
-    // @Input() layer: Layer;
+    @Input() editRadius: boolean = true;
     @Input() symbology: SimplePointSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimplePointSymbology>();
 
@@ -118,52 +106,42 @@ export class SymbologyPointsComponent {
     selector: 'wave-symbology-vector',
     template: `
         <table>
-            <template [ngIf]='symbology.describesArea()'>
-            <tr>
+            <tr *ngIf="symbology.describesArea()">
                 <td>
-                    <label>Fill color</label>
+                    <span>Fill</span>
                 </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.fillRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateFillRgba($event)'>
-                    </md-input-container>
-                </td>
-            </tr>
-            </template>
-            <tr>
-                <td>
-                    <label>Stroke color</label>
-                </td>
-                <td>
-                <md-input-container>
-                    <input mdInput
-                        class='cc'
-                        [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        [ngModel]='symbology.strokeRGBA | rgbaToCssStringPipe'
-                        (ngModelChange)='updateStrokeRgba($event)'>
-                    </md-input-container>
+                <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'>
+                    {{symbology.fillRGBA}}
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Stroke width</label>
+                    <span>Stroke</span>
+                </td>
+                <td class="color_cell" [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'>
+                    {{symbology.strokeRGBA}}                    
+                </td>
+            </tr>
+            <tr>
+                <td>                    
                 </td>
                 <td>
-                <md-input-container>
-                    <input mdInput type='number' min='0'
-                        [(ngModel)]='symbology.strokeWidth'
-                        (ngModelChange)='update()'>
-                    </md-input-container>
+                    <md-slider #sls thumbLabel min="0" max="10" step="1" value="1"></md-slider>
+                    <span>{{sls.displayValue}} px</span>
                 </td>
             </tr>
         </table>
      `,
     styles: [`
-        .mat-input >>> input {
+        table {
+            width: 100%;
+            font-size: 0.8em;
+        }
+    
+        .color_cell {
+            text-align: center;          
+            min-width: 2rem;
+            min-height: 2rem;
             color: black !important;
             text-shadow:
             -1px -1px 0 #fff,

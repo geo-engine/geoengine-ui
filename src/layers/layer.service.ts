@@ -126,6 +126,11 @@ export class LayerService {
         this.layers$.next(this.getLayers());
     }
 
+    toggleEditSymbology(layer: Layer<Symbology>) {
+        layer.editSymbology = !layer.editSymbology;
+        this.layers$.next(this.getLayers());
+    }
+
     /**
      * Set a new selected layer.
      * Does nothing if the layer is not within the list.

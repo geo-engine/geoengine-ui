@@ -38,6 +38,17 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
+    dragOptions = {
+        removeOnSpill: false,
+        revertOnSpill: true,
+        moves: (el, source, handle, sibling): boolean => {
+            let s = handle;
+            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag'));
+            return !s;
+        }
+    };
+
+
     private subscriptions: Array<Subscription> = [];
 
     constructor(
@@ -59,11 +70,6 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
-
-      dragulaService.setOptions('layer-bag', {
-          removeOnSpill: false,
-          revertOnSpill: true,
-      });
 
       this.handleDragAndDrop();
     }

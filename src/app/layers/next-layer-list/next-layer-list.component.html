@@ -36,7 +36,8 @@
     </md-toolbar>
 
     <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">
-        <md-list [dragula]="layer-bag" *ngIf="layoutService.getLayerListVisibilityStream() | async">
+        <md-list [dragula]="layer-bag" [dragulaOptions]="dragOptions"
+                 *ngIf="layoutService.getLayerListVisibilityStream() | async">
 
             <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
                 <button md-button class="no-layer"
@@ -48,11 +49,11 @@
             </md-list-item>
 
             <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
-                <md-list-item (click)="layerService.setSelectedLayer(layer)"
+                <md-list-item
                               [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
-                              [class.list-item-extended]="layer.expanded"
+                              [class.list-item-extended]="layer.expanded || layer.editSymbology"
                               [title]="layer.name"
-                              class="grabbable"
+
                 >
                     <md-menu #layerMenu="mdMenu">
                         <!--
@@ -85,7 +86,7 @@
                             <md-icon>mode_edit</md-icon>
                             <span>Rename</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(SymbologyDialogComponent)">
+                        <button md-menu-item (click)="layerService.toggleEditSymbology(layer)">
                             <md-icon>color_lens</md-icon>
                             <span>Edit Symbology</span>
                         </button>
@@ -148,7 +149,10 @@
                             </button>
 
 
-                            <div #layerName class="mat-list-item-text" fxFlex="grow">
+                            <div #layerName
+                                 class="mat-list-item-text grabbable"
+                                 fxFlex="grow"
+                                 (click)="layerService.setSelectedLayer(layer)">
                                 {{layer.name}}
                             </div>
 
@@ -158,35 +162,63 @@
                             </button>
                         </div>
 
-                        <div *ngIf="layer.expanded"
-                             [ngSwitch]="layer.symbology.getSymbologyType()" fxLayout="row" class="legendary">
+                        <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()" class="legendary">
+                            <template [ngSwitchCase]="ST.SIMPLE_POINT">
+                                <wave-legendary-points [symbology]="layer.symbology"></wave-legendary-points>
+                            </template>
 
-                            <wave-legendary-points
-                                *ngSwitchCase="ST.SIMPLE_POINT"
-                                [symbology]="layer.symbology">
-                            </wave-legendary-points>
+                            <template [ngSwitchCase]="ST.CLUSTERED_POINT">
+                                <wave-legendary-clustered-points [symbology]="layer.symbology">
+                                </wave-legendary-clustered-points>
+                            </template>
 
-                            <wave-legendary-clustered-points
-                                *ngSwitchCase="ST.CLUSTERED_POINT"
-                                [symbology]="layer.symbology">
-                            </wave-legendary-clustered-points>
+                            <template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+                                <wave-legendary-vector [symbology]="layer.symbology"></wave-legendary-vector>
+                            </template>
 
-                            <wave-legendary-vector
-                                *ngSwitchCase="ST.SIMPLE_VECTOR"
-                                [symbology]="layer.symbology">
-                            </wave-legendary-vector>
+                            <template [ngSwitchCase]="ST.RASTER">
+                                <wave-legendary-raster [symbology]="layer.symbology"></wave-legendary-raster>
+                            </template>
 
-                            <wave-legendary-raster
-                                *ngSwitchCase="ST.RASTER"
-                                [symbology]="layer.symbology">
-                            </wave-legendary-raster>
-
-                            <wave-legendary-mapping-colorizer-raster
-                                *ngSwitchCase="ST.MAPPING_COLORIZER_RASTER"
-                                [symbology]="layer.symbology">
-                            </wave-legendary-mapping-colorizer-raster>
+                            <template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
+                                <wave-legendary-mapping-colorizer-raster [symbology]="layer.symbology">
+                                </wave-legendary-mapping-colorizer-raster>
+                            </template>
 
                             <wave-legendary *ngSwitchDefault [symbology]="layer.symbology"></wave-legendary>
+                        </div>
+
+                        <div *ngIf="layer.editSymbology" [ngSwitch]="layer.symbology.getSymbologyType()"
+                             class="symbology no-drag">
+
+                            <div class="small" fxLayout="row" fxLayoutAlign="space-between center">
+                                <span>Edit Symbology</span>
+                                <button md-icon-button (click)="layerService.toggleEditSymbology(layer)">
+                                    <md-icon>close</md-icon>
+                                </button>
+                            </div>
+
+                            <template [ngSwitchCase]="ST.SIMPLE_POINT">
+                                <wave-symbology-points [symbology]="layer.symbology"></wave-symbology-points>
+                            </template>
+
+                            <template [ngSwitchCase]="ST.CLUSTERED_POINT">
+                                <wave-symbology-points
+                                    class="no-drag" [symbology]="layer.symbology" [editRadius]="false">
+                                </wave-symbology-points>
+                            </template>
+
+                            <template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+                                <wave-symbology-vector [symbology]="layer.symbology"></wave-symbology-vector>
+                            </template>
+
+                            <template [ngSwitchCase]="ST.RASTER">
+                                <wave-symbology-raster></wave-symbology-raster>
+                            </template>
+
+                            <template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
+                                <wave-symbology-raster></wave-symbology-raster>
+                            </template>
                         </div>
 
                         <md-progress-bar
