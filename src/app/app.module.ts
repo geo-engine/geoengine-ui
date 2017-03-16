@@ -45,7 +45,6 @@ import {StorageService} from './storage/storage.service';
 import {RandomColorService} from '../services/random-color.service';
 import {MapService} from '../map/map.service';
 import {NotificationService} from './notification.service';
-import {ColorPickerService} from 'ct-angular2-color-picker/lib/color-picker.service';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
@@ -94,6 +93,7 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
+import {ColorPickerModule, ColorPickerService} from 'angular2-color-picker';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -191,6 +191,7 @@ export function configInitializer(config: Config) {
         DragulaModule,
         ReactiveFormsModule,
         DataTableModule,
+        ColorPickerModule,
     ],
     entryComponents: [
         RenameLayerComponent,
@@ -232,7 +233,6 @@ export function configInitializer(config: Config) {
         LayoutService,
         StorageService,
         RandomColorService,
-        ColorPickerService,
         MapService,
         NotificationService,
         UserService,

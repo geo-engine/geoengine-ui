@@ -24,7 +24,7 @@
                                      [disabled]="!channel.hasTransform">
                     </md-slide-toggle>
                     -->
-                    <div (click)="add(source, channel, t.checked)">
+                    <div class="item" (click)="add(source, channel, t.checked)">
                         <p md-line bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm | waveSafeHtml"></p>
                         <template [ngIf]="true || t.checked">
                             <p md-line >measurement: {{channel?.transform?.unit?.measurement}}</p>
@@ -37,7 +37,7 @@
                     </div>
                 </template>
                 <template [ngIf]="!channel.isSwitchable">
-                    <div (click)="add(source, channel, channel.hasTransform)">
+                    <div class="item" (click)="add(source, channel, channel.hasTransform)">
                         <p md-line  bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm | waveSafeHtml"></p>
                         <template [ngIf]="!channel.hasTransform">
                             <p md-line >measurement: {{channel?.unit?.measurement}}</p>

@@ -109,6 +109,10 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         this.layerService.toggleLayer(layer);
     }
 
+    update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
+        this.layerService.changeLayerSymbology(layer, symbology);
+    }
+
     private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
         return Array.prototype.indexOf.call(parent.children, child);
     }

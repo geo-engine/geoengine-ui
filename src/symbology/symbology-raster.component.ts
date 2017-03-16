@@ -1,6 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {RasterSymbology} from './symbology.model';
+import {MdSliderChange} from "@angular/material";
 
 @Component({
     selector: 'wave-symbology-raster',
@@ -9,11 +10,13 @@ import {RasterSymbology} from './symbology.model';
         <tr>
             <td><span>Opacity</span></td>
             <td>
-                    <md-slider #slo thumbLabel min="0" max="100" step="1" value="80"></md-slider>
+                    <md-slider #slo thumbLabel min="0" max="100" step="1" [value]="symbology?.opacity*100"
+                        (change)="updateOpacity($event)">                        
+                    </md-slider>
                     <span>{{slo.displayValue}} %</span>
             </td>
         </tr>
-
+        <!--
         <tr>
             <td><span>Hue</span></td>
             <td>
@@ -28,6 +31,7 @@ import {RasterSymbology} from './symbology.model';
                 <span>{{sls.displayValue}} %</span>
             </td>
         </tr>
+        -->
     </table>
       `,
     styles: [`
@@ -53,6 +57,11 @@ export class SymbologyRasterComponent  {
     @Input() symbology: RasterSymbology;
     @Output('symbologyChanged') symbologyChanged: EventEmitter<RasterSymbology> =
         new EventEmitter<RasterSymbology>();
+
+    updateOpacity(event: MdSliderChange){
+        this.symbology.opacity = (!event.value || event.value === 0) ? 0 : Math.trunc(event.value / 100);
+        this.update();
+    }
 
     update() {
         this.symbologyChanged.emit(this.symbology.clone());
