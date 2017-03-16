@@ -1,18 +1,12 @@
 {
     "/cgi-bin/*": {
-        "target": "http://141.2.171.107/",
-        "changeOrigin": true,
-        "secure": false,
-        "logLevel": "debug"
-    },
-    "/testing/cgi-bin/*": {
-        "target": "https://sng107.sng.uni-frankfurt.de/",
+        "target": "https://sng107.sng.uni-frankfurt.de/dev/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"
     },
     "/mapcache/*": {
-        "target": "http://141.2.171.107/mapcache/",
+        "target": "http://sng107.sng.uni-frankfurt.de/mapcache/",
         "logLevel": "debug"
     }
 }
