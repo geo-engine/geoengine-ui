@@ -1,12 +1,13 @@
-import {LayoutDict} from '../app/layout.service';
-import {Layer, LayerDict} from '../layers/layer.model';
-import {Project, ProjectDict} from '../app/project/project.model';
-import {Symbology} from '../symbology/symbology.model';
-import {ResultType} from '../app/operators/result-type.model';
+import {LayoutDict} from '../layout.service';
+import {Layer, LayerDict} from '../../layers/layer.model';
+import {Project, ProjectDict} from '../project/project.model';
+import {Symbology} from '../../symbology/symbology.model';
+import {ResultType} from '../operators/result-type.model';
 
-import {LayerService} from '../layers/layer.service';
-import {Config} from '../app/config.service';
-import {ProjectService} from '../app/project/project.service';
+import {LayerService} from '../../layers/layer.service';
+import {Config} from '../config.service';
+import {ProjectService} from '../project/project.service';
+import {Observable} from 'rxjs/Rx';
 
 /**
  * A WAVE workspace consisting of a project, layers and plots.
@@ -52,54 +53,54 @@ export abstract class StorageProvider {
 
     /**
      * Load the current Workspace
-     * @returns a promise of a workspace.
+     * @returns a Observable of a workspace.
      */
-    abstract loadWorkspace(): Promise<Workspace>;
+    abstract loadWorkspace(): Observable<Workspace>;
 
     /**
      * Save the current Workspace
      * @param workspace a workspace consisting of the project, layers and plots.
      */
-    abstract saveWorkspace(workspace: Workspace): Promise<void>;
+    abstract saveWorkspace(workspace: Workspace): Observable<{}>;
 
     /**
      * Load layout settings.
      */
-    abstract loadLayoutSettings(): Promise<LayoutDict>;
+    abstract loadLayoutSettings(): Observable<LayoutDict>;
 
     /**
      * Save layout settings.
      * @param dict a serializable layout dictionary.
      */
-    abstract saveLayoutSettings(dict: LayoutDict): Promise<void>;
+    abstract saveLayoutSettings(dict: LayoutDict): Observable<{}>;
 
     /**
      * Does the project exist?
      * @param name the name of the project
      */
-    abstract projectExists(name: string): Promise<boolean>;
+    abstract projectExists(name: string): Observable<boolean>;
 
     /**
      * Retrieve all projects.
      */
-    abstract getProjects(): Promise<Array<string>>;
+    abstract getProjects(): Observable<Array<string>>;
 
     /**
      * Save an R script.
      * @param name the name of the script
-     * @paran scrpipt the script itself
+     * @param script the script itself
      */
-    abstract saveRScript(name: string, script: RScript): Promise<void>;
+    abstract saveRScript(name: string, script: RScript): Observable<void>;
 
     /**
      * Load an R script.
      * @param name the name of the script
      */
-    abstract loadRScript(name: string): Promise<RScript>;
+    abstract loadRScript(name: string): Observable<RScript>;
 
     /**
      * Retrieve all R scripts.
      */
-    abstract getRScripts(): Promise<Array<string>>;
+    abstract getRScripts(): Observable<Array<string>>;
 
 }

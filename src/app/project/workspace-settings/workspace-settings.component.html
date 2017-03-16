@@ -1,22 +1,57 @@
 <wave-sidenav-header>Workspace Settings</wave-sidenav-header>
 <md-nav-list>
     <h3 md-subheader>Storage</h3>
+    <!-- AUTOSAVE -->
     <md-list-item class="disabled">
         <md-icon md-list-icon color="default">save</md-icon>
         <h4 md-line>Save</h4>
         <p md-line><em>autosave</em></p>
     </md-list-item>
-    <md-list-item>
+    <!-- SAVE AS -->
+    <md-list-item
+        *waveIfLoggedIn
+        (click)="layoutService.setSidenavContentComponent(SaveProjectAsComponent, Self)"
+    >
+        <md-icon md-list-icon color="default">folder</md-icon>
+        <h4 md-line>Save As</h4>
+        <p md-line>Save project under a different name</p>
+    </md-list-item>
+    <md-list-item *waveIfGuest class="disabled">
+        <md-icon md-list-icon color="default">folder</md-icon>
+        <h4 md-line>Save As</h4>
+        <p md-line>Please log in to use the full functionality</p>
+    </md-list-item>
+    <!-- LOAD -->
+    <md-list-item
+        *waveIfLoggedIn
+        (click)="layoutService.setSidenavContentComponent(LoadProjectComponent, Self)"
+    >
         <md-icon md-list-icon color="default">folder_open</md-icon>
         <h4 md-line>Load</h4>
         <p md-line>Load another project</p>
     </md-list-item>
+    <md-list-item *waveIfGuest class="disabled">
+        <md-icon md-list-icon color="default">folder_open</md-icon>
+        <h4 md-line>Load</h4>
+        <p md-line>Please log in to use the full functionality</p>
+    </md-list-item>
+    <!-- -->
     <h3 md-subheader>Project</h3>
-    <md-list-item>
+    <!-- NEW PROJECT -->
+    <md-list-item
+        *waveIfLoggedIn
+        (click)="layoutService.setSidenavContentComponent(NewProjectComponent, Self)"
+    >
         <md-icon md-list-icon color="default">create_new_folder</md-icon>
         <h4 md-line>New</h4>
         <p md-line>Create a new project</p>
     </md-list-item>
+    <md-list-item *waveIfGuest class="disabled">
+        <md-icon md-list-icon color="default">create_new_folder</md-icon>
+        <h4 md-line>New</h4>
+        <p md-line>Please log in to use the full functionality</p>
+    </md-list-item>
+    <!-- PROJECTION -->
     <md-list-item (click)="layoutService.setSidenavContentComponent(ChangeProjectionComponent, Self)">
         <md-icon md-list-icon color="default">map</md-icon>
         <h4 md-line>Projection</h4>

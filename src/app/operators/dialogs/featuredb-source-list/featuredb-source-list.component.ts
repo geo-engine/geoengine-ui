@@ -7,7 +7,7 @@ import {ResultTypes} from '../../result-type.model';
 import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../symbology/symbology.model';
 import {RandomColorService} from '../../../../services/random-color.service';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
-import {Subject} from 'rxjs/Rx';
+import {Subject, ReplaySubject} from 'rxjs/Rx';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
 import {MdDialog} from '@angular/material';
 
@@ -19,9 +19,7 @@ import {MdDialog} from '@angular/material';
 })
 export class FeaturedbSourceListComponent implements OnInit {
 
-    CsvDialogComponent = CsvDialogComponent;
-
-    entries$: Subject<Array<{name: string, operator: Operator}>> = new Subject();
+    entries$: Subject<Array<{name: string, operator: Operator}>> = new ReplaySubject(1);
 
     constructor(private userService: UserService,
                 private layerService: LayerService,
@@ -37,7 +35,14 @@ export class FeaturedbSourceListComponent implements OnInit {
     refresh() {
         this.userService.getFeatureDBList()
             .map(entries => entries.sort())
-            .subscribe(this.entries$);
+            .subscribe(entries => this.entries$.next(entries));
+    }
+
+    openCSVDialog() {
+        this.dialog.open(CsvDialogComponent)
+            .afterClosed()
+            .first()
+            .subscribe(() => this.refresh());
     }
 
     add(entry: {name: string, operator: Operator}) {

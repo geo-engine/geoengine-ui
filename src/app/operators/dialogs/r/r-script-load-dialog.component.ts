@@ -3,8 +3,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {BehaviorSubject, Observable, Subscription, Observer} from 'rxjs/Rx';
 
-import {StorageService} from '../../../../storage/storage.service';
-import {RScript} from '../../../../storage/storage-provider.model';
+import {StorageService} from '../../../storage/storage.service';
+import {RScript} from '../../../storage/storage-provider.model';
 import {Config} from '../../../config.service';
 
 interface RScriptLoadDialogType {

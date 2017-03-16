@@ -12,7 +12,7 @@ import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-con
 
 import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from './storage/storage.service';
 
 import {MapComponent} from '../map/map.component';
 

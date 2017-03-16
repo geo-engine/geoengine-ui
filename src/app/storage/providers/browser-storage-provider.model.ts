@@ -1,67 +1,61 @@
-import {
-    StorageProvider, Workspace, RScript, RScriptDict,
-} from '../storage-provider.model';
+import {StorageProvider, Workspace, RScript, RScriptDict} from '../storage-provider.model';
 
-import {LayoutDict} from '../../app/layout.service';
-import {Layer, LayerDict} from '../../layers/layer.model';
-import {Project} from '../../app/project/project.model';
-import {Symbology} from '../../symbology/symbology.model';
-import {Operator} from '../../app/operators/operator.model';
-import {ResultTypes} from '../../app/operators/result-type.model';
+import {LayoutDict} from '../../layout.service';
+import {Layer, LayerDict} from '../../../layers/layer.model';
+import {Project} from '../../project/project.model';
+import {Symbology} from '../../../symbology/symbology.model';
+import {Operator} from '../../operators/operator.model';
+import {ResultTypes} from '../../operators/result-type.model';
+import {Observable} from 'rxjs/Rx';
 
 /**
  * StorageProvider implementation that uses the brower's localStorage
  */
 export class BrowserStorageProvider extends StorageProvider {
 
-    loadWorkspace(): Promise<Workspace> {
+    loadWorkspace(): Observable<Workspace> {
         const operatorMap = new Map<number, Operator>();
 
-        const promises: [
-            Promise<Project>,
-            Promise<Array<Layer<Symbology>>>
-        ] = [
+        return Observable.forkJoin(
             this.loadProject(operatorMap),
             this.loadLayers(operatorMap),
-        ];
-        return Promise.all(
-            promises
-        ).then(([project, layers]: [Project, Array<Layer<Symbology>>]) => {
-            return {
-                project: project,
-                layers: layers,
-            };
-        });
+            (project, layers) => {
+                return {
+                    project: project,
+                    layers: layers,
+                };
+            },
+        );
     };
 
-    saveWorkspace(workspace: Workspace): Promise<void> {
-        return Promise.all([
-            this.saveProject(workspace.project),
-            this.saveLayers(workspace.layers),
-        ]).then(
-            _ => undefined
-        );
+    saveWorkspace(workspace: Workspace): Observable<{}> {
+        return Observable
+            .concat(
+                this.saveProject(workspace.project),
+                this.saveLayers(workspace.layers),
+            )
+            .mapTo({});
     }
 
-    loadProject(operatorMap: Map<number, Operator>): Promise<Project> {
+    loadProject(operatorMap: Map<number, Operator>): Observable<Project> {
         const projectJSON = localStorage.getItem('project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
-            return Promise.resolve(undefined);
+            return Observable.of(undefined);
         } else {
             const project = Project.fromJSON(projectJSON, operatorMap);
-            return Promise.resolve(project);
+            return Observable.of(project);
         }
     }
 
-    saveProject(project: Project): Promise<void> {
+    saveProject(project: Project): Observable<void> {
         localStorage.setItem('project', project.toJSON());
-        return Promise.resolve();
+        return Observable.of(undefined);
     }
 
-    loadLayers(operatorMap: Map<number, Operator>): Promise<Array<Layer<Symbology>>> {
+    loadLayers(operatorMap: Map<number, Operator>): Observable<Array<Layer<Symbology>>> {
         const layersJSON = localStorage.getItem('layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
-            return Promise.resolve(undefined);
+            return Observable.of(undefined);
         } else {
             const layers: Array<Layer<Symbology>> = [];
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
@@ -72,11 +66,11 @@ export class BrowserStorageProvider extends StorageProvider {
                 );
             }
 
-            return Promise.resolve(layers);
+            return Observable.of(layers);
         }
     }
 
-    saveLayers(layers: Array<Layer<Symbology>>): Promise<void> {
+    saveLayers(layers: Array<Layer<Symbology>>): Observable<void> {
         const layerDicts: Array<LayerDict> = [];
 
         for (const layer of layers) {
@@ -84,32 +78,32 @@ export class BrowserStorageProvider extends StorageProvider {
         }
 
         localStorage.setItem('layers', JSON.stringify(layerDicts));
-        return Promise.resolve();
+        return Observable.of(undefined);
     }
 
-    loadLayoutSettings(): Promise<LayoutDict> {
+    loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem('layoutSettings');
         if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
-            return Promise.resolve(undefined);
+            return Observable.of(undefined);
         } else {
-            return Promise.resolve(JSON.parse(layoutSettings));
+            return Observable.of(JSON.parse(layoutSettings));
         }
     };
 
-    saveLayoutSettings(dict: LayoutDict): Promise<void> {
+    saveLayoutSettings(dict: LayoutDict): Observable<{}> {
         localStorage.setItem('layoutSettings', JSON.stringify(dict));
-        return Promise.resolve();
+        return Observable.of({});
     };
 
-    projectExists(name: string): Promise<boolean> {
-        return Promise.resolve(false);
+    projectExists(name: string): Observable<boolean> {
+        return Observable.of(false);
     }
 
-    getProjects(): Promise<Array<string>> {
-        return Promise.resolve([]);
+    getProjects(): Observable<Array<string>> {
+        return Observable.of([]);
     }
 
-    saveRScript(name: string, script: RScript): Promise<void> {
+    saveRScript(name: string, script: RScript): Observable<void> {
         const itemName = 'r_scripts';
         const scriptDict: RScriptDict = {
             code: script.code,
@@ -122,24 +116,24 @@ export class BrowserStorageProvider extends StorageProvider {
         scripts[name] = scriptDict;
         localStorage.setItem(itemName, JSON.stringify(scripts));
 
-        return Promise.resolve();
+        return Observable.of(undefined);
     }
 
-    loadRScript(name: string): Promise<RScript> {
+    loadRScript(name: string): Observable<RScript> {
         const scripts: {
             [index: string]: RScriptDict
         } = JSON.parse(localStorage.getItem('r_scripts'));
-        return Promise.resolve({
+        return Observable.of({
             code: scripts[name].code,
             resultType: ResultTypes.fromCode(scripts[name].resultType),
         });
     };
 
-    getRScripts(): Promise<Array<string>> {
+    getRScripts(): Observable<Array<string>> {
         const scripts: {
             [index: string]: RScriptDict
         } = JSON.parse(localStorage.getItem('r_scripts'));
-        return Promise.resolve(Object.keys(scripts));
+        return Observable.of(Object.keys(scripts));
     };
 
 }

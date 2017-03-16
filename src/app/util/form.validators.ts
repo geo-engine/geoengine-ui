@@ -1,4 +1,6 @@
-import {AbstractControl} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
+import {StorageService} from '../storage/storage.service';
+import {Observable, Observer} from 'rxjs/Rx';
 
 /**
  * A validator that validates a form group that contains min/max number fields.
@@ -64,15 +66,53 @@ function conditionalValidator(validator: (control: AbstractControl) => {[key: st
         }
     };
 }
+
+/**
+ * Checks if keyword is a reserved keyword.
+ * @param keywords
+ * @returns {(control:AbstractControl)=>{keyword: boolean}}
+ */
 function keywordValidator(keywords: Array<string>) {
     return (control: AbstractControl) => {
         return keywords.indexOf(control.value) >= 0 ? {'keyword': true} : null;
     };
 }
 
+/**
+ * Checks if the project name is unique.
+ * @param storageService
+ * @returns {(control:AbstractControl)=>Observable<{[p: string]: boolean}>}
+ */
+function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
+
+        return Observable.create((observer: Observer<{[key: string]: boolean}>) => {
+            storageService.projectExists(control.value as string)
+                .map(projectExists => {
+                    const errors: {
+                        nameInUsage?: boolean,
+                    } = {};
+
+                    if (projectExists) {
+                        errors.nameInUsage = true;
+                    }
+
+                    return Object.keys(errors).length > 0 ? errors : null;
+                })
+                .subscribe(errors => {
+                    observer.next(errors);
+                    observer.complete();
+                }, error => {
+                    observer.error(error);
+                });
+        });
+
+    };
+}
 
 export const WaveValidators = {
     minAndMax: minAndMax,
     conditionalValidator: conditionalValidator,
     keyword: keywordValidator,
+    uniqueProjectName: uniqueProjectNameValidator,
 };
