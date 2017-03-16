@@ -43,6 +43,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
             this.userService.isGuestUserStream()
                 .distinctUntilChanged()
                 .filter(isGuest => isGuest)
+                .filter(() => this.loginColor$.getValue() === 'default')
                 .subscribe(() => {
                     this.loginColor$.next('accent');
                     setTimeout(
