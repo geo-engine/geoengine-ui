@@ -15,8 +15,8 @@
         <md-icon>add</md-icon>
     </button>
     <button md-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, OperatorRepositoryComponent)"
-            (click)="layoutService.setSidenavContentComponent(OperatorRepositoryComponent)"
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, OperatorListComponent)"
+            (click)="layoutService.setSidenavContentComponent(OperatorListComponent)"
             mdTooltip="Operators" mdTooltipPosition="before"
     >
         <span class="icon-cogs"></span>

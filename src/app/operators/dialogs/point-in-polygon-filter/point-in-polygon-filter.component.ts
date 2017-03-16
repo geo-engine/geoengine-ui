@@ -12,7 +12,6 @@ import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
 } from '../../../../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MdDialogRef} from '@angular/material';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -32,8 +31,7 @@ export class PointInPolygonFilterOperatorComponent {
     constructor(private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private layerService: LayerService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<PointInPolygonFilterOperatorComponent>) {
+                private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
             pointLayer: [undefined, Validators.required],
@@ -85,7 +83,6 @@ export class PointInPolygonFilterOperatorComponent {
             clustered: clustered,
         }));
 
-        this.dialogRef.close();
     }
 
 }

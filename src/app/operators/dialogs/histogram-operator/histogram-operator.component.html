@@ -1,27 +1,23 @@
-<wave-dialog-header>Histogram</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
-    <md-dialog-content>
+<wave-sidenav-header>Histogram</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex fxLayout="column" fxLayoutAlign="start stretch" class="container">
         <wave-layer-selection
             [types]="ResultTypes.INPUT_TYPES"
             formControlName="layer"
         ></wave-layer-selection>
         <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
-        <div fxLayout="row" *ngIf="isVectorLayer$ | async">
-            <md-select placeholder="Attribute" formControlName="attribute" fxFlex>
-                <md-option
-                    *ngFor="let attribute of (attributes$ | async)"
-                    [value]="attribute"
-                >{{attribute}}
-                </md-option>
-            </md-select>
-        </div>
-        <div fxLayout="row">
-            <md-select placeholder="Range Type" formControlName="rangeType" fxFlex>
-                <md-option [value]="'custom'">Custom</md-option>
-                <md-option [value]="'unit'">Unit</md-option>
-                <md-option [value]="'data'">Data</md-option>
-            </md-select>
-        </div>
+        <md-select placeholder="Attribute" formControlName="attribute" *ngIf="isVectorLayer$ | async">
+            <md-option
+                *ngFor="let attribute of (attributes$ | async)"
+                [value]="attribute"
+            >{{attribute}}
+            </md-option>
+        </md-select>
+        <md-select placeholder="Range Type" formControlName="rangeType">
+            <md-option [value]="'custom'">Custom</md-option>
+            <md-option [value]="'unit'">Unit</md-option>
+            <md-option [value]="'data'">Data</md-option>
+        </md-select>
         <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
             <md-input-container fxFlex>
                 <input mdInput type="number" placeholder="Min" formControlName="min">
@@ -56,14 +52,10 @@
             formControlName="name"
             [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
         ></wave-operator-output-name>
-    </md-dialog-content>
-    <md-dialog-actions align="end">
-        <button
-            type="submit"
-            md-raised-button
-            color="primary"
-            [disabled]="(form.statusChanges | async) !== 'VALID'"
-        >Apply
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Create
         </button>
-    </md-dialog-actions>
+    </div>
 </form>

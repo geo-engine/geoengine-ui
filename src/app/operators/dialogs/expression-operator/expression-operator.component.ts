@@ -1,5 +1,4 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {LayerService} from '../../../../layers/layer.service';
@@ -31,7 +30,6 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
     constructor(private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
-                private dialogRef: MdDialogRef<ExpressionOperatorComponent>,
                 private formBuilder: FormBuilder,
                 private changeDetectorRef: ChangeDetectorRef) {
         this.form = formBuilder.group({
@@ -174,7 +172,6 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
-        this.dialogRef.close();
     }
 
 }

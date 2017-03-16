@@ -1,5 +1,5 @@
 import {
-    Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit,
+    Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit, ElementRef,
 } from '@angular/core';
 
 import {HistogramData} from '../../../plots/histogram.component';
@@ -18,10 +18,10 @@ import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/form
 import {Subscription, BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
-import {MdDialogRef} from '@angular/material';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Unit} from '../../unit.model';
 import {ProjectService} from '../../../project/project.service';
+import {LayoutService} from '../../../layout.service';
 
 function minMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;
@@ -65,12 +65,15 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
     dataLoading$ = new BehaviorSubject(false);
 
+    histogramWidth: number;
+    histogramHeight: number;
+
     constructor(private layerService: LayerService,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private projectService: ProjectService,
                 private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<NumericAttributeFilterOperatorComponent>) {
+                private elementRef: ElementRef) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
             pointLayer: [undefined, Validators.required],
@@ -130,8 +133,16 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     }
 
     ngAfterViewInit() {
+        // calculate size for histogram
+        const formStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('form'));
+        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx();
+        const formHeight = parseInt(formStyle.height, 10) - 2 * LayoutService.remInPx();
+
+        this.histogramWidth = formWidth;
+        this.histogramHeight = Math.max(formHeight / 3, formWidth / 3);
+
         // initially get attributes
-        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}), 0);
+        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}));
     }
 
     ngOnDestroy() {
@@ -204,7 +215,6 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             clustered: clustered,
         }));
 
-        this.dialogRef.close();
     }
 
 }

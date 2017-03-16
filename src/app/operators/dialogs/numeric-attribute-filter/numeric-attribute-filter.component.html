@@ -1,6 +1,6 @@
-<wave-dialog-header>Numeric Attribute Filter</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
-    <md-dialog-content>
+<wave-sidenav-header>Numeric Attribute Filter</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
         <wave-layer-selection
             [types]="[ResultTypes.POINTS]"
             formControlName="pointLayer">
@@ -15,8 +15,9 @@
             </md-select>
         </div>
         <md-progress-circle mode="indeterminate" *ngIf="dataLoading$ | async"></md-progress-circle>
-        <wave-histogram [height]="500" [width]="500" [selectable]="true"
-                        *ngIf="data$ | async" [data]="data$ | async" interactable="true"
+        <wave-histogram [height]="histogramHeight" [width]="histogramWidth"
+                        [selectable]="true" [interactable]="false"
+                        *ngIf="data$ | async" [data]="data$ | async"
                         [minRange]="form.controls.bounds.value.min"
                         [maxRange]="form.controls.bounds.value.max"
                         (minRangeChange)="form.controls.bounds.controls.min.setValue($event)"
@@ -48,13 +49,10 @@
             formControlName="name"
             [suggestion]="'Filtered ' + (form.controls.pointLayer.valueChanges | async)?.name"
         ></wave-operator-output-name>
-    </md-dialog-content>
-    <md-dialog-actions align="end">
-        <button
-            type="submit"
-            md-raised-button
-            color="primary"
-            [disabled]="form.invalid"
-        >Apply</button>
-    </md-dialog-actions>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
 </form>

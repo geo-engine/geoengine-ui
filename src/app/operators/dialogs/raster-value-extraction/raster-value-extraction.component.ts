@@ -11,7 +11,6 @@ import {
     AbstractVectorSymbology, ClusteredPointSymbology,
     SimplePointSymbology
 } from '../../../../symbology/symbology.model';
-import {MdDialogRef} from '@angular/material';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 
@@ -72,8 +71,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
-                private changeDetectorRef: ChangeDetectorRef,
-                private dialogRef: MdDialogRef<RasterValueExtractionOperatorComponent>) {
+                private changeDetectorRef: ChangeDetectorRef) {
         this.form = this.formBuilder.group({
             pointLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
@@ -207,7 +205,6 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             clustered: clustered,
         }));
 
-        this.dialogRef.close();
     }
 
 }

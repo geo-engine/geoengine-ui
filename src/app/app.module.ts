@@ -94,6 +94,8 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
+import { OperatorListComponent } from './operators/dialogs/operator-list/operator-list.component';
+import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -181,6 +183,9 @@ export function configInitializer(config: Config) {
         NewProjectComponent,
         LoadProjectComponent,
         SaveProjectAsComponent,
+        OperatorListComponent,
+        SidenavSearchComponent,
+        SidenavSearchRightDirective,
     ],
     imports: [
         BrowserModule,
@@ -221,6 +226,7 @@ export function configInitializer(config: Config) {
         NewProjectComponent,
         LoadProjectComponent,
         SaveProjectAsComponent,
+        OperatorListComponent,
     ],
     providers: [
         DragulaService,

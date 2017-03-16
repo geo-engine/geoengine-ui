@@ -3,7 +3,6 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Subscription, ReplaySubject, Observable} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
-import {MdDialogRef} from '@angular/material';
 import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
@@ -37,8 +36,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     private subscriptions: Array<Subscription> = [];
 
     constructor(private projectService: ProjectService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<HistogramOperatorComponent>) {
+                private formBuilder: FormBuilder) {
     }
 
     ngOnInit() {
@@ -138,8 +136,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             name: outputName,
             operator: operator,
         }));
-
-        this.dialogRef.close();
     }
 
 }

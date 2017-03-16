@@ -10,6 +10,7 @@ import {WorkspaceSettingsComponent} from '../../project/workspace-settings/works
 import {UserService} from '../../users/user.service';
 import {Subscription, BehaviorSubject} from 'rxjs/Rx';
 import {Config} from '../../config.service';
+import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -21,7 +22,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     // make available
     SourceOperatorListComponent = SourceOperatorListComponent;
-    OperatorRepositoryComponent = OperatorRepositoryComponent;
+    OperatorListComponent = OperatorListComponent;
     LoginComponent = LoginComponent;
     HelpComponent = HelpComponent;
     TimeConfigComponent = TimeConfigComponent;
