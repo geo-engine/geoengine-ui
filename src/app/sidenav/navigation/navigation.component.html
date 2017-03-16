@@ -2,7 +2,7 @@
     <button md-raised-button
             [color]="loginColor$ | async"
             (click)="layoutService.setSidenavContentComponent(LoginComponent)"
-            mdTooltip="User Account / Login" mdTooltipPosition="before"
+            [mdTooltip]="(userService.isGuestUserStream() | async) ? 'Login' : 'User Account'" mdTooltipPosition="before"
     >
         <md-icon *waveIfLoggedIn>person</md-icon>
         <md-icon *waveIfGuest>person_outline</md-icon>
@@ -38,7 +38,7 @@
     <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, WorkspaceSettingsComponent)"
             (click)="layoutService.setSidenavContentComponent(WorkspaceSettingsComponent)"
-            mdTooltip="Workspace Settings" mdTooltipPosition="before"
+            mdTooltip="Workspace" mdTooltipPosition="before"
     >
         <md-icon>settings</md-icon>
     </button>

@@ -34,7 +34,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(public layoutService: LayoutService,
-                private userService: UserService,
+                public userService: UserService,
                 private config: Config) {
     }
 
