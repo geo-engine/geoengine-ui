@@ -16,6 +16,8 @@ import {LayerService} from '../layers/layer.service';
                 <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
                  [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
                  (colorPickerChange)='updateFillRgba($event)'
+                 [cpSaveClickOutside]="false"
+                 [cpOKButton]="true"
                  [cpOutputFormat]="'rgba'">
                     {{symbology.fillRGBA}}
                 </td>
@@ -28,6 +30,8 @@ import {LayerService} from '../layers/layer.service';
                     [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     (colorPickerChange)='updateStrokeRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
                     [cpOutputFormat]="'rgba'">
                     {{symbology.strokeRGBA}}                    
                 </td>
@@ -137,6 +141,8 @@ export class SymbologyPointsComponent {
                 <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
                     [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
                     (colorPickerChange)='updateFillRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
                     [cpOutputFormat]="'rgba'">
                     {{symbology.fillRGBA}}
                 </td>
@@ -148,6 +154,8 @@ export class SymbologyPointsComponent {
                 <td class="color_cell" [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
                     (colorPickerChange)='updateStrokeRgba($event)'
+                    [cpSaveClickOutside]="false"
+                    [cpOKButton]="true"
                     [cpOutputFormat]="'rgba'">
                     {{symbology.strokeRGBA}}                    
                 </td>

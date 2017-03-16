@@ -10,7 +10,7 @@ import {MdSliderChange} from "@angular/material";
         <tr>
             <td><span>Opacity</span></td>
             <td>
-                    <md-slider #slo thumbLabel min="0" max="100" step="1" [value]="symbology?.opacity*100"
+                    <md-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
                         (change)="updateOpacity($event)">                        
                     </md-slider>
                     <span>{{slo.displayValue}} %</span>
@@ -59,7 +59,7 @@ export class SymbologyRasterComponent  {
         new EventEmitter<RasterSymbology>();
 
     updateOpacity(event: MdSliderChange){
-        this.symbology.opacity = (!event.value || event.value === 0) ? 0 : Math.trunc(event.value / 100);
+        this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
