@@ -13,7 +13,7 @@ import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../../../../models/csv.model';
-import {ClusteredPointSymbology} from '../../../../symbology/symbology.model';
+import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
 
 type Grouped<T> = Iterable<Group<T>>;
 interface Group<T> {

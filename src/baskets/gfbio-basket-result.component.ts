@@ -9,7 +9,7 @@ import {Projections} from '../app/operators/projection.model';
 import {DataType, DataTypes} from '../app/operators/datatype.model';
 import {VectorLayer} from '../app/layers/layer.model';
 import {Unit} from '../app/operators/unit.model';
-import {ClusteredPointSymbology} from '../symbology/symbology.model';
+import {ClusteredPointSymbology} from '../app/layers/symbology/symbology.model';
 import {MappingQueryService} from '../app/queries/mapping-query.service';
 import {LayerService} from '../app/layers/layer.service';
 import {RandomColorService} from '../app/util/services/random-color.service';

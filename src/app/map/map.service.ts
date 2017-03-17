@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, BehaviorSubject, Subject} from 'rxjs/Rx';
 import * as ol from 'openlayers';
-import {Symbology} from '../../symbology/symbology.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 
 export interface ViewportSize {

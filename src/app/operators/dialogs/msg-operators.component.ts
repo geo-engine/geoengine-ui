@@ -15,7 +15,7 @@ import {Projections} from '../projection.model';
 import {Unit} from '../unit.model';
 import {
     Symbology, MappingColorizerRasterSymbology, RasterSymbology,
-} from '../../../symbology/symbology.model';
+} from '../../layers/symbology/symbology.model';
 import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
     MsgTemperatureType, MsgPansharpenType,
     MsgCo2CorrectionType, SolarangleName} from '../types/msg-types.model';

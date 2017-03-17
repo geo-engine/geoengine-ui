@@ -6,7 +6,7 @@ import * as ol from 'openlayers';
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {Symbology, AbstractVectorSymbology} from '../../symbology/symbology.model';
+import {Symbology, AbstractVectorSymbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {MapService} from './map.service';

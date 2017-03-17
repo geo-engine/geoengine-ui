@@ -9,7 +9,7 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {RasterSymbology} from '../../../../symbology/symbology.model';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 @Component({

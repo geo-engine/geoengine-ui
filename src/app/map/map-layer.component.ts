@@ -8,7 +8,7 @@ import * as ol from 'openlayers';
 import {Projection} from '../operators/projection.model';
 import {
     Symbology, AbstractVectorSymbology, RasterSymbology
-} from '../../symbology/symbology.model';
+} from '../layers/symbology/symbology.model';
 
 import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';

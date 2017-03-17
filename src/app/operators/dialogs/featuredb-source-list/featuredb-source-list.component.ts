@@ -4,7 +4,7 @@ import {Operator} from '../../operator.model';
 import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../symbology/symbology.model';
+import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {Subject, ReplaySubject} from 'rxjs/Rx';

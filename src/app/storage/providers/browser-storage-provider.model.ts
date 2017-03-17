@@ -3,7 +3,7 @@ import {StorageProvider, Workspace, RScript, RScriptDict} from '../storage-provi
 import {LayoutDict} from '../../layout.service';
 import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../project/project.model';
-import {Symbology} from '../../../symbology/symbology.model';
+import {Symbology} from '../../layers/symbology/symbology.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {Observable} from 'rxjs/Rx';

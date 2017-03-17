@@ -13,7 +13,7 @@ import {ResultTypes} from '../../result-type.model';
 import {DataTypes, DataType} from '../../datatype.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
-} from '../../../../symbology/symbology.model';
+} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
 import {Subscription, BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';

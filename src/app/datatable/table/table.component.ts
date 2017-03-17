@@ -8,7 +8,7 @@ import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {VectorLayer} from '../../layers/layer.model';
-import {AbstractVectorSymbology} from '../../../symbology/symbology.model';
+import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {GeoJsonFeature, FeatureID} from '../../../models/geojson.model';
 
 

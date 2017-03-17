@@ -3,7 +3,7 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {LayerService} from '../layer.service';
 
 import {Layer} from '../layer.model';
-import {Symbology} from '../../../symbology/symbology.model';
+import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
 

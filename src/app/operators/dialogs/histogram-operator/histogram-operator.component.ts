@@ -4,7 +4,7 @@ import {Subscription, ReplaySubject, Observable} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {Layer} from '../../../layers/layer.model';
-import {Symbology} from '../../../../symbology/symbology.model';
+import {Symbology} from '../../../layers/symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';

@@ -8,7 +8,7 @@ import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LayerService} from '../../layers/layer.service';
 import {LayoutService, Browser} from '../../layout.service';
 
-import {Symbology} from '../../../symbology/symbology.model';
+import {Symbology} from '../../layers/symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
 import {ResultType, ResultTypes} from '../result-type.model';
 import {Projection} from '../projection.model';

@@ -17,8 +17,8 @@ import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-con
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
-import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
-import {SymbologyRasterComponent} from '../symbology/symbology-raster.component';
+import {SymbologyPointsComponent, SymbologyVectorComponent} from './layers/symbology/symbology-points.component';
+import {SymbologyRasterComponent} from './layers/symbology/symbology-raster.component';
 import {CodeEditorComponent} from '../components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
@@ -26,7 +26,7 @@ import {
     LegendaryPointComponent, LegendaryRasterComponent,
     LegendaryVectorComponent, LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
     LegendaryComponent
-} from '../symbology/legendary.component';
+} from './layers/symbology/legendary.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {VatLogoComponent, IdessaLogoComponent} from './logo.component';
@@ -37,7 +37,7 @@ import {TrimPipe} from './util/pipes/trim.pipe';
 import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '../baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
-import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
+import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from './layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -88,7 +88,7 @@ import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
 import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
-import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
+import {SymbologyDialogComponent} from './layers/symbology/symbology-dialog.component';
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';

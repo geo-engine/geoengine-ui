@@ -22,7 +22,7 @@ import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {Plot} from '../../plots/plot.model';
 import {
     Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology,
-} from '../../../symbology/symbology.model';
+} from '../../layers/symbology/symbology.model';
 import {Operator} from '../operator.model';
 import {ResultTypes} from '../result-type.model';
 import {DataType} from '../datatype.model';
