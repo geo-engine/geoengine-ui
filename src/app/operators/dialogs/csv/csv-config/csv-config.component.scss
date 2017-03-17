@@ -1,0 +1,187 @@
+$latitudeColor: #26c5ff;
+$longitudeColor: orange;
+$startColor: darkgreen;
+$endColor: darkviolet;
+
+div.temporal_fxElement div {
+    margin-top: 20px;
+}
+div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $latitudeColor;
+}
+div.longitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $longitudeColor;
+}
+div.startSelector md-select /deep/ span.mat-select-placeholder {
+    color: $startColor;
+}
+div.endSelector md-select /deep/ span.mat-select-placeholder {
+    color: $endColor;
+}
+
+input[type=number]{
+    width:50px;
+}
+
+.frame{
+    width:95%;
+    margin: 0 auto;
+}
+.buttons {
+    text-align:right;
+}
+td.orange{
+    border-left-style: solid;
+    border-right-style: solid;
+    border-color: $longitudeColor;
+}
+td.blue {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-color: $latitudeColor;
+}
+td.green{
+    border-left-style: solid;
+    border-right-style: solid;
+    border-color:$startColor;
+}
+td.violet {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-color:$endColor;
+}
+.orangeHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$longitudeColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.blueHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$latitudeColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.greenHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$startColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.violetHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$endColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+md-slide-toggle {
+    display: inline-block;
+}
+
+/*Table*/
+.table-frame {
+    align: center;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px darkgray;
+    min-width: 80vw;
+    max-width: 80vw;
+}
+
+.typingdiv {
+    overflow: hidden;
+    width: auto;
+    border-bottom: solid 1px dimgray;
+    background-color: #FFFFFF;
+    font-weight: 300;
+    border-right: solid 1px dimgray;
+}
+
+.headerdiv {
+    overflow: hidden;
+    width: auto;
+    border-bottom: solid 1px dimgray;
+    border-right: solid 1px dimgray;
+    background-color: #335aa3;/*Inherit from theme here.*/
+    color: white; /*Inherit from theme here.*/
+    font-weight: 300;
+}
+
+.headerdiv table td.custom md-input-container {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    font-size: 15px;
+    height: 30px;
+    color: white; /*Inherit from theme here.*/
+}
+
+.bodydiv {
+    overflow: scroll;
+    height: 200px;
+}
+
+.bodydiv table tr:nth-child(even) {
+    background-color: #add4f4;
+}
+
+.resizeTable {
+    table-layout: fixed;
+}
+
+.custom {
+    font-weight: normal;
+    padding-bottom: 0px;
+}
+
+.scrollbar-measure {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
+}
+
+.time_green {
+    border: solid $startColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.time_violet {
+    border: solid $endColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_orange {
+    border: solid $longitudeColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_blue {
+    border: solid $latitudeColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
