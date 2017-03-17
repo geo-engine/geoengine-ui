@@ -5,15 +5,15 @@ import {Subscription} from 'rxjs/Rx';
 
 import * as ol from 'openlayers';
 
-import {Projection} from '../app/operators/projection.model';
+import {Projection} from '../operators/projection.model';
 import {
     Symbology, AbstractVectorSymbology, RasterSymbology
-} from '../symbology/symbology.model';
+} from '../../symbology/symbology.model';
 
-import {Layer, VectorLayer, RasterLayer} from '../app/layers/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {Time} from '../app/time.model';
-import {Config} from '../app/config.service';
+import {Time} from '../time.model';
+import {Config} from '../config.service';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.

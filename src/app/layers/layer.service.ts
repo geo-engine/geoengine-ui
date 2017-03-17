@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Set as ImmutableSet} from 'immutable';
 
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
 import {Operator} from '../operators/operator.model';

@@ -2,8 +2,8 @@ import {Component, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef} from '
 import {ResultTypes} from '../../result-type.model';
 import {FormBuilder, FormGroup, Validators, FormArray, FormControl} from '@angular/forms';
 import {LayerService} from '../../../layers/layer.service';
-import {RandomColorService} from '../../../../services/random-color.service';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Subscription} from 'rxjs/Rx';
 import {VectorLayer} from '../../../layers/layer.model';

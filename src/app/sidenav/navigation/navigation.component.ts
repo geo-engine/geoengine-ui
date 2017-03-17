@@ -1,7 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, Type, OnDestroy} from '@angular/core';
 import {LayoutService} from '../../layout.service';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
-import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from '../../help.component';
 import {TimeConfigComponent} from '../../time-config/time-config.component';

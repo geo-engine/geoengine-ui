@@ -9,9 +9,9 @@ import {AbcdArchive} from '../../../../models/abcd.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
-import {RandomColorService} from '../../../../services/random-color.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../../../../models/csv.model';
 import {ClusteredPointSymbology} from '../../../../symbology/symbology.model';
 

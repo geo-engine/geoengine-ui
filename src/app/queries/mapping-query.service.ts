@@ -4,26 +4,26 @@ import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
 import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
-import {MappingRequestParameters} from '../app/queries/request-parameters.model';
+import {MappingRequestParameters} from './request-parameters.model';
 
-import {ProjectService} from '../app/project/project.service';
-import {UserService} from '../app/users/user.service';
+import {ProjectService} from '../project/project.service';
+import {UserService} from '../users/user.service';
 import {MapService, ViewportSize} from '../map/map.service';
-import {NotificationService} from '../app/notification.service';
+import {NotificationService} from '../notification.service';
 
-import {Operator} from '../app/operators/operator.model';
-import {Projection} from '../app/operators/projection.model';
-import {ResultTypes} from '../app/operators/result-type.model';
-import {MappingColorizer} from '../symbology/symbology.model';
+import {Operator} from '../operators/operator.model';
+import {Projection} from '../operators/projection.model';
+import {ResultTypes} from '../operators/result-type.model';
+import {MappingColorizer} from '../../symbology/symbology.model';
 
-import {PlotData} from '../app/plots/plot.model';
-import {VectorLayerData, LayerProvenance} from '../app/layers/layer.model';
-import {LoadingState} from '../app/project/loading-state.model';
+import {PlotData} from '../plots/plot.model';
+import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
+import {LoadingState} from '../project/loading-state.model';
 
-import {GeoJsonFeatureCollection} from '../models/geojson.model';
-import {Provenance} from '../app/provenance/provenance.model';
-import {Time} from '../app/time.model';
-import {Config} from '../app/config.service';
+import {GeoJsonFeatureCollection} from '../../models/geojson.model';
+import {Provenance} from '../provenance/provenance.model';
+import {Time} from '../time.model';
+import {Config} from '../config.service';
 import Extent = ol.Extent;
 
 /**

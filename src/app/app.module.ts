@@ -7,16 +7,16 @@ import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
-import {MapComponent} from '../map/map.component';
+import {MapComponent} from './map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
     OlPolygonLayerComponent
-} from '../map/map-layer.component';
+} from './map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
-import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
-import {RgbaToCssStringPipe} from '../pipes/rgba-to-css-string.pipe';
+import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
+import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from '../symbology/symbology-points.component';
 import {SymbologyRasterComponent} from '../symbology/symbology-raster.component';
 import {CodeEditorComponent} from '../components/code-editor.component';
@@ -27,23 +27,23 @@ import {
     LegendaryVectorComponent, LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
     LegendaryComponent
 } from '../symbology/legendary.component';
-import {MappingQueryService} from '../queries/mapping-query.service';
+import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {VatLogoComponent, IdessaLogoComponent} from './logo.component';
-import {MappingDataSourceFilter} from '../pipes/mapping-data-sources.pipe';
-import {HighlightPipe} from '../pipes/highlight.pipe';
+import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
+import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from '../baskets/gfbio-basket.pipe';
-import {TrimPipe} from '../pipes/trim.pipe';
+import {TrimPipe} from './util/pipes/trim.pipe';
 import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from '../baskets/gfbio-basket-result.component';
-import {SafeStylePipe} from '../pipes/safe-style.pipe';
-import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
+import {SafeStylePipe} from './util/pipes/safe-style.pipe';
+import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from './layers/layer.service';
 import {LayoutService} from './layout.service';
 import {StorageService} from './storage/storage.service';
-import {RandomColorService} from '../services/random-color.service';
-import {MapService} from '../map/map.service';
+import {RandomColorService} from './util/services/random-color.service';
+import {MapService} from './map/map.service';
 import {NotificationService} from './notification.service';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
@@ -54,7 +54,6 @@ import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/di
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
-import {OperatorRepositoryComponent} from '../components/operator-repository.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
@@ -70,10 +69,10 @@ import {SidenavRef} from './sidenav/sidenav-ref.service';
 import { SidenavHeaderComponent } from './sidenav/sidenav-header/sidenav-header.component';
 import { NavigationComponent } from './sidenav/navigation/navigation.component';
 import { SourceOperatorListComponent } from './operators/dialogs/source-operator-list/source-operator-list.component';
-import { IfGfbioDirective } from './util/if-gfbio.directive';
-import { IfGfbioLoggedInDirective } from './util/if-gfbio-logged-in.directive';
-import { IfLoggedInDirective } from './util/if-logged-in.directive';
-import { IfGuestDirective } from './util/if-guest.directive';
+import { IfGfbioDirective } from './util/directives/if-gfbio.directive';
+import { IfGfbioLoggedInDirective } from './util/directives/if-gfbio-logged-in.directive';
+import { IfLoggedInDirective } from './util/directives/if-logged-in.directive';
+import { IfGuestDirective } from './util/directives/if-guest.directive';
 import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
@@ -93,9 +92,10 @@ import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component'
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
-import {ColorPickerModule, ColorPickerService} from 'angular2-color-picker';
+import {ColorPickerModule} from 'angular2-color-picker';
 import { OperatorListComponent } from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
+import { ROperatorComponent } from './operators/dialogs/r/r-operator/r-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -148,7 +148,6 @@ export function configInitializer(config: Config) {
         DialogSectionHeadingComponent,
         RenameLayerComponent,
         LayerSelectionComponent,
-        OperatorRepositoryComponent,
         OperatorOutputNameComponent,
         MultiLayerSelectionComponent,
         ReprojectionSelectionComponent,
@@ -186,6 +185,7 @@ export function configInitializer(config: Config) {
         OperatorListComponent,
         SidenavSearchComponent,
         SidenavSearchRightDirective,
+        ROperatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -205,7 +205,6 @@ export function configInitializer(config: Config) {
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,
         NumericAttributeFilterOperatorComponent,
-        OperatorRepositoryComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
         RasterValueExtractionOperatorComponent,
@@ -228,6 +227,7 @@ export function configInitializer(config: Config) {
         LoadProjectComponent,
         SaveProjectAsComponent,
         OperatorListComponent,
+        ROperatorComponent,
     ],
     providers: [
         DragulaService,

@@ -1,5 +1,5 @@
 import {Directive, DoCheck, TemplateRef, Component, ViewContainerRef, OnInit} from '@angular/core';
-import {Config} from '../config.service';
+import {Config} from '../../config.service';
 
 @Directive({
     selector: '[waveIfGfbio]'

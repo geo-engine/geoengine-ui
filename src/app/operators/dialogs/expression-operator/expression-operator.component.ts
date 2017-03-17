@@ -10,7 +10,7 @@ import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {RasterSymbology} from '../../../../symbology/symbology.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 @Component({
     selector: 'wave-expression-operator',

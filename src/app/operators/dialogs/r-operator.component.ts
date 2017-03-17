@@ -13,8 +13,8 @@ import {
 import {CodeEditorComponent} from '../../../components/code-editor.component';
 
 import {LayerService} from '../../layers/layer.service';
-import {RandomColorService} from '../../../services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {RandomColorService} from '../../util/services/random-color.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService, Browser} from '../../../app/layout.service';
 

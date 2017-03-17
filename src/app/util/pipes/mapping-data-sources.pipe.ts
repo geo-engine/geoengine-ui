@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform, Injectable} from '@angular/core';
 
-import {MappingSource} from '../models/mapping-source.model';
+import {MappingSource} from '../../../models/mapping-source.model';
 
 @Pipe({
     name: 'waveMappingDataSourceFilter',

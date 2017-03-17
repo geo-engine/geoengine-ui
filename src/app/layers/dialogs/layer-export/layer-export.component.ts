@@ -1,12 +1,12 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
-import {WFSOutputFormats} from '../../../../queries/output-formats/wfs-output-format.model';
-import {WCSOutputFormats} from '../../../../queries/output-formats/wcs-output-format.model';
+import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
+import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
 import {Symbology} from '../../../../symbology/symbology.model';
 import {MdDialogRef} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {Subscription} from 'rxjs';
 
 interface LayerExportComponentConfig {

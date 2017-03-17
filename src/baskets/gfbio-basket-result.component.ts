@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 
-import {TrimPipe} from '../pipes/trim.pipe';
+import {TrimPipe} from '../app/util/pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
 import {Operator} from '../app/operators/operator.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../app/operators/types/abcd-source-type.model';
@@ -10,9 +10,9 @@ import {DataType, DataTypes} from '../app/operators/datatype.model';
 import {VectorLayer} from '../app/layers/layer.model';
 import {Unit} from '../app/operators/unit.model';
 import {ClusteredPointSymbology} from '../symbology/symbology.model';
-import {MappingQueryService} from '../queries/mapping-query.service';
+import {MappingQueryService} from '../app/queries/mapping-query.service';
 import {LayerService} from '../app/layers/layer.service';
-import {RandomColorService} from '../services/random-color.service';
+import {RandomColorService} from '../app/util/services/random-color.service';
 import {PangaeaSourceType} from '../app/operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';
 import {UserService} from '../app/users/user.service';

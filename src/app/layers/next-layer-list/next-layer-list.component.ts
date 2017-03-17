@@ -8,7 +8,7 @@ import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../layer.service';
-import {MapService} from '../../../map/map.service';
+import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';

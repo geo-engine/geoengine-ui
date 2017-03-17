@@ -1,0 +1,46 @@
+<wave-sidenav-header>R Operator</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.RASTER]"
+            formControlName="rasterLayers"
+            [min]="1" [max]="5"
+        ></wave-multi-layer-selection>
+        <wave-dialog-section-heading
+            title="Configuration" subtitle="Specify the operator"
+        ></wave-dialog-section-heading>
+        <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
+        <md-input-container>
+            <input mdInput type="text" formControlName="expression" placeholder="Expression">
+        </md-input-container>
+        <md-select formControlName="dataType" placeholder="Output Data Type">
+            <md-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType">
+                {{dataType[0]}} {{dataType[1]}}
+            </md-option>
+        </md-select>
+        <div fxLayout="row">
+            <md-input-container fxFlex>
+                <input mdInput type="number" formControlName="minValue" placeholder="Minimum Value">
+            </md-input-container>
+            <div fxFlex="1rem"></div>
+            <md-input-container fxFlex>
+                <input mdInput type="number" formControlName="maxValue" placeholder="Maximum Value">
+            </md-input-container>
+        </div>
+        <md-select formControlName="unit" placeholder="Output Unit">
+            <md-option *ngFor="let unit of outputUnits$ | async" [value]="unit">
+                {{unit}}
+            </md-option>
+        </md-select>
+        <wave-reprojection-selection
+            [layers]="form.controls.rasterLayers.valueChanges | async"
+            formControlName="projection"
+        ></wave-reprojection-selection>
+        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>

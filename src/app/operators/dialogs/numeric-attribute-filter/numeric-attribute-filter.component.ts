@@ -5,8 +5,8 @@ import {
 import {HistogramData} from '../../../plots/histogram.component';
 
 import {LayerService} from '../../../layers/layer.service';
-import {RandomColorService} from '../../../../services/random-color.service';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';

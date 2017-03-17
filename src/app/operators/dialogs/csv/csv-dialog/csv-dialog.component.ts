@@ -8,8 +8,8 @@ import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
 import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../../symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
-import {MappingQueryService} from '../../../../../queries/mapping-query.service';
-import {RandomColorService} from '../../../../../services/random-color.service';
+import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MdDialogRef} from '@angular/material';
 
 @Component({

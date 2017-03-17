@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
-import {CssStringToRgbaPipe} from '../pipes/css-string-to-rgba.pipe';
+import {CssStringToRgbaPipe} from '../app/util/pipes/css-string-to-rgba.pipe';
 import {MdSliderChange} from '@angular/material';
 import {LayerService} from '../app/layers/layer.service';
 

@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable, BehaviorSubject, Subject} from 'rxjs/Rx';
 import * as ol from 'openlayers';
-import {MapComponent} from "./map.component";
-import {Symbology} from "../symbology/symbology.model";
-import {Layer} from "../app/layers/layer.model";
+import {Symbology} from '../../symbology/symbology.model';
+import {Layer} from '../layers/layer.model';
 
 export interface ViewportSize {
     extent: Extent;

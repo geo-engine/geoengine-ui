@@ -10,7 +10,7 @@ import * as moment from 'moment';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Response} from '@angular/http';
 

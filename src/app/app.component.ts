@@ -14,14 +14,14 @@ import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
 import {StorageService} from './storage/storage.service';
 
-import {MapComponent} from '../map/map.component';
+import {MapComponent} from './map/map.component';
 
 import {Layer} from './layers/layer.model';
 import {LayerService} from './layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {DomSanitizer} from "@angular/platform-browser";
-import {RandomColorService} from "../services/random-color.service";
+import {RandomColorService} from "./util/services/random-color.service";
 
 @Component({
     selector: 'wave-app',

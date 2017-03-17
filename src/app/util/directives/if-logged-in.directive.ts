@@ -1,11 +1,11 @@
 import {Directive, TemplateRef, Component, ViewContainerRef, OnDestroy} from '@angular/core';
-import {UserService} from '../users/user.service';
+import {UserService} from '../../users/user.service';
 import {Subscription} from 'rxjs/Rx';
 
 @Directive({
-    selector: '[waveIfGuest]'
+    selector: '[waveIfLoggedIn]'
 })
-export class IfGuestDirective implements OnDestroy {
+export class IfLoggedInDirective implements OnDestroy {
 
     private subscription: Subscription;
 
@@ -14,7 +14,7 @@ export class IfGuestDirective implements OnDestroy {
                 private viewContainer: ViewContainerRef) {
         this.subscription = this.userService.isGuestUserStream().subscribe(isGuest => {
             this.viewContainer.clear();
-            if (isGuest) {
+            if (!isGuest) {
                 this.viewContainer.createEmbeddedView(this.templateRef).markForCheck();
             }
         });
