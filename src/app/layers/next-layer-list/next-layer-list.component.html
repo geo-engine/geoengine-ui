@@ -56,16 +56,16 @@
 
                 >
                     <md-menu #layerMenu="mdMenu">
-                        <!--
-                        <button md-menu-item [disabled]="true">
+
+                        <button md-menu-item *ngIf="layer.visible" (click)="layerService.setLayerVisible(layer, false)">
                             <md-icon >visibility_off</md-icon>
                             <span>Hide Layer</span>
                         </button>
-                        <button md-menu-item *ngIf="layer.expanded" [disabled]="true">
+                        <button md-menu-item *ngIf="!layer.visible" (click)="layerService.setLayerVisible(layer, true)">
                             <md-icon >visibility</md-icon>
                             <span>Show Layer</span>
                         </button>
-                        -->
+
                         <button md-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
                             <md-icon >expand_more</md-icon>
                             <span>Show Legend</span>
@@ -82,7 +82,7 @@
                             <md-icon>delete</md-icon>
                             <span>Remove</span>
                         </button>
-                        <button md-menu-item (click)="dialog.open(RenameLayerComponent)">
+                        <button md-menu-item (click)="dialog.open(RenameLayerComponent, {layer: layer})">
                             <md-icon>mode_edit</md-icon>
                             <span>Rename</span>
                         </button>

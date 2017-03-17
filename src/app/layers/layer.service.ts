@@ -117,6 +117,11 @@ export class LayerService {
         this.layers$.next(this.getLayers());
     }
 
+    setLayerVisible(layer: Layer<Symbology>, visible: boolean) {
+        layer.visible = visible;
+        this.layers$.next(this.getLayers());
+    }
+
     /**
      * Toggle the layer (extension).
      * @param layer The layer to modify
