@@ -36,7 +36,9 @@
         <span fxFlex></span>
         <button md-button (click)="projectService.removePlot(plot)"><md-icon>remove_circle_outline</md-icon></button>
     </md-card-actions>
-    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" class="error">
-        <button md-button (click)="projectService.reloadPlot(plot)"><md-icon>replay</md-icon></button>
+    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" fxLayout="row">
+        <button md-button (click)="projectService.reloadPlot(plot)" class="error"><md-icon>replay</md-icon></button>
+        <span fxFlex></span>
+        <button md-button (click)="projectService.removePlot(plot)"><md-icon>remove_circle_outline</md-icon></button>
     </md-card-actions>
 </md-card>
