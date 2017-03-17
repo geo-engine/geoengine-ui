@@ -38,6 +38,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     @Input() projection: Projection;
     @Input() symbology: S;
     @Input() time: Time;
+    @Input() visible = true;
 
     protected _mapLayer: OlLayer;
     protected source: OlSource;
@@ -80,6 +81,7 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
     }
 
     ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+
         if (this.isFirstChange(changes) || changes['projection']) {
             if (this.dataSubscription) {
                 this.dataSubscription.unsubscribe();
@@ -88,6 +90,10 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
                 this.source.clear(); // TODO: check if this is needed always...
                 this.source.addFeatures(this.format.readFeatures(data));
             });
+        }
+
+        if(changes['visible']) {
+            this.mapLayer.setVisible(this.visible);
         }
 
         if (changes['symbology']) {
@@ -120,7 +126,7 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time'],
+    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -133,7 +139,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time'],
+    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -146,7 +152,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time'],
+    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -159,7 +165,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: OlMapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time'],
+    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS,
     RasterSymbology, RasterLayer<RasterSymbology>> implements OnChanges {
@@ -187,6 +193,10 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 source: this.source,
                 opacity: this.symbology.opacity,
             });
+        }
+
+        if(changes['visible']) {
+            this._mapLayer.setVisible(this.visible);
         }
 
         if (changes['projection'] || changes['time']) {
