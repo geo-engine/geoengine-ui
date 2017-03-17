@@ -7,7 +7,7 @@ import {RasterSourceType} from '../../types/raster-source-type.model';
 import {AbcdRepositoryComponent} from '../abcd-repository/abcd-repository.component';
 import {ABCDSourceType} from '../../types/abcd-source-type.model';
 import {CsvSourceType} from '../../types/csv-source-type.model';
-import {GfbioBasketsComponent} from '../../../../baskets/gfbio-baskets.component';
+import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
 
 @Component({

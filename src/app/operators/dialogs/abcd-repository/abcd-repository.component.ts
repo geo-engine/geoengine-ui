@@ -5,14 +5,14 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';
-import {AbcdArchive} from '../../../../models/abcd.model';
+import {AbcdArchive} from './abcd.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BasicColumns} from '../../../../models/csv.model';
+import {BasicColumns} from '../baskets/csv.model';
 import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
 
 type Grouped<T> = Iterable<Group<T>>;

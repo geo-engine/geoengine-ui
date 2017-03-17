@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
   from '../operator-type.model';
-import {BasicColumns} from "../../../models/csv.model";
+import {BasicColumns} from "../dialogs/baskets/csv.model";
 
 interface GFBioSourceTypeConfig {
     dataSource: string;

@@ -9,7 +9,7 @@ import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
-import {GeoJsonFeature, FeatureID} from '../../../models/geojson.model';
+import {GeoJsonFeature, FeatureID} from '../../queries/geojson.model';
 
 
 interface Column {

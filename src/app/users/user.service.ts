@@ -6,13 +6,13 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs/Rx';
 import {User, Guest} from './user.model';
 
 import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
-import {AbcdArchive} from '../../models/abcd.model';
-import {IBasket} from '../../baskets/gfbio-basket.model';
+import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
+import {IBasket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource, MappingSourceChannel, MappingTransform,
-} from '../../models/mapping-source.model';
-import {CsvFile, CsvColumn} from '../../models/csv.model';
+} from '../operators/dialogs/raster-repository/mapping-source.model';
+import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 import {Config} from '../config.service';

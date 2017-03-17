@@ -1,4 +1,4 @@
-import {Unit} from '../app/operators/unit.model';
+import {Unit} from '../../unit.model';
 
 export interface MappingTransform {
   datatype: string;
