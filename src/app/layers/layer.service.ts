@@ -7,7 +7,7 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
 import {Operator} from '../operators/operator.model';
-import {FeatureID} from '../../models/geojson.model';
+import {FeatureID} from '../queries/geojson.model';
 import {Symbology} from './symbology/symbology.model';
 import {NotificationService} from '../notification.service';
 

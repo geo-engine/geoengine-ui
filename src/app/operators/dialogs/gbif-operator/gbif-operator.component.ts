@@ -13,7 +13,7 @@ import {
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BasicColumns} from '../../../../models/csv.model';
+import {BasicColumns} from '../baskets/csv.model';
 import {Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Http} from '@angular/http';

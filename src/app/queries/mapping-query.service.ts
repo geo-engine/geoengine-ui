@@ -20,7 +20,7 @@ import {PlotData} from '../plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
 import {LoadingState} from '../project/loading-state.model';
 
-import {GeoJsonFeatureCollection} from '../../models/geojson.model';
+import {GeoJsonFeatureCollection} from './geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {Time} from '../time.model';
 import {Config} from '../config.service';

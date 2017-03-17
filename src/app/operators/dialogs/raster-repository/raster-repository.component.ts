@@ -7,7 +7,7 @@ import {RasterLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';
-import {MappingSource, MappingSourceChannel} from '../../../../models/mapping-source.model';
+import {MappingSource, MappingSourceChannel} from './mapping-source.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
 import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
