@@ -39,7 +39,7 @@ export class CsvDialogComponent implements OnInit {
         const geometry = 'xy';
         const time = config.intervalType;
         const time1Format = config.startFormat;
-        const time2Format = config.startFormat;
+        const time2Format = config.endFormat;
         const header = config.isHeaderRow ? 0 : config.header;
         const columnX = config.header[config.xCol];
         const columnY = config.header[config.yCol];
@@ -88,10 +88,20 @@ export class CsvDialogComponent implements OnInit {
             removeIfExists(parameters.columns.textual, time1);
             removeIfExists(parameters.columns.numeric, time1);
 
-            if (time.indexOf('end') >= 0 || time.indexOf('duration') >= 0) {
+            if (time.indexOf('end') >= 0) {
                 parameters.timeFormat.time2 = {
                     format: 'custom',
                     customFormat: time2Format,
+                };
+                parameters.columns.time2 = time2;
+
+                removeIfExists(parameters.columns.textual, time2);
+                removeIfExists(parameters.columns.numeric, time2);
+            }
+            if (time.indexOf('duration') >= 0) {
+                // TODO: refactor for other formats
+                parameters.timeFormat.time2 = {
+                    format: time2Format as 'seconds',
                 };
                 parameters.columns.time2 = time2;
 
