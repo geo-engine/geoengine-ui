@@ -120,7 +120,7 @@ const ConfigDefault = Immutable.fromJS({
         REFRESH_LAYERS_ON_CHANGE: false,
     },
     GFBIO: {
-        LIFERAY_PORTAL_URL: 'http://gfbio-dev1.inf-bb.uni-jena.de:8080/',
+        LIFERAY_PORTAL_URL: 'https://gfbio-dev1.inf-bb.uni-jena.de/',
     },
 } as ConfigInterface);
 
