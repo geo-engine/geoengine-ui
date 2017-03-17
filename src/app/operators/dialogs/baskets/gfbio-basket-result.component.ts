@@ -1,22 +1,21 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 
-import {TrimPipe} from '../app/util/pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
-import {Operator} from '../app/operators/operator.model';
-import {ABCDSourceType, ABCDSourceTypeConfig} from '../app/operators/types/abcd-source-type.model';
-import {ResultTypes} from '../app/operators/result-type.model';
-import {Projections} from '../app/operators/projection.model';
-import {DataType, DataTypes} from '../app/operators/datatype.model';
-import {VectorLayer} from '../app/layers/layer.model';
-import {Unit} from '../app/operators/unit.model';
-import {ClusteredPointSymbology} from '../app/layers/symbology/symbology.model';
-import {MappingQueryService} from '../app/queries/mapping-query.service';
-import {LayerService} from '../app/layers/layer.service';
-import {RandomColorService} from '../app/util/services/random-color.service';
-import {PangaeaSourceType} from '../app/operators/types/pangaea-source-type.model';
-import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';
-import {UserService} from '../app/users/user.service';
-import {Subscription} from "rxjs";
+import {Operator} from '../../operator.model';
+import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
+import {ResultTypes} from '../operators/../../result-type.model';
+import {Projections} from '../operators/../../projection.model';
+import {DataType, DataTypes} from '../../datatype.model';
+import {VectorLayer} from '../../../layers/layer.model';
+import {Unit} from '../../unit.model';
+import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {PangaeaSourceType} from '../../types/pangaea-source-type.model';
+import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
+import {UserService} from '../../../users/user.service';
+import {Subscription} from 'rxjs/Rx';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
