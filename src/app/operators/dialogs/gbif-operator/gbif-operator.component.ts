@@ -17,8 +17,8 @@ import {BasicColumns} from '../../../../models/csv.model';
 import {Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Http} from '@angular/http';
-import {LayerService} from '../../../../layers/layer.service';
-import {VectorLayer} from '../../../../layers/layer.model';
+import {LayerService} from '../../../layers/layer.service';
+import {VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {

@@ -17,7 +17,7 @@ import {ResultTypes} from '../app/operators/result-type.model';
 import {MappingColorizer} from '../symbology/symbology.model';
 
 import {PlotData} from '../app/plots/plot.model';
-import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
+import {VectorLayerData, LayerProvenance} from '../app/layers/layer.model';
 import {LoadingState} from '../app/project/loading-state.model';
 
 import {GeoJsonFeatureCollection} from '../models/geojson.model';

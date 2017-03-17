@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Projection} from '../../../projection.model';
-import {Layer} from '../../../../../layers/layer.model';
+import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../../symbology/symbology.model';
 
 @Component({

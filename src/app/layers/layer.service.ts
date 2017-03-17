@@ -3,13 +3,13 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Set as ImmutableSet} from 'immutable';
 
-import {MappingQueryService} from '../queries/mapping-query.service';
+import {MappingQueryService} from '../../queries/mapping-query.service';
 
 import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
-import {Operator} from '../app/operators/operator.model';
-import {FeatureID} from '../models/geojson.model';
-import {Symbology} from '../symbology/symbology.model';
-import {NotificationService} from '../app/notification.service';
+import {Operator} from '../operators/operator.model';
+import {FeatureID} from '../../models/geojson.model';
+import {Symbology} from '../../symbology/symbology.model';
+import {NotificationService} from '../notification.service';
 
 export interface SelectedFeatures {
     selected: ImmutableSet<FeatureID>;

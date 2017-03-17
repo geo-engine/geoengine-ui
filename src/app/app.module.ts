@@ -39,7 +39,7 @@ import {SafeStylePipe} from '../pipes/safe-style.pipe';
 import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from '../symbology/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
-import {LayerService} from '../layers/layer.service';
+import {LayerService} from './layers/layer.service';
 import {LayoutService} from './layout.service';
 import {StorageService} from './storage/storage.service';
 import {RandomColorService} from '../services/random-color.service';

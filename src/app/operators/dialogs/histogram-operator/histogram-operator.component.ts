@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Subscription, ReplaySubject, Observable} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
-import {Layer} from '../../../../layers/layer.model';
+import {Layer} from '../../../layers/layer.model';
 import {Symbology} from '../../../../symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Operator} from '../../operator.model';

@@ -7,9 +7,9 @@ import {SymbologyDialogComponent} from '../../../symbology/symbology-dialog.comp
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../layer.service';
 import {MapService} from '../../../map/map.service';
-import {Layer} from '../../../layers/layer.model';
+import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';

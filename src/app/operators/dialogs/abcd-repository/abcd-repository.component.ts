@@ -2,8 +2,8 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {LayerService} from '../../../../layers/layer.service';
-import {VectorLayer} from '../../../../layers/layer.model';
+import {LayerService} from '../../../layers/layer.service';
+import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';

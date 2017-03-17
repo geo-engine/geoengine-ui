@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, Pipe, PipeTransform, Input} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Provenance} from '../provenance.model';
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 
 /**
  * Return either the value or a non-breaking space point if it is empty.

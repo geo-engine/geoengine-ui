@@ -1,7 +1,7 @@
 import {StorageProvider, Workspace, RScript, RScriptDict} from '../storage-provider.model';
 
 import {LayoutDict} from '../../layout.service';
-import {Layer, LayerDict} from '../../../layers/layer.model';
+import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../project/project.model';
 import {Symbology} from '../../../symbology/symbology.model';
 import {Operator} from '../../operators/operator.model';
