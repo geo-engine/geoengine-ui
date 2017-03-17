@@ -1,9 +1,9 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
-import {CssStringToRgbaPipe} from '../app/util/pipes/css-string-to-rgba.pipe';
+import {CssStringToRgbaPipe} from '../../util/pipes/css-string-to-rgba.pipe';
 import {MdSliderChange} from '@angular/material';
-import {LayerService} from '../app/layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 
 @Component({
     selector: 'wave-symbology-points',
@@ -36,7 +36,7 @@ import {LayerService} from '../app/layers/layer.service';
                     {{symbology.strokeRGBA}}                    
                 </td>
             </tr>
-            <tr>
+            <tr *ngIf="editStrokeWidth">
                 <td>                    
                 </td>
                 <td>
@@ -85,6 +85,7 @@ export class SymbologyPointsComponent {
     static minRadius: number = 1;
 
     @Input() editRadius: boolean = true;
+    @Input() editStrokeWidth: boolean = true;
     @Input() symbology: SimplePointSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimplePointSymbology>();
 

@@ -88,7 +88,6 @@ import { RasterIconComponent } from './raster-icon/raster-icon.component';
 import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
 import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
 import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
-import {SymbologyDialogComponent} from './layers/symbology/symbology-dialog.component';
 import { NewProjectComponent } from './project/new-project/new-project.component';
 import { LoadProjectComponent } from './project/load-project/load-project.component';
 import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
@@ -118,7 +117,6 @@ export function configInitializer(config: Config) {
         SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyVectorComponent,
-        SymbologyDialogComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,
@@ -222,7 +220,6 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LayerExportComponent,
         ChangeProjectionComponent,
-        SymbologyDialogComponent,
         NewProjectComponent,
         LoadProjectComponent,
         SaveProjectAsComponent,

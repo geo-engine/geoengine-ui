@@ -4,7 +4,7 @@ import {Observable, Subscription, BehaviorSubject} from 'rxjs/Rx';
 
 import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
-import {UserService} from '../app/users/user.service';
+import {UserService} from '../../../users/user.service';
 
 import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './gfbio-basket-result.component';
 
