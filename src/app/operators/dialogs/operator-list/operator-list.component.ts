@@ -92,6 +92,12 @@ export class OperatorListComponent implements OnInit {
             Observable.of(ALL_OPERATORS),
             this.searchString$.map(s => s.toLowerCase()),
             (operatorGroups, searchString) => {
+                const nameComparator = (a: string, b: string): number => {
+                    const stripped = (s: string): string => s.replace(' ', '');
+
+                    return stripped(a).localeCompare(stripped(b));
+                };
+
                 const filteredGroups = [];
                 for (const group of operatorGroups) {
                     const operators = [];
@@ -106,12 +112,12 @@ export class OperatorListComponent implements OnInit {
                     if (operators.length > 0) {
                         filteredGroups.push({
                             name: group.name,
-                            list: operators,
+                            list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
                         });
                     }
                 }
 
-                return filteredGroups;
+                return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
             }
         );
     }

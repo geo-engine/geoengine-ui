@@ -11,3 +11,7 @@ md-list-item {
 p {
     color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
 }
+
+md-list-item /deep/ .highlight {
+    color: mat-color($wave-app-accent);
+}
