@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
 import {Http} from '@angular/http';
+import {Observable} from 'rxjs/Rx';
 
 type MappingUrlType = string;
 interface WmsInterface {
@@ -72,7 +73,6 @@ interface ConfigInterface {
  * @type {any}
  */
 const ConfigDefault = Immutable.fromJS({
-    CONFIG_FILE: 'assets/config.json',
     MAPPING_URL: '/cgi-bin/mapping_cgi',
     WMS: {
         VERSION: '1.3.0',
@@ -232,6 +232,7 @@ export class Config {
                 error => {
                     this.handleConfig(ConfigDefault.toJS());
                 })
+            .catch(() => Observable.of(undefined))
             .toPromise();
     }
 

@@ -1,22 +1,19 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
 import {ResultTypes} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {CodeEditorComponent} from '../../../../../components/code-editor.component';
+import {CodeEditorComponent} from '../../../../util/components/code-editor.component';
 import {ProjectService} from '../../../../project/project.service';
 import {LayerService} from '../../../../layers/layer.service';
 import {DataType} from '../../../datatype.model';
 import {Projections} from '../../../projection.model';
 import {Operator} from '../../../operator.model';
 import {RasterLayer, VectorLayer, Layer} from '../../../../layers/layer.model';
-import {
-    RasterSymbology, AbstractVectorSymbology,
-    Symbology, SimplePointSymbology
-} from '../../../../../symbology/symbology.model';
 import {RScriptType} from '../../../types/r-script-type.model';
 import {Unit} from '../../../unit.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {Plot} from '../../../../plots/plot.model';
+import {RasterSymbology, AbstractVectorSymbology, Symbology, SimplePointSymbology} from '../../../../layers/symbology/symbology.model';
 
 @Component({
     selector: 'wave-r-operator',
