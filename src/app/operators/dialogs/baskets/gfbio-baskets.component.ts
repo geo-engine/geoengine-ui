@@ -3,10 +3,7 @@ import {Component, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {Observable, Subscription, BehaviorSubject} from 'rxjs/Rx';
 
 import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
-import {BasketResultGroupByDatasetPipe} from './gfbio-basket.pipe';
 import {UserService} from '../../../users/user.service';
-
-import {PangaeaBasketResultComponent, GroupedAbcdBasketResultComponent} from './gfbio-basket-result.component';
 
 @Component({
     selector: 'wave-gfbio-baskets',

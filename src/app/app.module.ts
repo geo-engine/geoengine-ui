@@ -19,7 +19,7 @@ import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from './layers/symbology/symbology-points.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster.component';
-import {CodeEditorComponent} from '../components/code-editor.component';
+import {CodeEditorComponent} from './util/components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
 import {

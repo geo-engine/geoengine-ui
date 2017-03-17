@@ -4,42 +4,78 @@
         <wave-multi-layer-selection
             [types]="[ResultTypes.RASTER]"
             formControlName="rasterLayers"
-            [min]="1" [max]="5"
+            [min]="0" [max]="5" [initialAmount]="0"
         ></wave-multi-layer-selection>
-        <wave-dialog-section-heading
-            title="Configuration" subtitle="Specify the operator"
-        ></wave-dialog-section-heading>
-        <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
-        <md-input-container>
-            <input mdInput type="text" formControlName="expression" placeholder="Expression">
-        </md-input-container>
-        <md-select formControlName="dataType" placeholder="Output Data Type">
-            <md-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType">
-                {{dataType[0]}} {{dataType[1]}}
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.POINTS]"
+            formControlName="pointLayers"
+            [min]="0" [max]="5" [initialAmount]="0"
+        ></wave-multi-layer-selection>
+
+        <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
+
+        <md-card>
+            <md-card-header>
+                <md-icon md-card-avatar>help</md-icon>
+                <md-card-title>Quick Help</md-card-title>
+                <md-card-subtitle>How the operator works</md-card-subtitle>
+            </md-card-header>
+            <md-card-content>
+                <p>
+                    The R operator allows executing arbitrary R code on <em>VAT</em> data.
+                    The result can either be a new raster or vector layer, a plot or plain text.
+                    For accessing the input data there exists a <code>mapping</code> object that offers the following functionality:</p>
+                <table>
+                    <tr>
+                        <th>Functionality</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>loadRaster(rasterId, queryRectangle)</code></td>
+                        <td>Load the <code>rasterId</code>th input raster as an R matrix.</td>
+                    </tr>
+                    <tr>
+                        <td><code>loadRasterAsVector(rasterId, queryRectangle)</code></td>
+                        <td>Load the <code>rasterId</code>th input raster as an R numeric vector.</td>
+                    </tr>
+                    <tr>
+                        <td><code>rastercount</code></td>
+                        <td>This variable contains the amount of raster inputs.</td>
+                    </tr>
+                    <tr>
+                        <td><code>loadPoints(pointId, queryRectangle)</code></td>
+                        <td>Load the <code>pointId</code>th input point collection as an R list.</td>
+                    </tr>
+                    <tr>
+                        <td><code>pointscount</code></td>
+                        <td>This variable contains the amount of point collection inputs.</td>
+                    </tr>
+                    <tr>
+                        <td><code>qrect</code></td>
+                        <td>
+                            This variable is a list that contains the fields
+                            <code>t1, t2, x1, y1, x2, y2, xres, yres</code> and <code>epsg</code>.
+                        </td>
+                    </tr>
+                </table>
+                <p>An example is <code>mapping.loadRaster(0, mapping.qrect)</code> for accessing the first raster.</p>
+            </md-card-content>
+        </md-card>
+
+        <wave-code-editor language="r" formControlName="code"></wave-code-editor>
+        <md-select formControlName="resultType" placeholder="Result Type">
+            <md-option
+                *ngFor="let resultType of [ResultTypes.POINTS, ResultTypes.PLOT, ResultTypes.RASTER, ResultTypes.TEXT]"
+                [value]="resultType"
+            >
+                {{resultType}}
             </md-option>
         </md-select>
-        <div fxLayout="row">
-            <md-input-container fxFlex>
-                <input mdInput type="number" formControlName="minValue" placeholder="Minimum Value">
-            </md-input-container>
-            <div fxFlex="1rem"></div>
-            <md-input-container fxFlex>
-                <input mdInput type="number" formControlName="maxValue" placeholder="Maximum Value">
-            </md-input-container>
-        </div>
-        <md-select formControlName="unit" placeholder="Output Unit">
-            <md-option *ngFor="let unit of outputUnits$ | async" [value]="unit">
-                {{unit}}
-            </md-option>
-        </md-select>
-        <wave-reprojection-selection
-            [layers]="form.controls.rasterLayers.valueChanges | async"
-            formControlName="projection"
-        ></wave-reprojection-selection>
+
         <wave-operator-output-name formControlName="name"></wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" md-raised-button color="primary" [disabled]="form.invalid">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
             Create
         </button>
     </div>

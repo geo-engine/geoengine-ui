@@ -16,7 +16,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {PangaeaSourceType} from '../../../operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
 import {UserService} from '../../../users/user.service';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs/Rx';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;

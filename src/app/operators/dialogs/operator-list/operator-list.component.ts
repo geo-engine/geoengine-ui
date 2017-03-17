@@ -14,7 +14,9 @@ import {HistogramType} from '../../types/histogram-type.model';
 import {RasterValueExtractionOperatorComponent} from '../raster-value-extraction/raster-value-extraction.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {LayoutService} from '../../../layout.service';
-import {Observable, ReplaySubject, BehaviorSubject} from 'rxjs/Rx';
+import {Observable, BehaviorSubject} from 'rxjs/Rx';
+import {ROperatorComponent} from '../r/r-operator/r-operator.component';
+import {RScriptType} from '../../types/r-script-type.model';
 
 interface OperatorListType {
     component: Type<Component>;
@@ -28,6 +30,11 @@ const MIXED_OPERATORS: Array<OperatorListType> = [
         type: RasterValueExtractionType,
         description: 'Attach raster values to vector data',
     },
+    {
+        component: ROperatorComponent,
+        type: RScriptType,
+        description: 'Execute an R script (experimental)'
+    }
 ];
 
 const PLOT_OPERATORS: Array<OperatorListType> = [

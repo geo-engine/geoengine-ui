@@ -3,7 +3,7 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
 import {CssStringToRgbaPipe} from '../../util/pipes/css-string-to-rgba.pipe';
 import {MdSliderChange} from '@angular/material';
-import {LayerService} from '../../layers/layer.service';
+import {LayerService} from '../layer.service';
 
 @Component({
     selector: 'wave-symbology-points',
