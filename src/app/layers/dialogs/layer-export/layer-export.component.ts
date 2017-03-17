@@ -3,7 +3,7 @@ import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-forma
 import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
-import {Symbology} from '../../../../symbology/symbology.model';
+import {Symbology} from '../../symbology/symbology.model';
 import {MdDialogRef} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';

@@ -2,8 +2,8 @@ import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@ang
 import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs/Rx';
-import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
-import {SymbologyDialogComponent} from '../../../symbology/symbology-dialog.component';
+import {SymbologyType, Symbology} from '../symbology/symbology.model';
+import {SymbologyDialogComponent} from '../symbology/symbology-dialog.component';
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';

@@ -3,7 +3,7 @@ import {Observable, Observer} from 'rxjs/Rx';
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
     Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer, ClusteredPointSymbology
-} from '../../symbology/symbology.model';
+} from './symbology/symbology.model';
 import {GeoJsonFeatureCollection} from '../../models/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';

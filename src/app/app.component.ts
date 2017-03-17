@@ -4,7 +4,7 @@ import {
 import {MdTabGroup, MdSidenav, MdDialog, MdIconRegistry} from '@angular/material';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {Symbology} from '../symbology/symbology.model';
+import {Symbology} from './layers/symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
 
 import {LayoutService} from './layout.service';

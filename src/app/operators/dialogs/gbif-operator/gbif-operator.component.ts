@@ -11,7 +11,7 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology,
     SimpleVectorSymbology
-} from '../../../../symbology/symbology.model';
+} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../../../../models/csv.model';
 import {Unit} from '../../unit.model';

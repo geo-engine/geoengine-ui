@@ -13,7 +13,7 @@ import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
 import {Layer} from '../layers/layer.model';
-import {Symbology} from '../../symbology/symbology.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 
 /**
  * A service that is responsible for saving the app state.

@@ -10,7 +10,7 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology,
     SimplePointSymbology
-} from '../../../../symbology/symbology.model';
+} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 

@@ -10,7 +10,7 @@ import {ResultTypes} from '../../result-type.model';
 import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
-} from '../../../../symbology/symbology.model';
+} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 
 /**

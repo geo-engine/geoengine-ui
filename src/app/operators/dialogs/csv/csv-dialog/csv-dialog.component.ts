@@ -6,7 +6,7 @@ import {CSV} from '../csv-config/csv-config.component';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
-import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../../symbology/symbology.model';
+import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';

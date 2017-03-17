@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {Symbology} from '../../../../../symbology/symbology.model';
+import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {LayerService} from '../../../../layers/layer.service';
 import {ResultType} from '../../../result-type.model';
 

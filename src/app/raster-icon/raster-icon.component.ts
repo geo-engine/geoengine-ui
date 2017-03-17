@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChange} from '@angular/core';
-import {MappingColorizer} from '../../symbology/symbology.model';
+import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 @Component({
   selector: 'wave-raster-icon',

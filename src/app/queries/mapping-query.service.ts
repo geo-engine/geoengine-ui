@@ -14,7 +14,7 @@ import {NotificationService} from '../notification.service';
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
-import {MappingColorizer} from '../../symbology/symbology.model';
+import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
 import {VectorLayerData, LayerProvenance} from '../layers/layer.model';

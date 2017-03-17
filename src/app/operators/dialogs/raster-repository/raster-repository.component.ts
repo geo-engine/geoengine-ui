@@ -10,7 +10,7 @@ import {DataType, DataTypes} from '../../datatype.model';
 import {MappingSource, MappingSourceChannel} from '../../../../models/mapping-source.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
-import {MappingColorizerRasterSymbology} from '../../../../symbology/symbology.model';
+import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RasterSourceType} from '../../types/raster-source-type.model';
