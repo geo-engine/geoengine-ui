@@ -1,7 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-
-import {Observable} from 'rxjs/Rx';
-
+import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
@@ -31,7 +29,7 @@ interface Group<T> {
 })
 export class AbcdRepositoryComponent {
 
-    private _searchTerm: String = '';
+    private searchString$ = new BehaviorSubject<string>('');
     private groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
