@@ -4,10 +4,10 @@ import {
 } from '@angular/core';
 import {DialogComponent} from '../dialog/dialog.component';
 import {Observable, Subscription} from 'rxjs';
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
-import {VectorLayer} from '../../../layers/layer.model';
+import {VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../../symbology/symbology.model';
 import {GeoJsonFeature, FeatureID} from '../../../models/geojson.model';
 

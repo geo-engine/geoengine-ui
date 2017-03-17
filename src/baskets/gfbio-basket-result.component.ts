@@ -7,11 +7,11 @@ import {ABCDSourceType, ABCDSourceTypeConfig} from '../app/operators/types/abcd-
 import {ResultTypes} from '../app/operators/result-type.model';
 import {Projections} from '../app/operators/projection.model';
 import {DataType, DataTypes} from '../app/operators/datatype.model';
-import {VectorLayer} from '../layers/layer.model';
+import {VectorLayer} from '../app/layers/layer.model';
 import {Unit} from '../app/operators/unit.model';
 import {ClusteredPointSymbology} from '../symbology/symbology.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {LayerService} from '../layers/layer.service';
+import {LayerService} from '../app/layers/layer.service';
 import {RandomColorService} from '../services/random-color.service';
 import {PangaeaSourceType} from '../app/operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from '../models/csv.model';

@@ -4,10 +4,10 @@ import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
-import {Layer} from '../../../layers/layer.model';
+import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../../symbology/symbology.model';
 import {MdDialogRef} from '@angular/material';
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 

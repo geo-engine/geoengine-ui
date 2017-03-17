@@ -4,11 +4,11 @@ import {
 
 import {HistogramData} from '../../../plots/histogram.component';
 
-import {LayerService} from '../../../../layers/layer.service';
+import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../../services/random-color.service';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../../../layers/layer.model';
+import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataTypes, DataType} from '../../datatype.model';
 import {

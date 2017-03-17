@@ -12,13 +12,13 @@ import {
 } from './operator.component';
 import {CodeEditorComponent} from '../../../components/code-editor.component';
 
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {RandomColorService} from '../../../services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService, Browser} from '../../../app/layout.service';
 
-import {Layer, VectorLayer, RasterLayer} from '../../../layers/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../../layers/layer.model';
 import {Plot} from '../../plots/plot.model';
 import {
     Symbology, SimplePointSymbology, RasterSymbology, AbstractVectorSymbology,

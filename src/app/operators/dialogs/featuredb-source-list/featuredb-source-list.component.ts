@@ -1,8 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
-import {LayerService} from '../../../../layers/layer.service';
-import {VectorLayer} from '../../../../layers/layer.model';
+import {LayerService} from '../../../layers/layer.service';
+import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../symbology/symbology.model';
 import {RandomColorService} from '../../../../services/random-color.service';

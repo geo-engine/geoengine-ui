@@ -10,7 +10,7 @@ import {
     Symbology, AbstractVectorSymbology, RasterSymbology
 } from '../symbology/symbology.model';
 
-import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
+import {Layer, VectorLayer, RasterLayer} from '../app/layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {Time} from '../app/time.model';
 import {Config} from '../app/config.service';

@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy} fr
 import {WFSOutputFormats} from '../../../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {Layer} from '../../../../layers/layer.model';
+import {Layer} from '../../layer.model';
 import {Symbology} from '../../../../symbology/symbology.model';
 import {MdDialogRef} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';

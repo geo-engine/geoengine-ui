@@ -1,12 +1,12 @@
 import {Observable, Observer} from 'rxjs/Rx';
 
-import {Operator, OperatorDict} from '../app/operators/operator.model';
+import {Operator, OperatorDict} from '../operators/operator.model';
 import {
     Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer, ClusteredPointSymbology
-} from '../symbology/symbology.model';
-import {GeoJsonFeatureCollection} from '../models/geojson.model';
-import {Provenance} from '../app/provenance/provenance.model';
-import {LoadingState} from '../app/project/loading-state.model';
+} from '../../symbology/symbology.model';
+import {GeoJsonFeatureCollection} from '../../models/geojson.model';
+import {Provenance} from '../provenance/provenance.model';
+import {LoadingState} from '../project/loading-state.model';
 
 export interface VectorLayerData {
     data$: Observable<GeoJsonFeatureCollection>;

@@ -3,7 +3,7 @@ import {FormGroup, FormBuilder, Validators, AbstractControl, AsyncValidatorFn} f
 import {Observable, Observer, BehaviorSubject} from 'rxjs/Rx';
 import {StorageService} from '../../storage/storage.service';
 import {ProjectService} from '../project.service';
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {Project} from '../project.model';
 import {Projections} from '../../operators/projection.model';
 import {NotificationService} from '../../notification.service';

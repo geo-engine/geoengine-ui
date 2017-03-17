@@ -9,7 +9,7 @@ import {LayoutDict} from '../../layout.service';
 import {Project} from '../../project/project.model';
 import {Session} from '../../users/user.service';
 
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../../layers/layer.service';
 import {Config} from '../../config.service';
 import {ProjectService} from '../../project/project.service';
 import {Observable, ReplaySubject, Subject} from 'rxjs/Rx';

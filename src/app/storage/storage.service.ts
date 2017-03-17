@@ -7,12 +7,12 @@ import {BrowserStorageProvider} from './providers/browser-storage-provider.model
 import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
 
 import {LayoutService} from '../layout.service';
-import {LayerService} from '../../layers/layer.service';
+import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
-import {Layer} from '../../layers/layer.model';
+import {Layer} from '../layers/layer.model';
 import {Symbology} from '../../symbology/symbology.model';
 
 /**

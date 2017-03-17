@@ -1,14 +1,14 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {LayerService} from '../../../../layers/layer.service';
+import {LayerService} from '../../../layers/layer.service';
 import {DataTypes, DataType} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 import {Observable} from 'rxjs/Rx';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
-import {RasterLayer} from '../../../../layers/layer.model';
+import {RasterLayer} from '../../../layers/layer.model';
 import {RasterSymbology} from '../../../../symbology/symbology.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 

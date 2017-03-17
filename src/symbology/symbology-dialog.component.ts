@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 
-import {LayerService} from '../layers/layer.service';
+import {LayerService} from '../app/layers/layer.service';
 
 import {Symbology, SymbologyType} from './symbology.model';
 
-import {Layer} from '../layers/layer.model';
+import {Layer} from '../app/layers/layer.model';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
