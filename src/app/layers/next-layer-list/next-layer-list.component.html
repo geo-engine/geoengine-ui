@@ -209,6 +209,7 @@
                             <template [ngSwitchCase]="ST.CLUSTERED_POINT">
                                 <wave-symbology-points fxFlex="grow"
                                     class="no-drag" [symbology]="layer.symbology" [editRadius]="false"
+                                                       [editStrokeWidth]="false"
                                     (symbologyChanged)="update_symbology(layer, $event)">
                                 </wave-symbology-points>
                             </template>

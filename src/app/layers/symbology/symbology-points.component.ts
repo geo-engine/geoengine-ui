@@ -36,7 +36,7 @@ import {LayerService} from '../layer.service';
                     {{symbology.strokeRGBA}}                    
                 </td>
             </tr>
-            <tr>
+            <tr *ngIf="editStrokeWidth">
                 <td>                    
                 </td>
                 <td>
@@ -85,6 +85,7 @@ export class SymbologyPointsComponent {
     static minRadius: number = 1;
 
     @Input() editRadius: boolean = true;
+    @Input() editStrokeWidth: boolean = true;
     @Input() symbology: SimplePointSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimplePointSymbology>();
 

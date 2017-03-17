@@ -1,18 +1,19 @@
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
 
+import {TrimPipe} from '../../../util/pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
-import {Operator} from '../../operator.model';
-import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
-import {ResultTypes} from '../operators/../../result-type.model';
-import {Projections} from '../operators/../../projection.model';
-import {DataType, DataTypes} from '../../datatype.model';
+import {Operator} from '../../../operators/operator.model';
+import {ABCDSourceType, ABCDSourceTypeConfig} from '../../..//operators/types/abcd-source-type.model';
+import {ResultTypes} from '../../../operators/result-type.model';
+import {Projections} from '../../../operators/projection.model';
+import {DataType, DataTypes} from '../../../operators/datatype.model';
 import {VectorLayer} from '../../../layers/layer.model';
-import {Unit} from '../../unit.model';
+import {Unit} from '../../../operators/unit.model';
 import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {PangaeaSourceType} from '../../types/pangaea-source-type.model';
+import {PangaeaSourceType} from '../../../operators/types/pangaea-source-type.model';
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
 import {UserService} from '../../../users/user.service';
 import {Subscription} from 'rxjs/Rx';

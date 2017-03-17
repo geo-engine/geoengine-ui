@@ -1,4 +1,4 @@
-import {CsvColumn} from '../models/csv.model';
+import {CsvColumn} from './csv.model';
 export type BasketResult = IBasketAbcdResult | IBasketPangaeaResult;
 
 export type UnitGroupedBasketResult = IBasketGroupedAbcdResult | IBasketPangaeaResult;
