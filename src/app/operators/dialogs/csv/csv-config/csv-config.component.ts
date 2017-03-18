@@ -400,15 +400,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.endCol = this.model.startCol = 0;
         }
 
-        console.log(2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
-            + ((this.model.intervalType.indexOf('end') >= 0 ||
-            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0));
-
         if (this.model.header.length >= 2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
             + ((this.model.intervalType.indexOf('end') >= 0 ||
             this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.intervalType.indexOf('no') < 0) {
             // check if temporal properties overlap with spatial properties.
-            console.log('setting temporal properties');
             let arr = [this.model.xCol, this.model.yCol];
             if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
                 arr.push(this.model.endCol);
@@ -524,12 +519,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             tableArr.push(this.typingTable.nativeElement);
         }
         for (let t of tableArr) {
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                if (t.rows.item(0).cells.item(j) == null) {
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                if (row.cells.item(j) == null) {
                     continue;
                 }
-                t.rows.item(0).cells.item(j).style.minWidth = null;
-                t.rows.item(0).cells.item(j).style.maxWidth = null;
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
+                cell.style.minWidth = null;
+                cell.style.maxWidth = null;
             }
         }
     }
@@ -559,8 +556,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         let maxCol: number[] = new Array(colNumber);
 
         for (let t of tableArr) {
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                let cell = t.rows.item(0).cells.item(j);
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
                 if (cell == null) {
                     continue;
                 }
@@ -576,12 +574,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         for (let t of tableArr) {
             t.style.borderCollapse = 'separate';
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                if (t.rows.item(0).cells.item(j).getAttribute('name') === 'spacer') {
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                if (row.cells.item(j).getAttribute('name') === 'spacer') {
                     continue;
                 }
-                t.rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
-                t.rows.item(0).cells.item(j).style.maxWidth = (maxCol[j]) + 'px';
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
+                cell.style.minWidth = (maxCol[j]) + 'px';
+                cell.style.maxWidth = (maxCol[j]) + 'px';
             }
         }
         this.resizeTableFrame();
@@ -610,8 +610,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let t of tableArr) {
             width = Math.max(width, t.clientWidth);
         }
-        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
-        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
+        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
     }
 
     /**Resets table size and delays then.
