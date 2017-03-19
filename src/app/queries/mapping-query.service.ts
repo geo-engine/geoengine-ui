@@ -22,7 +22,7 @@ import {LoadingState} from '../project/loading-state.model';
 
 import {GeoJsonFeatureCollection} from './geojson.model';
 import {Provenance} from '../provenance/provenance.model';
-import {Time} from '../time.model';
+import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 import Extent = ol.Extent;
 

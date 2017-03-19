@@ -1,5 +1,5 @@
 import {Projection, Projections} from '../operators/projection.model';
-import {Time, TimeDict, timeFromDict} from '../time.model';
+import {Time, TimeDict, timeFromDict} from '../time/time.model';
 import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 

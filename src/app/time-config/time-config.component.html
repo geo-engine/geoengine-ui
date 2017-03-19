@@ -1,99 +1,30 @@
 <wave-sidenav-header>Time Config</wave-sidenav-header>
-<div fxFlex fxLayout="column" class="container">
-    <div *ngIf="time?.getType() === 'TimePoint' || time?.getType() === 'TimeInterval'">
-
-
+<md-card>
+    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime($event)" fxLayout="column">
         <h3>Start</h3>
 
-        <div fxLayout="row">
-            <md-input-container>
-                <input mdInput placeholder="year" type="number" maxLength="4"
-                       [ngModel]="time.getStart().year()" (ngModelChange)="updateStart('year', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="month" type="number" maxLength="2"
-                       [ngModel]="time.getStart().month()+1" (ngModelChange)="updateStart('month', $event-1)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="day" type="number" maxLength="2"
-                       [ngModel]="time.getStart().date()" (ngModelChange)="updateStart('day', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-        </div>
-        <div fxLayout="row">
-            <md-input-container>
-                <input mdInput placeholder="hour" type="number" maxLength="2"
-                       [ngModel]="time.getStart().hour()" (ngModelChange)="updateStart('hour', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="minute" type="number" maxLength="2"
-                       [ngModel]="time.getStart().minute()" (ngModelChange)="updateStart('minute', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="second" type="number" maxLength="2"
-                       [ngModel]="time.getStart().second()" (ngModelChange)="updateStart('second', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-        </div>
-    </div>
+        <wave-time-input formControlName="start"></wave-time-input>
 
-
-    <div>
-
-        <div fxLayout="row"  fxLayoutAlign="space-between center">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
             <h3>End</h3>
-            <md-slide-toggle #asPointSlider [checked]="timeAsPoint" (change)="changeMode($event)">same as start </md-slide-toggle>
+            <md-slide-toggle #t formControlName="timeAsPoint">same as start</md-slide-toggle>
         </div>
 
-        <div fxLayout="row">
-            <md-input-container>
-                <input mdInput placeholder="year" type="number" maxLength="4" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().year()" (ngModelChange)="updateEnd('year', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="month" type="number" maxLength="2" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().month()+1" (ngModelChange)="updateEnd('month', $event-1)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="day" type="number" maxLength="2" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().date()" (ngModelChange)="updateEnd('day', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
+        <wave-time-input formControlName="end" [disabled]="t.checked"></wave-time-input>
+
+
+
+        <div class="actions">
+            <button md-raised-button (click)="reset()">
+                Reset
+            </button>
+            <button md-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">
+                Apply
+            </button>
+            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
         </div>
-        <div fxLayout="row">
-            <md-input-container>
-                <input mdInput placeholder="hour" type="number" maxLength="2" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().hour()" (ngModelChange)="updateEnd('hour', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="minute" type="number" maxLength="2" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().minute()" (ngModelChange)="updateEnd('minute', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-            <md-input-container>
-                <input mdInput placeholder="second" type="number" maxLength="2" [disabled]="asPointSlider.checked"
-                       [ngModel]="time.getEnd().second()" (ngModelChange)="updateEnd('second', $event)"
-                       (wheel)="$event.stopPropagation()"
-                >
-            </md-input-container>
-        </div>
-    </div>
-</div>
+    </form>
+</md-card>
+<md-card>
+    <h3>Step</h3>
+</md-card>

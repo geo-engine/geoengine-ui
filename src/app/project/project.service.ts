@@ -5,7 +5,7 @@ import {Projections, Projection} from '../operators/projection.model';
 
 import {Project} from './project.model';
 
-import {Time, TimePoint} from '../time.model';
+import {Time, TimePoint} from '../time/time.model';
 import * as moment from 'moment';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';

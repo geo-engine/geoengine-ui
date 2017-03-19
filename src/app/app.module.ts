@@ -95,6 +95,7 @@ import {ColorPickerModule} from 'angular2-color-picker';
 import { OperatorListComponent } from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import { ROperatorComponent } from './operators/dialogs/r/r-operator/r-operator.component';
+import {TimeInputComponent} from './time/time-input/time-input.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -184,6 +185,7 @@ export function configInitializer(config: Config) {
         SidenavSearchComponent,
         SidenavSearchRightDirective,
         ROperatorComponent,
+        TimeInputComponent,
     ],
     imports: [
         BrowserModule,

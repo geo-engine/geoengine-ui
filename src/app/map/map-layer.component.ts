@@ -12,7 +12,7 @@ import {
 
 import {Layer, VectorLayer, RasterLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {Time} from '../time.model';
+import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 
 /**

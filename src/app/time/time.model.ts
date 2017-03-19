@@ -1,6 +1,17 @@
 import * as moment from 'moment';
 import DurationInputArg2 = moment.DurationInputArg2;
 
+export interface SimpleMoment {
+    year: number,
+    month: number,
+    day: number,
+    hour: number,
+    minute: number,
+    second: number,
+    millisecond: number
+}
+
+
 export type TimeType = 'TimePoint' | 'TimeInterval' | 'TimeComplex';
 
 export interface TimeDict {

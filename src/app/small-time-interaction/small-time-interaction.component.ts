@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@an
 import {ProjectService} from '../project/project.service';
 import {LayoutService} from '../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
-import {Time} from "../time.model";
+import {Time} from "../time/time.model";
 
 @Component({
   selector: 'wave-small-time-interaction',
@@ -31,9 +31,9 @@ export class SmallTimeInteractionComponent implements OnInit {
   }
 
   static formatTime(time: Time): string {
-      let s =  time.getStart().format('DD.MM.YYYY hh:mm:ss');
+      let s =  time.getStart().format('DD.MM.YYYY HH:mm:ss');
       if (!time.getStart().isSame(time.getEnd())) {
-          s += ' - ' + time.getEnd().format('DD.MM.YYYY hh:mm:ss');
+          s += ' - ' + time.getEnd().format('DD.MM.YYYY HH:mm:ss');
       }
       return s;
   }

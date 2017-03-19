@@ -1,7 +1,10 @@
-md-toolbar /deep/ md-toolbar-row:first-child {
-    display: none !important;
-}
+@import '../../wave-app-theme';
+
 
 .container {
     padding: 1rem 1rem;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
 }

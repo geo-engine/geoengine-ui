@@ -1,6 +1,6 @@
 import {ParametersType, MappingRequestParameters} from './request-parameters.model';
 import {Projection, Projections} from '../operators/projection.model';
-import {Time, TimeInterval} from '../time.model';
+import {Time, TimeInterval} from '../time/time.model';
 import {DataTypes} from '../operators/datatype.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {FeatureCollectionDBSourceType} from '../operators/types/feature-collection-db-source-type.model';
