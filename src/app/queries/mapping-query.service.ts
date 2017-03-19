@@ -1,4 +1,4 @@
-import {Injectable, Inject, forwardRef, Injector} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 
@@ -391,13 +391,14 @@ export class MappingQueryService {
                 layers: operator.getProjectedOperator(projection).toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
                 time: time.asRequestString(),
+                crs: projection.getCode(),
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
             .map((res: Response) => res.json() as MappingColorizer)
             .catch((err, cought) => {
-                console.log("getColorizer", err, cought); //TODO: notification?
+                // console.log("getColorizer", err, cought); //TODO: notification?
                 return Observable.of({interpolation: 'unknown', breakpoints: []});
             }).map(c => {
                 if(c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {
