@@ -1,0 +1,10 @@
+<wave-dialog-header>Load R Script</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();load()" *ngIf="!(loading$ | async)">
+    <md-radio-group formControlName="scriptName">
+        <md-radio-button *ngFor="let name of scriptNames$ | async" [value]="name">
+            {{name}}
+        </md-radio-button>
+    </md-radio-group>
+    <button md-raised-button type="submit" color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Load</button>
+</form>
+<md-progress-circle mode="indeterminate" *ngIf="loading$ | async"></md-progress-circle>

@@ -1,0 +1,9 @@
+<wave-dialog-header>Save R Script</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();save()" *ngIf="!(loading$ | async)">
+    <md-input-container>
+        <input mdInput type="text" placeholder="Script Name" formControlName="name">
+        <md-hint align="end" class="error" *ngIf="form.controls.name.errors?.required">The name must be non-empty.</md-hint>
+    </md-input-container>
+    <button md-raised-button type="submit" color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Save</button>
+</form>
+<md-progress-circle mode="indeterminate" *ngIf="loading$ | async"></md-progress-circle>

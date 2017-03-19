@@ -1,0 +1,19 @@
+@import "../../../../../wave-app-theme";
+
+md-input-container, input, button {
+    width: 100%;
+}
+
+button {
+    margin-top: 1rem;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}
+
+md-progress-circle {
+    width: 50%;
+    height: auto;
+    margin: 0 auto;
+}
