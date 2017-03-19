@@ -1,6 +1,6 @@
 <wave-sidenav-header>Histogram</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
-    <div fxFlex fxLayout="column" fxLayoutAlign="start stretch" class="container">
+    <div fxFlex class="container">
         <wave-layer-selection
             [types]="ResultTypes.INPUT_TYPES"
             formControlName="layer"

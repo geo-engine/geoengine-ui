@@ -123,7 +123,7 @@ export class OperatorListComponent implements OnInit {
     }
 
     load(component: Type<Component>) {
-        this.layoutService.setSidenavContentComponent(component, OperatorListComponent);
+        this.layoutService.setSidenavContentComponent({component: component, parent: OperatorListComponent});
     }
 
 }

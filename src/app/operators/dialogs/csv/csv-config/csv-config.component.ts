@@ -6,7 +6,7 @@ import {
     AfterViewInit,
     OnDestroy,
     ChangeDetectionStrategy,
-    EventEmitter
+    EventEmitter, ViewChild, ElementRef
 } from '@angular/core';
 import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
@@ -49,10 +49,8 @@ export class CSV {
 @Component({
     selector: 'wave-csv-config',
     templateUrl: 'csv-config-template.component.html',
-    styleUrls: ['csv-config-styles-basic.component.css',
-        'csv-config-styles-table-fixHeader.component.css',
-        'csv-config-styles-table-form.component.css',
-        'csv-config-styles-misc.component.css'],
+    styleUrls: ['csv-config-styles-table-form.component.css',
+        'csv-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -95,12 +93,12 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {display: 'yyyy-MM-dd', value: '%Y-%m-%d'},
     ];
     durationFormats: Array<{display: string, value: string}> = [
-        {display: 'days', value: 'd'},
-        {display: 'hours', value: 'h'},
-        {display: 'seconds', value: 's'},
+        // {display: 'days', value: 'd'},
+        // {display: 'hours', value: 'h'},
+        {display: 'seconds', value: 'seconds'},
     ];
     intervalTypes: Array<{display: string, value: string}> = [
-        {display: 'no time', value: 'none'},
+        {display: 'No time', value: 'none'},
         {display: '[Start,+inf)', value: 'start+inf'},
         {display: '[Start, End]', value: 'start+end'},
         {display: '[Start, Start+Duration]', value: 'start+duration'},
@@ -114,6 +112,13 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     @Input() cellSpacing: number;
     @Input() linesToParse: number;
     @Output() finish: EventEmitter<CSV> = new EventEmitter<CSV>();
+    @ViewChild('headerdiv') headerDiv: ElementRef;
+    @ViewChild('bodydiv') bodyDiv: ElementRef;
+    @ViewChild('typingdiv') typingDiv: ElementRef;
+    @ViewChild('headertable') headerTable: ElementRef;
+    @ViewChild('bodytable') bodyTable: ElementRef;
+    @ViewChild('typingtable') typingTable: ElementRef;
+    @ViewChild('tableframe') tableFrame: ElementRef;
 
     customHeader: string[] = [];
     elements: string[][] = [];
@@ -131,11 +136,15 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit() {
+        this.update(true);
+        if (this.model.header.length > 1) {
+            this.model.yCol = 1;
+            this.model.endCol = 1;
+            this.xyColumn$.next({x: this.model.xCol, y: this.model.yCol});
+        }
         this.resizeTable();
         this.scrollBarWidth = this.getScrollBarWidth();
-        let headerdiv: HTMLElement = document.getElementById('headerdiv');
-        headerdiv.style.marginRight = this.scrollBarWidth + 'px';
-        this.update(true);
+        this.headerDiv.nativeElement.style.marginRight = this.scrollBarWidth + 'px';
     }
 
     ngOnInit() {
@@ -151,7 +160,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.model.xCol = 0;
         this.model.yCol = 0;
         this.model.spatialRefSys = Projections.WGS_84;
-        this.model.coordForm = this.coordFormats[0];
+        this.model.coordForm = this.coordFormats[2];
         this.model.intervalType = this.intervalTypes[0].value;
         this.model.startFormat = this.timeFormats[0].value;
         this.model.startCol = 0;
@@ -159,6 +168,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.model.endCol = 0;
         this.model.content = this.data.content;
         this.model.isNumberArr = [];
+        this.model.header = [];
 
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
@@ -185,12 +195,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         );
 
         this.formStatus$.next(FormStatus.DataProperties);
-        this.update(true);
-        if (this.model.header.length > 1) {
-            this.model.yCol = 1;
-            this.model.endCol = 1;
-            this.xyColumn$.next({x: this.model.xCol, y: this.model.yCol});
-        }
+        this.parse();
     }
 
     next() {
@@ -208,7 +213,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.update(false);
         if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
             this.scrollBarWidth = this.getScrollBarWidth();
-            setTimeout(() => document.getElementById('typingdiv').style.marginRight = this.scrollBarWidth + 'px');
+            setTimeout(() => this.typingDiv.nativeElement.style.marginRight = this.scrollBarWidth + 'px');
         }
     }
 
@@ -261,18 +266,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     update(reparse: boolean) {
         if (reparse) {
-            this.parsedData = this.parse();
-            if (this.model.isHeaderRow) {
-                this.model.header = this.parsedData[this.model.headerRow];
-                this.elements = this.parsedData.slice(this.model.headerRow + 1,
-                    this.model.headerRow + this.linesToParse + 1);
-            } else {
-                this.elements = this.parsedData;
-            }
-            if (!this.model.header || !this.elements) {
-                console.log('to large data');
-            }
-            this.resetNumberArr();
+            this.parse();
         }
 
         this.checkColumns();
@@ -292,7 +286,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     parse() {
         let textQualifier: string = this.model.isTextQualifier ? this.model.textQualifier : null;
         let prev: number = this.model.isHeaderRow ? this.model.headerRow + this.linesToParse + 1 : this.linesToParse;
-        return Papa.parse(this.data.content as string, {
+        this.parsedData = Papa.parse(this.data.content as string, {
             delimiter: this.model.delimitter,
             newline: '',
             quoteChar: textQualifier,
@@ -300,14 +294,24 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             skipEmptyLines: true,
             preview: prev,
         } as any).data;
-
+        if (this.model.isHeaderRow) {
+            this.model.header = this.parsedData[this.model.headerRow];
+            this.elements = this.parsedData.slice(this.model.headerRow + 1,
+                this.model.headerRow + this.linesToParse + 1);
+        } else {
+            this.elements = this.parsedData;
+        }
+        if (!this.model.header || !this.elements) {
+            console.log('to large data');
+        }
+        this.resetNumberArr();
     }
 
     bodyScroll() {
-        let scrollLeft = document.getElementById('bodydiv').scrollLeft;
-        document.getElementById('headerdiv').scrollLeft = scrollLeft;
+        let scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
+        this.headerDiv.nativeElement.scrollLeft = scrollLeft;
         if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
-            document.getElementById('typingdiv').scrollLeft = scrollLeft;
+            this.typingDiv.nativeElement.scrollLeft = scrollLeft;
         }
     }
 
@@ -381,9 +385,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
             }
             // If not necessary both are needed, its possible to set every header column to start or end col.
-            // On change to "both needed" check if start col was set to end col und change if necessary.
-            if (this.model.intervalType.indexOf('Start') >= 0 && (this.model.intervalType.indexOf('End') >= 0
-                || this.model.intervalType.indexOf('Duration') >= 0) && this.model.header.length > 1) {
+            // On change to "both needed" check if start col was set to end col and change if necessary.
+            if (this.model.intervalType.indexOf('start') >= 0 && (this.model.intervalType.indexOf('end') >= 0
+                || this.model.intervalType.indexOf('duration') >= 0) && this.model.header.length > 1) {
                 if (this.model.startCol === this.model.endCol) {
                     if (this.model.startCol === 0) {
                         this.model.endCol = this.model.startCol + 1;
@@ -394,6 +398,46 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         } else {
             this.model.endCol = this.model.startCol = 0;
+        }
+
+        console.log(2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
+            + ((this.model.intervalType.indexOf('end') >= 0 ||
+            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0));
+
+        if (this.model.header.length >= 2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
+            + ((this.model.intervalType.indexOf('end') >= 0 ||
+            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.intervalType.indexOf('no') < 0) {
+            // check if temporal properties overlap with spatial properties.
+            console.log('setting temporal properties');
+            let arr = [this.model.xCol, this.model.yCol];
+            if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
+                arr.push(this.model.endCol);
+            }
+            if (this.model.intervalType.indexOf('start') >= 0 && arr.indexOf(this.model.startCol) >= 0) {
+                while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol < this.model.header.length - 1) {
+                    this.model.startCol++;
+                }
+                if (arr.indexOf(this.model.startCol) >= 0) {
+                    while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol > 1) {
+                        this.model.startCol--;
+                    }
+                }
+            }
+            arr = [this.model.xCol, this.model.yCol];
+            if (this.model.intervalType.indexOf('start') >= 0) {
+                arr.push(this.model.startCol);
+            }
+            if ((this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) &&
+                arr.indexOf(this.model.endCol) >= 0) {
+                while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol < this.model.header.length - 1) {
+                    this.model.endCol++;
+                }
+                if (arr.indexOf(this.model.endCol) >= 0) {
+                    while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol > 1) {
+                        this.model.endCol--;
+                    }
+                }
+            }
         }
     }
 
@@ -469,17 +513,23 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * Causes a reload "effect"
      */
     resetTableSize() {
-        let x = document.getElementsByTagName('table');
-        if (x.length === 0) {
-            return;
+        let tableArr: HTMLTableElement[] = [];
+        if (this.headerTable) {
+            tableArr.push(this.headerTable.nativeElement);
         }
-
-        for (let i = 0; i < x.length; i++) {
-            if (!x.item(i).classList.contains('resizeTable') || x.item(i).rows.length === 0) {
-                continue;
-            }
-            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
-                x.item(i).rows.item(0).cells.item(j).style.minWidth = '0px';
+        if (this.bodyTable) {
+            tableArr.push(this.bodyTable.nativeElement);
+        }
+        if (this.typingDiv) {
+            tableArr.push(this.typingTable.nativeElement);
+        }
+        for (let t of tableArr) {
+            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
+                if (t.rows.item(0).cells.item(j) == null) {
+                    continue;
+                }
+                t.rows.item(0).cells.item(j).style.minWidth = null;
+                t.rows.item(0).cells.item(j).style.maxWidth = null;
             }
         }
     }
@@ -490,18 +540,30 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * if table assigned to class "resizeTable".
      */
     resizeTable() {
-        let x = document.getElementsByTagName('table');
-        if (x.length === 0) {
-            return;
+        let tableArr: HTMLTableElement[] = [];
+        if (this.headerTable) {
+            tableArr.push(this.headerTable.nativeElement);
         }
-        let maxCol: number[] = new Array(x.item(0).rows.length);
-
-        for (let i = 0; i < x.length; i++) {
-            if (!x.item(i).classList.contains('resizeTable') || x.item(i).rows.length === 0) {
-                continue;
+        if (this.bodyTable) {
+            tableArr.push(this.bodyTable.nativeElement);
+        }
+        if (this.typingDiv) {
+            tableArr.push(this.typingTable.nativeElement);
+        }
+        let colNumber = 0;
+        for (let t of tableArr) {
+            if (t.rows.length > colNumber) {
+                colNumber = t.rows.length;
             }
-            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
-                let cell = x.item(i).rows.item(0).cells.item(j);
+        }
+        let maxCol: number[] = new Array(colNumber);
+
+        for (let t of tableArr) {
+            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
+                let cell = t.rows.item(0).cells.item(j);
+                if (cell == null) {
+                    continue;
+                }
                 if (cell.getAttribute('name') === 'spacer') {
                     cell.style.minWidth = this.cellSpacing + 'px';
                     continue;
@@ -512,24 +574,21 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             }
         }
 
-        for (let i = 0; i < x.length; i++) {
-            if (!x.item(i).classList.contains('resizeTable') || x.item(i).rows.length === 0) {
-                continue;
-            }
-            x.item(i).style.borderCollapse = 'separate';
-            for (let j = 0; j < x.item(i).rows.item(0).cells.length; j++) {
-                if (x.item(i).rows.item(0).cells.item(j).getAttribute('name') === 'spacer') {
+        for (let t of tableArr) {
+            t.style.borderCollapse = 'separate';
+            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
+                if (t.rows.item(0).cells.item(j).getAttribute('name') === 'spacer') {
                     continue;
                 }
-                x.item(i).rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
-                x.item(i).rows.item(0).cells.item(j).style.maxWidth = (maxCol[j]) + 'px';
+                t.rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
+                t.rows.item(0).cells.item(j).style.maxWidth = (maxCol[j]) + 'px';
             }
         }
         this.resizeTableFrame();
         // Reset the headerdiv to body divs scroll.
-        document.getElementById('headerdiv').scrollLeft = document.getElementById('bodydiv').scrollLeft;
+        this.headerDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
         if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
-            document.getElementById('typingdiv').scrollLeft = document.getElementById('bodydiv').scrollLeft;
+            this.typingDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
         }
     }
 
@@ -537,13 +596,22 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
      * It brings the table container back to its initial 80%. This is a bug fix.
      */
     resizeTableFrame() {
-        let x = document.getElementsByClassName('resizeTable');
-        let width = 0;
-        for (let i = 0; i < x.length; i++) {
-            width = Math.max(width, x.item(i).clientWidth);
+        let tableArr: Element[] = [];
+        if (this.headerTable) {
+            tableArr.push(this.headerTable.nativeElement);
         }
-        document.getElementById('table-frame').style.maxWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
-        document.getElementById('table-frame').style.minWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
+        if (this.bodyTable) {
+            tableArr.push(this.bodyTable.nativeElement);
+        }
+        if (this.typingDiv) {
+            tableArr.push(this.typingTable.nativeElement);
+        }
+        let width = 0;
+        for (let t of tableArr) {
+            width = Math.max(width, t.clientWidth);
+        }
+        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
+        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
     }
 
     /**Resets table size and delays then.
@@ -567,10 +635,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.xCol,
             this.model.yCol
         ];
-        if (this.model.intervalType.indexOf('End') >= 0 || this.model.intervalType.indexOf('Duration') >= 0) {
+        if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
             arr.push(this.model.endCol);
         }
-        if (this.model.intervalType.indexOf('Start') >= 0) {
+        if (this.model.intervalType.indexOf('start') >= 0) {
             arr.push(this.model.startCol);
         }
         return arr;

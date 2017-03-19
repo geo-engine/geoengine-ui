@@ -20,8 +20,8 @@ import {Layer} from './layers/layer.model';
 import {LayerService} from './layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
-import {DomSanitizer} from "@angular/platform-browser";
-import {RandomColorService} from "./util/services/random-color.service";
+import {DomSanitizer} from '@angular/platform-browser';
+import {RandomColorService} from './util/services/random-color.service';
 
 @Component({
     selector: 'wave-app',
@@ -58,8 +58,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private iconRegistry: MdIconRegistry,
                 private sanitizer: DomSanitizer,
                 private randomColorService: RandomColorService) {
-        iconRegistry.addSvgIconInNamespace('vat','logo',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'));
+        iconRegistry.addSvgIconInNamespace(
+            'vat',
+            'logo',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg')
+        );
 
         this.storageService.toString(); // just register
 
@@ -87,15 +90,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(([component, backButtonComponent]) => {
-            this.rightSidenavContainer.load(component, backButtonComponent);
-            if (component) {
+        this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+            this.rightSidenavContainer.load(sidenavConfig);
+            if (sidenavConfig) {
                 this.rightSidenav.open();
             } else {
                 this.rightSidenav.close();
             }
         });
-        this.projectService.getNewPlotStream().subscribe(() => this.layoutService.setSidenavContentComponent(PlotListComponent));
+        this.projectService.getNewPlotStream()
+            .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
         this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {

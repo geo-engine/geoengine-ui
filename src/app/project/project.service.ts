@@ -155,6 +155,18 @@ export class ProjectService {
         }
     }
 
+    replacePlot(oldPlot: Plot, newPlot: Plot) {
+        this.addPlot(newPlot, false);
+
+        const currentPlots = this.getProject().plots;
+        const oldPlotIndex = currentPlots.indexOf(oldPlot);
+        currentPlots[oldPlotIndex] = newPlot;
+        currentPlots.shift();
+
+        this.removePlot(oldPlot);
+        this.newPlot$.next();
+    }
+
     /**
      * Remove a plot from the project.
      * @param plot

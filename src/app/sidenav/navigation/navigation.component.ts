@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Type, OnDestroy} from '@angular/core';
-import {LayoutService} from '../../layout.service';
+import {LayoutService, SidenavConfig} from '../../layout.service';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from '../../help.component';
@@ -55,7 +55,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(
             this.layoutService.getSidenavContentComponentStream()
-                .map(([component, parent]) => component)
+                .map(sidenavConfig => sidenavConfig ? sidenavConfig.component : undefined)
                 .subscribe(component => {
                     if (component === LoginComponent) {
                         this.loginColor$.next('primary');
@@ -70,13 +70,12 @@ export class NavigationComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    buttonColor(componentSelection: [Type<Component>, Type<Component>], component: Type<Component>): 'default' | 'primary' | 'accent' {
-        if (!componentSelection) {
+    buttonColor(sidenavConfig: SidenavConfig, component: Type<Component>): 'default' | 'primary' | 'accent' {
+        if (!sidenavConfig) {
             return 'default';
         }
 
-        const [selectedComponent, backButtonComponent] = componentSelection;
-        if (selectedComponent === component || backButtonComponent === component) {
+        if (sidenavConfig.component === component || sidenavConfig.parent === component) {
             return 'primary';
         } else {
             return 'default';

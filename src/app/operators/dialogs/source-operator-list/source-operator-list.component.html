@@ -1,38 +1,44 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 <md-nav-list>
-    <md-list-item (click)="layoutService.setSidenavContentComponent(RasterRepositoryComponent, SourceOperatorListComponent)">
-        <img md-list-icon [src]="RasterSourceType.ICON_URL">
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent({component: RasterRepositoryComponent, parent: SourceOperatorListComponent})"
+    >
+        <img md-list-icon [src]="RasterSourceType.ICON_URL" [alt]="RasterSourceType.NAME">
         <h4 md-line>Environmental</h4>
         <p md-line>Add environmental raster layers</p>
     </md-list-item>
-    <md-list-item (click)="layoutService.setSidenavContentComponent(AbcdRepositoryComponent, SourceOperatorListComponent)">
-        <img md-list-icon [src]="ABCDSourceType.ICON_URL">
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent({component: AbcdRepositoryComponent, parent: SourceOperatorListComponent})"
+    >
+        <img md-list-icon [src]="ABCDSourceType.ICON_URL" [alt]="ABCDSourceType.NAME">
         <h4 md-line>ABCD Archives</h4>
         <p md-line>Lookup GFBio ABCD archives</p>
     </md-list-item>
     <md-list-item *waveIfGuest class="disabled">
-        <img md-list-icon [src]="CsvSourceType.ICON_URL">
+        <img md-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
         <h4 md-line>Custom Features</h4>
         <p md-line>Log in to use custom vector data from e.g. CSV files</p>
     </md-list-item>
     <md-list-item
-        (click)="layoutService.setSidenavContentComponent(FeaturedbSourceListComponent, SourceOperatorListComponent)"
+        (click)="layoutService.setSidenavContentComponent({component: FeaturedbSourceListComponent, parent: SourceOperatorListComponent})"
         *waveIfLoggedIn
     >
-        <img md-list-icon [src]="CsvSourceType.ICON_URL">
+        <img md-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
         <h4 md-line>Custom Features</h4>
         <p md-line>Add and use custom vector features like CSV</p>
     </md-list-item>
     <md-list-item
-        (click)="layoutService.setSidenavContentComponent(GfbioBasketsComponent, SourceOperatorListComponent)"
+        (click)="layoutService.setSidenavContentComponent({component: GfbioBasketsComponent, parent: SourceOperatorListComponent})"
         *waveIfGfbioLoggedIn
     >
         <md-icon md-list-icon>add_shopping_cart</md-icon>
         <h4 md-line>GFBio Baskets</h4>
         <p md-line>Display the GFBio Search Results</p>
     </md-list-item>
-    <md-list-item (click)="layoutService.setSidenavContentComponent(GbifOperatorComponent, SourceOperatorListComponent)">
-        <img md-list-icon [src]="GFBioSourceType.ICON_URL">
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent({component: GbifOperatorComponent, parent: SourceOperatorListComponent})"
+    >
+        <img md-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
         <h4 md-line>Species Distribution</h4>
         <p md-line>Query data from GBIF and IUCN</p>
     </md-list-item>

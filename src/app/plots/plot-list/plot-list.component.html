@@ -13,7 +13,7 @@
         [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type"
     >
         <template ngSwitchCase="text">
-            <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+            <pre [style.maxHeight.px]="cardWidth$ | async">{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
         </template>
         <template ngSwitchCase="png">
             <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" alt="{{plot.name}}">
@@ -34,11 +34,23 @@
     <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
         <button md-button (click)="dialog.open(PlotDetailViewComponent, {data: plot})"><md-icon>fullscreen</md-icon></button>
         <span fxFlex></span>
+        <button
+            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
+            md-button (click)="editRPlot(plot)"
+        >
+            <md-icon>mode_edit</md-icon>
+        </button>
         <button md-button (click)="projectService.removePlot(plot)"><md-icon>remove_circle_outline</md-icon></button>
     </md-card-actions>
     <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" fxLayout="row">
         <button md-button (click)="projectService.reloadPlot(plot)" class="error"><md-icon>replay</md-icon></button>
         <span fxFlex></span>
+        <button
+            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
+            md-button (click)="editRPlot(plot)"
+        >
+            <md-icon>mode_edit</md-icon>
+        </button>
         <button md-button (click)="projectService.removePlot(plot)"><md-icon>remove_circle_outline</md-icon></button>
     </md-card-actions>
 </md-card>

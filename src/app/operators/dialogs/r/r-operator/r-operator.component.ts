@@ -1,5 +1,5 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
-import {ResultTypes} from '../../../result-type.model';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
+import {ResultTypes, ResultType} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CodeEditorComponent} from '../../../../util/components/code-editor.component';
 import {ProjectService} from '../../../../project/project.service';
@@ -31,6 +31,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     form: FormGroup;
 
+    @Input() editable: Layer<Symbology> | Plot = undefined;
+    editableSourceRasters: Array<Operator> = undefined;
+    editableSourcePoints: Array<Operator> = undefined;
+
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService,
                 private layerService: LayerService,
@@ -46,6 +50,50 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             resultType: [ResultTypes.TEXT, Validators.required],
             name: ['R Output', Validators.required],
         });
+
+        if (this.editable) {
+            // edit existing operator
+
+            let name: string;
+            let operatorType: RScriptType;
+            let resultType: ResultType;
+            let rasterOperators: Array<Operator>;
+            let pointOperators: Array<Operator>;
+
+            if (this.editable instanceof VectorLayer) {
+                const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.editable;
+                name = vectorLayer.name;
+                resultType = vectorLayer.operator.resultType;
+                rasterOperators = vectorLayer.operator.getSources(ResultTypes.RASTER).toArray();
+                pointOperators = vectorLayer.operator.getSources(ResultTypes.POINTS).toArray();
+                operatorType = vectorLayer.operator.operatorType as RScriptType;
+            } else if (this.editable instanceof RasterLayer) {
+                const rasterLayer: RasterLayer<RasterSymbology> = this.editable;
+                name = rasterLayer.name;
+                resultType = rasterLayer.operator.resultType;
+                rasterOperators = rasterLayer.operator.getSources(ResultTypes.RASTER).toArray();
+                pointOperators = rasterLayer.operator.getSources(ResultTypes.POINTS).toArray();
+                operatorType = rasterLayer.operator.operatorType as RScriptType;
+            } else if (this.editable instanceof Plot) {
+                const plot: Plot = this.editable;
+                name = plot.name;
+                resultType = plot.operator.resultType;
+                rasterOperators = plot.operator.getSources(ResultTypes.RASTER).toArray();
+                pointOperators = plot.operator.getSources(ResultTypes.POINTS).toArray();
+                operatorType = plot.operator.operatorType as RScriptType;
+            } else {
+                throw Error('unknown type to edit');
+            }
+
+            this.form.controls['name'].setValue(name);
+            this.form.controls['resultType'].setValue(resultType);
+            this.form.controls['code'].setValue(operatorType.toDict().code);
+
+            // this.form.controls['rasterLayers'].setValue(rasterLayers);
+            // this.form.controls['pointLayers'].setValue(pointLayers);
+            this.editableSourceRasters = rasterOperators;
+            this.editableSourcePoints = pointOperators;
+        }
     }
 
     ngAfterViewInit() {
@@ -72,12 +120,20 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         const projection = getAnySource(0) === undefined ?
             Projections.WGS_84 : getAnySource(0).operator.projection;
 
-        const rasterSources: Array<Operator> = rasterLayers.map(
-            layer => layer.operator.getProjectedOperator(projection)
-        );
-        const pointSources: Array<Operator> = pointLayers.map(
-            layer => layer.operator.getProjectedOperator(projection)
-        );
+        let rasterSources: Array<Operator>;
+        let pointSources: Array<Operator>;
+
+        if (this.editable) {
+            rasterSources = this.editableSourceRasters.map(operator => operator.getProjectedOperator(projection));
+            pointSources = this.editableSourcePoints.map(operator => operator.getProjectedOperator(projection));
+        } else {
+            rasterSources = rasterLayers.map(
+                layer => layer.operator.getProjectedOperator(projection)
+            );
+            pointSources = pointLayers.map(
+                layer => layer.operator.getProjectedOperator(projection)
+            );
+        }
 
         const operator = new Operator({
             operatorType: new RScriptType({
@@ -125,7 +181,13 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 default:
                     throw Error('Unknown Symbology Error');
             }
-            this.layerService.addLayer(layer);
+
+            if (this.editable) {
+                // TODO: implement replace functionality
+                this.layerService.addLayer(layer);
+            } else {
+                this.layerService.addLayer(layer);
+            }
 
         } else {
 
@@ -134,7 +196,12 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 name: outputName,
                 operator: operator,
             });
-            this.projectService.addPlot(plot);
+
+            if (this.editable) {
+                this.projectService.replacePlot(this.editable as Plot, plot);
+            } else {
+                this.projectService.addPlot(plot);
+            }
 
         }
 

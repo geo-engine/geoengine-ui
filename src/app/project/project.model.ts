@@ -23,18 +23,25 @@ export class Project {
     private _name: string;
     private _plots: Array<Plot>;
 
+    static fromJSON(json: string, operatorMap = new Map<number, Operator>()): Project {
+        const config = JSON.parse(json);
+        return Project.fromDict(config, operatorMap);
+    }
+
     static fromDict(dict: ProjectDict, operatorMap = new Map<number, Operator>()): Project {
+        let plots: Array<Plot>;
+        if (dict.plots) {
+            plots = dict.plots.map(plotDict => Plot.fromDict(plotDict, operatorMap));
+        } else {
+            plots = [];
+        }
+
         return new Project({
             name: dict.name,
             projection: Projections.fromCode(dict.projection),
             time: timeFromDict(dict.time),
-            plots: dict.plots.map(plotDict => Plot.fromDict(plotDict, operatorMap)),
+            plots: plots,
         });
-    }
-
-    static fromJSON(json: string, operatorMap = new Map<number, Operator>()): Project {
-        const config = JSON.parse(json);
-        return Project.fromDict(config, operatorMap);
     }
 
     constructor(config: ProjectConfig) {
