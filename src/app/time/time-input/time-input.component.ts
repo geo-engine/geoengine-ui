@@ -68,8 +68,10 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
     }
 
     private update(timeUnit: moment.unitOfTime.Base, value: number){
-        this.time.set(timeUnit, value);
-        this.propagateChange();
+        if(value) {
+            this.time.set(timeUnit, value);
+            this.propagateChange();
+        }
     }
 
     private propagateChange() {

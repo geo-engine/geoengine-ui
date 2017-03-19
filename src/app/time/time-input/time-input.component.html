@@ -6,8 +6,8 @@
                    (ngModelChange)="update('year', $event)" [disabled]="disabled">
         </md-input-container>
         <md-input-container>
-            <input mdInput placeholder="Month" type="number" maxLength="2" [ngModel]="time?.month()"
-                   (ngModelChange)="update('month', $event)" [disabled]="disabled">
+            <input mdInput placeholder="Month" type="number" maxLength="2" [ngModel]="time?.month()+1"
+                   (ngModelChange)="update('month', ($event-1))" [disabled]="disabled">
         </md-input-container>
         <md-input-container>
             <input mdInput placeholder="Day" type="number" maxLength="2" [ngModel]="time?.date()"
