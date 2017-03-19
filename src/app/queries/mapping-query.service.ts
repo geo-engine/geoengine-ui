@@ -24,7 +24,6 @@ import {GeoJsonFeatureCollection} from './geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {Time} from '../time/time.model';
 import {Config} from '../config.service';
-import Extent = ol.Extent;
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -133,7 +132,11 @@ export class MappingQueryService {
             const resolution = (config.viewportSize as ViewportSize).resolution;
 
             parameters.setParameter('clustered', true);
-            parameters.setParameter('bbox', extent.join(','));
+            if(config.projection.getCode() === 'EPSG:4326') {
+                parameters.setParameter('bbox', extent[1] + ',' + extent[0] + ',' + extent[3] + ',' + extent[2]);
+            } else {
+                parameters.setParameter('bbox', extent.join(','));
+            }
             parameters.setParameter('resolution', resolution);
             // parameters.setParameter('height', Math.max(1, resolution));
             // parameters.setParameter('width', Math.max(1, resolution));
@@ -421,7 +424,7 @@ export class MappingQueryService {
         operator: Operator,
         time: Time,
         projection: Projection,
-        extent: Extent,
+        extent: ol.Extent,
     }): Promise<Array<Provenance>> {
         const request = new MappingRequestParameters({
             service: 'provenance',
