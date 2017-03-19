@@ -190,7 +190,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 this.layerService.getSelectedFeatures().selected.toArray()
             );
 
-            console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
+            // console.log('ngAfterViewInit', 'change:resolution', view.calculateExtent(this.map.getSize()));
             this.mapService.setViewportSize({
                 extent: this.map.getView().calculateExtent(this.map.getSize()),
                 resolution: this.map.getView().getResolution(),
@@ -199,7 +199,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         this.map.on('moveend', event => {
-            console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
+            // console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
             this.mapService.setViewportSize({
                 extent: this.map.getView().calculateExtent(this.map.getSize()),
