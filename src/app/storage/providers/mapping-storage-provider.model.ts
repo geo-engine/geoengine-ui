@@ -270,36 +270,45 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
 
-        return this.http.post(
-            this.config.MAPPING_URL,
-            updateRequest.toMessageBody(),
-            {headers: updateRequest.getHeaders()}
-        ).flatMap(responseString => {
-            const response = responseString.json();
-            if (typeof response.result !== 'boolean') {
-                // `create` on error
-                const createRequest = new ArtifactServiceRequestParameters({
-                    request: 'create',
-                    sessionToken: this.session.sessionToken,
-                    parameters: {
-                        type: TYPES.R_SCRIPTS,
-                        name: name,
-                        value: JSON.stringify(scriptDict),
-                    },
-                });
+        return this.http
+            .post(
+                this.config.MAPPING_URL,
+                updateRequest.toMessageBody(),
+                {headers: updateRequest.getHeaders()}
+            )
+            .map(response => response.json())
+            .flatMap(response => {
+                if (MappingStorageProvider.mappingHasResult(response)) {
+                    return Observable.of(undefined);
+                } else {
+                    // TODO: refactor inner request
+                    // `create` on error
+                    const createRequest = new ArtifactServiceRequestParameters({
+                        request: 'create',
+                        sessionToken: this.session.sessionToken,
+                        parameters: {
+                            type: TYPES.R_SCRIPTS,
+                            name: name,
+                            value: JSON.stringify(scriptDict),
+                        },
+                    });
 
-                return this.http.post(
-                    this.config.MAPPING_URL,
-                    createRequest.toMessageBody(),
-                    {headers: createRequest.getHeaders()}
-                ).map(newResponseString => {
-                    const newResponse = newResponseString.json();
-                    if (typeof newResponse.result !== 'boolean') {
-                        // TODO: error handling
-                    }
-                });
-            }
-        });
+                    return this.http
+                        .post(
+                            this.config.MAPPING_URL,
+                            createRequest.toMessageBody(),
+                            {headers: createRequest.getHeaders()}
+                        )
+                        .map(response2 => response2.json())
+                        .map(response2 => {
+                            if (MappingStorageProvider.mappingHasResult(response2)) {
+                                return Observable.of(undefined);
+                            } else {
+                                // TODO: error handling
+                            }
+                        });
+                }
+            });
     }
 
     loadRScript(name: string): Observable<RScript> {

@@ -32,7 +32,7 @@
             </md-card-header>
             <md-card-content>
                 <p>
-                    The R operator allows executing arbitrary R code on <em>VAT</em> data.
+                    The <em>R operator</em> allows executing arbitrary <em>R</em> code on <em>VAT</em> data.
                     The result can either be a new raster or vector layer, a plot or plain text.
                     For accessing the input data there exists a <code>mapping</code> object that offers the following functionality:</p>
                 <table>
@@ -42,11 +42,17 @@
                     </tr>
                     <tr>
                         <td><code>loadRaster(rasterId, queryRectangle)</code></td>
-                        <td>Load the <code>rasterId</code>th input raster as an R matrix.</td>
+                        <td>
+                            Load the <code>rasterId</code>th input raster as an <em>R</em>
+                            <a
+                                href="https://cran.r-project.org/web/packages/raster/raster.pdf"
+                                target="_blank"
+                            ><code>raster</code></a>.
+                        </td>
                     </tr>
                     <tr>
                         <td><code>loadRasterAsVector(rasterId, queryRectangle)</code></td>
-                        <td>Load the <code>rasterId</code>th input raster as an R numeric vector.</td>
+                        <td>Load the <code>rasterId</code>th input raster as an <em>R</em> numeric vector.</td>
                     </tr>
                     <tr>
                         <td><code>rastercount</code></td>
@@ -55,11 +61,11 @@
                     <tr>
                         <td><code>loadPoints(pointId, queryRectangle)</code></td>
                         <td>
-                            Load the <code>pointId</code>th input point collection as an <code>R</code>
-                            <a href="https://cran.r-project.org/web/packages/sp/sp.pdf" target="_blank">
-                                <code>SpatialPointsDataFrame</code>
-                            </a>
-                            .
+                            Load the <code>pointId</code>th input point collection as an <em>R</em>
+                            <a
+                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
+                                target="_blank"
+                            ><code>SpatialPointsDataFrame</code></a>.
                         </td>
                     </tr>
                     <tr>
@@ -79,6 +85,13 @@
         </md-card>
 
         <wave-code-editor language="r" formControlName="code"></wave-code-editor>
+
+        <div fxLayout="row" class="load-save" *waveIfLoggedIn>
+            <button md-raised-button type="button" fxFlex (click)="load()">Load Script</button>
+            <span fxFlex="1rem"></span>
+            <button md-raised-button type="button" fxFlex (click)="save()">Save Script</button>
+        </div>
+
         <md-select formControlName="resultType" placeholder="Result Type">
             <md-option
                 *ngFor="let resultType of [ResultTypes.POINTS, ResultTypes.PLOT, ResultTypes.RASTER, ResultTypes.TEXT]"

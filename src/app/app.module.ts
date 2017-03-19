@@ -96,6 +96,8 @@ import { OperatorListComponent } from './operators/dialogs/operator-list/operato
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import { ROperatorComponent } from './operators/dialogs/r/r-operator/r-operator.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
+import { RScriptSaveComponent } from './operators/dialogs/r/r-script-save/r-script-save.component';
+import { RScriptLoadComponent } from './operators/dialogs/r/r-script-load/r-script-load.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -185,6 +187,8 @@ export function configInitializer(config: Config) {
         SidenavSearchComponent,
         SidenavSearchRightDirective,
         ROperatorComponent,
+        RScriptSaveComponent,
+        RScriptLoadComponent,
         TimeInputComponent,
     ],
     imports: [
@@ -227,6 +231,8 @@ export function configInitializer(config: Config) {
         SaveProjectAsComponent,
         OperatorListComponent,
         ROperatorComponent,
+        RScriptSaveComponent,
+        RScriptLoadComponent,
     ],
     providers: [
         DragulaService,

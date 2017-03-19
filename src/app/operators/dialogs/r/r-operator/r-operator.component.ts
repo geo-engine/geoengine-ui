@@ -14,6 +14,9 @@ import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {Plot} from '../../../../plots/plot.model';
 import {RasterSymbology, AbstractVectorSymbology, Symbology, SimplePointSymbology} from '../../../../layers/symbology/symbology.model';
+import {MdDialog} from '@angular/material';
+import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
+import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
 
 @Component({
     selector: 'wave-r-operator',
@@ -39,7 +42,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 private projectService: ProjectService,
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
-                private randomColorService: RandomColorService) {
+                private randomColorService: RandomColorService,
+                private dialog: MdDialog) {
     }
 
     ngOnInit() {
@@ -101,6 +105,30 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             this.form.updateValueAndValidity();
             this.codeEditor.refresh();
         });
+    }
+
+    load() {
+        this.dialog.open(RScriptLoadComponent)
+            .afterClosed()
+            .first()
+            .subscribe((result: RScriptLoadResult) => {
+                if (result) {
+                    this.form.controls['code'].setValue(result.script.code);
+                    this.form.controls['resultType'].setValue(result.script.resultType);
+                }
+            });
+    }
+
+    save() {
+        this.dialog.open(
+            RScriptSaveComponent,
+            {
+                script: {
+                    code: this.form.controls['code'].value,
+                    resultType: this.form.controls['resultType'].value,
+                }
+            } as RScriptSaveComponentConfig
+        );
     }
 
     add() {
