@@ -14,6 +14,12 @@ form {
     padding: 1rem;
 }
 
+table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+
 md-card-content {
     text-align: justify;
 }

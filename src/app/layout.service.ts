@@ -11,6 +11,12 @@ export interface LayoutDict {
     layerDetailViewHeightPercentage: number;
 }
 
+export interface SidenavConfig {
+    component: Type<Component>;
+    parent?: Type<Component>;
+    config?: {[key: string]: any};
+}
+
 /**
  * A service that keeps track of app layouting options.
  */
@@ -40,7 +46,7 @@ export class LayoutService {
     /**
      *  Sidenav content
      */
-    private sidenavContentComponent$: Subject<[Type<Component>, Type<Component>]> = new ReplaySubject(1);
+    private sidenavContentComponent$: Subject<SidenavConfig> = new ReplaySubject(1);
 
     static remInPx(): number {
         // TODO: calculate
@@ -101,7 +107,7 @@ export class LayoutService {
     /**
      * Which component to show in the sidenav?
      */
-    getSidenavContentComponentStream(): Observable<[Type<Component>, Type<Component>]> {
+    getSidenavContentComponentStream(): Observable<SidenavConfig> {
         return this.sidenavContentComponent$.distinctUntilChanged();
     }
 
@@ -110,8 +116,8 @@ export class LayoutService {
      * @param component
      * @param backButtonComponent
      */
-    setSidenavContentComponent(component: Type<Component>, backButtonComponent?: Type<Component>) {
-        this.sidenavContentComponent$.next([component, backButtonComponent]);
+    setSidenavContentComponent(sidenavConfig: SidenavConfig) {
+        this.sidenavContentComponent$.next(sidenavConfig);
     }
 
     /**

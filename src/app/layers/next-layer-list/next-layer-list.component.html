@@ -41,7 +41,7 @@
 
             <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
                 <button md-button class="no-layer"
-                        (click)="layoutService.setSidenavContentComponent(SourceOperatorListComponent)"
+                        (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
                         mdTooltip="Add New Data" mdTooltipPosition="after"
                 >
                     <md-icon>add</md-icon> add a first layer

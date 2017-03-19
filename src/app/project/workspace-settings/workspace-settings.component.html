@@ -10,7 +10,7 @@
     <!-- SAVE AS -->
     <md-list-item
         *waveIfLoggedIn
-        (click)="layoutService.setSidenavContentComponent(SaveProjectAsComponent, Self)"
+        (click)="layoutService.setSidenavContentComponent({component: SaveProjectAsComponent, parent: Self})"
     >
         <md-icon md-list-icon color="default">folder</md-icon>
         <h4 md-line>Save As</h4>
@@ -24,7 +24,7 @@
     <!-- LOAD -->
     <md-list-item
         *waveIfLoggedIn
-        (click)="layoutService.setSidenavContentComponent(LoadProjectComponent, Self)"
+        (click)="layoutService.setSidenavContentComponent({component: LoadProjectComponent, parent: Self})"
     >
         <md-icon md-list-icon color="default">folder_open</md-icon>
         <h4 md-line>Load</h4>
@@ -40,7 +40,7 @@
     <!-- NEW PROJECT -->
     <md-list-item
         *waveIfLoggedIn
-        (click)="layoutService.setSidenavContentComponent(NewProjectComponent, Self)"
+        (click)="layoutService.setSidenavContentComponent({component: NewProjectComponent, parent: Self})"
     >
         <md-icon md-list-icon color="default">create_new_folder</md-icon>
         <h4 md-line>New</h4>
@@ -52,7 +52,7 @@
         <p md-line>Please log in to use the full functionality</p>
     </md-list-item>
     <!-- PROJECTION -->
-    <md-list-item (click)="layoutService.setSidenavContentComponent(ChangeProjectionComponent, Self)">
+    <md-list-item (click)="layoutService.setSidenavContentComponent({component: ChangeProjectionComponent, parent: Self})">
         <md-icon md-list-icon color="default">map</md-icon>
         <h4 md-line>Projection</h4>
         <p md-line>Change the current projection</p>

@@ -33,17 +33,17 @@ export class RScriptType extends OperatorType {
     private code: string;
     private resultType: ResultType;
 
-    constructor(config: RScriptTypeConfig) {
-        super();
-        this.code = config.code;
-        this.resultType = config.resultType;
-    }
-
     static fromDict(dict: RScriptTypeDict): RScriptType {
         return new RScriptType({
             code: dict.code,
             resultType: ResultTypes.fromCode(dict.resultType),
         });
+    }
+
+    constructor(config: RScriptTypeConfig) {
+        super();
+        this.code = config.code;
+        this.resultType = config.resultType;
     }
 
     getMappingName(): string {

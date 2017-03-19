@@ -1,9 +1,9 @@
 import {
-    Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef, Type,
+    Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef,
     ComponentRef, ComponentFactoryResolver, OnDestroy, ElementRef, Renderer, ViewChildren, QueryList, AfterViewInit
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
-import {LayoutService} from '../../layout.service';
+import {LayoutService, SidenavConfig} from '../../layout.service';
 import {Subscription, Observable} from 'rxjs/Rx';
 
 @Component({
@@ -64,9 +64,14 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    load(type: Type<Component>, backButtonType?: Type<Component>) {
+    load(sidenavConfig: SidenavConfig) {
+        if (this.componentRef) {
+            this.target.clear();
+            this.componentRef.destroy();
+        }
+
         this.sidenavRef.setTitle(undefined);
-        this.sidenavRef.setBackButtonComponent(backButtonType);
+        this.sidenavRef.setBackButtonComponent(sidenavConfig ? sidenavConfig.parent : undefined);
         this.sidenavRef.removeSearch();
         this.searchTerm = '';
 
@@ -74,9 +79,18 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             this.target.clear();
             this.componentRef.destroy();
         }
-        if (this.target && type) {
-            let componentFactory = this.componentFactoryResolver.resolveComponentFactory(type);
+        if (this.target && sidenavConfig && sidenavConfig.component) {
+            let componentFactory = this.componentFactoryResolver.resolveComponentFactory(sidenavConfig.component);
             this.componentRef = this.target.createComponent(componentFactory);
+
+            if (sidenavConfig.config) {
+                for (const key in sidenavConfig.config) {
+                    if (sidenavConfig.config.hasOwnProperty(key)) {
+                        this.componentRef.instance[key] = sidenavConfig.config[key];
+                    }
+                }
+            }
+
             setTimeout(() => this.componentRef.changeDetectorRef.markForCheck());
         }
     }
@@ -86,7 +100,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     back() {
-        this.layoutService.setSidenavContentComponent(this.sidenavRef.getBackButtonComponent());
+        this.layoutService.setSidenavContentComponent({component: this.sidenavRef.getBackButtonComponent()});
     }
 
 }
