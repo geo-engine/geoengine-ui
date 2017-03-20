@@ -6,6 +6,9 @@ export class TrimPipe implements PipeTransform {
         if (!value) {
             return '';
         }
-        return value.trim();
+        if (value.trim) {
+            return value.trim();
+        }
+        return value;
     }
 }
