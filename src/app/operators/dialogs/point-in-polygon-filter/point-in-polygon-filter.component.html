@@ -1,6 +1,6 @@
-<wave-dialog-header>Point in Polygon Filter</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
-    <md-dialog-content>
+<wave-sidenav-header>Point in Polygon Filter</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
         <wave-layer-selection
             [types]="[ResultTypes.POINTS]"
             formControlName="pointLayer"
@@ -10,13 +10,13 @@
             formControlName="polygonLayer"
         ></wave-layer-selection>
         <wave-operator-output-name formControlName="name"></wave-operator-output-name>
-    </md-dialog-content>
-    <md-dialog-actions align="end">
+    </div>
+    <div class="actions">
         <button
             type="submit"
             md-raised-button
             color="primary"
             [disabled]="form.invalid"
         >Apply</button>
-    </md-dialog-actions>
+    </div>
 </form>

@@ -37,7 +37,10 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
             }
 
             const width = parseInt(getComputedStyle(dialogContainer).maxWidth, 10) - 2 * LayoutService.remInPx();
-            const maxHeight = window.innerHeight * 0.8;
+
+            let dialogContent = this.elementRef.nativeElement.querySelector('md-dialog-content');
+
+            const maxHeight = parseInt(getComputedStyle(dialogContent).maxHeight, 10) - 2 * LayoutService.remInPx();
 
             this.maxWidth$.next(width);
             this.maxHeight$.next(maxHeight);

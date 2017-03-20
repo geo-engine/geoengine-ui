@@ -10,7 +10,7 @@ import * as moment from 'moment';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
-import {MappingQueryService} from '../../queries/mapping-query.service';
+import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Response} from '@angular/http';
 
@@ -108,6 +108,12 @@ export class ProjectService {
         this.changeProjectConfig({name: name});
     }
 
+    setProjection(projection: Projection) {
+        this.changeProjectConfig({
+            projection: projection
+        });
+    }
+
     getProjection(): Projection {
         return this.projection$.value;
     }
@@ -147,6 +153,18 @@ export class ProjectService {
         if (notify) {
             this.newPlot$.next();
         }
+    }
+
+    replacePlot(oldPlot: Plot, newPlot: Plot) {
+        this.addPlot(newPlot, false);
+
+        const currentPlots = this.getProject().plots;
+        const oldPlotIndex = currentPlots.indexOf(oldPlot);
+        currentPlots[oldPlotIndex] = newPlot;
+        currentPlots.shift();
+
+        this.removePlot(oldPlot);
+        this.newPlot$.next();
     }
 
     /**

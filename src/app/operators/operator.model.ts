@@ -83,6 +83,66 @@ export class Operator {
     private polygonSources: ImmutableList<Operator>;
 
     /**
+     * Deserialize an operator from a json string.
+     * @param json
+     * @returns {Operator}
+     */
+    static fromJSON(json: string): Operator {
+        return this.fromDict(JSON.parse(json));
+    }
+
+    /**
+     * Deserialize an operator from a dictionary.
+     * @param operatorDict the Dictionary
+     * @param operators a map from serialized ids to already deserialized operators
+     * @returns an operator
+     */
+    static fromDict(
+        operatorDict: OperatorDict,
+        operators = new Map<OperatorId, Operator>()
+    ): Operator {
+        // the operator was deserialized before, so just return it
+        if (operators.has(operatorDict.id)) {
+            return operators.get(operatorDict.id);
+        }
+
+        // create the operator from the dict (recursively)
+        const operator = new Operator({
+            operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
+            resultType: ResultTypes.fromCode(operatorDict.resultType),
+            projection: Projections.fromCode(operatorDict.projection),
+            attributes: ImmutableList(operatorDict.attributes),
+            dataTypes: ImmutableMap<AttributeName, DataType>(
+                (operatorDict.dataTypes as Array<[string, string]>).map(
+                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
+                )
+            ),
+            units: ImmutableMap<AttributeName, Unit>(
+                (operatorDict.units as Array<[string, UnitDict]>).map(
+                    ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
+                )
+            ),
+            rasterSources: ImmutableList(
+                operatorDict.rasterSources.map(dict => Operator.fromDict(dict, operators))
+            ),
+            pointSources: ImmutableList(
+                operatorDict.pointSources.map(dict => Operator.fromDict(dict, operators))
+            ),
+            lineSources: ImmutableList(
+                operatorDict.lineSources.map(dict => Operator.fromDict(dict, operators))
+            ),
+            polygonSources: ImmutableList(
+                operatorDict.polygonSources.map(dict => Operator.fromDict(dict, operators))
+            ),
+        });
+
+        // store the operator s.th. the same operator is not deserialized into two instances
+        operators.set(operatorDict.id, operator);
+
+        return operator;
+    }
+
+    /**
      * Instantiate an operator.
      *
      * @param config.operatorType      The mapping type name of the operator.
@@ -151,61 +211,6 @@ export class Operator {
         this.pointSources = returnChecked(config.pointSources, ResultTypes.POINTS);
         this.lineSources = returnChecked(config.lineSources, ResultTypes.LINES);
         this.polygonSources = returnChecked(config.polygonSources, ResultTypes.POLYGONS);
-    }
-
-    static fromJSON(json: string): Operator {
-      return this.fromDict(JSON.parse(json));
-    }
-
-    /**
-     * Deserialize an operator from a dictionary.
-     * @param operatorDict the Dictionary
-     * @param operators a map from serialized ids to already deserialized operators
-     * @returns an operator
-     */
-    static fromDict(
-        operatorDict: OperatorDict,
-        operators = new Map<OperatorId, Operator>()
-    ): Operator {
-        // the operator was deserialized before, so just return it
-        if (operators.has(operatorDict.id)) {
-            return operators.get(operatorDict.id);
-        }
-
-        // create the operator from the dict (recursively)
-        const operator = new Operator({
-            operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
-            resultType: ResultTypes.fromCode(operatorDict.resultType),
-            projection: Projections.fromCode(operatorDict.projection),
-            attributes: ImmutableList(operatorDict.attributes),
-            dataTypes: ImmutableMap<AttributeName, DataType>(
-                (operatorDict.dataTypes as Array<[string, string]>).map(
-                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
-                )
-            ),
-            units: ImmutableMap<AttributeName, Unit>(
-                (operatorDict.units as Array<[string, UnitDict]>).map(
-                    ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
-                )
-            ),
-            rasterSources: ImmutableList(
-                operatorDict.rasterSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            pointSources: ImmutableList(
-                operatorDict.pointSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            lineSources: ImmutableList(
-                operatorDict.lineSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            polygonSources: ImmutableList(
-                operatorDict.polygonSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-        });
-
-        // store the operator s.th. the same operator is not deserialized into two instances
-        operators.set(operatorDict.id, operator);
-
-        return operator;
     }
 
     /**

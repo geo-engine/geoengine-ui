@@ -18,7 +18,10 @@ button {
     padding: 0;
 }
 
-div {
+div, md-toolbar {
     width: 33vw;
+}
+
+div {
     overflow: auto;
 }

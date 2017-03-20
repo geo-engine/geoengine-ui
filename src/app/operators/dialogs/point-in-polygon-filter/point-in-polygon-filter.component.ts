@@ -1,18 +1,17 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {LayerService} from '../../../../layers/layer.service';
-import {RandomColorService} from '../../../../services/random-color.service';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {LayerService} from '../../../layers/layer.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
-import {VectorLayer} from '../../../../layers/layer.model';
+import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
-} from '../../../../symbology/symbology.model';
+} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MdDialogRef} from '@angular/material';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -32,8 +31,7 @@ export class PointInPolygonFilterOperatorComponent {
     constructor(private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private layerService: LayerService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<PointInPolygonFilterOperatorComponent>) {
+                private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Filtered Values', Validators.required],
             pointLayer: [undefined, Validators.required],
@@ -85,7 +83,6 @@ export class PointInPolygonFilterOperatorComponent {
             clustered: clustered,
         }));
 
-        this.dialogRef.close();
     }
 
 }

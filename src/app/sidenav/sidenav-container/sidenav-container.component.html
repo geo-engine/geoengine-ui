@@ -1,4 +1,4 @@
-<md-toolbar color="primary" fxFlexLayout="row">
+<md-toolbar color="primary">
     <button md-button (click)="$event.preventDefault();close()" mdTooltip="close sidenav" mdTooltipPosition="after">
         <md-icon>keyboard_arrow_right</md-icon>
     </button>
@@ -10,6 +10,13 @@
     >
         <md-icon>subdirectory_arrow_left</md-icon>
     </button>
+</md-toolbar>
+<md-toolbar *ngIf="sidenavRef.hasSearchComponentStream() | async">
+    <md-input-container fxFlex floatPlaceholder="never">
+        <md-icon mdPrefix>search</md-icon>
+        <input mdInput placeholder="Search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="sidenavRef.searchTerm($event)">
+    </md-input-container>
+    <span #searchElements></span>
 </md-toolbar>
 <div fxFlex>
     <template #target></template>

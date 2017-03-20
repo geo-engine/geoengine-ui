@@ -5,11 +5,12 @@ import {Operator} from '../../../operator.model';
 import {CSV, CsvConfigComponent} from '../csv-config/csv-config.component';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
-import {LayerService} from '../../../../../layers/layer.service';
-import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../../symbology/symbology.model';
-import {VectorLayer} from '../../../../../layers/layer.model';
-import {MappingQueryService} from '../../../../../queries/mapping-query.service';
-import {RandomColorService} from '../../../../../services/random-color.service';
+import {LayerService} from '../../../../layers/layer.service';
+import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../layers/symbology/symbology.model';
+import {VectorLayer} from '../../../../layers/layer.model';
+import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {RandomColorService} from '../../../../util/services/random-color.service';
+import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -25,7 +26,8 @@ export class CsvDialogComponent implements OnInit {
     constructor(private userService: UserService,
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
-                private randomColorService: RandomColorService) {
+                private randomColorService: RandomColorService,
+                private dialogRef: MdDialogRef<CsvDialogComponent>) {
     }
 
     ngOnInit() {
@@ -37,7 +39,7 @@ export class CsvDialogComponent implements OnInit {
         const geometry = 'xy';
         const time = config.intervalType;
         const time1Format = config.startFormat;
-        const time2Format = config.startFormat;
+        const time2Format = config.endFormat;
         const header = config.isHeaderRow ? 0 : config.header;
         const columnX = config.header[config.xCol];
         const columnY = config.header[config.yCol];
@@ -86,10 +88,20 @@ export class CsvDialogComponent implements OnInit {
             removeIfExists(parameters.columns.textual, time1);
             removeIfExists(parameters.columns.numeric, time1);
 
-            if (time.indexOf('end') >= 0 || time.indexOf('duration') >= 0) {
+            if (time.indexOf('end') >= 0) {
                 parameters.timeFormat.time2 = {
                     format: 'custom',
                     customFormat: time2Format,
+                };
+                parameters.columns.time2 = time2;
+
+                removeIfExists(parameters.columns.textual, time2);
+                removeIfExists(parameters.columns.numeric, time2);
+            }
+            if (time.indexOf('duration') >= 0) {
+                // TODO: refactor for other formats
+                parameters.timeFormat.time2 = {
+                    format: time2Format as 'seconds',
                 };
                 parameters.columns.time2 = time2;
 
@@ -109,9 +121,13 @@ export class CsvDialogComponent implements OnInit {
             projection: config.spatialRefSys,
         });
 
-        console.log("SAVE", config, csvSourceType);
+        // console.log("SAVE", config, csvSourceType);
         this.userService.addFeatureToDB(config.layerName, operator)
-            .subscribe(data => this.addLayer(data));
+            .subscribe(data => {
+                this.addLayer(data);
+
+                this.dialogRef.close();
+            });
     }
 
     private addLayer(entry: {name: string, operator: Operator}) {

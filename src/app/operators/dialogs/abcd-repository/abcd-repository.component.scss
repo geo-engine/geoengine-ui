@@ -1,0 +1,36 @@
+@import '../../../../wave-app-theme';
+
+.datagroup {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.datagroup a {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.searchInput {
+    width: 100%;
+}
+md-list-item {
+    cursor: pointer;
+}
+
+.highlight,
+md-list-item /deep/ .highlight {
+    color: mat-color($wave-app-accent);
+    text-decoration: underline;
+}
+
+.secondary_action {
+    float: right;
+}
+
+img {
+    padding: 5px 5px 5px 0;
+}
+.link {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

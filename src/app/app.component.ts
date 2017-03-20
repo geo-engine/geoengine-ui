@@ -4,7 +4,7 @@ import {
 import {MdTabGroup, MdSidenav, MdDialog, MdIconRegistry} from '@angular/material';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 
-import {Symbology} from '../symbology/symbology.model';
+import {Symbology} from './layers/symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
 
 import {LayoutService} from './layout.service';
@@ -12,15 +12,16 @@ import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-con
 
 import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
-import {StorageService} from '../storage/storage.service';
+import {StorageService} from './storage/storage.service';
 
-import {MapComponent} from '../map/map.component';
+import {MapComponent} from './map/map.component';
 
-import {Layer} from '../layers/layer.model';
-import {LayerService} from '../layers/layer.service';
+import {Layer} from './layers/layer.model';
+import {LayerService} from './layers/layer.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
-import {DomSanitizer} from "@angular/platform-browser";
+import {DomSanitizer} from '@angular/platform-browser';
+import {RandomColorService} from './util/services/random-color.service';
 
 @Component({
     selector: 'wave-app',
@@ -55,9 +56,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MdDialog,
                 private iconRegistry: MdIconRegistry,
-                private sanitizer: DomSanitizer ) {
-        iconRegistry.addSvgIconInNamespace('vat','logo',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/vat_logo.svg'));
+                private sanitizer: DomSanitizer,
+                private randomColorService: RandomColorService) {
+        iconRegistry.addSvgIconInNamespace(
+            'vat',
+            'logo',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg')
+        );
 
         this.storageService.toString(); // just register
 
@@ -85,15 +90,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(([component, backButtonComponent]) => {
-            this.rightSidenavContainer.load(component, backButtonComponent);
-            if (component) {
+        this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+            this.rightSidenavContainer.load(sidenavConfig);
+            if (sidenavConfig) {
                 this.rightSidenav.open();
             } else {
                 this.rightSidenav.close();
             }
         });
-        this.projectService.getNewPlotStream().subscribe(() => this.layoutService.setSidenavContentComponent(PlotListComponent));
+        this.projectService.getNewPlotStream()
+            .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
         this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {

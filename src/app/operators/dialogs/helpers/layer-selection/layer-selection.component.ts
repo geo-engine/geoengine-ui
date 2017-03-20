@@ -3,9 +3,9 @@ import {
     ChangeDetectorRef
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {Layer} from '../../../../../layers/layer.model';
-import {LayerService} from '../../../../../layers/layer.service';
-import {Symbology} from '../../../../../symbology/symbology.model';
+import {Layer} from '../../../../layers/layer.model';
+import {LayerService} from '../../../../layers/layer.service';
+import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 
 /**

@@ -1,23 +1,21 @@
 <wave-sidenav-header>Custom Features</wave-sidenav-header>
-<md-toolbar>
-    <md-toolbar-row fxLayout="row">
-        <span fxFlex></span>
-        <button md-icon-button [mdMenuTriggerFor]="addMenu">
-            <md-icon>add</md-icon>
+<wave-sidenav-search (searchString)="searchString$.next($event)">
+    <button md-icon-button [mdMenuTriggerFor]="addMenu" waveSidenavSearchRight>
+        <md-icon>add</md-icon>
+    </button>
+    <md-menu #addMenu="mdMenu">
+        <button md-menu-item (click)="openCSVDialog()">
+            CSV
         </button>
-        <md-menu #addMenu="mdMenu">
-            <button md-menu-item (click)="dialog.open(CsvDialogComponent)">CSV</button>
-        </md-menu>
-        <button md-icon-button (click)="refresh()"><md-icon>refresh</md-icon></button>
-    </md-toolbar-row>
-</md-toolbar>
+    </md-menu>
+    <button md-icon-button (click)="refresh()" waveSidenavSearchRight>
+        <md-icon>refresh</md-icon>
+    </button>
+</wave-sidenav-search>
 <md-list>
-    <md-list-item
-        *ngFor="let entry of entries$ | async"
-        (click)="add(entry)"
-    >
-        <img md-list-icon [src]="entry.operator.operatorType.getIconUrl()">
-        <h4 md-line>{{entry.name}}</h4>
+    <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
+        <img md-list-icon [src]="entry.operator.operatorType.getIconUrl()" [alt]="entry.name">
+        <h4 md-line bind-innerHtml="entry.name | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
         <p md-line>Add this {{entry.operator.resultType}} data set.</p>
     </md-list-item>
 </md-list>

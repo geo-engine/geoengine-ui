@@ -21,6 +21,15 @@ $accent: map-get($wave-app-theme, accent);
 .logo {
     text-align: center;
     font-family: 'Pacifico', cursive;
+
+    md-icon {
+        vertical-align: sub;
+    }
+
+    /deep/ svg {
+        border: 1px solid currentColor;
+        border-radius: 50%;
+    }
 }
 
 .grabbable {
@@ -35,6 +44,10 @@ $accent: map-get($wave-app-theme, accent);
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.small {
+    font-size: 0.8rem;
 }
 
 .mat-toolbar {

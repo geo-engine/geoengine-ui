@@ -14,6 +14,7 @@
                 <template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer
                         [layer]="layer"
+                        [visible]="layer.visible"
                         [symbology]="layer.symbology"
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
@@ -22,6 +23,7 @@
                 <template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
                     <wave-ol-line-layer
                         [layer]="layer"
+                        [visible]="layer.visible"
                         [symbology]="layer.symbology"
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
@@ -30,6 +32,7 @@
                 <template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
                     <wave-ol-polygon-layer
                         [layer]="layer"
+                        [visible]="layer.visible"
                         [symbology]="layer.symbology"
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
@@ -38,6 +41,7 @@
                 <template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
                     <wave-ol-raster-layer
                         [layer]="layer"
+                        [visible]="layer.visible"
                         [symbology]="layer.symbology"
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"

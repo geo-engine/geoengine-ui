@@ -4,7 +4,11 @@ import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
 import {MdDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
-import {subscriptionLogsToBeFn} from 'rxjs/testing/TestScheduler';
+import {RScriptType} from '../../operators/types/r-script-type.model';
+import {LayoutService} from '../../layout.service';
+import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
+import {Plot} from '../plot.model';
+import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-plot-list',
@@ -14,6 +18,10 @@ import {subscriptionLogsToBeFn} from 'rxjs/testing/TestScheduler';
 })
 export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    // make available
+    RScriptType = RScriptType;
+    //
+
     LoadingState = LoadingState;
     PlotDetailViewComponent = PlotDetailViewComponent;
 
@@ -22,6 +30,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     private subsriptions: Array<Subscription> = [];
 
     constructor(public projectService: ProjectService,
+                private layoutService: LayoutService,
                 public dialog: MdDialog,
                 private elementRef: ElementRef) {
     }
@@ -46,6 +55,16 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnDestroy() {
         this.subsriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
+    editRPlot(plot: Plot) {
+        this.layoutService.setSidenavContentComponent({
+            component: ROperatorComponent,
+            parent: OperatorListComponent,
+            config: {
+                editable: plot,
+            }
+        });
     }
 
 }

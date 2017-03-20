@@ -74,8 +74,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         let loginRequest: Observable<boolean>;
 
-        switch (this.loginForm.controls['loginAuthority'].value) {
-            case 'GFBio':
+        switch (this.loginForm.controls['loginAuthority'].value.toLowerCase()) {
+            case 'gfbio':
                 loginRequest = this.userService.gfbioLogin({
                     user: this.loginForm.controls['username'].value,
                     password: this.loginForm.controls['password'].value,

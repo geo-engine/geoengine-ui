@@ -1,12 +1,15 @@
-import {Component, OnInit, ChangeDetectionStrategy, Type} from '@angular/core';
-import {LayoutService} from '../../layout.service';
+import {Component, OnInit, ChangeDetectionStrategy, Type, OnDestroy} from '@angular/core';
+import {LayoutService, SidenavConfig} from '../../layout.service';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
-import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from '../../help.component';
 import {TimeConfigComponent} from '../../time-config/time-config.component';
 import {PlotListComponent} from '../../plots/plot-list/plot-list.component';
 import {WorkspaceSettingsComponent} from '../../project/workspace-settings/workspace-settings.component';
+import {UserService} from '../../users/user.service';
+import {Subscription, BehaviorSubject} from 'rxjs/Rx';
+import {Config} from '../../config.service';
+import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-navigation',
@@ -14,30 +17,65 @@ import {WorkspaceSettingsComponent} from '../../project/workspace-settings/works
     styleUrls: ['./navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NavigationComponent implements OnInit {
+export class NavigationComponent implements OnInit, OnDestroy {
 
     // make available
     SourceOperatorListComponent = SourceOperatorListComponent;
-    OperatorRepositoryComponent = OperatorRepositoryComponent;
+    OperatorListComponent = OperatorListComponent;
     LoginComponent = LoginComponent;
     HelpComponent = HelpComponent;
     TimeConfigComponent = TimeConfigComponent;
     PlotListComponent = PlotListComponent;
     WorkspaceSettingsComponent = WorkspaceSettingsComponent;
+    //
 
-    constructor(public layoutService: LayoutService) {
+    loginColor$ = new BehaviorSubject<'default' | 'primary' | 'accent'>('default');
+
+    private subscriptions: Array<Subscription> = [];
+
+    constructor(public layoutService: LayoutService,
+                public userService: UserService,
+                private config: Config) {
     }
 
     ngOnInit() {
+        this.subscriptions.push(
+            this.userService.isGuestUserStream()
+                .distinctUntilChanged()
+                .filter(isGuest => isGuest)
+                .filter(() => this.loginColor$.getValue() === 'default')
+                .subscribe(() => {
+                    this.loginColor$.next('accent');
+                    setTimeout(
+                        () => this.loginColor$.next(this.loginColor$.getValue() === 'accent' ? 'default' : 'primary'),
+                        this.config.DELAYS.GUEST_LOGIN_HINT
+                    );
+                })
+        );
+
+        this.subscriptions.push(
+            this.layoutService.getSidenavContentComponentStream()
+                .map(sidenavConfig => sidenavConfig ? sidenavConfig.component : undefined)
+                .subscribe(component => {
+                    if (component === LoginComponent) {
+                        this.loginColor$.next('primary');
+                    } else if (this.loginColor$.getValue() === 'primary') {
+                        this.loginColor$.next('default');
+                    }
+                })
+        );
     }
 
-    buttonColor(componentSelection: [Type<Component>, Type<Component>], component: Type<Component>): string {
-        if (!componentSelection) {
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
+    buttonColor(sidenavConfig: SidenavConfig, component: Type<Component>): 'default' | 'primary' | 'accent' {
+        if (!sidenavConfig) {
             return 'default';
         }
 
-        const [selectedComponent, backButtonComponent] = componentSelection;
-        if (selectedComponent === component || backButtonComponent === component) {
+        if (sidenavConfig.component === component || sidenavConfig.parent === component) {
             return 'primary';
         } else {
             return 'default';

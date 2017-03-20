@@ -1,6 +1,6 @@
-<wave-dialog-header>Extract a Raster Value and Add it to the Vector Layer</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
-    <md-dialog-content>
+<wave-sidenav-header>Extract a Raster Value and Add it to the Vector Layer</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
         <wave-layer-selection
             [types]="[ResultTypes.POINTS]"
             formControlName="pointLayer"
@@ -13,9 +13,8 @@
         <wave-dialog-section-heading
             title="Configuration" subtitle="Specify the operator"
         ></wave-dialog-section-heading>
-        <div fxLayout="column" formArrayName="valueNames">
+        <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
             <md-input-container
-                fxFlex
                 *ngFor="let control of form.controls.valueNames.controls; let i = index"
                 [dividerColor]="form.controls.valueNames.controls[i].errors? 'warn' : 'default'"
             >
@@ -30,13 +29,10 @@
             </md-input-container>
         </div>
         <wave-operator-output-name formControlName="name"></wave-operator-output-name>
-    </md-dialog-content>
-    <md-dialog-actions align="end">
-        <button
-            type="submit"
-            md-raised-button
-            color="primary"
-            [disabled]="form.invalid"
-        >Apply</button>
-    </md-dialog-actions>
+    </div>
+    <div class="actions">
+        <button md-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
 </form>

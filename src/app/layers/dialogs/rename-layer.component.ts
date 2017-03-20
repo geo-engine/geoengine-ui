@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {LayerService} from '../../../layers/layer.service';
+import {LayerService} from '../layer.service';
 
-import {Layer} from '../../../layers/layer.model';
-import {Symbology} from '../../../symbology/symbology.model';
+import {Layer} from '../layer.model';
+import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
 
@@ -29,7 +29,8 @@ import {MdDialogRef} from '@angular/material';
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RenameLayerComponent {
+export class RenameLayerComponent implements OnInit {
+
     form: FormGroup;
 
     private layer: Layer<Symbology>;
@@ -38,9 +39,10 @@ export class RenameLayerComponent {
         private layerService: LayerService,
         private formBuilder: FormBuilder,
         private dialogRef: MdDialogRef<RenameLayerComponent>
-    ) {
-        this.layer = this.layerService.getSelectedLayer();
+    ) {}
 
+    ngOnInit(): void {
+        this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
         this.form = this.formBuilder.group({
             layerName: [this.layer.name, Validators.required]
         });

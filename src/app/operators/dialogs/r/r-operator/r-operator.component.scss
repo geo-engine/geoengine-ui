@@ -1,0 +1,34 @@
+form {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+.actions {
+    text-align: right;
+    padding: 1rem;
+}
+
+table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+}
+
+md-card-content {
+    text-align: justify;
+}
+
+md-select {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+wave-code-editor {
+    margin: 1rem 0;
+}

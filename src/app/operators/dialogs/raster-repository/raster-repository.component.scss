@@ -1,0 +1,31 @@
+@import '../../../../wave-app-theme';
+
+.datagroup {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.datagroup a {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.item {
+    width: 100%;
+    cursor: pointer;
+}
+
+.highlight,
+md-list-item /deep/ .highlight {
+    color: mat-color($wave-app-accent);
+    text-decoration: underline;
+}
+
+md-list-item {
+}
+
+img {
+    padding: 5px 5px 5px 0;
+}
+
+.secondary_action {
+    float: right;
+}

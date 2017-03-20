@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angula
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {Config} from '../../../config.service';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {GFBioSourceType} from '../../types/gfbio-source-type.model';
@@ -11,14 +11,14 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology, ClusteredPointSymbology,
     SimpleVectorSymbology
-} from '../../../../symbology/symbology.model';
-import {RandomColorService} from '../../../../services/random-color.service';
-import {BasicColumns} from '../../../../models/csv.model';
+} from '../../../layers/symbology/symbology.model';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {BasicColumns} from '../baskets/csv.model';
 import {Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Http} from '@angular/http';
-import {LayerService} from '../../../../layers/layer.service';
-import {VectorLayer} from '../../../../layers/layer.model';
+import {LayerService} from '../../../layers/layer.service';
+import {VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {

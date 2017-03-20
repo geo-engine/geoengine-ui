@@ -1,0 +1,28 @@
+@import "../../../wave-app-theme";
+
+:host {
+    display: block;
+    padding: 1rem;
+}
+
+p {
+    text-align: justify;
+    margin-bottom: 2rem;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}
+
+md-select {
+    margin: 1rem 0;
+}
+
+button {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+p.finished {
+    text-align: center;
+}

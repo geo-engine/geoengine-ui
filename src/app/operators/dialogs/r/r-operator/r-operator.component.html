@@ -1,0 +1,98 @@
+<wave-sidenav-header>R Operator</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <template [ngIf]="!this.editable">
+            <wave-multi-layer-selection
+                [types]="[ResultTypes.RASTER]"
+                formControlName="rasterLayers"
+                [min]="0" [max]="5" [initialAmount]="0"
+            ></wave-multi-layer-selection>
+            <wave-multi-layer-selection
+                [types]="[ResultTypes.POINTS]"
+                formControlName="pointLayers"
+                [min]="0" [max]="5" [initialAmount]="0"
+            ></wave-multi-layer-selection>
+        </template>
+        <template [ngIf]="this.editable">
+            <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
+            <p *ngIf="!editableSourceRasters">No Input Available</p>
+            <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourcePoints">{{operator.operatorType}}</p>
+            <p *ngIf="!editableSourcePoints">No Input Available</p>
+        </template>
+
+        <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
+
+        <md-card>
+            <md-card-header>
+                <md-icon md-card-avatar>help</md-icon>
+                <md-card-title>Quick Help</md-card-title>
+                <md-card-subtitle>How the operator works</md-card-subtitle>
+            </md-card-header>
+            <md-card-content>
+                <p>
+                    The R operator allows executing arbitrary R code on <em>VAT</em> data.
+                    The result can either be a new raster or vector layer, a plot or plain text.
+                    For accessing the input data there exists a <code>mapping</code> object that offers the following functionality:</p>
+                <table>
+                    <tr>
+                        <th>Functionality</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>loadRaster(rasterId, queryRectangle)</code></td>
+                        <td>Load the <code>rasterId</code>th input raster as an R matrix.</td>
+                    </tr>
+                    <tr>
+                        <td><code>loadRasterAsVector(rasterId, queryRectangle)</code></td>
+                        <td>Load the <code>rasterId</code>th input raster as an R numeric vector.</td>
+                    </tr>
+                    <tr>
+                        <td><code>rastercount</code></td>
+                        <td>This variable contains the amount of raster inputs.</td>
+                    </tr>
+                    <tr>
+                        <td><code>loadPoints(pointId, queryRectangle)</code></td>
+                        <td>
+                            Load the <code>pointId</code>th input point collection as an <code>R</code>
+                            <a href="https://cran.r-project.org/web/packages/sp/sp.pdf" target="_blank">
+                                <code>SpatialPointsDataFrame</code>
+                            </a>
+                            .
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>pointscount</code></td>
+                        <td>This variable contains the amount of point collection inputs.</td>
+                    </tr>
+                    <tr>
+                        <td><code>qrect</code></td>
+                        <td>
+                            This variable is a list that contains the fields
+                            <code>t1, t2, x1, y1, x2, y2, xres, yres</code> and <code>epsg</code>.
+                        </td>
+                    </tr>
+                </table>
+                <p>An example is <code>mapping.loadRaster(0, mapping.qrect)</code> for accessing the first raster.</p>
+            </md-card-content>
+        </md-card>
+
+        <wave-code-editor language="r" formControlName="code"></wave-code-editor>
+        <md-select formControlName="resultType" placeholder="Result Type">
+            <md-option
+                *ngFor="let resultType of [ResultTypes.POINTS, ResultTypes.PLOT, ResultTypes.RASTER, ResultTypes.TEXT]"
+                [value]="resultType"
+            >
+                {{resultType}}
+            </md-option>
+        </md-select>
+
+        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Create
+        </button>
+    </div>
+</form>

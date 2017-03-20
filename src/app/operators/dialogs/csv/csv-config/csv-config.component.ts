@@ -93,9 +93,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {display: 'yyyy-MM-dd', value: '%Y-%m-%d'},
     ];
     durationFormats: Array<{display: string, value: string}> = [
-        {display: 'days', value: 'd'},
-        {display: 'hours', value: 'h'},
-        {display: 'seconds', value: 's'},
+        // {display: 'days', value: 'd'},
+        // {display: 'hours', value: 'h'},
+        {display: 'seconds', value: 'seconds'},
     ];
     intervalTypes: Array<{display: string, value: string}> = [
         {display: 'No time', value: 'none'},

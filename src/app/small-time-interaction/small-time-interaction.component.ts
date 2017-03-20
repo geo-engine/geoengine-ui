@@ -58,6 +58,6 @@ export class SmallTimeInteractionComponent implements OnInit {
   **/
 
   openTimeConfig() {
-    this.layoutService.setSidenavContentComponent(TimeConfigComponent);
+    this.layoutService.setSidenavContentComponent({component: TimeConfigComponent});
   }
 }

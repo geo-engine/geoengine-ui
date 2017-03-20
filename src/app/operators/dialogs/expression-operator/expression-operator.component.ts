@@ -1,17 +1,16 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {LayerService} from '../../../../layers/layer.service';
+import {LayerService} from '../../../layers/layer.service';
 import {DataTypes, DataType} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 import {Observable} from 'rxjs/Rx';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
-import {RasterLayer} from '../../../../layers/layer.model';
-import {RasterSymbology} from '../../../../symbology/symbology.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
+import {RasterLayer} from '../../../layers/layer.model';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 @Component({
     selector: 'wave-expression-operator',
@@ -31,7 +30,6 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
     constructor(private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
-                private dialogRef: MdDialogRef<ExpressionOperatorComponent>,
                 private formBuilder: FormBuilder,
                 private changeDetectorRef: ChangeDetectorRef) {
         this.form = formBuilder.group({
@@ -174,7 +172,6 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
-        this.dialogRef.close();
     }
 
 }

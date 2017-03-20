@@ -39,6 +39,20 @@ export abstract class Projection {
      * @return the crs uri.
      */
     abstract getCrsURI(): string;
+
+    /**
+     * @returns {string} x coordinate name
+     */
+    get xCoordinateName(): string {
+        return 'x';
+    }
+
+    /**
+     * @returns {string} y coordinate name
+     */
+    get yCoordinateName(): string {
+        return 'y';
+    }
 }
 
 export class WebMercator extends Projection {
@@ -68,6 +82,12 @@ export class WGS84 extends Projection {
     }
     getCrsURI(): string {
         return 'http://www.opengis.net/def/crs/EPSG/0/4326';
+    }
+    get xCoordinateName(): string {
+        return 'longitude';
+    }
+    get yCoordinateName(): string {
+        return 'latitude';
     }
 }
 

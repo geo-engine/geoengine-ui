@@ -1,11 +1,10 @@
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Subscription, ReplaySubject} from 'rxjs/Rx';
+import {Subscription, ReplaySubject, Observable} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
-import {MdDialogRef} from '@angular/material';
-import {Layer} from '../../../../layers/layer.model';
-import {Symbology} from '../../../../symbology/symbology.model';
+import {Layer} from '../../../layers/layer.model';
+import {Symbology} from '../../../layers/symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
@@ -26,18 +25,18 @@ function isVectorLayer(layer: Layer<Symbology>): boolean {
 export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     // make public to template
     ResultTypes = ResultTypes;
-    isVectorLayer = isVectorLayer;
     //
 
     form: FormGroup;
 
-    attributes$ = new ReplaySubject<Array<string>>();
+    attributes$ = new ReplaySubject<Array<string>>(1);
+
+    isVectorLayer$: Observable<boolean>;
 
     private subscriptions: Array<Subscription> = [];
 
     constructor(private projectService: ProjectService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<HistogramOperatorComponent>) {
+                private formBuilder: FormBuilder) {
     }
 
     ngOnInit() {
@@ -65,18 +64,18 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         ;
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges.map(layer => {
-                // side effect!!!
-                this.form.controls['attribute'].setValue(undefined);
-
-                if (layer) {
-                    return layer.operator.attributes.filter((attribute: string) => {
-                        return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
-                    }).toArray();
-                } else {
-                    return [];
-                }
-            }).subscribe(this.attributes$)
+            this.form.controls['layer'].valueChanges
+                .do(() => this.form.controls['attribute'].setValue(undefined))
+                .map(layer => {
+                    if (layer) {
+                        return layer.operator.attributes.filter((attribute: string) => {
+                            return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
+                        }).toArray();
+                    } else {
+                        return [];
+                    }
+                })
+                .subscribe(this.attributes$)
         );
 
         this.subscriptions.push(
@@ -84,10 +83,15 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                 .filter(rangeType => rangeType === 'custom')
                 .subscribe(() => this.form.controls['range'].updateValueAndValidity())
         );
+
+        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.map(layer => isVectorLayer(layer));
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.form.updateValueAndValidity(), 0);
+        setTimeout(() => {
+            this.form.updateValueAndValidity();
+            this.form.controls['layer'].updateValueAndValidity();
+        });
     }
 
     ngOnDestroy() {
@@ -132,8 +136,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             name: outputName,
             operator: operator,
         }));
-
-        this.dialogRef.close();
     }
 
 }

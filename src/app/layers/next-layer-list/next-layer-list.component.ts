@@ -1,20 +1,19 @@
 import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MdDialog, MdIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
-import {Observable, Subscription} from 'rxjs';
-import {SymbologyType, Symbology} from '../../../symbology/symbology.model';
-import {SymbologyDialogComponent} from '../../../symbology/symbology-dialog.component';
+import {Observable, Subscription} from 'rxjs/Rx';
+import {SymbologyType, Symbology} from '../symbology/symbology.model';
+
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
-import {OperatorGraphDialogComponent} from '../dialogs/operator-graph.component';
-import {ExportDialogComponent} from '../dialogs/export.component';
-import {OperatorRepositoryComponent} from '../../../components/operator-repository.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {DragulaService} from 'ng2-dragula';
-import {LayerService} from '../../../layers/layer.service';
-import {MapService} from '../../../map/map.service';
-import {Layer} from '../../../layers/layer.model';
+import {LayerService} from '../layer.service';
+import {MapService} from '../../map/map.service';
+import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
+import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
+import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -33,11 +32,22 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
     ST = SymbologyType;
     LoadingState = LoadingState;
     RenameLayerComponent = RenameLayerComponent;
-    SymbologyDialogComponent = SymbologyDialogComponent;
-    OperatorGraphDialogComponent = OperatorGraphDialogComponent;
-    ExportDialogComponent = ExportDialogComponent;
+
+    LineageGraphComponent = LineageGraphComponent;
+    LayerExportComponent = LayerExportComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
+
+    dragOptions = {
+        removeOnSpill: false,
+        revertOnSpill: true,
+        moves: (el, source, handle, sibling): boolean => {
+            let s = handle;
+            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag'));
+            return !s;
+        }
+    };
+
 
     private subscriptions: Array<Subscription> = [];
 
@@ -51,20 +61,15 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      private sanitizer: DomSanitizer
     ) {
         iconRegistry.addSvgIconInNamespace('symbology','polygon',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/polygon_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','line',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/line_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/line_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','point',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/point_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/point_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology','grid4',
-            sanitizer.bypassSecurityTrustResourceUrl('/assets/icons/grid4_24.svg'));
+            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
-
-      dragulaService.setOptions('layer-bag', {
-          removeOnSpill: false,
-          revertOnSpill: true,
-      });
 
       this.handleDragAndDrop();
     }
@@ -102,6 +107,10 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
 
     toggleLayer(layer: Layer<Symbology>) {
         this.layerService.toggleLayer(layer);
+    }
+
+    update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
+        this.layerService.changeLayerSymbology(layer, symbology);
     }
 
     private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
