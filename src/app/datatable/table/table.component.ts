@@ -1,5 +1,5 @@
 import {
-    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter,
+    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, AfterViewInit, EventEmitter,
     ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
 import {DialogComponent} from '../dialog/dialog.component';
@@ -118,8 +118,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public loading = false;
 
     // Observables
-    private data$: Observable<Array<GeoJsonFeature>>;
-    private state$: Observable<LoadingState>;
+    public data$: Observable<Array<GeoJsonFeature>>;
+    public state$: Observable<LoadingState>;
 
     private selectable$: Observable<boolean>;
     private dataSubscription: Subscription;
