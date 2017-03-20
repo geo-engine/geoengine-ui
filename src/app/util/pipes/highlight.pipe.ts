@@ -5,10 +5,17 @@ export class HighlightPipe implements PipeTransform {
 
     // TODO: replace <span> with a <higlight> component?
     transform(text: string, term: string): string {
+
+        let rexp;
         if (term) {
-            let rexp = new RegExp('(' + term + ')', 'gi');
-            text = text.replace(rexp,
-                '<span class="highlight">$1</span>');
+            try {
+                rexp = new RegExp('(' + term + ')', 'gi');
+            }
+            catch(e) {
+                //TODO: what to do?
+            }
+            if(rexp)
+                text = text.replace(rexp, '<span class="highlight">$1</span>');
         }
         return text;
     }
