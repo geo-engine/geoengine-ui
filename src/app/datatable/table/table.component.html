@@ -1,7 +1,7 @@
 <div class="scrollContent" [style.height.px]="height" #scrollContainer (window:resize)="updateContainer()" (scroll)="updateScroll()">
 
     <!-- Loading Spinner -->
-    <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft" 
+    <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
          [style.top.px]="scrollContainer.scrollTop">
         <div class="spinner">
             <md-spinner color="primary"></md-spinner>
@@ -17,7 +17,7 @@
                 <th [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
                     class="tableFixed tableFixedHorizontal tableFixedVertical">
                     <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual" (change)="toggleAll()"></md-checkbox>
+                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
                                      (change)="toggleAll()"></md-checkbox>
                     </div>
                 </th>
@@ -40,7 +40,7 @@
             <tr *ngFor="let tr of displayItemCounter" [class]="'tr'+tr" [class.rowSelected]="selected[tr+firstDisplay]">
                 <td [style.left.px]="scrollContainer.scrollLeft" [style.position]="'relative'" class="tableFixed tableFixedVertical">
                     <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]" 
+                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]"
                                      (change)="toggle(tr+firstDisplay)"></md-checkbox>
                     </div>
                 </td>
@@ -53,7 +53,7 @@
                     </div>
                     -->
                     <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width.px]="avgWidths[i]">
-                        <wave-datatable-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]" 
+                        <wave-datatable-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]"
                                     [type]="colTypes[i]"> </wave-datatable-dialog>
                         <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </span>
                     </div>
