@@ -37,7 +37,7 @@ export class CsvDialogComponent implements OnInit {
         // TODO: refactor most of this
         const fieldSeparator = config.delimitter;
         const geometry = 'xy';
-        const time = config.intervalType;
+        const time = config.isTime ? config.intervalType : 'none';
         const time1Format = config.startFormat;
         const time2Format = config.endFormat;
         const header = config.isHeaderRow ? 0 : config.header;

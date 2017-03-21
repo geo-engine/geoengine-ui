@@ -1,7 +1,11 @@
+@import "../../../../../wave-app-theme";
+
 $latitudeColor: #26c5ff;
 $longitudeColor: orange;
 $startColor: darkgreen;
 $endColor: darkviolet;
+$backgroundColor: mat-color(map-get($wave-app-theme, primary));
+$titleColor: white; /*Inherit from theme here.*/
 
 div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
     color: $latitudeColor;
@@ -16,7 +20,7 @@ div.endSelector md-select /deep/ span.mat-select-placeholder {
     color: $endColor;
 }
 .custom md-input-container /deep/ label.mat-input-placeholder {
-    color: white; /*From template.*/
+    color: $titleColor;
     opacity: 0.75;
 }
 
@@ -112,8 +116,8 @@ md-slide-toggle {
     width: auto;
     border-bottom: solid 1px dimgray;
     border-right: solid 1px dimgray;
-    background-color: #335aa3;/*Inherit from theme here.*/
-    color: white; /*Inherit from theme here.*/
+    background-color: $backgroundColor;
+    color: $titleColor;
     font-weight: 300;
 }
 
@@ -122,7 +126,7 @@ md-slide-toggle {
     padding-bottom: 0px;
     font-size: 15px;
     height: 30px;
-    color: white; /*Inherit from theme here.*/
+    color: $titleColor;
 }
 
 .bodydiv {
@@ -131,7 +135,7 @@ md-slide-toggle {
 }
 
 .bodydiv table tr:nth-child(even) {
-    background-color: #add4f4;
+    background-color: #add4f4; /*Take background color and mix with white.*/
 }
 
 .resizeTable {

@@ -35,6 +35,7 @@ export class CSV {
     public coordForm: string/**:Typ Einfügen(Enum)*/;
     /**Temporal Properties
      * */
+    public isTime: boolean;
     public intervalType: string;
     /**:element of {[Start, +inf), [Start, End], [Start, Start+Duration], (-inf, End]}*/
     public startFormat: string;
@@ -49,8 +50,7 @@ export class CSV {
 @Component({
     selector: 'wave-csv-config',
     templateUrl: 'csv-config-template.component.html',
-    styleUrls: ['csv-config-styles-table-form.component.css',
-        'csv-config.component.scss'],
+    styleUrls: ['csv-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -98,7 +98,6 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {display: 'seconds', value: 'seconds'},
     ];
     intervalTypes: Array<{display: string, value: string}> = [
-        {display: 'No time', value: 'none'},
         {display: '[Start,+inf)', value: 'start+inf'},
         {display: '[Start, End]', value: 'start+end'},
         {display: '[Start, Start+Duration]', value: 'start+duration'},
@@ -157,10 +156,13 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.model.textQualifier = this.texqual[0];
         this.model.isHeaderRow = true;
         this.model.headerRow = 0;
+
         this.model.xCol = 0;
         this.model.yCol = 0;
         this.model.spatialRefSys = Projections.WGS_84;
         this.model.coordForm = this.coordFormats[2];
+
+        this.model.isTime = false;
         this.model.intervalType = this.intervalTypes[0].value;
         this.model.startFormat = this.timeFormats[0].value;
         this.model.startCol = 0;
@@ -402,7 +404,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         if (this.model.header.length >= 2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
             + ((this.model.intervalType.indexOf('end') >= 0 ||
-            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.intervalType.indexOf('no') < 0) {
+            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.isTime) {
             // check if temporal properties overlap with spatial properties.
             let arr = [this.model.xCol, this.model.yCol];
             if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
@@ -470,13 +472,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     changeTemporalProperties(e: MdSlideToggleChange) {
-        switch (e.checked) {
-            case true:
-                this.model.intervalType = this.intervalTypes[1].value;
-                break;
-            default:
-                this.model.intervalType = this.intervalTypes[0].value;
-        }
+        this.model.isTime = e.checked;
     }
 
     resetNumberArr() {
@@ -646,7 +642,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             return true;
         }
         for (let h of this.model.header) {
-            if(!h || h === '' || h === null
+            if (!h || h === '' || h === null
             || h.indexOf(this.model.decimalSeperator) >= 0
             || (this.model.isTextQualifier && h.indexOf(this.model.textQualifier) >= 0)
             || h.indexOf(this.model.delimitter) >= 0) {
@@ -661,10 +657,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.xCol,
             this.model.yCol
         ];
-        if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
+        if (this.model.isTime && this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
             arr.push(this.model.endCol);
         }
-        if (this.model.intervalType.indexOf('start') >= 0) {
+        if (this.model.isTime && this.model.intervalType.indexOf('start') >= 0) {
             arr.push(this.model.startCol);
         }
         return arr;
