@@ -1,6 +1,6 @@
 import {
-    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, Output, AfterViewInit, EventEmitter,
-    ChangeDetectionStrategy, OnInit, OnDestroy, HostListener
+    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, AfterViewInit, EventEmitter,
+    ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
 import {DialogComponent} from '../dialog/dialog.component';
 import {Observable, Subscription} from 'rxjs';
@@ -12,19 +12,12 @@ import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {GeoJsonFeature, FeatureID} from '../../queries/geojson.model';
 
 
-interface Column {
-    name: string;
-    type: 'text' | 'media' | '';
-    avgWidth: string;
-}
-
-
 /**
  * Data-Table-Component
  * Displays a Data-Table
  */
 @Component({
-    selector: 'wave-data-table',
+    selector: 'wave-datatable',
     templateUrl: './table.component.html',
     styleUrls: [
         'table.component.less',
@@ -51,37 +44,37 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      };*/
 
 
-    LoadingState = LoadingState;
+    public LoadingState = LoadingState;
 
     @Input()
-    private height: number;
+    public height: number;
 
     /**
      * Input: Data to display in the table
      */
-        // @Input()
-    private data: Array<any>;
+    // @Input()
+    public data: Array<any>;
 
     /**
      * Output: Is emitted when the row-selection changes. The selected rows are emitted
      * @type {EventEmitter}
      */
-        // @Output()
+    // @Output()
     private rowsSelected: EventEmitter<Array<number>> = new EventEmitter();
 
 
     // Data-Subsets
-    private dataHead: Array<string>;
+    public dataHead: Array<string>;
     private testData: Array<any>;
 
     // For row-selection
-    private selected: boolean[];
+    public selected: boolean[];
     private selectedRowsList: Array<number>;
-    private allSelected: boolean;
-    private allEqual: boolean;
+    public allSelected: boolean;
+    public allEqual: boolean;
 
     // Element-References
-    @ViewChild('scrollContainer') private container: ElementRef;
+    @ViewChild('scrollContainer') public container: ElementRef;
     /*
      @ViewChild('scrollContainerContent') table:ElementRef;
      @ViewChild('tableHead') tableHead:ElementRef;
@@ -94,43 +87,44 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     private oneLineMaxWidth = 300;
     private canvas;
 
-    private avgWidths: number[];
-    private colTypes: string[];
+
+    public avgWidths: number[];
+    public colTypes: string[];
 
     // For virtual scrolling
-    private scrollTop = 0;
-    private scrollLeft = 0;
+    public scrollTop = 0;
+    public  scrollLeft = 0;
 
     private scrollTopBefore = 0;
     private scrollLeftBefore = 0;
     // tableHeight: number;
 
     private containerHeight = 0;
-    private offsetTop = 0;
-    private offsetBottom = 0;
+    public offsetTop = 0;
+    public offsetBottom = 0;
     private elementHeight = 48;
 
 
-    private displayItemCount = 40;
-    private displayOffsetMax = 10;
+    public displayItemCount = 40;
+    // private displayOffsetMax = 10;
     private displayOffsetMin = 5;
 
-    private displayItemCounter: number[];
+    public displayItemCounter: number[];
 
-    private firstDisplay: number;
+    public firstDisplay: number;
     // private lastDisplay: number;
 
     private scrolling = false;
 
 
     private cdr;
-    private layerService;
+    public layerService;
 
-    private loading = false;
+    public loading = false;
 
     // Observables
-    private data$: Observable<Array<GeoJsonFeature>>;
-    private state$: Observable<LoadingState>;
+    public data$: Observable<Array<GeoJsonFeature>>;
+    public state$: Observable<LoadingState>;
 
     private selectable$: Observable<boolean>;
     private dataSubscription: Subscription;
@@ -215,11 +209,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
             for (let i = 0; i < this.data.length; i++) {
-                if (x.selected.contains(this.data[i].id)) {
-                    this.selected[i] = true;
-                } else {
-                    this.selected[i] = false;
-                }
+                this.selected[i] = x.selected.contains(this.data[i].id);
             }
 
             this.testSelected();
@@ -271,7 +261,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                         selectable: false,
                     };
             }
-            ;
         });
 
         this.data$ = dataStream.switchMap(stream => stream.data$);
@@ -388,29 +377,29 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                     w = this.getTextWidth(dataHead[j], 'bold ' + this.styleString);
 
                     t = '';
-                }
-                // Normal Table Rows
-                else {
+                } else { // Normal Table Rows
                     let tmp = testData[i]['properties'][dataHead[j]];
                     w = this.getTextWidth(tmp, this.styleString);
 
                     if (typeof tmp === 'string' && tmp !== '') {
                         let urls = tmp.split(/(,)/g);
                         for (let u in urls) {
-                            t = DialogComponent.getType(urls[u]);
+                            if (urls.hasOwnProperty(u)) {
+                                t = DialogComponent.getType(urls[u]);
 
-                            if (t !== '') {
-                                if (t !== 'text') {
-                                    t = 'media';
+                                if (t !== '') {
+                                    if (t !== 'text') {
+                                        t = 'media';
+                                    }
+
+                                    if (types[j] === 'text' && t !== 'text') {
+                                        types[j] = t;
+                                    }
                                 }
 
-                                if (types[j] === 'text' && t !== 'text') {
+                                if (types[j] == null || types[j] === '') {
                                     types[j] = t;
                                 }
-                            }
-
-                            if (types[j] == null || types[j] === '') {
-                                types[j] = t;
                             }
                         }
                     } else {
@@ -452,7 +441,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param colID the ID of the column to test for
      * @returns {boolean} true, if the text is too wide for the column, false otherwise
      */
-    private textTooWideForColumn(text, colID) {
+    public textTooWideForColumn(text, colID) {
         let w = this.getTextWidth(text, this.styleString);
         if (w > this.oneLineMaxWidth) {
             w = w / 2 + 50;
@@ -462,7 +451,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
 
-    private updateContainer() {
+    public updateContainer() {
         this.containerHeight = this.container.nativeElement.offsetHeight;
         // console.log("new height: "+this.containerHeight);
     }
@@ -478,12 +467,15 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Called on Scrolling the Data-Table
      * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
      */
-    private updateScroll() {
+    public updateScroll() {
+        console.log(this.scrollTopBefore - this.scrollTop);
+
         this.scrollTopBefore = this.scrollTop;
         this.scrollLeftBefore = this.scrollLeft;
 
         this.scrollTop = this.container.nativeElement.scrollTop;
         this.scrollLeft = this.container.nativeElement.scrollLeft;
+
 
         // console.log(this.scrollTopBefore+"->"+this.scrollTop);
 
@@ -581,7 +573,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Called on clicking a checkbox to select a row
      * toggles the checked-variable for this row and runs the tests to check, whether all rows are selected or unselected
      */
-    private toggle(index: number) {
+    public toggle(index: number) {
         this.selected[index] = !this.selected[index];
 
         if (this.selected[index]) {
@@ -599,7 +591,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Called when clicking the select-all-checkbox
      * Selects or unselects all rows, depending on whether a row is already selected
      */
-    private toggleAll() {
+    public toggleAll() {
         let toggledList = Array<FeatureID>();
         for (let i = 0; i < this.selected.length; i++) {
             if (this.allSelected === this.selected[i]) {
@@ -628,10 +620,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         this.allSelected = true;
         this.selectedRowsList = [];
         for (let i in this.selected) {
-            this.allSelected = this.allSelected && this.selected[i];
+            if (this.selected.hasOwnProperty(i)) {
+                this.allSelected = this.allSelected && this.selected[i];
 
-            if (this.selected[i]) {
-                this.selectedRowsList.push(Number(i));
+                if (this.selected[i]) {
+                    this.selectedRowsList.push(Number(i));
+                }
             }
         }
 

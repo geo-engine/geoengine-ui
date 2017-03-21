@@ -1,8 +1,8 @@
 <div class="scrollContent" [style.height.px]="height" #scrollContainer (window:resize)="updateContainer()" (scroll)="updateScroll()">
 
     <!-- Loading Spinner -->
-    <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollLeft"
-         [style.top.px]="scrollTop">
+    <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft" 
+         [style.top.px]="scrollContainer.scrollTop">
         <div class="spinner">
             <md-spinner color="primary"></md-spinner>
         </div>
@@ -14,14 +14,14 @@
         <table #scrollContainerContent>
             <thead> <!--#tableHead-->
             <tr>
-                <th [style.left.px]="scrollLeft" [style.top.px]="scrollTop" [style.position]="'relative'"
+                <th [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
                     class="tableFixed tableFixedHorizontal tableFixedVertical">
                     <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
+                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual" (change)="toggleAll()"></md-checkbox>
                                      (change)="toggleAll()"></md-checkbox>
                     </div>
                 </th>
-                <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollTop" [style.position]="'relative'"
+                <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
                     class="tableFixed tableFixedHorizontal">
                     <div class="tableCell" [style.width.px]="avgWidths[i]">
                         {{t}}
@@ -38,10 +38,9 @@
 
             <!-- Content -->
             <tr *ngFor="let tr of displayItemCounter" [class]="'tr'+tr" [class.rowSelected]="selected[tr+firstDisplay]">
-                <!--#tableElements-->  <!--[class]="'tr'+r+' '+'data'+(r+firstDisplay)"-->
-                <td [style.left.px]="scrollLeft" [style.position]="'relative'" class="tableFixed tableFixedVertical">
+                <td [style.left.px]="scrollContainer.scrollLeft" [style.position]="'relative'" class="tableFixed tableFixedVertical">
                     <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]"
+                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]" 
                                      (change)="toggle(tr+firstDisplay)"></md-checkbox>
                     </div>
                 </td>
@@ -54,8 +53,8 @@
                     </div>
                     -->
                     <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width.px]="avgWidths[i]">
-                        <app-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]"
-                                    [type]="colTypes[i]"></app-dialog>
+                        <wave-datatable-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]" 
+                                    [type]="colTypes[i]"> </wave-datatable-dialog>
                         <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </span>
                     </div>
                 </td>
@@ -70,6 +69,6 @@
     </template>
     <div *ngIf="!(layerService.getIsAnyLayerSelectedStream() | async)" class="no-layer">
         <span>no layer selected</span>
-    </div>
+        </div>
 
 </div>
