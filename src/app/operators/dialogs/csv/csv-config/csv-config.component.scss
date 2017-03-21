@@ -15,6 +15,10 @@ div.startSelector md-select /deep/ span.mat-select-placeholder {
 div.endSelector md-select /deep/ span.mat-select-placeholder {
     color: $endColor;
 }
+.custom md-input-container /deep/ label.mat-input-placeholder {
+    color: white; /*From template.*/
+    opacity: 0.75;
+}
 
 input[type=number]{
     width:50px;

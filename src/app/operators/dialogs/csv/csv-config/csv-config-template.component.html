@@ -14,7 +14,10 @@
            type="input">
 </md-input-container>
 
-<wave-dialog-section-heading [title]="dialogTitle"></wave-dialog-section-heading>
+<div fxLayout="row" fxLayoutAlign="left center">
+    <md-slide-toggle *ngIf="isTemporalProperties$ | async" (change)="changeTemporalProperties($event)" aria-checked="true"></md-slide-toggle>
+    <wave-dialog-section-heading [title]="dialogTitle"></wave-dialog-section-heading>
+</div>
 <!-- First page -->
 
 <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px" fxLayoutAlign="space-around center" style="margin-bottom: 15px;"
@@ -38,7 +41,9 @@
                     <md-select placeholder="Text qualifier"
                                name="texqual" (change)="update(true)"
                                [(ngModel)]="model.textQualifier"
-                               [disabled]="!model.isTextQualifier">
+                               disabled
+                    >
+                        <!--[disabled]="!model.isTextQualifier"-->
                         <md-option *ngFor="let tq of texqual" [value]="tq">
                             {{tq}}
                         </md-option>
@@ -80,9 +85,11 @@
                 </td>
                 <td style="padding: 0px;">
                     <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
-                           name="headerRowC" [disabled]="!model.isHeaderRow"
+                           name="headerRowC"
                            (change)="update(true)"
+                           disabled
                     ><!-- TODO: Need to add line count, so you cant expire. -->
+                    <!--[disabled]="!model.isHeaderRow"-->
                 </td>
             </tr>
             </tbody>
@@ -96,7 +103,7 @@
      style="width: 100%; margin-bottom: 15px;" *ngIf="isSpatialProperties$ | async">
     <div fxLayout="column" fxLayoutGap="20px">
         <div class="longitudeSelector">
-            <md-select fxFlex="100" placeholder="x-Coordinate column"
+            <md-select fxFlex="100" placeholder="{{model.spatialRefSys.xCoordinateName}}-Coordinate column"
                        name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option [disabled]="i === (yColumn$ | async)" [value]="i">
@@ -123,7 +130,7 @@
     </div>
     <div fxLayout="column" fxLayoutGap="20px">
         <div class="latitudeSelector">
-            <md-select fxFlex="100" placeholder="y-Coordinate column"
+            <md-select fxFlex="100" placeholder="{{model.spatialRefSys.yCoordinateName}}-Coordinate column"
                        name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option [disabled]="i === (xColumn$ | async)" [value]="i">

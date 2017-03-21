@@ -26,7 +26,8 @@
                         [disabled]="(((csvConfig.isSpatialProperties$ | async) && (csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
                                     || ((csvConfig.isTemporalProperties$ | async) && (((csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
                                     && ((csvConfig.model.intervalType.indexOf('end') >= 0 || csvConfig.model.intervalType.indexOf('duration') >= 0)
-                                    && csvConfig.model.intervalType.indexOf('start') >= 0))) && csvConfig.model.header.length > 1)"
+                                    && csvConfig.model.intervalType.indexOf('start') >= 0))) && csvConfig.model.header.length > 1)
+                                    || !csvConfig.validHeader()"
                 >
                     Next
                 </button>

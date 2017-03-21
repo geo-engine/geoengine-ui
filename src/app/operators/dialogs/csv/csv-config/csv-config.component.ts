@@ -469,6 +469,16 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    changeTemporalProperties(e: MdSlideToggleChange) {
+        switch (e.checked) {
+            case true:
+                this.model.intervalType = this.intervalTypes[1].value;
+                break;
+            default:
+                this.model.intervalType = this.intervalTypes[0].value;
+        }
+    }
+
     resetNumberArr() {
         this.model.isNumberArr = [];
         for (let i = 0; i < this.model.header.length; i++) {
@@ -629,6 +639,21 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     submit() {
         this.model.content = this.data.content;
         this.finish.emit(this.model);
+    }
+
+    validHeader() {
+        if (this.model.headerRow) {
+            return true;
+        }
+        for (let h of this.model.header) {
+            if(!h || h === '' || h === null
+            || h.indexOf(this.model.decimalSeperator) >= 0
+            || (this.model.isTextQualifier && h.indexOf(this.model.textQualifier) >= 0)
+            || h.indexOf(this.model.delimitter) >= 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     get typedCols(): number[] {
