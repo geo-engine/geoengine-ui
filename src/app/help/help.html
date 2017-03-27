@@ -1,0 +1,202 @@
+<div id="container">
+
+	<md-card>
+		<md-card-header>Content</md-card-header>
+        <md-card-content>
+            <ul>
+                <li>About</li>
+                <li>General Information</li>
+                <li>Quick Demo</li>
+                <li>Account/Login</li>
+                <li>Overview of the User Interface</li>
+                <li>Add Data</li>
+                <li>Operators</li>
+                <li>Lineage Tracking</li>
+                <li>Data Export</li>
+                <li>GFBio Search Results</li>
+            </ul>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>About</md-card-header>
+        <md-card-content>
+            <p>The VAT system is developed by</p>
+            <ul>
+                <li>Database Research Group of the University of Marburg</li>
+                <li>Responsible: Prof. Dr. Bernhard Seeger</li>
+                <li>
+                    <a href="http://dbs.mathematik.uni-marburg.de" target="_blank">http://dbs.mathematik.uni-marburg.de</a>
+                </li>
+            </ul>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>General Information</md-card-header>
+        <md-card-content>
+            <p>The VAT system allows users to explore biodiversity data by selecting one of sevaral data sources and processing them with our built-in operators.</p>
+            <p>Guest users can already try the system. The main features for <b>registered</b> users are:</p>
+            <ul>
+                <li>Saving work</li>
+                <li>Uploading custom data</li>
+                <li>Soon: Sharing results with other users</li>
+            </ul>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>Quick Demo</md-card-header>
+		<md-card-content>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/i2GwQtOZphE" frameborder="0" allowfullscreen></iframe>
+        </md-card-content>
+    </md-card>
+
+	<md-card>
+		<md-card-header>Account/Login</md-card-header>
+        <md-card-content>
+            <p>There are two options for obtaining a VAT account:</p>
+                <ul>
+                    <li>Registering at the GFBio portal at <a href="http://www.gfbio.org" target="_blank">gfbio.org</a>
+                        <ul>
+                            <li>Using your GFBio Portal account also allows you to access your stored search results</li>
+                        </ul>
+                    <li>Obtaining a system account. Please contact us at <a href="mailto:mattig [at] mathematik.uni-marburg.de">mattig [at] mathematik.uni-marburg.de</a> if you are interested in obtaining an account</li>
+                </ul>
+            <p>To Log in click the button in the top-left, and select the type of account</p>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>Overview of the User Interface</md-card-header>
+        <md-card-content>
+            <a href="assets/images/overview.png" target="_blank"><img src="assets/images/overview.png"  style="width:100%;"><br>Click to enhance</a>
+            <p>The user interface consists of the following main parts:</p>
+                <ul>
+                    <li>Map (center)
+                        <ul>
+                            <li>Here, all data is visualized.</li>
+                        </ul>
+                    </li>
+                    <li>Layer list (left)
+                        <ul>
+                            <li>All layers that were added to the map are listed.</li>
+                            <li>You can change the order of the layers via drag and drop.
+                            <li>Additionaly, legends for the layers are shown.</li>
+                            <li>A layer can be selected as <i>active</i> for the data table and feature selection in the map</li>
+                        </ul>
+                    </li>
+                    <li>Data table &amp; Citation (bottom)
+                        <ul>
+                            <li>Data table: Here, information about individual items in the layer are shown</li>
+                            <li>Citations: Inspect the citation information of all data sets that were involved in createing the layer</li>
+                        </ul>
+                    </li>
+                    <li>Sidebar (right)
+                        <ul>
+                            <li>Here, the core functionality of the system is available. Clicking one of the buttons on the right hand side opens the sidebar.</li>
+                            <li>Login: Login to the system to use more advanced features not available to guests.</li>
+                            <li>Add data: select data from one of the following categories
+                                <ul>
+                                    <li>Environmental data</li>
+                                    <li>Species distribution</li>
+                                    <li>Custom (uploaded) data</li>
+                                </ul>
+                            </li>
+                            <li>Operators: Perform an operation on one or multiple layers previously added to the map.</li>
+                            <li>Time: Select the reference time for the current project (cf. Time)</li>
+                            <li>Plots: Inspect plots like graphs and histogram</li>
+                            <li>Workspace: Configure your workspace
+                                <ul>
+                                    <li>Load/Save project</li>
+                                    <li>Change the currently active projection</li>
+                                </ul>
+                            </li>
+                            <li>Help: Open this help functionality</li>
+                        </ul>
+                    </li>
+                    <li>Time (top)
+                        <ul>
+                            <li>Step through the time. For more detailed information see time</li>
+                        </ul>
+                    </li>
+                </ul>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>Add Data</md-card-header>
+        <md-card-content>
+            <p>The VAT system supports two very different types of data: raster and vector data. Rasters consist of many pixels, and each pixel contains a value for the particular location, e.g. the mean temparature. Vector data are collections of features with attributes, e.g. a set of occurrences of pumas and the time of the observation</p>
+            <p>Under <i>AdData</i> you can select on of sevaral environmental layers (rasters), occurrence data from <a href="http://www.gbif.org" target="_blank">GBIF</a>, data from GFBio archives in ABCD format and your own custom data</p>
+            <p>Each data set is added to the map as a layer which you can further process with <i>operators</i>.</p>
+        </md-card-content>
+    </md-card>
+
+	<md-card>
+		<md-card-header>Operators</md-card-header>
+        <md-card-content>
+            <p>Operators allow you to process the layers that were previously added to the map. Our current operators are:</p>
+            <ul>
+                <li>Mixed
+                    <ul>
+                        <li>Raster Value Extraction
+                            <ul>
+                                <li>Select a vector layer and one or more raster layers. The raster values at the location of the features are attached as new attributes. E.g. you can add an <i>elevation</i> attribute to pumas, containing the elvation at the puma's observed location</li>
+                            </ul>
+                        </li>
+                    </ul>
+                <li>Plots
+                    <ul>
+                        <li>Histogram: Plot a histogram of the data distribution of a raster or vector layer.</li>
+                    </ul>
+                </li>
+                <li>Raster
+                    <ul>
+                        <li>Expression
+                            <ul>
+                                <li>Evaluate an expression on the pixel values of the input rasters</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Vectors
+                    <ul>
+                        <li>Numeric Attribute Filter
+                            <ul>
+                                <li>Perform a range filter on a numeric attribute of a feature collection</li>
+                            </ul>
+                        </li>
+                        <li>Point in Polygon Filter
+                            <ul>
+                                <li>Select a point and a polygon layer and create a new layer containing only those points that are contained in at least one polygon</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>Lineage Tracking</md-card-header>
+        <md-card-content>
+		    <img src="assets/images/lineage.png" style="max-width:100%;">
+		    <p>The VAT system's goal is to support interactive data exploration by tracking the data processing automatically in the background. You can view the complete processing workflow for individual layers by selection <i>Lineage</i> in the layer context menu and the lineage for all layers by clicking on the context menu of the layer list in the top left.</p>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>Data Export</md-card-header>
+        <md-card-content>
+		    <p>The result of computations can be exported by clicking the <i>Export</i> button in a layers context menu. After selecting the output format, a ZIP file is generated that bundles the actual data with all citations and the workflow itself</p>
+        </md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-header>GFBio Search Results</md-card-header>
+		<md-card-content>
+            <p>When logged in as a GFBio user, the Add Data function offers a <i>GFBio baskets</i> option. There, you have access to all previous searches you performed on gfbio.org while being logged in. You have the option to go the data sets landing page or add a new layer containing the data.</p>
+        </md-card-content>
+	</md-card>
+</div>

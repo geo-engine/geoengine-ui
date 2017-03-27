@@ -77,7 +77,7 @@ import { LoginComponent } from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
 import { PlotListComponent } from './plots/plot-list/plot-list.component';
 import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
-import { HelpComponent } from './help.component';
+import { HelpComponent } from './help/help.component';
 import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
 import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
