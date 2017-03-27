@@ -93,10 +93,7 @@
         </div>
 
         <md-select formControlName="resultType" placeholder="Result Type">
-            <md-option
-                *ngFor="let resultType of [ResultTypes.POINTS, ResultTypes.PLOT, ResultTypes.RASTER, ResultTypes.TEXT]"
-                [value]="resultType"
-            >
+            <md-option *ngFor="let resultType of outputTypes" [value]="resultType">
                 {{resultType}}
             </md-option>
         </md-select>
