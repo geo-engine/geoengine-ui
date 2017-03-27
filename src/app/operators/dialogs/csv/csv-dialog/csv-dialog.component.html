@@ -35,7 +35,7 @@
         <button md-raised-button color="primary" (click)="csvConfig.submit()" *ngIf="csvConfig.isTypingProperties$ | async"
                 [disabled]="(csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async)
                                 && ((csvConfig.model.intervalType.indexOf('end') >= 0 || csvConfig.model.intervalType.indexOf('duration') >= 0)
-                                && csvConfig.model.intervalType.indexOf('start') >= 0)"
+                                && csvConfig.model.intervalType.indexOf('start') >= 0) || (csvConfig.nameIsReserved$ | async)"
         >
             Submit
         </button>

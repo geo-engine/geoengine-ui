@@ -190,3 +190,7 @@ md-slide-toggle {
     margin-bottom: 3px;
     horiz-align: center;
 }
+
+.error {
+    color: mat-color($wave-app-warn);
+}

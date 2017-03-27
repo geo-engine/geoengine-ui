@@ -8,10 +8,12 @@ import {
     ChangeDetectionStrategy,
     EventEmitter, ViewChild, ElementRef
 } from '@angular/core';
-import {BehaviorSubject, Subscription, Observable} from 'rxjs/Rx';
+import {BehaviorSubject, Subscription, Observable, ReplaySubject} from 'rxjs/Rx';
 import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
 import {Projections, Projection} from '../../../projection.model';
+import {StorageService} from '../../../../storage/storage.service';
+import {UserService} from '../../../../users/user.service';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -125,13 +127,27 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     model: CSV;
     dialogTitle: string;
 
-    constructor() {
+    nameIsReserved$: Observable<boolean>;
+    storageName$ = new ReplaySubject<string>(1);
+    private reservedNames$ = new BehaviorSubject<Array<string>>([]);
+
+    constructor(private userService: UserService) {
         this.xColumn$ = this.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.xyColumn$.map(xy => xy.y);
         this.isDataProperties$ = this.formStatus$.map(status => status === FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === FormStatus.SpatialProperties);
         this.isTemporalProperties$ = this.formStatus$.map(status => status === FormStatus.TemporalProperties);
         this.isTypingProperties$ = this.formStatus$.map(status => status === FormStatus.TypingProperties);
+
+        this.userService.getFeatureDBList()
+            .map(entries => entries.map(entry => entry.name))
+            .subscribe(names => this.reservedNames$.next(names));
+
+        this.nameIsReserved$ = Observable.combineLatest(
+            this.reservedNames$,
+            this.storageName$,
+            (reservedNames, storageName) => reservedNames.indexOf(storageName) >= 0
+        );
     }
 
     ngAfterViewInit() {

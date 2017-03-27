@@ -10,8 +10,9 @@
 
 
 <md-input-container style="width: 100%;">
-    <input mdInput [(ngModel)]="model.layerName" name="layerName" placeholder="File Name"
+    <input mdInput [(ngModel)]="model.layerName" (ngModelChange)="storageName$.next($event)" name="layerName" placeholder="File Name"
            type="input">
+    <md-hint class="error" *ngIf="nameIsReserved$ | async">Name is already in use.</md-hint>
 </md-input-container>
 
 <div fxLayout="row" fxLayoutAlign="left center">
