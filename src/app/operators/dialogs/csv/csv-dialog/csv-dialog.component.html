@@ -6,17 +6,18 @@
         (onData)="data = $event"
     ></wave-csv-upload>
     <wave-csv-config
-        *ngIf="!!data"
+        *ngIf="!!data && !(uploading$ | async)"
         [data]="data"
         [cellSpacing]="10"
         [linesToParse]="15"
         (finish)="submit($event)"
     ></wave-csv-config>
+    <md-spinner *ngIf="uploading$ | async"></md-spinner>
 </md-dialog-content>
 <!-- TODO: DO THIS WITH ALL THE BUTTONS! -->
 <!-- Buttons -->
 
-<md-dialog-actions align="end">
+<md-dialog-actions align="end" *ngIf="!(uploading$ | async)">
     <div class="buttons" *ngIf="!!csvConfig">
             <span *ngIf="(csvConfig.isSpatialProperties$ | async) || (csvConfig.isTemporalProperties$ | async) || (csvConfig.isTypingProperties$ | async)">
               <button md-raised-button (click)="csvConfig.prev()">Prev</button>
