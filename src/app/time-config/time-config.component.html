@@ -1,17 +1,18 @@
 <wave-sidenav-header>Time Config</wave-sidenav-header>
-<md-card>
+<!--<md-card>-->
     <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime($event)" fxLayout="column">
-        <h3>Start</h3>
+        <h3 *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
 
         <wave-time-input formControlName="start"></wave-time-input>
 
-        <div fxLayout="row" fxLayoutAlign="space-between center">
-            <h3>End</h3>
-            <md-slide-toggle #t formControlName="timeAsPoint">same as start</md-slide-toggle>
+        <div *ngIf="config.TIME.ALLOW_RANGES">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <h3>End</h3>
+                <md-slide-toggle #t formControlName="timeAsPoint">same as start</md-slide-toggle>
+            </div>
+
+            <wave-time-input formControlName="end" [disabled]="t.checked"></wave-time-input>
         </div>
-
-        <wave-time-input formControlName="end" [disabled]="t.checked"></wave-time-input>
-
 
 
         <div class="actions">
@@ -24,7 +25,7 @@
             <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
         </div>
     </form>
-</md-card>
-<md-card>
-    <h3>Step</h3>
-</md-card>
+<!--</md-card>-->
+<!--<md-card>-->
+    <!--<h3>Step</h3>-->
+<!--</md-card>-->

@@ -4,25 +4,26 @@ import {Subscription} from 'rxjs/Rx';
 import {Time, TimeType, TimePoint, TimeInterval} from '../time/time.model';
 import {unitOfTime, Moment} from 'moment';
 import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
+import {Config} from '../config.service';
 
-const startBeforeEndValidator = (condition) => (control:FormGroup) => {
+const startBeforeEndValidator = (condition) => (control: FormGroup) => {
     let start = control.controls.start.value as Moment;
     let end = control.controls.end.value as Moment;
     var timeAsPoint = control.controls.timeAsPoint.value as boolean;
 
-    if ( start && end && (timeAsPoint || start.isBefore(end) )) {
+    if (start && end && (timeAsPoint || start.isBefore(end) )) {
         return null;
     } else {
-        return { valid: false };
+        return {valid: false};
     }
 };
 
 
 @Component({
-  selector: 'wave-time-config',
-  templateUrl: './time-config.component.html',
-  styleUrls: ['./time-config.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'wave-time-config',
+    templateUrl: './time-config.component.html',
+    styleUrls: ['./time-config.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -33,19 +34,23 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     start: Moment;
     end: Moment;
 
-  constructor(private projectService: ProjectService,
-              private changeDetectorRef: ChangeDetectorRef,
-              private formBuilder: FormBuilder) {
+    constructor(private projectService: ProjectService,
+                private changeDetectorRef: ChangeDetectorRef,
+                private formBuilder: FormBuilder,
+                public config: Config) {
 
-      this.timeForm = this.formBuilder.group({
-          start: [this.start, Validators.required],
-          timeAsPoint: [this.timeAsPoint, Validators.required],
-          end: [{value: this.end, disabled: this.timeAsPoint}, Validators.required],
-      });
-      this.timeForm.setValidators(startBeforeEndValidator(null));
+        if (!this.config.TIME.ALLOW_RANGES) {
+            this.timeAsPoint = false;
+        }
 
-  }
+        this.timeForm = this.formBuilder.group({
+            start: [this.start, Validators.required],
+            timeAsPoint: [this.timeAsPoint, Validators.required],
+            end: [{value: this.end, disabled: this.timeAsPoint}, Validators.required],
+        });
+        this.timeForm.setValidators(startBeforeEndValidator(null));
 
+    }
 
 
     ngOnInit() {
@@ -60,23 +65,23 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit() {
-      setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
+        setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
     ngOnDestroy(): void {
-      this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.forEach(s => s.unsubscribe());
     }
 
-    applyTime(event: any){
-      if(this.timeForm.valid){
-          const start = this.timeForm.controls['start'].value;
-          if(this.timeForm.controls['timeAsPoint'].value) {
-              this.push(new TimePoint(start));
-          } else {
-              const end = this.timeForm.controls['end'].value;
-              this.push(this.time = new TimeInterval(start, end));
-          }
-      }
+    applyTime(event: any) {
+        if (this.timeForm.valid) {
+            const start = this.timeForm.controls['start'].value;
+            if (this.timeForm.controls['timeAsPoint'].value) {
+                this.push(new TimePoint(start));
+            } else {
+                const end = this.timeForm.controls['end'].value;
+                this.push(this.time = new TimeInterval(start, end));
+            }
+        }
     }
 
     reset() {

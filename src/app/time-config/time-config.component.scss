@@ -1,5 +1,9 @@
 @import '../../wave-app-theme';
 
+:host {
+    display: block;
+    padding: 1rem;
+}
 
 .container {
     padding: 1rem 1rem;
