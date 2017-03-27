@@ -1,10 +1,10 @@
 import { Component, Input} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MdDialogRef} from '@angular/material';
 
 @Component({
-  selector: 'dialog-audio',
-  templateUrl: 'dialog.audio.component.html',
-  styleUrls: ['dialog.audio.component.less']
+    selector: 'wave-dialog-audio',
+    templateUrl: 'dialog.audio.component.html',
+    styleUrls: ['dialog.audio.component.less']
 })
 
 /**
@@ -15,45 +15,44 @@ import {MdDialogRef} from "@angular/material";
  */
 export class DialogAudioComponent {
 
-  /**
-   * Input: An array of audio-urls to display in the dialog
-   */
-  @Input()
-  private audioURLs: string[];
+    /**
+     * Input: An array of audio-urls to display in the dialog
+     */
+    @Input()
+    public audioURLs: string[];
 
-  /**
-   * Input: The index of the audio-file to play first
-   */
-  @Input()
-  private currentAudio: number;
+    /**
+     * Input: The index of the audio-file to play first
+     */
+    @Input()
+    public currentAudio: number;
 
-  //audioNames: string[];
-  private autoPlay: boolean;
+    // audioNames: string[];
+    public autoPlay: boolean;
 
-  /**
-   * Sets up all variables
-   * @param dialogRef reference to this Dialog-Type
-   */
-  constructor(public dialogRef: MdDialogRef<DialogAudioComponent>) {
-    this.autoPlay = false;
-  }
+    /**
+     * Sets up all variables
+     * @param dialogRef reference to this Dialog-Type
+     */
+    constructor(public dialogRef: MdDialogRef<DialogAudioComponent>) {
+        this.autoPlay = false;
+    }
 
-  /**
-   * Plays the audio with given id, skipping the currently playing one
-   * @param audioID the ID auf the audio-file to play
-   */
-  private goToAudio(audioID:number){
-    this.currentAudio = audioID;
-    this.autoPlay = true;
-  }
+    /**
+     * Plays the audio with given id, skipping the currently playing one
+     * @param audioID the ID auf the audio-file to play
+     */
+    public goToAudio(audioID: number) {
+        this.currentAudio = audioID;
+        this.autoPlay = true;
+    }
 
-  /**
-   * Plays the next audio in the list of audio-urls
-   * If the current file is the last one, plays the first one
-   * Is called when the current audio has finished playing
-   */
-  private playNext(){
-    this.goToAudio((this.currentAudio + 1) % this.audioURLs.length);
-  }
-
+    /**
+     * Plays the next audio in the list of audio-urls
+     * If the current file is the last one, plays the first one
+     * Is called when the current audio has finished playing
+     */
+    public playNext() {
+        this.goToAudio((this.currentAudio + 1) % this.audioURLs.length);
+    }
 }

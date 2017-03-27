@@ -9,7 +9,6 @@ import { DialogComponent } from './dialog/dialog.component';
 import { DialogImageComponent } from './dialog/image/dialog.image.component';
 import { DialogAudioComponent } from './dialog/audio/dialog.audio.component';
 import { DialogVideoComponent } from './dialog/video/dialog.video.component';
-import { DialogPipe } from './dialog/dialog.pipe';
 
 import { PlaylistComponent } from './dialog/playlist/playlist.component';
 import { FileNamePipe } from './dialog/filename.pipe';
@@ -30,7 +29,6 @@ import { TableService } from './table/table.service';
         DialogImageComponent,
         DialogAudioComponent,
         DialogVideoComponent,
-        DialogPipe,
         PlaylistComponent,
         FileNamePipe
     ],

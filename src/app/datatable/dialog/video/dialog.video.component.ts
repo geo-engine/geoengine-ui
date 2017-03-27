@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MdDialogRef} from '@angular/material';
 
 @Component({
-  selector: 'dialog-video',
-  templateUrl: 'dialog.video.component.html',
-  styleUrls: ['dialog.video.component.less']
+    selector: 'wave-dialog-video',
+    templateUrl: 'dialog.video.component.html',
+    styleUrls: ['dialog.video.component.less']
 })
 
 /**
@@ -15,44 +15,44 @@ import {MdDialogRef} from "@angular/material";
  */
 export class DialogVideoComponent {
 
-  /**
-   * Input: An array of video-urls to display in the dialog
-   */
-  @Input()
-  private videoURLs: string[];
+    /**
+     * Input: An array of video-urls to display in the dialog
+     */
+    @Input()
+    public videoURLs: string[];
 
-  /**
-   * Input: The index of the video to play first
-   */
-  @Input()
-  private currentVideo: number;
+    /**
+     * Input: The index of the video to play first
+     */
+    @Input()
+    public currentVideo: number;
 
-  private autoPlay: boolean;
+    public autoPlay: boolean;
 
-  /**
-   * Sets up all variables
-   * @param dialogRef reference to this Dialog-Type
-   */
-  constructor(public dialogRef: MdDialogRef<DialogVideoComponent>) {
-    this.autoPlay = false;
-  }
+    /**
+     * Sets up all variables
+     * @param dialogRef reference to this Dialog-Type
+     */
+    constructor(public dialogRef: MdDialogRef<DialogVideoComponent>) {
+        this.autoPlay = false;
+    }
 
-  /**
-   * Plays the video with given id, skipping the currently playing one
-   * @param videoID the ID auf the video-file to play
-   */
-  private goToVideo(videoID:number){
-    this.currentVideo = videoID;
-    this.autoPlay = true;
-  }
+    /**
+     * Plays the video with given id, skipping the currently playing one
+     * @param videoID the ID auf the video-file to play
+     */
+    public goToVideo(videoID: number) {
+        this.currentVideo = videoID;
+        this.autoPlay = true;
+    }
 
-  /**
-   * Plays the next video in the list of video-urls
-   * If the current file is the last one, plays the first one
-   * Is called when the current video has finished playing
-   */
-  private playNext(){
-    this.goToVideo((this.currentVideo + 1) % this.videoURLs.length);
-  }
+    /**
+     * Plays the next video in the list of video-urls
+     * If the current file is the last one, plays the first one
+     * Is called when the current video has finished playing
+     */
+    public playNext() {
+        this.goToVideo((this.currentVideo + 1) % this.videoURLs.length);
+    }
 
 }
