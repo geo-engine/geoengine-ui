@@ -45,7 +45,7 @@ export class ProjectService {
             if (project.projection !== this.projection$.value) {
                 this.projection$.next(project.projection);
             }
-            if (!project.time.isSame(this.time$.value)) {
+            if (project.time && project.time.isValid() && !project.time.isSame(this.time$.value)) {
                 this.time$.next(project.time);
             }
             if (project.plots !== this.plots$.getValue()) {
