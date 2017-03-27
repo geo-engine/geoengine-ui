@@ -22,7 +22,7 @@
             <div fxLayout="row">
                 <button md-raised-button
                         fxFlex
-                        *ngIf="(mode$ | async) === 1"
+                        *ngIf="(mode$ | async) === Mode.SEARCH"
                         color="accent"
                         (click)="lookup()"
                         [disabled]="(form.controls.searchString.valueChanges | async)?.length < minSearchLength"
@@ -31,7 +31,7 @@
                 </button>
                 <button md-raised-button
                         fxFlex
-                        *ngIf="(mode$ | async) === 2"
+                        *ngIf="(mode$ | async) === Mode.SELECT"
                         color="accent"
                         (click)="reset()"
                 >
@@ -39,7 +39,7 @@
                 </button>
             </div>
         </div>
-        <div *ngIf="(mode$ | async) === 2">
+        <div *ngIf="(mode$ | async) === Mode.SELECT">
             <wave-dialog-section-heading
                 title="2. Select Resources"
                 subtitle="Select different source results"
