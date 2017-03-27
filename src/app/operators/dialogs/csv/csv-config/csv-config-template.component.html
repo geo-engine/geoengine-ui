@@ -17,13 +17,13 @@
 
 <div fxLayout="row" fxLayoutAlign="left center">
     <md-slide-toggle *ngIf="isTemporalProperties$ | async" [(ngModel)]="model.isTime" (change)="update(false);"></md-slide-toggle>
-    <wave-dialog-section-heading [title]="dialogTitle"></wave-dialog-section-heading>
+    <wave-dialog-section-heading [title]="dialogTitle" [subtitle]="subtitleDescription"></wave-dialog-section-heading>
 </div>
 <!-- First page -->
 
-<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px" fxLayoutAlign="space-around center" style="margin-bottom: 15px;"
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center" style="margin-bottom: 1rem;"
      *ngIf="isDataProperties$ | async">
-    <div fxLayout="column" fxLayoutGap="20px">
+    <div fxLayout="column" fxLayoutGap="1rem">
         <md-select placeholder="Delimiter"
                    name="delimitter" (change)="update(true)"
                    [(ngModel)]="model.delimitter">
@@ -31,14 +31,14 @@
                 {{del.def}}
             </md-option>
         </md-select>
-        <table cellspacing="0" cellpadding="0" style="border-spacing:0px;">
+        <table cellspacing="0" cellpadding="0" style="border-spacing: 0;">
             <tr>
                 <td>
                     <md-slide-toggle [(ngModel)]="model.isTextQualifier"
                                      name="isTextQualifier" (change)="update(true); resize();">
                     </md-slide-toggle>
                 </td>
-                <td style="padding: 0px;">
+                <td style="padding: 0;">
                     <md-select placeholder="Text qualifier"
                                name="texqual" (change)="update(true)"
                                [(ngModel)]="model.textQualifier"
@@ -53,7 +53,7 @@
             </tr>
         </table>
     </div>
-    <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="10px">
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1rem">
         <md-select name="decsep" placeholder="Decimal seperator"
                    (change)="update(false)"
                    [(ngModel)]="model.decimalSeperator"
@@ -80,11 +80,11 @@
             </tr>
             <tr style="max-height: 40px;">
                 <td>
-                    <md-slide-toggle style="margin: 0px;" [checked]="model.isHeaderRow"
+                    <md-slide-toggle style="margin: 0;" [checked]="model.isHeaderRow"
                                      name="isHeaderRow" (change)="changeHeaderMode($event);">
                     </md-slide-toggle>
                 </td>
-                <td style="padding: 0px;">
+                <td style="padding: 0;">
                     <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
                            name="headerRowC"
                            (change)="update(true)"
@@ -100,9 +100,9 @@
 
 <!-- Second page -->
 
-<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px" fxLayoutAlign="space-around center"
-     style="width: 100%; margin-bottom: 15px;" *ngIf="isSpatialProperties$ | async">
-    <div fxLayout="column" fxLayoutGap="20px">
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+     style="width: 100%; margin-bottom: 1rem;" *ngIf="isSpatialProperties$ | async">
+    <div fxLayout="column" fxLayoutGap="1rem">
         <div class="longitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.xCoordinateName}}-Coordinate column"
                        name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
@@ -129,7 +129,7 @@
             </md-select>
         </div>
     </div>
-    <div fxLayout="column" fxLayoutGap="20px">
+    <div fxLayout="column" fxLayoutGap="1rem">
         <div class="latitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.yCoordinateName}}-Coordinate column"
                        name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
@@ -162,9 +162,9 @@
 
 
 <!-- Third page -->
-<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px" fxLayoutAlign="space-around center"
-     style="width: 100%; margin-bottom: 15px;" *ngIf="isTemporalProperties$ | async">
-    <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="20px" class="temporal_fxElement">
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+     style="width: 100%; margin-bottom: 1rem;" *ngIf="isTemporalProperties$ | async">
+    <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
         <md-select fxFlex="80"
                    placeholder="Interval type"
                    (change)="update(false)"
@@ -177,7 +177,7 @@
             </md-option>
         </md-select>
     </div>
-    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="20px" fxLayoutAlign="center" class="temporal_fxElement">
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
         <div [ngClass]="{startSelector: model.isTime}">
             <md-select placeholder="Start column"
                        name="startCol" (change)="update(false)"
@@ -221,7 +221,7 @@
             </md-select>
         </div>
     </div>
-    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="20px" fxLayoutAlign="center" class="temporal_fxElement">
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
         <div [ngClass]="{startSelector: model.isTime}">
             <md-select placeholder="Start format"
                        (change)="update(false)"
@@ -268,7 +268,7 @@
             <tr>
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;">
-                        <md-select placeholder="Type" style="width: 100%; margin-top: 15px;"
+                        <md-select placeholder="Type" style="width: 100%; margin-top: 1rem;"
                                    name="isNumber_{{i}}" *ngIf="typedCols.indexOf(i) < 0"
                                    [(ngModel)]="model.isNumberArr[i]">
                             <md-option [value]="true">

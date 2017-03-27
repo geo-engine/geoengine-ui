@@ -12,7 +12,6 @@ import {BehaviorSubject, Subscription, Observable, ReplaySubject} from 'rxjs/Rx'
 import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
 import {Projections, Projection} from '../../../projection.model';
-import {StorageService} from '../../../../storage/storage.service';
 import {UserService} from '../../../../users/user.service';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
@@ -126,6 +125,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     model: CSV;
     dialogTitle: string;
+    subtitleDescription: string;
 
     nameIsReserved$: Observable<boolean>;
     storageName$ = new ReplaySubject<string>(1);
@@ -166,6 +166,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.model = new CSV();
 
         this.model.layerName = this.data.file.name;
+        this.storageName$.next(this.model.layerName);
+
         this.model.delimitter = this.delimitters[1].value;
         this.model.decimalSeperator = this.decsep[1];
         this.model.isTextQualifier = false;
@@ -192,16 +194,20 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.formStatus$.subscribe(status => {
                 switch (status) {
                     case FormStatus.DataProperties:
-                        this.dialogTitle = 'Data Properties';
+                        this.dialogTitle = 'CSV Settings';
+                        this.subtitleDescription = 'Please specify the properties of your CSV file, e.g. the delimiter.';
                         break;
                     case FormStatus.SpatialProperties:
                         this.dialogTitle = 'Spatial Properties';
+                        this.subtitleDescription = 'In this step you can specify the spatial columns of your CSV file.';
                         break;
                     case FormStatus.TemporalProperties:
                         this.dialogTitle = 'Temporal Properties';
+                        this.subtitleDescription = 'This step allows you to specify temporal columns of your CSV file.';
                         break;
                     case FormStatus.TypingProperties:
                         this.dialogTitle = 'Typing Properties';
+                        this.subtitleDescription = 'You can specify the data types of the remaining columns here.';
                         break;
                     case FormStatus.Loading:
                     /* falls through */
