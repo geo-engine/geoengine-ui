@@ -106,7 +106,7 @@ const ConfigDefault = Immutable.fromJS({
             MIN: 500,
         },
         DEBOUNCE: 400,
-        STORAGE_DEBOUNCE: 5000,
+        STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
     },
     PROJECT: 'GFBio',
