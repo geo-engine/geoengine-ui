@@ -4,8 +4,3 @@ body {
     font-family: Roboto, 'Helvetica Neue', sans-serif;
     font-size: 16px;
 }
-
-//Put Dialogs in Container with position relative (default is static) to allow better styling of button-positions
-.cdk-overlay-pane{
-    position: relative !important;
-}
