@@ -35,6 +35,7 @@ export class CSV {
     public coordForm: string/**:Typ Einfügen(Enum)*/;
     /**Temporal Properties
      * */
+    public isTime: boolean;
     public intervalType: string;
     /**:element of {[Start, +inf), [Start, End], [Start, Start+Duration], (-inf, End]}*/
     public startFormat: string;
@@ -49,8 +50,7 @@ export class CSV {
 @Component({
     selector: 'wave-csv-config',
     templateUrl: 'csv-config-template.component.html',
-    styleUrls: ['csv-config-styles-table-form.component.css',
-        'csv-config.component.scss'],
+    styleUrls: ['csv-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -98,7 +98,6 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {display: 'seconds', value: 'seconds'},
     ];
     intervalTypes: Array<{display: string, value: string}> = [
-        {display: 'No time', value: 'none'},
         {display: '[Start,+inf)', value: 'start+inf'},
         {display: '[Start, End]', value: 'start+end'},
         {display: '[Start, Start+Duration]', value: 'start+duration'},
@@ -157,10 +156,13 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.model.textQualifier = this.texqual[0];
         this.model.isHeaderRow = true;
         this.model.headerRow = 0;
+
         this.model.xCol = 0;
         this.model.yCol = 0;
         this.model.spatialRefSys = Projections.WGS_84;
         this.model.coordForm = this.coordFormats[2];
+
+        this.model.isTime = false;
         this.model.intervalType = this.intervalTypes[0].value;
         this.model.startFormat = this.timeFormats[0].value;
         this.model.startCol = 0;
@@ -400,15 +402,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.endCol = this.model.startCol = 0;
         }
 
-        console.log(2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
-            + ((this.model.intervalType.indexOf('end') >= 0 ||
-            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0));
-
         if (this.model.header.length >= 2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
             + ((this.model.intervalType.indexOf('end') >= 0 ||
-            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.intervalType.indexOf('no') < 0) {
+            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.isTime) {
             // check if temporal properties overlap with spatial properties.
-            console.log('setting temporal properties');
             let arr = [this.model.xCol, this.model.yCol];
             if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
                 arr.push(this.model.endCol);
@@ -474,6 +471,10 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    changeTemporalProperties(e: MdSlideToggleChange) {
+        this.model.isTime = e.checked;
+    }
+
     resetNumberArr() {
         this.model.isNumberArr = [];
         for (let i = 0; i < this.model.header.length; i++) {
@@ -524,12 +525,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             tableArr.push(this.typingTable.nativeElement);
         }
         for (let t of tableArr) {
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                if (t.rows.item(0).cells.item(j) == null) {
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                if (row.cells.item(j) == null) {
                     continue;
                 }
-                t.rows.item(0).cells.item(j).style.minWidth = null;
-                t.rows.item(0).cells.item(j).style.maxWidth = null;
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
+                cell.style.minWidth = null;
+                cell.style.maxWidth = null;
             }
         }
     }
@@ -559,8 +562,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         let maxCol: number[] = new Array(colNumber);
 
         for (let t of tableArr) {
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                let cell = t.rows.item(0).cells.item(j);
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
                 if (cell == null) {
                     continue;
                 }
@@ -576,12 +580,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         for (let t of tableArr) {
             t.style.borderCollapse = 'separate';
-            for (let j = 0; j < t.rows.item(0).cells.length; j++) {
-                if (t.rows.item(0).cells.item(j).getAttribute('name') === 'spacer') {
+            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
+            for (let j = 0; j < row.cells.length; j++) {
+                if (row.cells.item(j).getAttribute('name') === 'spacer') {
                     continue;
                 }
-                t.rows.item(0).cells.item(j).style.minWidth = (maxCol[j]) + 'px';
-                t.rows.item(0).cells.item(j).style.maxWidth = (maxCol[j]) + 'px';
+                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
+                cell.style.minWidth = (maxCol[j]) + 'px';
+                cell.style.maxWidth = (maxCol[j]) + 'px';
             }
         }
         this.resizeTableFrame();
@@ -610,8 +616,9 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let t of tableArr) {
             width = Math.max(width, t.clientWidth);
         }
-        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
-        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 * 0.8, width) + 'px';
+        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
     }
 
     /**Resets table size and delays then.
@@ -630,15 +637,30 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.finish.emit(this.model);
     }
 
+    validHeader() {
+        if (this.model.headerRow) {
+            return true;
+        }
+        for (let h of this.model.header) {
+            if (!h || h === '' || h === null
+            || h.indexOf(this.model.decimalSeperator) >= 0
+            || (this.model.isTextQualifier && h.indexOf(this.model.textQualifier) >= 0)
+            || h.indexOf(this.model.delimitter) >= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     get typedCols(): number[] {
         let arr: number[] = [
             this.model.xCol,
             this.model.yCol
         ];
-        if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
+        if (this.model.isTime && this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
             arr.push(this.model.endCol);
         }
-        if (this.model.intervalType.indexOf('start') >= 0) {
+        if (this.model.isTime && this.model.intervalType.indexOf('start') >= 0) {
             arr.push(this.model.startCol);
         }
         return arr;
