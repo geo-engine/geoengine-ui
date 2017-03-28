@@ -24,15 +24,16 @@ import {Config} from '../config.service';
  * * params
  * * style
  */
-@Component({
-    selector: 'wave-ol-layer',
-    template: '',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
-    OlSource extends ol.source.Source,
-    S extends Symbology,
-    L extends Layer<S>> implements OnChanges {
+// @Component({
+//     selector: 'wave-ol-layer',
+//     template: '',
+//     changeDetection: ChangeDetectionStrategy.OnPush,
+// })
+export abstract class OlMapLayerComponent
+<OlLayer extends ol.layer.Layer, OlSource extends ol.source.Source, S extends Symbology, L extends Layer<S>>
+implements OnChanges {
+
+    // TODO: refactor
 
     @Input() layer: L;
     @Input() projection: Projection;
@@ -64,8 +65,9 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     }
 }
 
-export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector,
-    AbstractVectorSymbology, VectorLayer<AbstractVectorSymbology>> implements OnChanges, OnDestroy {
+export abstract class OlVectorLayerComponent //
+extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector, AbstractVectorSymbology, VectorLayer<AbstractVectorSymbology>> //
+implements OnChanges, OnDestroy {
 
     // @Input() data: GeoJsonFeatureCollection;
     private format = new ol.format.GeoJSON();
@@ -92,7 +94,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
             });
         }
 
-        if(changes['visible']) {
+        if (changes['visible']) {
             this.mapLayer.setVisible(this.visible);
         }
 
@@ -195,7 +197,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
             });
         }
 
-        if(changes['visible']) {
+        if (changes['visible']) {
             this._mapLayer.setVisible(this.visible);
         }
 
