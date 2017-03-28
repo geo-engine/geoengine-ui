@@ -64,7 +64,7 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     }
 }
 
-abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector,
+export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector,
     AbstractVectorSymbology, VectorLayer<AbstractVectorSymbology>> implements OnChanges, OnDestroy {
 
     // @Input() data: GeoJsonFeatureCollection;
