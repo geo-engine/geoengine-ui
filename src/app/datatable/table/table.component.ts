@@ -320,7 +320,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         }
 
         // Get Header
-        if (this.data.length > 0) {
+        if (this.data.length > 0 && this.data[0]['properties']) {
             this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
         }
 

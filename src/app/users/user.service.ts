@@ -9,22 +9,19 @@ import {RequestParameters, MappingRequestParameters, ParametersType} from '../qu
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
 import {IBasket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
-import {
-    MappingSource, MappingSourceChannel, MappingTransform,
-} from '../operators/dialogs/raster-repository/mapping-source.model';
+import {MappingSource, MappingSourceChannel, MappingTransform,} from '../operators/dialogs/raster-repository/mapping-source.model';
 import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
 import {Config} from '../config.service';
 import {Operator} from '../operators/operator.model';
 import {
-    FeatureDBServiceListParameters, FeatureDBList, FeatureDBServiceUploadParameters,
-    FeatureDBListEntry, featureDBListEntryToOperator
+    FeatureDBServiceListParameters,
+    FeatureDBList,
+    FeatureDBServiceUploadParameters,
+    FeatureDBListEntry,
+    featureDBListEntryToOperator
 } from '../queries/feature-db.model';
-import {FeatureCollectionDBSourceType} from '../operators/types/feature-collection-db-source-type.model';
-import {ResultTypes} from '../operators/result-type.model';
-import {Projections} from '../operators/projection.model';
-import {DataTypes} from '../operators/datatype.model';
 
 export interface Session {
     user: string;
@@ -461,11 +458,11 @@ export class UserService {
      * @returns `true` if the login was succesful, `false` otherwise.
      */
     gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
-        const tokenPromise = this.getGFBioToken({
+        const token$ = this.getGFBioToken({
             username: credentials.user,
             password: credentials.password,
         });
-        return tokenPromise.flatMap(token => {
+        return token$.flatMap(token => {
                 const parameters = new MappingRequestParameters({
                     service: 'gfbio',
                     sessionToken: undefined,
@@ -503,25 +500,36 @@ export class UserService {
             request: 'login',
             parameters: {token: token},
         });
-        return this.request(parameters).flatMap(response => {
-            const result = response.json() as {result: string | boolean, session: string};
-            const success = typeof result.result === 'boolean' && result.result === true;
 
-            if (success) {
-                return this.getUserDetails({user: undefined, sessionToken: result.session})
-                    .do(user => {
-                        this.session$.next({
-                            user: user.name,
-                            sessionToken: result.session,
-                            staySignedIn: false,
-                            isExternallyConnected: true,
-                        });
-                    })
-                    .map(user => true);
-            } else {
-                return Observable.of(false);
-            }
-        });
+        const subject = new Subject<boolean>();
+
+        this.request(parameters)
+            .flatMap(response => {
+                const result = response.json() as {result: string | boolean, session: string};
+                const success = typeof result.result === 'boolean' && result.result === true;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: result.session})
+                        .do(user => {
+                            this.session$.next({
+                                user: user.name,
+                                sessionToken: result.session,
+                                staySignedIn: false,
+                                isExternallyConnected: true,
+                            });
+                        })
+                        .map(user => true);
+                } else {
+                    return Observable.of(false);
+                }
+            })
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+
+        return subject;
     }
 
     setIntroductoryPopup(show: boolean) {

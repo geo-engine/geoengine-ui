@@ -61,9 +61,14 @@ export class BrowserStorageProvider extends StorageProvider {
             const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
 
             for (const layerDict of layerDicts) {
-                layers.push(
-                    this.layerService.createLayerFromDict(layerDict, operatorMap)
-                );
+                try {
+                    layers.push(
+                        this.layerService.createLayerFromDict(layerDict, operatorMap)
+                    );
+                } catch (error) {
+                    // TODO: show reason to user
+                    console.error(`Cannot load layer because of ${error}`);
+                }
             }
 
             return Observable.of(layers);

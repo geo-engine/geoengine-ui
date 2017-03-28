@@ -3,8 +3,8 @@ import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-dialog-audio',
-    templateUrl: 'dialog.audio.component.html',
-    styleUrls: ['dialog.audio.component.less']
+    templateUrl: './dialog.audio.component.html',
+    styleUrls: ['./dialog.audio.component.less']
 })
 
 /**

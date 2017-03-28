@@ -115,9 +115,17 @@ export class MappingStorageProvider extends StorageProvider {
 
                             return {
                                 project: Project.fromDict(workspace.project, operatorMap),
-                                layers: workspace.layers.map(
-                                    layer => this.layerService.createLayerFromDict(layer, operatorMap)
-                                ),
+                                layers: workspace.layers
+                                    .map(layer => {
+                                        try {
+                                            return this.layerService.createLayerFromDict(layer, operatorMap);
+                                        } catch (error) {
+                                            // TODO: show reason to user
+                                            console.error(`Cannot load layer because of ${error}`);
+                                            return undefined;
+                                        }
+                                    })
+                                    .filter(layer => layer !== undefined),
                             };
                         } else {
                             // the workspace does not exist

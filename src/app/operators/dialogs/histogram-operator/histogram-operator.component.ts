@@ -19,7 +19,7 @@ function isVectorLayer(layer: Layer<Symbology>): boolean {
 @Component({
     selector: 'wave-histogram-operator',
     templateUrl: './histogram-operator.component.html',
-    styleUrls: ['histogram-operator.component.scss'],
+    styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {

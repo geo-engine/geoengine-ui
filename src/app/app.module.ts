@@ -10,7 +10,7 @@ import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/r
 import {MapComponent} from './map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-    OlPolygonLayerComponent
+    OlPolygonLayerComponent, OlMapLayerComponent, OlVectorLayerComponent,
 } from './map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
@@ -29,7 +29,7 @@ import {
 } from './layers/symbology/legendary.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
-import {VatLogoComponent, IdessaLogoComponent} from './logo.component';
+import {VatLogoComponent, GFBioLogoComponent, IdessaLogoComponent} from './logo.component';
 import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
@@ -66,38 +66,38 @@ import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
 import {Config} from './config.service';
 import {SidenavRef} from './sidenav/sidenav-ref.service';
-import { SidenavHeaderComponent } from './sidenav/sidenav-header/sidenav-header.component';
-import { NavigationComponent } from './sidenav/navigation/navigation.component';
-import { SourceOperatorListComponent } from './operators/dialogs/source-operator-list/source-operator-list.component';
-import { IfGfbioDirective } from './util/directives/if-gfbio.directive';
-import { IfGfbioLoggedInDirective } from './util/directives/if-gfbio-logged-in.directive';
-import { IfLoggedInDirective } from './util/directives/if-logged-in.directive';
-import { IfGuestDirective } from './util/directives/if-guest.directive';
-import { LoginComponent } from './users/login/login.component';
+import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
+import {NavigationComponent} from './sidenav/navigation/navigation.component';
+import {SourceOperatorListComponent} from './operators/dialogs/source-operator-list/source-operator-list.component';
+import {IfGfbioDirective} from './util/directives/if-gfbio.directive';
+import {IfGfbioLoggedInDirective} from './util/directives/if-gfbio-logged-in.directive';
+import {IfLoggedInDirective} from './util/directives/if-logged-in.directive';
+import {IfGuestDirective} from './util/directives/if-guest.directive';
+import {LoginComponent} from './users/login/login.component';
 import {DataTableModule} from './datatable/datatable.module';
-import { PlotListComponent } from './plots/plot-list/plot-list.component';
-import { SplashDialogComponent } from './dialogs/splash-dialog/splash-dialog.component';
-import { HelpComponent } from './help/help.component';
-import { PlotDetailViewComponent } from './plots/plot-detail-view/plot-detail-view.component';
-import { CsvDialogComponent } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
-import { CsvConfigComponent } from './operators/dialogs/csv/csv-config/csv-config.component';
-import { CsvUploadComponent } from './operators/dialogs/csv/csv-upload/csv-upload.component';
-import { FeaturedbSourceListComponent } from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
-import { WorkspaceSettingsComponent } from './project/workspace-settings/workspace-settings.component';
-import { RasterIconComponent } from './raster-icon/raster-icon.component';
-import { LineageGraphComponent } from './provenance/lineage-graph/lineage-graph.component';
-import { LayerExportComponent } from './layers/dialogs/layer-export/layer-export.component';
-import { ChangeProjectionComponent } from './project/change-projection/change-projection.component';
-import { NewProjectComponent } from './project/new-project/new-project.component';
-import { LoadProjectComponent } from './project/load-project/load-project.component';
-import { SaveProjectAsComponent } from './project/save-project-as/save-project-as.component';
+import {PlotListComponent} from './plots/plot-list/plot-list.component';
+import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
+import {HelpComponent} from './help/help.component';
+import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
+import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import {CsvConfigComponent} from './operators/dialogs/csv/csv-config/csv-config.component';
+import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
+import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
+import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
+import {RasterIconComponent} from './raster-icon/raster-icon.component';
+import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
+import {LayerExportComponent} from './layers/dialogs/layer-export/layer-export.component';
+import {ChangeProjectionComponent} from './project/change-projection/change-projection.component';
+import {NewProjectComponent} from './project/new-project/new-project.component';
+import {LoadProjectComponent} from './project/load-project/load-project.component';
+import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.component';
 import {ColorPickerModule} from 'angular2-color-picker';
-import { OperatorListComponent } from './operators/dialogs/operator-list/operator-list.component';
+import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
-import { ROperatorComponent } from './operators/dialogs/r/r-operator/r-operator.component';
+import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
-import { RScriptSaveComponent } from './operators/dialogs/r/r-script-save/r-script-save.component';
-import { RScriptLoadComponent } from './operators/dialogs/r/r-script-load/r-script-load.component';
+import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script-save.component';
+import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -108,6 +108,8 @@ export function configInitializer(config: Config) {
         AppComponent,
         RasterRepositoryComponent,
         MapComponent,
+        // OlMapLayerComponent,
+        // OlVectorLayerComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,
         OlRasterLayerComponent,
@@ -131,6 +133,7 @@ export function configInitializer(config: Config) {
         LegendaryMappingColorizerRasterComponent,
         LegendaryClusteredPointComponent,
         VatLogoComponent,
+        GFBioLogoComponent,
         IdessaLogoComponent,
         MappingDataSourceFilter,
         HighlightPipe,

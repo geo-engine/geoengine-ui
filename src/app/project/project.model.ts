@@ -1,5 +1,5 @@
 import {Projection, Projections} from '../operators/projection.model';
-import {Time, TimeDict, timeFromDict} from '../time/time.model';
+import {Time, TimeDict, timeFromDict, TimePoint, TimeInterval} from '../time/time.model';
 import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 
@@ -31,15 +31,51 @@ export class Project {
     static fromDict(dict: ProjectDict, operatorMap = new Map<number, Operator>()): Project {
         let plots: Array<Plot>;
         if (dict.plots) {
-            plots = dict.plots.map(plotDict => Plot.fromDict(plotDict, operatorMap));
+            plots = dict.plots
+                .map(plotDict => {
+                    try {
+                        return Plot.fromDict(plotDict, operatorMap);
+                    } catch (error) {
+                        // TODO: show reason to user
+                        console.error(`Cannot load plot because of ${error}`);
+                        return undefined;
+                    }
+                })
+                .filter(plot => plot !== undefined);
         } else {
             plots = [];
         }
 
+        let projection: Projection;
+        try {
+            projection = Projections.fromCode(dict.projection);
+        } catch (error) {
+            projection = Projections.WEB_MERCATOR; // TODO: insert default project
+            // TODO: show reason to user
+            console.error(`Cannot load projection because of ${error}`);
+        }
+
+        let time: TimePoint | TimeInterval;
+        try {
+            time = timeFromDict(dict.time);
+        } catch  (error) {
+            time = new TimePoint({
+                years: 2000,
+                months: 0,
+                date: 1,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                milliseconds: 0,
+            }); // TODO: insert default time
+            // TODO: show reason to user
+            console.error(`Cannot load time because of ${error}`);
+        }
+
         return new Project({
             name: dict.name,
-            projection: Projections.fromCode(dict.projection),
-            time: timeFromDict(dict.time),
+            projection: projection,
+            time: time,
             plots: plots,
         });
     }
