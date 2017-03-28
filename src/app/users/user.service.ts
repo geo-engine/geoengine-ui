@@ -503,25 +503,36 @@ export class UserService {
             request: 'login',
             parameters: {token: token},
         });
-        return this.request(parameters).flatMap(response => {
-            const result = response.json() as {result: string | boolean, session: string};
-            const success = typeof result.result === 'boolean' && result.result === true;
 
-            if (success) {
-                return this.getUserDetails({user: undefined, sessionToken: result.session})
-                    .do(user => {
-                        this.session$.next({
-                            user: user.name,
-                            sessionToken: result.session,
-                            staySignedIn: false,
-                            isExternallyConnected: true,
-                        });
-                    })
-                    .map(user => true);
-            } else {
-                return Observable.of(false);
-            }
-        });
+        const subject = new Subject<boolean>();
+
+        this.request(parameters)
+            .flatMap(response => {
+                const result = response.json() as {result: string | boolean, session: string};
+                const success = typeof result.result === 'boolean' && result.result === true;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: result.session})
+                        .do(user => {
+                            this.session$.next({
+                                user: user.name,
+                                sessionToken: result.session,
+                                staySignedIn: false,
+                                isExternallyConnected: true,
+                            });
+                        })
+                        .map(user => true);
+                } else {
+                    return Observable.of(false);
+                }
+            })
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+
+        return subject;
     }
 
     setIntroductoryPopup(show: boolean) {
