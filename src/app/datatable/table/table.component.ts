@@ -21,7 +21,7 @@ import {GeoJsonFeature, FeatureID} from '../../queries/geojson.model';
     templateUrl: './table.component.html',
     styleUrls: [
         'table.component.less',
-        'table.component.scss',
+        'table.component.scss'
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -294,7 +294,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         }
 
         // Get Header
-        if (this.data.length > 0) {
+        if (this.data.length > 0 && this.data[0]['properties']) {
             this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
         }
 
