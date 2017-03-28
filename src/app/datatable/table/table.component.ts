@@ -21,7 +21,7 @@ import {GeoJsonFeature, FeatureID} from '../../queries/geojson.model';
     templateUrl: './table.component.html',
     styleUrls: [
         'table.component.less',
-        'table.component.scss'
+        'table.component.scss',
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

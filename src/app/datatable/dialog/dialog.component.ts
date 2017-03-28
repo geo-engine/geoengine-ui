@@ -7,7 +7,7 @@ import {DialogVideoComponent} from './video/dialog.video.component';
 @Component({
     selector: 'wave-datatable-dialog',
     templateUrl: './dialog.component.html',
-    styleUrls: ['dialog.component.less'],
+    styleUrls: ['./dialog.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 

@@ -13,8 +13,8 @@ import {ResultType, ResultTypes} from '../../../result-type.model';
  */
 @Component({
     selector: 'wave-layer-selection',
-    templateUrl: 'layer-selection.component.html',
-    styleUrls: ['layer-selection.component.scss'],
+    templateUrl: './layer-selection.component.html',
+    styleUrls: ['./layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},

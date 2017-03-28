@@ -18,8 +18,8 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
  */
 @Component({
     selector: 'wave-point-in-polygon-filter',
-    templateUrl: 'point-in-polygon-filter.component.html',
-    styleUrls: ['point-in-polygon-filter.component.scss'],
+    templateUrl: './point-in-polygon-filter.component.html',
+    styleUrls: ['./point-in-polygon-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointInPolygonFilterOperatorComponent {

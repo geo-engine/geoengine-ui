@@ -17,8 +17,8 @@ export interface UploadData {
 
 @Component({
     selector: 'wave-csv-upload',
-    templateUrl: 'csv-upload-template.component.html',
-    styleUrls: ['csv-upload-style.component.css']
+    templateUrl: './csv-upload-template.component.html',
+    styleUrls: ['./csv-upload-style.component.css']
 })
 export class CsvUploadComponent implements OnInit, OnDestroy {
 

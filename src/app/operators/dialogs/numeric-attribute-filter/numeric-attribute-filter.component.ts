@@ -49,8 +49,8 @@ function minMax(control: AbstractControl): {[key: string]: boolean} {
  */
 @Component({
     selector: 'wave-numeric-attribute-filter',
-    templateUrl: 'numeric-attribute-filter.component.html',
-    styleUrls: ['numeric-attribute-filter.component.scss'],
+    templateUrl: './numeric-attribute-filter.component.html',
+    styleUrls: ['./numeric-attribute-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumericAttributeFilterOperatorComponent implements AfterViewInit, OnDestroy {

@@ -24,9 +24,6 @@ import {Config} from '../config.service';
     </div>
     <ng-content></ng-content>
     `,
-    styleUrls: [
-//        'node_modules/openlayers/css/ol.css'
-    ],
     queries: {
         contentChildren: new ContentChildren(OlMapLayerComponent),
     },
@@ -279,7 +276,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         (select as any).setActive(false);
         this.map.addInteraction(select);
         select.on(['select'], (event: {}) => {
-            const selectEvent = event as ol.interaction.SelectEvent;
+            const selectEvent = event as ol.interaction.Select.Event;
             const selectedSymbology = this.layerService.getSelectedLayer().symbology;
 
             if (selectedSymbology instanceof AbstractVectorSymbology) {

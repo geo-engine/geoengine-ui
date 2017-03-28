@@ -18,8 +18,8 @@ import {ProjectService} from '../../../project/project.service';
 
 @Component({
     selector: 'wave-raster-repository',
-    templateUrl: 'raster-repository.component.html',
-    styleUrls: ['raster-repository.component.scss'],
+    templateUrl: './raster-repository.component.html',
+    styleUrls: ['./raster-repository.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 

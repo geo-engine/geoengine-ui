@@ -50,8 +50,8 @@ export class CSV {
 
 @Component({
     selector: 'wave-csv-config',
-    templateUrl: 'csv-config-template.component.html',
-    styleUrls: ['csv-config.component.scss'],
+    templateUrl: './csv-config-template.component.html',
+    styleUrls: ['./csv-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {

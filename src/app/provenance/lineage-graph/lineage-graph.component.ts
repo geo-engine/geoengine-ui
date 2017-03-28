@@ -29,8 +29,8 @@ const GRAPH_STYLE = {
 
 @Component({
     selector: 'wave-lineage-graph',
-    templateUrl: 'lineage-graph.component.html',
-    styleUrls: ['lineage-graph.component.scss'],
+    templateUrl: './lineage-graph.component.html',
+    styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LineageGraphComponent implements OnInit, AfterViewInit {

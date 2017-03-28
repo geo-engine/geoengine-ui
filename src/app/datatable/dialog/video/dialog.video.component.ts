@@ -3,8 +3,8 @@ import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-dialog-video',
-    templateUrl: 'dialog.video.component.html',
-    styleUrls: ['dialog.video.component.less']
+    templateUrl: './dialog.video.component.html',
+    styleUrls: ['./dialog.video.component.less']
 })
 
 /**

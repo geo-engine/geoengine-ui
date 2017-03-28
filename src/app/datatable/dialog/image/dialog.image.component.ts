@@ -3,8 +3,8 @@ import {MdDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-dialog-image',
-    templateUrl: 'dialog.image.component.html',
-    styleUrls: ['dialog.image.component.less']
+    templateUrl: './dialog.image.component.html',
+    styleUrls: ['./dialog.image.component.less']
 })
 
 /**

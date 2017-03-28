@@ -23,8 +23,8 @@ interface Group<T> {
 
 @Component({
     selector: 'wave-abcd-repository',
-    templateUrl: 'abcd-repository.component.html',
-    styleUrls: ['abcd-repository.component.scss'],
+    templateUrl: './abcd-repository.component.html',
+    styleUrls: ['./abcd-repository.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AbcdRepositoryComponent {
