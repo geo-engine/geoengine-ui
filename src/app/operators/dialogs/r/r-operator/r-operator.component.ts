@@ -17,6 +17,7 @@ import {RasterSymbology, AbstractVectorSymbology, Symbology, SimplePointSymbolog
 import {MdDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
+import {Config} from '../../../../config.service';
 
 @Component({
     selector: 'wave-r-operator',
@@ -38,15 +39,24 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     editableSourceRasters: Array<Operator> = undefined;
     editableSourcePoints: Array<Operator> = undefined;
 
+    outputTypes: Array<ResultType>;
+
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService,
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
-                private dialog: MdDialog) {
+                private dialog: MdDialog,
+                private config: Config) {
     }
 
     ngOnInit() {
+        if (this.config.DEBUG_MODE.WAVE) {
+            this.outputTypes = [ResultTypes.POINTS, ResultTypes.PLOT, ResultTypes.RASTER, ResultTypes.TEXT];
+        } else {
+            this.outputTypes = [ResultTypes.PLOT, ResultTypes.TEXT];
+        }
+
         this.form = this.formBuilder.group({
             rasterLayers: [[]],
             pointLayers: [[]],

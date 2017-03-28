@@ -65,6 +65,8 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
     dataLoading$ = new BehaviorSubject(false);
 
+    attributeUnit$ = new BehaviorSubject('');
+
     histogramWidth: number;
     histogramHeight: number;
 
@@ -130,6 +132,22 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 return [];
             }
         });
+
+        this.subscriptions.push(
+            this.form.controls['attribute']
+                .valueChanges
+                .map((attribute: string) => {
+                    const operator = this.form.controls['pointLayer'].value.operator as Operator;
+                    const unit = operator.getUnit(attribute);
+
+                    if (!unit || unit.unit === Unit.defaultUnit.unit || unit.measurement === Unit.defaultUnit.measurement) {
+                        return '';
+                    } else {
+                        return unit.unit;
+                    }
+                })
+                .subscribe(unit => this.attributeUnit$.next(unit))
+        );
     }
 
     ngAfterViewInit() {

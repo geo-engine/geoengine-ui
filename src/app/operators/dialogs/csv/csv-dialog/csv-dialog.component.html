@@ -1,4 +1,4 @@
-<wave-dialog-header>CSV-Upload</wave-dialog-header>
+<wave-dialog-header>CSV Upload</wave-dialog-header>
 <md-dialog-content>
     <wave-csv-upload
         *ngIf="!data"
@@ -6,17 +6,18 @@
         (onData)="data = $event"
     ></wave-csv-upload>
     <wave-csv-config
-        *ngIf="!!data"
+        *ngIf="!!data && !(uploading$ | async)"
         [data]="data"
         [cellSpacing]="10"
         [linesToParse]="15"
         (finish)="submit($event)"
     ></wave-csv-config>
+    <md-spinner *ngIf="uploading$ | async"></md-spinner>
 </md-dialog-content>
 <!-- TODO: DO THIS WITH ALL THE BUTTONS! -->
 <!-- Buttons -->
 
-<md-dialog-actions align="end">
+<md-dialog-actions align="end" *ngIf="!(uploading$ | async)">
     <div class="buttons" *ngIf="!!csvConfig">
             <span *ngIf="(csvConfig.isSpatialProperties$ | async) || (csvConfig.isTemporalProperties$ | async) || (csvConfig.isTypingProperties$ | async)">
               <button md-raised-button (click)="csvConfig.prev()">Prev</button>
@@ -26,7 +27,8 @@
                         [disabled]="(((csvConfig.isSpatialProperties$ | async) && (csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
                                     || ((csvConfig.isTemporalProperties$ | async) && (((csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
                                     && ((csvConfig.model.intervalType.indexOf('end') >= 0 || csvConfig.model.intervalType.indexOf('duration') >= 0)
-                                    && csvConfig.model.intervalType.indexOf('start') >= 0))) && csvConfig.model.header.length > 1)"
+                                    && csvConfig.model.intervalType.indexOf('start') >= 0))) && csvConfig.model.header.length > 1)
+                                    || !csvConfig.validHeader()"
                 >
                     Next
                 </button>
@@ -34,7 +36,7 @@
         <button md-raised-button color="primary" (click)="csvConfig.submit()" *ngIf="csvConfig.isTypingProperties$ | async"
                 [disabled]="(csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async)
                                 && ((csvConfig.model.intervalType.indexOf('end') >= 0 || csvConfig.model.intervalType.indexOf('duration') >= 0)
-                                && csvConfig.model.intervalType.indexOf('start') >= 0)"
+                                && csvConfig.model.intervalType.indexOf('start') >= 0) || (csvConfig.nameIsReserved$ | async)"
         >
             Submit
         </button>

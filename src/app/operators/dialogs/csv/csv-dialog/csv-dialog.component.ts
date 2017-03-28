@@ -11,6 +11,7 @@ import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MdDialogRef} from '@angular/material';
+import {BehaviorSubject} from 'rxjs/Rx';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -22,6 +23,7 @@ export class CsvDialogComponent implements OnInit {
 
     @ViewChild(CsvConfigComponent) csvConfig;
     data: UploadData = undefined;
+    uploading$ = new BehaviorSubject(false);
 
     constructor(private userService: UserService,
                 private layerService: LayerService,
@@ -37,7 +39,7 @@ export class CsvDialogComponent implements OnInit {
         // TODO: refactor most of this
         const fieldSeparator = config.delimitter;
         const geometry = 'xy';
-        const time = config.intervalType;
+        const time = config.isTime ? config.intervalType : 'none';
         const time1Format = config.startFormat;
         const time2Format = config.endFormat;
         const header = config.isHeaderRow ? 0 : config.header;
@@ -121,9 +123,13 @@ export class CsvDialogComponent implements OnInit {
             projection: config.spatialRefSys,
         });
 
+        this.uploading$.next(true);
+
         // console.log("SAVE", config, csvSourceType);
         this.userService.addFeatureToDB(config.layerName, operator)
             .subscribe(data => {
+                this.uploading$.next(false);
+
                 this.addLayer(data);
 
                 this.dialogRef.close();

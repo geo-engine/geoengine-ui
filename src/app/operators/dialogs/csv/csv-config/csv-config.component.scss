@@ -1,11 +1,12 @@
+@import "../../../../../wave-app-theme";
+
 $latitudeColor: #26c5ff;
 $longitudeColor: orange;
 $startColor: darkgreen;
 $endColor: darkviolet;
+$backgroundColor: mat-color(map-get($wave-app-theme, primary));
+$titleColor: white; /*Inherit from theme here.*/
 
-div.temporal_fxElement div {
-    margin-top: 20px;
-}
 div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
     color: $latitudeColor;
 }
@@ -17,6 +18,10 @@ div.startSelector md-select /deep/ span.mat-select-placeholder {
 }
 div.endSelector md-select /deep/ span.mat-select-placeholder {
     color: $endColor;
+}
+.custom md-input-container /deep/ label.mat-input-placeholder {
+    color: $titleColor;
+    opacity: 0.75;
 }
 
 input[type=number]{
@@ -111,8 +116,8 @@ md-slide-toggle {
     width: auto;
     border-bottom: solid 1px dimgray;
     border-right: solid 1px dimgray;
-    background-color: #335aa3;/*Inherit from theme here.*/
-    color: white; /*Inherit from theme here.*/
+    background-color: $backgroundColor;
+    color: $titleColor;
     font-weight: 300;
 }
 
@@ -121,16 +126,16 @@ md-slide-toggle {
     padding-bottom: 0px;
     font-size: 15px;
     height: 30px;
-    color: white; /*Inherit from theme here.*/
+    color: $titleColor;
 }
 
 .bodydiv {
     overflow: scroll;
-    height: 200px;
+    height: 200px; //Maybe fill the 65 vh of dialog per code
 }
 
 .bodydiv table tr:nth-child(even) {
-    background-color: #add4f4;
+    background-color: #add4f4; /*Take background color and mix with white.*/
 }
 
 .resizeTable {
@@ -184,4 +189,12 @@ md-slide-toggle {
     margin-top: 3px;
     margin-bottom: 3px;
     horiz-align: center;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}
+
+wave-dialog-section-heading {
+    margin-bottom: 1rem;
 }

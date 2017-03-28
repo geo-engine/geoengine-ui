@@ -53,6 +53,10 @@ interface GfbioInterface {
     LIFERAY_PORTAL_URL: string;
 }
 
+interface TimeInterface {
+    ALLOW_RANGES: boolean;
+}
+
 interface ConfigInterface {
     CONFIG_FILE: string;
     MAPPING_URL: MappingUrlType;
@@ -66,6 +70,7 @@ interface ConfigInterface {
     DEFAULTS: DefaultsInterface;
     MAP: MapInterface;
     GFBIO: GfbioInterface;
+    TIME: TimeInterface;
 }
 
 /**
@@ -101,7 +106,7 @@ const ConfigDefault = Immutable.fromJS({
             MIN: 500,
         },
         DEBOUNCE: 400,
-        STORAGE_DEBOUNCE: 5000,
+        STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
     },
     PROJECT: 'GFBio',
@@ -121,6 +126,9 @@ const ConfigDefault = Immutable.fromJS({
     },
     GFBIO: {
         LIFERAY_PORTAL_URL: 'https://gfbio-dev1.inf-bb.uni-jena.de/',
+    },
+    TIME: {
+        ALLOW_RANGES: true,
     },
 } as ConfigInterface);
 
@@ -152,7 +160,6 @@ function deepFreeze(o) {
  */
 @Injectable()
 export class Config {
-
     static get CONFIG_FILE(): string {
         return 'assets/config.json';
     };
@@ -168,6 +175,7 @@ export class Config {
     private _DEFAULTS: DefaultsInterface;
     private _MAP: MapInterface;
     private _GFBIO: GfbioInterface;
+    private _TIME: TimeInterface;
 
 
     get MAPPING_URL(): MappingUrlType {
@@ -212,6 +220,10 @@ export class Config {
 
     get GFBIO(): GfbioInterface {
         return this._GFBIO;
+    }
+
+    get TIME(): TimeInterface {
+        return this._TIME;
     }
 
     constructor(private http: Http) {
@@ -274,6 +286,9 @@ export class Config {
                         break;
                     case 'GFBIO':
                         this._GFBIO = value;
+                        break;
+                    case 'TIME':
+                        this._TIME = value;
                         break;
                     default:
                         break;

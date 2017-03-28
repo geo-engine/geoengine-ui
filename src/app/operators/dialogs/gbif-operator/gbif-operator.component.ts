@@ -1,6 +1,6 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable, BehaviorSubject} from 'rxjs/Rx';
+import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../../config.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
@@ -40,13 +40,20 @@ function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     return Object.keys(errors).length > 0 ? errors : null;
 }
 
+enum Mode {
+    SEARCH = 1,
+    SELECT = 2,
+}
+
 @Component({
     selector: 'wave-gbif-operator',
     templateUrl: './gbif-operator.component.html',
     styleUrls: ['./gbif-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GbifOperatorComponent implements OnInit, AfterViewInit {
+export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    Mode = Mode;
 
     form: FormGroup;
 
@@ -69,6 +76,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
     private iucnUnits = new Map<string, Unit>();
     private iucnDatatypes = new Map<string, DataType>();
 
+    private subscriptions: Array<Subscription> = [];
+
     constructor(private config: Config,
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
@@ -88,6 +97,16 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
                 validator: oneIsTrue
             }),
         });
+
+        this.subscriptions.push(
+            this.mode$.subscribe(mode => {
+                if (mode === Mode.SEARCH) {
+                    this.form.controls['searchString'].enable();
+                } else {
+                    this.form.controls['searchString'].disable();
+                }
+            })
+        );
 
         this.autoCompleteResults$ = this.form.controls['searchString'].valueChanges
             .startWith(null)
@@ -128,6 +147,10 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
         setTimeout(() => this.form.updateValueAndValidity(), 0);
     }
 
+    ngOnDestroy() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
     lookup() {
         this.mode$.next(2);
         this.loading$.next(true);
@@ -161,7 +184,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit {
         this.gbifCount = 0;
         this.iucnCount = 0;
 
-        this.form.controls['searchString'].setValue(undefined);
+        this.form.controls['searchString'].setValue('');
 
         this.form.controls['select'].setValue({
             gbif: false,

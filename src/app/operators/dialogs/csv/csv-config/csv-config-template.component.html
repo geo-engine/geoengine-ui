@@ -10,141 +10,116 @@
 
 
 <md-input-container style="width: 100%;">
-    <input mdInput [(ngModel)]="model.layerName" name="layerName" placeholder="File Name"
+    <input mdInput [(ngModel)]="model.layerName" (ngModelChange)="storageName$.next($event)" name="layerName" placeholder="File Name"
            type="input">
+    <md-hint class="error" *ngIf="nameIsReserved$ | async">Name is already in use.</md-hint>
 </md-input-container>
 
-<wave-dialog-section-heading [title]="dialogTitle"></wave-dialog-section-heading>
+<div fxLayout="row" fxLayoutAlign="left center">
+    <md-slide-toggle *ngIf="isTemporalProperties$ | async" [(ngModel)]="model.isTime" (change)="update(false);"></md-slide-toggle>
+    <wave-dialog-section-heading [title]="dialogTitle" [subtitle]="subtitleDescription"></wave-dialog-section-heading>
+</div>
 <!-- First page -->
 
-<div class="form-group" *ngIf="isDataProperties$ | async">
-
-    <div class="group-container">
-        <div class="dataProperties">
-            <table class="selector">
-                <tr>
-                    <td>
-                        Delimitter/Seperator:
-                    </td>
-                    <td>
-                        <md-select placeholder="Delimiter"
-                                   name="delimitter" (change)="update(true)"
-                                   [(ngModel)]="model.delimitter">
-                            <md-option *ngFor="let del of delimitters" [value]="del.value">
-                                {{del.def}}
-                            </md-option>
-                        </md-select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Text qualifier:
-                    </td>
-                    <td>
-                        <table cellspacing="0" cellpadding="0" style="border-spacing:0px;">
-                            <tr>
-                                <td>
-                                    <md-slide-toggle [(ngModel)]="model.isTextQualifier"
-                                                     name="isTextQualifier" (change)="update(true); resize();">
-                                    </md-slide-toggle>
-                                </td>
-                                <td style="padding: 0px;">
-                                    <md-select placeholder="Text qualifier"
-                                               name="texqual" (change)="update(true)"
-                                               [(ngModel)]="model.textQualifier"
-                                               [disabled]="!model.isTextQualifier">
-                                        <md-option *ngFor="let tq of texqual" [value]="tq">
-                                            {{tq}}
-                                        </md-option>
-                                    </md-select>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-
-            <table class="selector">
-                <tr>
-                    <td>
-                        Decimal seperator:
-                    </td>
-                    <td>
-                        <md-select name="decsep" placeholder="Decimal seperator"
-                                   (change)="update(false)"
-                                   [(ngModel)]="model.decimalSeperator"
-                                   disabled
-                        >
-                            <md-option *ngFor="let ds of decsep" [value]="ds">
-                                <!-- TODO: Disable Comma, if comma is already used for delimiting purposes -->
-                                {{ds}}
-                            </md-option>
-                        </md-select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Header row:
-                    </td>
-                    <td>
-                        <table cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td>
-                                    <md-slide-toggle [checked]="model.isHeaderRow"
-                                                     name="isHeaderRow" (change)="changeHeaderMode($event);">
-                                    </md-slide-toggle>
-                                </td>
-                                <td style="padding: 0px;">
-                                    <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
-                                           name="headerRowC" [disabled]="!model.isHeaderRow"
-                                           (change)="update(true)"
-                                    ><!-- TODO: Need to add line count, so you cant expire. -->
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center" style="margin-bottom: 1rem;"
+     *ngIf="isDataProperties$ | async">
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <md-select placeholder="Delimiter"
+                   name="delimitter" (change)="update(true)"
+                   [(ngModel)]="model.delimitter">
+            <md-option *ngFor="let del of delimitters" [value]="del.value">
+                {{del.def}}
+            </md-option>
+        </md-select>
+        <table cellspacing="0" cellpadding="0" style="border-spacing: 0;">
+            <tr>
+                <td>
+                    <md-slide-toggle [(ngModel)]="model.isTextQualifier"
+                                     name="isTextQualifier" (change)="update(true); resize();">
+                    </md-slide-toggle>
+                </td>
+                <td style="padding: 0;">
+                    <md-select placeholder="Text qualifier"
+                               name="texqual" (change)="update(true)"
+                               [(ngModel)]="model.textQualifier"
+                               disabled
+                    >
+                        <!--[disabled]="!model.isTextQualifier"-->
+                        <md-option *ngFor="let tq of texqual" [value]="tq">
+                            {{tq}}
+                        </md-option>
+                    </md-select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1rem">
+        <md-select name="decsep" placeholder="Decimal seperator"
+                   (change)="update(false)"
+                   [(ngModel)]="model.decimalSeperator"
+                   disabled
+        >
+            <md-option *ngFor="let ds of decsep" [value]="ds">
+                <!-- TODO: Disable Comma, if comma is already used for delimiting purposes -->
+                {{ds}}
+            </md-option>
+        </md-select>
+        <table cellspacing="0" cellpadding="0">
+            <tbody>
+            <tr>
+                <td>
+                </td>
+                <td style="display: table-cell;" class="ng-pristine mat-select-disabled mat-select ng-touched">
+                    <div style="cursor: default; display: flex; color: rgba(0, 0, 0, 0.38)">
+                        <span style="cursor: default; transform: scale(.75); text-align: left; left: -2px;"
+                              class="mat-select-placeholder">
+                            Header Row
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr style="max-height: 40px;">
+                <td>
+                    <md-slide-toggle style="margin: 0;" [checked]="model.isHeaderRow"
+                                     name="isHeaderRow" (change)="changeHeaderMode($event);">
+                    </md-slide-toggle>
+                </td>
+                <td style="padding: 0;">
+                    <input type="number" min="0" value="0" [(ngModel)]="model.headerRow"
+                           name="headerRowC"
+                           (change)="update(true)"
+                           disabled
+                    ><!-- TODO: Need to add line count, so you cant expire. -->
+                    <!--[disabled]="!model.isHeaderRow"-->
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- Second page -->
 
-<div fxLayout="row" fxLayoutAlign="space-around center" style="width: 100%; margin-bottom: 15px;" *ngIf="isSpatialProperties$ | async">
-    <div fxLayout="column" class="longitudeSelector temporal_fxElement">
-        <md-select placeholder="x-Coordinate column"
-                   name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
-            <template ngFor let-i [ngForOf]="range(0,model.header.length)">
-                <md-option [disabled]="i === (yColumn$ | async)" [value]="i">
-                    <template [ngIf]="model.header[i] !== ''">
-                        {{(i+1) + ' - ' + model.header[i]}}
-                    </template>
-                    <template [ngIf]="model.header[i] === ''">
-                        {{(i+1) + ' - unnamed'}}
-                    </template>
-                </md-option>
-            </template>
-        </md-select>
-    </div>
-    <div fxLayout="column" class="latitudeSelector temporal_fxElement">
-        <md-select placeholder="y-Coordinate column"
-                   name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
-            <template ngFor let-i [ngForOf]="range(0,model.header.length)">
-                <md-option [disabled]="i === (xColumn$ | async)" [value]="i">
-                    <template [ngIf]="model.header[i] !== ''">
-                        {{(i+1) + ' - ' + model.header[i]}}
-                    </template>
-                    <template [ngIf]="model.header[i] === ''">
-                        {{(i+1) + ' - unnamed'}}
-                    </template>
-                </md-option>
-            </template>
-        </md-select>
-    </div>
-    <div fxLayout="column" fxFlex="30" class="temporal_fxElement">
-        <div style="text-align: right;">
-            <md-select placeholder="Spatial Reference System"
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+     style="width: 100%; margin-bottom: 1rem;" *ngIf="isSpatialProperties$ | async">
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <div class="longitudeSelector">
+            <md-select fxFlex="100" placeholder="{{model.spatialRefSys.xCoordinateName}}-Coordinate column"
+                       name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
+                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                    <md-option [disabled]="i === (yColumn$ | async)" [value]="i">
+                        <template [ngIf]="model.header[i] !== ''">
+                            {{(i+1) + ' - ' + model.header[i]}}
+                        </template>
+                        <template [ngIf]="model.header[i] === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+        <div>
+            <md-select style="width:100%;" placeholder="Spatial Reference System"
                        name="spatialRefSys" (change)="update(false)"
                        [(ngModel)]="model.spatialRefSys">
                 <md-option *ngFor="let projection of Projections.ALL_PROJECTIONS"
@@ -153,8 +128,25 @@
                 </md-option>
             </md-select>
         </div>
-        <div style="text-align: right;">
-            <md-select placeholder="Coordinate format"
+    </div>
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <div class="latitudeSelector">
+            <md-select fxFlex="100" placeholder="{{model.spatialRefSys.yCoordinateName}}-Coordinate column"
+                       name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
+                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                    <md-option [disabled]="i === (xColumn$ | async)" [value]="i">
+                        <template [ngIf]="model.header[i] !== ''">
+                            {{(i+1) + ' - ' + model.header[i]}}
+                        </template>
+                        <template [ngIf]="model.header[i] === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+        <div>
+            <md-select style="width:100%;" placeholder="Coordinate format"
                        style="align: right;" name="coordForm"
                        (change)="update(false)" [(ngModel)]="model.coordForm"
                        disabled
@@ -170,27 +162,31 @@
 
 
 <!-- Third page -->
-<div fxLayout="row" fxLayoutAlign="space-around center" style="width: 100%; margin-bottom: 15px;" *ngIf="isTemporalProperties$ | async">
-    <div fxLayout="column" fxFlex="30" class="temporal_fxElement">
+<div fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+     style="width: 100%; margin-bottom: 1rem;" *ngIf="isTemporalProperties$ | async">
+    <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
         <md-select fxFlex="80"
                    placeholder="Interval type"
                    (change)="update(false)"
-                   [(ngModel)]="model.intervalType" [ngModelOptions]="{standalone: true}">
+                   [(ngModel)]="model.intervalType"
+                   [ngModelOptions]="{standalone: true}"
+                   [disabled]="!model.isTime"
+        >
             <md-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value">
                 {{intervalType.display}}
             </md-option>
         </md-select>
     </div>
-    <div fxLayout="column" class="temporal_fxElement">
-        <div [ngClass]="{startSelector: model.intervalType !== 'none'}">
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
+        <div [ngClass]="{startSelector: model.isTime}">
             <md-select placeholder="Start column"
                        name="startCol" (change)="update(false)"
                        [(ngModel)]="model.startCol"
-                       [disabled]="model.intervalType.indexOf('start') < 0"
+                       [disabled]="model.intervalType.indexOf('start') < 0 || !model.isTime"
             >
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
-                        [disabled]="((model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0) && i === (yColumn$ | async)) || i === model.xCol || i === model.yCol"
+                        [disabled]="((model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0) && model.isTime && i === (yColumn$ | async)) || i === model.xCol || i === model.yCol"
                         [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
@@ -202,17 +198,17 @@
                 </template>
             </md-select>
         </div>
-        <div [ngClass]="{endSelector: !(model.intervalType === 'none'
+        <div [ngClass]="{endSelector: !(!model.isTime
                                                     || !(model.intervalType.indexOf('end') >= 0
                                                     || model.intervalType.indexOf('duration') >= 0))}"
         >
             <md-select
                 [placeholder]="(model.intervalType.indexOf('duration') >= 0) ? 'Duration column' : 'End Column'"
                 name="endCol" (change)="update(false)" [(ngModel)]="model.endCol"
-                [disabled]="!(model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0)">
+                [disabled]="!(model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0) || !model.isTime">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
-                        [disabled]="(model.intervalType.indexOf('start') >= 0 && i === (xColumn$ | async)) || i === model.xCol || i === model.yCol"
+                        [disabled]="(model.intervalType.indexOf('start') >= 0 && model.isTime && i === (xColumn$ | async)) || i === model.xCol || i === model.yCol"
                         [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
@@ -225,18 +221,18 @@
             </md-select>
         </div>
     </div>
-    <div fxLayout="column" fxFlex="30" class="temporal_fxElement">
-        <div [ngClass]="{startSelector: model.intervalType !== 'none'}">
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
+        <div [ngClass]="{startSelector: model.isTime}">
             <md-select placeholder="Start format"
                        (change)="update(false)"
                        [(ngModel)]="model.startFormat" [ngModelOptions]="{standalone: true}"
-                       [disabled]="model.intervalType === 'none'">
+                       [disabled]="!model.isTime">
                 <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
                     {{timeFormat.display}}
                 </md-option>
             </md-select>
         </div>
-        <div [ngClass]="{endSelector: !(model.intervalType === 'none'
+        <div [ngClass]="{endSelector: !(!model.isTime
                                                     || !(model.intervalType.indexOf('end') >= 0
                                                     || model.intervalType.indexOf('duration') >= 0))}"
         >
@@ -244,7 +240,7 @@
                 [placeholder]="(model.intervalType.indexOf('duration') >= 0) ? 'Duration format' : 'End format'"
                 (change)="update(false)"
                 [(ngModel)]="model.endFormat" [ngModelOptions]="{standalone: true}"
-                [disabled]="model.intervalType === 'none'
+                [disabled]="!model.isTime
                                                     || !(model.intervalType.indexOf('end') >= 0
                                                     || model.intervalType.indexOf('duration') >= 0)"
             >
@@ -272,7 +268,7 @@
             <tr>
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;">
-                        <md-select placeholder="Type" style="width: 100%; margin-top: 15px;"
+                        <md-select placeholder="Type" style="width: 100%; margin-top: 1rem;"
                                    name="isNumber_{{i}}" *ngIf="typedCols.indexOf(i) < 0"
                                    [(ngModel)]="model.isNumberArr[i]">
                             <md-option [value]="true">
@@ -288,12 +284,12 @@
                         <p *ngIf="i === model.yCol" class="coordinate_blue">
                             Coordinate
                         </p>
-                        <p *ngIf="(i === model.startCol) && model.intervalType.indexOf('start') >= 0"
+                        <p *ngIf="(i === model.startCol) && model.isTime && model.intervalType.indexOf('start') >= 0"
                            class="time_green">
                             Time
                         </p>
                         <p class="time_violet"
-                           *ngIf="(i === model.endCol) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)">
+                           *ngIf="(i === model.endCol) && model.isTime && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)">
                             Time
                         </p>
                     </td>
@@ -310,7 +306,7 @@
                     <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                         <td style="margin-left:0; margin-right:0; padding-bottom: 3px; white-space: nowrap;"
                             title="{{model.header[i]}}"
-                            [ngClass]="{'orangeHead': (isSpatialProperties$ | async) && (i === (xColumn$ | async)), 'blueHead': (isSpatialProperties$ | async) && (i === (yColumn$ | async)), 'greenHead': (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, 'violetHead': (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
+                            [ngClass]="{'orangeHead': (isSpatialProperties$ | async) && (i === (xColumn$ | async)), 'blueHead': (isSpatialProperties$ | async) && (i === (yColumn$ | async)), 'greenHead': model.isTime && (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, 'violetHead': model.isTime && (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                             {{model.header[i]}}
                         </td>
                         <td *ngIf="i !== model.header.length-1" name="spacer"></td>
@@ -319,7 +315,7 @@
                 <template [ngIf]="!model.isHeaderRow">
                     <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                         <td class="custom" style="margin-left:0; margin-right:0;"
-                            [ngClass]="{orangeHead: (isSpatialProperties$ | async) && (i === (xColumn$ | async)), blueHead: (isSpatialProperties$ | async) && (i === (yColumn$ | async)), greenHead: (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violetHead: (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
+                            [ngClass]="{orangeHead: (isSpatialProperties$ | async) && (i === (xColumn$ | async)), blueHead: (isSpatialProperties$ | async) && (i === (yColumn$ | async)), greenHead: model.isTime && (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violetHead: model.isTime && (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                             <md-input-container>
                                 <input mdInput type="text" placeholder="{{i+1}}{{ending(i+1)}} Column"
                                        [(ngModel)]="model.header[i]" name="header_{{i}}">
@@ -337,7 +333,7 @@
             <tr *ngFor="let i of range(0,elements.length)" style="white-space: nowrap;">
                 <template ngFor let-j [ngForOf]="range(0,model.header.length)">
                     <td style="margin-left:0; margin-right:0;"
-                        [ngClass]="{orange: (isSpatialProperties$ | async) && (j === (xColumn$ | async)), blue: (isSpatialProperties$ | async) && (j === (yColumn$ | async)), green: (isTemporalProperties$ |async) && (j === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violet: (isTemporalProperties$ | async) && (j === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
+                        [ngClass]="{orange: (isSpatialProperties$ | async) && (j === (xColumn$ | async)), blue: (isSpatialProperties$ | async) && (j === (yColumn$ | async)), green: model.isTime && (isTemporalProperties$ |async) && (j === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violet: model.isTime && (isTemporalProperties$ | async) && (j === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                         {{elements[i][j]}}
                     </td>
                     <td *ngIf="j !== model.header.length-1" name="spacer"></td>

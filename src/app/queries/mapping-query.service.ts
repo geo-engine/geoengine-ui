@@ -132,7 +132,7 @@ export class MappingQueryService {
             const resolution = (config.viewportSize as ViewportSize).resolution;
 
             parameters.setParameter('clustered', true);
-            if(config.projection.getCode() === 'EPSG:4326') {
+            if (config.projection.getCode() === 'EPSG:4326') {
                 parameters.setParameter('bbox', extent[1] + ',' + extent[0] + ',' + extent[3] + ',' + extent[2]);
             } else {
                 parameters.setParameter('bbox', extent.join(','));
@@ -314,6 +314,7 @@ export class MappingQueryService {
             parameters: {
                 version: this.config.WMS.VERSION,
                 format: this.config.WMS.FORMAT,
+                EXCEPTIONS: this.config.DEBUG_MODE.MAPPING ? 'INIMAGE' : 'BLANK',
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
@@ -404,7 +405,7 @@ export class MappingQueryService {
                 // console.log("getColorizer", err, cought); //TODO: notification?
                 return Observable.of({interpolation: 'unknown', breakpoints: []});
             }).map(c => {
-                if(c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {
+                if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }
                 return c;
