@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-    <ModulePrefs title="VAT" author="Database Research Group of Uni Marburg" />
+    <ModulePrefs title="VAT" author="Database Research Group of Uni Marburg">
+        <Require feature="dynamic-height"/>
+    </ModulePrefs>
     <UserPref name="VAT_URL" display_name="VAT URL" required="true" datatype="string"
-              default_value="http://pc12388.mathematik.uni-marburg.de/index.html" />
+              default_value="https://sng107.sng.uni-frankfurt.de/"/>
+    <UserPref name="HEADER_HEIGHT" display_name="Header Height in Px" required="true" datatype="string"
+              default_value="75"/>
     <Content type="html">
         <![CDATA[
         <script type="text/javascript">
+            // get preferences
+            var prefs = new gadgets.Prefs();
+
+            // size application
+            var totalHeight = isNaN(parent.window.innerHeight) ? parent.window.clientHeight : parent.window.innerHeight;
+            var headerHeight = prefs.getInt("HEADER_HEIGHT");
+            gadgets.window.adjustHeight(totalHeight - headerHeight);
+
             // create iframe
             var iframe = document.createElement('iframe');
             iframe.id = 'searchVisualizationFrame';
@@ -14,8 +26,6 @@
             iframe.style.padding = 0;
             iframe.style.height = '100%';
             iframe.style.width = '100%';
-
-            var prefs = new gadgets.Prefs();
             iframe.src = prefs.getString('VAT_URL');
 
             // listen on load event and then send the token
