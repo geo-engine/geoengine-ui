@@ -93,16 +93,23 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 break;
         }
 
-        loginRequest.subscribe(valid => {
-            if (valid) {
-                this.invalidCredentials$.next(false);
-                this.formStatus$.next(FormStatus.LoggedIn);
-            } else {
+        loginRequest.subscribe(
+            valid => {
+                if (valid) {
+                    this.invalidCredentials$.next(false);
+                    this.formStatus$.next(FormStatus.LoggedIn);
+                } else {
+                    this.invalidCredentials$.next(true);
+                    (this.loginForm.controls['password'] as FormControl).setValue('');
+                    this.formStatus$.next(FormStatus.LoggedOut);
+                }
+            },
+            () => { // on error
                 this.invalidCredentials$.next(true);
                 (this.loginForm.controls['password'] as FormControl).setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             }
-        });
+        );
     }
 
     logout() {
