@@ -85,7 +85,6 @@ export class StorageService {
     private resetStorageProvider(projectName: string = undefined) {
         // clean up old provider stuff
         this.storageProvider = undefined;
-        this.pendingWorkspace = undefined;
         if (this.projectSubscription) {
             this.projectSubscription.unsubscribe();
         }
@@ -94,6 +93,11 @@ export class StorageService {
         }
         if (this.pendingWorkspaceSubscription) {
             this.pendingWorkspaceSubscription.unsubscribe();
+        }
+        if (this.pendingWorkspace) {
+            this.storageProvider.saveWorkspace(this.pendingWorkspace);
+
+            this.pendingWorkspace = undefined;
         }
 
         // create suitable provider
