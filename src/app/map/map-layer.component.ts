@@ -68,7 +68,7 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
     AbstractVectorSymbology, VectorLayer<AbstractVectorSymbology>> implements OnChanges, OnDestroy {
 
     // @Input() data: GeoJsonFeatureCollection;
-    private format = new ol.format.GeoJSON();
+
     private dataSubscription: Subscription;
 
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -86,9 +86,9 @@ abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vecto
             if (this.dataSubscription) {
                 this.dataSubscription.unsubscribe();
             }
-            this.dataSubscription = this.layer.data.data$.subscribe(data => {
+            this.dataSubscription = this.layer.data.data$.subscribe(features => {
                 this.source.clear(); // TODO: check if this is needed always...
-                this.source.addFeatures(this.format.readFeatures(data));
+                this.source.addFeatures(features);
             });
         }
 

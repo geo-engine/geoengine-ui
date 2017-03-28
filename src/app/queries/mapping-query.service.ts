@@ -25,6 +25,8 @@ import {Provenance} from '../provenance/provenance.model';
 import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 
+import * as ol from 'openlayers';
+
 /**
  * A service that encapsulates MAPPING queries.
  */
@@ -101,7 +103,8 @@ export class MappingQueryService {
         time?: Time,
         projection?: Projection,
         outputFormat: WFSOutputFormat,
-        viewportSize?: boolean | ViewportSize
+        viewportSize?:ViewportSize,
+        clustered?: boolean
     }): string {
         if (!config.time) {
             config.time = this.getProjectService().getTime();
@@ -126,12 +129,18 @@ export class MappingQueryService {
                 outputFormat: config.outputFormat.getFormat(),
             },
         });
+        if(config.clustered){
+            parameters.setParameter('clustered', config.clustered);
+        }
+        else {
+            parameters.setParameter('clustered', false);
+        }
 
         if (config.viewportSize) {
+
             const extent = (config.viewportSize as ViewportSize).extent;
             const resolution = (config.viewportSize as ViewportSize).resolution;
 
-            parameters.setParameter('clustered', true);
             if (config.projection.getCode() === 'EPSG:4326') {
                 parameters.setParameter('bbox', extent[1] + ',' + extent[0] + ',' + extent[3] + ',' + extent[2]);
             } else {
@@ -190,7 +199,8 @@ export class MappingQueryService {
         operator: Operator,
         time: Time,
         projection: Projection,
-        viewportSize?: (boolean | ViewportSize)
+        viewportSize?: ViewportSize,
+        clustered?: boolean,
     }): Promise<GeoJsonFeatureCollection> {
         return this.http.get(
             this.getWFSQueryUrl({
@@ -199,9 +209,11 @@ export class MappingQueryService {
                 projection: config.projection,
                 outputFormat: WFSOutputFormats.JSON,
                 viewportSize: config.viewportSize,
+                clustered: config.clustered,
             })
         ).toPromise().then(response => response.json());
     }
+
 
     /**
      * Create a stream of WFS data that emits data on every time change.
@@ -209,6 +221,7 @@ export class MappingQueryService {
      * @param outputFormat the output format
      * @returns an Observable of features
      */
+    /*
     getWFSDataStream(config: {
         operator: Operator,
         outputFormat: WFSOutputFormat
@@ -224,31 +237,59 @@ export class MappingQueryService {
             })
         );
     }
+    */
 
     getWFSDataStreamAsGeoJsonFeatureCollection(config: {
         operator: Operator,
-        clustered?: boolean
+        clustered?: boolean,
+        buffer?: boolean,
     }): VectorLayerData {
-        const viewportSize$: Observable<boolean | ViewportSize> =
-            config.clustered ?
-                this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
-                : Observable.of(false);
+        const viewportSize$= this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE);
 
         const reload$ = new BehaviorSubject<void>(undefined);
         const state$ = new ReplaySubject<LoadingState>(1);
+        const dataExtent$ = new BehaviorSubject<[number, number, number, number]>([0,0,0,0]);
+        const dataResolution$= new BehaviorSubject<number>(0);
+        const dataProjection$ = new BehaviorSubject<Projection>(null);
+        const format = new ol.format.GeoJSON();
+        const dataTime$ = new BehaviorSubject<Time>(null);
         const data$ = Observable.combineLatest(
             this.getProjectService().getTimeStream(),
             this.getProjectService().getProjectionStream(),
             viewportSize$,
             reload$
-        ).switchMap(([time, projection, optionalViewport]) => {
+        ).filter(([time, projection, viewport]) => {
+            console.log('a', time, projection, viewport);
+            console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
+            return (
+                !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent) ||
+                (dataResolution$.getValue() !== viewport.resolution) ||
+                (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)) ||
+                (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection)
+            );
+        })
+            .switchMap(([time, projection, viewport]) => {
             state$.next(LoadingState.LOADING);
+            const ex = Math.min(ol.extent.getWidth(viewport.extent), ol.extent.getHeight(viewport.extent));
+            const requestExtent = ol.extent.getIntersection(
+                ol.extent.buffer(viewport.extent, ex*0.25)
+                , viewport.maxExtent);
+            console.log('req', viewport.extent, ex, requestExtent);
             const promise = this.getWFSDataAsJson({
                 operator: config.operator,
                 time: time,
                 projection: projection,
-                viewportSize: optionalViewport,
+                viewportSize: {
+                    extent: requestExtent,
+                    resolution: viewport.resolution,
+                    maxExtent: viewport.maxExtent,
+                },
+                clustered: (config.clustered) ? config.clustered : false,
             });
+            dataExtent$.next(requestExtent);
+            dataProjection$.next(projection);
+            dataResolution$.next(viewport.resolution);
+            dataTime$.next(time);
             return promise.then(
                 result => {
                     state$.next(LoadingState.OK);
@@ -263,30 +304,29 @@ export class MappingQueryService {
         }).map(result => {
             if (result) {
                 const geojson = result as GeoJsonFeatureCollection;
-                const features = geojson.features;
-                for (let localRowId = 0; localRowId < features.length; localRowId++) {
-                    const feature = features[localRowId];
+                for (let localRowId = 0; localRowId < geojson.features.length; localRowId++) {
+                    const feature = geojson.features[localRowId];
                     if (feature.id === undefined) {
-                        feature.id = 'lrid_' + localRowId;
+                        feature.id = ('lrid_' + localRowId);
                     }
                 }
-                return geojson;
+
+                const features = format.readFeatures(result);
+                return features;
             } else {
-                return {
-                    type: '',
-                    features: [],
-                } as GeoJsonFeatureCollection;
+                return [];
             }
         }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
 
         return {
             data$: data$,
+            dataExtent$: dataExtent$,
             state$: state$,
             reload$: reload$,
         };
     }
 
-    /**
+     /**
      * Get MAPPING query parameters for the WMS request.
      * @param operator the operator graph
      * @param time the point in time
