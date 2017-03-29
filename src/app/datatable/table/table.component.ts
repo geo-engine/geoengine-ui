@@ -294,7 +294,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                             const xe = x.getGeometry().getExtent();
                             const ve = v.extent;
                             const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); //todo not only point
-                            console.log(ve, x.getGeometry(), int);
+                            // console.log(ve, x.getGeometry(), int);
                             return int;
                         });
                         //return d;
@@ -520,7 +520,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
      */
     public updateScroll() {
-        console.log(this.scrollTopBefore - this.scrollTop);
+        //console.log(this.scrollTopBefore - this.scrollTop);
 
         this.scrollTopBefore = this.scrollTop;
         this.scrollLeftBefore = this.scrollLeft;
