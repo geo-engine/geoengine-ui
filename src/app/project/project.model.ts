@@ -49,15 +49,7 @@ export class Project {
             return new Project({
                 name: parameters.config.DEFAULTS.PROJECT.NAME,
                 projection: Projections.fromCode(parameters.config.DEFAULTS.PROJECT.PROJECTION),
-                time: new TimePoint({ // TODO: insert default time
-                    years: 2000,
-                    months: 0,
-                    date: 1,
-                    hours: 0,
-                    minutes: 0,
-                    seconds: 0,
-                    milliseconds: 0,
-                }),
+                time: new TimePoint(parameters.config.DEFAULTS.PROJECT.TIME),
                 plots: [],
             });
         }
@@ -102,15 +94,7 @@ export class Project {
         try {
             time = timeFromDict(parameters.dict.time);
         } catch (error) {
-            time = new TimePoint({ // TODO: insert default time
-                years: 2000,
-                months: 0,
-                date: 1,
-                hours: 0,
-                minutes: 0,
-                seconds: 0,
-                milliseconds: 0,
-            });
+            time = new TimePoint(parameters.config.DEFAULTS.PROJECT.TIME);
             parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
