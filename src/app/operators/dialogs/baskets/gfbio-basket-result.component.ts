@@ -118,7 +118,7 @@ export class BasketResult<T extends IBasketResult>  {
         }
         
         md-card {
-            max-width: 600px !important;
+            max-width: 100% !important;
         }
         
         md-card >>> md-card-title {
