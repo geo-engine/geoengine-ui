@@ -10,8 +10,13 @@ import {ResultTypes} from '../../operators/result-type.model';
 import {VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {GeoJsonFeature, FeatureID} from '../../queries/geojson.model';
+import {MapService} from '../../map/map.service';
+import * as ol from 'openlayers';
 
-
+interface FeatureData {
+    id: number | string;
+    properties: {[key: string]: string | number };
+}
 /**
  * Data-Table-Component
  * Displays a Data-Table
@@ -123,7 +128,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public loading = false;
 
     // Observables
-    public data$: Observable<Array<GeoJsonFeature>>;
+    public data$: Observable<Array<ol.Feature>>;
     public state$: Observable<LoadingState>;
 
     private selectable$: Observable<boolean>;
@@ -137,7 +142,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @returns {string[]} a string-array containing all the keys
      */
     private static getArrayOfKeys(object) {
-        return Object.keys(object).filter(x => !x.startsWith('___'));
+        return Object.keys(object).filter(x => !(x.startsWith('___') || x === 'geometry'));
     }
 
     /**
@@ -146,7 +151,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param cdr ChangeDetector Reference
      * @param layerService LayerService Reference
      */
-    constructor(cdr: ChangeDetectorRef, layerService: LayerService) {
+    constructor(cdr: ChangeDetectorRef, layerService: LayerService, private mapService: MapService) {
         this.cdr = cdr;
         this.layerService = layerService;
 
@@ -156,11 +161,16 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     ngOnInit() {
-        this.dataSubscription = this.data$.subscribe((features: Array<GeoJsonFeature>) => {
+        this.dataSubscription = this.data$.subscribe((features: Array<ol.Feature>) => {
             this.dataHead = [];
             this.data = [];
 
-            this.data = features; // .map(x => (x.properties));
+            this.data = features.map(x => {
+                return {
+                    id: x.getId(),
+                    properties: x.getProperties(),
+                }
+            });
 
             // only needs to be called once for each "data"
             this.dataInit();
@@ -249,9 +259,25 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS:
                     let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
+
+                    const data = Observable.combineLatest(
+                        vectorLayer.data.data$, this.mapService.getViewportSizeStream()).map(([d, v]) => {
+                        //console.log('d,v', d, v);
+                        return d.filter(x => {
+                            //console.log('x', x);
+                            const xe = x.getGeometry().getExtent();
+                            const ve = v.extent;
+                            const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); //todo not only point
+                            console.log(ve, x.getGeometry(), int);
+                            return int;
+                        });
+                        //return d;
+                    });
                     return {
-                        data$: vectorLayer.data.data$.map(data => data.features),
+                        data$: data,
+                        dataExtent$: vectorLayer.data.dataExtent$,
                         state$: vectorLayer.data.state$,
+                        reload$: vectorLayer.data.reload$,
                         selectable: true,
                     };
                 default:

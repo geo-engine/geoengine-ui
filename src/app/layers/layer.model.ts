@@ -4,12 +4,13 @@ import {Operator, OperatorDict} from '../operators/operator.model';
 import {
     Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, MappingColorizer, ClusteredPointSymbology
 } from './symbology/symbology.model';
-import {GeoJsonFeatureCollection} from '../queries/geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
+import * as ol from 'openlayers';
 
 export interface VectorLayerData {
-    data$: Observable<GeoJsonFeatureCollection>;
+    data$: Observable<Array<ol.Feature>>;
+    dataExtent$?: Observable<[number, number, number, number]>,
     state$: Observable<LoadingState>;
     reload$: Observer<void>;
 }

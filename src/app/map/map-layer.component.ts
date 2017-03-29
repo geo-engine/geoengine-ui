@@ -70,7 +70,7 @@ extends OlMapLayerComponent<ol.layer.Vector, ol.source.Vector, AbstractVectorSym
 implements OnChanges, OnDestroy {
 
     // @Input() data: GeoJsonFeatureCollection;
-    private format = new ol.format.GeoJSON();
+
     private dataSubscription: Subscription;
 
     constructor(protected mappingQueryService: MappingQueryService) {
@@ -88,9 +88,9 @@ implements OnChanges, OnDestroy {
             if (this.dataSubscription) {
                 this.dataSubscription.unsubscribe();
             }
-            this.dataSubscription = this.layer.data.data$.subscribe(data => {
+            this.dataSubscription = this.layer.data.data$.subscribe(features => {
                 this.source.clear(); // TODO: check if this is needed always...
-                this.source.addFeatures(this.format.readFeatures(data));
+                this.source.addFeatures(features);
             });
         }
 
