@@ -9,7 +9,7 @@ import {RequestParameters, MappingRequestParameters, ParametersType} from '../qu
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
 import {IBasket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
-import {MappingSource, MappingSourceChannel, MappingTransform,} from '../operators/dialogs/raster-repository/mapping-source.model';
+import {MappingSource, MappingSourceChannel, MappingTransform} from '../operators/dialogs/raster-repository/mapping-source.model';
 import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
@@ -458,6 +458,10 @@ export class UserService {
      * @returns `true` if the login was succesful, `false` otherwise.
      */
     gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
+        if (!credentials.staySignedIn) {
+            credentials.staySignedIn = true;
+        }
+
         const token$ = this.getGFBioToken({
             username: credentials.user,
             password: credentials.password,

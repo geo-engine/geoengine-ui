@@ -5,6 +5,7 @@ import {Config} from '../../config.service';
 import {WaveValidators} from '../../util/form.validators';
 import {UserService} from '../user.service';
 import {User} from '../user.model';
+import {NotificationService} from '../../notification.service';
 
 enum FormStatus {
     LoggedOut,
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     constructor(private formBuilder: FormBuilder,
                 private config: Config,
-                private userService: UserService) {
+                private userService: UserService,
+                private notificationService: NotificationService) {
         this.loginForm = this.formBuilder.group({
             loginAuthority: ['system', Validators.required],
             username: ['', Validators.compose([
@@ -79,6 +81,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 loginRequest = this.userService.gfbioLogin({
                     user: this.loginForm.controls['username'].value,
                     password: this.loginForm.controls['password'].value,
+                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
                 });
 
                 break;
@@ -88,7 +91,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 loginRequest = this.userService.login({
                     user: this.loginForm.controls['username'].value,
                     password: this.loginForm.controls['password'].value,
-                    staySignedIn: this.loginForm.controls['staySignedIn'].value.checked,
+                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
                 });
                 break;
         }
@@ -114,11 +117,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     logout() {
         this.formStatus$.next(FormStatus.Loading);
-        this.userService.guestLogin().subscribe(success => {
-            // TODO: what to do if this is not successful?
-            this.loginForm.controls['password'].setValue('');
-            this.formStatus$.next(FormStatus.LoggedOut);
-        });
+        this.userService.guestLogin()
+            .subscribe(
+                () => {
+                    this.loginForm.controls['password'].setValue('');
+                    this.formStatus$.next(FormStatus.LoggedOut);
+                },
+                error => this.notificationService.error(`The backend is currently unavailable (${error})`));
     }
 
 }
