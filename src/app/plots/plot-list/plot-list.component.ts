@@ -60,7 +60,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     editRPlot(plot: Plot) {
         this.layoutService.setSidenavContentComponent({
             component: ROperatorComponent,
-            parent: OperatorListComponent,
+            parent: PlotListComponent,
             config: {
                 editable: plot,
             }
