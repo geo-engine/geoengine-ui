@@ -6,7 +6,6 @@ import {Projections, Projection} from '../operators/projection.model';
 import {Project} from './project.model';
 
 import {Time, TimePoint} from '../time/time.model';
-import * as moment from 'moment';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
@@ -59,7 +58,7 @@ export class ProjectService {
         return new Project({
             name: this.config.DEFAULTS.PROJECT.NAME,
             projection: Projections.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION),
-            time: new TimePoint(moment(this.config.DEFAULTS.PROJECT.TIME)),
+            time: new TimePoint(this.config.DEFAULTS.PROJECT.TIME),
         });
     }
 
@@ -86,7 +85,7 @@ export class ProjectService {
 
     setTime(time: Time) {
         const oldTime = this.project$.getValue().time;
-        if (time.isValid() && !time.isSame(oldTime)) {
+        if (time && time.isValid() && !time.isSame(oldTime)) {
             this.changeProjectConfig({
                 time: time,
             });

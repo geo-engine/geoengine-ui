@@ -24,6 +24,9 @@ export function timeFromDict(dict: TimeDict) {
             return TimePoint.fromDict(dict as TimePointDict);
         case 'TimeInterval':
             return TimeInterval.fromDict(dict as TimeIntervalDict);
+        default:
+            console.error('INVALID TIME REPRESENTATION', dict);
+            throw Error('invalid time representation');
     }
 }
 
@@ -53,7 +56,7 @@ export class TimePoint implements Time {
     }
 
     constructor(start: moment.MomentInput) {
-        this.start = moment(start);
+        this.start = moment.utc(start);
     }
 
     getType(): TimeType {
@@ -116,7 +119,7 @@ export class TimeInterval implements Time {
 
     // TODO: check if this makes sense
     static maximal(): TimeInterval {
-        const min = moment({
+        const min = {
             years: 1,
             months: 0,
             date: 1,
@@ -124,8 +127,8 @@ export class TimeInterval implements Time {
             minutes: 0,
             seconds: 0,
             milliseconds: 0,
-        });
-        const max = moment({
+        };
+        const max = {
             years: 9999,
             months: 11,
             date: 31,
@@ -133,13 +136,13 @@ export class TimeInterval implements Time {
             minutes: 59,
             seconds: 59,
             milliseconds: 999,
-        });
+        };
         return new TimeInterval(min, max);
     }
 
     constructor(start: moment.MomentInput, end: moment.MomentInput) {
-        this.start = moment(start);
-        this.end = moment(end);
+        this.start = moment.utc(start);
+        this.end = moment.utc(end);
 
         if( this.start == this.end ){
             this.end = this.end.clone();
