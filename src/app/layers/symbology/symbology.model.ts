@@ -383,6 +383,7 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
 export interface MappingColorizer {
     interpolation: string;
     breakpoints: Array<[number, string, string]>;
+    result?: string | number;
 }
 
 export class MappingColorizerRasterSymbology extends RasterSymbology
