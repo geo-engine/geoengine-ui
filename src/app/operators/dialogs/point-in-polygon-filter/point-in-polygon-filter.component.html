@@ -9,7 +9,14 @@
             [types]="[ResultTypes.POLYGONS]"
             formControlName="polygonLayer"
         ></wave-layer-selection>
-        <wave-operator-output-name formControlName="name"></wave-operator-output-name>
+        <wave-operator-output-name formControlName="name">
+            <md-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </md-hint>
+        </wave-operator-output-name>
     </div>
     <div class="actions">
         <button

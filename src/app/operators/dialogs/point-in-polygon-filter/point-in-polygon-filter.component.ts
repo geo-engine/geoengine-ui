@@ -12,6 +12,7 @@ import {
     SimplePointSymbology, ClusteredPointSymbology, AbstractVectorSymbology,
 } from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {WaveValidators} from '../../../util/form.validators';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -33,7 +34,7 @@ export class PointInPolygonFilterOperatorComponent {
                 private layerService: LayerService,
                 private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
-            name: ['Filtered Values', Validators.required],
+            name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
             polygonLayer: [undefined, Validators.required],
         });

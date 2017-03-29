@@ -43,7 +43,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         let rangeTypeControl = this.formBuilder.control('data', Validators.required);
         this.form = this.formBuilder.group({
-            name: ['Filtered Values', Validators.required],
+            name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
             attribute: [undefined, WaveValidators.conditionalValidator(
                 Validators.required, () => isVectorLayer(layerControl.value)

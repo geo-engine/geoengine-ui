@@ -18,6 +18,7 @@ import {MdDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
 import {Config} from '../../../../config.service';
+import {WaveValidators} from '../../../../util/form.validators';
 
 @Component({
     selector: 'wave-r-operator',
@@ -62,7 +63,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             pointLayers: [[]],
             code: [`print("Hello world");\na <- 1:5;\nprint(a);`, Validators.required],
             resultType: [ResultTypes.TEXT, Validators.required],
-            name: ['R Output', Validators.required],
+            name: ['R Output', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
         if (this.editable) {
