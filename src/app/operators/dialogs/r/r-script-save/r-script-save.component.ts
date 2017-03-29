@@ -5,6 +5,7 @@ import {MdDialogRef, MdDialogConfig} from '@angular/material';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {NotificationService} from '../../../../notification.service';
+import {WaveValidators} from '../../../../util/form.validators';
 
 export interface RScriptSaveComponentConfig extends MdDialogConfig {
     script: RScript;
@@ -33,7 +34,7 @@ export class RScriptSaveComponent implements OnInit, AfterViewInit {
         const config = this.dialogRef.config as RScriptSaveComponentConfig;
 
         this.form = this.formBuilder.group({
-            name: ['', Validators.required],
+            name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             script: [config.script, Validators.required],
         });
     }

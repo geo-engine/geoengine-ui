@@ -13,6 +13,7 @@ import {
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
+import {WaveValidators} from '../../../util/form.validators';
 
 function valueNameCollision(pointLayerControl: FormControl, valueNames: FormArray) {
     return (control: FormControl): {[key: string]: boolean} => {
@@ -76,7 +77,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             pointLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
             valueNames: this.formBuilder.array([]),
-            name: ['Points With Raster Values', Validators.required],
+            name: ['Points With Raster Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
         this.subscriptions.push(

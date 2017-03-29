@@ -7,10 +7,10 @@ import {NotificationService} from '../../notification.service';
 import {WaveValidators} from '../../util/form.validators';
 
 @Component({
-  selector: 'wave-save-project-as',
-  templateUrl: './save-project-as.component.html',
-  styleUrls: ['./save-project-as.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'wave-save-project-as',
+    templateUrl: './save-project-as.component.html',
+    styleUrls: ['./save-project-as.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveProjectAsComponent implements OnInit, AfterViewInit {
 
@@ -26,7 +26,11 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            name: ['', Validators.required, WaveValidators.uniqueProjectName(this.storageService)],
+            name: [
+                '',
+                Validators.compose([Validators.required, WaveValidators.notOnlyWhitespace]),
+                WaveValidators.uniqueProjectName(this.storageService),
+            ],
             projection: [this.projectService.getProjection(), Validators.required],
         });
     }

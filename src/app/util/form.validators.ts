@@ -110,9 +110,15 @@ function uniqueProjectNameValidator(storageService: StorageService): AsyncValida
     };
 }
 
+function notOnlyWhitespace(control: AbstractControl) {
+    const text = control.value as string;
+    return text.trim().length <= 0 ? {'onlyWhitespace': true} : null;
+}
+
 export const WaveValidators = {
-    minAndMax: minAndMax,
     conditionalValidator: conditionalValidator,
     keyword: keywordValidator,
+    minAndMax: minAndMax,
+    notOnlyWhitespace: notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
 };

@@ -11,6 +11,7 @@ import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {WaveValidators} from '../../../util/form.validators';
 
 @Component({
     selector: 'wave-expression-operator',
@@ -50,7 +51,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                 /*firstRasterLayer ? firstRasterLayer.operator.projection : */undefined,
                 Validators.required,
             ],
-            name: ['Expression', Validators.required],
+            name: ['Expression', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
         this.outputUnits$ = this.form.controls['rasterLayers'].valueChanges.map(rasterLayers => {

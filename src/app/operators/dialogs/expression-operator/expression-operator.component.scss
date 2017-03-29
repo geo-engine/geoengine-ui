@@ -1,3 +1,5 @@
+@import "../../../../wave-app-theme";
+
 form {
     height: 100%;
     width: 100%;
@@ -21,4 +23,8 @@ md-select {
 
 md-input-container {
     margin-bottom: 1rem;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
 }

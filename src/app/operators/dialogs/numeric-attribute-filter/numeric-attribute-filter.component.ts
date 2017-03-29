@@ -22,6 +22,7 @@ import {HistogramType} from '../../types/histogram-type.model';
 import {Unit} from '../../unit.model';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
+import {WaveValidators} from '../../../util/form.validators';
 
 function minMax(control: AbstractControl): {[key: string]: boolean} {
     const min = control.get('min').value;
@@ -77,7 +78,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 private formBuilder: FormBuilder,
                 private elementRef: ElementRef) {
         this.form = formBuilder.group({
-            name: ['Filtered Values', Validators.required],
+            name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
             attribute: [undefined, Validators.required],
             bounds: formBuilder.group({
