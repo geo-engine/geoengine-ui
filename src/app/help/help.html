@@ -35,7 +35,7 @@
 	<md-card>
 		<md-card-header>General Information</md-card-header>
         <md-card-content>
-            <p>The VAT system allows users to explore biodiversity data by selecting one of sevaral data sources and processing them with our built-in operators.</p>
+            <p>The VAT system allows users to explore biodiversity data by selecting one of several data sources and processing them with our built-in operators.</p>
             <p>Guest users can already try the system. The main features for <b>registered</b> users are:</p>
             <ul>
                 <li>Saving work</li>
@@ -61,9 +61,14 @@
                         <ul>
                             <li>Using your GFBio Portal account also allows you to access your stored search results</li>
                         </ul>
-                    <li>Obtaining a system account. Please contact us at <a href="mailto:mattig [at] mathematik.uni-marburg.de">mattig [at] mathematik.uni-marburg.de</a> if you are interested in obtaining an account</li>
+                    </li>
+                    <li>Obtaining a system account.
+                        <ul>
+                            <li>Please contact us at <a href="mailto:mattig [at] mathematik.uni-marburg.de">mattig [at] mathematik.uni-marburg.de</a> if you are interested in obtaining an account</li>
+                        </ul>
+                    </li>
                 </ul>
-            <p>To Log in click the button in the top-left, and select the type of account</p>
+            <p>To log in click the button in the top-right, and select the type of account</p>
         </md-card-content>
 	</md-card>
 
@@ -81,22 +86,22 @@
                     <li>Layer list (left)
                         <ul>
                             <li>All layers that were added to the map are listed.</li>
-                            <li>You can change the order of the layers via drag and drop.
-                            <li>Additionaly, legends for the layers are shown.</li>
-                            <li>A layer can be selected as <i>active</i> for the data table and feature selection in the map</li>
+                            <li>You can change the order of the layers via drag and drop.</li>
+                            <li>Additionally, legends for the layers are shown.</li>
+                            <li>A layer can be selected as <i>active</i> for the data table and feature selection in the map.</li>
                         </ul>
                     </li>
                     <li>Data table &amp; Citation (bottom)
                         <ul>
-                            <li>Data table: Here, information about individual items in the layer are shown</li>
-                            <li>Citations: Inspect the citation information of all data sets that were involved in createing the layer</li>
+                            <li>Data table: Here, information about individual items in the layer are shown.</li>
+                            <li>Citations: Inspect the citation information of all data sets that were involved in creating the layer.</li>
                         </ul>
                     </li>
                     <li>Sidebar (right)
                         <ul>
                             <li>Here, the core functionality of the system is available. Clicking one of the buttons on the right hand side opens the sidebar.</li>
                             <li>Login: Login to the system to use more advanced features not available to guests.</li>
-                            <li>Add data: select data from one of the following categories
+                            <li>Add data: Select data from one of the following categories
                                 <ul>
                                     <li>Environmental data</li>
                                     <li>Species distribution</li>
@@ -105,7 +110,7 @@
                             </li>
                             <li>Operators: Perform an operation on one or multiple layers previously added to the map.</li>
                             <li>Time: Select the reference time for the current project (cf. Time)</li>
-                            <li>Plots: Inspect plots like graphs and histogram</li>
+                            <li>Plots: Inspect plots like graphs and histograms</li>
                             <li>Workspace: Configure your workspace
                                 <ul>
                                     <li>Load/Save project</li>
@@ -127,8 +132,8 @@
 	<md-card>
 		<md-card-header>Add Data</md-card-header>
         <md-card-content>
-            <p>The VAT system supports two very different types of data: raster and vector data. Rasters consist of many pixels, and each pixel contains a value for the particular location, e.g. the mean temparature. Vector data are collections of features with attributes, e.g. a set of occurrences of pumas and the time of the observation</p>
-            <p>Under <i>AdData</i> you can select on of sevaral environmental layers (rasters), occurrence data from <a href="http://www.gbif.org" target="_blank">GBIF</a>, data from GFBio archives in ABCD format and your own custom data</p>
+            <p>The VAT system supports two very different types of data: raster and vector data. Rasters consist of many pixels, and each pixel contains a value for the particular location, e.g. the mean temperature. Vector data are collections of features with attributes, e.g. a set of occurrences of pumas and the time of the observation</p>
+            <p>Under <i>Add Data</i> you can select one of several environmental layers (rasters), occurrence data from <a href="http://www.gbif.org" target="_blank">GBIF</a>, data from GFBio archives in ABCD format and your own custom data</p>
             <p>Each data set is added to the map as a layer which you can further process with <i>operators</i>.</p>
         </md-card-content>
     </md-card>
@@ -142,7 +147,7 @@
                     <ul>
                         <li>Raster Value Extraction
                             <ul>
-                                <li>Select a vector layer and one or more raster layers. The raster values at the location of the features are attached as new attributes. E.g. you can add an <i>elevation</i> attribute to pumas, containing the elvation at the puma's observed location</li>
+                                <li>Select a vector layer and one or more raster layers. The raster values at the location of the features are attached as new attributes. E.g. you can add an <i>elevation</i> attribute to pumas, containing the elevation at the puma's observed location</li>
                             </ul>
                         </li>
                     </ul>
@@ -182,21 +187,21 @@
 		<md-card-header>Lineage Tracking</md-card-header>
         <md-card-content>
 		    <img src="assets/images/lineage.png" style="max-width:100%;">
-		    <p>The VAT system's goal is to support interactive data exploration by tracking the data processing automatically in the background. You can view the complete processing workflow for individual layers by selection <i>Lineage</i> in the layer context menu and the lineage for all layers by clicking on the context menu of the layer list in the top left.</p>
+		    <p>The VAT system's goal is to support interactive data exploration by tracking the data processing automatically in the background. You can view the complete processing workflow for individual layers by selecting <i>Lineage</i> in the layer context menu and the lineage for all layers by clicking on the context menu of the layer list in the top left.</p>
         </md-card-content>
 	</md-card>
 
 	<md-card>
 		<md-card-header>Data Export</md-card-header>
         <md-card-content>
-		    <p>The result of computations can be exported by clicking the <i>Export</i> button in a layers context menu. After selecting the output format, a ZIP file is generated that bundles the actual data with all citations and the workflow itself</p>
+		    <p>The result of computations can be exported by clicking the <i>Export</i> button in a layer's context menu. After selecting the output format, a ZIP file is generated that bundles the actual data with all citations and the workflow itself</p>
         </md-card-content>
 	</md-card>
 
 	<md-card>
 		<md-card-header>GFBio Search Results</md-card-header>
 		<md-card-content>
-            <p>When logged in as a GFBio user, the Add Data function offers a <i>GFBio baskets</i> option. There, you have access to all previous searches you performed on gfbio.org while being logged in. You have the option to go the data sets landing page or add a new layer containing the data.</p>
+            <p>When logged in as a GFBio user, the <i>Add Data</i> function offers a <i>GFBio baskets</i> option. There, you have access to all previous searches you performed on gfbio.org while being logged in. You have the option to go the data sets landing page or add a new layer containing the data.</p>
         </md-card-content>
 	</md-card>
 </div>
