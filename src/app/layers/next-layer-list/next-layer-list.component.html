@@ -93,10 +93,6 @@
                             <md-icon>color_lens</md-icon>
                             <span>Edit Symbology</span>
                         </button>
-                        <button md-menu-item (click)="mapService.zoomToLayer(layer)">
-                            <md-icon>fullscreen</md-icon>
-                            <span>Zoom to Extent</span>
-                        </button>
                         <button md-menu-item (click)="dialog.open(LayerExportComponent, {layer: layer})">
                             <md-icon>file_download</md-icon>
                             <span>Export</span>
