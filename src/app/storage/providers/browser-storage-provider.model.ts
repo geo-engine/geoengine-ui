@@ -42,7 +42,12 @@ export class BrowserStorageProvider extends StorageProvider {
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
             return Observable.of(undefined);
         } else {
-            const project = Project.fromJSON(projectJSON, operatorMap);
+            const project = Project.fromJSON({
+                json: projectJSON,
+                config: this.config,
+                notificationService: this.notificationService,
+                operatorMap: operatorMap
+            });
             return Observable.of(project);
         }
     }
@@ -66,8 +71,7 @@ export class BrowserStorageProvider extends StorageProvider {
                         this.layerService.createLayerFromDict(layerDict, operatorMap)
                     );
                 } catch (error) {
-                    // TODO: show reason to user
-                    console.error(`Cannot load layer because of ${error}`);
+                    this.notificationService.error(`Cannot load layer because of »${error}«`);
                 }
             }
 

@@ -8,6 +8,7 @@ import {LayerService} from '../layers/layer.service';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {Observable} from 'rxjs/Rx';
+import {NotificationService} from '../notification.service';
 
 /**
  * A WAVE workspace consisting of a project, layers and plots.
@@ -48,7 +49,8 @@ export abstract class StorageProvider {
     constructor(
         protected config: Config,
         protected layerService: LayerService,
-        protected projectService: ProjectService
+        protected projectService: ProjectService,
+        protected notificationService: NotificationService
     ) {}
 
     /**
