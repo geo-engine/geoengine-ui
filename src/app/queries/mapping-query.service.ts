@@ -259,8 +259,9 @@ export class MappingQueryService {
             viewportSize$,
             reload$
         ).filter(([time, projection, viewport]) => {
-            console.log('a', time, projection, viewport);
-            console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
+            //console.log('a', time, projection, viewport);
+            //console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
+            //console.log('c', !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent), (dataResolution$.getValue() !== viewport.resolution), (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)), (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection));
             return (
                 !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent) ||
                 (dataResolution$.getValue() !== viewport.resolution) ||
@@ -274,7 +275,7 @@ export class MappingQueryService {
             const requestExtent = ol.extent.getIntersection(
                 ol.extent.buffer(viewport.extent, ex*0.25)
                 , viewport.maxExtent);
-            console.log('req', viewport.extent, ex, requestExtent);
+            //console.log('req', viewport.extent, ex, requestExtent);
             const promise = this.getWFSDataAsJson({
                 operator: config.operator,
                 time: time,

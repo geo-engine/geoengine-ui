@@ -218,8 +218,34 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         // console.log(this.containerHeight);
 
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
+            const tableHeadHeight = this.elementHeight;
+
             for (let i = 0; i < this.data.length; i++) {
-                this.selected[i] = x.selected.contains(this.data[i].id);
+                const selectedContainsId = x.selected.contains(this.data[i].id);
+                if(!this.selected[i] && selectedContainsId){
+
+                    let numberOfTopRows = i - 1;
+
+                    if (numberOfTopRows + this.displayItemCount > this.data.length) {
+                        numberOfTopRows = this.data.length - this.displayItemCount;
+                    }
+                    if (numberOfTopRows < 0) {
+                        numberOfTopRows = 0;
+                    }
+                    this.firstDisplay = numberOfTopRows;
+
+                    //console.log('a', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
+
+                    this.offsetTop = numberOfTopRows * this.elementHeight;
+                    this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+                    //console.log('b', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
+
+                    const st = (numberOfTopRows * this.elementHeight) + tableHeadHeight;
+                    //console.log('c', tableHeadHeight, st);
+                    this.container.nativeElement.scrollTop = st;
+                }
+
+                this.selected[i] = selectedContainsId;
             }
 
             this.testSelected();
@@ -537,6 +563,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             // console.log("UpdateScroll: "+(time2-time1));
         }
     }
+
 
     /**
      * Virtual Scroll Update Function
