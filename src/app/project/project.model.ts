@@ -2,6 +2,8 @@ import {Projection, Projections} from '../operators/projection.model';
 import {Time, TimeDict, timeFromDict, TimePoint, TimeInterval} from '../time/time.model';
 import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
+import {Config} from '../config.service';
+import {NotificationService} from '../notification.service';
 
 export interface ProjectConfig {
     name: string;
@@ -23,21 +25,63 @@ export class Project {
     private _name: string;
     private _plots: Array<Plot>;
 
-    static fromJSON(json: string, operatorMap = new Map<number, Operator>()): Project {
-        const config = JSON.parse(json);
-        return Project.fromDict(config, operatorMap);
+    static fromJSON(parameters: {
+        json: string,
+        config: Config,
+        notificationService: NotificationService,
+        operatorMap?: Map<number, Operator>
+    }): Project {
+        if (!parameters.operatorMap) {
+            parameters.operatorMap = new Map<number, Operator>();
+        }
+
+        try {
+            const dict = JSON.parse(parameters.json);
+            return Project.fromDict({
+                dict: dict,
+                config: parameters.config,
+                notificationService: parameters.notificationService,
+                operatorMap: parameters.operatorMap
+            });
+        } catch (error) {
+            parameters.notificationService.error(`Invalid JSON from project due to »${error}«`);
+            // return default project
+            return new Project({
+                name: parameters.config.DEFAULTS.PROJECT.NAME,
+                projection: Projections.fromCode(parameters.config.DEFAULTS.PROJECT.PROJECTION),
+                time: new TimePoint({ // TODO: insert default time
+                    years: 2000,
+                    months: 0,
+                    date: 1,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    milliseconds: 0,
+                }),
+                plots: [],
+            });
+        }
+
     }
 
-    static fromDict(dict: ProjectDict, operatorMap = new Map<number, Operator>()): Project {
+    static fromDict(parameters: {
+        dict: ProjectDict,
+        config: Config,
+        notificationService: NotificationService,
+        operatorMap?: Map<number, Operator>
+    }): Project {
+        if (!parameters.operatorMap) {
+            parameters.operatorMap = new Map<number, Operator>();
+        }
+
         let plots: Array<Plot>;
-        if (dict.plots) {
-            plots = dict.plots
+        if (parameters.dict.plots) {
+            plots = parameters.dict.plots
                 .map(plotDict => {
                     try {
-                        return Plot.fromDict(plotDict, operatorMap);
+                        return Plot.fromDict(plotDict, parameters.operatorMap);
                     } catch (error) {
-                        // TODO: show reason to user
-                        console.error(`Cannot load plot because of ${error}`);
+                        parameters.notificationService.error(`Cannot load plot because of »${error}«`);
                         return undefined;
                     }
                 })
@@ -48,18 +92,17 @@ export class Project {
 
         let projection: Projection;
         try {
-            projection = Projections.fromCode(dict.projection);
+            projection = Projections.fromCode(parameters.dict.projection);
         } catch (error) {
-            projection = Projections.WEB_MERCATOR; // TODO: insert default project
-            // TODO: show reason to user
-            console.error(`Cannot load projection because of ${error}`);
+            projection = Projections.fromCode(parameters.config.DEFAULTS.PROJECT.PROJECTION);
+            parameters.notificationService.error(`Cannot load projection because of »${error}«`);
         }
 
         let time: TimePoint | TimeInterval;
         try {
-            time = timeFromDict(dict.time);
-        } catch  (error) {
-            time = new TimePoint({
+            time = timeFromDict(parameters.dict.time);
+        } catch (error) {
+            time = new TimePoint({ // TODO: insert default time
                 years: 2000,
                 months: 0,
                 date: 1,
@@ -67,13 +110,12 @@ export class Project {
                 minutes: 0,
                 seconds: 0,
                 milliseconds: 0,
-            }); // TODO: insert default time
-            // TODO: show reason to user
-            console.error(`Cannot load time because of ${error}`);
+            });
+            parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
         return new Project({
-            name: dict.name,
+            name: parameters.dict.name,
             projection: projection,
             time: time,
             plots: plots,

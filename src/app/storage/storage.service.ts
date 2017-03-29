@@ -14,6 +14,7 @@ import {Config} from '../config.service';
 import {Project} from '../project/project.model';
 import {Layer} from '../layers/layer.model';
 import {Symbology} from '../layers/symbology/symbology.model';
+import {NotificationService} from '../notification.service';
 
 /**
  * A service that is responsible for saving the app state.
@@ -33,6 +34,7 @@ export class StorageService {
                 private projectService: ProjectService,
                 private layoutService: LayoutService,
                 private userService: UserService,
+                private notificationService: NotificationService,
                 private http: Http) {
         // load stored values on session change
         this.userService.getSessionStream()
@@ -102,12 +104,18 @@ export class StorageService {
 
         // create suitable provider
         if (this.userService.isGuestUser()) {
-            this.storageProvider = new BrowserStorageProvider(this.config, this.layerService, this.projectService);
+            this.storageProvider = new BrowserStorageProvider(
+                this.config,
+                this.layerService,
+                this.projectService,
+                this.notificationService
+            );
         } else {
             this.storageProvider = new MappingStorageProvider({
                 config: this.config,
                 layerService: this.layerService,
                 projectService: this.projectService,
+                notificationService: this.notificationService,
                 http: this.http,
                 session: this.userService.getSession(),
                 createDefaultProject: this.projectService.createDefaultProject,

@@ -13,6 +13,7 @@ import {LayerService} from '../../layers/layer.service';
 import {Config} from '../../config.service';
 import {ProjectService} from '../../project/project.service';
 import {Observable, ReplaySubject, Subject} from 'rxjs/Rx';
+import {NotificationService} from '../../notification.service';
 
 const TYPES = {
     PROJECTS: '__wave_projects',
@@ -65,12 +66,13 @@ export class MappingStorageProvider extends StorageProvider {
         config: Config,
         layerService: LayerService,
         projectService: ProjectService,
+        notificationService: NotificationService,
         http: Http,
         session: Session,
         createDefaultProject: () => Project,
         projectName?: string,
     }) {
-        super(config.config, config.layerService, config.projectService);
+        super(config.config, config.layerService, config.projectService, config.notificationService);
         this.http = config.http;
 
         this.session = config.session;
@@ -114,14 +116,18 @@ export class MappingStorageProvider extends StorageProvider {
                             const operatorMap = new Map<number, Operator>();
 
                             return {
-                                project: Project.fromDict(workspace.project, operatorMap),
+                                project: Project.fromDict({
+                                    dict: workspace.project,
+                                    config: this.config,
+                                    notificationService: this.notificationService,
+                                    operatorMap: operatorMap,
+                                }),
                                 layers: workspace.layers
                                     .map(layer => {
                                         try {
                                             return this.layerService.createLayerFromDict(layer, operatorMap);
                                         } catch (error) {
-                                            // TODO: show reason to user
-                                            console.error(`Cannot load layer because of ${error}`);
+                                            this.notificationService.error(`Cannot load layer because of »${error}«`);
                                             return undefined;
                                         }
                                     })
