@@ -232,15 +232,16 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                     if (numberOfTopRows < 0) {
                         numberOfTopRows = 0;
                     }
-                    this.firstDisplay = numberOfTopRows;
+                    /*this.firstDisplay = numberOfTopRows;
 
                     //console.log('a', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
 
                     this.offsetTop = numberOfTopRows * this.elementHeight;
                     this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
                     //console.log('b', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
+                    */
 
-                    const st = (numberOfTopRows * this.elementHeight) + tableHeadHeight;
+                    let st = (numberOfTopRows * this.elementHeight) + tableHeadHeight;
                     //console.log('c', tableHeadHeight, st);
                     this.container.nativeElement.scrollTop = st;
                 }
