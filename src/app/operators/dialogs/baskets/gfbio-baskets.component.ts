@@ -11,11 +11,11 @@ import {UserService} from '../../../users/user.service';
     <div class="container" layout="column">
         <md-toolbar>
           <label>Basket: </label>
-            <select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
-                <option *ngFor='let basket of baskets' [ngValue]='basket'> 
+            <md-select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
+                <md-option *ngFor='let basket of baskets' [value]='basket'> 
                     {{basket.timestamp}} - {{basket.query}}
-                    </option>
-            </select> 
+                    </md-option>
+            </md-select> 
           <span class="toolbar-fill-remaining-space"></span>
           <button md-icon-button aria-label='sync' (click)='reload()'>
             <md-icon>sync</md-icon>
@@ -24,7 +24,7 @@ import {UserService} from '../../../users/user.service';
         <div *ngIf="isLoading$ | async" class="loading">
             <md-progress-circle mode="indeterminate"></md-progress-circle>
         </div>
-        <div *ngIf="!(isLoading$ | async)" flex="grow">
+        <div *ngIf="!(isLoading$ | async)" fxFlex="grow" fxLayout="column">
              <template [ngIf]='selectedBasket'>       
                 <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
@@ -49,7 +49,7 @@ import {UserService} from '../../../users/user.service';
     .container {
         height: 100%;
         min-width: 300px;
-        max-width: 600px;
+        max-width: 100%;
     }
     
     .toolbar-fill-remaining-space {
