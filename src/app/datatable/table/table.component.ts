@@ -165,6 +165,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             this.dataHead = [];
             this.data = [];
 
+            //console.log("TEST");
             this.data = features.map(x => {
                 return {
                     id: x.getId(),
@@ -218,32 +219,24 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         // console.log(this.containerHeight);
 
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
-            const tableHeadHeight = this.elementHeight;
 
             for (let i = 0; i < this.data.length; i++) {
                 const selectedContainsId = x.selected.contains(this.data[i].id);
                 if(!this.selected[i] && selectedContainsId){
+                    //console.log(i, this.data[i].id, x.selected);
 
-                    let numberOfTopRows = i - 1;
+                    let newOffset = i * this.elementHeight;
 
-                    if (numberOfTopRows + this.displayItemCount > this.data.length) {
-                        numberOfTopRows = this.data.length - this.displayItemCount;
+                    //let itemsInView = (this.containerHeight - tableHeadHeight)/ this.elementHeight;
+                    if (newOffset + this.elementHeight + this.containerHeight > this.data.length * this.elementHeight) {    //TODO: nicht benötigt?
+                        newOffset = this.data.length * this.elementHeight - this.containerHeight;
                     }
-                    if (numberOfTopRows < 0) {
-                        numberOfTopRows = 0;
+                    if (newOffset < 0) {
+                        newOffset = 0;
                     }
-                    /*this.firstDisplay = numberOfTopRows;
 
-                    //console.log('a', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
-
-                    this.offsetTop = numberOfTopRows * this.elementHeight;
-                    this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
-                    //console.log('b', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
-                    */
-
-                    let st = (numberOfTopRows * this.elementHeight) + tableHeadHeight;
-                    //console.log('c', tableHeadHeight, st);
-                    this.container.nativeElement.scrollTop = st;
+                    this.container.nativeElement.scrollTop = newOffset;
+                    console.log(newOffset, this.container.nativeElement.scrollTop);
                 }
 
                 this.selected[i] = selectedContainsId;
@@ -521,8 +514,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
      */
     public updateScroll() {
-        //console.log(this.scrollTopBefore - this.scrollTop);
-
         this.scrollTopBefore = this.scrollTop;
         this.scrollLeftBefore = this.scrollLeft;
 
@@ -530,7 +521,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         this.scrollLeft = this.container.nativeElement.scrollLeft;
 
 
-        // console.log(this.scrollTopBefore+"->"+this.scrollTop);
+        //console.log(this.scrollTopBefore+"->"+this.scrollTop);
 
         if (this.data != null && !this.scrolling) {
             this.scrolling = true;
