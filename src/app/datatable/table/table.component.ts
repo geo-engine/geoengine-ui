@@ -236,7 +236,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                     }
 
                     this.container.nativeElement.scrollTop = newOffset;
-                    console.log(newOffset, this.container.nativeElement.scrollTop);
+                    //console.log(newOffset, this.container.nativeElement.scrollTop);
                 }
 
                 this.selected[i] = selectedContainsId;
