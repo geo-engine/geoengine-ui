@@ -12,6 +12,8 @@ import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
+import {Projections} from '../../../projection.model';
+import {ProjectionType} from '../../../types/projection-type.model';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -121,7 +123,7 @@ export class CsvDialogComponent implements OnInit {
             operatorType: csvSourceType,
             resultType: ResultTypes.POINTS,
             projection: config.spatialRefSys,
-        });
+        }).getProjectedOperator(Projections.WGS_84);
 
         this.uploading$.next(true);
 

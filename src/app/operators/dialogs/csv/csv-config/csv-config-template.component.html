@@ -122,7 +122,7 @@
             <md-select style="width:100%;" placeholder="Spatial Reference System"
                        name="spatialRefSys" (change)="update(false)"
                        [(ngModel)]="model.spatialRefSys">
-                <md-option *ngFor="let projection of Projections.ALL_PROJECTIONS"
+                <md-option *ngFor="let projection of [Projections.WGS_84]"
                            [value]="projection">
                     {{projection}}
                 </md-option>
