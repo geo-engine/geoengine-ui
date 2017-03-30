@@ -12,6 +12,14 @@ import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Response} from '@angular/http';
+import {Layer, RasterLayer, VectorLayer, LayerData, RasterData, VectorData} from '../layers/layer.model';
+import {
+    Symbology, MappingColorizer, RasterSymbology,
+    AbstractVectorSymbology, SymbologyType
+} from '../layers/symbology/symbology.model';
+import {Provenance} from '../provenance/provenance.model';
+import {MapService} from '../map/map.service';
+import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
 
 @Injectable()
 export class ProjectService {
@@ -19,6 +27,19 @@ export class ProjectService {
     private projection$: BehaviorSubject<Projection>;
 
     private time$: BehaviorSubject<Time>;
+
+    private layers$: BehaviorSubject<Array<Layer<Symbology>>>;
+    private layerData$: Map<Layer<Symbology>, ReplaySubject<LayerData<any>>>;
+    private layerDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
+    private layerDataSubscriptions: Map<Layer<Symbology>, Subscription>;
+    private layerSymbologyData$: Map<Layer<Symbology>, ReplaySubject<MappingColorizer>>;
+    private layerSymbologyDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
+    private layerSymbologyDataSubscriptions: Map<Layer<Symbology>, Subscription>;
+    private layerProvenanceData$: Map<Layer<Symbology>, ReplaySubject<Array<Provenance>>>;
+    private layerProvenanceDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
+    private layerProvenanceDataSubscriptions: Map<Layer<Symbology>, Subscription>;
+
+    private newLayer$: Subject<void>;
 
     private plots$: BehaviorSubject<Array<Plot>>;
     private plotData$: Map<Plot, ReplaySubject<PlotData>>;
@@ -28,7 +49,8 @@ export class ProjectService {
 
     constructor(private config: Config,
                 private notificationService: NotificationService,
-                private mappingQueryService: MappingQueryService) {
+                private mappingQueryService: MappingQueryService,
+                private mapservice: MapService) {
         this.project$ = new BehaviorSubject(this.createDefaultProject());
 
         this.projection$ = new BehaviorSubject(this.project$.value.projection);
@@ -40,6 +62,18 @@ export class ProjectService {
         this.plotSubscriptions = new Map();
         this.newPlot$ = new Subject<void>();
 
+        this.layers$ = new BehaviorSubject([]);
+        this.layerData$ = new Map();
+        this.layerDataState$ = new Map();
+        this.layerDataSubscriptions = new Map();
+        this.layerSymbologyData$ = new Map();
+        this.layerSymbologyDataState$ = new Map();
+        this.layerSymbologyDataSubscriptions = new Map();
+        this.layerProvenanceData$ = new Map();
+        this.layerProvenanceDataState$ = new Map();
+        this.layerProvenanceDataSubscriptions = new Map();
+        this.newLayer$ = new Subject<void>();
+
         this.project$.subscribe(project => {
             if (project.projection !== this.projection$.value) {
                 this.projection$.next(project.projection);
@@ -49,6 +83,9 @@ export class ProjectService {
             }
             if (project.plots !== this.plots$.getValue()) {
                 this.plots$.next(project.plots);
+            }
+            if (project.layers !== this.layers$.getValue()) {
+                this.layers$.next(project.layers);
             }
         });
 
@@ -92,7 +129,14 @@ export class ProjectService {
         }
     }
 
-    private changeProjectConfig(config: {name?: string, projection?: Projection, time?: Time, plots?: Array<Plot>}) {
+    private changeProjectConfig(config: {
+        name?: string,
+        projection?: Projection,
+        time?: Time,
+        plots?: Array<Plot>,
+        layers?: Array<Layer<Symbology>>
+    }) {
+
         const project = this.project$.value;
 
         this.project$.next(new Project({
@@ -100,6 +144,7 @@ export class ProjectService {
             projection: config.projection ? config.projection : project.projection,
             time: config.time ? config.time : project.time,
             plots: config.plots ? config.plots : project.plots,
+            layers: config.layers ? config.layers: project.layers,
         }));
     }
 
@@ -299,6 +344,336 @@ export class ProjectService {
 
         this.plotData$.set(newPlot, this.plotData$.get(plot));
         this.plotData$.delete(plot);
+    }
+
+    /**
+     * Add a plot to the project.
+     * @param layer
+     * @param notify
+     */
+    addLayer(layer: Layer<Symbology>, notify = true) {
+        // each layer has data. The type depends on the layer type
+        const layerDataLoadingState$ = new ReplaySubject(1);
+        const layerData$ = new ReplaySubject(1);
+        let layerDataSub: Subscription;
+        switch(layer.getLayerType()) {
+            case 'raster':
+                layerDataSub = this.createRasterLayerDataSubscription(
+                    layer as RasterLayer<RasterSymbology>, layerData$, layerDataLoadingState$
+                );
+                break;
+            default :
+                layerDataSub = this.createVectorLayerDataSubscription(
+                    layer as VectorLayer<AbstractVectorSymbology>, layerData$, layerDataLoadingState$
+                );
+        }
+        this.layerDataSubscriptions.set(layer, layerDataSub);
+        this.layerDataState$.set(layer, layerDataLoadingState$);
+        this.layerData$.set(layer, layerData$);
+
+        if(layer.getLayerType() === 'raster') {
+            const symbologyDataLoadingState$ = new ReplaySubject(1);
+            const symbologyData$ = new ReplaySubject(1);
+            const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
+                symbologyData$,
+                symbologyDataLoadingState$
+            );
+            this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSybscription);
+            this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
+            this.layerSymbologyData$.set(layer, symbologyData$);
+        }
+
+        // each layer has provenance...
+        const provenanceDataLoadingState$ = new ReplaySubject(1);
+        const provenanceData$ = new ReplaySubject(1);
+        const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
+        this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
+        this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
+        this.layerProvenanceData$.set(layer, provenanceData$);
+
+        const currentLayers = this.getProject().layers;
+        this.changeProjectConfig({
+            layers: [layer, ...currentLayers]
+        });
+
+        if (notify) {
+            this.newLayer$.next();
+        }
+
+        console.log("ADD LAYER", layer, this);
+    }
+
+    /**
+     * Remove a plot from the project.
+     * @param layer
+     */
+    removeLayer(layer: Layer<Symbology>) {
+        const layers = this.getProject().layers;
+        const layerIndex = layers.indexOf(layer);
+        if (layerIndex >= 0) {
+            layers.splice(layerIndex, 1);
+            this.changeProjectConfig({
+                layers: layers
+            });
+
+            this.layerDataSubscriptions.get(layer).unsubscribe();
+            this.layerDataSubscriptions.delete(layer);
+            this.layerDataState$.get(layer).complete();
+            this.layerDataState$.delete(layer);
+            this.layerData$.get(layer).complete();
+            this.layerData$.delete(layer);
+
+            this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
+            this.layerProvenanceDataSubscriptions.delete(layer);
+            this.layerProvenanceDataState$.get(layer).complete();
+            this.layerProvenanceDataState$.delete(layer);
+            this.layerProvenanceData$.get(layer).complete();
+            this.layerProvenanceData$.delete(layer);
+
+            const lsdsub = this.layerSymbologyDataSubscriptions.get(layer);
+            if(lsdsub) lsdsub.unsubscribe();
+            this.layerSymbologyDataSubscriptions.delete(layer);
+            const lsds = this.layerSymbologyDataState$.get(layer);
+            if(lsds) lsds.complete();
+            this.layerSymbologyDataState$.delete(layer);
+            const lsd = this.layerSymbologyData$.get(layer);
+            if(lsd) lsd.complete();
+            this.layerSymbologyData$.delete(layer);
+        }
+    }
+
+
+
+    reloadLayerData(layer: Layer<Symbology>) {
+        this.layerData$.get(layer).next(undefined); // send empty data
+
+        this.layerDataSubscriptions.get(layer).unsubscribe();
+        this.layerDataSubscriptions.delete(layer);
+
+        switch(layer.getLayerType()) {
+            case 'raster': {
+                this.layerDataSubscriptions.set(layer,
+                    this.createRasterLayerDataSubscription(
+                        layer as RasterLayer<RasterSymbology>,
+                        (this.layerData$.get(layer) as Observer<RasterData>),
+                        this.layerDataState$.get(layer)
+                    )
+                );
+                break;
+            }
+            case 'vector': {
+                this.layerDataSubscriptions.set(layer,
+                    this.createVectorLayerDataSubscription(
+                        layer as VectorLayer<AbstractVectorSymbology>,
+                        (this.layerData$.get(layer) as Observer<VectorData>),
+                        this.layerDataState$.get(layer)
+                    )
+                );
+                break;
+            }
+
+        }
+    }
+
+    /**
+     * Reload everything for the layer manually (e.g. on error).
+     * @param layer
+     */
+    reloadLayer(layer: Layer<Symbology>) {
+        this.layerData$.get(layer).next(undefined); // send empty data
+
+        this.layerDataSubscriptions.get(layer).unsubscribe();
+        this.layerDataSubscriptions.delete(layer);
+
+        this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
+        this.layerProvenanceDataSubscriptions.delete(layer);
+
+        if(this.layerSymbologyDataSubscriptions.has(layer)) {
+            this.layerSymbologyDataSubscriptions.get(layer).unsubscribe();
+            this.layerSymbologyDataSubscriptions.delete(layer);
+        }
+
+        switch(layer.getLayerType()) {
+            case 'raster': {
+                this.layerDataSubscriptions.set(layer,
+                    this.createRasterLayerDataSubscription(
+                        layer as RasterLayer<RasterSymbology>,
+                        (this.layerData$.get(layer) as Observer<RasterData>),
+                        this.layerDataState$.get(layer)
+                    )
+                );
+                this.layerSymbologyDataSubscriptions.set(layer,
+                    this.createRasterLayerSymbologyDataSubscription(
+                        layer as RasterLayer<RasterSymbology>,
+                        this.layerSymbologyData$.get(layer) as Observer<MappingColorizer>,
+                        this.layerSymbologyDataState$.get(layer)));
+                break;
+            }
+            case 'vector': {
+                this.layerDataSubscriptions.set(layer,
+                    this.createVectorLayerDataSubscription(
+                        layer as VectorLayer<AbstractVectorSymbology>,
+                        (this.layerData$.get(layer) as Observer<VectorData>),
+                        this.layerDataState$.get(layer)
+                    )
+                );
+                break;
+            }
+
+        }
+
+        this.layerProvenanceDataSubscriptions.set(layer,
+            this.createLayerProvenanceSubscription(
+                layer,
+                this.layerProvenanceData$.get(layer),
+                this.layerProvenanceDataState$.get(layer)
+            )
+        );
+    }
+
+
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     * @param layer
+     * @param data$
+     * @param loadingState$
+     * @returns {Subscription}
+     */
+    private createRasterLayerDataSubscription(layer: RasterLayer<RasterSymbology>, data$: Observer<RasterData>,
+                                        loadingState$: Observer<LoadingState>): Subscription {
+        return Observable.combineLatest(
+            this.getTimeStream(),
+            this.getProjectionStream(),
+        )
+            .do(() => loadingState$.next(LoadingState.LOADING))
+            .map(([time, projection]) => {
+                return new RasterData(time, projection,
+                    this.mappingQueryService.getWMSQueryUrl({
+                        operator: layer.operator,
+                        time: time,
+                        projection: projection
+                    })
+                );
+            })
+            .do(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            )
+            .subscribe(
+                data => data$.next(data),
+                error => error // ignore error
+            );
+    }
+
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     * @param layer
+     * @param data$
+     * @param loadingState$
+     * @returns {Subscription}
+     */
+    private createVectorLayerDataSubscription(layer: VectorLayer<AbstractVectorSymbology>, data$: Observer<VectorData>,
+                                        loadingState$: Observer<LoadingState>): Subscription {
+        return Observable.combineLatest(
+            this.getTimeStream(),
+            this.getProjectionStream(),
+            this.mapservice.getViewportSizeStream()
+        )
+            .do(() => loadingState$.next(LoadingState.LOADING))
+            .switchMap(([time, projection, viewportSize]) => {
+                const requestExtent: [number, number, number, number] = [0,0,0,0];
+
+                return this.mappingQueryService.getWFSData({
+                    operator: layer.operator,
+                    time: time,
+                    projection: projection,
+                    clustered: layer.symbology.getSymbologyType() === SymbologyType.CLUSTERED_POINT,
+                    outputFormat: WFSOutputFormats.JSON,
+                    viewportSize: viewportSize
+                }).map(x => VectorData.olParse(time, projection, requestExtent, x));
+            })
+            .do(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            )
+            .subscribe(
+                data => data$.next(data),
+                error => error // ignore error
+            );
+    }
+
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     * @param layer
+     * @param provenance$
+     * @param loadingState$
+     * @returns {Subscription}
+     */
+    private createLayerProvenanceSubscription(layer: Layer<Symbology>, provenance$: Observer<{}>,
+                                        loadingState$: Observer<LoadingState>): Subscription {
+        return Observable.combineLatest(this.getTimeStream(), this.getProjectionStream())
+            .do(() => loadingState$.next(LoadingState.LOADING))
+            .switchMap(([time, projection]) => {
+                return this.mappingQueryService.getProvenance({
+                    operator: layer.operator,
+                    time: time,
+                    projection: projection,
+                    extent: projection.getExtent(),
+                });
+            })
+            .do(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            )
+            .subscribe(
+                data => provenance$.next(data),
+                error => error // ignore error
+            );
+    }
+
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     * @param layer
+     * @param data$
+     * @param loadingState$
+     * @returns {Subscription}
+     */
+    private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<RasterSymbology>,
+                                                       data$: Observer<MappingColorizer>,
+                                                       loadingState$: Observer<LoadingState>
+    ): Subscription{
+        return Observable.combineLatest(
+            this.getTimeStream(),
+            this.getProjectionStream(),
+        )
+            .do(() => loadingState$.next(LoadingState.LOADING))
+            .switchMap(([time, projection]) => {
+                return this.mappingQueryService.getColorizer(
+                        layer.operator,
+                        time,
+                        projection
+                    );
+            })
+            .do(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            )
+            .subscribe(
+                data => data$.next(data),
+                error => error // ignore error
+            );
     }
 
 }

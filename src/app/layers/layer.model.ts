@@ -7,6 +7,76 @@ import {
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
 import * as ol from 'openlayers';
+import {Time} from '../time/time.model';
+import {Projection} from '../operators/projection.model';
+
+export abstract class LayerData<D>{
+    type: LayerType;
+    _time: Time;
+    _projection: Projection;
+
+    constructor(type: LayerType, time: Time, projection: Projection) {
+        this.type = type;
+        this._projection = projection;
+        this._time = time;
+    }
+
+    get time(): Time {
+        return this._time;
+    }
+
+    get projection(): Projection {
+        return this._projection;
+    }
+
+    abstract get data(): D;
+}
+
+export class VectorData extends LayerData<Array<ol.Feature>> {
+    _data: Array<ol.Feature>;
+    _extent: [number, number, number, number];
+
+    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]){
+        super('vector', time, projection);
+        this._data = data;
+        this._extent = extent;
+    }
+
+    static olParse(
+        time: Time,
+        projection: Projection,
+        extent: [number, number, number, number],
+        source: (Document | Node | GlobalObject | string),
+        opt_options?: olx.format.ReadOptions): VectorData
+    {
+        return new VectorData(time, projection, new ol.format.GeoJSON().readFeatures(source, opt_options), extent);
+    }
+
+    get data(): Array<ol.Feature> {
+        return this._data;
+    }
+
+    get extent(): [number, number, number, number] {
+        return this._extent;
+    }
+}
+
+export class RasterData extends LayerData<string> {
+    _data: string;
+
+    constructor(
+        time: Time,
+        projection: Projection,
+        data: string)
+    {
+        super('raster', time, projection);
+        this._data = data;
+    }
+
+    get data(): string {
+        return this._data;
+    }
+}
 
 export interface VectorLayerData {
     data$: Observable<Array<ol.Feature>>;
@@ -86,7 +156,7 @@ export abstract class Layer<S extends Symbology> {
         return this._provenance.provenance$;
     }
 
-    protected abstract getLayerType(): LayerType;
+    abstract getLayerType(): LayerType;
 
     /**
      * Retrieve the loading state of the layer.

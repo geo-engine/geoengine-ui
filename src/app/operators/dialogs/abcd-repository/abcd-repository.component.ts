@@ -14,6 +14,7 @@ import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
 import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
+import {ProjectService} from '../../../project/project.service';
 
 type Grouped<T> = Iterable<Group<T>>;
 interface Group<T> {
@@ -36,7 +37,8 @@ export class AbcdRepositoryComponent {
         private mappingQueryService: MappingQueryService,
         private layerService: LayerService,
         private userService: UserService,
-        private randomColorService: RandomColorService
+        private randomColorService: RandomColorService,
+        private projectService: ProjectService,
     ) {
         this.groups = this.userService.getAbcdArchivesStream().map(archives => {
             let groups: {[groupname: string]: Group<AbcdArchive>} = {};
@@ -121,6 +123,8 @@ export class AbcdRepositoryComponent {
                 clustered: clustered,
             });
             this.layerService.addLayer(layer);
+            this.projectService.addLayer(layer);
         });
+
     }
 }

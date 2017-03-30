@@ -181,10 +181,11 @@ export class MappingQueryService {
         time?: Time,
         projection?: Projection,
         outputFormat: WFSOutputFormat,
-    }): Promise<string> {
+        viewportSize: ViewportSize,
+        clustered: boolean
+    }): Observable<string> {
         return this.http.get(this.getWFSQueryUrl(config))
-            .toPromise()
-            .then(response => response.text());
+            .map(response => response.text());
     }
 
     /**
@@ -425,7 +426,7 @@ export class MappingQueryService {
 
     getColorizer(operator: Operator,
                  time: Time,
-                 projection: Projection): Promise<MappingColorizer> {
+                 projection: Projection): Observable<MappingColorizer> {
 
         const request = new MappingRequestParameters({
             service: 'WMS',
@@ -457,7 +458,6 @@ export class MappingQueryService {
                 }
                 return c;
             })
-            .toPromise();
     }
 
     getColorizerStream(operator: Operator): Observable<MappingColorizer> {

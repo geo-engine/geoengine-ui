@@ -83,7 +83,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 pointOperators = vectorLayer.operator.getSources(ResultTypes.POINTS).toArray();
                 operatorType = vectorLayer.operator.operatorType as RScriptType;
             } else if (this.editable instanceof RasterLayer) {
-                const rasterLayer: RasterLayer<RasterSymbology> = this.editable;
+                const rasterLayer: RasterLayer<RasterSymbology> = this.editable as RasterLayer<RasterSymbology>;
                 name = rasterLayer.name;
                 resultType = rasterLayer.operator.resultType;
                 rasterOperators = rasterLayer.operator.getSources(ResultTypes.RASTER).toArray();
