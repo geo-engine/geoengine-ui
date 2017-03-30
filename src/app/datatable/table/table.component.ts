@@ -220,7 +220,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 if (!this.selected[i] && selectedContainsId) {
 
                     let newOffset = i * this.elementHeight;
-
                     /* Not necessary. Scroll-Offset is automatically capped.
                     let tableHeight = (this.data.length + 1) * this.elementHeight;
                     console.log(newOffset, this.containerHeight, tableHeight);
@@ -571,10 +570,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 numberOfTopRows = 0;
             }
 
+
             this.firstDisplay = numberOfTopRows;
 
-            this.offsetTop = numberOfTopRows * this.elementHeight;
             this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+            this.offsetTop = numberOfTopRows * this.elementHeight;
+
             // this.offsetBottom - (this.offsetTop - newOffsetTop);
         }
     }
