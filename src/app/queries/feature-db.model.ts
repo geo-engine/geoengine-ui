@@ -60,7 +60,12 @@ export class FeatureDBServiceUploadParameters extends FeatureDBServiceRequestPar
                 crs: config.crs.getCode(),
                 query: config.query,
                 type: config.type,
-                bbox: config.crs.getExtent().join(','),
+                bbox: config.crs.getCode() === 'EPSG:4326' ?
+                    config.crs.getExtent()[1]
+                        + ',' + config.crs.getExtent()[0] + ','
+                        + config.crs.getExtent()[3] + ','
+                        + config.crs.getExtent()[2]
+                    : config.crs.getExtent().join(','),
                 time: TimeInterval.maximal().asRequestString(),
             },
         });
