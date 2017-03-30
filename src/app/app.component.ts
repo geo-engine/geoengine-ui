@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     layerListVisible$: Observable<boolean>;
     layerDetailViewVisible$: Observable<boolean>;
 
+    private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
 
@@ -74,19 +75,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        const windowHeight$ = new BehaviorSubject(window.innerHeight);
-        Observable.fromEvent(window, 'resize')
-            .map(_ => window.innerHeight)
-            .subscribe(windowHeight$);
-
-        const remainingHeight$ = windowHeight$;
-        /*.map(
-         height => Math.max(height - LayoutService.getToolbarHeightPx(), 0)
-         );*/
-
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(remainingHeight$)
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$)
             .do(() => this.mapComponent.resize());
-        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(remainingHeight$);
+        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngAfterViewInit() {
@@ -128,6 +119,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTabIndex(index: number) {
         this.layoutService.setLayerDetailViewTabIndex(index);
         this.layoutService.setLayerDetailViewVisibility(true);
+    }
+
+    @HostListener('window:resize')
+    private windowHeight() {
+        this.windowHeight$.next(window.innerHeight);
     }
 
     @HostListener('window:message', ['$event.data'])
