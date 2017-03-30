@@ -134,7 +134,7 @@ export class CsvSourceType extends OperatorType {
                 const dataPart = data.substring(commaPosition + 1, data.length);
 
                 const headerPart = (this.parameters.header as Array<string>)
-                    .join(this.parameters.fieldSeparator);
+                    .join(this.parameters.fieldSeparator) + '\n';
 
                 data = uriPart + headerPart + dataPart;
             }
