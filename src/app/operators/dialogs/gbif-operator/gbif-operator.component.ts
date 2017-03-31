@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../../config.service';
@@ -20,6 +20,7 @@ import {Http} from '@angular/http';
 import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
+import {MdAutocompleteTrigger} from '@angular/material';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     const errors: {
@@ -56,6 +57,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     Mode = Mode;
 
     form: FormGroup;
+
+    @ViewChild(MdAutocompleteTrigger) autoCompleteTrigger: MdAutocompleteTrigger;
 
     mode$ = new BehaviorSubject(1);
     loading$ = new BehaviorSubject(false);
@@ -175,6 +178,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 totalCount += result.count;
             }
         });
+
+        this.autoCompleteTrigger.closePanel();
     }
 
     reset() {
