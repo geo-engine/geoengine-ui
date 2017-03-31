@@ -310,6 +310,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         this.layerService.getSelectedLayerStream().subscribe(layer => {
+            select.getFeatures().forEach((feature) => {
+                feature.setStyle(undefined);
+            });
             select.getFeatures().clear();
             if (layer && select) {
                 selectedOlLayers = this.contentChildren.filter(
@@ -317,9 +320,9 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
                 ).map(
                     olLayerComponent => olLayerComponent.mapLayer
                 );
-                (select as any).setActive(true);
+                select.setActive(true);
             } else {
-                (select as any).setActive(false);
+                select.setActive(false);
             }
         });
 
