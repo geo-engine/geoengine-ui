@@ -80,7 +80,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         this.subscriptions.push(
             this.form.controls['rangeType'].valueChanges
-                .filter(rangeType => rangeType === 'custom')
                 .subscribe(() => this.form.controls['range'].updateValueAndValidity())
         );
 
