@@ -82,7 +82,7 @@ export class LegendaryVectorComponent<S extends SimpleVectorSymbology>
 @Component({
     selector: 'wave-legendary-raster',
     template: `
-        <span>opacity: {{symbology.opacity}}</span>
+        <span>No legend available</span>
         `,
     styles: [``],
     inputs: ['symbology'],

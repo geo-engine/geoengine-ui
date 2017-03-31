@@ -104,10 +104,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     private scrollLeftBefore = 0;
     // tableHeight: number;
 
-    private containerHeight = 0;
     public offsetTop = 0;
     public offsetBottom = 0;
-    private elementHeight = 48;
+    private elementHeight = 42;
 
 
     public displayItemCount = 40;
@@ -169,7 +168,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 return {
                     id: x.getId(),
                     properties: x.getProperties(),
-                }
+                };
             });
 
             // only needs to be called once for each "data"
@@ -214,35 +213,25 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Get the height of the container and save it to variable
      */
     ngAfterViewInit() {
-        this.containerHeight = this.container.nativeElement.offsetHeight;
-        // console.log(this.containerHeight);
-
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
-            const tableHeadHeight = this.elementHeight;
 
             for (let i = 0; i < this.data.length; i++) {
                 const selectedContainsId = x.selected.contains(this.data[i].id);
-                if(!this.selected[i] && selectedContainsId){
+                if (!this.selected[i] && selectedContainsId) {
 
-                    let numberOfTopRows = i - 1;
-
-                    if (numberOfTopRows + this.displayItemCount > this.data.length) {
-                        numberOfTopRows = this.data.length - this.displayItemCount;
+                    let newOffset = i * this.elementHeight;
+                    /* Not necessary. Scroll-Offset is automatically capped.
+                    let tableHeight = (this.data.length + 1) * this.elementHeight;
+                    console.log(newOffset, this.containerHeight, tableHeight);
+                    if (newOffset + this.elementHeight + this.containerHeight > tableHeight) {
+                        newOffset = tableHeight - this.containerHeight;
                     }
-                    if (numberOfTopRows < 0) {
-                        numberOfTopRows = 0;
-                    }
-                    this.firstDisplay = numberOfTopRows;
+                    if (newOffset < 0) {
+                        newOffset = 0;
+                    }*/
 
-                    //console.log('a', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
-
-                    this.offsetTop = numberOfTopRows * this.elementHeight;
-                    this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
-                    //console.log('b', i, numberOfTopRows, this.offsetTop, this.offsetBottom, this.elementHeight, this.displayItemCount, this.elementHeight);
-
-                    const st = (numberOfTopRows * this.elementHeight) + tableHeadHeight;
-                    //console.log('c', tableHeadHeight, st);
-                    this.container.nativeElement.scrollTop = st;
+                    this.container.nativeElement.scrollTop = newOffset;
+                    // console.log(newOffset, this.container.nativeElement.scrollTop);
                 }
 
                 this.selected[i] = selectedContainsId;
@@ -288,16 +277,14 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
                     const data = Observable.combineLatest(
                         vectorLayer.data.data$, this.mapService.getViewportSizeStream()).map(([d, v]) => {
-                        //console.log('d,v', d, v);
                         return d.filter(x => {
-                            //console.log('x', x);
                             const xe = x.getGeometry().getExtent();
                             const ve = v.extent;
                             const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); //todo not only point
                             // console.log(ve, x.getGeometry(), int);
                             return int;
                         });
-                        //return d;
+                        // return d;
                     });
                     return {
                         data$: data,
@@ -504,7 +491,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
 
     public updateContainer() {
-        this.containerHeight = this.container.nativeElement.offsetHeight;
+        this.height = this.container.nativeElement.offsetHeight;
         // console.log("new height: "+this.containerHeight);
     }
 
@@ -520,8 +507,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
      */
     public updateScroll() {
-        //console.log(this.scrollTopBefore - this.scrollTop);
-
         this.scrollTopBefore = this.scrollTop;
         this.scrollLeftBefore = this.scrollLeft;
 
@@ -573,7 +558,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         let tableHeadHeight = this.elementHeight;
 
         // Scrolling down
-        if (this.scrollTop + this.containerHeight >
+        if (this.scrollTop + this.height >
             tableHeadHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
 
             let numberOfTopRows = Math.floor((this.scrollTop - tableHeadHeight) / this.elementHeight) - this.displayOffsetMin;
@@ -585,10 +570,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 numberOfTopRows = 0;
             }
 
+
             this.firstDisplay = numberOfTopRows;
 
-            this.offsetTop = numberOfTopRows * this.elementHeight;
             this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+            this.offsetTop = numberOfTopRows * this.elementHeight;
+
             // this.offsetBottom - (this.offsetTop - newOffsetTop);
         }
     }
@@ -603,7 +590,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         // Scrolling up
         if (this.scrollTop < tableHeadHeight + (this.firstDisplay + this.displayOffsetMin) * this.elementHeight) {
 
-            let numberOfTopRows = Math.floor((this.scrollTop + this.containerHeight) /
+            let numberOfTopRows = Math.floor((this.scrollTop + this.height) /
                     this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
 
             if (numberOfTopRows + this.displayItemCount > this.data.length) {

@@ -279,7 +279,7 @@ export class LayoutService {
             layerListVisible: this.getLayerListVisibility(),
             layerDetailViewVisible: this.getLayerDetailViewVisibility(),
             layerDetailViewTabIndex: this.getLayerDetailViewTabIndex(),
-            layerDetailViewHeightPercentage: this.layerDetailViewHeightPercentage$.value,
+            layerDetailViewHeightPercentage: this.layerDetailViewHeightPercentage$.getValue(),
         };
     }
 
@@ -304,10 +304,18 @@ export class LayoutService {
     }
 
     setLayoutDict(dict: LayoutDict) {
-        this.setLayerListVisibility(dict.layerListVisible);
-        this.setLayerDetailViewVisibility(dict.layerDetailViewVisible);
-        this.setLayerDetailViewTabIndex(dict.layerDetailViewTabIndex);
-        this.setLayerDetailViewHeightPercentage(dict.layerDetailViewHeightPercentage);
+        if (dict.layerListVisible) {
+            this.setLayerListVisibility(dict.layerListVisible);
+        }
+        if (dict.layerDetailViewVisible) {
+            this.setLayerDetailViewVisibility(dict.layerDetailViewVisible);
+        }
+        if (dict.layerDetailViewTabIndex) {
+            this.setLayerDetailViewTabIndex(dict.layerDetailViewTabIndex);
+        }
+        if (dict.layerDetailViewHeightPercentage) {
+            this.setLayerDetailViewHeightPercentage(dict.layerDetailViewHeightPercentage);
+        }
     }
 
 }

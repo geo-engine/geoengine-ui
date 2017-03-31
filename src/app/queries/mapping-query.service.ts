@@ -482,7 +482,12 @@ export class MappingQueryService {
                 query: encodeURIComponent(config.operator.getProjectedOperator(config.projection).toQueryJSON()),
                 crs: config.projection.getCode(),
                 time: config.time.asRequestString(),
-                bbox: config.extent.join(','),
+                bbox: config.projection.getCode() === 'EPSG:4326' ?
+                    config.projection.getExtent()[1]
+                    + ',' + config.projection.getExtent()[0] + ','
+                    + config.projection.getExtent()[3] + ','
+                    + config.projection.getExtent()[2]
+                    : config.projection.getExtent().join(','),
                 type: config.operator.resultType.getCode(),
             },
         });

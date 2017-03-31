@@ -1,13 +1,13 @@
 {
   "name": "wave",
-  "version": "0.1.1",
+  "version": "2.0.1",
   "license": "MIT",
   "angular-cli": {},
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
-    "build-production": "ng build --prod --aot",
+    "build-production": "ng build --prod --aot=false",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
