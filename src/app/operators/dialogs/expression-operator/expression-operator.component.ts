@@ -9,7 +9,7 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterSymbology, MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WaveValidators} from '../../../util/form.validators';
 
@@ -169,7 +169,9 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         this.layerService.addLayer(new RasterLayer({
             name: name,
             operator: operator,
-            symbology: new RasterSymbology({ unit: unit }),
+            symbology: new MappingColorizerRasterSymbology({unit: unit},
+                this.mappingQueryService.getColorizerStream(operator)
+            ),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         }));
 
