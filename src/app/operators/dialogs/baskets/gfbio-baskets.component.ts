@@ -8,9 +8,10 @@ import {UserService} from '../../../users/user.service';
 @Component({
     selector: 'wave-gfbio-baskets',
     template: `
+    <wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
     <div class="container" layout="column">
         <md-toolbar>
-          <label>Basket: </label>
+          <label>Basket:&nbsp;</label>
             <md-select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
                 <md-option *ngFor='let basket of baskets' [value]='basket'> 
                     {{basket.timestamp}} - {{basket.query}}
