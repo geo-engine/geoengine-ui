@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, Input} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
@@ -13,7 +13,7 @@ import {MdDialogRef} from '@angular/material';
  * Displays an audio-player with a playlist.
  * The component receives an array of urls to audio-files (audioURLS) and the id of the audio to play first (currentAudio) as inputs.
  */
-export class DialogAudioComponent {
+export class DialogAudioComponent implements AfterViewInit{
 
     /**
      * Input: An array of audio-urls to display in the dialog
@@ -30,12 +30,23 @@ export class DialogAudioComponent {
     // audioNames: string[];
     public autoPlay: boolean;
 
+    private domNode;
+
     /**
      * Sets up all variables
      * @param dialogRef reference to this Dialog-Type
      */
-    constructor(public dialogRef: MdDialogRef<DialogAudioComponent>) {
+    constructor(public dialogRef: MdDialogRef<DialogAudioComponent>, @Inject(ElementRef) elementRef: ElementRef) {
         this.autoPlay = false;
+        this.domNode = elementRef.nativeElement;
+    }
+
+    /**
+     * Hack to set Dialog's parent's position to absolute
+     */
+    ngAfterViewInit() {
+        // console.log(this.domNode.parentNode.parentNode.parentNode.parentNode);
+        this.domNode.parentNode.parentNode.parentNode.parentElement.style.position = 'absolute';
     }
 
     /**

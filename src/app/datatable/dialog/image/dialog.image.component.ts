@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, ElementRef, Inject, Input, AfterViewInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
@@ -13,7 +13,7 @@ import {MdDialogRef} from '@angular/material';
  * Displays an image-gallery. One image is shown at a time with two buttons to the previous and next images in the list.
  * The component receives an array of urls to images (imageURLS) and the id of the image to show first (currentImage) as inputs.
  */
-export class DialogImageComponent {
+export class DialogImageComponent implements AfterViewInit {
 
     /**
      * Input: An array of image-urls to display in the dialog
@@ -31,12 +31,24 @@ export class DialogImageComponent {
 
     public imageFullSize: boolean;
 
+    private domNode;
+
     /**
      * Sets up all variables
      * @param dialogRef reference to this Dialog-Type
      */
-    constructor(public dialogRef: MdDialogRef<DialogImageComponent>) {
+    constructor(public dialogRef: MdDialogRef<DialogImageComponent>, @Inject(ElementRef) elementRef: ElementRef) {
         this.loading = true;
+
+        this.domNode = elementRef.nativeElement;
+    }
+
+    /**
+     * Hack to set Dialog's parent's position to absolute
+     */
+    ngAfterViewInit() {
+        // console.log(this.domNode.parentNode.parentNode.parentNode.parentNode);
+        this.domNode.parentNode.parentNode.parentNode.parentElement.style.position = 'absolute';
     }
 
     /**
