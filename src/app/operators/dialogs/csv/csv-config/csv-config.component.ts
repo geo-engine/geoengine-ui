@@ -13,6 +13,7 @@ import {MdSlideToggleChange} from '@angular/material';
 import * as Papa from 'papaparse';
 import {Projections, Projection} from '../../../projection.model';
 import {UserService} from '../../../../users/user.service';
+import { IntervalFormat } from '../interval.enum';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -32,20 +33,39 @@ export class CSV {
         // public isSpatialProperties:boolean; Laut Folie optional, nach Absprache nicht.
     public xCol: number;
     public yCol: number;
-    public spatialRefSys: Projection/**:Typ Einfügen(Enum)*/;
+    public spatialRefSys: Projection;
     public coordForm: string/**:Typ Einfügen(Enum)*/;
     /**Temporal Properties
      * */
     public isTime: boolean;
-    public intervalType: string;
+    public intervalType: IntervalFormat;
     /**:element of {[Start, +inf), [Start, End], [Start, Start+Duration], (-inf, End]}*/
     public startFormat: string;
     public startCol: number;
     public endFormat: string;
     public endCol: number;
+    public constDur: number;
 
     public content: string;
     public isNumberArr: boolean[];
+
+    get intervalString(): string {
+        if (!this.isTime) {
+            return 'none';
+        }
+        switch (this.intervalType) {
+            case IntervalFormat.StartInf:
+                return 'start+inf';
+            case IntervalFormat.StartEnd:
+                return 'start+end';
+            case IntervalFormat.StartDur:
+                return 'start+duration';
+            case IntervalFormat.StartConst:
+                return 'start+constant';
+            default:
+                return 'none';
+        }
+    }
 }
 
 @Component({
@@ -56,6 +76,7 @@ export class CSV {
 })
 export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
+    IntervalFormat = IntervalFormat;
     Projections = Projections;
 
     formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -90,6 +111,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {display: 'yyyy-MM-ddTHH:mmZ', value: '%Y-%m-%dT%H:%MZ'},
         {display: 'dd-MM-yyyy HH:mm:ss', value: '%d-%m-%Y %H:%M:%S'},
         {display: 'dd.MM.yyyy HH:mm:ss', value: '%d.%m.%Y %H:%M:%S'},
+        {display: 'yyyy-MM-dd HH:mm:ssZ', value: '%Y-%m-%d %H:%M:%SZ'},
+        {display: 'yyyy-MM-dd HH:mmZ', value: '%Y-%m-%d %H:%MZ'},
         {display: 'dd.MM.yyyy', value: '%d.%m.%Y'},
         {display: 'yyyy-MM-dd', value: '%Y-%m-%d'},
     ];
@@ -98,10 +121,11 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         // {display: 'hours', value: 'h'},
         {display: 'seconds', value: 'seconds'},
     ];
-    intervalTypes: Array<{display: string, value: string}> = [
-        {display: '[Start,+inf)', value: 'start+inf'},
-        {display: '[Start, End]', value: 'start+end'},
-        {display: '[Start, Start+Duration]', value: 'start+duration'},
+    intervalTypes: Array<{display: string, value: IntervalFormat}> = [
+        {display: '[Start,+inf)', value: IntervalFormat.StartInf},
+        {display: '[Start, End]', value: IntervalFormat.StartEnd},
+        {display: '[Start, Start+Duration]', value: IntervalFormat.StartDur},
+        {display: '[Start, Start+Constant]', value: IntervalFormat.StartConst},
     ];
 
     decsep: string[] = [',', '.'];
@@ -345,11 +369,11 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     checkColumns(): void {
         // Check if intervalType was changed, set the end time format to a valid time format then.
         if (this.durationFormats.map(format => format.value).indexOf(this.model.endFormat) < 0
-            && this.model.intervalType.indexOf('duration') >= 0) {
+            && (this.model.intervalType === IntervalFormat.StartDur || this.model.intervalType === IntervalFormat.StartConst)) {
             this.model.endFormat = this.durationFormats[0].value;
         }
         if (this.durationFormats.map(format => format.value).indexOf(this.model.endFormat) >= 0
-            && this.model.intervalType.indexOf('duration') < 0) {
+            && (this.model.intervalType !== IntervalFormat.StartDur && this.model.intervalType !== IntervalFormat.StartConst)) {
             this.model.endFormat = this.timeFormats[0].value;
         }
 
@@ -393,67 +417,66 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // Check if table got changed in a way that the new header length doesnt
         // support the start/end col settings. Change them if needed.
-        if (!(this.model.header.length <= 1)) {
-            if (this.model.startCol >= this.model.header.length) {
-                if (this.model.endCol === this.model.header.length - 1) {
-                    this.model.startCol = this.model.header.length - 2;
-                } else {
-                    this.model.startCol = this.model.header.length - 1;
-                }
-            }
-            if (this.model.endCol >= this.model.header.length) {
-                if (this.model.startCol === this.model.header.length - 1) {
-                    this.model.endCol = this.model.header.length - 2;
-                } else {
-                    this.model.endCol = this.model.header.length - 1;
-                }
-            }
-            // If not necessary both are needed, its possible to set every header column to start or end col.
-            // On change to "both needed" check if start col was set to end col and change if necessary.
-            if (this.model.intervalType.indexOf('start') >= 0 && (this.model.intervalType.indexOf('end') >= 0
-                || this.model.intervalType.indexOf('duration') >= 0) && this.model.header.length > 1) {
-                if (this.model.startCol === this.model.endCol) {
-                    if (this.model.startCol === 0) {
-                        this.model.endCol = this.model.startCol + 1;
+        if (this.model.intervalType !== IntervalFormat.StartConst) {
+            if (!(this.model.header.length <= 1)) {
+                if (this.model.startCol >= this.model.header.length) {
+                    if (this.model.endCol === this.model.header.length - 1) {
+                        this.model.startCol = this.model.header.length - 2;
                     } else {
-                        this.model.startCol = this.model.endCol - 1;
+                        this.model.startCol = this.model.header.length - 1;
                     }
                 }
+                if (this.model.endCol >= this.model.header.length) {
+                    if (this.model.startCol === this.model.header.length - 1) {
+                        this.model.endCol = this.model.header.length - 2;
+                    } else {
+                        this.model.endCol = this.model.header.length - 1;
+                    }
+                }
+                // If not necessary both are needed, its possible to set every header column to start or end col.
+                // On change to "both needed" check if start col was set to end col and change if necessary.
+                if ((this.model.intervalType === IntervalFormat.StartEnd
+                    || this.model.intervalType === IntervalFormat.StartDur) && this.model.header.length > 1) {
+                    if (this.model.startCol === this.model.endCol) {
+                        if (this.model.startCol === 0) {
+                            this.model.endCol = this.model.startCol + 1;
+                        } else {
+                            this.model.startCol = this.model.endCol - 1;
+                        }
+                    }
+                }
+            } else {
+                this.model.endCol = this.model.startCol = 0;
             }
-        } else {
-            this.model.endCol = this.model.startCol = 0;
-        }
 
-        if (this.model.header.length >= 2 + ((this.model.intervalType.indexOf('start') >= 0) ? 1 : 0)
-            + ((this.model.intervalType.indexOf('end') >= 0 ||
-            this.model.intervalType.indexOf('duration') >= 0) ? 1 : 0) && this.model.isTime) {
-            // check if temporal properties overlap with spatial properties.
-            let arr = [this.model.xCol, this.model.yCol];
-            if (this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
-                arr.push(this.model.endCol);
-            }
-            if (this.model.intervalType.indexOf('start') >= 0 && arr.indexOf(this.model.startCol) >= 0) {
-                while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol < this.model.header.length - 1) {
-                    this.model.startCol++;
+            if (this.model.header.length >= 3 + ((this.model.intervalType === IntervalFormat.StartEnd ||
+                this.model.intervalType === IntervalFormat.StartDur) ? 1 : 0) && this.model.isTime) {
+                // check if temporal properties overlap with spatial properties.
+                let arr = [this.model.xCol, this.model.yCol];
+                if (this.model.intervalType === IntervalFormat.StartEnd || this.model.intervalType === IntervalFormat.StartDur) {
+                    arr.push(this.model.endCol);
                 }
                 if (arr.indexOf(this.model.startCol) >= 0) {
-                    while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol > 1) {
-                        this.model.startCol--;
+                    while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol < this.model.header.length - 1) {
+                        this.model.startCol++;
+                    }
+                    if (arr.indexOf(this.model.startCol) >= 0) {
+                        while (arr.indexOf(this.model.startCol) >= 0 && this.model.startCol > 1) {
+                            this.model.startCol--;
+                        }
                     }
                 }
-            }
-            arr = [this.model.xCol, this.model.yCol];
-            if (this.model.intervalType.indexOf('start') >= 0) {
+                arr = [this.model.xCol, this.model.yCol];
                 arr.push(this.model.startCol);
-            }
-            if ((this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) &&
-                arr.indexOf(this.model.endCol) >= 0) {
-                while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol < this.model.header.length - 1) {
-                    this.model.endCol++;
-                }
-                if (arr.indexOf(this.model.endCol) >= 0) {
-                    while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol > 1) {
-                        this.model.endCol--;
+                if ((this.model.intervalType === IntervalFormat.StartEnd || this.model.intervalType === IntervalFormat.StartDur) &&
+                    arr.indexOf(this.model.endCol) >= 0) {
+                    while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol < this.model.header.length - 1) {
+                        this.model.endCol++;
+                    }
+                    if (arr.indexOf(this.model.endCol) >= 0) {
+                        while (arr.indexOf(this.model.endCol) >= 0 && this.model.endCol > 1) {
+                            this.model.endCol--;
+                        }
                     }
                 }
             }
@@ -679,10 +702,11 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.model.xCol,
             this.model.yCol
         ];
-        if (this.model.isTime && this.model.intervalType.indexOf('end') >= 0 || this.model.intervalType.indexOf('duration') >= 0) {
+        if (this.model.isTime && this.model.intervalType === IntervalFormat.StartEnd ||
+            this.model.intervalType === IntervalFormat.StartDur) {
             arr.push(this.model.endCol);
         }
-        if (this.model.isTime && this.model.intervalType.indexOf('start') >= 0) {
+        if (this.model.isTime) {
             arr.push(this.model.startCol);
         }
         return arr;

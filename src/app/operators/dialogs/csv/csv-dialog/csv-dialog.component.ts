@@ -14,6 +14,7 @@ import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
 import {ProjectionType} from '../../../types/projection-type.model';
+import {IntervalFormat} from '../interval.enum';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -23,6 +24,7 @@ import {ProjectionType} from '../../../types/projection-type.model';
 })
 export class CsvDialogComponent implements OnInit {
 
+    IntervalFormat = IntervalFormat;
     @ViewChild(CsvConfigComponent) csvConfig;
     data: UploadData = undefined;
     uploading$ = new BehaviorSubject(false);
@@ -41,7 +43,7 @@ export class CsvDialogComponent implements OnInit {
         // TODO: refactor most of this
         const fieldSeparator = config.delimitter;
         const geometry = 'xy';
-        const time = config.isTime ? config.intervalType : 'none';
+        const time = config.intervalString;
         const time1Format = config.startFormat;
         const time2Format = config.endFormat;
         const header = config.isHeaderRow ? 0 : config.header;
