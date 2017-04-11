@@ -16,7 +16,11 @@
 </md-input-container>
 
 <div fxLayout="row" fxLayoutAlign="left center">
-    <md-slide-toggle *ngIf="isTemporalProperties$ | async" [(ngModel)]="model.isTime" (change)="update(false);"></md-slide-toggle>
+    <md-slide-toggle *ngIf="isTemporalProperties$ | async"
+                     [(ngModel)]="model.isTime"
+                     (change)="update(false);"
+                     [disabled]="model.header.length <= 2">
+    </md-slide-toggle>
     <wave-dialog-section-heading [title]="dialogTitle" [subtitle]="subtitleDescription"></wave-dialog-section-heading>
 </div>
 <!-- First page -->
@@ -105,9 +109,9 @@
     <div fxLayout="column" fxLayoutGap="1rem">
         <div class="longitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.xCoordinateName}}-Coordinate column"
-                       name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
+                       name="xCoord" (change)="changeXCol($event)" [(ngModel)]="model.xCol">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
-                    <md-option [disabled]="i === (yColumn$ | async)" [value]="i">
+                    <md-option [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
                         </template>
@@ -132,9 +136,9 @@
     <div fxLayout="column" fxLayoutGap="1rem">
         <div class="latitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.yCoordinateName}}-Coordinate column"
-                       name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
+                       name="yCoord" (change)="changeYCol($event)" [(ngModel)]="model.yCol">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
-                    <md-option [disabled]="i === (xColumn$ | async)" [value]="i">
+                    <md-option [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
                         </template>
@@ -180,13 +184,13 @@
     <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
         <div [ngClass]="{startSelector: model.isTime}">
             <md-select placeholder="Start column"
-                       name="startCol" (change)="update(false)"
+                       name="startCol" (change)="changeStartCol($event)"
                        [(ngModel)]="model.startCol"
                        [disabled]="!model.isTime"
             >
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
-                        [disabled]="((model.intervalType === IntervalFormat.StartEnd || model.intervalType === IntervalFormat.StartDur) && model.isTime && i === (yColumn$ | async)) || i === model.xCol || i === model.yCol"
+                        [disabled]="i === model.xCol || i === model.yCol"
                         [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
@@ -204,11 +208,11 @@
         >
             <md-select *ngIf="model.intervalType !== IntervalFormat.StartConst"
                 [placeholder]="(model.intervalType === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
-                name="endCol" (change)="update(false)" [(ngModel)]="model.endCol"
+                name="endCol" (change)="changeEndCol($event)" [(ngModel)]="model.endCol"
                 [disabled]="!(model.intervalType === IntervalFormat.StartEnd || model.intervalType === IntervalFormat.StartDur) || !model.isTime">
                 <template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
-                        [disabled]="(model.isTime && i === (xColumn$ | async)) || i === model.xCol || i === model.yCol"
+                        [disabled]="i === model.xCol || i === model.yCol"
                         [value]="i">
                         <template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}

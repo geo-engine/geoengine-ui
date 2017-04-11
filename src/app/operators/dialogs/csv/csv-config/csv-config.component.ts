@@ -9,11 +9,11 @@ import {
     EventEmitter, ViewChild, ElementRef
 } from '@angular/core';
 import {BehaviorSubject, Subscription, Observable, ReplaySubject} from 'rxjs/Rx';
-import {MdSlideToggleChange} from '@angular/material';
+import {MdSlideToggleChange, MdSelectChange} from '@angular/material';
 import * as Papa from 'papaparse';
 import {Projections, Projection} from '../../../projection.model';
 import {UserService} from '../../../../users/user.service';
-import { IntervalFormat } from '../interval.enum';
+import {IntervalFormat} from '../interval.enum';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -329,6 +329,53 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.resetTableSize();
             setTimeout(() => this.resizeTable());
         }
+    }
+
+    changeXCol(e: MdSelectChange) {
+        if (e.value === this.model.yCol) {
+            if (this.model.header.length > this.model.yCol + 1) {
+                this.model.yCol++;
+            } else {
+                this.model.yCol--;
+            }
+        }
+        this.update(false);
+    }
+
+    changeYCol(e: MdSelectChange) {
+        if (e.value === this.model.xCol) {
+            if (this.model.header.length > this.model.xCol + 1) {
+                this.model.xCol++;
+            } else {
+                this.model.xCol--;
+            }
+        }
+        this.update(false);
+    }
+
+    changeStartCol(e: MdSelectChange) {
+        if (this.model.intervalType === IntervalFormat.StartEnd
+            || this.model.intervalType === IntervalFormat.StartDur) {
+            if (e.value === this.model.endCol) {
+                if (this.model.header.length > this.model.endCol + 1) {
+                    this.model.endCol++;
+                } else {
+                    this.model.endCol--;
+                }
+            }
+        }
+        this.update(false);
+    }
+
+    changeEndCol(e: MdSelectChange) {
+        if (e.value === this.model.startCol) {
+            if (this.model.header.length > this.model.startCol + 1) {
+                this.model.startCol++;
+            } else {
+                this.model.startCol--;
+            }
+        }
+        this.update(false);
     }
 
     parse() {
@@ -661,8 +708,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let t of tableArr) {
             width = Math.max(width, t.clientWidth);
         }
-        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
-        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width + this.getScrollBarWidth()) + 'px';
+        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width + this.getScrollBarWidth()) + 'px';
         // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
     }
 
@@ -683,14 +730,14 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     validHeader() {
-        if (this.model.headerRow) {
+        if (this.model.isHeaderRow) {
             return true;
         }
         for (let h of this.model.header) {
             if (!h || h === '' || h === null
-            || h.indexOf(this.model.decimalSeperator) >= 0
-            || (this.model.isTextQualifier && h.indexOf(this.model.textQualifier) >= 0)
-            || h.indexOf(this.model.delimitter) >= 0) {
+                || h.indexOf(this.model.decimalSeperator) >= 0
+                || (this.model.isTextQualifier && h.indexOf(this.model.textQualifier) >= 0)
+                || h.indexOf(this.model.delimitter) >= 0) {
                 return false;
             }
         }

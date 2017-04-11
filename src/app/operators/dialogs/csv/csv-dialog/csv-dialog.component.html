@@ -24,11 +24,10 @@
             </span>
         <span *ngIf="(csvConfig.isSpatialProperties$ | async) || (csvConfig.isDataProperties$ | async) || (csvConfig.isTemporalProperties$ | async)">
                 <button md-raised-button color="primary" (click)="csvConfig.next()"
-                        [disabled]="(((csvConfig.isSpatialProperties$ | async) && (csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
-                                    || ((csvConfig.isTemporalProperties$ | async) && (((csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async))
-                                    && ((csvConfig.model.intervalType === IntervalFormat.StartEnd || csvConfig.model.intervalType == IntervalFormat.StartDur))))
-                                    && csvConfig.model.header.length > 1)
-                                    || !csvConfig.validHeader()"
+                        [disabled]="!csvConfig.validHeader()
+                                   || (((csvConfig.isSpatialProperties$ | async) || (csvConfig.isTemporalProperties$ | async))
+                                   && ((csvConfig.xColumn$ | async) === (csvConfig.yColumn$ | async)))
+                                   || csvConfig.model.header.length <= 1"
                 >
                     Next
                 </button>
