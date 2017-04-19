@@ -10,6 +10,7 @@ import {Operator} from '../operators/operator.model';
 import {FeatureID} from '../queries/geojson.model';
 import {Symbology} from './symbology/symbology.model';
 import {NotificationService} from '../notification.service';
+import {ProjectService} from "../project/project.service";
 
 export interface SelectedFeatures {
     selected: ImmutableSet<FeatureID>;
@@ -23,7 +24,6 @@ export interface SelectedFeatures {
  */
 @Injectable()
 export class LayerService {
-    private layers$: BehaviorSubject<Array<Layer<Symbology>>> = new BehaviorSubject([]);
     private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
     private selectedFeatures$: BehaviorSubject<SelectedFeatures> = new BehaviorSubject({
         selected: ImmutableSet<FeatureID>(),
@@ -32,109 +32,12 @@ export class LayerService {
 
     constructor(
         private mappingQueryService: MappingQueryService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private projectService: ProjectService
     ) {
         this.isAnyLayerSelected$ = this.getSelectedLayerStream().map(layer => layer !== undefined);
     }
 
-    /**
-     * @returns The layer list.
-     */
-    getLayers(): Array<Layer<Symbology>> {
-        return this.layers$.getValue();
-    }
-
-    /**
-     * @returns The stream of the layer list.
-     */
-    getLayersStream(): Observable<Array<Layer<Symbology>>> {
-        return this.layers$;
-    }
-
-    /**
-     * Insert a new array of layers. Resets the selected layer.
-     * @param layers The layer list.
-     */
-    setLayers(layers: Array<Layer<Symbology>>) {
-        if (layers.indexOf(this.selectedLayer$.getValue()) === -1) {
-            this.setSelectedLayer(undefined);
-        }
-
-        this.layers$.next(layers);
-    }
-
-    /**
-     * Adds a layer on top of the layer list.
-     * @param layer The new layer.
-     */
-    addLayer(layer: Layer<Symbology>) {
-       let layers = this.layers$.getValue();
-       this.setLayers([layer, ...layers]);
-
-       this.notificationService.info('Added New Layer »' + layer.name + '«');
-    }
-
-    /**
-     * Removes a layer from the list.
-     * @param layer The layer to remove.
-     */
-    removeLayer(layer: Layer<Symbology>) {
-        let layers = this.layers$.getValue();
-        let index = layers.indexOf(layer);
-
-        if (index >= 0) {
-            layers.splice(index, 1);
-            this.setLayers(layers);
-        }
-
-        this.notificationService.info('Removed Layer »' + layer.name + '«');
-    }
-
-    removeAllLayers() {
-        this.setLayers([]);
-
-        this.notificationService.info('Removed All Layers');
-    }
-
-    /**
-     * Changes the display name of a layer.
-     * @param layer The layer to modify
-     * @param newName The new layer name
-     */
-    changeLayerName(layer: Layer<Symbology>, newName: string) {
-      layer.name = newName;
-      this.layers$.next(this.getLayers());
-    }
-
-    /**
-     * Changes the symbology of a layer.
-     * @param layer The layer to modify
-     * @param symbology The new symbology
-     */
-    changeLayerSymbology(layer: Layer<Symbology>, symbology: Symbology) {
-        // console.log('changeLayerSymbology', layer, symbology);
-        layer.symbology = symbology;
-        this.layers$.next(this.getLayers());
-    }
-
-    setLayerVisible(layer: Layer<Symbology>, visible: boolean) {
-        layer.visible = visible;
-        this.layers$.next(this.getLayers());
-    }
-
-    /**
-     * Toggle the layer (extension).
-     * @param layer The layer to modify
-     */
-    toggleLayer(layer: Layer<Symbology>) {
-        layer.expanded = !layer.expanded;
-        this.layers$.next(this.getLayers());
-    }
-
-    toggleEditSymbology(layer: Layer<Symbology>) {
-        layer.editSymbology = !layer.editSymbology;
-        this.layers$.next(this.getLayers());
-    }
 
     /**
      * Set a new selected layer.

@@ -28,7 +28,6 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
     constructor(private formBuilder: FormBuilder,
                 private storageService: StorageService,
                 private projectService: ProjectService,
-                private layerService: LayerService,
                 private notificationService: NotificationService) {
     }
 
@@ -53,9 +52,9 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
                 name: projectName,
                 projection: this.form.controls['projection'].value,
                 time: this.projectService.getTime(),
+                layers: [],
             })
         );
-        this.layerService.setLayers([]);
 
         this.created$.next(true);
         this.notificationService.info(`Created and switched to new project »${projectName}«`);

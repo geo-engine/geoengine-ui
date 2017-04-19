@@ -26,11 +26,10 @@ export class StorageService {
     private projectSubscription: Subscription;
     private layoutSubscription: Subscription;
 
-    private pendingWorkspace: {project: Project, layers: Array<Layer<Symbology>>};
+    private pendingWorkspace: {project: Project};
     private pendingWorkspaceSubscription: Subscription;
 
     constructor(private config: Config,
-                private layerService: LayerService,
                 private projectService: ProjectService,
                 private layoutService: LayoutService,
                 private userService: UserService,
@@ -106,14 +105,12 @@ export class StorageService {
         if (this.userService.isGuestUser()) {
             this.storageProvider = new BrowserStorageProvider(
                 this.config,
-                this.layerService,
                 this.projectService,
                 this.notificationService
             );
         } else {
             this.storageProvider = new MappingStorageProvider({
                 config: this.config,
-                layerService: this.layerService,
                 projectService: this.projectService,
                 notificationService: this.notificationService,
                 http: this.http,
@@ -128,22 +125,14 @@ export class StorageService {
             if (workspace.project) {
                 this.projectService.setProject(workspace.project);
             }
-            if (workspace.layers) {
-                this.layerService.setLayers(workspace.layers);
-            }
 
             // setup storage
-            this.projectSubscription = Observable
-                .combineLatest(
-                    this.projectService.getProjectStream(),
-                    this.layerService.getLayersStream(),
-                )
+            this.projectSubscription = this.projectService.getProjectStream()
                 .skip(1) // don't save the loaded stuff directly again
-                .do(([project, layers]) => {
+                .do(project => {
                     // save pending change
                     this.pendingWorkspace = {
-                        project: project,
-                        layers: layers,
+                        project: project
                     };
                 })
                 .debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE)
@@ -151,10 +140,9 @@ export class StorageService {
                     // store pending change
                     this.pendingWorkspace = undefined;
                 })
-                .subscribe(([project, layers]) => {
+                .subscribe(project => {
                     this.storageProvider.saveWorkspace({
                         project: project,
-                        layers: layers,
                     });
                 });
 

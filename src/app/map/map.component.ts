@@ -9,6 +9,7 @@ import {Projection, Projections} from '../operators/projection.model';
 import {Symbology, AbstractVectorSymbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
+import {ProjectService} from '../project/project.service';
 import {MapService} from './map.service';
 import {Config} from '../config.service';
 
@@ -51,7 +52,8 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     constructor(
         private config: Config,
         private mapService: MapService,
-        private layerService: LayerService
+        private layerService: LayerService,
+        private projectService: ProjectService
     ) {
         this.initOpenlayersMap();
 
@@ -132,7 +134,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
         });
 
         // Hack: querylist ignores order changes
-        this.layerService.getLayersStream().subscribe(x => {
+        this.projectService.getLayerStream().subscribe(x => {
             if (this._layers === x) { return; }
 
             let change = this._layers.length !== x.length;

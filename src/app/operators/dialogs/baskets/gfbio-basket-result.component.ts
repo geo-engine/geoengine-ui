@@ -17,25 +17,21 @@ import {PangaeaSourceType} from '../../../operators/types/pangaea-source-type.mo
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
 import {UserService} from '../../../users/user.service';
 import {Subscription} from 'rxjs/Rx';
+import {ProjectService} from '../../../project/project.service';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
 
-    mappingQueryService: MappingQueryService;
-    layerService: LayerService;
-    randomColorService: RandomColorService;
-    userService: UserService;
+
 
     constructor(
-        mappingQueryService: MappingQueryService,
-        layerService: LayerService,
-        randomColorService: RandomColorService,
-        userService: UserService
+        protected mappingQueryService: MappingQueryService,
+        protected layerService: LayerService,
+        protected randomColorService: RandomColorService,
+        protected userService: UserService,
+        protected projectService: ProjectService
     ) {
-        this.mappingQueryService = mappingQueryService;
-        this.layerService = layerService;
-        this.randomColorService = randomColorService;
-        this.userService = userService;
+
     }
 
     protected createAndAddLayer(operator: Operator, name: string) {
@@ -53,8 +49,8 @@ export class BasketResult<T extends IBasketResult>  {
             provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         });
-        this.layerService.addLayer(layer);
-
+        //this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
     }
 }
 
@@ -144,9 +140,10 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
         mappingQueryService: MappingQueryService,
         layerService: LayerService,
         randomColorService: RandomColorService,
-        userService: UserService
+        userService: UserService,
+        projectService: ProjectService
     ) {
-        super(mappingQueryService, layerService, randomColorService, userService);
+        super(mappingQueryService, layerService, randomColorService, userService, projectService);
     };
 
     createResultOperator(): Operator {
@@ -339,12 +336,13 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     private abcdSchemaSubscription: Subscription;
 
     constructor(
-        mappingQueryService: MappingQueryService,
-        layerService: LayerService,
-        randomColorService: RandomColorService,
-        userService: UserService
+        protected mappingQueryService: MappingQueryService,
+        protected layerService: LayerService,
+        protected randomColorService: RandomColorService,
+        protected userService: UserService,
+        protected projectService: ProjectService
     ) {
-        super(mappingQueryService, layerService, randomColorService, userService);
+        super(mappingQueryService, layerService, randomColorService, userService, projectService);
     };
 
     ngOnInit() {

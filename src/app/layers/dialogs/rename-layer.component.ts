@@ -1,11 +1,10 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
-import {LayerService} from '../layer.service';
-
 import {Layer} from '../layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MdDialogRef} from '@angular/material';
+import {ProjectService} from '../../project/project.service';
 
 @Component({
     selector: 'wave-rename-layer-dialog',
@@ -36,7 +35,7 @@ export class RenameLayerComponent implements OnInit {
     private layer: Layer<Symbology>;
 
     constructor(
-        private layerService: LayerService,
+        private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MdDialogRef<RenameLayerComponent>
     ) {}
@@ -54,7 +53,7 @@ export class RenameLayerComponent implements OnInit {
     save() {
         const layerName = this.form.controls['layerName'].value;
         if (layerName !== this.layer.name) {
-            this.layerService.changeLayerName(this.layer, layerName);
+            this.projectService.changeLayerName(this.layer, layerName);
         }
         this.dialogRef.close();
     }

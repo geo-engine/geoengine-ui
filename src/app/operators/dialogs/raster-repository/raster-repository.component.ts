@@ -69,6 +69,7 @@ export class RasterRepositoryComponent {
             ),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
-        this.layerService.addLayer(layer);
+        //this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
     }
 }

@@ -15,7 +15,6 @@ import {NotificationService} from '../notification.service';
  */
 export interface Workspace {
     project: Project;
-    layers: Array<Layer<Symbology>>;
 }
 
 /**
@@ -23,7 +22,6 @@ export interface Workspace {
  */
 export interface WorkspaceDict {
     project: ProjectDict;
-    layers: Array<LayerDict>;
 }
 
 /**
@@ -48,7 +46,6 @@ export interface RScriptDict {
 export abstract class StorageProvider {
     constructor(
         protected config: Config,
-        protected layerService: LayerService,
         protected projectService: ProjectService,
         protected notificationService: NotificationService
     ) {}

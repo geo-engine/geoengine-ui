@@ -5,8 +5,8 @@ import {
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
-import {LayerService} from '../../../../layers/layer.service';
 import {ResultType} from '../../../result-type.model';
+import {ProjectService} from '../../../../project/project.service';
 
 /**
  * Singleton for a letter to number converter for ids.
@@ -51,7 +51,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, After
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> = this.layerService.getLayers();
+    @Input() layers: Array<Layer<Symbology>> = this.projectService.getLayers();
 
     /**
      * The minimum number of elements to select.
@@ -91,7 +91,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, After
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
-        private layerService: LayerService
+        private projectService: ProjectService
     ) {}
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {

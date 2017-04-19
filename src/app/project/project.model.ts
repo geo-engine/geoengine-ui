@@ -104,7 +104,7 @@ export class Project {
             parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
-        let layers: Array<Layer<Symbology>>;
+        let layers: Array<Layer<Symbology>> = [];
         if (parameters.dict.layers) {
             layers = parameters.dict.layers
                 .map(layerDict => {

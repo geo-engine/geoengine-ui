@@ -7,9 +7,9 @@ import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../layers/symbology/symbology.model';
 import {MdDialogRef} from '@angular/material';
-import {LayerService} from '../../layers/layer.service';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
+import {ProjectService} from '../../project/project.service';
 
 const GRAPH_STYLE = {
     general: {
@@ -55,7 +55,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private dialogRef: MdDialogRef<LineageGraphComponent>,
-                private layerService: LayerService) {
+                private projectService: ProjectService
+    ) {
     }
 
     ngOnInit() {
@@ -103,19 +104,19 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
             this.addLayersToGraph(
                 graph,
-                this.layerService.getLayers(),
+                this.projectService.getLayers(),
                 [this.selectedLayer],
                 operatorIdsInGraph
             );
         } else {
             const operatorIdsInGraph = this.addOperatorsToGraph(
                 graph,
-                this.layerService.getLayers().map(layer => layer.operator),
-                this.layerService.getLayers()
+                this.projectService.getLayers().map(layer => layer.operator),
+                this.projectService.getLayers()
             );
             this.addLayersToGraph(
                 graph,
-                this.layerService.getLayers(),
+                this.projectService.getLayers(),
                 [],
                 operatorIdsInGraph
             );

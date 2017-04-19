@@ -1,9 +1,7 @@
 import {StorageProvider, Workspace, RScript, RScriptDict} from '../storage-provider.model';
 
 import {LayoutDict} from '../../layout.service';
-import {Layer, LayerDict} from '../../layers/layer.model';
 import {Project} from '../../project/project.model';
-import {Symbology} from '../../layers/symbology/symbology.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {Observable} from 'rxjs/Rx';
@@ -16,13 +14,9 @@ export class BrowserStorageProvider extends StorageProvider {
     loadWorkspace(): Observable<Workspace> {
         const operatorMap = new Map<number, Operator>();
 
-        return Observable.forkJoin(
-            this.loadProject(operatorMap),
-            this.loadLayers(operatorMap),
-            (project, layers) => {
+        return this.loadProject(operatorMap).map(project => {
                 return {
                     project: project,
-                    layers: layers,
                 };
             },
         );
@@ -32,7 +26,6 @@ export class BrowserStorageProvider extends StorageProvider {
         return Observable
             .concat(
                 this.saveProject(workspace.project),
-                this.saveLayers(workspace.layers),
             )
             .mapTo({});
     }
@@ -54,39 +47,6 @@ export class BrowserStorageProvider extends StorageProvider {
 
     saveProject(project: Project): Observable<void> {
         localStorage.setItem('project', project.toJSON());
-        return Observable.of(undefined);
-    }
-
-    loadLayers(operatorMap: Map<number, Operator>): Observable<Array<Layer<Symbology>>> {
-        const layersJSON = localStorage.getItem('layers');
-        if (layersJSON === null) { // tslint:disable-line:no-null-keyword
-            return Observable.of(undefined);
-        } else {
-            const layers: Array<Layer<Symbology>> = [];
-            const layerDicts: Array<LayerDict> = JSON.parse(layersJSON);
-
-            for (const layerDict of layerDicts) {
-                try {
-                    layers.push(
-                        this.layerService.createLayerFromDict(layerDict, operatorMap)
-                    );
-                } catch (error) {
-                    this.notificationService.error(`Cannot load layer because of »${error}«`);
-                }
-            }
-
-            return Observable.of(layers);
-        }
-    }
-
-    saveLayers(layers: Array<Layer<Symbology>>): Observable<void> {
-        const layerDicts: Array<LayerDict> = [];
-
-        for (const layer of layers) {
-            layerDicts.push(layer.toDict());
-        }
-
-        localStorage.setItem('layers', JSON.stringify(layerDicts));
         return Observable.of(undefined);
     }
 

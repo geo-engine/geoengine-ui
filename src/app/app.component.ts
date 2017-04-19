@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.storageService.toString(); // just register
 
-        this.layersReverse$ = this.layerService.getLayersStream()
+        this.layersReverse$ = this.projectService.getLayerStream()
             .map(layers => layers.slice(0).reverse());
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();

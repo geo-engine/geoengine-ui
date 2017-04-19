@@ -14,6 +14,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
+import {ProjectService} from "../../project/project.service";
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -55,6 +56,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      public dialog: MdDialog,
      private layoutService: LayoutService,
      private dragulaService: DragulaService,
+     private projectService: ProjectService,
      private layerService: LayerService,
      private mapService: MapService,
      private iconRegistry: MdIconRegistry,
@@ -98,19 +100,19 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
                 dropIndex = NextLayerListComponent.domIndexOf(listItem, list);
                 // console.log('drop', dropIndex);
 
-                const layers = this.layerService.getLayers();
+                const layers = this.projectService.getLayers();
                 layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
-                this.layerService.setLayers(layers);
+                this.projectService.setLayers(layers);
             })
         );
     }
 
     toggleLayer(layer: Layer<Symbology>) {
-        this.layerService.toggleLayer(layer);
+        this.projectService.toggleLayer(layer);
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
-        this.layerService.changeLayerSymbology(layer, symbology);
+        this.projectService.changeLayerSymbology(layer, symbology);
     }
 
     private static domIndexOf(child: HTMLElement, parent: HTMLElement) {

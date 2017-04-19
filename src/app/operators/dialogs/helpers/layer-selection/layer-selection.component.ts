@@ -4,9 +4,10 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {LayerService} from '../../../../layers/layer.service';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
+import {ProjectService} from '../../../../project/project.service';
+import {LayerService} from '../../../../layers/layer.service';
 
 /**
  * This component allows selecting one layer.
@@ -25,7 +26,7 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> = this.layerService.getLayers();
+    @Input() layers: Array<Layer<Symbology>> = this.projectService.getLayers();
 
     /**
      * The type is used as a filter for the layers to choose from.
@@ -44,7 +45,9 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
     selectedLayer: Layer<Symbology> = undefined;
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
-                private layerService: LayerService) {
+                private layerService: LayerService,
+                private projectService: ProjectService
+    ) {
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {

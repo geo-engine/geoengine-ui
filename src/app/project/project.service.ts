@@ -39,7 +39,7 @@ export class ProjectService {
     private layerProvenanceDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
     private layerProvenanceDataSubscriptions: Map<Layer<Symbology>, Subscription>;
 
-    private newLayer$: Subject<void>;
+    private newLayer$: Subject<Layer<Symbology>>;
 
     private plots$: BehaviorSubject<Array<Plot>>;
     private plotData$: Map<Plot, ReplaySubject<PlotData>>;
@@ -72,7 +72,7 @@ export class ProjectService {
         this.layerProvenanceData$ = new Map();
         this.layerProvenanceDataState$ = new Map();
         this.layerProvenanceDataSubscriptions = new Map();
-        this.newLayer$ = new Subject<void>();
+        this.newLayer$ = new Subject<Layer<Symbology>>();
 
         this.project$.subscribe(project => {
             if (project.projection !== this.projection$.value) {
@@ -397,7 +397,7 @@ export class ProjectService {
         });
 
         if (notify) {
-            this.newLayer$.next();
+            this.newLayer$.next(layer);
         }
 
         console.log("ADD LAYER", layer, this);
@@ -550,8 +550,8 @@ export class ProjectService {
                 return new RasterData(time, projection,
                     this.mappingQueryService.getWMSQueryUrl({
                         operator: layer.operator,
-                        time: time,
-                        projection: projection
+                        //time: time,
+                        //projection: projection
                     })
                 );
             })
@@ -674,6 +674,150 @@ export class ProjectService {
                 data => data$.next(data),
                 error => error // ignore error
             );
+    }
+
+    /**
+     * Retrieve the layer models array as a stream.
+     * @returns {BehaviorSubject<Array<Layer<Symbology>>>}
+     */
+    getLayerStream(): Observable<Array<Layer<Symbology>>> {
+        return this.layers$;
+    }
+
+    /**
+     * Retrieve the data of the layer as a stream.
+     * @param layer
+     * @returns {ReplaySubject<LayerData<any>>}
+     */
+    getLayerDataStream(layer: Layer<Symbology>): Observable<LayerData<any>> {
+        return this.layerData$.get(layer);
+    }
+
+    /**
+     * Retrieve the layer data status as a stream.
+     * @param layer
+     * @returns {ReplaySubject<LoadingState>}
+     */
+    getLayerDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+        return this.layerDataState$.get(layer);
+    }
+
+    /**
+     * Retrieve the symbology data of the layer as a stream.
+     * @param layer
+     * @returns {ReplaySubject<LayerData<any>>}
+     */
+    getLayerSymbologyDataStream(layer: Layer<Symbology>): Observable<MappingColorizer> {
+        return this.layerSymbologyData$.get(layer);
+    }
+
+    /**
+     * Retrieve the layer symbology data status as a stream.
+     * @param layer
+     * @returns {ReplaySubject<LoadingState>}
+     */
+    getLayerSymbologyDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+        return this.layerSymbologyDataState$.get(layer);
+    }
+
+    /**
+     * Retrieve the provenance data of the layer as a stream.
+     * @param layer
+     * @returns {ReplaySubject<Array<Provenance>>}
+     */
+    getLayerProvenanceDataStream(layer: Layer<Symbology>): Observable<Array<Provenance>> {
+        return this.layerProvenanceData$.get(layer);
+    }
+
+    /**
+     * Retrieve the layer provenance status as a stream.
+     * @param layer
+     * @returns {ReplaySubject<LoadingState>}
+     */
+    getLayerProvenanceDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+        return this.layerProvenanceDataState$.get(layer);
+    }
+
+    /**
+     * Remove all plots from a project.
+     */
+    clearLayers() {
+        for (const layer of this.layers$.getValue().slice(0)) {
+            this.removeLayer(layer);
+        }
+    }
+
+    getNewLayerStream(): Observable<Layer<Symbology>> {
+        return this.newLayer$;
+    }
+
+    /**
+     * @returns The layer list.
+     */
+    getLayers(): Array<Layer<Symbology>> {
+        console.log("getLayers");
+        return this.layers$.getValue();
+    }
+
+
+    /**
+     * Sets the layers
+     * @param layers
+     */
+    setLayers(layers: Array<Layer<Symbology>>) {
+        console.log("setLayers", layers);
+        if(!(this.getLayers() == layers)) {
+            this.changeProjectConfig({layers: layers});
+        }
+    }
+
+    /**
+     * Changes the display name of a layer.
+     * @param layer The layer to modify
+     * @param newName The new layer name
+     */
+    changeLayerName(layer: Layer<Symbology>, newName: string) {
+        layer.name = newName;
+        this.layers$.next(this.getLayers());
+    }
+
+    /**
+     * Changes the symbology of a layer.
+     * @param layer The layer to modify
+     * @param symbology The new symbology
+     */
+    changeLayerSymbology(layer: Layer<Symbology>, symbology: Symbology) {
+        // console.log('changeLayerSymbology', layer, symbology);
+        layer.symbology = symbology;
+        this.layers$.next(this.getLayers());
+    }
+
+    setLayerVisible(layer: Layer<Symbology>, visible: boolean) {
+        layer.visible = visible;
+        this.layers$.next(this.getLayers());
+    }
+
+    /**
+     * Toggle the layer (extension).
+     * @param layer The layer to modify
+     */
+    toggleLayer(layer: Layer<Symbology>) {
+        layer.expanded = !layer.expanded;
+        this.setLayerExpanded(layer, !layer.expanded);
+    }
+
+    setLayerExpanded(layer: Layer<Symbology>, expanded: boolean) {
+        layer.expanded = expanded;
+        this.layers$.next(this.getLayers());
+    }
+
+    toggleEditSymbology(layer: Layer<Symbology>) {
+        this.setShowLayerSymbology(layer, !layer.editSymbology);
+    }
+
+    setShowLayerSymbology(layer: Layer<Symbology>, showSymbology: boolean) {
+        layer.editSymbology = !layer.editSymbology;
+        this.layers$.next(this.getLayers());
     }
 
 }

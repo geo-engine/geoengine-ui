@@ -21,6 +21,7 @@ import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {MdAutocompleteTrigger} from '@angular/material';
+import {ProjectService} from '../../../project/project.service';
 
 function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     const errors: {
@@ -86,7 +87,9 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 private formBuilder: FormBuilder,
                 private randomColorService: RandomColorService,
                 private http: Http,
-                private layerService: LayerService) {
+                private layerService: LayerService,
+                private projectService: ProjectService,
+    ) {
     }
 
     ngOnInit() {
@@ -254,7 +257,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             const clustered = source.resultType === ResultTypes.POINTS;
-            this.layerService.addLayer(new VectorLayer({
+            const layer = new VectorLayer({
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
@@ -263,7 +266,10 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 }),
                 provenance: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
-            }));
+            });
+
+            //this.layerService.addLayer(layer);
+            this.projectService.addLayer(layer);
         }
 
     }

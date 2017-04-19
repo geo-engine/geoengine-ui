@@ -14,6 +14,7 @@ import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
 import {ProjectionType} from '../../../types/projection-type.model';
+import {ProjectService} from '../../../../project/project.service';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -31,6 +32,7 @@ export class CsvDialogComponent implements OnInit {
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
+                private projectService: ProjectService,
                 private dialogRef: MdDialogRef<CsvDialogComponent>) {
     }
 
@@ -166,6 +168,7 @@ export class CsvDialogComponent implements OnInit {
             provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
             clustered: clustered,
         });
-        this.layerService.addLayer(layer);
+        //this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
     }
 }

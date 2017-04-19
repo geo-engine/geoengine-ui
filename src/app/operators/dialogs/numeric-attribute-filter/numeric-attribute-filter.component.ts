@@ -217,7 +217,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         const operator = new Operator(dict);
 
         const clustered = vectorLayer.clustered;
-        this.layerService.addLayer(new VectorLayer({
+        const layer = new VectorLayer({
             name: name,
             operator: operator,
             symbology: clustered ?
@@ -232,7 +232,10 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             }),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
-        }));
+        });
+
+        //this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
 
     }
 

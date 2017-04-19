@@ -17,7 +17,7 @@
             <span>Zoom to All</span>
         </button>
         -->
-        <button md-menu-item (click)="layerService.removeAllLayers()">
+        <button md-menu-item (click)="projectService.clearLayers()">
             <md-icon>delete_sweep</md-icon>
             <span>Remove All Layers</span>
         </button>
@@ -42,7 +42,7 @@
         <md-list [dragula]="layer-bag" [dragulaOptions]="dragOptions"
                  *ngIf="layoutService.getLayerListVisibilityStream() | async">
 
-            <md-list-item *ngIf="(layerService.getLayersStream() | async).length === 0">
+            <md-list-item *ngIf="(projectService.getLayerStream() | async).length === 0">
                 <button md-button class="no-layer"
                         (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
                         mdTooltip="Add New Data" mdTooltipPosition="after"
@@ -51,7 +51,7 @@
                 </button>
             </md-list-item>
 
-            <template ngFor let-layer [ngForOf]="layerService.getLayersStream() | async">
+            <template ngFor let-layer [ngForOf]="projectService.getLayerStream() | async">
                 <md-list-item
                               [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
                               [class.list-item-extended]="layer.expanded || layer.editSymbology"
@@ -60,11 +60,11 @@
                 >
                     <md-menu #layerMenu="mdMenu">
 
-                        <button md-menu-item *ngIf="layer.visible" (click)="layerService.setLayerVisible(layer, false)">
+                        <button md-menu-item *ngIf="layer.visible" (click)="projectService.setLayerVisible(layer, false)">
                             <md-icon >visibility_off</md-icon>
                             <span>Hide Layer</span>
                         </button>
-                        <button md-menu-item *ngIf="!layer.visible" (click)="layerService.setLayerVisible(layer, true)">
+                        <button md-menu-item *ngIf="!layer.visible" (click)="projectService.setLayerVisible(layer, true)">
                             <md-icon >visibility</md-icon>
                             <span>Show Layer</span>
                         </button>
@@ -81,7 +81,7 @@
                             <md-icon>merge_type</md-icon>
                             <span>Lineage</span>
                         </button>
-                        <button md-menu-item (click)="layerService.removeLayer(layer)">
+                        <button md-menu-item (click)="projectService.removeLayer(layer)">
                             <md-icon>delete</md-icon>
                             <span>Remove</span>
                         </button>
@@ -89,7 +89,7 @@
                             <md-icon>mode_edit</md-icon>
                             <span>Rename</span>
                         </button>
-                        <button md-menu-item (click)="layerService.toggleEditSymbology(layer)">
+                        <button md-menu-item (click)="projectService.toggleEditSymbology(layer)">
                             <md-icon>color_lens</md-icon>
                             <span>Edit Symbology</span>
                         </button>

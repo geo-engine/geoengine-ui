@@ -14,6 +14,7 @@ import {
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 import {WaveValidators} from '../../../util/form.validators';
+import {ProjectService} from '../../../project/project.service';
 
 function valueNameCollision(pointLayerControl: FormControl, valueNames: FormArray) {
     return (control: FormControl): {[key: string]: boolean} => {
@@ -69,6 +70,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(private layerService: LayerService,
+                private projectService: ProjectService,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
@@ -189,7 +191,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         });
 
         const clustered: boolean = this.form.controls['pointLayer'].value.clustered;
-        this.layerService.addLayer(new VectorLayer({
+        const layer = new VectorLayer({
             name: name,
             operator: operator,
             symbology: clustered ?
@@ -204,7 +206,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             }),
             provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
-        }));
+        });
+        //this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
+
 
     }
 
