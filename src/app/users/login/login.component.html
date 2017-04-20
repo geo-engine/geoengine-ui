@@ -11,26 +11,19 @@
                 </md-button-toggle>
             </md-button-toggle-group>
         </div>
-        <div fxLayout="column" fxLayoutAlign="space-around stretch">
-            <md-input-container fxFlex>
+        <div>
+            <md-input-container>
                 <input mdInput type="text" placeholder="Username" formControlName="username">
             </md-input-container>
-            <md-input-container fxFlex>
+            <md-input-container>
                 <input mdInput type="password" placeholder="Password" formControlName="password">
             </md-input-container>
-            <span class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</span>
+            <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
             <md-checkbox fxFlex formControlName="staySignedIn">Stay signed in</md-checkbox>
         </div>
-        <div fxLayout="row">
-            <button md-raised-button
-                    type="submit"
-                    [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
-                    fxFlex
-                    color="primary"
-            >
-                Login
-            </button>
-        </div>
+        <button md-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
+            Login
+        </button>
     </form>
 </template>
 <template [ngIf]="isLoading$ | async">
