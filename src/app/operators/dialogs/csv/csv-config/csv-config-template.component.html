@@ -18,7 +18,7 @@
 <div fxLayout="row" fxLayoutAlign="left center">
     <md-slide-toggle *ngIf="isTemporalProperties$ | async"
                      [(ngModel)]="model.isTime"
-                     (change)="update(false);"
+                     (change)="onLayoutChanges()"
                      [disabled]="model.header.length <= 2">
     </md-slide-toggle>
     <wave-dialog-section-heading [title]="dialogTitle" [subtitle]="subtitleDescription"></wave-dialog-section-heading>
@@ -171,7 +171,7 @@
     <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
         <md-select fxFlex="80"
                    placeholder="Interval type"
-                   (change)="update(false)"
+                   (change)="onLayoutChanges()"
                    [(ngModel)]="model.intervalType"
                    [ngModelOptions]="{standalone: true}"
                    [disabled]="!model.isTime"

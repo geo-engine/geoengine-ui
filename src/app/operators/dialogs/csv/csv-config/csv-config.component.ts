@@ -182,8 +182,6 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             this.xyColumn$.next({x: this.model.xCol, y: this.model.yCol});
         }
         this.resizeTable();
-        this.scrollBarWidth = this.getScrollBarWidth();
-        this.headerDiv.nativeElement.style.marginRight = this.scrollBarWidth + 'px';
     }
 
     ngOnInit() {
@@ -258,11 +256,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.formStatus$.next(FormStatus.TypingProperties);
                 this.resize();
         }
-        this.update(false);
-        if (this.formStatus$.getValue() === FormStatus.TypingProperties) {
-            this.scrollBarWidth = this.getScrollBarWidth();
-            setTimeout(() => this.typingDiv.nativeElement.style.marginRight = this.scrollBarWidth + 'px');
-        }
+        this.onLayoutChanges();
     }
 
     prev() {
@@ -276,7 +270,13 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             default:
                 this.formStatus$.next(FormStatus.DataProperties);
         }
+        this.onLayoutChanges();
+    }
+
+    onLayoutChanges() {
         this.update(false);
+        this.resetTableSize();
+        setTimeout(() => this.resizeTable());
     }
 
     ngOnDestroy() {
@@ -708,8 +708,8 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         for (let t of tableArr) {
             width = Math.max(width, t.clientWidth);
         }
-        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width + this.getScrollBarWidth()) + 'px';
-        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width + this.getScrollBarWidth()) + 'px';
+        this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
+        this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
         // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
     }
 
