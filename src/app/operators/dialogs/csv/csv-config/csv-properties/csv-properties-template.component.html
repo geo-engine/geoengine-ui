@@ -1,0 +1,72 @@
+<!-- Data Properties -->
+<form *ngIf="isDataProperties$ | async" [formGroup]="dataProperties"
+      fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+      style="margin-bottom: 1rem;">
+
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <md-select placeholder="Delimiter" formControlName="delimiter">
+            <md-option *ngFor="let delimiter of delimiters" [value]="delimiter.value">
+                {{delimiter.def}}
+            </md-option>
+        </md-select>
+        <table cellspacing="0" cellpadding="0" style="border-spacing: 0;">
+            <tr>
+                <td>
+                    <md-slide-toggle formControlName="isTextQualifier"></md-slide-toggle>
+                </td>
+                <td style="padding: 0;">
+                    <md-select placeholder="Text qualifier" formControlName="textQualifier">
+                        <md-option *ngFor="let textQualifier of textQualifiers" [value]="textQualifier">
+                            {{textQualifier}}
+                        </md-option>
+                    </md-select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1rem">
+        <md-select placeholder="Decimal separator" formControlName="decimalSeparator">
+            <md-option *ngFor="let decimalSeparator of decimalSeparators" [value]="decimalSeparator">
+                {{decimalSeparator}}
+            </md-option>
+        </md-select>
+        <table cellspacing="0" cellpadding="0">
+            <tbody>
+            <tr>
+                <td>
+                </td>
+                <td style="display: table-cell;" class="ng-pristine mat-select-disabled mat-select ng-touched">
+                    <div style="cursor: default; display: flex; color: rgba(0, 0, 0, 0.38)">
+                        <span style="cursor: default; transform: scale(.75); text-align: left; left: -2px;"
+                              class="mat-select-placeholder">
+                            Header Row
+                        </span>
+                    </div>
+                </td>
+            </tr>
+            <tr style="max-height: 40px;">
+                <td>
+                    <md-slide-toggle style="margin:0;" formControlName="isHeaderRow"></md-slide-toggle>
+                </td>
+                <td style="padding: 0;">
+                    <input type="number" min="0" formControlName="headerRow">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+
+<!-- Spatial Properties -->
+<form *ngIf="isSpatialProperties$ | async" [formGroup]="spatialProperties">
+
+</form>
+
+<!-- Temporal Properties -->
+<form *ngIf="isTemporalProperties$ | async" [formGroup]="temporalProperties">
+
+</form>
+<!-- Typing Properties -->
+<form *ngIf="isTypingProperties$ | async" [formGroup]="typingProperties">
+
+</form>
