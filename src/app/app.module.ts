@@ -98,6 +98,8 @@ import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.co
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script-save.component';
 import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
+import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
+import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -193,6 +195,8 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
+        CsvPropertiesComponent,
+        CsvTableComponent,
     ],
     imports: [
         BrowserModule,

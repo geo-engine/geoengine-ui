@@ -1,12 +1,13 @@
 /**
  * Created by Julian on 04/05/2017.
  */
-import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, FormControl} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription} from 'rxjs';
 import {IntervalFormat} from '../../interval.enum';
+import {CsvTableComponent} from '../csv-table/csv-table.component';
 
-enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
+export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
 @Component({
     selector: 'wave-csv-properties',
@@ -56,8 +57,16 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
         isHeaderRow: new FormControl(true),
         headerRow: new FormControl({value: 0, disabled: true}, Validators.required),
     });
-    spatialProperties: FormGroup = new FormGroup({});
-    temporalProperties: FormGroup = new FormGroup({});
+    spatialProperties: FormGroup = new FormGroup({
+        xColumn: new FormControl(0, Validators.required),//Validator not equal to yCol
+        yColumn: new FormControl(1, Validators.required),
+    });
+    temporalProperties: FormGroup = new FormGroup({
+        intervalType: new FormControl(IntervalFormat.StartEnd),
+        isTime: new FormControl(false),
+        startColumn: new FormControl(2),// Anpassung ungleich x
+        endColumn: new FormControl(3),// Anpassung ungleich y
+    });
     typingProperties:FormGroup = new FormGroup({});
 
     dialogTitle: string;
@@ -68,6 +77,8 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
     isSpatialProperties$: Observable<boolean>;
     isTemporalProperties$: Observable<boolean>;
     isTypingProperties$: Observable<boolean>;
+
+    @Input('table') csvTable: CsvTableComponent;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
@@ -107,7 +118,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
             }
         }),
         this.dataProperties.valueChanges.subscribe(data => {
-            console.log(data)
+            this.csvTable.parse();
         })
         );
         this.formStatus$.next(FormStatus.DataProperties);

@@ -14,6 +14,7 @@ import * as Papa from 'papaparse';
 import {Projections, Projection} from '../../../projection.model';
 import {UserService} from '../../../../users/user.service';
 import {IntervalFormat} from '../interval.enum';
+import {FormGroup, FormBuilder} from '@angular/forms';
 
 enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -85,6 +86,11 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     isTemporalProperties$: Observable<boolean>;
     isTypingProperties$: Observable<boolean>;
 
+    dataPropertyGroup: FormGroup;
+    spatialPropertyGroup: FormGroup;
+    temporalPropertyGroup: FormGroup;
+    typingPropertyGroup: FormGroup;
+
     parsedData: Array<Array<string>>;
 
     xyColumn$: BehaviorSubject<{x: number, y: number}> = new BehaviorSubject<{x: number, y: number}>({x: 0, y: 0});
@@ -155,7 +161,7 @@ export class CsvConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     storageName$ = new ReplaySubject<string>(1);
     private reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private formBuilder: FormBuilder) {
         this.xColumn$ = this.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.xyColumn$.map(xy => xy.y);
         this.isDataProperties$ = this.formStatus$.map(status => status === FormStatus.DataProperties);

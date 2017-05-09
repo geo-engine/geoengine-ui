@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/co
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {CSV, CsvConfigComponent} from '../csv-config/csv-config.component';
+import {CSV} from '../csv-config/csv-config.component';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
@@ -15,6 +15,7 @@ import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
 import {ProjectionType} from '../../../types/projection-type.model';
 import {IntervalFormat} from '../interval.enum';
+import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -25,7 +26,7 @@ import {IntervalFormat} from '../interval.enum';
 export class CsvDialogComponent implements OnInit {
 
     IntervalFormat = IntervalFormat;
-    @ViewChild(CsvConfigComponent) csvConfig;
+    @ViewChild(CsvPropertiesComponent) csvProperties;
     data: UploadData = undefined;
     uploading$ = new BehaviorSubject(false);
 
