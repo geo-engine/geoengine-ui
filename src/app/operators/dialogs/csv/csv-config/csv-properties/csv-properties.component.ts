@@ -1,7 +1,7 @@
 /**
  * Created by Julian on 04/05/2017.
  */
-import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, FormControl} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription} from 'rxjs';
 import {IntervalFormat} from '../../interval.enum';
@@ -15,7 +15,7 @@ export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, 
     styleUrls: ['./csv-properties.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CsvPropertiesComponent implements OnInit, AfterViewInit {
+export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     delimiters: {def: string, value: string}[] = [
         {def: 'TAB', value: '\t'},
@@ -119,6 +119,24 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
         }),
         this.dataProperties.valueChanges.subscribe(data => {
             this.csvTable.parse();
+            this.csvTable.resize();
+        }),
+        this.dataProperties['controls']['isHeaderRow'].valueChanges.subscribe(data => {
+            if(data === true) {
+                this.csvTable.customHeader = [];
+                for(let i: number = 0; i < this.csvTable.header.length; i++) {
+                    this.csvTable.customHeader[i] = this.csvTable.header[i];
+                }
+            } else {
+                if(this.csvTable.customHeader.length === this.csvTable.elements[0].length) {
+                    for(let i: number = 0; i < this.csvTable.customHeader.length; i++) {
+                        this.csvTable.header[i] = this.csvTable.customHeader[i];
+                    }
+                } else {
+                    this.csvTable.customHeader = [];
+                    this.csvTable.header = new Array(this.csvTable.elements[0].length);
+                }
+            }
         })
         );
         this.formStatus$.next(FormStatus.DataProperties);
@@ -126,10 +144,13 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.dataProperties.controls['delimiter'].updateValueAndValidity({
-            onlySelf: true,
-            emitEvent: true
-        }), 500);
+        setTimeout(() => {
+            this.dataProperties['controls']['delimiter'].setValue(this.delimiters[1].value);
+        });
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     nextPage() {
@@ -149,18 +170,28 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit {
     }
 
     previousPage() {
+        let value: string;
         switch (this.formStatus$.getValue()) {
             case FormStatus.TemporalProperties:
                 this.actualPage$.next(this.spatialProperties);
                 this.formStatus$.next(FormStatus.SpatialProperties);
+                value = 'xColumn';
                 break;
             case FormStatus.TypingProperties:
                 this.actualPage$.next(this.temporalProperties);
                 this.formStatus$.next(FormStatus.TemporalProperties);
+                value = 'intervalType';
                 break;
             default:
                 this.actualPage$.next(this.dataProperties);
                 this.formStatus$.next(FormStatus.DataProperties);
+                value = 'delimiter'
         }
+        setTimeout(() => {
+            this.actualPage$.getValue().controls[value].updateValueAndValidity({
+                onlySelf: false,
+                emitEvent: true
+            });
+        }, 0);
     }
 }

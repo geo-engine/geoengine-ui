@@ -9,8 +9,7 @@ import * as Papa from 'papaparse';
 @Component({
     selector: 'wave-csv-table',
     templateUrl: './csv-table-template.component.html',
-    styleUrls: ['./csv-table.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./csv-table.component.scss']
 })
 export class CsvTableComponent implements OnInit, AfterViewInit {
 
@@ -30,18 +29,23 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
     @ViewChild('tableframe') tableFrame: ElementRef;
 
     parsedData: Array<Array<string>>;
+    customHeader: string[] = [];
     header: string[] = [];
     elements: string[][] = [];
+    cellSizes:number[] = [];
 
     ngOnInit() {
-        console.log('Init table with properties ' + this.csvProperty);
         this.parse();
+        this.cellSizes = new Array(this.header.length);
+        for(let i: number = 0; i < this.header.length; i++) {
+            this.cellSizes[i] = 0;
+        }
     }
 
     ngAfterViewInit() {
-        this.resetTableSize();
-        setTimeout(() => this.resizeTable());
+        this.resize();
     }
+
 
     parse() {
         if(!!this.csvProperty) {
@@ -67,8 +71,6 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
             }
             this.resetNumberArr();
         }
-        this.resetTableSize();
-        setTimeout(() => this.resizeTable());
     }
 
     resetNumberArr() {
@@ -82,6 +84,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
      * Causes a reload "effect"
      */
     resetTableSize() {
+        /**
         let tableArr: HTMLTableElement[] = [];
         if (this.headerTable) {
             tableArr.push(this.headerTable.nativeElement);
@@ -102,6 +105,9 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
                 cell.style.minWidth = null;
                 cell.style.maxWidth = null;
             }
+        }**/
+        for(let i: number = 0; i < this.cellSizes.length; i++) {
+            this.cellSizes[i] = 0;
         }
     }
 
@@ -112,13 +118,9 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
      */
     resizeTable() {
         let tableArr: HTMLTableElement[] = [];
-        if (this.headerTable) {
-            tableArr.push(this.headerTable.nativeElement);
-        }
-        if (this.bodyTable) {
-            tableArr.push(this.bodyTable.nativeElement);
-        }
-        if (this.typingDiv) {
+        tableArr.push(this.headerTable.nativeElement);
+        tableArr.push(this.bodyTable.nativeElement);
+        if (!!this.typingDiv) {
             tableArr.push(this.typingTable.nativeElement);
         }
         let colNumber = 0;
@@ -127,40 +129,22 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
                 colNumber = t.rows.length;
             }
         }
-        let maxCol: number[] = new Array(colNumber);
-
         for (let t of tableArr) {
+            // t.style.borderSpacing = this.cellSpacing + 'px 0';
             let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
             for (let j = 0; j < row.cells.length; j++) {
                 let cell: HTMLElement = row.cells.item(j) as HTMLElement;
-                if (cell == null) {
-                    continue;
-                }
-                if (cell.getAttribute('name') === 'spacer') {
-                    cell.style.minWidth = this.cellSpacing + 'px';
-                    continue;
-                }
-                if (!maxCol[j] || maxCol[j] < cell.clientWidth) {
-                    maxCol[j] = cell.clientWidth;
+                if(cell.getAttribute('name') === 'spacer') {
+                    this.cellSizes[j] = this.cellSpacing;
+                }else if (!this.cellSizes[j] || this.cellSizes[j] < cell.getBoundingClientRect().width) {
+                    this.cellSizes[j] = cell.getBoundingClientRect().width;
                 }
             }
         }
 
-        for (let t of tableArr) {
-            t.style.borderCollapse = 'separate';
-            let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
-            for (let j = 0; j < row.cells.length; j++) {
-                if (row.cells.item(j).getAttribute('name') === 'spacer') {
-                    continue;
-                }
-                let cell: HTMLElement = row.cells.item(j) as HTMLElement;
-                cell.style.minWidth = (maxCol[j]) + 'px';
-                cell.style.maxWidth = (maxCol[j]) + 'px';
-            }
-        }
         this.resizeTableFrame();
         // Reset the headerdiv to body divs scroll.
-        this.headerDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
+        this.headerDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft = 0;
         if (!!this.typingDiv) {
             this.typingDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
         }
@@ -179,12 +163,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
      */
     resizeTableFrame() {
         let tableArr: Element[] = [];
-        if (this.headerTable) {
-            tableArr.push(this.headerTable.nativeElement);
-        }
-        if (this.bodyTable) {
-            tableArr.push(this.bodyTable.nativeElement);
-        }
+        tableArr.push(this.headerTable.nativeElement);
+        tableArr.push(this.bodyTable.nativeElement);
         if (this.typingDiv) {
             tableArr.push(this.typingTable.nativeElement);
         }
@@ -203,5 +183,17 @@ export class CsvTableComponent implements OnInit, AfterViewInit {
     resize() {
         this.resetTableSize();
         setTimeout(() => this.resizeTable());
+    }
+
+    ending(i: number): string {
+        if ((i - 1) % 10 === 0 && (i - 11) % 100 !== 0) {
+            return 'st';
+        } else if ((i - 2) % 10 === 0 && (i - 12) % 100 !== 0) {
+            return 'nd';
+        } else if ((i - 3) % 10 === 0 && (i - 13) % 100 !== 0) {
+            return 'rd';
+        } else {
+            return 'th';
+        }
     }
 }
