@@ -80,7 +80,6 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
-import {CsvConfigComponent} from './operators/dialogs/csv/csv-config/csv-config.component';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
@@ -176,9 +175,6 @@ export function configInitializer(config: Config) {
         SplashDialogComponent,
         HelpComponent,
         PlotDetailViewComponent,
-        CsvDialogComponent,
-        CsvConfigComponent,
-        CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
         RasterIconComponent,
@@ -195,6 +191,8 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
+        CsvDialogComponent,
+        CsvUploadComponent,
         CsvPropertiesComponent,
         CsvTableComponent,
     ],

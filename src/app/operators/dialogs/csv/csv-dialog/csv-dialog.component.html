@@ -9,6 +9,7 @@
         <wave-csv-properties
             #csvProperties
             [table]="csvTable"
+            [data]="data"
         ></wave-csv-properties>
         <wave-csv-table
             #csvTable
@@ -37,14 +38,14 @@
         <span
             *ngIf="(csvProperties.isSpatialProperties$ | async) || (csvProperties.isDataProperties$ | async) || (csvProperties.isTemporalProperties$ | async)">
                 <button md-raised-button color="primary" (click)="csvProperties.nextPage()"
-                        [disabled]="!(csvProperties.actualPage$ | async).valid"
+                        [disabled]="!(csvProperties.actualPage$ | async).valid || (csvProperties.formStatus$.getValue() === FormStatus.DataProperties && csvProperties.csvTable.header.length < 2)"
                 >
                     Next
                 </button>
             </span>
         <button md-raised-button color="primary" (click)="csvProperties.submit()"
                 *ngIf="csvProperties.isTypingProperties$ | async"
-                [disabled]="!(csvProperties.actualPage$ | async).valid || (csvProperties.nameIsReserved$ | async)"
+                [disabled]="!csvProperties.valid || (csvProperties.nameIsReserved$ | async) || csvProperties.layerName === ''"
         >
             Submit
         </button>

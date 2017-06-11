@@ -2,7 +2,6 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/co
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {CSV} from '../csv-config/csv-config.component';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
@@ -13,7 +12,7 @@ import {RandomColorService} from '../../../../util/services/random-color.service
 import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
-import {ProjectionType} from '../../../types/projection-type.model';
+import {FormStatus} from '../csv-config/csv-properties/csv-properties.component';
 import {IntervalFormat} from '../interval.enum';
 import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
 
@@ -25,6 +24,7 @@ import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-propertie
 })
 export class CsvDialogComponent implements OnInit {
 
+    FormStatus = FormStatus;
     IntervalFormat = IntervalFormat;
     @ViewChild(CsvPropertiesComponent) csvProperties;
     data: UploadData = undefined;
@@ -40,20 +40,20 @@ export class CsvDialogComponent implements OnInit {
     ngOnInit() {
     }
 
-    submit(config: CSV) {
+    submit() {
         // TODO: refactor most of this
-        const fieldSeparator = config.delimitter;
+        const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
         const geometry = 'xy';
-        const time = config.intervalString;
-        const time1Format = config.startFormat;
-        const time2Format = config.endFormat;
-        const header = config.isHeaderRow ? 0 : config.header;
-        const columnX = config.header[config.xCol];
-        const columnY = config.header[config.yCol];
-        const time1 = config.header[config.startCol];
-        const time2 = config.header[config.endCol];
-        const numericColumns = config.header.filter((name, index) => config.isNumberArr[index]);
-        const textualColumns = config.header.filter((name, index) => !config.isNumberArr[index]);
+        const time = this.intervalString;
+        const time1Format = this.csvProperties.temporalProperties.controls['startFormat'].value;
+        const time2Format = this.csvProperties.temporalProperties.controls['endFormat'].value;
+        const header = this.csvProperties.dataProperties.controls['isHeaderRow'] ? 0 : this.csvProperties.csvTable.header;
+        const columnX = this.csvProperties.csvTable.header[this.csvProperties.spatialProperties['xColumn'].value];
+        const columnY = this.csvProperties.csvTable.header[this.csvProperties.spatialProperties['yColumn'].value];
+        const time1 = this.csvProperties.csvTable.header[this.csvProperties.temporalProperties['startColumn'].value];
+        const time2 = this.csvProperties.csvTable.header[this.csvProperties.temporalProperties['endColumn'].value];
+        const numericColumns = this.csvProperties.csvTable.header.filter((name, index) => this.csvProperties.csvTable.data.isNumberArr[index]);
+        const textualColumns = this.csvProperties.csvTable.header.filter((name, index) => !this.csvProperties.csvTable.data.isNumberArr[index]);
         const onError = 'skip';
 
         let parameters: CSVParameters = {
@@ -118,20 +118,20 @@ export class CsvDialogComponent implements OnInit {
         }
 
         const csvSourceType = new CsvSourceType({
-            dataURI: 'data:text/plain,' + config.content,
+            dataURI: 'data:text/plain,' + this.data.content,
             parameters: parameters,
         });
 
         const operator = new Operator({
             operatorType: csvSourceType,
             resultType: ResultTypes.POINTS,
-            projection: config.spatialRefSys,
+            projection: this.csvProperties.spatialProperties.controls['spatialReferenceSystem'].value,
         }).getProjectedOperator(Projections.WGS_84);
 
         this.uploading$.next(true);
 
         // console.log("SAVE", config, csvSourceType);
-        this.userService.addFeatureToDB(config.layerName, operator)
+        this.userService.addFeatureToDB(this.csvProperties.layerName, operator)
             .subscribe(data => {
                 this.uploading$.next(false);
 
@@ -170,5 +170,23 @@ export class CsvDialogComponent implements OnInit {
             clustered: clustered,
         });
         this.layerService.addLayer(layer);
+    }
+
+    get intervalString(): string {
+        if (!this.csvProperties.temporalProperties.controls['isTime'].value) {
+            return 'none';
+        }
+        switch (this.csvProperties.temporalProperties.controls['intervalType'].value) {
+            case IntervalFormat.StartInf:
+                return 'start+inf';
+            case IntervalFormat.StartEnd:
+                return 'start+end';
+            case IntervalFormat.StartDur:
+                return 'start+duration';
+            case IntervalFormat.StartConst:
+                return 'start+constant';
+            default:
+                return 'none';
+        }
     }
 }

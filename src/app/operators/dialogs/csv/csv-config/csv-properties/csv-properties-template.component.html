@@ -1,3 +1,17 @@
+<md-input-container style="width: 100%;">
+    <input mdInput [(ngModel)]="layerName" (ngModelChange)="storageName$.next($event)" name="layerName" placeholder="File Name"
+           type="input">
+    <md-hint class="error" *ngIf="nameIsReserved$ | async">Name is already in use.</md-hint>
+</md-input-container>
+
+<div fxLayout="row" fxLayoutAlign="left center">
+    <form [formGroup]="temporalProperties" *ngIf="isTemporalProperties$ | async">
+        <md-slide-toggle formControlName="isTime">
+        </md-slide-toggle>
+    </form>
+    <wave-dialog-section-heading [title]="dialogTitle" [subtitle]="subtitleDescription"></wave-dialog-section-heading>
+</div>
+
 <!-- Data Properties -->
 <form *ngIf="isDataProperties$ | async" [formGroup]="dataProperties"
       fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
@@ -58,13 +72,158 @@
 </form>
 
 <!-- Spatial Properties -->
-<form *ngIf="isSpatialProperties$ | async" [formGroup]="spatialProperties">
-
+<form fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+      style="width: 100%; margin-bottom: 1rem;" *ngIf="isSpatialProperties$ | async" [formGroup]="spatialProperties">
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <div class="longitudeSelector">
+            <md-select fxFlex="100"
+                       placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
+                       formControlName="xColumn">
+                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                    <md-option [value]="i">
+                        <template [ngIf]="h !== ''">
+                            {{(i+1) + ' - ' + h}}
+                        </template>
+                        <template [ngIf]="h === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+        <div>
+            <md-select style="width:100%;" placeholder="Spatial Reference System"
+                       formControlName="spatialReferenceSystem">
+                <md-option *ngFor="let projection of [Projections.WGS_84]"
+                           [value]="projection">
+                    {{projection}}
+                </md-option>
+            </md-select>
+        </div>
+    </div>
+    <div fxLayout="column" fxLayoutGap="1rem">
+        <div class="latitudeSelector">
+            <md-select fxFlex="100"
+                       placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
+                       formControlName="yColumn">
+                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                    <md-option [value]="i">
+                        <template [ngIf]="h !== ''">
+                            {{(i+1) + ' - ' + h}}
+                        </template>
+                        <template [ngIf]="h === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+        <div>
+            <md-select style="width:100%;" placeholder="Coordinate format"
+                       style="align: right;" formControlName="coordinateFormat"
+            >
+                <md-option *ngFor="let c of coordinateFormats"
+                           [value]="c">
+                    {{c}}
+                </md-option>
+            </md-select>
+        </div>
+    </div>
 </form>
 
 <!-- Temporal Properties -->
-<form *ngIf="isTemporalProperties$ | async" [formGroup]="temporalProperties">
-
+<form fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+      style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties" *ngIf="isTemporalProperties$ | async">
+    <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
+        <md-select fxFlex="80"
+                   placeholder="Interval type"
+                   formControlName="intervalType"
+        >
+            <md-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value" [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
+                {{intervalType.display}}
+            </md-option>
+        </md-select>
+    </div>
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
+        <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
+            <md-select placeholder="Start column"
+                       name="startCol"
+                       formControlName="startColumn"
+            >
+                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                    <md-option
+                        [value]="i"
+                        [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                        <template [ngIf]="h !== ''">
+                            {{(i+1) + ' - ' + h}}
+                        </template>
+                        <template [ngIf]="h === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+        <div [ngClass]="{endSelector: !(!temporalProperties.controls['isTime'].value
+                                           || !(temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd
+                                           || temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur))}"
+        >
+            <md-select *ngIf="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst"
+                       [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
+                       name="endCol" formControlName="endColumn">
+                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                    <md-option
+                        [value]="i"
+                        [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                        <template [ngIf]="h !== ''">
+                            {{(i+1) + ' - ' + h}}
+                        </template>
+                        <template [ngIf]="h === ''">
+                            {{(i+1) + ' - unnamed'}}
+                        </template>
+                    </md-option>
+                </template>
+            </md-select>
+            <md-input-container *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
+                <input mdInput formControlName="constantDuration" placeholder="Constant duration"
+                       type="input">
+                <span md-suffix>{{temporalProperties.controls['endFormat'].value}}</span>
+            </md-input-container>
+        </div>
+    </div>
+    <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
+        <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
+            <md-select placeholder="Start format"
+                       formControlName="startFormat">
+                <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
+                    {{timeFormat.display}}
+                </md-option>
+            </md-select>
+        </div>
+        <div [ngClass]="{endSelector: !(!temporalProperties.controls['isTime'].value
+                                                    || !(temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd
+                                                    || temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur))}"
+        >
+            <md-select
+                [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration format' : 'End format'"
+                formControlName="endFormat"
+            >
+                <template [ngIf]="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartDur
+                    && temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst">
+                    <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
+                        {{timeFormat.display}}
+                    </md-option>
+                </template>
+                <template
+                    [ngIf]="temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
+                    <md-option *ngFor="let durationFormat of durationFormats"
+                               [value]="durationFormat.value">
+                        {{durationFormat.display}}
+                    </md-option>
+                </template>
+            </md-select>
+        </div>
+    </div>
 </form>
 <!-- Typing Properties -->
 <form *ngIf="isTypingProperties$ | async" [formGroup]="typingProperties">

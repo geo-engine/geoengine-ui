@@ -7,6 +7,26 @@ $endColor: darkviolet;
 $backgroundColor: mat-color(map-get($wave-app-theme, primary));
 $titleColor: white; /*Inherit from theme here.*/
 
+div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $latitudeColor;
+}
+div.longitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $longitudeColor;
+}
+div.startSelector md-select /deep/ span.mat-select-placeholder {
+    color: $startColor;
+}
+div.endSelector md-select /deep/ span.mat-select-placeholder {
+    color: $endColor;
+}
+div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
+    color: $endColor;
+}
+.custom md-input-container /deep/ label.mat-input-placeholder {
+    color: $titleColor;
+    opacity: 0.75;
+}
+
 .table-frame {
     align: center;
     overflow: hidden;
@@ -104,4 +124,58 @@ $titleColor: white; /*Inherit from theme here.*/
     margin-top: 3px;
     margin-bottom: 3px;
     horiz-align: center;
+}
+
+/**Column Colors*/
+td.orange{
+    border-left-style: solid;
+    border-right-style: solid;
+    border-color: $longitudeColor;
+}
+td.blue {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-color: $latitudeColor;
+}
+td.green{
+    border-left-style: solid;
+    border-right-style: solid;
+    border-color:$startColor;
+}
+td.violet {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-color:$endColor;
+}
+.orangeHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$longitudeColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.blueHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$latitudeColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.greenHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$startColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.violetHead {
+    border-left-style:solid;
+    border-right-style:solid;
+    border-top-style:solid;
+    border-color:$endColor;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
