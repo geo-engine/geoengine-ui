@@ -1,4 +1,4 @@
-<wave-dialog-header>Visualization, Analysis and Transformation System</wave-dialog-header>
+<wave-dialog-header>VAT - The Visualization, Analysis and Transformation System</wave-dialog-header>
 <md-dialog-content>
     <h2>Biodiversity Data Easily Explored Online</h2>
     <p>
@@ -10,6 +10,12 @@
         data, and integrate your own data!
     </p>
     <p>For a detailed introduction, please have a look at our help section!</p>
+    <p></p>
+    <p *waveIfGfbio>
+        <wave-gfbio-logo></wave-gfbio-logo>
+        <em>VAT</em> is part of the German Federation for Biological Data (<em>GFBio</em>, <a href="https://www.gfbio.org">www.gfbio.org</a>),
+        a sustainable, service oriented, national data infrastructure facilitating data sharing for biological and environmental research.
+    </p>
 </md-dialog-content>
 <md-dialog-actions align="end">
     <md-checkbox (change)="changeTick($event)">Don't show this message again</md-checkbox>
