@@ -1,7 +1,7 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, Inject} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MdDialogRef, MdDialogConfig} from '@angular/material';
+import {MdDialogRef, MdDialogConfig, MD_DIALOG_DATA} from '@angular/material';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {NotificationService} from '../../../../notification.service';
@@ -27,15 +27,16 @@ export class RScriptSaveComponent implements OnInit, AfterViewInit {
     constructor(private storageService: StorageService,
                 private formBuilder: FormBuilder,
                 private dialogRef: MdDialogRef<RScriptSaveComponent>,
+                @Inject(MD_DIALOG_DATA) private config: RScriptSaveComponentConfig,
                 private notificationService: NotificationService) {
     }
 
     ngOnInit() {
-        const config = this.dialogRef.config as RScriptSaveComponentConfig;
+        // const config = this.dialogRef.config as RScriptSaveComponentConfig;
 
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
-            script: [config.script, Validators.required],
+            script: [this.config.script, Validators.required],
         });
     }
 

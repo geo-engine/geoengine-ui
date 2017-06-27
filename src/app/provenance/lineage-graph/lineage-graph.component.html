@@ -14,13 +14,13 @@
         </md-list>
         <wave-dialog-section-heading>Parameters</wave-dialog-section-heading>
         <md-list>
-            <template ngFor let-parameter [ngForOf]="parameters$ | async">
+            <ng-template ngFor let-parameter [ngForOf]="parameters$ | async">
                 <h3 md-subheader>{{parameter.key}}</h3>
                 <md-list-item>
                     <p md-line>{{parameter.value}}</p>
                 </md-list-item>
                 <md-divider></md-divider>
-            </template>
+            </ng-template>
         </md-list>
     </div>
 </div>

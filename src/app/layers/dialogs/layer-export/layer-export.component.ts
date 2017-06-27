@@ -1,13 +1,13 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, Inject} from '@angular/core';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {MdDialogRef} from '@angular/material';
+import {MD_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {Subscription} from 'rxjs';
+import {Subscription} from 'rxjs/Rx';
 
 interface LayerExportComponentConfig {
     layer: Layer<Symbology>;
@@ -35,14 +35,14 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private dialogRef: MdDialogRef<LayerExportComponent>,
-                private formBuilder: FormBuilder,
-                private mappingQueryService: MappingQueryService) {
+    constructor(private formBuilder: FormBuilder,
+                private mappingQueryService: MappingQueryService,
+                @Inject(MD_DIALOG_DATA) private config: LayerExportComponentConfig) {
     }
 
     ngOnInit() {
-        const config = this.dialogRef.config as LayerExportComponentConfig;
-        this.layer = config.layer;
+        // const config = this.dialogRef.config as LayerExportComponentConfig;
+        this.layer = this.config.layer;
 
         this.isRaster = this.layer.operator.resultType === ResultTypes.RASTER;
         this.isVector = ResultTypes.VECTOR_TYPES.indexOf(this.layer.operator.resultType) >= 0;

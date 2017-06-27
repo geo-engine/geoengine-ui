@@ -1,4 +1,4 @@
-<template [ngIf]="isLoggedOut$ | async">
+<ng-template [ngIf]="isLoggedOut$ | async">
     <wave-sidenav-header>Login</wave-sidenav-header>
     <form [formGroup]="loginForm" (ngSubmit)="$event.preventDefault();login()">
         <div fxLayout="row" fxLayoutAlign="space-around none">
@@ -25,11 +25,11 @@
             Login
         </button>
     </form>
-</template>
-<template [ngIf]="isLoading$ | async">
+</ng-template>
+<ng-template [ngIf]="isLoading$ | async">
     <md-spinner></md-spinner>
-</template>
-<template [ngIf]="isLoggedIn$ | async">
+</ng-template>
+<ng-template [ngIf]="isLoggedIn$ | async">
     <wave-sidenav-header>User Info</wave-sidenav-header>
     <div fxLayout="row" class="container">
         <div class="label">
@@ -46,4 +46,4 @@
     <div fxLayout="row" class="container">
         <button md-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
     </div>
-</template>
+</ng-template>

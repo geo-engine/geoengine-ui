@@ -95,7 +95,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     template: `
         <div class='legend'>
             <tbody>
-                <template [ngIf]='symbology.isUnknown()'>
+                <ng-template [ngIf]='symbology.isUnknown()'>
                     <tr>
                         <td>Interpolation</td><td>{{symbology?.interpolation}}</td>
                     </tr>
@@ -105,13 +105,13 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                     <tr>
                         <td>Unit</td><td>{{symbology?.unit?.unit}}</td>
                     </tr>                    
-                </template>
-                <template [ngIf]='!symbology.isUnknown()'>
+                </ng-template>
+                <ng-template [ngIf]='!symbology.isUnknown()'>
                     <tr
                         *ngFor='let breakpoint of (symbology.colorizer$ | async)?.breakpoints;
                                 let isFirst = first'
                     >
-                        <template [ngIf]='symbology.isContinuous()'>
+                        <ng-template [ngIf]='symbology.isContinuous()'>
                             <td class='gradient'
                                 *ngIf='isFirst'
                                 [rowSpan]='(symbology.colorizer$ | async)?.breakpoints.length'
@@ -120,16 +120,16 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                             ></td>
                             <td>{{breakpoint[0]}}</td>
                             <td *ngIf='isFirst'>{{symbology?.unit.unit}}</td>
-                        </template>
-                        <template [ngIf]='symbology.isDiscrete()'>
+                        </ng-template>
+                        <ng-template [ngIf]='symbology.isDiscrete()'>
                             <td class ='classes'><div
                                 class='icon'
                                 [style.background-color]='breakpoint[1]'
                             ></div></td>
                             <td>{{symbology?.unit.classes.get(breakpoint[0])}}</td>                        
-                        </template>                        
+                        </ng-template>                        
                     </tr>
-                </template>
+                </ng-template>
             </tbody>
         </div>
         `,

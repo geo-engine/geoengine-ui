@@ -2,7 +2,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
-import {MaterialModule, MdIconRegistry} from '@angular/material';
+import {MdIconRegistry} from '@angular/material';
+import {MaterialModule} from './material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
@@ -91,7 +93,7 @@ import {ChangeProjectionComponent} from './project/change-projection/change-proj
 import {NewProjectComponent} from './project/new-project/new-project.component';
 import {LoadProjectComponent} from './project/load-project/load-project.component';
 import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.component';
-import {ColorPickerModule} from 'angular2-color-picker';
+import {ColorPickerModule} from 'ngx-color-picker';
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.component';
@@ -198,6 +200,7 @@ export function configInitializer(config: Config) {
         BrowserModule,
         FormsModule,
         HttpModule,
+        BrowserAnimationsModule,
         MaterialModule,
         FlexLayoutModule,
         DragulaModule,

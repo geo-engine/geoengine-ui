@@ -9,7 +9,7 @@
     </div>
 
 
-    <template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
+    <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
         <!-- Data-Table -->
         <table #scrollContainerContent>
             <thead> <!--#tableHead-->
@@ -66,7 +66,7 @@
             </tr>
             </tbody>
         </table>
-    </template>
+    </ng-template>
     <div *ngIf="!(layerService.getIsAnyLayerSelectedStream() | async)" class="no-layer">
         <span>no layer selected</span>
         </div>

@@ -106,16 +106,16 @@
         <div class="longitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.xCoordinateName}}-Coordinate column"
                        name="xCoord" (change)="update(false)" [(ngModel)]="model.xCol">
-                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option [disabled]="i === (yColumn$ | async)" [value]="i">
-                        <template [ngIf]="model.header[i] !== ''">
+                        <ng-template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
-                        </template>
-                        <template [ngIf]="model.header[i] === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="model.header[i] === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div>
@@ -133,16 +133,16 @@
         <div class="latitudeSelector">
             <md-select fxFlex="100" placeholder="{{model.spatialRefSys.yCoordinateName}}-Coordinate column"
                        name="yCoord" (change)="update(false)" [(ngModel)]="model.yCol">
-                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option [disabled]="i === (xColumn$ | async)" [value]="i">
-                        <template [ngIf]="model.header[i] !== ''">
+                        <ng-template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
-                        </template>
-                        <template [ngIf]="model.header[i] === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="model.header[i] === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div>
@@ -184,18 +184,18 @@
                        [(ngModel)]="model.startCol"
                        [disabled]="model.intervalType.indexOf('start') < 0 || !model.isTime"
             >
-                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
                         [disabled]="((model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0) && model.isTime && i === (yColumn$ | async)) || i === model.xCol || i === model.yCol"
                         [value]="i">
-                        <template [ngIf]="model.header[i] !== ''">
+                        <ng-template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
-                        </template>
-                        <template [ngIf]="model.header[i] === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="model.header[i] === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div [ngClass]="{endSelector: !(!model.isTime
@@ -206,18 +206,18 @@
                 [placeholder]="(model.intervalType.indexOf('duration') >= 0) ? 'Duration column' : 'End Column'"
                 name="endCol" (change)="update(false)" [(ngModel)]="model.endCol"
                 [disabled]="!(model.intervalType.indexOf('end') >= 0 || model.intervalType.indexOf('duration') >= 0) || !model.isTime">
-                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <md-option
                         [disabled]="(model.intervalType.indexOf('start') >= 0 && model.isTime && i === (xColumn$ | async)) || i === model.xCol || i === model.yCol"
                         [value]="i">
-                        <template [ngIf]="model.header[i] !== ''">
+                        <ng-template [ngIf]="model.header[i] !== ''">
                             {{(i+1) + ' - ' + model.header[i]}}
-                        </template>
-                        <template [ngIf]="model.header[i] === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="model.header[i] === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
     </div>
@@ -244,17 +244,17 @@
                                                     || !(model.intervalType.indexOf('end') >= 0
                                                     || model.intervalType.indexOf('duration') >= 0)"
             >
-                <template [ngIf]="model.intervalType.indexOf('duration') < 0">
+                <ng-template [ngIf]="model.intervalType.indexOf('duration') < 0">
                     <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
                         {{timeFormat.display}}
                     </md-option>
-                </template>
-                <template [ngIf]="model.intervalType.indexOf('duration') >= 0">
+                </ng-template>
+                <ng-template [ngIf]="model.intervalType.indexOf('duration') >= 0">
                     <md-option *ngFor="let durationFormat of durationFormats"
                                [value]="durationFormat.value">
                         {{durationFormat.display}}
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
     </div>
@@ -266,7 +266,7 @@
     <div #typingdiv class="typingdiv" *ngIf="(isTypingProperties$ | async)">
         <table #typingtable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
-                <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;">
                         <md-select placeholder="Type" style="width: 100%; margin-top: 1rem;"
                                    name="isNumber_{{i}}" *ngIf="typedCols.indexOf(i) < 0"
@@ -294,7 +294,7 @@
                         </p>
                     </td>
                     <td *ngIf="i !== model.header.length-1" name="spacer"></td>
-                </template>
+                </ng-template>
             </tr>
         </table>
     </div>
@@ -302,18 +302,18 @@
         <table #headertable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <!-- header goes here -->
-                <template [ngIf]="model.isHeaderRow">
-                    <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                <ng-template [ngIf]="model.isHeaderRow">
+                    <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                         <td style="margin-left:0; margin-right:0; padding-bottom: 3px; white-space: nowrap;"
                             title="{{model.header[i]}}"
                             [ngClass]="{'orangeHead': (isSpatialProperties$ | async) && (i === (xColumn$ | async)), 'blueHead': (isSpatialProperties$ | async) && (i === (yColumn$ | async)), 'greenHead': model.isTime && (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, 'violetHead': model.isTime && (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                             {{model.header[i]}}
                         </td>
                         <td *ngIf="i !== model.header.length-1" name="spacer"></td>
-                    </template>
-                </template>
-                <template [ngIf]="!model.isHeaderRow">
-                    <template ngFor let-i [ngForOf]="range(0,model.header.length)">
+                    </ng-template>
+                </ng-template>
+                <ng-template [ngIf]="!model.isHeaderRow">
+                    <ng-template ngFor let-i [ngForOf]="range(0,model.header.length)">
                         <td class="custom" style="margin-left:0; margin-right:0;"
                             [ngClass]="{orangeHead: (isSpatialProperties$ | async) && (i === (xColumn$ | async)), blueHead: (isSpatialProperties$ | async) && (i === (yColumn$ | async)), greenHead: model.isTime && (isTemporalProperties$ |async) && (i === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violetHead: model.isTime && (isTemporalProperties$ | async) && (i === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                             <md-input-container>
@@ -322,8 +322,8 @@
                             </md-input-container>
                         </td>
                         <td *ngIf="i !== model.header.length-1" name="spacer"></td>
-                    </template>
-                </template>
+                    </ng-template>
+                </ng-template>
             </tr>
         </table>
     </div>
@@ -331,13 +331,13 @@
         <table #bodytable class="resizeTable" cellspacing="0" cellpadding="0">
             <!-- body goes here -->
             <tr *ngFor="let i of range(0,elements.length)" style="white-space: nowrap;">
-                <template ngFor let-j [ngForOf]="range(0,model.header.length)">
+                <ng-template ngFor let-j [ngForOf]="range(0,model.header.length)">
                     <td style="margin-left:0; margin-right:0;"
                         [ngClass]="{orange: (isSpatialProperties$ | async) && (j === (xColumn$ | async)), blue: (isSpatialProperties$ | async) && (j === (yColumn$ | async)), green: model.isTime && (isTemporalProperties$ |async) && (j === (xColumn$ | async)) && model.intervalType.indexOf('start') >= 0, violet: model.isTime && (isTemporalProperties$ | async) && (j === (yColumn$ | async)) && (model.intervalType.indexOf('duration') >= 0 || model.intervalType.indexOf('end') >= 0)}">
                         {{elements[i][j]}}
                     </td>
                     <td *ngIf="j !== model.header.length-1" name="spacer"></td>
-                </template>
+                </ng-template>
             </tr>
         </table>
     </div>

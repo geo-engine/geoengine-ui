@@ -1,5 +1,5 @@
-import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit, Inject} from '@angular/core';
+import {MD_DIALOG_DATA} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
 import {BehaviorSubject} from 'rxjs/Rx';
@@ -13,18 +13,18 @@ import {LayoutService} from '../../layout.service';
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit {
 
-    plot: Plot;
+    // plot: Plot;
 
     maxWidth$ = new BehaviorSubject<number>(undefined);
     maxHeight$ = new BehaviorSubject<number>(undefined);
 
-    constructor(private dialogRef: MdDialogRef<PlotDetailViewComponent>,
-                public projectService: ProjectService,
-                private elementRef: ElementRef) {
+    constructor(public projectService: ProjectService,
+                private elementRef: ElementRef,
+                @Inject(MD_DIALOG_DATA) public plot: Plot) {
     }
 
     ngOnInit() {
-        this.plot = this.dialogRef.config.data;
+        // this.plot = this.dialogRef.config.data;
     }
 
     ngAfterViewInit() {

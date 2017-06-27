@@ -1,12 +1,12 @@
 <wave-sidenav-header>ABCD Archives</wave-sidenav-header>
 <wave-sidenav-search (searchString)="searchString$.next($event)"></wave-sidenav-search>
 <md-nav-list>
-    <template ngFor let-group [ngForOf]='groups | async'>
+    <ng-template ngFor let-group [ngForOf]='groups | async'>
         <div md-subheader class="datagroup" fxLayout="row" fxLayoutAlign="space-between center">
             <span bind-innerHtml = "group.name | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></span>
             <span><a md-icon-button target='_blank' href={{group?.uri}} *ngIf="!!group.uri"><md-icon>open_in_new</md-icon></a></span>
         </div>
-        <template ngFor let-archive [ngForOf]='group.group'>
+        <ng-template ngFor let-archive [ngForOf]='group.group'>
             <md-list-item *ngIf="archive.available">
                 <a  md-icon-button
                     target='_blank'
@@ -20,7 +20,7 @@
                     <span bind-innerHtml = "archive.dataset | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></span>
                 </p>
             </md-list-item>
-        </template>
+        </ng-template>
         <md-divider></md-divider>
-    </template>
+    </ng-template>
 </md-nav-list>

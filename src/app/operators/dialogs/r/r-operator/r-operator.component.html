@@ -1,7 +1,7 @@
 <wave-sidenav-header>R Operator</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
     <div fxFlex class="container">
-        <template [ngIf]="!this.editable">
+        <ng-template [ngIf]="!this.editable">
             <wave-multi-layer-selection
                 [types]="[ResultTypes.RASTER]"
                 formControlName="rasterLayers"
@@ -12,15 +12,15 @@
                 formControlName="pointLayers"
                 [min]="0" [max]="5" [initialAmount]="0"
             ></wave-multi-layer-selection>
-        </template>
-        <template [ngIf]="this.editable">
+        </ng-template>
+        <ng-template [ngIf]="this.editable">
             <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourceRasters">No Input Available</p>
             <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourcePoints">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourcePoints">No Input Available</p>
-        </template>
+        </ng-template>
 
         <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
 

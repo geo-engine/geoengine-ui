@@ -1,5 +1,5 @@
 <div class='container' [style.height.px]='height'>
-    <template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
+    <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
         <md-list dense>
             <md-list-item *ngFor="let p of provenance$ | async; let last = last">
                 <dl>
@@ -13,10 +13,10 @@
                 <md-divider *ngIf="!last"></md-divider>
             </md-list-item>
         </md-list>
-    </template>
-    <template [ngIf]="!(layerService.getIsAnyLayerSelectedStream() | async)">
+    </ng-template>
+    <ng-template [ngIf]="!(layerService.getIsAnyLayerSelectedStream() | async)">
         <div class="no-layer">
             <span>no layer selected</span>
         </div>
-    </template>
+    </ng-template>
 </div>

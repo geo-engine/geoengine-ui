@@ -1,5 +1,5 @@
 <wave-sidenav-header>Save As</wave-sidenav-header>
-<template [ngIf]="!(created$ | async)">
+<ng-template [ngIf]="!(created$ | async)">
     <p>
         Save the current project under a different name.
     </p>
@@ -23,11 +23,11 @@
         </div>
         <button md-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
     </form>
-</template>
-<template [ngIf]="created$ | async">
+</ng-template>
+<ng-template [ngIf]="created$ | async">
     <p class="finished">
         Saved project under <em>{{form.controls['name'].value}}</em> and switched to it.
         <br><br>
         You are ready to go!
     </p>
-</template>
+</ng-template>
