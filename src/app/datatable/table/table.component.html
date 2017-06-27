@@ -1,4 +1,4 @@
-<div class="scrollContent" [style.height.px]="height" #scrollContainer (window:resize)="updateContainer()" (scroll)="updateScroll()">
+<div class="scrollContent" [style.height.px]="height" #scrollContainer (scroll)="updateScroll()">
 
     <!-- Loading Spinner -->
     <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
@@ -24,7 +24,7 @@
                 <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
                     class="tableFixed tableFixedHorizontal">
                     <div class="tableCell" [style.width.px]="avgWidths[i]">
-                        {{t}}
+                        {{dataHeadUnits[i]}}
                     </div>
                 </th>
             </tr>
@@ -32,7 +32,7 @@
 
             <tbody> <!--#tableBody-->
             <!-- Top Offset for virtual scrolling-->
-            <tr #offsetterTop [style.height.px]="offsetTop" class="offsetterTop">
+            <tr #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop">
                 <td [style.width]="'100%'"></td>
             </tr>
 
@@ -61,7 +61,7 @@
             </tr>
 
             <!-- Bottom Offset for virtual scrolling-->
-            <tr #offsetterBottom [style.height.px]="offsetBottom" class="offsetterBottom">
+            <tr #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom">
                 <td [style.width]="'100%'"></td>
             </tr>
             </tbody>

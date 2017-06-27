@@ -5,6 +5,7 @@
     width: 100%;
     //border: @border;
     position: relative;
+    overflow-anchor: none;
 }
 
 table{
@@ -37,7 +38,7 @@ table{
     }
 
     tbody{
-        td:not(.tableFixed) .tableCell{
+        td:not(.tableFixed) .tableCell, td:not(.tableFixed) .tableCell span{
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -65,6 +66,11 @@ table{
         //width: -webkit-max-content; /* Chrome */
         //width: 600px;
         max-width: 600px;
+
+        span{
+            height: 36px;
+            display: block;
+        }
     }
 
     //For testing only
