@@ -8,6 +8,8 @@ import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {Observable} from 'rxjs/Rx';
 
+const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
+
 /**
  * StorageProvider implementation that uses the brower's localStorage
  */
@@ -38,7 +40,7 @@ export class BrowserStorageProvider extends StorageProvider {
     }
 
     loadProject(operatorMap: Map<number, Operator>): Observable<Project> {
-        const projectJSON = localStorage.getItem('project');
+        const projectJSON = localStorage.getItem(PATH_PREFIX + 'project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
             return Observable.of(undefined);
         } else {
@@ -53,12 +55,12 @@ export class BrowserStorageProvider extends StorageProvider {
     }
 
     saveProject(project: Project): Observable<void> {
-        localStorage.setItem('project', project.toJSON());
+        localStorage.setItem(PATH_PREFIX + 'project', project.toJSON());
         return Observable.of(undefined);
     }
 
     loadLayers(operatorMap: Map<number, Operator>): Observable<Array<Layer<Symbology>>> {
-        const layersJSON = localStorage.getItem('layers');
+        const layersJSON = localStorage.getItem(PATH_PREFIX + 'layers');
         if (layersJSON === null) { // tslint:disable-line:no-null-keyword
             return Observable.of(undefined);
         } else {
@@ -86,12 +88,12 @@ export class BrowserStorageProvider extends StorageProvider {
             layerDicts.push(layer.toDict());
         }
 
-        localStorage.setItem('layers', JSON.stringify(layerDicts));
+        localStorage.setItem(PATH_PREFIX + 'layers', JSON.stringify(layerDicts));
         return Observable.of(undefined);
     }
 
     loadLayoutSettings(): Observable<LayoutDict> {
-        const layoutSettings = localStorage.getItem('layoutSettings');
+        const layoutSettings = localStorage.getItem(PATH_PREFIX + 'layoutSettings');
         if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
             return Observable.of(undefined);
         } else {
@@ -100,7 +102,7 @@ export class BrowserStorageProvider extends StorageProvider {
     };
 
     saveLayoutSettings(dict: LayoutDict): Observable<{}> {
-        localStorage.setItem('layoutSettings', JSON.stringify(dict));
+        localStorage.setItem(PATH_PREFIX + 'layoutSettings', JSON.stringify(dict));
         return Observable.of({});
     };
 
@@ -131,7 +133,7 @@ export class BrowserStorageProvider extends StorageProvider {
     loadRScript(name: string): Observable<RScript> {
         const scripts: {
             [index: string]: RScriptDict
-        } = JSON.parse(localStorage.getItem('r_scripts'));
+        } = JSON.parse(localStorage.getItem(PATH_PREFIX + 'r_scripts'));
         return Observable.of({
             code: scripts[name].code,
             resultType: ResultTypes.fromCode(scripts[name].resultType),
@@ -141,7 +143,7 @@ export class BrowserStorageProvider extends StorageProvider {
     getRScripts(): Observable<Array<string>> {
         const scripts: {
             [index: string]: RScriptDict
-        } = JSON.parse(localStorage.getItem('r_scripts'));
+        } = JSON.parse(localStorage.getItem(PATH_PREFIX + 'r_scripts'));
         return Observable.of(Object.keys(scripts));
     };
 
