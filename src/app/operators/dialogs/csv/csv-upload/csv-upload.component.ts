@@ -13,6 +13,7 @@ export interface UploadData {
     content: string;
     progress: number;
     isNull: boolean;
+    isNumberArr: boolean[];
 }
 
 @Component({
@@ -35,7 +36,8 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
         file: null,
         content: '',
         progress: 0,
-        isNull: true
+        isNull: true,
+        isNumberArr: [],
     };
 
     private subscriptions: Array<Subscription> = [];
@@ -63,7 +65,8 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
                 file: $event.target.files[0],
                 content: '',
                 progress: 0,
-                isNull: false
+                isNull: false,
+                isNumberArr: []
             };
             $event.target.value = '';
             this.upload();
@@ -73,7 +76,8 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
                 file: null,
                 content: '',
                 progress: 0,
-                isNull: true
+                isNull: true,
+                isNumberArr: []
             };
             if ($event.target.files[0].size > this.file_size_limit) {
                 $event.target.value = '';

@@ -17,6 +17,8 @@ import {LayoutService} from '../../../layout.service';
 import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 import {RScriptType} from '../../types/r-script-type.model';
+import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
+import {PieChartType} from '../../types/piechart-type.model';
 
 interface OperatorListType {
     component: Type<Component>;
@@ -42,6 +44,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: HistogramOperatorComponent,
         type: HistogramType,
         description: 'Create a histogram from vector or raster data',
+    },
+    {
+        component: PieChartComponent,
+        type: PieChartType,
+        description: 'Plot your data as a pie chart',
     },
 ];
 

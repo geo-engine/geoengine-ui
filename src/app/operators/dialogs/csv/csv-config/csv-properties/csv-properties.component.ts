@@ -373,7 +373,4 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
     }
-    get valid() {
-        return this.dataProperties.valid && this.spatialProperties && this.temporalProperties;
-    }
 }

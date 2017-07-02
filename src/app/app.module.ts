@@ -99,6 +99,7 @@ import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script
 import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
 import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
+import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -175,6 +176,8 @@ export function configInitializer(config: Config) {
         SplashDialogComponent,
         HelpComponent,
         PlotDetailViewComponent,
+        CsvDialogComponent,
+        CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
         RasterIconComponent,
@@ -191,10 +194,9 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
-        CsvDialogComponent,
-        CsvUploadComponent,
         CsvPropertiesComponent,
         CsvTableComponent,
+        PieChartComponent,
     ],
     imports: [
         BrowserModule,
@@ -238,6 +240,7 @@ export function configInitializer(config: Config) {
         ROperatorComponent,
         RScriptSaveComponent,
         RScriptLoadComponent,
+        PieChartComponent,
     ],
     providers: [
         DragulaService,

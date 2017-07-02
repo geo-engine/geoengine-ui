@@ -36,16 +36,16 @@
               </button>
             </span>
         <span
-            *ngIf="(csvProperties.isSpatialProperties$ | async) || (csvProperties.isDataProperties$ | async) || (csvProperties.isTemporalProperties$ | async)">
+            *ngIf="((csvProperties.isSpatialProperties$ | async) || (csvProperties.isDataProperties$ | async) || (csvProperties.isTemporalProperties$ | async)) && csvProperties.csvTable">
                 <button md-raised-button color="primary" (click)="csvProperties.nextPage()"
                         [disabled]="!(csvProperties.actualPage$ | async).valid || (csvProperties.formStatus$.getValue() === FormStatus.DataProperties && csvProperties.csvTable.header.length < 2)"
                 >
                     Next
                 </button>
             </span>
-        <button md-raised-button color="primary" (click)="csvProperties.submit()"
+        <button md-raised-button color="primary" (click)="submit()"
                 *ngIf="csvProperties.isTypingProperties$ | async"
-                [disabled]="!csvProperties.valid || (csvProperties.nameIsReserved$ | async) || csvProperties.layerName === ''"
+                [disabled]="!(csvProperties.actualPage$ | async).valid || (csvProperties.nameIsReserved$ | async) || csvProperties.layerName === ''"
         >
             Submit
         </button>

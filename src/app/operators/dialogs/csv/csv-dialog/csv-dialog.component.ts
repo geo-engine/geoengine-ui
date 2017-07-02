@@ -12,7 +12,7 @@ import {RandomColorService} from '../../../../util/services/random-color.service
 import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
-import {FormStatus} from '../csv-config/csv-properties/csv-properties.component';
+import {ProjectionType} from '../../../types/projection-type.model';
 import {IntervalFormat} from '../interval.enum';
 import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
 
@@ -24,7 +24,6 @@ import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-propertie
 })
 export class CsvDialogComponent implements OnInit {
 
-    FormStatus = FormStatus;
     IntervalFormat = IntervalFormat;
     @ViewChild(CsvPropertiesComponent) csvProperties;
     data: UploadData = undefined;
@@ -47,13 +46,13 @@ export class CsvDialogComponent implements OnInit {
         const time = this.intervalString;
         const time1Format = this.csvProperties.temporalProperties.controls['startFormat'].value;
         const time2Format = this.csvProperties.temporalProperties.controls['endFormat'].value;
-        const header = this.csvProperties.dataProperties.controls['isHeaderRow'] ? 0 : this.csvProperties.csvTable.header;
-        const columnX = this.csvProperties.csvTable.header[this.csvProperties.spatialProperties['xColumn'].value];
-        const columnY = this.csvProperties.csvTable.header[this.csvProperties.spatialProperties['yColumn'].value];
-        const time1 = this.csvProperties.csvTable.header[this.csvProperties.temporalProperties['startColumn'].value];
-        const time2 = this.csvProperties.csvTable.header[this.csvProperties.temporalProperties['endColumn'].value];
-        const numericColumns = this.csvProperties.csvTable.header.filter((name, index) => this.csvProperties.csvTable.data.isNumberArr[index]);
-        const textualColumns = this.csvProperties.csvTable.header.filter((name, index) => !this.csvProperties.csvTable.data.isNumberArr[index]);
+        const header = this.csvProperties.csvTable.header;
+        const columnX = header[this.csvProperties.spatialProperties.controls['xColumn'].value];
+        const columnY = header[this.csvProperties.spatialProperties.controls['yColumn'].value];
+        const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ? header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
+        const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ? header[this.csvProperties.temporalProperties.controls['endColumn'].value] : '';
+        const numericColumns = header.filter((name, index) => this.data.isNumberArr[index]);
+        const textualColumns = header.filter((name, index) => !this.data.isNumberArr[index]);
         const onError = 'skip';
 
         let parameters: CSVParameters = {

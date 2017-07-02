@@ -97,6 +97,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
             } else {
                 this.csvProperty.temporalProperties.controls['isTime'].enable();
             }
+            // TODO: set Start/End column to a valid value, if it exceeds header length.
         }
     }
 
@@ -175,7 +176,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         let width = 0;
         for (let t of tableArr) {
-            width = Math.max(width, t.getBoundingClientRect().width);
+            width = Math.max(width, t.clientWidth);
         }
         this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
         this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
@@ -188,8 +189,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     resize() {
         this.resetTableSize();
         this.update(10);
-        setTimeout(() => this.resizeTable(), 20);
-        this.update(20);
+        setTimeout(() => this.resizeTable(), 100);
+        this.update(100);
     }
 
     ending(i: number): string {
@@ -219,5 +220,12 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
             this.csvProperty.temporalProperties.controls['isTime'].enable();
         }
+    }
+
+    get notOnlyWhiteSpace() : boolean {
+        for(let h of this.header) {
+            if(h === '' || h === null || h === undefined) return false;
+        }
+        return true;
     }
 }
