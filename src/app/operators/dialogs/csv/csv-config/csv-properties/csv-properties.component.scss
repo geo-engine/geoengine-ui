@@ -1,0 +1,31 @@
+@import "../../../../../../wave-app-theme";
+
+$latitudeColor: #26c5ff;
+$longitudeColor: orange;
+$startColor: darkgreen;
+$endColor: darkviolet;
+$backgroundColor: mat-color(map-get($wave-app-theme, primary));
+$titleColor: white; /*Inherit from theme here.*/
+
+div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $latitudeColor;
+}
+div.longitudeSelector md-select /deep/ span.mat-select-placeholder {
+    color: $longitudeColor;
+}
+div.startSelector md-select /deep/ span.mat-select-placeholder {
+    color: $startColor;
+}
+div.endSelector md-select /deep/ span.mat-select-placeholder {
+    color: $endColor;
+}
+div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
+    color: $endColor;
+}
+.custom md-input-container /deep/ label.mat-input-placeholder {
+    color: $titleColor;
+    opacity: 0.75;
+}
+.error {
+    color: mat-color($wave-app-warn);
+}

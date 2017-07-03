@@ -1,0 +1,28 @@
+<wave-sidenav-header>Pie chart plot</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <div fxLayout="column" class="container" *ngIf="pointLayers.length > 0">
+        <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
+        <md-select
+            formControlName="layer"
+            fxFlex
+        >
+            <md-option *ngFor="let layer of pointLayers" [value]="layer">{{layer.name}}</md-option>
+        </md-select>
+    </div>
+    <div *ngIf="form.controls['layer'].value" class="container">
+        <wave-dialog-section-heading title="Attribute" [subtitle]="'Select an attribute of layer ' + form.controls['layer'].value.name"></wave-dialog-section-heading>
+        <md-select placeholder="Attribute" formControlName="attribute">
+            <md-option
+                *ngFor="let attribute of form.controls['layer'].value.operator.attributes"
+                [value]="attribute"
+            >{{attribute}}
+            </md-option>
+        </md-select>
+    </div>
+    <p *ngIf="pointLayers.length <= 0 ">No Input available</p>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Create
+        </button>
+    </div>
+</form>

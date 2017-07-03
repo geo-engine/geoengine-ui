@@ -82,7 +82,6 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
-import {CsvConfigComponent} from './operators/dialogs/csv/csv-config/csv-config.component';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
@@ -100,6 +99,9 @@ import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.co
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script-save.component';
 import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
+import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
+import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
+import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -177,7 +179,6 @@ export function configInitializer(config: Config) {
         HelpComponent,
         PlotDetailViewComponent,
         CsvDialogComponent,
-        CsvConfigComponent,
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
@@ -195,6 +196,9 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
+        CsvPropertiesComponent,
+        CsvTableComponent,
+        PieChartComponent,
     ],
     imports: [
         BrowserModule,
@@ -239,6 +243,7 @@ export function configInitializer(config: Config) {
         ROperatorComponent,
         RScriptSaveComponent,
         RScriptLoadComponent,
+        PieChartComponent,
     ],
     providers: [
         DragulaService,
