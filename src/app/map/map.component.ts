@@ -102,7 +102,7 @@ export class MapComponent implements AfterViewInit, AfterViewChecked, OnChanges,
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        // console.log('map changes', changes, this);
+        console.log('map changes', changes, this);
 
         for (let propName in changes) {
             switch (propName) {

@@ -161,14 +161,14 @@ export class CsvDialogComponent implements OnInit {
             name: entry.name,
             operator: entry.operator,
             symbology: symbology,
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator: entry.operator,
-                clustered: clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //     operator: entry.operator,
+            //     clustered: clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
             clustered: clustered,
         });
-        //this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
     }
 }

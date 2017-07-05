@@ -170,12 +170,10 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         const layer = new RasterLayer({
             name: name,
             operator: operator,
-            symbology: new MappingColorizerRasterSymbology({unit: unit},
-                this.mappingQueryService.getColorizerStream(operator)
-            ),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            symbology: new MappingColorizerRasterSymbology({unit: unit}),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
-        //this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
 
     }

@@ -201,13 +201,13 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 new SimplePointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator, clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //     operator, clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         });
-        //this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
 
 

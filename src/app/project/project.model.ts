@@ -104,18 +104,20 @@ export class Project {
             parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
-        let layers: Array<Layer<Symbology>> = [];
+        let layers: Array<Layer<Symbology>>;
         if (parameters.dict.layers) {
             layers = parameters.dict.layers
                 .map(layerDict => {
                     try {
-                        return undefined; //Layer.fromDict(layerDict, parameters.operatorMap); TODO: DO STHNG!
+                        return Layer.fromDict(layerDict, parameters.operatorMap);
                     } catch (error) {
                         parameters.notificationService.error(`Cannot load layer because of »${error}«`);
                         return undefined;
                     }
                 })
                 .filter(layer => layer !== undefined);
+        } else {
+            layers = [];
         }
 
         return new Project({

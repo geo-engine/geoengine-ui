@@ -85,6 +85,7 @@ export class ProjectService {
                 this.plots$.next(project.plots);
             }
             if (project.layers !== this.layers$.getValue()) {
+                console.log("project.service changed project.layers");
                 this.layers$.next(project.layers);
             }
         });
@@ -109,14 +110,19 @@ export class ProjectService {
 
     setProject(project: Project) {
         this.clearPlots();
+        this.clearLayers();
         this.project$.next(new Project({
             name: project.name,
             projection: project.projection,
             time: project.time,
             plots: [],
+            layers: [],
         }));
         for (const plot of project.plots.reverse()) {
             this.addPlot(plot, false);
+        }
+        for (const layer of project.layers.reverse()) {
+            this.addLayer(layer);
         }
     }
 
@@ -136,7 +142,7 @@ export class ProjectService {
         plots?: Array<Plot>,
         layers?: Array<Layer<Symbology>>
     }) {
-
+        console.log('Project::ProjectService.changeProjectConfig', config);
         const project = this.project$.value;
 
         this.project$.next(new Project({
@@ -144,7 +150,7 @@ export class ProjectService {
             projection: config.projection ? config.projection : project.projection,
             time: config.time ? config.time : project.time,
             plots: config.plots ? config.plots : project.plots,
-            layers: config.layers ? config.layers: project.layers,
+            layers: config.layers ? config.layers : project.layers,
         }));
     }
 
@@ -216,7 +222,7 @@ export class ProjectService {
      * @param plot
      */
     removePlot(plot: Plot) {
-        const plots = this.getProject().plots;
+        const plots = Array.from(this.getProject().plots);
         const plotIndex = plots.indexOf(plot);
         if (plotIndex >= 0) {
             plots.splice(plotIndex, 1);
@@ -356,7 +362,7 @@ export class ProjectService {
         const layerDataLoadingState$ = new ReplaySubject(1);
         const layerData$ = new ReplaySubject(1);
         let layerDataSub: Subscription;
-        switch(layer.getLayerType()) {
+        switch (layer.getLayerType()) {
             case 'raster':
                 layerDataSub = this.createRasterLayerDataSubscription(
                     layer as RasterLayer<RasterSymbology>, layerData$, layerDataLoadingState$
@@ -371,7 +377,7 @@ export class ProjectService {
         this.layerDataState$.set(layer, layerDataLoadingState$);
         this.layerData$.set(layer, layerData$);
 
-        if(layer.getLayerType() === 'raster') {
+        if (layer.getLayerType() === 'raster') {
             const symbologyDataLoadingState$ = new ReplaySubject(1);
             const symbologyData$ = new ReplaySubject(1);
             const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
@@ -408,10 +414,12 @@ export class ProjectService {
      * @param layer
      */
     removeLayer(layer: Layer<Symbology>) {
-        const layers = this.getProject().layers;
+        const layers = Array.from(this.getProject().layers);
         const layerIndex = layers.indexOf(layer);
+        console.log("REMOVE LAYER", layer, layers, layerIndex);
         if (layerIndex >= 0) {
-            layers.splice(layerIndex, 1);
+            const removedLayers = layers.splice(layerIndex, 1);
+            console.log("REMOVE LAYER 2", removedLayers, layers);
             this.changeProjectConfig({
                 layers: layers
             });
@@ -431,13 +439,13 @@ export class ProjectService {
             this.layerProvenanceData$.delete(layer);
 
             const lsdsub = this.layerSymbologyDataSubscriptions.get(layer);
-            if(lsdsub) lsdsub.unsubscribe();
+            if (lsdsub) lsdsub.unsubscribe();
             this.layerSymbologyDataSubscriptions.delete(layer);
             const lsds = this.layerSymbologyDataState$.get(layer);
-            if(lsds) lsds.complete();
+            if (lsds) lsds.complete();
             this.layerSymbologyDataState$.delete(layer);
             const lsd = this.layerSymbologyData$.get(layer);
-            if(lsd) lsd.complete();
+            if (lsd) lsd.complete();
             this.layerSymbologyData$.delete(layer);
         }
     }
@@ -450,7 +458,7 @@ export class ProjectService {
         this.layerDataSubscriptions.get(layer).unsubscribe();
         this.layerDataSubscriptions.delete(layer);
 
-        switch(layer.getLayerType()) {
+        switch (layer.getLayerType()) {
             case 'raster': {
                 this.layerDataSubscriptions.set(layer,
                     this.createRasterLayerDataSubscription(
@@ -488,12 +496,12 @@ export class ProjectService {
         this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
         this.layerProvenanceDataSubscriptions.delete(layer);
 
-        if(this.layerSymbologyDataSubscriptions.has(layer)) {
+        if (this.layerSymbologyDataSubscriptions.has(layer)) {
             this.layerSymbologyDataSubscriptions.get(layer).unsubscribe();
             this.layerSymbologyDataSubscriptions.delete(layer);
         }
 
-        switch(layer.getLayerType()) {
+        switch (layer.getLayerType()) {
             case 'raster': {
                 this.layerDataSubscriptions.set(layer,
                     this.createRasterLayerDataSubscription(
@@ -550,8 +558,8 @@ export class ProjectService {
                 return new RasterData(time, projection,
                     this.mappingQueryService.getWMSQueryUrl({
                         operator: layer.operator,
-                        //time: time,
-                        //projection: projection
+                        // time: time, //handled by openlayers
+                        // projection: projection //handled by openlayers
                     })
                 );
             })
@@ -650,7 +658,7 @@ export class ProjectService {
     private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<RasterSymbology>,
                                                        data$: Observer<MappingColorizer>,
                                                        loadingState$: Observer<LoadingState>
-    ): Subscription{
+    ): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
@@ -766,7 +774,8 @@ export class ProjectService {
      */
     setLayers(layers: Array<Layer<Symbology>>) {
         console.log("setLayers", layers);
-        if(!(this.getLayers() == layers)) {
+        if ( this.getLayers() !== layers) {
+            console.log("setLayers updates");
             this.changeProjectConfig({layers: layers});
         }
     }
@@ -802,7 +811,6 @@ export class ProjectService {
      * @param layer The layer to modify
      */
     toggleLayer(layer: Layer<Symbology>) {
-        layer.expanded = !layer.expanded;
         this.setLayerExpanded(layer, !layer.expanded);
     }
 

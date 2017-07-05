@@ -2,7 +2,7 @@ import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 import {
     Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
-    MappingColorizerRasterSymbology, ClusteredPointSymbology,
+    MappingColorizerRasterSymbology, ClusteredPointSymbology, MappingColorizer,
 } from './symbology.model';
 
 @Component({
@@ -108,14 +108,14 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                 </template>
                 <template [ngIf]='!symbology.isUnknown()'>
                     <tr
-                        *ngFor='let breakpoint of (symbology.colorizer$ | async)?.breakpoints;
+                        *ngFor='let breakpoint of symbologyData.breakpoints;
                                 let isFirst = first'
                     >
                         <template [ngIf]='symbology.isContinuous()'>
                             <td class='gradient'
                                 *ngIf='isFirst'
-                                [rowSpan]='(symbology.colorizer$ | async)?.breakpoints.length'
-                                [style.background]='symbology.colorizer$ | async | waveWappingColorizerToGradient
+                                [rowSpan]='symbologyData.breakpoints.length'
+                                [style.background]='symbologyData | waveWappingColorizerToGradient
                                                     | waveSafeStyle'
                             ></td>
                             <td>{{breakpoint[0]}}</td>
@@ -167,9 +167,11 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
         }
 
         `],
-    inputs: ['symbology'],
+    inputs: ['symbology', 'symbologyData'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
     extends LegendaryRasterComponent<S> {
+
+    symbologyData: MappingColorizer;
 }

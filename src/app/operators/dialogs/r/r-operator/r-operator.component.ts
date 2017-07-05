@@ -202,10 +202,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                         symbology: new SimplePointSymbology({
                             fillRGBA: this.randomColorService.getRandomColor(),
                         }),
-                        data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                            operator,
-                        }),
-                        provenance: provenance$,
+                        // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                        //     operator,
+                        // }),
+                        // provenance: provenance$,
                     });
                     break;
                 case ResultTypes.RASTER:
@@ -214,7 +214,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                         operator: operator,
                         // TODO: read out of operator if specified
                         symbology: new RasterSymbology({unit: Unit.defaultUnit}),
-                        provenance: provenance$,
+                        // provenance: provenance$,
                     });
                     break;
                 default:
@@ -223,10 +223,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
             if (this.editable) {
                 // TODO: implement replace functionality
-                //this.layerService.addLayer(layer);
+                // this.layerService.addLayer(layer);
                 this.projectService.addLayer(layer);
             } else {
-                //this.layerService.addLayer(layer);
+                // this.layerService.addLayer(layer);
                 this.projectService.addLayer(layer);
             }
 

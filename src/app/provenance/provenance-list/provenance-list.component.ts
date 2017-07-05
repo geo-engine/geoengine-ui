@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, Pipe, PipeTransform, Input} 
 import {Observable} from 'rxjs';
 import {Provenance} from '../provenance.model';
 import {LayerService} from '../../layers/layer.service';
+import {ProjectService} from "../../project/project.service";
 
 /**
  * Return either the value or a non-breaking space point if it is empty.
@@ -29,10 +30,13 @@ export class ProvenanceListComponent {
 
     private provenance$: Observable<Iterable<Provenance>>;
 
-    constructor(private layerService: LayerService) {
+    constructor(
+        private layerService: LayerService,
+        private projectService: ProjectService,
+    ) {
         this.provenance$ = layerService.getSelectedLayerStream().map(l => {
             if (l) {
-                return l.provenanceStream;
+                return projectService.getLayerProvenanceDataStream(l);
             } else {
                 return Observable.of([]);
             }

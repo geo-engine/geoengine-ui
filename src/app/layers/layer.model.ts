@@ -36,12 +36,6 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
     _data: Array<ol.Feature>;
     _extent: [number, number, number, number];
 
-    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]){
-        super('vector', time, projection);
-        this._data = data;
-        this._extent = extent;
-    }
-
     static olParse(
         time: Time,
         projection: Projection,
@@ -50,6 +44,12 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
         opt_options?: olx.format.ReadOptions): VectorData
     {
         return new VectorData(time, projection, new ol.format.GeoJSON().readFeatures(source, opt_options), extent);
+    }
+
+    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]){
+        super('vector', time, projection);
+        this._data = data;
+        this._extent = extent;
     }
 
     get data(): Array<ol.Feature> {
@@ -67,15 +67,17 @@ export class RasterData extends LayerData<string> {
     constructor(
         time: Time,
         projection: Projection,
-        data: string)
-    {
+        data: string
+    ){
         super('raster', time, projection);
         this._data = data;
     }
 
+
     get data(): string {
         return this._data;
     }
+
 }
 
 export interface VectorLayerData {
@@ -95,11 +97,11 @@ interface LayerConfig<S extends Symbology> {
     name: string;
     operator: Operator;
     symbology: S;
-    provenance: LayerProvenance;
+    // provenance: LayerProvenance;
 }
 
 interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConfig<S> {
-    data: VectorLayerData;
+    // data: VectorLayerData;
     clustered?: boolean;
 }
 
@@ -136,41 +138,67 @@ export abstract class Layer<S extends Symbology> {
     editSymbology = false;
     symbology: S;
     protected _operator: Operator;
-    protected _provenance: LayerProvenance;
-    protected _state$: Observable<LoadingState>;
+    //protected _provenance: LayerProvenance;
+    // protected _state$: Observable<LoadingState>;
+
+    /**
+     * Create the suitable layer type and initialize the callbacks.
+     */
+    static fromDict(
+        dict: LayerDict,
+        operatorMap = new Map<number, Operator>()
+    ): Layer<Symbology> {
+        console.log('Layer.fromDict()', dict);
+        switch (dict.type) {
+            case 'raster':
+                return RasterLayer.fromDict(
+                    dict,
+                    operatorMap
+                );
+            case 'vector':
+                return VectorLayer.fromDict(
+                    dict,
+                    operatorMap
+                );
+            default:
+                throw new Error('LayerService.createLayerFromDict: Unknown LayerType ->' + dict);
+        }
+    }
 
     constructor(config: LayerConfig<S>) {
         this.name = config.name;
         this._operator = config.operator;
         this.symbology = config.symbology;
-        this._provenance = config.provenance;
+        // this._provenance = config.provenance;
 
-        this._state$ = this._provenance.state$;
+        // this._state$ = this._provenance.state$;
     }
 
     get operator() {
         return this._operator;
     }
 
+    /*
     get provenanceStream(): Observable<Iterable<Provenance>> {
         return this._provenance.provenance$;
     }
+    */
 
     abstract getLayerType(): LayerType;
 
     /**
      * Retrieve the loading state of the layer.
      */
-    get loadingState(): Observable<LoadingState> {
-        return this._state$;
-    }
+    // get loadingState(): Observable<LoadingState> {
+    //     return this._state$;
+    // }
 
     /**
      * Reload the async data.
      */
-    reload() {
-        this._provenance.reload$.next(undefined);
-    }
+    // reload() {
+    //     this._provenance.reload$.next(undefined);
+    // }
 
     toDict(): LayerDict {
         return {
@@ -193,11 +221,7 @@ export abstract class Layer<S extends Symbology> {
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     clustered = false;
 
-    private _data: VectorLayerData;
-
     static fromDict(dict: LayerDict,
-                    dataCallback: (operator: Operator, clustered: boolean) => VectorLayerData,
-                    provenanceCallback: (operator: Operator) => LayerProvenance,
                     operatorMap = new Map<number, Operator>()): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
@@ -212,8 +236,8 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
             name: dict.name,
             operator: operator,
             symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
-            data: dataCallback(operator, clustered),
-            provenance: provenanceCallback(operator),
+            // data: dataCallback(operator, clustered),
+            // provenance: provenanceCallback(operator),
             clustered: clustered,
         });
 
@@ -225,9 +249,9 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
     constructor(config: VectorLayerConfig<S>) {
         super(config);
-        this._data = config.data;
+        // this._data = config.data;
         this.clustered = !!config.clustered;
-
+        /*
         this._state$ = Observable.combineLatest(
             this._provenance.state$,
             this._data.state$,
@@ -241,23 +265,28 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
                 }
             }
         );
+        */
     }
+
 
     /**
      * @returns the data observable.
      */
-    get data(): VectorLayerData {
-        return this._data;
-    }
+    // get data(): VectorLayerData {
+    //     return this._data;
+    // }
 
     getLayerType(): LayerType {
         return 'vector';
     }
 
+
+    /*
     reload() {
         super.reload();
         this._data.reload$.next(undefined);
     }
+    */
 
     protected get typeOptions(): VectorLayerTypeOptionsDict {
         return {
@@ -270,8 +299,8 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
 
     static fromDict(dict: LayerDict,
-                    symbologyCallback: (operator: Operator) => Observable<MappingColorizer>,
-                    provenanceCallback: (operator: Operator) => LayerProvenance,
+                    // symbologyCallback: (operator: Operator) => Observable<MappingColorizer>,
+                    // provenanceCallback: (operator: Operator) => LayerProvenance,
                     operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
 
@@ -279,9 +308,9 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
             name: dict.name,
             operator: operator,
             symbology: Symbology.fromDict(
-                dict.symbology, symbologyCallback(operator)
+                dict.symbology
             ) as RasterSymbology,
-            provenance: provenanceCallback(operator),
+            // provenance: provenanceCallback(operator),
         });
 
         layer.expanded = dict.expanded;

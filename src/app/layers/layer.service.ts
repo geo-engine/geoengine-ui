@@ -74,9 +74,11 @@ export class LayerService {
         return this.isAnyLayerSelected$;
     }
 
+
     /**
      * Create the suitable layer type and initialize the callbacks.
      */
+    /*
     createLayerFromDict(
         dict: LayerDict,
         operatorMap = new Map<number, Operator>()
@@ -85,24 +87,25 @@ export class LayerService {
             case 'raster':
                 return RasterLayer.fromDict(
                     dict,
-                    operator => this.mappingQueryService.getColorizerStream(operator),
-                    operator => this.mappingQueryService.getProvenanceStream(operator),
+                    //operator => this.mappingQueryService.getColorizerStream(operator),
+                    //operator => this.mappingQueryService.getProvenanceStream(operator),
                     operatorMap
                 );
             case 'vector':
                 return VectorLayer.fromDict(
                     dict,
-                    (operator, clustered) =>
-                        this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                            operator, clustered,
-                        }),
-                    operator => this.mappingQueryService.getProvenanceStream(operator),
+                    // (operator, clustered) =>
+                    //     this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    //         operator, clustered,
+                    //     }),
+                    // operator => this.mappingQueryService.getProvenanceStream(operator),
                     operatorMap
                 );
             default:
                 throw 'LayerService.createLayerFromDict: Unknown LayerType ->' + dict;
         }
     }
+    */
 
     /**
      * @returns The currently selected features as stream.

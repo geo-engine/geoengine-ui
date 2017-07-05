@@ -42,14 +42,14 @@ export class BasketResult<T extends IBasketResult>  {
             symbology: new ClusteredPointSymbology({
                 fillRGBA: this.randomColorService.getRandomColor(),
             }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator,
-                clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //    operator,
+            //    clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         });
-        //this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
     }
 }
@@ -329,8 +329,8 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 })
 export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult>
                                               implements OnInit, OnDestroy {
-    showUnits: boolean = false;
-    hasUnits: boolean = false;
+    showUnits = false;
+    hasUnits = false;
     sourceSchema: Array<CsvColumn> = [];
 
     private abcdSchemaSubscription: Subscription;

@@ -14,7 +14,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
-import {ProjectService} from "../../project/project.service";
+import {ProjectService} from '../../project/project.service';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -44,13 +44,16 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         revertOnSpill: true,
         moves: (el, source, handle, sibling): boolean => {
             let s = handle;
-            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag'));
+            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag')) {}
             return !s;
         }
     };
 
-
     private subscriptions: Array<Subscription> = [];
+
+    private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
+        return Array.prototype.indexOf.call(parent.children, child);
+    }
 
     constructor(
      public dialog: MdDialog,
@@ -62,13 +65,13 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
      private iconRegistry: MdIconRegistry,
      private sanitizer: DomSanitizer
     ) {
-        iconRegistry.addSvgIconInNamespace('symbology','polygon',
+        iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','line',
+        iconRegistry.addSvgIconInNamespace('symbology', 'line',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/line_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','point',
+        iconRegistry.addSvgIconInNamespace('symbology', 'point',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/point_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','grid4',
+        iconRegistry.addSvgIconInNamespace('symbology', 'grid4',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
      this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
@@ -91,16 +94,16 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
             this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
                 dragIndex = NextLayerListComponent.domIndexOf(listItem, list);
-                // console.log('drag', dragIndex);
+                console.log('drag', dragIndex);
             })
         );
         this.subscriptions.push(
             this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
                 dropIndex = NextLayerListComponent.domIndexOf(listItem, list);
-                // console.log('drop', dropIndex);
+                console.log('drop', dropIndex);
 
-                const layers = this.projectService.getLayers();
+                const layers = Array.from(this.projectService.getLayers());
                 layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
                 this.projectService.setLayers(layers);
             })
@@ -115,7 +118,4 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         this.projectService.changeLayerSymbology(layer, symbology);
     }
 
-    private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
-        return Array.prototype.indexOf.call(parent.children, child);
-    }
 }

@@ -34,8 +34,8 @@ export class AbcdRepositoryComponent {
     private groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
-        private mappingQueryService: MappingQueryService,
-        private layerService: LayerService,
+        // private mappingQueryService: MappingQueryService,
+        // private layerService: LayerService,
         private userService: UserService,
         private randomColorService: RandomColorService,
         private projectService: ProjectService,
@@ -115,14 +115,14 @@ export class AbcdRepositoryComponent {
                 symbology: new ClusteredPointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                    operator,
-                    clustered,
-                }),
-                provenance: this.mappingQueryService.getProvenanceStream(operator),
+                // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                //    operator,
+                //    clustered,
+                // }),
+                // provenance: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
             });
-            //this.layerService.addLayer(layer);
+            // this.layerService.addLayer(layer);
             this.projectService.addLayer(layer);
         });
 

@@ -261,14 +261,14 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
-                data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                    operator, clustered,
-                }),
-                provenance: this.mappingQueryService.getProvenanceStream(operator),
+                // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                //     operator, clustered,
+                // }),
+                // provenance: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
             });
 
-            //this.layerService.addLayer(layer);
+            // this.layerService.addLayer(layer);
             this.projectService.addLayer(layer);
         }
 

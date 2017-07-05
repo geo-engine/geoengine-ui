@@ -7,11 +7,12 @@ import {Observable, Subscription} from 'rxjs';
 import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
-import {VectorLayer} from '../../layers/layer.model';
+import {VectorData, VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {FeatureID} from '../../queries/geojson.model';
 import {MapService} from '../../map/map.service';
 import * as ol from 'openlayers';
+import {ProjectService} from '../../project/project.service';
 
 interface FeatureData {
     id: number | string;
@@ -150,7 +151,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param cdr ChangeDetector Reference
      * @param layerService LayerService Reference
      */
-    constructor(cdr: ChangeDetectorRef, layerService: LayerService, private mapService: MapService) {
+    constructor(cdr: ChangeDetectorRef,
+                layerService: LayerService,
+                private mapService: MapService,
+                private projectService: ProjectService) {
         this.cdr = cdr;
         this.layerService = layerService;
 
@@ -274,10 +278,11 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 case ResultTypes.LINES:
                 case ResultTypes.POLYGONS:
                     let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
+                    let vectorLayerData = this.projectService.getLayerDataStream(vectorLayer) as Observable<VectorData>;
 
                     const data = Observable.combineLatest(
-                        vectorLayer.data.data$, this.mapService.getViewportSizeStream()).map(([d, v]) => {
-                        return d.filter(x => {
+                        vectorLayerData, this.mapService.getViewportSizeStream()).map(([d, v]) => {
+                        return d.data.filter(x => {
                             const xe = x.getGeometry().getExtent();
                             const ve = v.extent;
                             const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); //todo not only point
@@ -288,9 +293,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                     });
                     return {
                         data$: data,
-                        dataExtent$: vectorLayer.data.dataExtent$,
-                        state$: vectorLayer.data.state$,
-                        reload$: vectorLayer.data.reload$,
+                        dataExtent$: vectorLayerData.map(x => x.extent),
+                        state$: this.projectService.getLayerDataStatusStream(vectorLayer),
+                        // reload$: this.projectService.,
                         selectable: true,
                     };
                 default:
