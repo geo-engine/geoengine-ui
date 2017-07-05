@@ -4,7 +4,6 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit, ChangeDetectorRef} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ResultTypes, ResultType} from '../../result-type.model';
-import {LayerService} from '../../../layers/layer.service';
 import {Symbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
 import {Observable, ReplaySubject} from 'rxjs';
@@ -33,18 +32,17 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy{
     ResultTypes = ResultTypes;
 
     constructor(private formBuilder: FormBuilder,
-                private layerServer: LayerService,
                 private _changeDetectorRef: ChangeDetectorRef,
                 private projectService: ProjectService) {}
 
     ngOnInit() {
-        this.pointLayers = this.layerServer.getLayers().filter((layer: Layer<Symbology>) => {
+        this.pointLayers = this.projectService.getLayers().filter((layer: Layer<Symbology>) => {
             return (layer.operator.resultType === ResultTypes.POINTS);
         });
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         const attributeControl = this.formBuilder.control(undefined, Validators.required);
 
-        if(this.pointLayers.length > 0)
+        if (this.pointLayers.length > 0)
             layerControl.setValue(this.pointLayers[0]);
 
 

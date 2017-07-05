@@ -46,10 +46,11 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
         return new VectorData(time, projection, new ol.format.GeoJSON().readFeatures(source, opt_options), extent);
     }
 
-    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]){
+    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]) {
         super('vector', time, projection);
         this._data = data;
         this._extent = extent;
+        this.fakeIds(); // FIXME: use real IDs ...
     }
 
     get data(): Array<ol.Feature> {
@@ -58,6 +59,15 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
 
     get extent(): [number, number, number, number] {
         return this._extent;
+    }
+
+    fakeIds() {
+        for (let localRowId = 0; localRowId < this.data.length; localRowId++) {
+            const feature = this.data[localRowId];
+            if (feature.getId() === undefined) {
+                feature.setId(localRowId);
+            }
+        }
     }
 }
 
