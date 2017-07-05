@@ -30,6 +30,15 @@ md-spinner {
     margin: 1rem;
 }
 
+md-input-container {
+    width: 100%;
+}
+
+button {
+    margin-top: 1rem;
+    width: 100%;
+}
+
 .label {
     color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
     margin-right: 1rem;

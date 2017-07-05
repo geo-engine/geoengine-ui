@@ -18,7 +18,7 @@ form {
     padding: 1rem;
 }
 
-md-progress-circle {
+md-progress-spinner {
     position: relative;
     left: calc(50% - #{$circle-width / 2});
     width: $circle-width;

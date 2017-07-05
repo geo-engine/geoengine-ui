@@ -59,25 +59,9 @@ import {LayerService} from '../layer.service';
             </tr>
         </table>
         `,
-    styles: [`
-        table {
-            width: 100%;
-            font-size: 0.8em;
-        }
-    
-        .color_cell {
-            cursor: pointer;
-            text-align: center;          
-            min-width: 2rem;
-            min-height: 2rem;
-            color: black !important;
-            text-shadow:
-            -1px -1px 0 #fff,
-            1px -1px 0 #fff,
-            -1px 1px 0 #fff,
-            1px 1px 0 #fff !important;
-        }
-        `],
+    styleUrls: [
+        './symbology-points.component.scss'
+    ],
 })
 export class SymbologyPointsComponent {
 

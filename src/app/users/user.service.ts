@@ -23,6 +23,8 @@ import {
     featureDBListEntryToOperator
 } from '../queries/feature-db.model';
 
+const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
+
 export interface Session {
     user: string;
     sessionToken: string;
@@ -593,9 +595,9 @@ export class UserService {
         // look first into the localStorage, then sessionStorage and if there is no data
         // return an empty guest session
 
-        const sessionData = JSON.parse(localStorage.getItem('session')) as Session;
+        const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
         if (sessionData === null) { // tslint:disable-line:no-null-keyword
-            const sessionData2 = JSON.parse(sessionStorage.getItem('session')) as Session;
+            const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
             if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
                 return {
                     user: this.config.USER.GUEST.NAME,
@@ -611,11 +613,11 @@ export class UserService {
 
     protected saveSessionData(sessionData: Session) {
         if (sessionData.staySignedIn) {
-            localStorage.setItem('session', JSON.stringify(sessionData));
-            sessionStorage.removeItem('session');
+            localStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            sessionStorage.removeItem(PATH_PREFIX + 'session');
         } else {
-            sessionStorage.setItem('session', JSON.stringify(sessionData));
-            localStorage.removeItem('session');
+            sessionStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            localStorage.removeItem(PATH_PREFIX + 'session');
         }
     }
 

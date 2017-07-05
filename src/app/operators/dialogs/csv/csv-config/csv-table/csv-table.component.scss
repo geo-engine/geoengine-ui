@@ -1,4 +1,4 @@
-@import "../../../../../wave-app-theme";
+@import "../../../../../../wave-app-theme";
 
 $latitudeColor: #26c5ff;
 $longitudeColor: orange;
@@ -19,22 +19,114 @@ div.startSelector md-select /deep/ span.mat-select-placeholder {
 div.endSelector md-select /deep/ span.mat-select-placeholder {
     color: $endColor;
 }
+div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
+    color: $endColor;
+}
 .custom md-input-container /deep/ label.mat-input-placeholder {
     color: $titleColor;
     opacity: 0.75;
 }
 
-input[type=number]{
-    width:50px;
+.table-frame {
+    align: center;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px darkgray;
+    min-width: 80vw;
+    max-width: 80vw;
 }
 
-.frame{
-    width:95%;
-    margin: 0 auto;
+.typingdiv {
+    overflow: hidden;
+    width: auto;
+    border-bottom: solid 1px dimgray;
+    background-color: #FFFFFF;
+    font-weight: 300;
 }
-.buttons {
-    text-align:right;
+
+.headerdiv {
+    overflow: hidden;
+    width: auto;
+    border-bottom: solid 1px dimgray;
+    border-right: solid 1px dimgray;
+    background-color: $backgroundColor;
+    color: $titleColor;
+    font-weight: 300;
 }
+
+.headerdiv table td.custom md-input-container {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    font-size: 15px;
+    height: 30px;
+    color: $titleColor;
+}
+
+.bodydiv {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.bodydiv table tr:nth-child(even) {
+    background-color: #add4f4; /*Take background color and mix with white.*/
+}
+
+.resizeTable {
+    table-layout: fixed;
+}
+
+.custom {
+    font-weight: normal;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.scrollbar-measure {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
+}
+
+.time_green {
+    border: solid $startColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.time_violet {
+    border: solid $endColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_orange {
+    border: solid $longitudeColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+.coordinate_blue {
+    border: solid $latitudeColor;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    horiz-align: center;
+}
+
+/**Column Colors*/
 td.orange{
     border-left-style: solid;
     border-right-style: solid;
@@ -86,115 +178,4 @@ td.violet {
     border-color:$endColor;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-}
-md-slide-toggle {
-    display: inline-block;
-}
-
-/*Table*/
-.table-frame {
-    align: center;
-    overflow: hidden;
-    margin-left: auto;
-    margin-right: auto;
-    border: solid 1px darkgray;
-    min-width: 80vw;
-    max-width: 80vw;
-}
-
-.typingdiv {
-    overflow: hidden;
-    width: auto;
-    border-bottom: solid 1px dimgray;
-    background-color: #FFFFFF;
-    font-weight: 300;
-    border-right: solid 1px dimgray;
-}
-
-.headerdiv {
-    overflow: hidden;
-    width: auto;
-    border-bottom: solid 1px dimgray;
-    border-right: solid 1px dimgray;
-    background-color: $backgroundColor;
-    color: $titleColor;
-    font-weight: 300;
-}
-
-.headerdiv table td.custom md-input-container {
-    margin-bottom: 0px;
-    padding-bottom: 0px;
-    font-size: 15px;
-    height: 30px;
-    color: $titleColor;
-}
-
-.bodydiv {
-    overflow: scroll;
-    height: 200px; //Maybe fill the 65 vh of dialog per code
-}
-
-.bodydiv table tr:nth-child(even) {
-    background-color: #add4f4; /*Take background color and mix with white.*/
-}
-
-.resizeTable {
-    table-layout: fixed;
-}
-
-.custom {
-    font-weight: normal;
-    padding-bottom: 0px;
-}
-
-.scrollbar-measure {
-    width: 100px;
-    height: 100px;
-    overflow: scroll;
-    position: absolute;
-    top: -9999px;
-}
-
-.time_green {
-    border: solid $startColor;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    horiz-align: center;
-}
-
-.time_violet {
-    border: solid $endColor;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    horiz-align: center;
-}
-
-.coordinate_orange {
-    border: solid $longitudeColor;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    horiz-align: center;
-}
-
-.coordinate_blue {
-    border: solid $latitudeColor;
-    border-radius: 5px;
-    text-align: center;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    horiz-align: center;
-}
-
-.error {
-    color: mat-color($wave-app-warn);
-}
-
-wave-dialog-section-heading {
-    margin-bottom: 1rem;
 }

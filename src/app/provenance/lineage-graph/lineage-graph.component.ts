@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../layers/symbology/symbology.model';
-import {MdDialogRef} from '@angular/material';
+import {MD_DIALOG_DATA} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
@@ -44,7 +44,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     title$ = new BehaviorSubject<string>('Operator Lineage');
 
     selectedOperator$ = new ReplaySubject<Operator>(1);
-    parameters$ = new ReplaySubject<Array<{key: string, value: string}>>(1);
+    parameters$ = new ReplaySubject<Array<{ key: string, value: string }>>(1);
 
     private selectedLayer: Layer<Symbology> = undefined;
 
@@ -54,16 +54,17 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     private svgRatio = 0.7;
 
     constructor(private elementRef: ElementRef,
-                private dialogRef: MdDialogRef<LineageGraphComponent>,
-                private projectService: ProjectService
-    ) {
+                private projectService: ProjectService,
+                @Inject(MD_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
     }
 
     ngOnInit() {
         this.svgWidth$ = this.maxWidth$.map(width => Math.ceil(this.svgRatio * width));
         this.svgHeight$ = this.maxHeight$;
 
-        this.selectedLayer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        if (this.config) {
+            this.selectedLayer = this.config.layer;
+        }
     }
 
     ngAfterViewInit() {
@@ -313,7 +314,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.selectAll('.label > g').attr('transform', undefined);
     }
 
-    private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number, height: number} {
+    private setupWidthObservables(graph: dagre.graphlib.Graph): { width: number, height: number } {
         // create observables for the current graph bounds
         const graphWidth$ = Observable.of(graph.graph().width);
         const graphHeight$ = Observable.of(graph.graph().height);

@@ -1,9 +1,9 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit, Inject} from '@angular/core';
 
 import {Layer} from '../layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MdDialogRef} from '@angular/material';
+import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
 
 @Component({
@@ -12,7 +12,7 @@ import {ProjectService} from '../../project/project.service';
     <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
         <md-dialog-content>
-            <md-input-container class="flex-item" fxFlex>
+            <md-input-container>
                 <input mdInput type="text" placeholder="Name" formControlName="layerName">
             </md-input-container>
         </md-dialog-content>
@@ -24,6 +24,9 @@ import {ProjectService} from '../../project/project.service';
     styles: [`
     form {
         padding-top: 16px;
+    }
+    md-input-container {
+        width: 100%;
     }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,11 +40,13 @@ export class RenameLayerComponent implements OnInit {
     constructor(
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
-        private dialogRef: MdDialogRef<RenameLayerComponent>
+        private dialogRef: MdDialogRef<RenameLayerComponent>,
+        @Inject(MD_DIALOG_DATA) private config: {layer?: Layer<Symbology>}
     ) {}
 
     ngOnInit(): void {
-        this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        // this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        this.layer = this.config.layer;
         this.form = this.formBuilder.group({
             layerName: [this.layer.name, Validators.required]
         });

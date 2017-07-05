@@ -10,8 +10,8 @@
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
         <wave-ol-map [projection]="projectService.getProjectionStream() | async">
-            <template ngFor let-layer [ngForOf]='layersReverse$ | async'>
-                <template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
+            <ng-template ngFor let-layer [ngForOf]='layersReverse$ | async'>
+                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer
                         [layer]="layer"
                         [visible]="layer.visible"
@@ -19,8 +19,8 @@
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
                     ></wave-ol-point-layer>
-                </template>
-                <template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
+                </ng-template>
+                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
                     <wave-ol-line-layer
                         [layer]="layer"
                         [visible]="layer.visible"
@@ -28,8 +28,8 @@
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
                     ></wave-ol-line-layer>
-                </template>
-                <template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
+                </ng-template>
+                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
                     <wave-ol-polygon-layer
                         [layer]="layer"
                         [visible]="layer.visible"
@@ -37,8 +37,8 @@
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
                     ></wave-ol-polygon-layer>
-                </template>
-                <template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
+                </ng-template>
+                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
                     <wave-ol-raster-layer
                         [layer]="layer"
                         [visible]="layer.visible"
@@ -46,8 +46,8 @@
                         [projection]="projectService.getProjectionStream() | async"
                         [time]="projectService.getTimeStream() | async"
                     ></wave-ol-raster-layer>
-                </template>
-            </template>
+                </ng-template>
+            </ng-template>
         </wave-ol-map>
     </div>
     <div
@@ -65,18 +65,18 @@
         </button>
         <md-tab-group>
             <md-tab>
-                <template md-tab-label>
+                <ng-template md-tab-label>
                     <div (click)="setTabIndex(0)">Data Table</div>
-                </template>
+                </ng-template>
                 <wave-datatable
                     *ngIf="layerDetailViewVisible$ | async"
                     [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"
                 ></wave-datatable>
             </md-tab>
             <md-tab>
-                <template md-tab-label>
+                <ng-template md-tab-label>
                     <div (click)="setTabIndex(1)">Citations</div>
-                </template>
+                </ng-template>
                 <wave-provenance-list
                     *ngIf="layerDetailViewVisible$ | async"
                     [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"

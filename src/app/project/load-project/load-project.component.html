@@ -7,4 +7,4 @@
     </md-radio-group>
     <button md-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Load</button>
 </form>
-<md-progress-circle mode="indeterminate" *ngIf="loading$ | async"></md-progress-circle>
+<md-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></md-progress-spinner>

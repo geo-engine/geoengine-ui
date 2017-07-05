@@ -2,7 +2,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
-import {MaterialModule, MdIconRegistry} from '@angular/material';
+import {MdIconRegistry} from '@angular/material';
+import {MaterialModule} from './material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
@@ -80,7 +82,6 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
-import {CsvConfigComponent} from './operators/dialogs/csv/csv-config/csv-config.component';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
@@ -91,13 +92,16 @@ import {ChangeProjectionComponent} from './project/change-projection/change-proj
 import {NewProjectComponent} from './project/new-project/new-project.component';
 import {LoadProjectComponent} from './project/load-project/load-project.component';
 import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.component';
-import {ColorPickerModule} from 'angular2-color-picker';
+import {ColorPickerModule} from 'ngx-color-picker';
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script-save.component';
 import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
+import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
+import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
+import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -175,7 +179,6 @@ export function configInitializer(config: Config) {
         HelpComponent,
         PlotDetailViewComponent,
         CsvDialogComponent,
-        CsvConfigComponent,
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
@@ -193,11 +196,15 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
+        CsvPropertiesComponent,
+        CsvTableComponent,
+        PieChartComponent,
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpModule,
+        BrowserAnimationsModule,
         MaterialModule,
         FlexLayoutModule,
         DragulaModule,
@@ -236,6 +243,7 @@ export function configInitializer(config: Config) {
         ROperatorComponent,
         RScriptSaveComponent,
         RScriptLoadComponent,
+        PieChartComponent,
     ],
     providers: [
         DragulaService,

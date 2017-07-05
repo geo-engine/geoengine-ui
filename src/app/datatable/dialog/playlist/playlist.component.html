@@ -8,7 +8,7 @@
         </ul>
     </div>
     <a href="#" class="closeLink" (click)="showHide()">
-        <template [ngIf]="!playlistOpen">(show all {{tracks.length}} files)</template>
-        <template [ngIf]="playlistOpen">(hide)</template>
+        <ng-template [ngIf]="!playlistOpen">(show all {{tracks.length}} files)</ng-template>
+        <ng-template [ngIf]="playlistOpen">(hide)</ng-template>
     </a>
 </div>
