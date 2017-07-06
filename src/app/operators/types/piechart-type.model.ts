@@ -40,11 +40,18 @@ export class PieChartType extends OperatorType {
 
     constructor(config: PieChartTypeConfig) {
         super();
-        this.attribute = config.attribute,
-        this.code = `points <- mapping.loadPoints(0, mapping.qrect)
-kv <- table(points$\`` + config.attribute + `\`)
-labels <- paste("(",names(kv),")", "\n", kv, sep="")
-pie(kv, labels = labels)`;
+        this.attribute = config.attribute;
+        this.code = `
+points <- mapping.loadPoints(0, mapping.qrect)
+if (length(points) > 0) {
+  kv <- table(points$\`${config.attribute}\`)
+  labels <- paste("(",names(kv),")", "\n", kv, sep="")
+  pie(kv, labels = labels)
+} else {
+  plot.new()
+  mtext("Empty Dataset")
+}
+        `;
         this.resultType = ResultTypes.PLOT;
     }
 
