@@ -2,7 +2,6 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 import {Observable} from 'rxjs/Rx';
 
-import {LayerService} from '../../../layers/layer.service';
 import {RasterLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
@@ -11,7 +10,6 @@ import {MappingSource, MappingSourceChannel} from './mapping-source.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
 import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {ProjectService} from '../../../project/project.service';
@@ -25,12 +23,11 @@ import {ProjectService} from '../../../project/project.service';
 
 export class RasterRepositoryComponent {
 
-    private _searchTerm: String = '';
+    searchTerm: String = '';
+
     private sources: Observable<Array<MappingSource>>;
 
     constructor(
-        private mappingQueryService: MappingQueryService,
-        private layerService: LayerService,
         private projectService: ProjectService,
         private userService: UserService
     ) {
@@ -50,7 +47,7 @@ export class RasterRepositoryComponent {
             operatorType: new RasterSourceType({
                 channel: channel.id,
                 sourcename: source.source,
-                transform: doTransform, // FIXME user selectable transform?
+                transform: doTransform, // TODO: user selectable transform?
             }),
             resultType: ResultTypes.RASTER,
             projection: Projections.fromCode('EPSG:' + source.coords.epsg),
@@ -65,9 +62,11 @@ export class RasterRepositoryComponent {
             name: channel.name,
             operator: operator,
             symbology: new MappingColorizerRasterSymbology({unit: unit}),
-            // provenance: this.mappingQueryService.getProvenanceStream(operator),
         });
-        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
+    }
+
+    reload() {
+        this.userService.reloadRasterSources();
     }
 }

@@ -1,17 +1,12 @@
 <wave-sidenav-header>Raster Repository</wave-sidenav-header>
-<md-toolbar>
-    <md-icon>search</md-icon>
-    <md-input-container>
-        <input mdInput placeholder="Dataset or Provider" type="text" [(ngModel)]="_searchTerm">
-    </md-input-container>
-</md-toolbar>
-<md-list>
+<wave-sidenav-search (searchString)="searchTerm = $event"></wave-sidenav-search>
+<md-list *ngIf="(sources | async).length > 0; else noSources">
     <ng-template
         ngFor let-source
-        [ngForOf]="sources | async | waveMappingDataSourceFilter:_searchTerm"
+        [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm"
     >
         <div md-subheader class="datagroup" fxLayout="row" fxLayoutAlign="space-between center">
-            <span bind-innerHtml = "source.name | waveHighlightPipe:_searchTerm | waveSafeHtml"></span>
+            <span bind-innerHtml="source.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
             <span><a [href]="source?.uri" target="_blank"><md-icon>open_in_new</md-icon></a></span>
         </div>
         <ng-template ngFor let-channel [ngForOf]="source.channels">
@@ -25,27 +20,27 @@
                     </md-slide-toggle>
                     -->
                     <div class="item" (click)="add(source, channel, true)">
-                        <p md-line bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm | waveSafeHtml"></p>
+                        <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
                         <ng-template [ngIf]="true || t.checked">
-                            <p md-line >measurement: {{channel?.transform?.unit?.measurement}}</p>
-                            <p md-line >unit: {{channel?.transform?.unit?.unit}}</p>
+                            <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
+                            <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
                         </ng-template>
                         <ng-template [ngIf]="false && !t.checked">
-                            <p md-line >measurement: {{channel?.unit?.measurement}}</p>
-                            <p md-line >unit: {{channel?.unit?.unit}}</p>
+                            <p md-line>measurement: {{channel?.unit?.measurement}}</p>
+                            <p md-line>unit: {{channel?.unit?.unit}}</p>
                         </ng-template>
                     </div>
                 </ng-template>
                 <ng-template [ngIf]="!channel.isSwitchable">
                     <div class="item" (click)="add(source, channel, channel.hasTransform)">
-                        <p md-line  bind-innerHtml = "channel.name | waveHighlightPipe:_searchTerm | waveSafeHtml"></p>
+                        <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
                         <ng-template [ngIf]="!channel.hasTransform">
-                            <p md-line >measurement: {{channel?.unit?.measurement}}</p>
-                            <p md-line >unit: {{channel?.unit?.unit}}</p>
+                            <p md-line>measurement: {{channel?.unit?.measurement}}</p>
+                            <p md-line>unit: {{channel?.unit?.unit}}</p>
                         </ng-template>
                         <ng-template [ngIf]="channel.hasTransform">
-                            <p md-line >measurement: {{channel?.transform?.unit?.measurement}}</p>
-                            <p md-line >unit: {{channel?.transform?.unit?.unit}}</p>
+                            <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
+                            <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
                         </ng-template>
                     </div>
                 </ng-template>
@@ -54,3 +49,16 @@
         </ng-template>
     </ng-template>
 </md-list>
+<ng-template #noSources>
+    <div *ngIf="userService.getRasterSourcesErrorStream() | async; else noError" class="error">
+        <p>There are no sources available.</p>
+        <button md-icon-button class="mat-warn error-button" aria-label="Reload" (click)="reload()">
+            <md-icon>replay</md-icon>
+        </button>
+    </div>
+    <ng-template #noError>
+        <div class="error">
+            <p>There are no sources available.</p>
+        </div>
+    </ng-template>
+</ng-template>
