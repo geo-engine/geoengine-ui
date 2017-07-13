@@ -20,6 +20,7 @@ import {
 import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
+import {ResultTypes} from '../operators/result-type.model';
 
 @Injectable()
 export class ProjectService {
@@ -708,6 +709,19 @@ export class ProjectService {
      */
     getLayerDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
         return this.layerDataState$.get(layer);
+    }
+
+    /**
+     * Change the loading state of a raster layer
+     * @param layer
+     * @param state
+     */
+    changeRasterLayerDataStatus(layer: Layer<RasterSymbology>, state: LoadingState) {
+        if (layer.operator.resultType === ResultTypes.RASTER) {
+            this.layerDataState$.get(layer).next(state);
+        } else {
+            throw Error('It is only allowed to change the state of a raster layer');
+        }
     }
 
     /**

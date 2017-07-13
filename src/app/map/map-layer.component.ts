@@ -14,7 +14,8 @@ import {Layer, VectorLayer, RasterLayer, LayerData, VectorData, RasterData} from
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {Time} from '../time/time.model';
 import {Config} from '../config.service';
-import {ProjectService} from "../project/project.service";
+import {ProjectService} from '../project/project.service';
+import {LoadingState} from '../project/loading-state.model';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -230,7 +231,25 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 }
                 console.log("OlRasterLayerComponent dataSub update source", this.source);
             }
-        })
+        });
+
+        // TILE LOADING STATE
+        let tilesPending = 0;
+
+        this.source.on('tileloadstart', () => {
+            tilesPending++;
+            this.projectService.changeRasterLayerDataStatus(this.layer, LoadingState.LOADING);
+        });
+        this.source.on('tileloadend', () => {
+            tilesPending--;
+            if (tilesPending <= 0) {
+                this.projectService.changeRasterLayerDataStatus(this.layer, LoadingState.OK);
+            }
+        });
+        this.source.on('tileloaderror', () => {
+            tilesPending--;
+            this.projectService.changeRasterLayerDataStatus(this.layer, LoadingState.ERROR);
+        });
     }
 
     ngOnChanges(changes: {[propName: string]: SimpleChange}) {
