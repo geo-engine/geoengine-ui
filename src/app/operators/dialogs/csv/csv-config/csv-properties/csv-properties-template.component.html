@@ -79,16 +79,16 @@
             <md-select fxFlex="100"
                        placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
                        formControlName="xColumn">
-                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option [value]="i">
-                        <template [ngIf]="h !== ''">
+                        <ng-template [ngIf]="h !== ''">
                             {{(i+1) + ' - ' + h}}
-                        </template>
-                        <template [ngIf]="h === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="h === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div>
@@ -106,16 +106,16 @@
             <md-select fxFlex="100"
                        placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
                        formControlName="yColumn">
-                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option [value]="i">
-                        <template [ngIf]="h !== ''">
+                        <ng-template [ngIf]="h !== ''">
                             {{(i+1) + ' - ' + h}}
-                        </template>
-                        <template [ngIf]="h === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="h === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div>
@@ -150,18 +150,18 @@
                        name="startCol"
                        formControlName="startColumn"
             >
-                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option
                         [value]="i"
                         [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
-                        <template [ngIf]="h !== ''">
+                        <ng-template [ngIf]="h !== ''">
                             {{(i+1) + ' - ' + h}}
-                        </template>
-                        <template [ngIf]="h === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="h === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
         <div [ngClass]="{endSelector: !(!temporalProperties.controls['isTime'].value
@@ -171,18 +171,18 @@
             <md-select *ngIf="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst"
                        [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
                        name="endCol" formControlName="endColumn">
-                <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option
                         [value]="i"
                         [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
-                        <template [ngIf]="h !== ''">
+                        <ng-template [ngIf]="h !== ''">
                             {{(i+1) + ' - ' + h}}
-                        </template>
-                        <template [ngIf]="h === ''">
+                        </ng-template>
+                        <ng-template [ngIf]="h === ''">
                             {{(i+1) + ' - unnamed'}}
-                        </template>
+                        </ng-template>
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
             <md-input-container *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
                 <input mdInput formControlName="constantDuration" placeholder="Constant duration"
@@ -208,19 +208,19 @@
                 [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration format' : 'End format'"
                 formControlName="endFormat"
             >
-                <template [ngIf]="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartDur
+                <ng-template [ngIf]="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartDur
                     && temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst">
                     <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
                         {{timeFormat.display}}
                     </md-option>
-                </template>
-                <template
+                </ng-template>
+                <ng-template
                     [ngIf]="temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
                     <md-option *ngFor="let durationFormat of durationFormats"
                                [value]="durationFormat.value">
                         {{durationFormat.display}}
                     </md-option>
-                </template>
+                </ng-template>
             </md-select>
         </div>
     </div>
