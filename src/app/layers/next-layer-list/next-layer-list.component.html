@@ -60,11 +60,11 @@
                 >
                     <md-menu #layerMenu="mdMenu">
 
-                        <button md-menu-item *ngIf="layer.visible" (click)="projectService.setLayerVisible(layer, false)">
+                        <button md-menu-item *ngIf="layer.visible" (click)="projectService.changeLayer(layer, {visible: false})">
                             <md-icon >visibility_off</md-icon>
                             <span>Hide Layer</span>
                         </button>
-                        <button md-menu-item *ngIf="!layer.visible" (click)="projectService.setLayerVisible(layer, true)">
+                        <button md-menu-item *ngIf="!layer.visible" (click)="projectService.changeLayer(layer, {visible: true})">
                             <md-icon >visibility</md-icon>
                             <span>Show Layer</span>
                         </button>
