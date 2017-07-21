@@ -4,7 +4,6 @@ import {
 
 import {HistogramData} from '../../../plots/histogram.component';
 
-import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 
@@ -24,7 +23,7 @@ import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
 import {WaveValidators} from '../../../util/form.validators';
 
-function minMax(control: AbstractControl): {[key: string]: boolean} {
+function minMax(control: AbstractControl): { [key: string]: boolean } {
     const min = control.get('min').value;
     const max = control.get('max').value;
 
@@ -71,8 +70,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     histogramWidth: number;
     histogramHeight: number;
 
-    constructor(private layerService: LayerService,
-                private randomColorService: RandomColorService,
+    constructor(private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private projectService: ProjectService,
                 private formBuilder: FormBuilder,
@@ -112,12 +110,14 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             });
 
             this.dataLoading$.next(true);
-            this.mappingQueryService.getPlotData({
-                operator: operator,
-                time: this.projectService.getTime(),
-            }).subscribe(data => {
-                this.data$.next(data as HistogramData);
-                this.dataLoading$.next(false);
+            this.projectService.getTimeStream().first().subscribe(projectTime => {
+                this.mappingQueryService.getPlotData({
+                    operator: operator,
+                    time: projectTime,
+                }).subscribe(data => {
+                    this.data$.next(data as HistogramData);
+                    this.dataLoading$.next(false);
+                });
             });
         }));
 
@@ -126,10 +126,12 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             this.form.controls['attribute'].setValue(undefined);
 
             if (layer) {
+                this.form.controls['attribute'].enable({onlySelf: true});
                 return layer.operator.attributes.filter((attribute: string) => {
                     return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
                 }).toArray();
             } else {
+                this.form.controls['attribute'].disable({onlySelf: true});
                 return [];
             }
         });
@@ -138,6 +140,10 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             this.form.controls['attribute']
                 .valueChanges
                 .map((attribute: string) => {
+                    if (!attribute) {
+                        return '';
+                    }
+
                     const operator = this.form.controls['pointLayer'].value.operator as Operator;
                     const unit = operator.getUnit(attribute);
 
@@ -154,7 +160,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     ngAfterViewInit() {
         // calculate size for histogram
         const formStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('form'));
-        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx();
+        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx() - LayoutService.scrollbarWidthPx();
         const formHeight = parseInt(formStyle.height, 10) - 2 * LayoutService.remInPx();
 
         this.histogramWidth = formWidth;

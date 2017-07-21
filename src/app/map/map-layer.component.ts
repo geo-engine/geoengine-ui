@@ -31,12 +31,11 @@ import {LoadingState} from '../project/loading-state.model';
 //     template: '',
 //     changeDetection: ChangeDetectionStrategy.OnPush,
 // })
-export abstract class OlMapLayerComponent<
-    OlLayer extends ol.layer.Layer,
+export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     OlSource extends ol.source.Source,
     S extends Symbology,
     L extends Layer<S>>
-implements OnChanges {
+    implements OnChanges {
 
     // TODO: refactor
 
@@ -49,20 +48,18 @@ implements OnChanges {
     protected _mapLayer: OlLayer;
     protected source: OlSource;
 
-    constructor(
-        protected projectService: ProjectService,
-    ) {
+    constructor(protected projectService: ProjectService) {
     }
 
     get mapLayer(): OlLayer {
         return this._mapLayer;
     };
 
-    abstract ngOnChanges(changes: {[propName: string]: SimpleChange}): void;
+    abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
     abstract getExtent(): [number, number, number, number];
 
-    protected isFirstChange(changes: {[propName: string]: SimpleChange}): boolean {
+    protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
         for (const property in changes) {
             if (changes[property].isFirstChange()) {
                 return true;
@@ -72,20 +69,16 @@ implements OnChanges {
     }
 }
 
-export abstract class OlVectorLayerComponent extends OlMapLayerComponent<
-    ol.layer.Vector,
+export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector,
     ol.source.Vector,
     AbstractVectorSymbology,
-    VectorLayer<AbstractVectorSymbology>
-    > implements OnInit, OnChanges, OnDestroy {
+    VectorLayer<AbstractVectorSymbology>> implements OnInit, OnChanges, OnDestroy {
 
     // @Input() data: GeoJsonFeatureCollection;
 
     private dataSubscription: Subscription;
 
-    constructor(
-        protected projectService: ProjectService,
-    ) {
+    constructor(protected projectService: ProjectService) {
         super(projectService);
         this.source = new ol.source.Vector({wrapX: false});
         this._mapLayer = new ol.layer.Vector({
@@ -94,25 +87,25 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<
         });
     }
 
-    ngOnInit(){
+    ngOnInit() {
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: VectorData) => {
-            console.log("OlVectorLayerComponent dataSub", x);
+            // console.log("OlVectorLayerComponent dataSub", x);
             this.source.clear(); // TODO: check if this is needed always...
             this.source.addFeatures(x.data);
         })
     }
 
-    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
 
         /*
-        if (this.isFirstChange(changes) || changes['projection']) {
-            if (this.dataSubscription) {
-                this.dataSubscription.unsubscribe();
-            }
-            this.dataSubscription = this.layer.data.data$.subscribe(features => {
+         if (this.isFirstChange(changes) || changes['projection']) {
+         if (this.dataSubscription) {
+         this.dataSubscription.unsubscribe();
+         }
+         this.dataSubscription = this.layer.data.data$.subscribe(features => {
 
-            });
-        }
+         });
+         }
          */
 
         if (changes['visible']) {
@@ -129,10 +122,10 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<
         }
 
         /*
-        if (changes['projection'] || changes['time']) {
-            this.source.clear(); // TODO: check if this is needed always...
-        }
-        */
+         if (changes['projection'] || changes['time']) {
+         this.source.clear(); // TODO: check if this is needed always...
+         }
+         */
     }
 
     ngOnDestroy() {
@@ -154,7 +147,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
-    constructor(protected projectService: ProjectService,) {
+    constructor(protected projectService: ProjectService) {
         super(projectService);
     }
 }
@@ -167,7 +160,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
-    constructor(protected projectService: ProjectService,) {
+    constructor(protected projectService: ProjectService) {
         super(projectService);
     }
 }
@@ -180,7 +173,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
-    constructor(protected projectService: ProjectService,) {
+    constructor(protected projectService: ProjectService) {
         super(projectService);
     }
 }
@@ -197,18 +190,17 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
 
     private dataSubscription: Subscription;
 
-    constructor(
-        protected projectService: ProjectService,
-        protected mappingQueryService: MappingQueryService,
-        private config: Config) {
+    constructor(protected projectService: ProjectService,
+                protected mappingQueryService: MappingQueryService,
+                private config: Config) {
         super(projectService);
     }
 
     ngOnInit() {
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: RasterData) => {
-            console.log("OlRasterLayerComponent dataSub", x);
+            // console.log("OlRasterLayerComponent dataSub", x);
 
-            if(!this.source || this.source.getProjection().getCode() !== x.projection.getCode()) {
+            if (!this.source || this.source.getProjection().getCode() !== x.projection.getCode()) {
                 this.source = new ol.source.TileWMS({
                     url: x.data,
                     params: {
@@ -221,7 +213,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     source: this.source,
                     opacity: this.symbology.opacity,
                 });
-                console.log("OlRasterLayerComponent dataSub new source", this.source);
+                // console.log("OlRasterLayerComponent dataSub new source", this.source);
             } else {
                 this.source.updateParams({
                     time: x.time.asRequestString(),
@@ -229,7 +221,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
                     this.source.refresh();
                 }
-                console.log("OlRasterLayerComponent dataSub update source", this.source);
+                // console.log("OlRasterLayerComponent dataSub update source", this.source);
             }
         });
 
@@ -252,43 +244,43 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
         });
     }
 
-    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
 
         /*
-        const params = this.mappingQueryService.getWMSQueryParameters({
-            operator: this.layer.operator,
-            time: this.time,
-            projection: this.projection,
-        });
+         const params = this.mappingQueryService.getWMSQueryParameters({
+         operator: this.layer.operator,
+         time: this.time,
+         projection: this.projection,
+         });
 
-        if (this.isFirstChange(changes) || changes['projection']) {
-            this.source = new ol.source.TileWMS({
-                url: this.config.MAPPING_URL,
-                params: params.asObject(),
-                wrapX: false,
-                projection: this.projection.getCode()
-            });
-            this._mapLayer = new ol.layer.Tile({
-                source: this.source,
-                opacity: this.symbology.opacity,
-            });
-        }
+         if (this.isFirstChange(changes) || changes['projection']) {
+         this.source = new ol.source.TileWMS({
+         url: this.config.MAPPING_URL,
+         params: params.asObject(),
+         wrapX: false,
+         projection: this.projection.getCode()
+         });
+         this._mapLayer = new ol.layer.Tile({
+         source: this.source,
+         opacity: this.symbology.opacity,
+         });
+         }
          */
 
-        if(this._mapLayer){
+        if (this._mapLayer) {
             if (changes['visible']) {
                 this._mapLayer.setVisible(this.visible);
             }
 
             /*
-            if (changes['projection'] || changes['time']) {
-                this.source.updateParams(params.asObject());
+             if (changes['projection'] || changes['time']) {
+             this.source.updateParams(params.asObject());
 
-                if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
-                    this.source.refresh();
-                }
-            }
-            */
+             if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
+             this.source.refresh();
+             }
+             }
+             */
             if (changes['symbology']) {
                 this._mapLayer.setOpacity(this.symbology.opacity);
                 // this._mapLayer.setHue(rasterSymbology.hue);

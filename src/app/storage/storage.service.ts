@@ -124,6 +124,8 @@ export class StorageService {
         this.storageProvider.loadWorkspace().subscribe(workspace => {
             if (workspace.project) {
                 this.projectService.setProject(workspace.project);
+            } else {
+                this.projectService.setProject(this.projectService.createDefaultProject());
             }
 
             // setup storage

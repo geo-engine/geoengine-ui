@@ -22,6 +22,8 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {DomSanitizer} from '@angular/platform-browser';
 import {RandomColorService} from './util/services/random-color.service';
+import {ActivatedRoute} from '@angular/router';
+import {NotificationService} from './notification.service';
 
 @Component({
     selector: 'wave-app',
@@ -58,7 +60,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private dialog: MdDialog,
                 private iconRegistry: MdIconRegistry,
                 private sanitizer: DomSanitizer,
-                private randomColorService: RandomColorService) {
+                private randomColorService: RandomColorService,
+                private activatedRoute: ActivatedRoute,
+                private notificationService: NotificationService) {
         iconRegistry.addSvgIconInNamespace(
             'vat',
             'logo',
@@ -113,6 +117,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 type: 'STATUS',
                 status: 'READY',
             }, '*');
+        } else {
+
+            // handle query parameters directly if it is not embedded and using an auto login
+            this.handleWorkflowParameters();
+
         }
     }
 
@@ -131,11 +140,34 @@ export class AppComponent implements OnInit, AfterViewInit {
         switch (message.type) {
             case 'TOKEN_LOGIN':
                 const tokenMessage = message as {type: string, token: string};
-                this.userService.gfbioTokenLogin(tokenMessage.token);
+                this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
+                    this.handleWorkflowParameters();
+                });
                 break;
             default:
             // unhandled message
         }
+    }
+
+    private handleWorkflowParameters() {
+        this.activatedRoute.queryParams.subscribe(p => {
+            for (const parameter of Object.keys(p)) {
+                const value = p[parameter];
+                switch (parameter) {
+                    case 'workflow':
+                        try {
+                            this.projectService.getProjectStream().first().subscribe(() => {
+                                this.projectService.addLayer(Layer.fromDict(JSON.parse(value)));
+                            });
+                        } catch (error) {
+                            this.notificationService.error(`Invalid Workflow: »${error}«`);
+                        }
+                        break;
+                    default:
+                        this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
+                }
+            }
+        });
     }
 
 }

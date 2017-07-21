@@ -24,12 +24,8 @@ import {ResultTypes} from '../operators/result-type.model';
 
 @Injectable()
 export class ProjectService {
-    private project$: BehaviorSubject<Project>;
-    private projection$: BehaviorSubject<Projection>;
+    private project$ = new ReplaySubject<Project>(1);
 
-    private time$: BehaviorSubject<Time>;
-
-    private layers$: BehaviorSubject<Array<Layer<Symbology>>>;
     private layerData$: Map<Layer<Symbology>, ReplaySubject<LayerData<any>>>;
     private layerDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
     private layerDataSubscriptions: Map<Layer<Symbology>, Subscription>;
@@ -42,7 +38,6 @@ export class ProjectService {
 
     private newLayer$: Subject<Layer<Symbology>>;
 
-    private plots$: BehaviorSubject<Array<Plot>>;
     private plotData$: Map<Plot, ReplaySubject<PlotData>>;
     private plotDataState$: Map<Plot, ReplaySubject<LoadingState>>;
     private plotSubscriptions: Map<Plot, Subscription>;
@@ -51,19 +46,12 @@ export class ProjectService {
     constructor(private config: Config,
                 private notificationService: NotificationService,
                 private mappingQueryService: MappingQueryService,
-                private mapservice: MapService) {
-        this.project$ = new BehaviorSubject(this.createDefaultProject());
-
-        this.projection$ = new BehaviorSubject(this.project$.value.projection);
-        this.time$ = new BehaviorSubject(this.project$.value.time);
-
-        this.plots$ = new BehaviorSubject([]);
+                private mapService: MapService) {
         this.plotData$ = new Map();
         this.plotDataState$ = new Map();
         this.plotSubscriptions = new Map();
         this.newPlot$ = new Subject<void>();
 
-        this.layers$ = new BehaviorSubject([]);
         this.layerData$ = new Map();
         this.layerDataState$ = new Map();
         this.layerDataSubscriptions = new Map();
@@ -74,23 +62,6 @@ export class ProjectService {
         this.layerProvenanceDataState$ = new Map();
         this.layerProvenanceDataSubscriptions = new Map();
         this.newLayer$ = new Subject<Layer<Symbology>>();
-
-        this.project$.subscribe(project => {
-            if (project.projection !== this.projection$.value) {
-                this.projection$.next(project.projection);
-            }
-            if (project.time && project.time.isValid() && !project.time.isSame(this.time$.value)) {
-                this.time$.next(project.time);
-            }
-            if (project.plots !== this.plots$.getValue()) {
-                this.plots$.next(project.plots);
-            }
-            if (project.layers !== this.layers$.getValue()) {
-                console.log("project.service changed project.layers");
-                this.layers$.next(project.layers);
-            }
-        });
-
     }
 
     createDefaultProject(): Project {
@@ -105,35 +76,65 @@ export class ProjectService {
         return this.project$;
     }
 
-    getProject() {
-        return this.project$.getValue();
-    }
-
     setProject(project: Project) {
-        this.clearPlots();
-        this.clearLayers();
+        // console.log("`setProject`");
+
+        // clear layer data
+        this.layerData$.forEach(subject => subject.complete());
+        this.layerData$.clear();
+        this.layerDataState$.forEach(subject => subject.complete());
+        this.layerDataState$.clear();
+        this.layerDataSubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.layerDataSubscriptions.clear();
+        this.layerProvenanceData$.forEach(subject => subject.complete());
+        this.layerProvenanceData$.clear();
+        this.layerProvenanceDataState$.forEach(subject => subject.complete());
+        this.layerProvenanceDataState$.clear();
+        this.layerProvenanceDataSubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.layerProvenanceDataSubscriptions.clear();
+        this.layerSymbologyData$.forEach(subject => subject.complete());
+        this.layerSymbologyData$.clear();
+        this.layerSymbologyDataState$.forEach(subject => subject.complete());
+        this.layerSymbologyDataState$.clear();
+        this.layerSymbologyDataSubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.layerSymbologyDataSubscriptions.clear();
+
+        // clear plot data
+        this.plotData$.forEach(subject => subject.complete());
+        this.plotData$.clear();
+        this.plotDataState$.forEach(subject => subject.complete());
+        this.plotDataState$.clear();
+        this.plotSubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.plotSubscriptions.clear();
+
+        // add plot streams
+        for (const plot of project.plots) {
+            this.createPlotDataStreams(plot);
+        }
+
+        // add layer streams
+        for (const layer of project.layers) {
+            this.createLayerDataStreams(layer);
+        }
+
         this.project$.next(new Project({
             name: project.name,
             projection: project.projection,
             time: project.time,
-            plots: [],
-            layers: [],
+            plots: project.plots,
+            layers: project.layers,
         }));
-        for (const plot of project.plots.reverse()) {
-            this.addPlot(plot, false);
-        }
-        for (const layer of project.layers.reverse()) {
-            this.addLayer(layer);
-        }
     }
 
     setTime(time: Time) {
-        const oldTime = this.project$.getValue().time;
-        if (time && time.isValid() && !time.isSame(oldTime)) {
-            this.changeProjectConfig({
-                time: time,
-            });
-        }
+        this.project$.first().subscribe(project => {
+            const oldTime = project.time;
+            if (time && time.isValid() && !time.isSame(oldTime)) {
+                this.changeProjectConfig({
+                    time: time,
+                });
+            }
+        });
     }
 
     private changeProjectConfig(config: {
@@ -142,17 +143,27 @@ export class ProjectService {
         time?: Time,
         plots?: Array<Plot>,
         layers?: Array<Layer<Symbology>>
-    }) {
-        console.log('Project::ProjectService.changeProjectConfig', config);
-        const project = this.project$.value;
+    }): Observable<void> {
+        // console.log('Project::ProjectService.changeProjectConfig', config);
 
-        this.project$.next(new Project({
-            name: config.name ? config.name : project.name,
-            projection: config.projection ? config.projection : project.projection,
-            time: config.time ? config.time : project.time,
-            plots: config.plots ? config.plots : project.plots,
-            layers: config.layers ? config.layers : project.layers,
-        }));
+        const subject: Subject<void> = new ReplaySubject<void>(1);
+
+        this.project$.first().subscribe(
+            project => {
+                this.project$.next(new Project({
+                    name: config.name ? config.name : project.name,
+                    projection: config.projection ? config.projection : project.projection,
+                    time: config.time ? config.time : project.time,
+                    plots: config.plots ? config.plots : project.plots,
+                    layers: config.layers ? config.layers : project.layers,
+                }));
+                subject.next();
+                subject.complete();
+            },
+            error => subject.error(error)
+        );
+
+        return subject.asObservable();
     }
 
     setName(name: string) {
@@ -165,20 +176,12 @@ export class ProjectService {
         });
     }
 
-    getProjection(): Projection {
-        return this.projection$.value;
-    }
-
     getProjectionStream(): Observable<Projection> {
-        return this.projection$;
+        return this.project$.map(project => project.projection).distinctUntilChanged();
     }
 
     getTimeStream(): Observable<Time> {
-        return this.time$;
-    }
-
-    getTime(): Time {
-        return this.time$.getValue();
+        return this.project$.map(project => project.time).distinctUntilChanged();
     }
 
     /**
@@ -186,60 +189,83 @@ export class ProjectService {
      * @param plot
      * @param notify
      */
-    addPlot(plot: Plot, notify = true) {
-        const loadingState$ = new ReplaySubject(1);
-        const data$ = new ReplaySubject(1);
+    addPlot(plot: Plot, notify = true): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
 
-        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
+        this.project$.first().subscribe(
+            project => {
+                this.createPlotDataStreams(plot);
 
-        this.plotSubscriptions.set(plot, subscription);
+                const currentPlots = project.plots;
+                this.changeProjectConfig({
+                    plots: [plot, ...currentPlots]
+                }).subscribe(() => {
+                    if (notify) {
+                        this.newPlot$.next();
+                    }
 
-        const currentPlots = this.getProject().plots;
-        this.changeProjectConfig({
-            plots: [plot, ...currentPlots]
-        });
-        this.plotDataState$.set(plot, loadingState$);
-        this.plotData$.set(plot, data$);
+                    subject.next();
+                    subject.complete();
+                });
+            },
+            error => subject.error(error));
 
-        if (notify) {
-            this.newPlot$.next();
-        }
+        return subject.asObservable();
     }
 
-    replacePlot(oldPlot: Plot, newPlot: Plot) {
-        this.addPlot(newPlot, false);
+    replacePlot(oldPlot: Plot, newPlot: Plot): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
 
-        const currentPlots = this.getProject().plots;
-        const oldPlotIndex = currentPlots.indexOf(oldPlot);
-        currentPlots[oldPlotIndex] = newPlot;
-        currentPlots.shift();
+        this.addPlot(newPlot, false).subscribe(() => {
+            this.project$.first().subscribe(project => {
+                const currentPlots = project.plots;
+                const oldPlotIndex = currentPlots.indexOf(oldPlot);
+                currentPlots[oldPlotIndex] = newPlot;
+                currentPlots.shift();
 
-        this.removePlot(oldPlot);
-        this.newPlot$.next();
+                this.removePlot(oldPlot).subscribe(() => {
+                    this.newPlot$.next();
+
+                    subject.next();
+                    subject.complete();
+                });
+            });
+        });
+
+        return subject.asObservable();
     }
 
     /**
      * Remove a plot from the project.
      * @param plot
      */
-    removePlot(plot: Plot) {
-        const plots = Array.from(this.getProject().plots);
-        const plotIndex = plots.indexOf(plot);
-        if (plotIndex >= 0) {
-            plots.splice(plotIndex, 1);
-            this.changeProjectConfig({
-                plots: plots
-            });
+    removePlot(plot: Plot): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
 
-            this.plotSubscriptions.get(plot).unsubscribe();
-            this.plotSubscriptions.delete(plot);
+        this.project$.first().subscribe(project => {
+            const plots = [...project.plots];
+            const plotIndex = plots.indexOf(plot);
+            if (plotIndex >= 0) {
+                plots.splice(plotIndex, 1);
+                this.changeProjectConfig({
+                    plots: plots
+                }).subscribe(() => {
+                    this.plotSubscriptions.get(plot).unsubscribe();
+                    this.plotSubscriptions.delete(plot);
 
-            this.plotDataState$.get(plot).complete();
-            this.plotDataState$.delete(plot);
+                    this.plotDataState$.get(plot).complete();
+                    this.plotDataState$.delete(plot);
 
-            this.plotData$.get(plot).complete();
-            this.plotData$.delete(plot);
-        }
+                    this.plotData$.get(plot).complete();
+                    this.plotData$.delete(plot);
+
+                    subject.next();
+                    subject.complete();
+                });
+            }
+        });
+
+        return subject.asObservable();
     }
 
     /**
@@ -288,77 +314,29 @@ export class ProjectService {
             );
     }
 
-    /**
-     * Retrieve the plot models array as a stream.
-     * @returns {BehaviorSubject<Array<Plot>>}
-     */
-    getPlotStream(): Observable<Array<Plot>> {
-        return this.plots$;
+    private createPlotDataStreams(plot: Plot) {
+        const loadingState$ = new ReplaySubject(1);
+        const data$ = new ReplaySubject(1);
+
+        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
+        this.plotSubscriptions.set(plot, subscription);
+
+        this.plotDataState$.set(plot, loadingState$);
+        this.plotData$.set(plot, data$);
     }
 
-    /**
-     * Retrieve the data of the plot as a stream.
-     * @param plot
-     * @returns {ReplaySubject<PlotData>}
-     */
-    getPlotDataStream(plot: Plot): Observable<PlotData> {
-        return this.plotData$.get(plot);
-    }
+    private deletePlotDataStreas(plot: Plot) {
+        this.plotData$.get(plot).complete();
+        this.plotData$.delete(plot);
 
-    /**
-     * Retrieve the plot status as a stream.
-     * @param plot
-     * @returns {ReplaySubject<LoadingState>}
-     */
-    getPlotDataStatusStream(plot: Plot): Observable<LoadingState> {
-        return this.plotDataState$.get(plot);
-    }
-
-    /**
-     * Remove all plots from a project.
-     */
-    clearPlots() {
-        for (const plot of this.plots$.getValue().slice(0)) {
-            this.removePlot(plot);
-        }
-    }
-
-    getNewPlotStream(): Observable<void> {
-        return this.newPlot$;
-    }
-
-    /**
-     * Changes the display name of a plot.
-     * @param plot The plot to modify
-     * @param newName The new layer name
-     */
-    changePlotName(plot: Plot, newName: string) {
-        const newPlot = new Plot({
-            name: newName,
-            operator: plot.operator,
-        });
-
-        const plotIndex = this.plots$.getValue().indexOf(plot);
-        this.changeProjectConfig({
-            plots: this.plots$.getValue().splice(plotIndex, 1, newPlot),
-        });
-
-        this.plotSubscriptions.set(newPlot, this.plotSubscriptions.get(plot));
-        this.plotSubscriptions.delete(plot);
-
-        this.plotDataState$.set(newPlot, this.plotDataState$.get(plot));
+        this.plotDataState$.get(plot).complete();
         this.plotDataState$.delete(plot);
 
-        this.plotData$.set(newPlot, this.plotData$.get(plot));
-        this.plotData$.delete(plot);
+        this.plotSubscriptions.get(plot).unsubscribe();
+        this.plotSubscriptions.delete(plot);
     }
 
-    /**
-     * Add a plot to the project.
-     * @param layer
-     * @param notify
-     */
-    addLayer(layer: Layer<Symbology>, notify = true) {
+    private createLayerDataStreams(layer: Layer<Symbology>) {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject(1);
         const layerData$ = new ReplaySubject(1);
@@ -397,61 +375,165 @@ export class ProjectService {
         this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
         this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
         this.layerProvenanceData$.set(layer, provenanceData$);
+    }
 
-        const currentLayers = this.getProject().layers;
-        this.changeProjectConfig({
-            layers: [layer, ...currentLayers]
+    /**
+     * Retrieve the plot models array as a stream.
+     * @returns {BehaviorSubject<Array<Plot>>}
+     */
+    getPlotStream(): Observable<Array<Plot>> {
+        return this.project$.map(project => project.plots).distinctUntilChanged();
+    }
+
+    /**
+     * Retrieve the data of the plot as a stream.
+     * @param plot
+     * @returns {ReplaySubject<PlotData>}
+     */
+    getPlotDataStream(plot: Plot): Observable<PlotData> {
+        return this.plotData$.get(plot);
+    }
+
+    /**
+     * Retrieve the plot status as a stream.
+     * @param plot
+     * @returns {ReplaySubject<LoadingState>}
+     */
+    getPlotDataStatusStream(plot: Plot): Observable<LoadingState> {
+        return this.plotDataState$.get(plot);
+    }
+
+    /**
+     * Remove all plots from a project.
+     */
+    clearPlots() {
+        this.project$.first().subscribe(project => {
+            for (const plot of project.plots.slice(0)) {
+                this.removePlot(plot);
+            }
+        });
+    }
+
+    getNewPlotStream(): Observable<void> {
+        return this.newPlot$;
+    }
+
+    /**
+     * Changes the display name of a plot.
+     * @param plot The plot to modify
+     * @param newName The new layer name
+     */
+    changePlotName(plot: Plot, newName: string) {
+        const newPlot = new Plot({
+            name: newName,
+            operator: plot.operator,
         });
 
-        if (notify) {
-            this.newLayer$.next(layer);
-        }
+        this.project$.first().subscribe(project => {
+            let plots = project.plots;
+            const plotIndex = plots.indexOf(plot);
+            plots.splice(plotIndex, 1, newPlot);
 
-        console.log("ADD LAYER", layer, this);
+            this.changeProjectConfig({
+                plots: [...plots],
+            }).subscribe(() => {
+                this.plotSubscriptions.set(newPlot, this.plotSubscriptions.get(plot));
+                this.plotSubscriptions.delete(plot);
+
+                this.plotDataState$.set(newPlot, this.plotDataState$.get(plot));
+                this.plotDataState$.delete(plot);
+
+                this.plotData$.set(newPlot, this.plotData$.get(plot));
+                this.plotData$.delete(plot);
+            });
+        });
+    }
+
+    /**
+     * Add a plot to the project.
+     * @param layer
+     * @param notify
+     */
+    addLayer(layer: Layer<Symbology>, notify = true): Observable<void> {
+        this.createLayerDataStreams(layer);
+
+        const subject: Subject<void> = new ReplaySubject<void>(1);
+
+        this.project$.first().subscribe(project => {
+            const currentLayers = project.layers;
+            this.changeProjectConfig({
+                layers: [layer, ...currentLayers]
+            }).subscribe(() => {
+                if (notify) {
+                    this.newLayer$.next(layer);
+                }
+
+                // console.log("ADD LAYER", layer, this);
+
+                subject.next();
+                subject.complete();
+            });
+        });
+
+        return subject.asObservable();
     }
 
     /**
      * Remove a plot from the project.
      * @param layer
      */
-    removeLayer(layer: Layer<Symbology>) {
-        const layers = Array.from(this.getProject().layers);
-        const layerIndex = layers.indexOf(layer);
-        console.log("REMOVE LAYER", layer, layers, layerIndex);
-        if (layerIndex >= 0) {
-            const removedLayers = layers.splice(layerIndex, 1);
-            console.log("REMOVE LAYER 2", removedLayers, layers);
-            this.changeProjectConfig({
-                layers: layers
-            });
+    removeLayer(layer: Layer<Symbology>): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
 
-            this.layerDataSubscriptions.get(layer).unsubscribe();
-            this.layerDataSubscriptions.delete(layer);
-            this.layerDataState$.get(layer).complete();
-            this.layerDataState$.delete(layer);
-            this.layerData$.get(layer).complete();
-            this.layerData$.delete(layer);
+        this.project$.first().subscribe(project => {
+            // const layers = Array.from(this.getProject().layers);
+            const layers = [...project.layers];
+            const layerIndex = layers.indexOf(layer);
+            // console.log("REMOVE LAYER", layer, layers, layerIndex);
+            if (layerIndex >= 0) {
+                layers.splice(layerIndex, 1);
+                // console.log("REMOVE LAYER 2", removedLayers, layers);
+                this.changeProjectConfig({
+                    layers: layers
+                }).subscribe(() => {
+                    this.layerDataSubscriptions.get(layer).unsubscribe();
+                    this.layerDataSubscriptions.delete(layer);
+                    this.layerDataState$.get(layer).complete();
+                    this.layerDataState$.delete(layer);
+                    this.layerData$.get(layer).complete();
+                    this.layerData$.delete(layer);
 
-            this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
-            this.layerProvenanceDataSubscriptions.delete(layer);
-            this.layerProvenanceDataState$.get(layer).complete();
-            this.layerProvenanceDataState$.delete(layer);
-            this.layerProvenanceData$.get(layer).complete();
-            this.layerProvenanceData$.delete(layer);
+                    this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
+                    this.layerProvenanceDataSubscriptions.delete(layer);
+                    this.layerProvenanceDataState$.get(layer).complete();
+                    this.layerProvenanceDataState$.delete(layer);
+                    this.layerProvenanceData$.get(layer).complete();
+                    this.layerProvenanceData$.delete(layer);
 
-            const lsdsub = this.layerSymbologyDataSubscriptions.get(layer);
-            if (lsdsub) lsdsub.unsubscribe();
-            this.layerSymbologyDataSubscriptions.delete(layer);
-            const lsds = this.layerSymbologyDataState$.get(layer);
-            if (lsds) lsds.complete();
-            this.layerSymbologyDataState$.delete(layer);
-            const lsd = this.layerSymbologyData$.get(layer);
-            if (lsd) lsd.complete();
-            this.layerSymbologyData$.delete(layer);
-        }
+                    const symbologyDataSubscription = this.layerSymbologyDataSubscriptions.get(layer);
+                    if (symbologyDataSubscription) {
+                        symbologyDataSubscription.unsubscribe();
+                    }
+                    this.layerSymbologyDataSubscriptions.delete(layer);
+                    const symbologyDataState = this.layerSymbologyDataState$.get(layer);
+                    if (symbologyDataState) {
+                        symbologyDataState.complete();
+                    }
+                    this.layerSymbologyDataState$.delete(layer);
+                    const lsd = this.layerSymbologyData$.get(layer);
+                    if (lsd) {
+                        lsd.complete();
+                    }
+                    this.layerSymbologyData$.delete(layer);
+
+                    subject.next();
+                    subject.complete();
+                });
+            }
+        });
+
+        return subject.asObservable();
     }
-
-
 
     reloadLayerData(layer: Layer<Symbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
@@ -549,7 +631,7 @@ export class ProjectService {
      * @returns {Subscription}
      */
     private createRasterLayerDataSubscription(layer: RasterLayer<RasterSymbology>, data$: Observer<RasterData>,
-                                        loadingState$: Observer<LoadingState>): Subscription {
+                                              loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
@@ -559,8 +641,8 @@ export class ProjectService {
                 return new RasterData(time, projection,
                     this.mappingQueryService.getWMSQueryUrl({
                         operator: layer.operator,
-                        // time: time, //handled by openlayers
-                        // projection: projection //handled by openlayers
+                        time: time,
+                        projection: projection,
                     })
                 );
             })
@@ -585,15 +667,15 @@ export class ProjectService {
      * @returns {Subscription}
      */
     private createVectorLayerDataSubscription(layer: VectorLayer<AbstractVectorSymbology>, data$: Observer<VectorData>,
-                                        loadingState$: Observer<LoadingState>): Subscription {
+                                              loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
-            this.mapservice.getViewportSizeStream()
+            this.mapService.getViewportSizeStream()
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection, viewportSize]) => {
-                const requestExtent: [number, number, number, number] = [0,0,0,0];
+                const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
                 return this.mappingQueryService.getWFSData({
                     operator: layer.operator,
@@ -625,7 +707,7 @@ export class ProjectService {
      * @returns {Subscription}
      */
     private createLayerProvenanceSubscription(layer: Layer<Symbology>, provenance$: Observer<{}>,
-                                        loadingState$: Observer<LoadingState>): Subscription {
+                                              loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(this.getTimeStream(), this.getProjectionStream())
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection]) => {
@@ -658,8 +740,7 @@ export class ProjectService {
      */
     private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<RasterSymbology>,
                                                        data$: Observer<MappingColorizer>,
-                                                       loadingState$: Observer<LoadingState>
-    ): Subscription {
+                                                       loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
@@ -667,10 +748,10 @@ export class ProjectService {
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection]) => {
                 return this.mappingQueryService.getColorizer(
-                        layer.operator,
-                        time,
-                        projection
-                    );
+                    layer.operator,
+                    time,
+                    projection
+                );
             })
             .do(
                 () => loadingState$.next(LoadingState.OK),
@@ -690,7 +771,7 @@ export class ProjectService {
      * @returns {BehaviorSubject<Array<Layer<Symbology>>>}
      */
     getLayerStream(): Observable<Array<Layer<Symbology>>> {
-        return this.layers$;
+        return this.project$.map(project => project.layers).distinctUntilChanged();
     }
 
     /**
@@ -764,21 +845,15 @@ export class ProjectService {
      * Remove all plots from a project.
      */
     clearLayers() {
-        for (const layer of this.layers$.getValue().slice(0)) {
-            this.removeLayer(layer);
-        }
+        this.project$.first().subscribe(project => {
+            for (const layer of project.layers.slice(0)) {
+                this.removeLayer(layer);
+            }
+        });
     }
 
     getNewLayerStream(): Observable<Layer<Symbology>> {
         return this.newLayer$;
-    }
-
-    /**
-     * @returns The layer list.
-     */
-    getLayers(): Array<Layer<Symbology>> {
-        console.log("getLayers");
-        return this.layers$.getValue();
     }
 
 
@@ -787,59 +862,121 @@ export class ProjectService {
      * @param layers
      */
     setLayers(layers: Array<Layer<Symbology>>) {
-        console.log("setLayers", layers);
-        if ( this.getLayers() !== layers) {
-            console.log("setLayers updates");
-            this.changeProjectConfig({layers: layers});
-        }
+        this.project$.first().subscribe(project => {
+            // console.log("setLayers", layers);
+            if (project.layers !== layers) {
+                // console.log("setLayers updates");
+                this.changeProjectConfig({layers: layers});
+            }
+        });
     }
 
     /**
      * Changes the display name of a layer.
      * @param layer The layer to modify
-     * @param newName The new layer name
+     * @param changes
      */
-    changeLayerName(layer: Layer<Symbology>, newName: string) {
-        layer.name = newName;
-        this.layers$.next(this.getLayers());
-    }
+    changeLayer(layer: Layer<Symbology>, changes: {
+        name?: string,
+        symbology?: Symbology,
+        editSymbology?: boolean,
+        visible?: boolean,
+        expanded?: boolean,
+    }) {
+        // change immutably
+        //
+        // let newLayer: Layer<Symbology>;
+        // if (layer instanceof VectorLayer) {
+        //     newLayer = new VectorLayer<AbstractVectorSymbology>({
+        //         name: changes.name ? changes.name : layer.name,
+        //         operator: layer.operator,
+        //         symbology: changes.symbology ? changes.symbology : layer.symbology,
+        //         editSymbology: changes.editSymbology !== undefined ? changes.editSymbology : layer.editSymbology,
+        //         visible: changes.visible !== undefined ? changes.visible : layer.visible,
+        //         expanded: changes.expanded !== undefined ? changes.expanded : layer.expanded,
+        //     });
+        // } else if (layer instanceof RasterLayer) {
+        //     newLayer = new RasterLayer<RasterSymbology>({
+        //         name: changes.name ? changes.name : layer.name,
+        //         operator: layer.operator,
+        //         symbology: (changes.symbology ? changes.symbology : layer.symbology) as RasterSymbology,
+        //         editSymbology: changes.editSymbology !== undefined ? changes.editSymbology : layer.editSymbology,
+        //         visible: changes.visible !== undefined ? changes.visible : layer.visible,
+        //         expanded: changes.expanded !== undefined ? changes.expanded : layer.expanded,
+        //     });
+        // }
+        //
+        // if (layer) {
+        //     this.project$.first().subscribe(project => {
+        //         let layers = project.layers;
+        //         const layerIndex = layers.indexOf(layer);
+        //         layers.splice(layerIndex, 1, newLayer);
+        //
+        //         this.layerData$.set(newLayer, this.layerData$.get(layer));
+        //         this.layerDataState$.set(newLayer, this.layerDataState$.get(layer));
+        //         this.layerDataSubscriptions.set(newLayer, this.layerDataSubscriptions.get(layer));
+        //
+        //         if (layer instanceof RasterLayer) {
+        //             this.layerSymbologyData$.set(newLayer, this.layerSymbologyData$.get(layer));
+        //             this.layerSymbologyDataState$.set(newLayer, this.layerSymbologyDataState$.get(layer));
+        //             this.layerSymbologyDataSubscriptions.set(newLayer, this.layerSymbologyDataSubscriptions.get(layer));
+        //         }
+        //
+        //         this.layerProvenanceData$.set(newLayer, this.layerProvenanceData$.get(layer));
+        //         this.layerProvenanceDataState$.set(newLayer, this.layerProvenanceDataState$.get(layer));
+        //         this.layerProvenanceDataSubscriptions.set(newLayer, this.layerProvenanceDataSubscriptions.get(layer));
+        //
+        //         this.changeProjectConfig({
+        //             layers: [...layers],
+        //         }).subscribe(() => {
+        //             this.layerData$.delete(layer);
+        //             this.layerDataState$.delete(layer);
+        //             this.layerDataSubscriptions.delete(layer);
+        //
+        //             if (layer instanceof RasterLayer) {
+        //                 this.layerSymbologyData$.delete(layer);
+        //                 this.layerSymbologyDataState$.delete(layer);
+        //                 this.layerSymbologyDataSubscriptions.delete(layer);
+        //             }
+        //
+        //             this.layerProvenanceData$.delete(layer);
+        //             this.layerProvenanceDataState$.delete(layer);
+        //             this.layerProvenanceDataSubscriptions.delete(layer);
+        //         });
+        //     });
+        // }
 
-    /**
-     * Changes the symbology of a layer.
-     * @param layer The layer to modify
-     * @param symbology The new symbology
-     */
-    changeLayerSymbology(layer: Layer<Symbology>, symbology: Symbology) {
-        // console.log('changeLayerSymbology', layer, symbology);
-        layer.symbology = symbology;
-        this.layers$.next(this.getLayers());
-    }
+        // change mutably
+        layer._changeUnderlyingData(changes);
 
-    setLayerVisible(layer: Layer<Symbology>, visible: boolean) {
-        layer.visible = visible;
-        this.layers$.next(this.getLayers());
+        if (layer instanceof RasterLayer) {
+            const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(
+                layer as RasterLayer<RasterSymbology>,
+                this.layerSymbologyData$.get(layer),
+                this.layerSymbologyDataState$.get(layer),
+            );
+
+            this.layerSymbologyDataSubscriptions.get(layer).unsubscribe();
+            this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSybscription);
+        }
+
+        this.getLayerStream().first().subscribe(layers => {
+            this.changeProjectConfig({
+                layers: [...layers],
+            });
+        });
     }
 
     /**
      * Toggle the layer (extension).
      * @param layer The layer to modify
      */
-    toggleLayer(layer: Layer<Symbology>) {
-        this.setLayerExpanded(layer, !layer.expanded);
-    }
-
-    setLayerExpanded(layer: Layer<Symbology>, expanded: boolean) {
-        layer.expanded = expanded;
-        this.layers$.next(this.getLayers());
+    toggleSymbology(layer: Layer<Symbology>) {
+        this.changeLayer(layer, {expanded: !layer.expanded});
     }
 
     toggleEditSymbology(layer: Layer<Symbology>) {
-        this.setShowLayerSymbology(layer, !layer.editSymbology);
-    }
-
-    setShowLayerSymbology(layer: Layer<Symbology>, showSymbology: boolean) {
-        layer.editSymbology = !layer.editSymbology;
-        this.layers$.next(this.getLayers());
+        this.changeLayer(layer, {editSymbology: !layer.editSymbology});
     }
 
 }

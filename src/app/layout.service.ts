@@ -23,6 +23,8 @@ export interface SidenavConfig {
 @Injectable()
 export class LayoutService {
 
+    private static _scrollbarWidthPx: number;
+
     /**
      * Is the layer list visible?
      */
@@ -51,6 +53,35 @@ export class LayoutService {
     static remInPx(): number {
         // TODO: calculate
         return 16;
+    }
+
+    static scrollbarWidthPx() {
+        if (!this._scrollbarWidthPx) {
+            const outer = document.createElement('div');
+            outer.style.visibility = 'hidden';
+            outer.style.width = '100px';
+            outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
+
+            document.body.appendChild(outer);
+
+            const widthNoScroll = outer.offsetWidth;
+            // force scrollbars
+            outer.style.overflow = 'scroll';
+
+            // add innerdiv
+            const inner = document.createElement('div');
+            inner.style.width = '100%';
+            outer.appendChild(inner);
+
+            const widthWithScroll = inner.offsetWidth;
+
+            // remove divs
+            outer.parentNode.removeChild(outer);
+
+            this._scrollbarWidthPx = widthNoScroll - widthWithScroll;
+        }
+
+        return this._scrollbarWidthPx;
     }
 
     static getToolbarHeightPx(): number {
@@ -113,8 +144,7 @@ export class LayoutService {
 
     /**
      * Set the new Component to show in the sidenav
-     * @param component
-     * @param backButtonComponent
+     * @param sidenavConfig
      */
     setSidenavContentComponent(sidenavConfig: SidenavConfig) {
         this.sidenavContentComponent$.next(sidenavConfig);

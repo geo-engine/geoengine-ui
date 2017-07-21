@@ -13,8 +13,8 @@ import {MdSliderChange} from "@angular/material";
                     <md-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
                         (change)="updateOpacity($event)">                        
                     </md-slider>
-                    <span>{{slo.displayValue}} %</span>
             </td>
+            <td>{{slo.displayValue}} %</td>
         </tr>
         <!--
         <tr>
@@ -50,6 +50,16 @@ import {MdSliderChange} from "@angular/material";
             1px -1px 0 #fff,
             -1px 1px 0 #fff,
             1px 1px 0 #fff !important;
+        }
+        
+        td:first-child, td:last-child {
+            width: 1%;
+            white-space: nowrap;
+        }
+        
+        md-slider {
+            min-width: unset;
+            width: 100%;
         }
         `],
 })

@@ -42,7 +42,7 @@
         <md-list [dragula]="layer-bag" [dragulaOptions]="dragOptions"
                  *ngIf="layoutService.getLayerListVisibilityStream() | async">
 
-            <md-list-item *ngIf="(projectService.getLayerStream() | async).length === 0">
+            <md-list-item *ngIf="(projectService.getLayerStream() | async)?.length === 0">
                 <button md-button class="no-layer"
                         (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
                         mdTooltip="Add New Data" mdTooltipPosition="after"
@@ -181,14 +181,18 @@
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-                                <wave-legendary-mapping-colorizer-raster fxFlex="grow" [symbology]="layer.symbology" [symbologyData]="projectService.getLayerSymbologyDataStream(layer) | async">
+                                <wave-legendary-mapping-colorizer-raster
+                                    fxFlex="grow"
+                                    *ngIf="projectService.getLayerSymbologyDataStream(layer) | async"
+                                    [symbology]="layer.symbology"
+                                    [symbologyData]="projectService.getLayerSymbologyDataStream(layer) | async">
                                 </wave-legendary-mapping-colorizer-raster>
                             </ng-template>
 
                             <wave-legendary *ngSwitchDefault fxFlex="grow" [symbology]="layer.symbology">
                             </wave-legendary>
 
-                            <button md-icon-button (click)="projectService.toggleLayer(layer)">
+                            <button md-icon-button (click)="toggleLayer(layer)">
                                 <md-icon>expand_less</md-icon>
                             </button>
 

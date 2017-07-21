@@ -59,7 +59,7 @@ export class MappingQueryService {
      * @param config
      * @returns the query url
      */
-    getPlotQueryUrl(config: {operator: Operator, time: Time}): string {
+    getPlotQueryUrl(config: { operator: Operator, time: Time }): string {
         const parameters = new MappingRequestParameters({
             service: 'plot',
             request: '',
@@ -85,7 +85,7 @@ export class MappingQueryService {
      * @param config
      * @returns a Promise of PlotData
      */
-    getPlotData(config: {operator: Operator, time: Time}): Observable<PlotData> {
+    getPlotData(config: { operator: Operator, time: Time }): Observable<PlotData> {
         return this.http.get(this.getPlotQueryUrl(config))
             .map(response => response.json());
     }
@@ -100,19 +100,12 @@ export class MappingQueryService {
      */
     getWFSQueryUrl(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection,
+        time: Time,
+        projection: Projection,
         outputFormat: WFSOutputFormat,
-        viewportSize?:ViewportSize,
+        viewportSize?: ViewportSize,
         clustered?: boolean
     }): string {
-        if (!config.time) {
-            config.time = this.getProjectService().getTime();
-        }
-        if (!config.projection) {
-            config.projection = this.getProjectService().getProject().projection;
-        }
-
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
         const parameters = new MappingRequestParameters({
@@ -129,10 +122,9 @@ export class MappingQueryService {
                 outputFormat: config.outputFormat.getFormat(),
             },
         });
-        if(config.clustered){
+        if (config.clustered) {
             parameters.setParameter('clustered', config.clustered);
-        }
-        else {
+        } else {
             parameters.setParameter('clustered', false);
         }
 
@@ -178,8 +170,8 @@ export class MappingQueryService {
      */
     getWFSData(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection,
+        time: Time,
+        projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize: ViewportSize,
         clustered: boolean
@@ -223,34 +215,34 @@ export class MappingQueryService {
      * @returns an Observable of features
      */
     /*
-    getWFSDataStream(config: {
-        operator: Operator,
-        outputFormat: WFSOutputFormat
-    }): Observable<string> {
-        return Observable.combineLatest(
-            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
-        ).switchMap(
-            ([time, projection]) => this.getWFSData({
-                operator: config.operator,
-                time: time,
-                projection: projection,
-                outputFormat: config.outputFormat,
-            })
-        );
-    }
-    */
+     getWFSDataStream(config: {
+     operator: Operator,
+     outputFormat: WFSOutputFormat
+     }): Observable<string> {
+     return Observable.combineLatest(
+     this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
+     ).switchMap(
+     ([time, projection]) => this.getWFSData({
+     operator: config.operator,
+     time: time,
+     projection: projection,
+     outputFormat: config.outputFormat,
+     })
+     );
+     }
+     */
 
     getWFSDataStreamAsGeoJsonFeatureCollection(config: {
         operator: Operator,
         clustered?: boolean,
         buffer?: boolean,
     }): VectorLayerData {
-        const viewportSize$= this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE);
+        const viewportSize$ = this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE);
 
         const reload$ = new BehaviorSubject<void>(undefined);
         const state$ = new ReplaySubject<LoadingState>(1);
-        const dataExtent$ = new BehaviorSubject<[number, number, number, number]>([0,0,0,0]);
-        const dataResolution$= new BehaviorSubject<number>(0);
+        const dataExtent$ = new BehaviorSubject<[number, number, number, number]>([0, 0, 0, 0]);
+        const dataResolution$ = new BehaviorSubject<number>(0);
         const dataProjection$ = new BehaviorSubject<Projection>(null);
         const format = new ol.format.GeoJSON();
         const dataTime$ = new BehaviorSubject<Time>(null);
@@ -260,9 +252,11 @@ export class MappingQueryService {
             viewportSize$,
             reload$
         ).filter(([time, projection, viewport]) => {
-            //console.log('a', time, projection, viewport);
-            //console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
-            //console.log('c', !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent), (dataResolution$.getValue() !== viewport.resolution), (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)), (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection));
+            // console.log('a', time, projection, viewport);
+            // console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
+            // console.log('c', !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent),
+            // (dataResolution$.getValue() !== viewport.resolution), (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)),
+            // (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection));
             return (
                 !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent) ||
                 (dataResolution$.getValue() !== viewport.resolution) ||
@@ -271,54 +265,54 @@ export class MappingQueryService {
             );
         })
             .switchMap(([time, projection, viewport]) => {
-            state$.next(LoadingState.LOADING);
-            const ex = Math.min(ol.extent.getWidth(viewport.extent), ol.extent.getHeight(viewport.extent));
-            const requestExtent = ol.extent.getIntersection(
-                ol.extent.buffer(viewport.extent, ex*0.25)
-                , viewport.maxExtent);
-            //console.log('req', viewport.extent, ex, requestExtent);
-            const promise = this.getWFSDataAsJson({
-                operator: config.operator,
-                time: time,
-                projection: projection,
-                viewportSize: {
-                    extent: requestExtent,
-                    resolution: viewport.resolution,
-                    maxExtent: viewport.maxExtent,
-                },
-                clustered: (config.clustered) ? config.clustered : false,
-            });
-            dataExtent$.next(requestExtent);
-            dataProjection$.next(projection);
-            dataResolution$.next(viewport.resolution);
-            dataTime$.next(time);
-            return promise.then(
-                result => {
-                    state$.next(LoadingState.OK);
-                    return result;
-                },
-                (reason: Error) => {
-                    state$.next(LoadingState.ERROR);
-                    this.notificationService.error(`${reason.message}`);
-                    return undefined;
-                }
-            );
-        }).map(result => {
-            if (result) {
-                const geojson = result as GeoJsonFeatureCollection;
-                for (let localRowId = 0; localRowId < geojson.features.length; localRowId++) {
-                    const feature = geojson.features[localRowId];
-                    if (feature.id === undefined) {
-                        feature.id = ('lrid_' + localRowId);
+                state$.next(LoadingState.LOADING);
+                const ex = Math.min(ol.extent.getWidth(viewport.extent), ol.extent.getHeight(viewport.extent));
+                const requestExtent = ol.extent.getIntersection(
+                    ol.extent.buffer(viewport.extent, ex * 0.25)
+                    , viewport.maxExtent);
+                // console.log('req', viewport.extent, ex, requestExtent);
+                const promise = this.getWFSDataAsJson({
+                    operator: config.operator,
+                    time: time,
+                    projection: projection,
+                    viewportSize: {
+                        extent: requestExtent,
+                        resolution: viewport.resolution,
+                        maxExtent: viewport.maxExtent,
+                    },
+                    clustered: (config.clustered) ? config.clustered : false,
+                });
+                dataExtent$.next(requestExtent);
+                dataProjection$.next(projection);
+                dataResolution$.next(viewport.resolution);
+                dataTime$.next(time);
+                return promise.then(
+                    result => {
+                        state$.next(LoadingState.OK);
+                        return result;
+                    },
+                    (reason: Error) => {
+                        state$.next(LoadingState.ERROR);
+                        this.notificationService.error(`${reason.message}`);
+                        return undefined;
                     }
-                }
+                );
+            }).map(result => {
+                if (result) {
+                    const geojson = result as GeoJsonFeatureCollection;
+                    for (let localRowId = 0; localRowId < geojson.features.length; localRowId++) {
+                        const feature = geojson.features[localRowId];
+                        if (feature.id === undefined) {
+                            feature.id = ('lrid_' + localRowId);
+                        }
+                    }
 
-                const features = format.readFeatures(result);
-                return features;
-            } else {
-                return [];
-            }
-        }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
+                    const features = format.readFeatures(result);
+                    return features;
+                } else {
+                    return [];
+                }
+            }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
 
         return {
             data$: data$,
@@ -328,25 +322,16 @@ export class MappingQueryService {
         };
     }
 
-     /**
+    /**
      * Get MAPPING query parameters for the WMS request.
-     * @param operator the operator graph
-     * @param time the point in time
-     * @param projection the desired projection
      * @returns the query parameters
+     * @param config
      */
     getWMSQueryParameters(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection,
+        time: Time,
+        projection: Projection,
     }): MappingRequestParameters {
-        if (!config.time) {
-            config.time = this.getProjectService().getTime();
-        }
-        if (!config.projection) {
-            config.projection = this.getProjectService().getProject().projection;
-        }
-
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
         return new MappingRequestParameters({
@@ -367,15 +352,13 @@ export class MappingQueryService {
 
     /**
      * Get a MAPPING url for the WMS request.
-     * @param operator the operator graph
-     * @param time the point in time
-     * @param projection the desired projection
      * @returns the query url
+     * @param config
      */
     getWMSQueryUrl(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection
+        time: Time,
+        projection: Projection
     }): string {
         const parameters = this.getWMSQueryParameters(config);
 
@@ -384,24 +367,17 @@ export class MappingQueryService {
 
     getWCSQueryUrl(config: {
         operator: Operator,
-        time?: Time,
-        projection?: Projection,
+        time: Time,
+        projection: Projection,
         outputFormat: WCSOutputFormat,
         size: {
             x: number,
             y: number,
         },
     }): string {
-        if (!config.time) {
-            config.time = this.getProjectService().getTime();
-        }
-        if (!config.projection) {
-            config.projection = this.getProjectService().getProject().projection;
-        }
-
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
-        const extent = this.getProjectService().getProjection().getExtent();
+        const extent = config.projection.getExtent();
 
         const parameters = new MappingRequestParameters({
             service: this.config.WCS.SERVICE,
@@ -413,7 +389,7 @@ export class MappingQueryService {
                 coverageid: encodeURIComponent(projectedOperator.toQueryJSON()),
                 subset_x: `(${extent[0]},${extent[2]})`,
                 subset_y: `(${extent[1]},${extent[3]})`,
-                outputcrs: this.getProjectService().getProjection().getCrsURI(),
+                outputcrs: config.projection.getCrsURI(),
                 size_x: config.size.x,
                 size_y: config.size.y,
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
@@ -453,7 +429,7 @@ export class MappingQueryService {
                     this.notificationService.info('No raster for the given time available.');
                 }
 
-                if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length-1][0]) {
+                if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }
                 return c;
@@ -561,7 +537,7 @@ export class MappingQueryService {
         );
     }
 
-    getGBIFDataSourceCounts(scientificName: string): Promise<Array<{name: string, count: number}>> {
+    getGBIFDataSourceCounts(scientificName: string): Promise<Array<{ name: string, count: number }>> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
             request: 'queryDataSources',

@@ -8,6 +8,7 @@ import {MD_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {Subscription} from 'rxjs/Rx';
+import {ProjectService} from '../../../project/project.service';
 
 interface LayerExportComponentConfig {
     layer: Layer<Symbology>;
@@ -37,6 +38,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(private formBuilder: FormBuilder,
                 private mappingQueryService: MappingQueryService,
+                private projectService: ProjectService,
                 @Inject(MD_DIALOG_DATA) private config: LayerExportComponentConfig) {
     }
 
@@ -77,25 +79,31 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     download() {
-        if (this.isVector) {
-            location.href = this.mappingQueryService.getWFSQueryUrl({
-                operator: this.layer.operator,
-                outputFormat: this.form.controls['dataOutputFormat'].value,
-            });
-        }
+        this.projectService.getProjectStream().first().subscribe(project => {
+            if (this.isVector) {
+                location.href = this.mappingQueryService.getWFSQueryUrl({
+                    operator: this.layer.operator,
+                    outputFormat: this.form.controls['dataOutputFormat'].value,
+                    time: project.time,
+                    projection: project.projection,
+                });
+            }
 
-        if (this.isRaster) {
-            const rasterResolution = this.form.controls['rasterResolution'] as FormGroup;
+            if (this.isRaster) {
+                const rasterResolution = this.form.controls['rasterResolution'] as FormGroup;
 
-            location.href = this.mappingQueryService.getWCSQueryUrl({
-                operator: this.layer.operator,
-                outputFormat: this.form.controls['dataOutputFormat'].value,
-                size: {
-                    x: rasterResolution.controls['width'].value,
-                    y: rasterResolution.controls['height'].value,
-                },
-            });
-        }
+                location.href = this.mappingQueryService.getWCSQueryUrl({
+                    operator: this.layer.operator,
+                    outputFormat: this.form.controls['dataOutputFormat'].value,
+                    size: {
+                        x: rasterResolution.controls['width'].value,
+                        y: rasterResolution.controls['height'].value,
+                    },
+                    time: project.time,
+                    projection: project.projection,
+                });
+            }
+        });
     }
 
 }

@@ -44,7 +44,8 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         revertOnSpill: true,
         moves: (el, source, handle, sibling): boolean => {
             let s = handle;
-            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag')) {}
+            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag')) {
+            }
             return !s;
         }
     };
@@ -55,16 +56,14 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         return Array.prototype.indexOf.call(parent.children, child);
     }
 
-    constructor(
-     public dialog: MdDialog,
-     private layoutService: LayoutService,
-     private dragulaService: DragulaService,
-     private projectService: ProjectService,
-     private layerService: LayerService,
-     private mapService: MapService,
-     private iconRegistry: MdIconRegistry,
-     private sanitizer: DomSanitizer
-    ) {
+    constructor(public dialog: MdDialog,
+                private layoutService: LayoutService,
+                private dragulaService: DragulaService,
+                private projectService: ProjectService,
+                private layerService: LayerService,
+                private mapService: MapService,
+                private iconRegistry: MdIconRegistry,
+                private sanitizer: DomSanitizer) {
         iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology', 'line',
@@ -74,9 +73,9 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         iconRegistry.addSvgIconInNamespace('symbology', 'grid4',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
-     this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
+        this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
-      this.handleDragAndDrop();
+        this.handleDragAndDrop();
     }
 
     ngOnInit() {
@@ -94,28 +93,30 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
             this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
                 dragIndex = NextLayerListComponent.domIndexOf(listItem, list);
-                console.log('drag', dragIndex);
+                // console.log('drag', dragIndex);
             })
         );
         this.subscriptions.push(
             this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
                 dropIndex = NextLayerListComponent.domIndexOf(listItem, list);
-                console.log('drop', dropIndex);
+                // console.log('drop', dropIndex);
 
-                const layers = Array.from(this.projectService.getLayers());
-                layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
-                this.projectService.setLayers(layers);
+                this.projectService.getLayerStream().first().subscribe(layers => {
+                    let shiftedLayers: Array<Layer<Symbology>> = [...layers];
+                    shiftedLayers.splice(dropIndex, 0, shiftedLayers.splice(dragIndex, 1)[0]);
+                    this.projectService.setLayers(shiftedLayers)
+                });
             })
         );
     }
 
     toggleLayer(layer: Layer<Symbology>) {
-        this.projectService.toggleLayer(layer);
+        this.projectService.toggleSymbology(layer);
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
-        this.projectService.changeLayerSymbology(layer, symbology);
+        this.projectService.changeLayer(layer, {symbology: symbology});
     }
 
 }

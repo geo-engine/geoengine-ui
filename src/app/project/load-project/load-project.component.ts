@@ -3,6 +3,7 @@ import {ProjectService} from '../project.service';
 import {StorageService} from '../../storage/storage.service';
 import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn} from '@angular/forms';
 import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
+import {NotificationService} from '../../notification.service';
 
 function notCurrentProject(currentProjectName: () => string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: boolean} => {
@@ -35,11 +36,15 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     constructor(private projectService: ProjectService,
                 private storageService: StorageService,
+                private notificationService: NotificationService,
                 private formBuilder: FormBuilder) {
     }
 
     ngOnInit() {
-        this.currentProjectName = this.projectService.getProject().name;
+        this.currentProjectName = '';
+        this.projectService.getProjectStream().first().subscribe(project => {
+            this.currentProjectName = project.name;
+        });
 
         this.form = this.formBuilder.group({
             projectName: [
@@ -66,6 +71,8 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
         this.storageService.loadProjectByName(newProject);
         this.currentProjectName = newProject;
         setTimeout(() => this.form.controls['projectName'].updateValueAndValidity({emitEvent: true}));
+
+        this.notificationService.info(`Switched to project »${newProject}«`);
     }
 
 }

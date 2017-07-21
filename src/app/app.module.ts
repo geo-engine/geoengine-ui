@@ -12,7 +12,7 @@ import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/r
 import {MapComponent} from './map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-    OlPolygonLayerComponent, OlMapLayerComponent, OlVectorLayerComponent,
+    OlPolygonLayerComponent,
 } from './map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
@@ -102,6 +102,7 @@ import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script
 import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
+import {RouterModule} from '@angular/router';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -204,6 +205,7 @@ export function configInitializer(config: Config) {
         BrowserModule,
         FormsModule,
         HttpModule,
+        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         BrowserAnimationsModule,
         MaterialModule,
         FlexLayoutModule,
@@ -265,7 +267,7 @@ export function configInitializer(config: Config) {
             useFactory: configInitializer,
             deps: [Config],
             multi: true,
-        }
+        },
     ],
     bootstrap: [AppComponent]
 })

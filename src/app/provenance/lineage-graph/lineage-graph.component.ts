@@ -93,56 +93,58 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private drawGraph() {
-        let graph = new dagreD3.graphlib.Graph()
-            .setGraph({})
-            .setDefaultEdgeLabel(function () {
-                return {};
+        this.projectService.getProjectStream().first().subscribe(project => {
+            let graph = new dagreD3.graphlib.Graph()
+                .setGraph({})
+                .setDefaultEdgeLabel(function () {
+                    return {};
+                });
+
+            if (this.selectedLayer) {
+                this.title$.next(`Lineage for ${this.selectedLayer.name}`);
+
+                const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
+                this.addLayersToGraph(
+                    graph,
+                    project.layers,
+                    [this.selectedLayer],
+                    operatorIdsInGraph
+                );
+            } else {
+                const operatorIdsInGraph = this.addOperatorsToGraph(
+                    graph,
+                    project.layers.map(layer => layer.operator),
+                    project.layers
+                );
+                this.addLayersToGraph(
+                    graph,
+                    project.layers,
+                    [],
+                    operatorIdsInGraph
+                );
+            }
+
+            // create the renderer
+            let render = new dagreD3.render();
+
+            // Set up an SVG group so that we can translate the final graph.
+            // console.log(this.graphContainer.nativeElement);
+            let svg = d3.select(this.svg.nativeElement);
+            let svgGroup = d3.select(this.g.nativeElement);
+
+            // Run the renderer. This is what draws the final graph.
+            render(svgGroup, graph);
+
+
+            this.fixLabelPosition(svg);
+
+            // do this asynchronously to start a new cycle of change detection
+            setTimeout(() => {
+                // this.dialog.setTitle(title); // TODO: set title
+                const sizes = this.setupWidthObservables(graph);
+                this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
+                this.addClickHandler(svg, graph);
             });
-
-        if (this.selectedLayer) {
-            this.title$.next(`Lineage for ${this.selectedLayer.name}`);
-
-            const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
-            this.addLayersToGraph(
-                graph,
-                this.projectService.getLayers(),
-                [this.selectedLayer],
-                operatorIdsInGraph
-            );
-        } else {
-            const operatorIdsInGraph = this.addOperatorsToGraph(
-                graph,
-                this.projectService.getLayers().map(layer => layer.operator),
-                this.projectService.getLayers()
-            );
-            this.addLayersToGraph(
-                graph,
-                this.projectService.getLayers(),
-                [],
-                operatorIdsInGraph
-            );
-        }
-
-        // create the renderer
-        let render = new dagreD3.render();
-
-        // Set up an SVG group so that we can translate the final graph.
-        // console.log(this.graphContainer.nativeElement);
-        let svg = d3.select(this.svg.nativeElement);
-        let svgGroup = d3.select(this.g.nativeElement);
-
-        // Run the renderer. This is what draws the final graph.
-        render(svgGroup, graph);
-
-
-        this.fixLabelPosition(svg);
-
-        // do this asynchronously to start a new cycle of change detection
-        setTimeout(() => {
-            // this.dialog.setTitle(title); // TODO: set title
-            const sizes = this.setupWidthObservables(graph);
-            this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
-            this.addClickHandler(svg, graph);
         });
     }
 

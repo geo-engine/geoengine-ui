@@ -9,7 +9,7 @@
     <wave-next-layer-list class="mat-elevation-z4" [height]="middleContainerHeight$ | async"></wave-next-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
-        <wave-ol-map [projection]="projectService.getProjectionStream() | async">
+        <wave-ol-map>
             <ng-template ngFor let-layer [ngForOf]='layersReverse$ | async'>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer
