@@ -1,4 +1,4 @@
-<div #tableframe class="table-frame" style="width:100%" *ngIf="!!csvProperty" (window:resize)="resizeTableFrame()">
+<div #tableframe class="table-frame" *ngIf="!!csvProperty" (window:resize)="_changeDetectorRef.detectChanges()">
     <div #typingdiv class="typingdiv" *ngIf="(csvProperty.isTypingProperties$ | async)">
         <table #typingtable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
@@ -9,7 +9,7 @@
                                    name="isNumber_{{i}}" *ngIf="[csvProperty.spatialProperties.controls['xColumn'].value,
                                         csvProperty.spatialProperties.controls['yColumn'].value,
                                         (csvProperty.temporalProperties.controls['isTime'].value)?csvProperty.temporalProperties.controls['startColumn'].value:null,
-                                        (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn']:null].indexOf(i) < 0"
+                                        (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0"
                                    [(ngModel)]="data.isNumberArray[i]"
                                    [ngStyle]="{'min-width.px': cellSizes[2*i]}">
                             <md-option [value]="true">
@@ -40,8 +40,8 @@
                 </template>
             </tr>
         </table>
-    </div>
-    <div #headerdiv class="headerdiv">
+    </div><!--
+ --><div #headerdiv class="headerdiv">
         <table #headertable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <!-- header goes here -->
@@ -81,8 +81,9 @@
                 </template>
             </tr>
         </table>
-    </div>
-    <div #bodydiv class="bodydiv" (scroll)="bodyScroll()">
+    </div><!--
+    <br>
+--><div #bodydiv class="bodydiv" (scroll)="bodyScroll()">
         <table #bodytable class="resizeTable" cellspacing="0" cellpadding="0">
             <!-- body goes here -->
                 <tr *ngFor="let el of elements; let i = index; trackBy: trackbyFn" style="white-space: nowrap;">

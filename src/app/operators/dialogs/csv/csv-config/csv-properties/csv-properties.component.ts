@@ -5,7 +5,7 @@ import {
     Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy,
     ChangeDetectorRef, forwardRef
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators, FormControl} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs';
 import {IntervalFormat} from '../../interval.enum';
 import {CsvTableComponent} from '../csv-table/csv-table.component';

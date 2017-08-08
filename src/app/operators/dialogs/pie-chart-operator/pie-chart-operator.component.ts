@@ -20,7 +20,7 @@ import {PieChartType} from '../../types/piechart-type.model';
 
 @Component({
     selector: 'wave-pie-chart-operator',
-    templateUrl: './pie-chart-operator.component.html',
+    templateUrl: 'pie-chart-operator.component.html',
     styleUrls: ['./pie-chart-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

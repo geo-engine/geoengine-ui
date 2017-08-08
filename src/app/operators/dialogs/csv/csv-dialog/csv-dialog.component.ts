@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
@@ -12,7 +12,6 @@ import {RandomColorService} from '../../../../util/services/random-color.service
 import {MdDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
-import {ProjectionType} from '../../../types/projection-type.model';
 import {IntervalFormat} from '../interval.enum';
 import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
 
@@ -33,7 +32,11 @@ export class CsvDialogComponent implements OnInit {
                 private layerService: LayerService,
                 private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
-                private dialogRef: MdDialogRef<CsvDialogComponent>) {
+                private dialogRef: MdDialogRef<CsvDialogComponent>,
+                private changeDetectorRef: ChangeDetectorRef) {
+        setTimeout(() => {
+            changeDetectorRef.markForCheck();
+        }, 100);
     }
 
     ngOnInit() {

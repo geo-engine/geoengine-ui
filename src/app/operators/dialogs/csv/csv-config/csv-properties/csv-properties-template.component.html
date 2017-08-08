@@ -82,10 +82,10 @@
                 <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option [value]="i">
                         <template [ngIf]="h !== ''">
-                            {{(i+1) + ' - ' + h}}
+                            {{h}}
                         </template>
                         <template [ngIf]="h === ''">
-                            {{(i+1) + ' - unnamed'}}
+                            {{'unnamed'}}
                         </template>
                     </md-option>
                 </template>
@@ -109,10 +109,10 @@
                 <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
                     <md-option [value]="i">
                         <template [ngIf]="h !== ''">
-                            {{(i+1) + ' - ' + h}}
+                            {{h}}
                         </template>
                         <template [ngIf]="h === ''">
-                            {{(i+1) + ' - unnamed'}}
+                            {{'unnamed'}}
                         </template>
                     </md-option>
                 </template>
@@ -155,10 +155,10 @@
                         [value]="i"
                         [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
                         <template [ngIf]="h !== ''">
-                            {{(i+1) + ' - ' + h}}
+                            {{h}}
                         </template>
                         <template [ngIf]="h === ''">
-                            {{(i+1) + ' - unnamed'}}
+                            {{'unnamed'}}
                         </template>
                     </md-option>
                 </template>
@@ -176,10 +176,10 @@
                         [value]="i"
                         [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
                         <template [ngIf]="h !== ''">
-                            {{(i+1) + ' - ' + h}}
+                            {{h}}
                         </template>
                         <template [ngIf]="h === ''">
-                            {{(i+1) + ' - unnamed'}}
+                            {{'unnamed'}}
                         </template>
                     </md-option>
                 </template>

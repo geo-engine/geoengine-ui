@@ -10,6 +10,7 @@ import {CsvPropertiesComponent, FormStatus} from '../csv-properties/csv-properti
 import * as Papa from 'papaparse';
 import {Observable, Subscription} from 'rxjs';
 import {FormControl, AbstractControl} from '@angular/forms';
+import {CsvDialogComponent} from '../../csv-dialog/csv-dialog.component';
 
 @Component({
     selector: 'wave-csv-table',
@@ -27,6 +28,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
     @Input() cellSpacing: number;
     @Input() linesToParse: number;
+    @Input() dialog: CsvDialogComponent;
 
     IntervalFormat = IntervalFormat;
 
@@ -47,7 +49,9 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(public _changeDetectorRef: ChangeDetectorRef) {
-        setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
+        setTimeout( () => {
+            this._changeDetectorRef.markForCheck();
+        }, 10);
     }
 
     ngOnInit() {
@@ -148,7 +152,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
         }
-        this.resizeTableFrame();
+        // this.resizeTableFrame();
         // Reset the headerdiv to body divs scroll.
         this.headerDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft = 0;
         if (this.csvProperty.formStatus$.getValue() === FormStatus.TypingProperties) {
@@ -187,6 +191,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
      * After delay(so view can reload on resetted table column sizes) resizes table to maximum of every table.
      */
     resize() {
+        this._changeDetectorRef.detectChanges();
         this.resetTableSize();
         this.update(10);
         setTimeout(() => this.resizeTable(), 100);
