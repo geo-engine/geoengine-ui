@@ -28,6 +28,7 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 }
 
 .table-frame {
+    text-align: left;
     font-size: 0;
     max-width: 75vw;
     display: inline-block;
@@ -44,7 +45,7 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 .typingdiv {
     max-width: 100%;
     font-size: 15px;
-    display: inline-block;
+    display: block;
     overflow: hidden;
     border-bottom: solid 1px dimgray;
     background-color: #FFFFFF;
@@ -53,7 +54,7 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 
 .headerdiv {
     max-width: 100%;
-    display: inline-block;
+    display: block;
     overflow: hidden;
     border-bottom: solid 1px dimgray;
     border-right: solid 1px dimgray;
@@ -75,7 +76,7 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 .bodydiv {
     max-width: 100%;
     font-size: 15px;
-    display: inline-block;
+    display: block;
     overflow-x: auto;
     overflow-y: hidden;
 }

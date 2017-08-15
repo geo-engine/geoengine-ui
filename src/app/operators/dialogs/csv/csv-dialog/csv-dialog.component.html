@@ -5,7 +5,7 @@
         [file_size_limit]="100000000"
         (onData)="data = $event"
     ></wave-csv-upload>
-    <div *ngIf="!!data && !(uploading$ | async)">
+    <div *ngIf="!!data && !(uploading$ | async)" style="text-align: center">
         <wave-csv-properties
             #csvProperties
             [table]="csvTable"
