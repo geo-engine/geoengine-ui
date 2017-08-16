@@ -19,7 +19,7 @@
                 <input mdInput type="password" placeholder="Password" formControlName="password">
             </md-input-container>
             <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
-            <md-checkbox fxFlex formControlName="staySignedIn">Stay signed in</md-checkbox>
+            <md-checkbox formControlName="staySignedIn">Stay signed in</md-checkbox>
         </div>
         <button md-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
             Login

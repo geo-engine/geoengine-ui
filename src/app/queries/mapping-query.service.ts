@@ -1,14 +1,12 @@
-import {Injectable, Injector} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
-import {Observable, BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
+import {Observable} from 'rxjs/Rx';
 
-import {WFSOutputFormats, WFSOutputFormat} from './output-formats/wfs-output-format.model';
+import {WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
-
-import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
-import {MapService, ViewportSize} from '../map/map.service';
+import {ViewportSize} from '../map/map.service';
 import {NotificationService} from '../notification.service';
 
 import {Operator} from '../operators/operator.model';
@@ -17,10 +15,6 @@ import {ResultTypes} from '../operators/result-type.model';
 import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
-import {VectorLayerData, LayerProvenance} from '../layers/layer.model';
-import {LoadingState} from '../project/loading-state.model';
-
-import {GeoJsonFeatureCollection} from './geojson.model';
 import {Provenance} from '../provenance/provenance.model';
 import {Time} from '../time/time.model';
 import {Config} from '../config.service';
@@ -33,25 +27,13 @@ import * as ol from 'openlayers';
 @Injectable()
 export class MappingQueryService {
 
-    private projectService: ProjectService;
-
     /**
      * Inject the Http-Provider for asynchronous requests.
      */
     constructor(private config: Config,
                 private http: Http,
                 private userService: UserService,
-                // @Inject(forwardRef(() => ProjectService)) private projectService: ProjectService,
-                private injector: Injector,
-                private mapService: MapService,
                 private notificationService: NotificationService) {
-    }
-
-    getProjectService(): ProjectService {
-        if (!this.projectService) {
-            this.projectService = this.injector.get(ProjectService);
-        }
-        return this.projectService;
     }
 
     /**
@@ -92,10 +74,12 @@ export class MappingQueryService {
 
     /**
      * Get a MAPPING url for the WFS request.
-     * @param operator the operator graph
-     * @param time the point in time
-     * @param projection the desired projection
-     * @param outputFormat the output format
+     * @param config.operator the operator graph
+     * @param config.time the point in time
+     * @param config.projection the desired projection
+     * @param config.outputFormat the output format
+     * @param config.viewportSize the viewport size
+     * @param config.clustered if the result should be clustered
      * @returns the query url
      */
     getWFSQueryUrl(config: {
@@ -147,25 +131,13 @@ export class MappingQueryService {
     }
 
     /**
-     * Get a MAPPING url stream for the WFS request.
-     * @param operator the operator graph
-     * @param outputFormat the output format
-     * @returns the query url stream
-     */
-    getWFSQueryUrlStream(operator: Operator, outputFormat: WFSOutputFormat): Observable<string> {
-        return Observable.combineLatest(
-            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
-        ).map(
-            ([time, projection]) => this.getWFSQueryUrl({operator, time, projection, outputFormat})
-        );
-    }
-
-    /**
      * Retrieve the WFS data by querying MAPPING.
-     * @param operator the operator graph
-     * @param time the point in time
-     * @param projection the desired projection
-     * @param outputFormat the output format
+     * @param config.operator the operator graph
+     * @param config.time the point in time
+     * @param config.projection the desired projection
+     * @param config.outputFormat the output format
+     * @param config.viewportSize the viewport size
+     * @param config.clustered if the result should be clustered
      * @returns a Promise of features
      */
     getWFSData(config: {
@@ -178,148 +150,6 @@ export class MappingQueryService {
     }): Observable<string> {
         return this.http.get(this.getWFSQueryUrl(config))
             .map(response => response.text());
-    }
-
-    /**
-     * Retrieve the WFS data as JSON by querying MAPPING.
-     * @param operator the operator graph
-     * @param time the point in time
-     * @param projection the desired projection
-     * @param outputFormat the output format
-     * @returns a Promise of JSON
-     */
-    getWFSDataAsJson(config: {
-        operator: Operator,
-        time: Time,
-        projection: Projection,
-        viewportSize?: ViewportSize,
-        clustered?: boolean,
-    }): Promise<GeoJsonFeatureCollection> {
-        return this.http.get(
-            this.getWFSQueryUrl({
-                operator: config.operator,
-                time: config.time,
-                projection: config.projection,
-                outputFormat: WFSOutputFormats.JSON,
-                viewportSize: config.viewportSize,
-                clustered: config.clustered,
-            })
-        ).toPromise().then(response => response.json());
-    }
-
-
-    /**
-     * Create a stream of WFS data that emits data on every time change.
-     * @param operator the operator graph
-     * @param outputFormat the output format
-     * @returns an Observable of features
-     */
-    /*
-     getWFSDataStream(config: {
-     operator: Operator,
-     outputFormat: WFSOutputFormat
-     }): Observable<string> {
-     return Observable.combineLatest(
-     this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
-     ).switchMap(
-     ([time, projection]) => this.getWFSData({
-     operator: config.operator,
-     time: time,
-     projection: projection,
-     outputFormat: config.outputFormat,
-     })
-     );
-     }
-     */
-
-    getWFSDataStreamAsGeoJsonFeatureCollection(config: {
-        operator: Operator,
-        clustered?: boolean,
-        buffer?: boolean,
-    }): VectorLayerData {
-        const viewportSize$ = this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE);
-
-        const reload$ = new BehaviorSubject<void>(undefined);
-        const state$ = new ReplaySubject<LoadingState>(1);
-        const dataExtent$ = new BehaviorSubject<[number, number, number, number]>([0, 0, 0, 0]);
-        const dataResolution$ = new BehaviorSubject<number>(0);
-        const dataProjection$ = new BehaviorSubject<Projection>(null);
-        const format = new ol.format.GeoJSON();
-        const dataTime$ = new BehaviorSubject<Time>(null);
-        const data$ = Observable.combineLatest(
-            this.getProjectService().getTimeStream(),
-            this.getProjectService().getProjectionStream(),
-            viewportSize$,
-            reload$
-        ).filter(([time, projection, viewport]) => {
-            // console.log('a', time, projection, viewport);
-            // console.log('b', dataTime$.getValue(), dataProjection$.getValue(), dataResolution$.getValue(), dataExtent$.getValue());
-            // console.log('c', !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent),
-            // (dataResolution$.getValue() !== viewport.resolution), (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)),
-            // (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection));
-            return (
-                !ol.extent.containsExtent(dataExtent$.getValue(), viewport.extent) ||
-                (dataResolution$.getValue() !== viewport.resolution) ||
-                (!dataTime$.getValue()) || (!dataTime$.getValue().isSame(time)) ||
-                (!dataProjection$.getValue()) || (dataProjection$.getValue() !== projection)
-            );
-        })
-            .switchMap(([time, projection, viewport]) => {
-                state$.next(LoadingState.LOADING);
-                const ex = Math.min(ol.extent.getWidth(viewport.extent), ol.extent.getHeight(viewport.extent));
-                const requestExtent = ol.extent.getIntersection(
-                    ol.extent.buffer(viewport.extent, ex * 0.25)
-                    , viewport.maxExtent);
-                // console.log('req', viewport.extent, ex, requestExtent);
-                const promise = this.getWFSDataAsJson({
-                    operator: config.operator,
-                    time: time,
-                    projection: projection,
-                    viewportSize: {
-                        extent: requestExtent,
-                        resolution: viewport.resolution,
-                        maxExtent: viewport.maxExtent,
-                    },
-                    clustered: (config.clustered) ? config.clustered : false,
-                });
-                dataExtent$.next(requestExtent);
-                dataProjection$.next(projection);
-                dataResolution$.next(viewport.resolution);
-                dataTime$.next(time);
-                return promise.then(
-                    result => {
-                        state$.next(LoadingState.OK);
-                        return result;
-                    },
-                    (reason: Error) => {
-                        state$.next(LoadingState.ERROR);
-                        this.notificationService.error(`${reason.message}`);
-                        return undefined;
-                    }
-                );
-            }).map(result => {
-                if (result) {
-                    const geojson = result as GeoJsonFeatureCollection;
-                    for (let localRowId = 0; localRowId < geojson.features.length; localRowId++) {
-                        const feature = geojson.features[localRowId];
-                        if (feature.id === undefined) {
-                            feature.id = ('lrid_' + localRowId);
-                        }
-                    }
-
-                    const features = format.readFeatures(result);
-                    return features;
-                } else {
-                    return [];
-                }
-            }).publishReplay(1).refCount(); // use publishReplay to avoid re-requesting
-
-        return {
-            data$: data$,
-            dataExtent$: dataExtent$,
-            state$: state$,
-            reload$: reload$,
-        };
     }
 
     /**
@@ -419,9 +249,8 @@ export class MappingQueryService {
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
             .map((res: Response) => res.json() as MappingColorizer)
-            .catch((err, cought) => {
-                // console.log("getColorizer", err, cought); //TODO: notification?
-                this.notificationService.error('Could not load colorizer');
+            .catch((error, {}) => {
+                this.notificationService.error(`Could not load colorizer: »${error}«`);
                 return Observable.of({interpolation: 'unknown', breakpoints: []});
             }).map(c => {
 
@@ -434,14 +263,6 @@ export class MappingQueryService {
                 }
                 return c;
             })
-    }
-
-    getColorizerStream(operator: Operator): Observable<MappingColorizer> {
-        return Observable.combineLatest(
-            this.getProjectService().getTimeStream(), this.getProjectService().getProjectionStream()
-        ).switchMap(
-            ([time, projection]) => this.getColorizer(operator, time, projection)
-        ).publishReplay(1).refCount();
     }
 
     getProvenance(config: {
@@ -481,42 +302,6 @@ export class MappingQueryService {
         ).map(
             json => json as [Provenance]
         ).toPromise();
-    }
-
-    getProvenanceStream(operator: Operator): LayerProvenance {
-        // TODO: incorporate time and projection streams
-
-        const state$ = new BehaviorSubject<LoadingState>(LoadingState.OK); // TODO: good default?
-        const reload$ = new BehaviorSubject<void>(undefined);
-        const provenanceStream = Observable.combineLatest(
-            this.getProjectService().getTimeStream(),
-            this.getProjectService().getProjectionStream(),
-            this.mapService.getViewportSizeStream(),
-            reload$
-        ).switchMap(([time, projection, viewportSize]) => {
-            state$.next(LoadingState.LOADING);
-            return this.getProvenance({
-                operator: operator,
-                time: time,
-                projection: projection,
-                extent: viewportSize.extent,
-            }).then(
-                result => {
-                    state$.next(LoadingState.OK);
-                    return result;
-                },
-                reason => {
-                    state$.next(LoadingState.ERROR);
-                    return [];
-                }
-            );
-        });
-
-        return {
-            provenance$: provenanceStream.publishReplay(1).refCount(),
-            state$: state$,
-            reload$: reload$,
-        };
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {

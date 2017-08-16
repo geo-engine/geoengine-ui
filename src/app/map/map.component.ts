@@ -108,7 +108,8 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
     }
 
     zoomToExtent(extent: [number, number, number, number] | ol.Extent) {
-        this.map.getView().fit(extent, this.map.getSize());
+        // this.map.getView().fit(extent, this.map.getSize());
+        this.map.getView().fit(extent);
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {

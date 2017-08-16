@@ -3,17 +3,20 @@ import {ResultTypes, ResultType} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CodeEditorComponent} from '../../../../util/components/code-editor.component';
 import {ProjectService} from '../../../../project/project.service';
-import {LayerService} from '../../../../layers/layer.service';
 import {DataType} from '../../../datatype.model';
 import {Projections} from '../../../projection.model';
 import {Operator} from '../../../operator.model';
 import {RasterLayer, VectorLayer, Layer} from '../../../../layers/layer.model';
 import {RScriptType} from '../../../types/r-script-type.model';
 import {Unit} from '../../../unit.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {Plot} from '../../../../plots/plot.model';
-import {RasterSymbology, AbstractVectorSymbology, Symbology, SimplePointSymbology} from '../../../../layers/symbology/symbology.model';
+import {
+    RasterSymbology,
+    AbstractVectorSymbology,
+    Symbology,
+    SimplePointSymbology
+} from '../../../../layers/symbology/symbology.model';
 import {MdDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
@@ -44,8 +47,6 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService,
-                private layerService: LayerService,
-                private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
                 private dialog: MdDialog,
                 private config: Config) {
@@ -163,8 +164,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         let pointSources: Array<Operator>;
 
         if (this.editable) {
-            rasterSources = this.editableSourceRasters.map(operator => operator.getProjectedOperator(projection));
-            pointSources = this.editableSourcePoints.map(operator => operator.getProjectedOperator(projection));
+            rasterSources = this.editableSourceRasters.map(o => o.getProjectedOperator(projection));
+            pointSources = this.editableSourcePoints.map(o => o.getProjectedOperator(projection));
         } else {
             rasterSources = rasterLayers.map(
                 layer => layer.operator.getProjectedOperator(projection)
@@ -187,8 +188,6 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             rasterSources: rasterSources,
             pointSources: pointSources,
         });
-
-        const provenance$ = this.mappingQueryService.getProvenanceStream(operator);
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
 

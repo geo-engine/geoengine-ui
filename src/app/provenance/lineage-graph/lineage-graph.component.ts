@@ -96,8 +96,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         this.projectService.getProjectStream().first().subscribe(project => {
             let graph = new dagreD3.graphlib.Graph()
                 .setGraph({})
-                .setDefaultEdgeLabel(function () {
-                    return {};
+                .setDefaultEdgeLabel(() => {
+                    return;
                 });
 
             if (this.selectedLayer) {

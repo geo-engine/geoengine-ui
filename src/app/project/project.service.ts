@@ -315,8 +315,8 @@ export class ProjectService {
     }
 
     private createPlotDataStreams(plot: Plot) {
-        const loadingState$ = new ReplaySubject(1);
-        const data$ = new ReplaySubject(1);
+        const loadingState$ = new ReplaySubject<LoadingState>(1);
+        const data$ = new ReplaySubject<PlotData>(1);
 
         const subscription = this.createPlotSubscription(plot, data$, loadingState$);
         this.plotSubscriptions.set(plot, subscription);
@@ -338,8 +338,8 @@ export class ProjectService {
 
     private createLayerDataStreams(layer: Layer<Symbology>) {
         // each layer has data. The type depends on the layer type
-        const layerDataLoadingState$ = new ReplaySubject(1);
-        const layerData$ = new ReplaySubject(1);
+        const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const layerData$ = new ReplaySubject<LayerData<any>>(1);
         let layerDataSub: Subscription;
         switch (layer.getLayerType()) {
             case 'raster':
@@ -357,8 +357,8 @@ export class ProjectService {
         this.layerData$.set(layer, layerData$);
 
         if (layer.getLayerType() === 'raster') {
-            const symbologyDataLoadingState$ = new ReplaySubject(1);
-            const symbologyData$ = new ReplaySubject(1);
+            const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+            const symbologyData$ = new ReplaySubject<MappingColorizer>(1);
             const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
                 symbologyData$,
                 symbologyDataLoadingState$
@@ -369,8 +369,8 @@ export class ProjectService {
         }
 
         // each layer has provenance...
-        const provenanceDataLoadingState$ = new ReplaySubject(1);
-        const provenanceData$ = new ReplaySubject(1);
+        const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const provenanceData$ = new ReplaySubject<Array<Provenance>>(1);
         const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
         this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
         this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);

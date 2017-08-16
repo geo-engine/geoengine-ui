@@ -212,7 +212,7 @@ export class UserService {
                     });
                 }
             })
-            .map(([session, success]) => success);
+            .map(([session, success]) => success as boolean);
     }
 
     guestLogin(): Observable<boolean> {

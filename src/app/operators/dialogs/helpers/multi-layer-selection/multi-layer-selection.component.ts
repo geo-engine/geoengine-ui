@@ -247,6 +247,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     private layersForInitialSelection(layers: Array<Layer<Symbology>>,
                                       blacklist: Array<Layer<Symbology>>,
                                       amount: number): Array<Layer<Symbology>> {
+        if (layers.length === 0) {
+            return [];
+        }
+
         const layersForSelection = [...layers].filter(layer => blacklist.indexOf(layer) < 0);
 
         const selectedLayerIndex = layersForSelection.indexOf(this.layerService.getSelectedLayer());

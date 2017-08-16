@@ -12,8 +12,8 @@ export interface LayoutDict {
 }
 
 export interface SidenavConfig {
-    component: Type<Component>;
-    parent?: Type<Component>;
+    component: Type<any>;
+    parent?: Type<any>;
     config?: {[key: string]: any};
 }
 

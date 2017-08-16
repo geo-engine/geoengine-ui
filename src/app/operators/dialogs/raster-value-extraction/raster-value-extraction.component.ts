@@ -1,14 +1,13 @@
-import {Component, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
-import {FormBuilder, FormGroup, Validators, FormArray, FormControl} from '@angular/forms';
-import {LayerService} from '../../../layers/layer.service';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Subscription} from 'rxjs/Rx';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
-    AbstractVectorSymbology, ClusteredPointSymbology,
+    AbstractVectorSymbology,
+    ClusteredPointSymbology,
     SimplePointSymbology
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
@@ -69,10 +68,8 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private layerService: LayerService,
-                private projectService: ProjectService,
+    constructor(private projectService: ProjectService,
                 private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private changeDetectorRef: ChangeDetectorRef) {
         this.form = this.formBuilder.group({
@@ -150,7 +147,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         const resultType = vectorOperator.resultType;
 
         const rasterOperators: Array<Operator> = this.form.controls['rasterLayers'].value.map(
-            layer => layer.operator.getProjectedOperator(projection)
+            inputLayer => inputLayer.operator.getProjectedOperator(projection)
         );
 
         const valueNames: Array<string> = this.form.controls['valueNames'].value;
@@ -201,16 +198,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 new SimplePointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-            //     operator, clustered,
-            // }),
-            // provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         });
-        // this.layerService.addLayer(layer);
+
         this.projectService.addLayer(layer);
-
-
     }
 
 }

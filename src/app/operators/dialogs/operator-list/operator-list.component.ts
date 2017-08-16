@@ -21,7 +21,7 @@ import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.compon
 import {PieChartType} from '../../types/piechart-type.model';
 
 interface OperatorListType {
-    component: Type<Component>;
+    component: Type<any>;
     type: {NAME: string, ICON_URL: string};
     description: string;
 }
