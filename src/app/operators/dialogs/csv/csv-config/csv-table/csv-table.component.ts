@@ -56,7 +56,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(
-            this.resizeEvent$.subscribe(data => this.resizeTableFrame())
+            // this.resizeEvent$.subscribe(data => this.resizeTableFrame())
         );
         this.parse();
         this.cellSizes = new Array(this.header.length);

@@ -115,7 +115,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.xColumn$ = this.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.xyColumn$.map(xy => xy.y);
         this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
-                             y: this.spatialProperties.controls['yColumn'].value}
+            y: this.spatialProperties.controls['yColumn'].value}
         );
         this.isDataProperties$ = this.formStatus$.map(status => status === this.FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === this.FormStatus.SpatialProperties);
@@ -280,6 +280,27 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
+    /**
+     * @param type 0 left-click, 1 right-click
+     * @param value the column index
+     */
+    setProperty(type: number, value: number, event: Event) {
+        if(this.formStatus$.getValue() == this.FormStatus.SpatialProperties) {
+            if(type == 0) {
+                this.spatialProperties.controls['xColumn'].setValue(value);
+            }else if(type == 1) {
+                this.spatialProperties.controls['yColumn'].setValue(value);
+            }
+        }else if(this.formStatus$.getValue() == this.FormStatus.TemporalProperties) {
+            if(type == 0 && this.temporalProperties.controls['startColumn'].enabled) {
+                this.temporalProperties.controls['startColumn'].setValue(value);
+            }else if(type == 1 && this.temporalProperties.controls['endColumn'].enabled) {
+                this.temporalProperties.controls['endColumn'].setValue(value);
+            }
+        }
+        this.correctColumns();
+    }
+
     nextPage() {
         switch (this.formStatus$.getValue()) {
             case this.FormStatus.DataProperties:
@@ -296,7 +317,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         if(this.actualPage$.getValue() === this.temporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
-            y: this.temporalProperties.controls['endColumn'].value});
+                y: this.temporalProperties.controls['endColumn'].value});
         }
         if(this.actualPage$.getValue() === this.spatialProperties) {
             this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,

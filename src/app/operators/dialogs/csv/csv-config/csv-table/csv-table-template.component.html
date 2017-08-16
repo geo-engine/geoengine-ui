@@ -58,7 +58,9 @@
                             'violetHead': csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ | async) &&
                             (i === (csvProperty.yColumn$ | async)) && (csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur ||
                             csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd)}">
-                        {{header[i]}}
+                        <div (click)="csvProperty.setProperty(0, i, $event);" (contextmenu)="csvProperty.setProperty(1, i, $event);">
+                            {{header[i]}}
+                        </div>
                     </td>
                     <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
                 </template>
@@ -96,7 +98,9 @@
                         green: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ |async) && (k === (csvProperty.xColumn$ | async)),
                         violet: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ | async) && (k === (csvProperty.yColumn$ | async)) &&
                         (csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd)}">
-                    {{e}}
+                    <div (click)="csvProperty.setProperty(0, k, $event);" (contextmenu)="csvProperty.setProperty(1, k, $event);">
+                        {{e}}
+                    </div>
                 </td>
                 <td *ngIf="k !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[k*2+1]}"></td>
             </template>
