@@ -72,7 +72,7 @@ export class ProjectService {
         });
     }
 
-    getProjectStream() {
+    getProjectStream(): Observable<Project> {
         return this.project$;
     }
 
@@ -117,13 +117,7 @@ export class ProjectService {
             this.createLayerDataStreams(layer);
         }
 
-        this.project$.next(new Project({
-            name: project.name,
-            projection: project.projection,
-            time: project.time,
-            plots: project.plots,
-            layers: project.layers,
-        }));
+        this.project$.next(project);
     }
 
     setTime(time: Time) {
@@ -844,12 +838,29 @@ export class ProjectService {
     /**
      * Remove all plots from a project.
      */
-    clearLayers() {
+    clearLayers(): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
+
         this.project$.first().subscribe(project => {
+            let removeObservables = [];
+
             for (const layer of project.layers.slice(0)) {
-                this.removeLayer(layer);
+                removeObservables.push(this.removeLayer(layer));
             }
+
+            Observable
+                .combineLatest(removeObservables)
+                .first()
+                .subscribe(
+                    () => {
+                        subject.next();
+                        subject.complete();
+                    },
+                    error => subject.error(error)
+                );
         });
+
+        return subject.asObservable();
     }
 
     getNewLayerStream(): Observable<Layer<Symbology>> {
@@ -877,11 +888,11 @@ export class ProjectService {
      * @param changes
      */
     changeLayer(layer: Layer<Symbology>, changes: {
-        name?: string,
-        symbology?: Symbology,
-        editSymbology?: boolean,
-        visible?: boolean,
-        expanded?: boolean,
+        name ?: string,
+        symbology ?: Symbology,
+        editSymbology ?: boolean,
+        visible ?: boolean,
+        expanded ?: boolean,
     }) {
         // change immutably
         //

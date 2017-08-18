@@ -36,7 +36,10 @@ import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
-import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from './operators/dialogs/baskets/gfbio-basket-result.component';
+import {
+    GroupedAbcdBasketResultComponent,
+    PangaeaBasketResultComponent
+} from './operators/dialogs/baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
@@ -103,6 +106,10 @@ import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-pro
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 import {RouterModule} from '@angular/router';
+import {
+    WorkflowParameterChoiceDialogComponent
+} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
+import { LayerShareComponent } from './layers/dialogs/layer-share/layer-share.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -200,6 +207,8 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        WorkflowParameterChoiceDialogComponent,
+        LayerShareComponent,
     ],
     imports: [
         BrowserModule,
@@ -246,6 +255,8 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         PieChartComponent,
+        WorkflowParameterChoiceDialogComponent,
+        LayerShareComponent,
     ],
     providers: [
         DragulaService,

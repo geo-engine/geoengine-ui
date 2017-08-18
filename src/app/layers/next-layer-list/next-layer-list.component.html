@@ -97,6 +97,10 @@
                             <md-icon>file_download</md-icon>
                             <span>Export</span>
                         </button>
+                        <button md-menu-item (click)="dialog.open(LayerShareComponent, {data: {layer: layer}})">
+                            <md-icon>cloud</md-icon>
+                            <span>Share</span>
+                        </button>
                     </md-menu>
 
                     <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">

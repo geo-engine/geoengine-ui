@@ -2,18 +2,15 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable, Subscription} from 'rxjs/Rx';
 
-import {StorageProvider, RScript} from './storage-provider.model';
+import {RScript, StorageProvider} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
 import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
 
 import {LayoutService} from '../layout.service';
-import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
-import {Layer} from '../layers/layer.model';
-import {Symbology} from '../layers/symbology/symbology.model';
 import {NotificationService} from '../notification.service';
 
 /**
@@ -122,15 +119,13 @@ export class StorageService {
 
         // load workspace
         this.storageProvider.loadWorkspace().subscribe(workspace => {
-            if (workspace.project) {
-                this.projectService.setProject(workspace.project);
-            } else {
-                this.projectService.setProject(this.projectService.createDefaultProject());
-            }
+            const newProject = workspace.project ? workspace.project : this.projectService.createDefaultProject();
+
+            this.projectService.setProject(newProject);
 
             // setup storage
             this.projectSubscription = this.projectService.getProjectStream()
-                .skip(1) // don't save the loaded stuff directly again
+                .filter(project => project !== newProject) // skip saving the previously loaded project
                 .do(project => {
                     // save pending change
                     this.pendingWorkspace = {

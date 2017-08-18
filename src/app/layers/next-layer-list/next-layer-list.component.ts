@@ -15,6 +15,7 @@ import {SourceOperatorListComponent} from '../../operators/dialogs/source-operat
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';
+import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -36,6 +37,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
 
     LineageGraphComponent = LineageGraphComponent;
     LayerExportComponent = LayerExportComponent;
+    LayerShareComponent = LayerShareComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
