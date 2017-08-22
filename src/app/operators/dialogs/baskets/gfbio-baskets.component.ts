@@ -23,20 +23,20 @@ import {UserService} from '../../../users/user.service';
           </button>
         </md-toolbar>
         <div *ngIf="isLoading$ | async" class="loading">
-            <md-progress-circle mode="indeterminate"></md-progress-circle>
+            <md-progress-spinner mode="indeterminate"></md-progress-spinner>
         </div>
         <div *ngIf="!(isLoading$ | async)" fxFlex="grow" fxLayout="column">
-             <template [ngIf]='selectedBasket'>       
-                <template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
+             <ng-template [ngIf]='selectedBasket'>       
+                <ng-template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
                       
-                      <template [ngIf]='result.type === _abcdGroupedType'>
+                      <ng-template [ngIf]='result.type === _abcdGroupedType'>
                         <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
-                      </template>
-                      <template [ngIf]='result.type !== _abcdGroupedType'>
+                      </ng-template>
+                      <ng-template [ngIf]='result.type !== _abcdGroupedType'>
                         <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
-                      </template>
-                </template>
-             </template>
+                      </ng-template>
+                </ng-template>
+             </ng-template>
         </div>
     </div>
     `,
@@ -70,7 +70,7 @@ import {UserService} from '../../../users/user.service';
     div.loading {
         padding: 32px calc(50% - 100px/2);
     }
-    md-progress-circle {
+    md-progress-spinner {
         width: 100px;
         height: 100px;
     }

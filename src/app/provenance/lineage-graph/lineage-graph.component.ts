@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
@@ -6,10 +6,10 @@ import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../layers/symbology/symbology.model';
-import {MdDialogRef} from '@angular/material';
-import {LayerService} from '../../layers/layer.service';
+import {MD_DIALOG_DATA} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
+import {ProjectService} from '../../project/project.service';
 
 const GRAPH_STYLE = {
     general: {
@@ -44,7 +44,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     title$ = new BehaviorSubject<string>('Operator Lineage');
 
     selectedOperator$ = new ReplaySubject<Operator>(1);
-    parameters$ = new ReplaySubject<Array<{key: string, value: string}>>(1);
+    parameters$ = new ReplaySubject<Array<{ key: string, value: string }>>(1);
 
     private selectedLayer: Layer<Symbology> = undefined;
 
@@ -54,15 +54,17 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     private svgRatio = 0.7;
 
     constructor(private elementRef: ElementRef,
-                private dialogRef: MdDialogRef<LineageGraphComponent>,
-                private layerService: LayerService) {
+                private projectService: ProjectService,
+                @Inject(MD_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
     }
 
     ngOnInit() {
         this.svgWidth$ = this.maxWidth$.map(width => Math.ceil(this.svgRatio * width));
         this.svgHeight$ = this.maxHeight$;
 
-        this.selectedLayer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        if (this.config) {
+            this.selectedLayer = this.config.layer;
+        }
     }
 
     ngAfterViewInit() {
@@ -91,56 +93,58 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private drawGraph() {
-        let graph = new dagreD3.graphlib.Graph()
-            .setGraph({})
-            .setDefaultEdgeLabel(function () {
-                return {};
+        this.projectService.getProjectStream().first().subscribe(project => {
+            let graph = new dagreD3.graphlib.Graph()
+                .setGraph({})
+                .setDefaultEdgeLabel(() => {
+                    return;
+                });
+
+            if (this.selectedLayer) {
+                this.title$.next(`Lineage for ${this.selectedLayer.name}`);
+
+                const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
+                this.addLayersToGraph(
+                    graph,
+                    project.layers,
+                    [this.selectedLayer],
+                    operatorIdsInGraph
+                );
+            } else {
+                const operatorIdsInGraph = this.addOperatorsToGraph(
+                    graph,
+                    project.layers.map(layer => layer.operator),
+                    project.layers
+                );
+                this.addLayersToGraph(
+                    graph,
+                    project.layers,
+                    [],
+                    operatorIdsInGraph
+                );
+            }
+
+            // create the renderer
+            let render = new dagreD3.render();
+
+            // Set up an SVG group so that we can translate the final graph.
+            // console.log(this.graphContainer.nativeElement);
+            let svg = d3.select(this.svg.nativeElement);
+            let svgGroup = d3.select(this.g.nativeElement);
+
+            // Run the renderer. This is what draws the final graph.
+            render(svgGroup, graph);
+
+
+            this.fixLabelPosition(svg);
+
+            // do this asynchronously to start a new cycle of change detection
+            setTimeout(() => {
+                // this.dialog.setTitle(title); // TODO: set title
+                const sizes = this.setupWidthObservables(graph);
+                this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
+                this.addClickHandler(svg, graph);
             });
-
-        if (this.selectedLayer) {
-            this.title$.next(`Lineage for ${this.selectedLayer.name}`);
-
-            const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
-            this.addLayersToGraph(
-                graph,
-                this.layerService.getLayers(),
-                [this.selectedLayer],
-                operatorIdsInGraph
-            );
-        } else {
-            const operatorIdsInGraph = this.addOperatorsToGraph(
-                graph,
-                this.layerService.getLayers().map(layer => layer.operator),
-                this.layerService.getLayers()
-            );
-            this.addLayersToGraph(
-                graph,
-                this.layerService.getLayers(),
-                [],
-                operatorIdsInGraph
-            );
-        }
-
-        // create the renderer
-        let render = new dagreD3.render();
-
-        // Set up an SVG group so that we can translate the final graph.
-        // console.log(this.graphContainer.nativeElement);
-        let svg = d3.select(this.svg.nativeElement);
-        let svgGroup = d3.select(this.g.nativeElement);
-
-        // Run the renderer. This is what draws the final graph.
-        render(svgGroup, graph);
-
-
-        this.fixLabelPosition(svg);
-
-        // do this asynchronously to start a new cycle of change detection
-        setTimeout(() => {
-            // this.dialog.setTitle(title); // TODO: set title
-            const sizes = this.setupWidthObservables(graph);
-            this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
-            this.addClickHandler(svg, graph);
         });
     }
 
@@ -312,7 +316,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.selectAll('.label > g').attr('transform', undefined);
     }
 
-    private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number, height: number} {
+    private setupWidthObservables(graph: dagre.graphlib.Graph): { width: number, height: number } {
         // create observables for the current graph bounds
         const graphWidth$ = Observable.of(graph.graph().width);
         const graphHeight$ = Observable.of(graph.graph().height);

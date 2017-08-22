@@ -10,6 +10,7 @@ import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {Subject, ReplaySubject, BehaviorSubject, Observable} from 'rxjs/Rx';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
 import {MdDialog} from '@angular/material';
+import {ProjectService} from '../../../project/project.service';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -31,6 +32,7 @@ export class FeaturedbSourceListComponent implements OnInit {
 
     constructor(private userService: UserService,
                 private layerService: LayerService,
+                private projectService: ProjectService,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 public dialog: MdDialog) {
@@ -83,14 +85,15 @@ export class FeaturedbSourceListComponent implements OnInit {
             name: entry.name,
             operator: entry.operator,
             symbology: symbology,
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator: entry.operator,
-                clustered: clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //     operator: entry.operator,
+            //     clustered: clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
             clustered: clustered,
         });
-        this.layerService.addLayer(layer);
+        // this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer)
     }
 
 }

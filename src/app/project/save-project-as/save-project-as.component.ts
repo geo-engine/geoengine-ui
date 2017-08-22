@@ -5,6 +5,7 @@ import {StorageService} from '../../storage/storage.service';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
 import {WaveValidators} from '../../util/form.validators';
+import {Projections} from '../../operators/projection.model';
 
 @Component({
     selector: 'wave-save-project-as',
@@ -31,7 +32,10 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
                 Validators.compose([Validators.required, WaveValidators.notOnlyWhitespace]),
                 WaveValidators.uniqueProjectName(this.storageService),
             ],
-            projection: [this.projectService.getProjection(), Validators.required],
+            projection: [Projections.WEB_MERCATOR, Validators.required],
+        });
+        this.projectService.getProjectionStream().first().subscribe(projection => {
+            this.form.controls['projection'].setValue(projection);
         });
     }
 

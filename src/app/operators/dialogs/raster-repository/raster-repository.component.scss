@@ -19,7 +19,8 @@ md-list-item /deep/ .highlight {
     text-decoration: underline;
 }
 
-md-list-item {
+md-list-item /deep/ .mat-list-item-content {
+    height: auto !important;
 }
 
 img {
@@ -28,4 +29,8 @@ img {
 
 .secondary_action {
     float: right;
+}
+
+.error {
+    text-align: center;
 }

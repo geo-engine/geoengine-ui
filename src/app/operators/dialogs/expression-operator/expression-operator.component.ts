@@ -12,6 +12,7 @@ import {RasterLayer} from '../../../layers/layer.model';
 import {RasterSymbology, MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WaveValidators} from '../../../util/form.validators';
+import {ProjectService} from '../../../project/project.service';
 
 @Component({
     selector: 'wave-expression-operator',
@@ -29,7 +30,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
     outputDataTypes$: Observable<Array<[DataType, string]>>;
     outputUnits$: Observable<Array<Unit>>;
 
-    constructor(private layerService: LayerService,
+    constructor(private projectService: ProjectService,
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private changeDetectorRef: ChangeDetectorRef) {
@@ -166,14 +167,14 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             ),
         });
 
-        this.layerService.addLayer(new RasterLayer({
+        const layer = new RasterLayer({
             name: name,
             operator: operator,
-            symbology: new MappingColorizerRasterSymbology({unit: unit},
-                this.mappingQueryService.getColorizerStream(operator)
-            ),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
-        }));
+            symbology: new MappingColorizerRasterSymbology({unit: unit}),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
+        });
+        // this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
 
     }
 

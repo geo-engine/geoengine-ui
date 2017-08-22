@@ -2,18 +2,15 @@ import {Injectable} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable, Subscription} from 'rxjs/Rx';
 
-import {StorageProvider, RScript} from './storage-provider.model';
+import {RScript, StorageProvider} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
 import {MappingStorageProvider} from './providers/mapping-storage-provider.model';
 
 import {LayoutService} from '../layout.service';
-import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
-import {Layer} from '../layers/layer.model';
-import {Symbology} from '../layers/symbology/symbology.model';
 import {NotificationService} from '../notification.service';
 
 /**
@@ -26,11 +23,10 @@ export class StorageService {
     private projectSubscription: Subscription;
     private layoutSubscription: Subscription;
 
-    private pendingWorkspace: {project: Project, layers: Array<Layer<Symbology>>};
+    private pendingWorkspace: {project: Project};
     private pendingWorkspaceSubscription: Subscription;
 
     constructor(private config: Config,
-                private layerService: LayerService,
                 private projectService: ProjectService,
                 private layoutService: LayoutService,
                 private userService: UserService,
@@ -106,14 +102,12 @@ export class StorageService {
         if (this.userService.isGuestUser()) {
             this.storageProvider = new BrowserStorageProvider(
                 this.config,
-                this.layerService,
                 this.projectService,
                 this.notificationService
             );
         } else {
             this.storageProvider = new MappingStorageProvider({
                 config: this.config,
-                layerService: this.layerService,
                 projectService: this.projectService,
                 notificationService: this.notificationService,
                 http: this.http,
@@ -125,25 +119,17 @@ export class StorageService {
 
         // load workspace
         this.storageProvider.loadWorkspace().subscribe(workspace => {
-            if (workspace.project) {
-                this.projectService.setProject(workspace.project);
-            }
-            if (workspace.layers) {
-                this.layerService.setLayers(workspace.layers);
-            }
+            const newProject = workspace.project ? workspace.project : this.projectService.createDefaultProject();
+
+            this.projectService.setProject(newProject);
 
             // setup storage
-            this.projectSubscription = Observable
-                .combineLatest(
-                    this.projectService.getProjectStream(),
-                    this.layerService.getLayersStream(),
-                )
-                .skip(1) // don't save the loaded stuff directly again
-                .do(([project, layers]) => {
+            this.projectSubscription = this.projectService.getProjectStream()
+                .filter(project => project !== newProject) // skip saving the previously loaded project
+                .do(project => {
                     // save pending change
                     this.pendingWorkspace = {
-                        project: project,
-                        layers: layers,
+                        project: project
                     };
                 })
                 .debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE)
@@ -151,10 +137,9 @@ export class StorageService {
                     // store pending change
                     this.pendingWorkspace = undefined;
                 })
-                .subscribe(([project, layers]) => {
+                .subscribe(project => {
                     this.storageProvider.saveWorkspace({
                         project: project,
-                        layers: layers,
                     });
                 });
 

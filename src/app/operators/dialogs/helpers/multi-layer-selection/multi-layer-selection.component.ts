@@ -1,12 +1,15 @@
-import {
-    Component, OnInit, ChangeDetectionStrategy, forwardRef, SimpleChange, ChangeDetectorRef,
-    Input, AfterViewInit, OnChanges
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
-import {LayerService} from '../../../../layers/layer.service';
 import {ResultType} from '../../../result-type.model';
+import {ProjectService} from '../../../../project/project.service';
+import {Observable} from 'rxjs/Observable';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Subscription} from 'rxjs/Subscription';
+import {LayerService} from '../../../../layers/layer.service';
 
 /**
  * Singleton for a letter to number converter for ids.
@@ -19,9 +22,11 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
     toLetters: (num: number) => {
         let mod = num % 26;
         let pow = num / 26 | 0; // tslint:disable-line:no-bitwise
+        // noinspection CommaExpressionJS
         let out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
         return pow ? this.toLetters(pow) + out : out;
     },
+
     /**
      * Convert an alphanumeric id to a numeric one.
      * Starting with `A`.
@@ -46,12 +51,12 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true},
     ],
 })
-export class MultiLayerSelectionComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy {
 
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> = this.layerService.getLayers();
+    @Input() layers: Array<Layer<Symbology>> | Observable<Array<Layer<Symbology>>> = this.projectService.getLayerStream();
 
     /**
      * The minimum number of elements to select.
@@ -82,79 +87,132 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, After
     onTouched: () => void;
     onChange: (_: Array<Layer<Symbology>>) => void = undefined;
 
-    filteredLayers: Array<Layer<Symbology>>;
-    ids: Array<string>;
+    filteredLayers: Subject<Array<Layer<Symbology>>> = new ReplaySubject(1);
+    selectedLayers = new BehaviorSubject<Array<Layer<Symbology>>>([]);
 
-    amountOfLayers = 1;
+    private layerSubscription: Subscription;
+    private selectionSubscription: Subscription;
 
-    selectedLayers: Array<Layer<Symbology>> = [];
+    constructor(private projectService: ProjectService,
+                private layerService: LayerService) {
+        this.layerSubscription = this.filteredLayers.subscribe(filteredLayers => {
+            this.selectedLayers.next(
+                this.layersForInitialSelection(filteredLayers, [], this.initialAmount)
+            );
+        });
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private layerService: LayerService
-    ) {}
+        this.selectionSubscription = this.selectedLayers.subscribe(selectedLayers => {
+            if (this.onChange) {
+                this.onChange(selectedLayers);
+            }
+        });
+    }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
+        let minMaxInitialChanged = false;
+        let initialChange = false;
+
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'initialAmount':
-                    this.amountOfLayers = Math.max(this.initialAmount, this.min);
+                    initialChange = changes[propName].isFirstChange();
                 /* falls through */
+                case 'min':
+                case 'max':
+                    minMaxInitialChanged = true;
+                    break;
                 case 'layers':
                 case 'types':
-                    this.filteredLayers = this.layers.filter((layer: Layer<Symbology>) => {
-                        return this.types.indexOf(layer.operator.resultType) >= 0;
-                    });
-                    for (let i = 0; i < this.amountOfLayers; i++) {
-                        this.updateLayer(i, this.filteredLayers[0]);
+                    if (this.layers instanceof Observable) {
+                        this.layers.first().subscribe(layers => {
+                            this.filteredLayers.next(
+                                layers.filter((layer: Layer<Symbology>) => {
+                                    return this.types.indexOf(layer.operator.resultType) >= 0;
+                                })
+                            );
+                        });
+                    } else if (this.layers instanceof Array) {
+                        this.filteredLayers.next(
+                            this.layers.filter((layer: Layer<Symbology>) => {
+                                return this.types.indexOf(layer.operator.resultType) >= 0;
+                            })
+                        );
                     }
+
                     if (this.title === undefined) {
-                        this.title = this.types.map(type => type.toString())
-                            .join(', ');
+                        this.title = this.types.map(type => type.toString()).join(', ');
                     }
                     break;
-                case 'min':
-                    this.amountOfLayers = Math.max(this.amountOfLayers, this.min);
-                    break;
-                case 'max':
-                    this.amountOfLayers = Math.min(this.amountOfLayers, this.max);
-                    break;
+
                 default:
                 // DO NOTHING
             }
         }
-        this.recalculateIds();
+
+        if (minMaxInitialChanged) {
+            Observable
+                .combineLatest(this.filteredLayers, this.selectedLayers)
+                .first()
+                .subscribe(([filteredLayers, selectedLayers]) => {
+                    const amountOfLayers = selectedLayers.length;
+
+                    if (this.max < amountOfLayers) {
+                        // remove selected layers
+                        const difference = amountOfLayers - this.max;
+                        this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
+                    } else if (this.min > amountOfLayers) {
+                        // add selected layers
+                        const difference = this.min - amountOfLayers;
+                        this.selectedLayers.next(selectedLayers.concat(
+                            this.layersForInitialSelection(filteredLayers, [], difference)
+                        ));
+                    }
+
+                    if (initialChange) {
+                        // set initial layers
+                        this.selectedLayers.next(
+                            this.layersForInitialSelection(filteredLayers, [], this.initialAmount)
+                        );
+                    }
+                });
+        }
     }
 
-    ngAfterViewInit() {
-        setTimeout(() => this.changeDetectorRef.markForCheck());
+    ngOnDestroy() {
+        this.layerSubscription.unsubscribe();
+        this.selectionSubscription.unsubscribe();
     }
 
     updateLayer(index: number, layer: Layer<Symbology>) {
-        this.selectedLayers[index] = layer;
-        this.propagateChange();
+        this.selectedLayers.first().subscribe(selectedLayers => {
+            const newSelectedLayers = [...selectedLayers];
+            newSelectedLayers[index] = layer;
+            this.selectedLayers.next(newSelectedLayers);
+        });
     }
 
     add() {
-        this.amountOfLayers = Math.min(this.amountOfLayers + 1, this.max);
-        this.recalculateIds();
-        this.selectedLayers.push(this.filteredLayers[0]);
+        Observable
+            .combineLatest(
+                this.filteredLayers,
+                this.selectedLayers,
+            )
+            .first()
+            .subscribe(([filteredLayers, selectedLayers]) => {
+                this.selectedLayers.next(selectedLayers.concat(
+                    this.layersForInitialSelection(filteredLayers, selectedLayers, 1)
+                ));
 
-        setTimeout(() => this.changeDetectorRef.markForCheck());
-
-        this.propagateChange();
-        this.onBlur();
+                this.onBlur();
+            });
     }
 
     remove() {
-        this.amountOfLayers = Math.max(this.amountOfLayers - 1, this.min);
-        this.recalculateIds();
-        this.selectedLayers.pop();
+        this.selectedLayers.first().subscribe(selectedLayers => {
+            this.selectedLayers.next(selectedLayers.slice(0, selectedLayers.length - 1));
 
-        setTimeout(() => this.changeDetectorRef.markForCheck());
-
-        this.propagateChange();
-        this.onBlur();
+            this.onBlur();
+        });
     }
 
     onBlur() {
@@ -165,35 +223,48 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, After
 
     writeValue(layers: Array<Layer<Symbology>>): void {
         if (layers) {
-            this.selectedLayers = layers;
-
-            this.changeDetectorRef.markForCheck();
-        } else {
-            this.propagateChange();
+            this.selectedLayers.next(layers);
+        } else if (this.onChange) {
+            this.onChange(this.selectedLayers.getValue());
         }
     }
 
     registerOnChange(fn: (_: Array<Layer<Symbology>>) => void): void {
         this.onChange = fn;
 
-        this.propagateChange();
+        this.onChange(this.selectedLayers.getValue());
     }
 
     registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 
-    private propagateChange() {
-        if (this.onChange && this.selectedLayers && this.filteredLayers.length > 0) {
-            this.onChange(this.selectedLayers);
-        }
+    // noinspection JSMethodCanBeStatic
+    toLetters(i: number): string {
+        return LetterNumberConverter.toLetters(i + 1);
     }
 
-    private recalculateIds() {
-        this.ids = [];
-        for (let i = 1; i <= this.amountOfLayers; i++) {
-            this.ids.push(LetterNumberConverter.toLetters(i));
+    private layersForInitialSelection(layers: Array<Layer<Symbology>>,
+                                      blacklist: Array<Layer<Symbology>>,
+                                      amount: number): Array<Layer<Symbology>> {
+        if (layers.length === 0) {
+            return [];
         }
+
+        const layersForSelection = [...layers].filter(layer => blacklist.indexOf(layer) < 0);
+
+        const selectedLayerIndex = layersForSelection.indexOf(this.layerService.getSelectedLayer());
+        if (selectedLayerIndex >= 0) {
+            // swap to front
+            layersForSelection[0] = layersForSelection.splice(selectedLayerIndex, 1, layersForSelection[0])[0];
+        }
+
+        const difference = amount - layersForSelection.length;
+        for (let i = 0; i < difference; i++) {
+            layersForSelection.push(layers[0]);
+        }
+
+        return layersForSelection.slice(0, amount);
     }
 
 }

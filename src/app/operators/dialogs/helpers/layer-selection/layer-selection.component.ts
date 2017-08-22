@@ -1,12 +1,15 @@
-import {
-    Component, ChangeDetectionStrategy, forwardRef, Input, OnChanges, SimpleChange,
-    ChangeDetectorRef
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, Input, OnChanges, SimpleChange, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {LayerService} from '../../../../layers/layer.service';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
+import {ProjectService} from '../../../../project/project.service';
+import {LayerService} from '../../../../layers/layer.service';
+import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 
 /**
  * This component allows selecting one layer.
@@ -20,12 +23,12 @@ import {ResultType, ResultTypes} from '../../../result-type.model';
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
     ],
 })
-export class LayerSelectionComponent implements OnChanges, ControlValueAccessor {
+export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlValueAccessor {
 
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> = this.layerService.getLayers();
+    @Input() layers: Array<Layer<Symbology>> | Observable<Array<Layer<Symbology>>> = this.projectService.getLayerStream();
 
     /**
      * The type is used as a filter for the layers to choose from.
@@ -40,36 +43,68 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
     onTouched: () => void;
     onChange: (_: Layer<Symbology>) => void = undefined;
 
-    filteredLayers: Array<Layer<Symbology>>;
-    selectedLayer: Layer<Symbology> = undefined;
+    filteredLayers: Subject<Array<Layer<Symbology>>> = new ReplaySubject(1);
+    selectedLayer = new BehaviorSubject<Layer<Symbology>>(undefined);
 
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-                private layerService: LayerService) {
+    private subscriptions: Array<Subscription> = [];
+
+    constructor(private layerService: LayerService,
+                private projectService: ProjectService) {
+        this.subscriptions.push(
+            this.filteredLayers.subscribe(filteredLayers => {
+                if (filteredLayers.length > 0) {
+                    this.selectedLayer.first().subscribe(selectedLayer => {
+                        const selectedLayerIndex = filteredLayers.indexOf(
+                            selectedLayer ? selectedLayer : this.layerService.getSelectedLayer()
+                        );
+                        if (selectedLayerIndex >= 0) {
+                            this.selectedLayer.next(filteredLayers[selectedLayerIndex]);
+                        } else {
+                            this.selectedLayer.next(filteredLayers[0]);
+                        }
+                    });
+                } else {
+                    this.selectedLayer.next(undefined);
+                }
+            })
+        );
+
+        this.subscriptions.push(
+            this.selectedLayer.subscribe(selectedLayer => {
+                if (this.onChange) {
+                    this.onChange(selectedLayer);
+                }
+            })
+        );
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnDestroy() {
+        for (const subscription of this.subscriptions) {
+            subscription.unsubscribe();
+        }
+    }
+
+    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 /* falls through */
                 case 'layers':
                 case 'types':
-                    this.filteredLayers = this.layers.filter((layer: Layer<Symbology>) => {
-                        return this.types.indexOf(layer.operator.resultType) >= 0;
-                    });
-                    if (!this.selectedLayer && this.filteredLayers.length > 0) {
-                        // if no layer is selected, use app selected layer or first one in list
-                        const selectedLayerIndex = this.filteredLayers.indexOf(this.layerService.getSelectedLayer());
-                        if (selectedLayerIndex >= 0) {
-                            this.selectedLayer = this.filteredLayers[selectedLayerIndex];
-                        } else {
-                            this.selectedLayer = this.filteredLayers[0];
-                        }
-                    } else if (this.selectedLayer && this.filteredLayers.indexOf(this.selectedLayer) < 0) {
-                        // we need to reset the selected layer because it is not part of the list anymore
-                        this.selectedLayer = undefined;
+                    if (this.layers instanceof Observable) {
+                        this.layers.first().subscribe(layers => {
+                            this.filteredLayers.next(
+                                layers.filter((layer: Layer<Symbology>) => {
+                                    return this.types.indexOf(layer.operator.resultType) >= 0;
+                                })
+                            );
+                        });
+                    } else if (this.layers instanceof Array) {
+                        this.filteredLayers.next(
+                            this.layers.filter((layer: Layer<Symbology>) => {
+                                return this.types.indexOf(layer.operator.resultType) >= 0;
+                            })
+                        );
                     }
-
-                    this.propagateChange();
 
                     if (this.title === undefined) {
                         // set title out of types
@@ -79,7 +114,6 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
                             .join(', ');
                     }
 
-                    setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
                     break;
                 default:
                 // do nothing
@@ -95,15 +129,14 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
 
     writeValue(layer: Layer<Symbology>): void {
         if (layer !== null) {
-            this.selectedLayer = layer;
+            this.selectedLayer.next(layer);
         }
-        this.changeDetectorRef.markForCheck();
     }
 
     registerOnChange(fn: (_: Layer<Symbology>) => void): void {
         this.onChange = fn;
 
-        this.propagateChange();
+        this.onChange(this.selectedLayer.getValue());
     }
 
     registerOnTouched(fn: () => void): void {
@@ -111,15 +144,6 @@ export class LayerSelectionComponent implements OnChanges, ControlValueAccessor 
     }
 
     setSelectedLayer(layer: Layer<Symbology>) {
-        this.selectedLayer = layer;
-
-        this.propagateChange();
+        this.selectedLayer.next(layer);
     }
-
-    private propagateChange() {
-        if (this.onChange) {
-            this.onChange(this.selectedLayer);
-        }
-    }
-
 }

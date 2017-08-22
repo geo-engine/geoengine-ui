@@ -1,12 +1,12 @@
 <wave-dialog-header>{{plot.name}}</wave-dialog-header>
 <md-dialog-content [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type">
-    <template ngSwitchCase="text">
+    <ng-template ngSwitchCase="text">
         <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
-    </template>
-    <template ngSwitchCase="png">
+    </ng-template>
+    <ng-template ngSwitchCase="png">
         <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" [alt]="plot.name">
-    </template>
-    <template ngSwitchCase="histogram">
+    </ng-template>
+    <ng-template ngSwitchCase="histogram">
         <wave-histogram
             *ngIf="(maxWidth$ | async) && (maxHeight$ | async)"
             [data]="projectService.getPlotDataStream(plot) | async"
@@ -14,8 +14,8 @@
             [height]="maxHeight$ | async"
             [interactable]="true">
         </wave-histogram>
-    </template>
-    <template ngSwitchDefault>
+    </ng-template>
+    <ng-template ngSwitchDefault>
         <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
-    </template>
+    </ng-template>
 </md-dialog-content>

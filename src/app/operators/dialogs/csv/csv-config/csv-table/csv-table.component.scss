@@ -28,40 +28,30 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 }
 
 .table-frame {
-    text-align: left;
-    font-size: 0;
-    max-width: 75vw;
-    display: inline-block;
+    align: center;
     overflow: hidden;
     margin-left: auto;
     margin-right: auto;
     border: solid 1px darkgray;
-}
-
-.table-frame br {
-    display: none;
+    min-width: 80vw;
+    max-width: 80vw;
 }
 
 .typingdiv {
-    max-width: 100%;
-    font-size: 15px;
-    display: block;
     overflow: hidden;
+    width: auto;
     border-bottom: solid 1px dimgray;
     background-color: #FFFFFF;
     font-weight: 300;
 }
 
 .headerdiv {
-    max-width: 100%;
-    display: block;
     overflow: hidden;
+    width: auto;
     border-bottom: solid 1px dimgray;
     border-right: solid 1px dimgray;
-    margin-bottom: 0;
     background-color: $backgroundColor;
     color: $titleColor;
-    font-size: 15px;
     font-weight: 300;
 }
 
@@ -74,9 +64,6 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 }
 
 .bodydiv {
-    max-width: 100%;
-    font-size: 15px;
-    display: block;
     overflow-x: auto;
     overflow-y: hidden;
 }
@@ -86,7 +73,6 @@ div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
 }
 
 .resizeTable {
-    display: table;
     table-layout: fixed;
 }
 

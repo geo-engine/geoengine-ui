@@ -3,17 +3,20 @@ import {ResultTypes, ResultType} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {CodeEditorComponent} from '../../../../util/components/code-editor.component';
 import {ProjectService} from '../../../../project/project.service';
-import {LayerService} from '../../../../layers/layer.service';
 import {DataType} from '../../../datatype.model';
 import {Projections} from '../../../projection.model';
 import {Operator} from '../../../operator.model';
 import {RasterLayer, VectorLayer, Layer} from '../../../../layers/layer.model';
 import {RScriptType} from '../../../types/r-script-type.model';
 import {Unit} from '../../../unit.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {Plot} from '../../../../plots/plot.model';
-import {RasterSymbology, AbstractVectorSymbology, Symbology, SimplePointSymbology} from '../../../../layers/symbology/symbology.model';
+import {
+    RasterSymbology,
+    AbstractVectorSymbology,
+    Symbology,
+    SimplePointSymbology
+} from '../../../../layers/symbology/symbology.model';
 import {MdDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
@@ -44,8 +47,6 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService,
-                private layerService: LayerService,
-                private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
                 private dialog: MdDialog,
                 private config: Config) {
@@ -83,7 +84,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 pointOperators = vectorLayer.operator.getSources(ResultTypes.POINTS).toArray();
                 operatorType = vectorLayer.operator.operatorType as RScriptType;
             } else if (this.editable instanceof RasterLayer) {
-                const rasterLayer: RasterLayer<RasterSymbology> = this.editable;
+                const rasterLayer: RasterLayer<RasterSymbology> = this.editable as RasterLayer<RasterSymbology>;
                 name = rasterLayer.name;
                 resultType = rasterLayer.operator.resultType;
                 rasterOperators = rasterLayer.operator.getSources(ResultTypes.RASTER).toArray();
@@ -163,8 +164,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         let pointSources: Array<Operator>;
 
         if (this.editable) {
-            rasterSources = this.editableSourceRasters.map(operator => operator.getProjectedOperator(projection));
-            pointSources = this.editableSourcePoints.map(operator => operator.getProjectedOperator(projection));
+            rasterSources = this.editableSourceRasters.map(o => o.getProjectedOperator(projection));
+            pointSources = this.editableSourcePoints.map(o => o.getProjectedOperator(projection));
         } else {
             rasterSources = rasterLayers.map(
                 layer => layer.operator.getProjectedOperator(projection)
@@ -188,8 +189,6 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             pointSources: pointSources,
         });
 
-        const provenance$ = this.mappingQueryService.getProvenanceStream(operator);
-
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
 
             // LAYER
@@ -202,10 +201,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                         symbology: new SimplePointSymbology({
                             fillRGBA: this.randomColorService.getRandomColor(),
                         }),
-                        data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                            operator,
-                        }),
-                        provenance: provenance$,
+                        // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                        //     operator,
+                        // }),
+                        // provenance: provenance$,
                     });
                     break;
                 case ResultTypes.RASTER:
@@ -214,7 +213,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                         operator: operator,
                         // TODO: read out of operator if specified
                         symbology: new RasterSymbology({unit: Unit.defaultUnit}),
-                        provenance: provenance$,
+                        // provenance: provenance$,
                     });
                     break;
                 default:
@@ -223,9 +222,11 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
             if (this.editable) {
                 // TODO: implement replace functionality
-                this.layerService.addLayer(layer);
+                // this.layerService.addLayer(layer);
+                this.projectService.addLayer(layer);
             } else {
-                this.layerService.addLayer(layer);
+                // this.layerService.addLayer(layer);
+                this.projectService.addLayer(layer);
             }
 
         } else {

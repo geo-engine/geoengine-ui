@@ -4,12 +4,15 @@ import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
+import {Symbology} from '../layers/symbology/symbology.model';
+import {Layer, LayerDict} from '../layers/layer.model';
 
 export interface ProjectConfig {
     name: string;
     projection: Projection;
     time: Time;
     plots?: Array<Plot>;
+    layers?: Array<Layer<Symbology>>;
 }
 
 export interface ProjectDict {
@@ -17,6 +20,7 @@ export interface ProjectDict {
     projection: string;
     time: TimeDict;
     plots: Array<PlotDict>;
+    layers: Array<LayerDict>;
 }
 
 export class Project {
@@ -24,12 +28,13 @@ export class Project {
     private _time: Time;
     private _name: string;
     private _plots: Array<Plot>;
+    private _layers: Array<Layer<Symbology>>;
 
     static fromJSON(parameters: {
         json: string,
         config: Config,
         notificationService: NotificationService,
-        operatorMap?: Map<number, Operator>
+        operatorMap?: Map<number, Operator>,
     }): Project {
         if (!parameters.operatorMap) {
             parameters.operatorMap = new Map<number, Operator>();
@@ -51,6 +56,7 @@ export class Project {
                 projection: Projections.fromCode(parameters.config.DEFAULTS.PROJECT.PROJECTION),
                 time: new TimePoint(parameters.config.DEFAULTS.PROJECT.TIME),
                 plots: [],
+                layers: [],
             });
         }
 
@@ -98,11 +104,28 @@ export class Project {
             parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
+        let layers: Array<Layer<Symbology>>;
+        if (parameters.dict.layers) {
+            layers = parameters.dict.layers
+                .map(layerDict => {
+                    try {
+                        return Layer.fromDict(layerDict, parameters.operatorMap);
+                    } catch (error) {
+                        parameters.notificationService.error(`Cannot load layer because of »${error}«`);
+                        return undefined;
+                    }
+                })
+                .filter(layer => layer !== undefined);
+        } else {
+            layers = [];
+        }
+
         return new Project({
             name: parameters.dict.name,
             projection: projection,
             time: time,
             plots: plots,
+            layers: layers,
         });
     }
 
@@ -111,6 +134,7 @@ export class Project {
         this._projection = config.projection;
         this._time = config.time;
         this._plots = config.plots ? config.plots : [];
+        this._layers = config.layers ? config.layers : [];
     }
 
     get name(): string {
@@ -129,12 +153,17 @@ export class Project {
         return this._plots;
     }
 
+    get layers(): Array<Layer<Symbology>> {
+            return this._layers;
+    }
+
     toDict(): ProjectDict {
         return {
             name: this.name,
             projection: this._projection.getCode(),
             time: this._time.asDict(),
             plots: this._plots.map(plot => plot.toDict()),
+            layers: this._layers.map(layer => layer.toDict())
         };
     }
 

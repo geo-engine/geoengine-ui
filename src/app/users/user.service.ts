@@ -9,7 +9,13 @@ import {RequestParameters, MappingRequestParameters, ParametersType} from '../qu
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
 import {IBasket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
-import {MappingSource, MappingSourceChannel, MappingTransform} from '../operators/dialogs/raster-repository/mapping-source.model';
+import {
+    MappingSource,
+    MappingSourceChannel,
+    MappingTransform,
+    MappingSourceDict,
+    MappingSourceResponse
+} from '../operators/dialogs/raster-repository/mapping-source.model';
 import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
 
 import {Unit, UnitMappingDict} from '../operators/unit.model';
@@ -22,6 +28,9 @@ import {
     FeatureDBListEntry,
     featureDBListEntryToOperator
 } from '../queries/feature-db.model';
+import {NotificationService} from '../notification.service';
+
+const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
 export interface Session {
     user: string;
@@ -77,7 +86,7 @@ class GfbioServiceRequestParameters extends MappingRequestParameters {
 }
 
 class GFBioPortalLoginRequestParameters extends RequestParameters {
-    constructor(config: {username: string, password: string}) {
+    constructor(config: { username: string, password: string }) {
         super();
         this.addAuthentication(config.username, config.password);
     }
@@ -93,12 +102,18 @@ export class UserService {
 
     private isGuestUser$: Observable<boolean>;
 
+    private rasterSources$ = new BehaviorSubject<Array<MappingSource>>([]);
+    private rasterSourceError$ = new BehaviorSubject<boolean>(false);
+    private reloadRasterSources$ = new BehaviorSubject<void>(undefined);
+
     constructor(private config: Config,
-                private http: Http) {
+                private http: Http,
+                private notificationService: NotificationService) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
         );
 
+        this.user$ = new BehaviorSubject(new Guest(config));
         this.isGuestUser$ = this.session$.map(s => s.user === this.config.USER.GUEST.NAME);
 
         // storage of the session
@@ -106,24 +121,28 @@ export class UserService {
             this.isSessionValid(newSession).subscribe(isValid => {
                 if (isValid) {
                     this.saveSessionData(newSession);
+
+                    this.getUserDetails(newSession)
+                        .subscribe(user => {
+                            if (user) {
+                                this.user$.next(user);
+                            } else {
+                                this.user$.next(new Guest(config));
+                            }
+                        });
                 } else {
                     this.guestLogin().subscribe();
                 }
             });
         });
 
-        // user info
-        this.user$ = new BehaviorSubject(new Guest(config));
-        this.session$.subscribe(session => {
-            this.getUserDetails(session)
-                .subscribe(user => {
-                    if (user) {
-                        this.user$.next(user);
-                    } else {
-                        this.user$.next(new Guest(config));
-                    }
-                });
-        });
+        this.createRasterSourcesStream(this.session$, this.reloadRasterSources$)
+            .subscribe(sources => {
+                this.rasterSources$.next(sources);
+                if (this.rasterSourceError$.getValue()) {
+                    this.rasterSourceError$.next(false);
+                }
+            });
     }
 
     /**
@@ -168,7 +187,7 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    login(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
+    login(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
         if (credentials.staySignedIn === undefined) {
             credentials.staySignedIn = true;
         }
@@ -179,7 +198,7 @@ export class UserService {
         });
         return this.request(parameters)
             .map(response => {
-                const result = response.json() as {result: string | boolean, session: string};
+                const result = response.json() as { result: string | boolean, session: string };
                 const success = typeof result.result === 'boolean' && result.result === true;
 
                 return [result.session, success];
@@ -193,7 +212,7 @@ export class UserService {
                     });
                 }
             })
-            .map(([session, success]) => success);
+            .map(([session, success]) => success as boolean);
     }
 
     guestLogin(): Observable<boolean> {
@@ -217,7 +236,7 @@ export class UserService {
         });
         return this.request(parameters)
             .map(response => {
-                const result = response.json() as {result: string | boolean};
+                const result = response.json() as { result: string | boolean };
                 const valid = typeof result.result === 'boolean' && result.result;
 
                 return valid;
@@ -240,7 +259,7 @@ export class UserService {
             sessionToken: session.sessionToken,
         });
         return this.request(parameters).map(response => {
-            const result = response.json() as {result: string | boolean};
+            const result = response.json() as { result: string | boolean };
             const valid = typeof result.result === 'boolean' && result.result;
 
             if (valid) {
@@ -269,7 +288,7 @@ export class UserService {
      * @param details.lastName  The last name
      * @param details.email     The E-Mail address
      */
-    changeDetails(details: {realName: string, email: string}) {
+    changeDetails(details: { realName: string, email: string }) {
         let user = this.getUser();
         user.realName = details.realName;
         user.email = details.email;
@@ -277,90 +296,80 @@ export class UserService {
         this.user$.next(user);
     }
 
+    private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
+        return Observable
+            .combineLatest(session$, reload$, (session, reload) => session)
+            .switchMap(session => {
+                const parameters = new UserServiceRequestParameters({
+                    request: 'sourcelist',
+                    sessionToken: session.sessionToken,
+                });
+                return this.request(parameters)
+                    .map(response => response.json())
+                    .map((json: MappingSourceResponse) => {
+                        const sources: Array<MappingSource> = [];
+
+                        for (const sourceId in json.sourcelist) {
+                            if (json.sourcelist.hasOwnProperty(sourceId)) {
+                                const source: MappingSourceDict = json.sourcelist[sourceId];
+                                sources.push({
+                                    source: sourceId,
+                                    name: (source.name) ? source.name : sourceId,
+                                    uri: (source.provenance) ? source.provenance.uri : '',
+                                    citation: source.provenance ? source.provenance.citation : '',
+                                    license: source.provenance ? source.provenance.license : '',
+                                    colorizer: source.colorizer,
+                                    coords: source.coords,
+                                    channels: source.channels.map((channel, index) => {
+                                        return {
+                                            id: index,
+                                            name: channel.name || 'Channel #' + index,
+                                            datatype: channel.datatype,
+                                            nodata: channel.nodata,
+                                            unit: channel.unit ?
+                                                Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                            hasTransform: !!channel.transform,
+                                            isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+                                            transform: channel.transform === undefined ?
+                                                undefined : {
+                                                    unit: channel.transform.unit ?
+                                                        Unit.fromMappingDict(channel.transform.unit)
+                                                        : Unit.defaultUnit,
+                                                    datatype: channel.transform.datatype,
+                                                    offset: channel.transform.offset,
+                                                    scale: channel.transform.scale,
+                                                } as MappingTransform,
+                                        } as MappingSourceChannel;
+                                    }),
+                                });
+                            }
+                        }
+                        return sources;
+                    })
+                    .catch(error => {
+                        this.notificationService.error(`Error loading raster sources: »${error}«`);
+                        this.rasterSourceError$.next(true);
+                        return [];
+                    });
+            });
+    }
+
     /**
      * Get as stream of raster sources depending on the logged in user.
      */
     getRasterSourcesStream(): Observable<Array<MappingSource>> {
-        interface MappingSourceResponse {
-            sourcelist: {[index: string]: MappingSourceDict};
-        }
+        return this.rasterSources$;
+    }
 
-        interface MappingSourceDict {
-            name: string;
-            colorizer: string;
-            provenance?: {
-                uri: string;
-                license: string;
-                citation: string;
-            };
-            coords: {
-                epsg: number,
-                origin: number[],
-                scale: number[],
-                size: number[],
-            };
-            channels: [{
-                datatype: string,
-                nodata: number,
-                name?: string,
-                unit?: UnitMappingDict,
-                transform?: {
-                    unit?: UnitMappingDict,
-                    datatype: string,
-                    scale: number,
-                    offset: number,
-                },
-            }];
-        }
+    /**
+     * Reload the raster sources
+     */
+    reloadRasterSources() {
+        this.reloadRasterSources$.next(undefined);
+    }
 
-        return this.session$.switchMap(session => {
-            const parameters = new UserServiceRequestParameters({
-                request: 'sourcelist',
-                sessionToken: session.sessionToken,
-            });
-            return this.request(parameters)
-                .map(response => response.json())
-                .map((json: MappingSourceResponse) => {
-                    const sources: Array<MappingSource> = [];
-
-                    for (const sourceId in json.sourcelist) {
-                        const source: MappingSourceDict = json.sourcelist[sourceId];
-                        sources.push({
-                            source: sourceId,
-                            name: (source.name) ? source.name : sourceId,
-                            uri: (source.provenance) ? source.provenance.uri : '',
-                            citation: source.provenance ? source.provenance.citation : '',
-                            license: source.provenance ? source.provenance.license : '',
-                            colorizer: source.colorizer,
-                            coords: source.coords,
-                            channels: source.channels.map((channel, index) => {
-                                return {
-                                    id: index,
-                                    name: channel.name || 'Channel #' + index,
-                                    datatype: channel.datatype,
-                                    nodata: channel.nodata,
-                                    unit: channel.unit ?
-                                        Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
-                                    hasTransform: !!channel.transform,
-                                    isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-                                    transform: channel.transform === undefined ?
-                                        undefined : {
-                                            unit: channel.transform.unit ?
-                                                Unit.fromMappingDict(channel.transform.unit)
-                                                : Unit.defaultUnit,
-                                            datatype: channel.transform.datatype,
-                                            offset: channel.transform.offset,
-                                            scale: channel.transform.scale,
-                                        } as MappingTransform,
-                                } as MappingSourceChannel;
-                            }),
-                        });
-                    }
-
-                    return sources;
-                });
-        });
-
+    getRasterSourcesErrorStream(): Observable<boolean> {
+        return this.rasterSourceError$;
     }
 
     /**
@@ -434,7 +443,7 @@ export class UserService {
     /**
      * Get the GFBio login token from the portal.
      */
-    getGFBioToken(credentials: {username: string, password: string}): Observable<string> {
+    getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
         const parameters = new GFBioPortalLoginRequestParameters(credentials);
 
         return this.http.get(
@@ -445,7 +454,7 @@ export class UserService {
             if (typeof json === 'string') {
                 return Observable.of(json); // token
             } else {
-                const result: {exception: string, message: string} = json;
+                const result: { exception: string, message: string } = json;
                 return Observable.throw(result.message);
             }
         });
@@ -457,7 +466,7 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    gfbioLogin(credentials: {user: string, password: string, staySignedIn?: boolean}): Observable<boolean> {
+    gfbioLogin(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
         if (!credentials.staySignedIn) {
             credentials.staySignedIn = true;
         }
@@ -474,7 +483,7 @@ export class UserService {
                     parameters: {token: token},
                 });
                 return this.request(parameters).map(response => {
-                    const result = response.json() as {result: string | boolean, session: string};
+                    const result = response.json() as { result: string | boolean, session: string };
                     const success = typeof result.result === 'boolean' && result.result === true;
 
                     if (success) {
@@ -509,7 +518,7 @@ export class UserService {
 
         this.request(parameters)
             .flatMap(response => {
-                const result = response.json() as {result: string | boolean, session: string};
+                const result = response.json() as { result: string | boolean, session: string };
                 const success = typeof result.result === 'boolean' && result.result === true;
 
                 if (success) {
@@ -545,7 +554,7 @@ export class UserService {
         return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
     }
 
-    getFeatureDBList(): Observable<Array<{name: string, operator: Operator}>> {
+    getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
         if (this.isGuestUser()) {
             return Observable.of([]);
         }
@@ -555,12 +564,12 @@ export class UserService {
             .map(list => list.data_sets.map(featureDBListEntryToOperator));
     }
 
-    addFeatureToDB(name: string, operator: Operator): Observable<{name: string, operator: Operator}> {
+    addFeatureToDB(name: string, operator: Operator): Observable<{ name: string, operator: Operator }> {
         if (this.isGuestUser()) {
             return Observable.empty();
         }
 
-        const subject = new Subject<{name: string, operator: Operator}>();
+        const subject = new Subject<{ name: string, operator: Operator }>();
 
         this.request(
             new FeatureDBServiceUploadParameters({
@@ -593,9 +602,9 @@ export class UserService {
         // look first into the localStorage, then sessionStorage and if there is no data
         // return an empty guest session
 
-        const sessionData = JSON.parse(localStorage.getItem('session')) as Session;
+        const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
         if (sessionData === null) { // tslint:disable-line:no-null-keyword
-            const sessionData2 = JSON.parse(sessionStorage.getItem('session')) as Session;
+            const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
             if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
                 return {
                     user: this.config.USER.GUEST.NAME,
@@ -611,11 +620,11 @@ export class UserService {
 
     protected saveSessionData(sessionData: Session) {
         if (sessionData.staySignedIn) {
-            localStorage.setItem('session', JSON.stringify(sessionData));
-            sessionStorage.removeItem('session');
+            localStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            sessionStorage.removeItem(PATH_PREFIX + 'session');
         } else {
-            sessionStorage.setItem('session', JSON.stringify(sessionData));
-            localStorage.removeItem('session');
+            sessionStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            localStorage.removeItem(PATH_PREFIX + 'session');
         }
     }
 

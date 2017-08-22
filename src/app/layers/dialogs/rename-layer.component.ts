@@ -1,11 +1,10 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
-
-import {LayerService} from '../layer.service';
+import {Component, ChangeDetectionStrategy, OnInit, Inject} from '@angular/core';
 
 import {Layer} from '../layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MdDialogRef} from '@angular/material';
+import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
+import {ProjectService} from '../../project/project.service';
 
 @Component({
     selector: 'wave-rename-layer-dialog',
@@ -13,7 +12,7 @@ import {MdDialogRef} from '@angular/material';
     <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
         <md-dialog-content>
-            <md-input-container class="flex-item" fxFlex>
+            <md-input-container>
                 <input mdInput type="text" placeholder="Name" formControlName="layerName">
             </md-input-container>
         </md-dialog-content>
@@ -26,6 +25,9 @@ import {MdDialogRef} from '@angular/material';
     form {
         padding-top: 16px;
     }
+    md-input-container {
+        width: 100%;
+    }
     `],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,13 +38,15 @@ export class RenameLayerComponent implements OnInit {
     private layer: Layer<Symbology>;
 
     constructor(
-        private layerService: LayerService,
+        private projectService: ProjectService,
         private formBuilder: FormBuilder,
-        private dialogRef: MdDialogRef<RenameLayerComponent>
+        private dialogRef: MdDialogRef<RenameLayerComponent>,
+        @Inject(MD_DIALOG_DATA) private config: {layer?: Layer<Symbology>}
     ) {}
 
     ngOnInit(): void {
-        this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        // this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        this.layer = this.config.layer;
         this.form = this.formBuilder.group({
             layerName: [this.layer.name, Validators.required]
         });
@@ -54,7 +58,7 @@ export class RenameLayerComponent implements OnInit {
     save() {
         const layerName = this.form.controls['layerName'].value;
         if (layerName !== this.layer.name) {
-            this.layerService.changeLayerName(this.layer, layerName);
+            this.projectService.changeLayer(this.layer, {name: layerName});
         }
         this.dialogRef.close();
     }

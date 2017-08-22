@@ -294,7 +294,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
         svg.append('g').attr('class', 'y axis').call(yAxis);
 
-        let zoom: d3.behavior.Zoom<SVGElement>;
+        let zoom: d3.behavior.Zoom<any>;
         if (this.selectable) {
             // sliders to select a range
 

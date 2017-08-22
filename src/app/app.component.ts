@@ -22,6 +22,11 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {DomSanitizer} from '@angular/platform-browser';
 import {RandomColorService} from './util/services/random-color.service';
+import {ActivatedRoute} from '@angular/router';
+import {NotificationService} from './notification.service';
+import {
+    WorkflowParameterChoiceDialogComponent
+} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 
 @Component({
     selector: 'wave-app',
@@ -58,7 +63,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private dialog: MdDialog,
                 private iconRegistry: MdIconRegistry,
                 private sanitizer: DomSanitizer,
-                private randomColorService: RandomColorService) {
+                private randomColorService: RandomColorService,
+                private activatedRoute: ActivatedRoute,
+                private notificationService: NotificationService) {
         iconRegistry.addSvgIconInNamespace(
             'vat',
             'logo',
@@ -67,7 +74,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.storageService.toString(); // just register
 
-        this.layersReverse$ = this.layerService.getLayersStream()
+        this.layersReverse$ = this.projectService.getLayerStream()
             .map(layers => layers.slice(0).reverse());
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
@@ -113,6 +120,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 type: 'STATUS',
                 status: 'READY',
             }, '*');
+        } else {
+
+            // handle query parameters directly if it is not embedded and using an auto login
+            this.handleWorkflowParameters();
+
         }
     }
 
@@ -127,15 +139,45 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:message', ['$event.data'])
-    public handleMessage(message: {type: string}) {
+    public handleMessage(message: { type: string }) {
         switch (message.type) {
             case 'TOKEN_LOGIN':
-                const tokenMessage = message as {type: string, token: string};
-                this.userService.gfbioTokenLogin(tokenMessage.token);
+                const tokenMessage = message as { type: string, token: string };
+                this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
+                    this.handleWorkflowParameters();
+                });
                 break;
             default:
             // unhandled message
         }
+    }
+
+    private handleWorkflowParameters() {
+        this.activatedRoute.queryParams.subscribe(p => {
+            for (const parameter of Object.keys(p)) {
+                const value = p[parameter];
+                switch (parameter) {
+                    case 'workflow':
+                        try {
+                            const newLayer = Layer.fromDict(JSON.parse(value));
+                            this.projectService.getProjectStream().first().subscribe(project => {
+                                if (project.layers.length > 0) {
+                                    // show popup
+                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layer: newLayer}});
+                                } else {
+                                    // just add the layer if the layer array is empty
+                                    this.projectService.addLayer(newLayer);
+                                }
+                            });
+                        } catch (error) {
+                            this.notificationService.error(`Invalid Workflow: »${error}«`);
+                        }
+                        break;
+                    default:
+                        this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
+                }
+            }
+        });
     }
 
 }

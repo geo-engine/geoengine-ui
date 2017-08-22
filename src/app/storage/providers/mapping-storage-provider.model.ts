@@ -64,7 +64,6 @@ export class MappingStorageProvider extends StorageProvider {
 
     constructor(config: {
         config: Config,
-        layerService: LayerService,
         projectService: ProjectService,
         notificationService: NotificationService,
         http: Http,
@@ -72,7 +71,7 @@ export class MappingStorageProvider extends StorageProvider {
         createDefaultProject: () => Project,
         projectName?: string,
     }) {
-        super(config.config, config.layerService, config.projectService, config.notificationService);
+        super(config.config, config.projectService, config.notificationService);
         this.http = config.http;
 
         this.session = config.session;
@@ -121,23 +120,12 @@ export class MappingStorageProvider extends StorageProvider {
                                     config: this.config,
                                     notificationService: this.notificationService,
                                     operatorMap: operatorMap,
-                                }),
-                                layers: workspace.layers
-                                    .map(layer => {
-                                        try {
-                                            return this.layerService.createLayerFromDict(layer, operatorMap);
-                                        } catch (error) {
-                                            this.notificationService.error(`Cannot load layer because of »${error}«`);
-                                            return undefined;
-                                        }
-                                    })
-                                    .filter(layer => layer !== undefined),
-                            };
+                                })
+                            }
                         } else {
                             // the workspace does not exist
                             return {
                                 project: this.createDefaultProject(),
-                                layers: [],
                             };
                         }
                     });
@@ -190,7 +178,6 @@ export class MappingStorageProvider extends StorageProvider {
                 name: projectName,
                 value: JSON.stringify({
                     project: workspace.project.toDict(),
-                    layers: workspace.layers.map(layer => layer.toDict()),
                 }),
             },
         });

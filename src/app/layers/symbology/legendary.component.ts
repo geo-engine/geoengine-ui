@@ -2,7 +2,7 @@ import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 import {
     Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
-    MappingColorizerRasterSymbology, ClusteredPointSymbology,
+    MappingColorizerRasterSymbology, ClusteredPointSymbology, MappingColorizer,
 } from './symbology.model';
 
 @Component({
@@ -95,7 +95,7 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
     template: `
         <div class='legend'>
             <tbody>
-                <template [ngIf]='symbology.isUnknown()'>
+                <ng-template [ngIf]='symbology.isUnknown()'>
                     <tr>
                         <td>Interpolation</td><td>{{symbology?.interpolation}}</td>
                     </tr>
@@ -105,31 +105,31 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                     <tr>
                         <td>Unit</td><td>{{symbology?.unit?.unit}}</td>
                     </tr>                    
-                </template>
-                <template [ngIf]='!symbology.isUnknown()'>
+                </ng-template>
+                <ng-template [ngIf]='!symbology.isUnknown()'>
                     <tr
-                        *ngFor='let breakpoint of (symbology.colorizer$ | async)?.breakpoints;
+                        *ngFor='let breakpoint of symbologyData.breakpoints;
                                 let isFirst = first'
                     >
-                        <template [ngIf]='symbology.isContinuous()'>
+                        <ng-template [ngIf]='symbology.isContinuous()'>
                             <td class='gradient'
                                 *ngIf='isFirst'
-                                [rowSpan]='(symbology.colorizer$ | async)?.breakpoints.length'
-                                [style.background]='symbology.colorizer$ | async | waveWappingColorizerToGradient
+                                [rowSpan]='symbologyData.breakpoints.length'
+                                [style.background]='symbologyData | waveWappingColorizerToGradient
                                                     | waveSafeStyle'
                             ></td>
                             <td>{{breakpoint[0]}}</td>
                             <td *ngIf='isFirst'>{{symbology?.unit.unit}}</td>
-                        </template>
-                        <template [ngIf]='symbology.isDiscrete()'>
+                        </ng-template>
+                        <ng-template [ngIf]='symbology.isDiscrete()'>
                             <td class ='classes'><div
                                 class='icon'
                                 [style.background-color]='breakpoint[1]'
                             ></div></td>
                             <td>{{symbology?.unit.classes.get(breakpoint[0])}}</td>                        
-                        </template>                        
+                        </ng-template>                        
                     </tr>
-                </template>
+                </ng-template>
             </tbody>
         </div>
         `,
@@ -167,9 +167,11 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
         }
 
         `],
-    inputs: ['symbology'],
+    inputs: ['symbology', 'symbologyData'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
     extends LegendaryRasterComponent<S> {
+
+    symbologyData: MappingColorizer;
 }

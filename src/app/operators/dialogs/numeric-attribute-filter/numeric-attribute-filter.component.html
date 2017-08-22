@@ -14,7 +14,7 @@
                 >{{attribute}}</md-option>
             </md-select>
         </div>
-        <md-progress-circle mode="indeterminate" *ngIf="dataLoading$ | async"></md-progress-circle>
+        <md-progress-spinner mode="indeterminate" *ngIf="dataLoading$ | async"></md-progress-spinner>
         <wave-histogram [height]="histogramHeight" [width]="histogramWidth"
                         [selectable]="true" [interactable]="false"
                         *ngIf="data$ | async" [data]="data$ | async"

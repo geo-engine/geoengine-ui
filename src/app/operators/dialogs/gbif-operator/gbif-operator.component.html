@@ -44,7 +44,7 @@
                 title="2. Select Resources"
                 subtitle="Select different source results"
             ></wave-dialog-section-heading>
-            <md-progress-circle mode="indeterminate" *ngIf="loading$ | async"></md-progress-circle>
+            <md-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></md-progress-spinner>
             <div fxLayout="column" *ngIf="!(loading$ | async)" formGroupName="select">
                 <md-checkbox *ngIf="gbifCount > 0" formControlName="gbif" fxFlex>
                     GBIF ({{gbifCount}})

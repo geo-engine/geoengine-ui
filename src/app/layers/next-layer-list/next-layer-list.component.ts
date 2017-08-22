@@ -14,6 +14,8 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
+import {ProjectService} from '../../project/project.service';
+import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 
 @Component({
     selector: 'wave-next-layer-list',
@@ -35,6 +37,7 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
 
     LineageGraphComponent = LineageGraphComponent;
     LayerExportComponent = LayerExportComponent;
+    LayerShareComponent = LayerShareComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
     // tslint:enable
 
@@ -43,35 +46,38 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         revertOnSpill: true,
         moves: (el, source, handle, sibling): boolean => {
             let s = handle;
-            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag'));
+            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag')) {
+            }
             return !s;
         }
     };
 
-
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-     public dialog: MdDialog,
-     private layoutService: LayoutService,
-     private dragulaService: DragulaService,
-     private layerService: LayerService,
-     private mapService: MapService,
-     private iconRegistry: MdIconRegistry,
-     private sanitizer: DomSanitizer
-    ) {
-        iconRegistry.addSvgIconInNamespace('symbology','polygon',
+    private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
+        return Array.prototype.indexOf.call(parent.children, child);
+    }
+
+    constructor(public dialog: MdDialog,
+                private layoutService: LayoutService,
+                private dragulaService: DragulaService,
+                private projectService: ProjectService,
+                private layerService: LayerService,
+                private mapService: MapService,
+                private iconRegistry: MdIconRegistry,
+                private sanitizer: DomSanitizer) {
+        iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','line',
+        iconRegistry.addSvgIconInNamespace('symbology', 'line',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/line_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','point',
+        iconRegistry.addSvgIconInNamespace('symbology', 'point',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/point_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology','grid4',
+        iconRegistry.addSvgIconInNamespace('symbology', 'grid4',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
 
-     this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
+        this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
-      this.handleDragAndDrop();
+        this.handleDragAndDrop();
     }
 
     ngOnInit() {
@@ -98,22 +104,21 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
                 dropIndex = NextLayerListComponent.domIndexOf(listItem, list);
                 // console.log('drop', dropIndex);
 
-                const layers = this.layerService.getLayers();
-                layers.splice(dropIndex, 0, layers.splice(dragIndex, 1)[0]);
-                this.layerService.setLayers(layers);
+                this.projectService.getLayerStream().first().subscribe(layers => {
+                    let shiftedLayers: Array<Layer<Symbology>> = [...layers];
+                    shiftedLayers.splice(dropIndex, 0, shiftedLayers.splice(dragIndex, 1)[0]);
+                    this.projectService.setLayers(shiftedLayers)
+                });
             })
         );
     }
 
     toggleLayer(layer: Layer<Symbology>) {
-        this.layerService.toggleLayer(layer);
+        this.projectService.toggleSymbology(layer);
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
-        this.layerService.changeLayerSymbology(layer, symbology);
+        this.projectService.changeLayer(layer, {symbology: symbology});
     }
 
-    private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
-        return Array.prototype.indexOf.call(parent.children, child);
-    }
 }

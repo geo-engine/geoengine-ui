@@ -13,6 +13,7 @@ import {
 } from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
+import {ProjectService} from "../../../project/project.service";
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -32,6 +33,7 @@ export class PointInPolygonFilterOperatorComponent {
     constructor(private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private layerService: LayerService,
+                private projectService: ProjectService,
                 private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
@@ -67,7 +69,7 @@ export class PointInPolygonFilterOperatorComponent {
         });
 
         const clustered = pointLayer.clustered;
-        this.layerService.addLayer(new VectorLayer({
+        const layer = new VectorLayer({
             name: name,
             operator: operator,
             symbology: clustered ?
@@ -77,12 +79,14 @@ export class PointInPolygonFilterOperatorComponent {
                 new SimplePointSymbology({
                     fillRGBA: this.randomColorService.getRandomColor(),
                 }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator, clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //     operator, clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
-        }));
+        });
+        // this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
 
     }
 

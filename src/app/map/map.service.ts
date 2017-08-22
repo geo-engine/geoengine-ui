@@ -62,7 +62,7 @@ export class MapService {
 
             const w = ol.extent.getWidth(newViewportSize.extent);
             const h = ol.extent.getHeight(newViewportSize.extent);
-            let newExtent = newViewportSize.extent; //ol.extent.buffer(newViewportSize.extent, Math.max(w, h) * 0.5);
+            let newExtent = newViewportSize.extent; // ol.extent.buffer(newViewportSize.extent, Math.max(w, h) * 0.5);
 
             if (newViewportSize.maxExtent) {
                 newExtent = ol.extent.getIntersection(newExtent, newViewportSize.maxExtent);

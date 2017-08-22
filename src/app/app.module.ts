@@ -2,7 +2,9 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
-import {MaterialModule, MdIconRegistry} from '@angular/material';
+import {MdIconRegistry} from '@angular/material';
+import {MaterialModule} from './material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
@@ -10,7 +12,7 @@ import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/r
 import {MapComponent} from './map/map.component';
 import {
     OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
-    OlPolygonLayerComponent, OlMapLayerComponent, OlVectorLayerComponent,
+    OlPolygonLayerComponent,
 } from './map/map-layer.component';
 import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
@@ -34,7 +36,10 @@ import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
-import {GroupedAbcdBasketResultComponent, PangaeaBasketResultComponent} from './operators/dialogs/baskets/gfbio-basket-result.component';
+import {
+    GroupedAbcdBasketResultComponent,
+    PangaeaBasketResultComponent
+} from './operators/dialogs/baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
@@ -90,7 +95,7 @@ import {ChangeProjectionComponent} from './project/change-projection/change-proj
 import {NewProjectComponent} from './project/new-project/new-project.component';
 import {LoadProjectComponent} from './project/load-project/load-project.component';
 import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.component';
-import {ColorPickerModule} from 'angular2-color-picker';
+import {ColorPickerModule} from 'ngx-color-picker';
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.component';
@@ -100,6 +105,11 @@ import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script
 import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
+import {RouterModule} from '@angular/router';
+import {
+    WorkflowParameterChoiceDialogComponent
+} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
+import { LayerShareComponent } from './layers/dialogs/layer-share/layer-share.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -197,11 +207,15 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        WorkflowParameterChoiceDialogComponent,
+        LayerShareComponent,
     ],
     imports: [
         BrowserModule,
         FormsModule,
         HttpModule,
+        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
+        BrowserAnimationsModule,
         MaterialModule,
         FlexLayoutModule,
         DragulaModule,
@@ -241,6 +255,8 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         PieChartComponent,
+        WorkflowParameterChoiceDialogComponent,
+        LayerShareComponent,
     ],
     providers: [
         DragulaService,
@@ -262,7 +278,7 @@ export function configInitializer(config: Config) {
             useFactory: configInitializer,
             deps: [Config],
             multi: true,
-        }
+        },
     ],
     bootstrap: [AppComponent]
 })

@@ -1,4 +1,4 @@
-import {Unit} from '../../unit.model';
+import {Unit, UnitMappingDict} from '../../unit.model';
 
 export interface MappingTransform {
   datatype: string;
@@ -34,4 +34,36 @@ export interface MappingSource {
         scale: number[],
         size: number[],
     };
+}
+
+export interface MappingSourceDict {
+    name: string;
+    colorizer: string;
+    provenance?: {
+        uri: string;
+    license: string;
+    citation: string;
+    };
+    coords: {
+        epsg: number,
+            origin: number[],
+            scale: number[],
+            size: number[],
+    };
+    channels: [{
+        datatype: string,
+        nodata: number,
+        name?: string,
+        unit?: UnitMappingDict,
+        transform?: {
+            unit?: UnitMappingDict,
+            datatype: string,
+            scale: number,
+            offset: number,
+        },
+    }];
+}
+
+export interface MappingSourceResponse {
+    sourcelist: {[index: string]: MappingSourceDict};
 }

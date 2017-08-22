@@ -26,7 +26,7 @@ export abstract class Symbology implements ISymbology {
     show = false;
 
     static fromDict(
-        dict: SymbologyDict, colorizerObservable?: Observable<MappingColorizer>
+        dict: SymbologyDict, deprecated?: any
     ): Symbology {
         switch (dict.symbologyType) {
             case SymbologyType[SymbologyType.SIMPLE_POINT]:
@@ -52,7 +52,6 @@ export abstract class Symbology implements ISymbology {
                         saturation: mappingColorizerRasterSymbologyDict.saturation,
                         unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
                     },
-                    colorizerObservable
                 );
             default:
                 throw 'Unsupported Symbology';
@@ -389,8 +388,7 @@ export interface MappingColorizer {
 export class MappingColorizerRasterSymbology extends RasterSymbology
     implements IRasterSymbology {
 
-    constructor(config: IRasterSymbology,
-                private colorizer$: Observable<MappingColorizer>) {
+    constructor(config: IRasterSymbology) {
         super(config);
     }
 
@@ -399,7 +397,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     }
 
     isUnknown(): boolean {
-        return super.isUnknown() || !this.colorizer$;
+        return super.isUnknown();
     }
 
     toConfig(): IRasterSymbology {
@@ -407,7 +405,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     }
 
     clone(): MappingColorizerRasterSymbology {
-        return new MappingColorizerRasterSymbology(this, this.colorizer$);
+        return new MappingColorizerRasterSymbology(this);
     }
 
     toDict(): RasterSymbologyDict {

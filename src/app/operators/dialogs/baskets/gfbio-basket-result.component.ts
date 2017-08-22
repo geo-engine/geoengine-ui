@@ -17,25 +17,21 @@ import {PangaeaSourceType} from '../../../operators/types/pangaea-source-type.mo
 import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
 import {UserService} from '../../../users/user.service';
 import {Subscription} from 'rxjs/Rx';
+import {ProjectService} from '../../../project/project.service';
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
 
-    mappingQueryService: MappingQueryService;
-    layerService: LayerService;
-    randomColorService: RandomColorService;
-    userService: UserService;
+
 
     constructor(
-        mappingQueryService: MappingQueryService,
-        layerService: LayerService,
-        randomColorService: RandomColorService,
-        userService: UserService
+        protected mappingQueryService: MappingQueryService,
+        protected layerService: LayerService,
+        protected randomColorService: RandomColorService,
+        protected userService: UserService,
+        protected projectService: ProjectService
     ) {
-        this.mappingQueryService = mappingQueryService;
-        this.layerService = layerService;
-        this.randomColorService = randomColorService;
-        this.userService = userService;
+
     }
 
     protected createAndAddLayer(operator: Operator, name: string) {
@@ -46,15 +42,15 @@ export class BasketResult<T extends IBasketResult>  {
             symbology: new ClusteredPointSymbology({
                 fillRGBA: this.randomColorService.getRandomColor(),
             }),
-            data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                operator,
-                clustered,
-            }),
-            provenance: this.mappingQueryService.getProvenanceStream(operator),
+            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+            //    operator,
+            //    clustered,
+            // }),
+            // provenance: this.mappingQueryService.getProvenanceStream(operator),
             clustered: clustered,
         });
-        this.layerService.addLayer(layer);
-
+        // this.layerService.addLayer(layer);
+        this.projectService.addLayer(layer);
     }
 }
 
@@ -69,9 +65,9 @@ export class BasketResult<T extends IBasketResult>  {
                     <tr>
                         <td class='key'>Authors</td>
                         <td>
-                            <template ngFor let-author [ngForOf]='result.authors'>
+                            <ng-template ngFor let-author [ngForOf]='result.authors'>
                                 <span class='author'>{{author | waveTrimPipe}}</span>
-                            </template>
+                            </ng-template>
                         </td>
                     </tr>
                     <tr>
@@ -85,12 +81,12 @@ export class BasketResult<T extends IBasketResult>  {
                 </table>
            </md-card-content>
            <md-card-actions>
-            <template [ngIf]='result.available'>
+            <ng-template [ngIf]='result.available'>
                 <button md-button color='primary' (click)='addDataset()'>Add <u>dataset</u> as layer</button>
-            </template>
+            </ng-template>
            </md-card-actions>
            
-           <template [ngIf]='!result.available'>              
+           <ng-template [ngIf]='!result.available'>              
                  <md-card-content>
                     <i>This dataset is currently not available in the VAT system</i>
                     <ul>
@@ -98,7 +94,7 @@ export class BasketResult<T extends IBasketResult>  {
                         <li *ngIf='!result.isGeoreferenced'> no georeference detected </li>
                     </ul>
                 </md-card-content>
-            </template>
+            </ng-template>
         </md-card>
     `,
     styles: [`
@@ -144,9 +140,10 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
         mappingQueryService: MappingQueryService,
         layerService: LayerService,
         randomColorService: RandomColorService,
-        userService: UserService
+        userService: UserService,
+        projectService: ProjectService
     ) {
-        super(mappingQueryService, layerService, randomColorService, userService);
+        super(mappingQueryService, layerService, randomColorService, userService, projectService);
     };
 
     createResultOperator(): Operator {
@@ -223,9 +220,9 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
                     <tr>
                         <td class='key'>Authors</td> 
                         <td>
-                            <template ngFor let-author [ngForOf]='result.authors'>
+                            <ng-template ngFor let-author [ngForOf]='result.authors'>
                                 <span class='author'>{{author | waveTrimPipe}}</span>
-                            </template>
+                            </ng-template>
                         </td>
                     </tr>
                     <tr>
@@ -238,46 +235,46 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 
                 </table>
            </md-card-content>
-           <template [ngIf]='hasUnits'>
+           <ng-template [ngIf]='hasUnits'>
                <md-card-content>
                     <p>Units from multiple search results based on this dataset</p>
-                    <template [ngIf]='showUnits'>
+                    <ng-template [ngIf]='showUnits'>
                         <table class ='additional'> 
                                 <tr>
                                     <th>Unit</th><th>Type</th><th>Unit id</th>
                                 </tr>
-                            <template ngFor let-unit [ngForOf]='result.units'>
+                            <ng-template ngFor let-unit [ngForOf]='result.units'>
                                 <tr>
                                     <td>{{unit.prefix}}</td> <td>{{unit.type}}</td>
                                     <td><a href='{{unit.metadataLink}}'>{{unit.unitId}}</a></td>
                                 </tr>
-                            </template>
+                            </ng-template>
                         </table>
-                    </template>
+                    </ng-template>
                     
                 </md-card-content>
-            </template>
+            </ng-template>
            
                <md-card-actions>
-                    <template [ngIf]='hasUnits' >
+                    <ng-template [ngIf]='hasUnits' >
                         <button md-button (click)='showUnits= !showUnits'>Toggle Units</button>
-                    </template>    
-                    <template [ngIf]='result.available && hasUnits' >    
+                    </ng-template>    
+                    <ng-template [ngIf]='result.available && hasUnits' >    
                         <button md-button color='primary' (click)='add(true)'>Add <u>units</u> as layer</button> 
-                    </template>
-                    <template [ngIf]='result.available' >                
+                    </ng-template>
+                    <ng-template [ngIf]='result.available' >                
                         <button md-button color='primary'(click)='add(false)' >Add <u>dataset</u> as layer</button>
-                    </template>
+                    </ng-template>
                </md-card-actions>
            
-           <template [ngIf]='!result.available'>              
+           <ng-template [ngIf]='!result.available'>              
                  <md-card-content>
                     <i>This dataset is currently not available in the VAT system</i>
                     <ul>
                         <li *ngIf='!result.isGeoreferenced'> no georeference detected </li>
                     </ul>
                 </md-card-content>
-            </template>          
+            </ng-template>          
         </md-card>
     `,
     styles: [`
@@ -332,19 +329,20 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 })
 export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult>
                                               implements OnInit, OnDestroy {
-    showUnits: boolean = false;
-    hasUnits: boolean = false;
+    showUnits = false;
+    hasUnits = false;
     sourceSchema: Array<CsvColumn> = [];
 
     private abcdSchemaSubscription: Subscription;
 
     constructor(
-        mappingQueryService: MappingQueryService,
-        layerService: LayerService,
-        randomColorService: RandomColorService,
-        userService: UserService
+        protected mappingQueryService: MappingQueryService,
+        protected layerService: LayerService,
+        protected randomColorService: RandomColorService,
+        protected userService: UserService,
+        protected projectService: ProjectService
     ) {
-        super(mappingQueryService, layerService, randomColorService, userService);
+        super(mappingQueryService, layerService, randomColorService, userService, projectService);
     };
 
     ngOnInit() {

@@ -1,0 +1,10 @@
+<wave-dialog-header>Share: {{layer.name}}</wave-dialog-header>
+<p>Copy this link to share the selected layer with others.</p>
+<div fxFlexAlign="column">
+    <md-input-container fxFlex>
+        <input #linkInput mdInput placeholder="Link" disabled [value]="link">
+    </md-input-container>
+    <button md-icon-button (click)="copyLink()" mdTooltip="Copy Link">
+        <md-icon>content_copy</md-icon>
+    </button>
+</div>

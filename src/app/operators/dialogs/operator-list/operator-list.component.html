@@ -1,14 +1,14 @@
 <wave-sidenav-header>Operators</wave-sidenav-header>
 <wave-sidenav-search (searchString)="searchString$.next($event)"></wave-sidenav-search>
 <md-nav-list>
-    <template ngFor let-group [ngForOf]="operatorGroups$ | async">
+    <ng-template ngFor let-group [ngForOf]="operatorGroups$ | async">
         <h3 md-subheader>{{group.name}}</h3>
-        <template ngFor let-operator [ngForOf]="group.list">
+        <ng-template ngFor let-operator [ngForOf]="group.list">
         <md-list-item (click)="load(operator.component)">
             <img md-list-icon [src]="operator.type.ICON_URL" [alt]="operator.type.NAME">
             <h4 md-line bind-innerHtml="operator.type.NAME | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
             <p md-line bind-innerHtml="operator.description | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></p>
         </md-list-item>
-        </template>
-    </template>
+        </ng-template>
+    </ng-template>
 </md-nav-list>
