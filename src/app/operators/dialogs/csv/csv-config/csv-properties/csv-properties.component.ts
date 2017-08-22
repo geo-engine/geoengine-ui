@@ -299,6 +299,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
         this.correctColumns();
+        event.preventDefault();
     }
 
     nextPage() {
