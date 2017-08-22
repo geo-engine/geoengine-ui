@@ -5,7 +5,7 @@ import {
     Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy,
     ChangeDetectorRef, forwardRef
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators, FormControl} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs';
 import {IntervalFormat} from '../../interval.enum';
 import {CsvTableComponent} from '../csv-table/csv-table.component';
@@ -24,7 +24,7 @@ export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, 
 export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     Projections = Projections;
-
+    FormStatus = FormStatus;
     IntervalFormat = IntervalFormat;
 
     delimiters: {def: string, value: string}[] = [
@@ -87,7 +87,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     dialogTitle: string;
     subtitleDescription: string;
 
-    formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Loading);
+    formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(this.FormStatus.Loading);
     isDataProperties$: Observable<boolean>;
     isSpatialProperties$: Observable<boolean>;
     isTemporalProperties$: Observable<boolean>;
@@ -117,10 +117,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
             y: this.spatialProperties.controls['yColumn'].value}
         );
-        this.isDataProperties$ = this.formStatus$.map(status => status === FormStatus.DataProperties);
-        this.isSpatialProperties$ = this.formStatus$.map(status => status === FormStatus.SpatialProperties);
-        this.isTemporalProperties$ = this.formStatus$.map(status => status === FormStatus.TemporalProperties);
-        this.isTypingProperties$ = this.formStatus$.map(status => status === FormStatus.TypingProperties);
+        this.isDataProperties$ = this.formStatus$.map(status => status === this.FormStatus.DataProperties);
+        this.isSpatialProperties$ = this.formStatus$.map(status => status === this.FormStatus.SpatialProperties);
+        this.isTemporalProperties$ = this.formStatus$.map(status => status === this.FormStatus.TemporalProperties);
+        this.isTypingProperties$ = this.formStatus$.map(status => status === this.FormStatus.TypingProperties);
 
         this.userService.getFeatureDBList()
             .map(entries => entries.map(entry => entry.name))
@@ -138,23 +138,23 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
                 switch (status) {
-                    case FormStatus.DataProperties:
+                    case this.FormStatus.DataProperties:
                         this.dialogTitle = 'CSV Settings';
                         this.subtitleDescription = 'Please specify the properties of your CSV file, e.g. the delimiter.';
                         break;
-                    case FormStatus.SpatialProperties:
+                    case this.FormStatus.SpatialProperties:
                         this.dialogTitle = 'Spatial Properties';
                         this.subtitleDescription = 'In this step you can specify the spatial columns of your CSV file.';
                         break;
-                    case FormStatus.TemporalProperties:
+                    case this.FormStatus.TemporalProperties:
                         this.dialogTitle = 'Temporal Properties';
                         this.subtitleDescription = 'This step allows you to specify temporal columns of your CSV file.';
                         break;
-                    case FormStatus.TypingProperties:
+                    case this.FormStatus.TypingProperties:
                         this.dialogTitle = 'Typing Properties';
                         this.subtitleDescription = 'You can specify the data types of the remaining columns here.';
                         break;
-                    case FormStatus.Loading:
+                    case this.FormStatus.Loading:
                     /* falls through */
                     default:
                         break;
@@ -264,7 +264,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.update(10);
             }),
         );
-        this.formStatus$.next(FormStatus.DataProperties);
+        this.formStatus$.next(this.FormStatus.DataProperties);
         this.actualPage$.next(this.dataProperties);
     }
 
@@ -292,6 +292,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.spatialProperties.controls['yColumn'].setValue(value);
             }
         }else if(this.formStatus$.getValue() == this.FormStatus.TemporalProperties) {
+            if([this.spatialProperties.controls['xColumn'].value, this.spatialProperties.controls['yColumn'].value].indexOf(value) >= 0) {
+                event.preventDefault();
+                return;
+            }
             if(type == 0 && this.temporalProperties.controls['startColumn'].enabled) {
                 this.temporalProperties.controls['startColumn'].setValue(value);
             }else if(type == 1 && this.temporalProperties.controls['endColumn'].enabled) {
@@ -304,17 +308,17 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     nextPage() {
         switch (this.formStatus$.getValue()) {
-            case FormStatus.DataProperties:
+            case this.FormStatus.DataProperties:
                 this.actualPage$.next(this.spatialProperties);
-                this.formStatus$.next(FormStatus.SpatialProperties);
+                this.formStatus$.next(this.FormStatus.SpatialProperties);
                 break;
-            case FormStatus.SpatialProperties:
+            case this.FormStatus.SpatialProperties:
                 this.actualPage$.next(this.temporalProperties);
-                this.formStatus$.next(FormStatus.TemporalProperties);
+                this.formStatus$.next(this.FormStatus.TemporalProperties);
                 break;
             default:
                 this.actualPage$.next(this.typingProperties);
-                this.formStatus$.next(FormStatus.TypingProperties);
+                this.formStatus$.next(this.FormStatus.TypingProperties);
         }
         if(this.actualPage$.getValue() === this.temporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
@@ -331,17 +335,17 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     previousPage() {
         switch (this.formStatus$.getValue()) {
-            case FormStatus.TemporalProperties:
+            case this.FormStatus.TemporalProperties:
                 this.actualPage$.next(this.spatialProperties);
-                this.formStatus$.next(FormStatus.SpatialProperties);
+                this.formStatus$.next(this.FormStatus.SpatialProperties);
                 break;
-            case FormStatus.TypingProperties:
+            case this.FormStatus.TypingProperties:
                 this.actualPage$.next(this.temporalProperties);
-                this.formStatus$.next(FormStatus.TemporalProperties);
+                this.formStatus$.next(this.FormStatus.TemporalProperties);
                 break;
             default:
                 this.actualPage$.next(this.dataProperties);
-                this.formStatus$.next(FormStatus.DataProperties);
+                this.formStatus$.next(this.FormStatus.DataProperties);
         }
         if(this.actualPage$.getValue() === this.temporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
@@ -351,7 +355,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                 y: this.spatialProperties.controls['yColumn'].value});
         }
-        if(this.formStatus$.getValue() === FormStatus.TemporalProperties) {
+        if(this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
             this.csvTable.resize();
         }
     }
