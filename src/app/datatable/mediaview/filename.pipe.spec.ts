@@ -1,11 +1,11 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async } from '@angular/core/testing';
-import { NamePipe } from './filename.pipe';
+import { FileNamePipe } from './filename.pipe';
 
 describe('Pipe: Name', () => {
   it('create an instance', () => {
-    let pipe = new NamePipe();
+    let pipe = new FileNamePipe();
     expect(pipe).toBeTruthy();
   });
 });

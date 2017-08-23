@@ -1,11 +1,11 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async } from '@angular/core/testing';
-import { DialogAudioComponent } from './dialog.audio.component';
+import { MediaviewPlaylistComponent } from './mediaview.playlist.component';
 
-describe('Component: Dialog-Audio', () => {
+describe('Component: Mediaview-Playlist', () => {
   it('should create an instance', () => {
-    //let component = new DialogAudioComponent();
+    //let component = new MediaviewPlaylistComponent();
     //expect(component).toBeTruthy();
   });
 });

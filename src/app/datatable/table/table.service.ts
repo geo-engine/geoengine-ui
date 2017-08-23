@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
-import {Observable} from "rxjs/Observable";
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 
@@ -23,7 +23,7 @@ export class TableService {
    * @returns {Observable<R>} the contents of the geojson-file
    */
   getData(resource) {
-    return this.http.get('../../resources/'+resource)
+    return this.http.get('../../resources/' + resource)
       .map(res => res.json())
       .catch(this.handleError);
   }

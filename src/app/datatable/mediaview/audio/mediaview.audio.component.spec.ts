@@ -1,11 +1,11 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async } from '@angular/core/testing';
-import { DialogVideoComponent } from './dialog.video.component';
+import { MediaviewAudioComponent } from './mediaview.audio.component';
 
-describe('Component: Dialog-Video', () => {
+describe('Component: Mediaview-Audio', () => {
   it('should create an instance', () => {
-    //let component = new DialogVideoComponent();
+    //let component = new MediaviewAudioComponent();
     //expect(component).toBeTruthy();
   });
 });

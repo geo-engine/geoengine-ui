@@ -1,0 +1,33 @@
+<div class="imageContainer">
+    <md-toolbar md-dialog-title color="primary">
+        <wave-dialog-section-heading title="Image {{currentImage + 1}} of {{imageURLs.length}}" subtitle="{{imageURLs[currentImage] | fileName}}"></wave-dialog-section-heading>
+
+        <a md-icon-button [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
+            <md-icon class="md-24">open_in_new</md-icon>
+        </a>
+
+        <span class="separator"></span>
+
+        <button md-icon-button md-dialog-close class="closeLink">
+            <md-icon>clear</md-icon>
+        </button>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+
+        <div *ngIf="loading" class="loading">
+            <div class="spinner">
+                <md-spinner color="primary"></md-spinner>
+            </div>
+        </div>
+    </md-dialog-content>
+
+    <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="previousImage()" class="previous" [title]="'previous image'">
+        <md-icon class="md-24">chevron_left</md-icon>
+    </button>
+
+    <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="nextImage()" class="next" [title]="'next image'">
+        <md-icon class="md-24">chevron_right</md-icon>
+    </button>
+</div>

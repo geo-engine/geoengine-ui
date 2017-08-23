@@ -1,5 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
+import {Router, RouterModule, ActivatedRoute} from '@angular/router';
 import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {MaterialModule, MdIconRegistry} from '@angular/material';
@@ -74,7 +75,6 @@ import {IfGfbioLoggedInDirective} from './util/directives/if-gfbio-logged-in.dir
 import {IfLoggedInDirective} from './util/directives/if-logged-in.directive';
 import {IfGuestDirective} from './util/directives/if-guest.directive';
 import {LoginComponent} from './users/login/login.component';
-import {DataTableModule} from './datatable/datatable.module';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {HelpComponent} from './help/help.component';
@@ -98,6 +98,17 @@ import {ROperatorComponent} from './operators/dialogs/r/r-operator/r-operator.co
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {RScriptSaveComponent} from './operators/dialogs/r/r-script-save/r-script-save.component';
 import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script-load.component';
+
+// import {DataTableModule} from './datatable/datatable.module';
+import { TableComponent } from './datatable/table/table.component';
+import { MediaviewComponent } from './datatable/mediaview/mediaview.component';
+import { MediaviewImageComponent } from './datatable/mediaview/image/mediaview.image.component';
+import { MediaviewImageDialogComponent } from './datatable/mediaview/image-dialog/mediaview.image-dialog.component';
+import { MediaviewAudioComponent } from './datatable/mediaview/audio/mediaview.audio.component';
+import { MediaviewVideoComponent } from './datatable/mediaview/video/mediaview.video.component';
+import { MediaviewPlaylistComponent } from './datatable/mediaview/playlist/mediaview.playlist.component';
+import { FileNamePipe } from './datatable/mediaview/filename.pipe';
+import { TableService } from './datatable/table/table.service';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -193,6 +204,14 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         TimeInputComponent,
+        TableComponent,
+        MediaviewComponent,
+        MediaviewImageComponent,
+        MediaviewImageDialogComponent,
+        MediaviewAudioComponent,
+        MediaviewVideoComponent,
+        MediaviewPlaylistComponent,
+        FileNamePipe,
     ],
     imports: [
         BrowserModule,
@@ -202,7 +221,6 @@ export function configInitializer(config: Config) {
         FlexLayoutModule,
         DragulaModule,
         ReactiveFormsModule,
-        DataTableModule,
         ColorPickerModule,
     ],
     entryComponents: [
@@ -236,6 +254,10 @@ export function configInitializer(config: Config) {
         ROperatorComponent,
         RScriptSaveComponent,
         RScriptLoadComponent,
+        MediaviewImageComponent,
+        MediaviewImageDialogComponent,
+        MediaviewAudioComponent,
+        MediaviewVideoComponent,
     ],
     providers: [
         DragulaService,
@@ -252,6 +274,7 @@ export function configInitializer(config: Config) {
         UserService,
         SidenavRef,
         Config,
+        TableService,
         {
             provide: APP_INITIALIZER,
             useFactory: configInitializer,
