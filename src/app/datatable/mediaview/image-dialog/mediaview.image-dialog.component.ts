@@ -45,8 +45,9 @@ export class MediaviewImageDialogComponent implements AfterViewInit {
      * Hack to set Dialog's parent's position to absolute
      */
     ngAfterViewInit() {
-        // console.log(this.domNode.parentNode.parentNode.parentNode.parentNode);
-        this.domNode.parentNode.parentNode.parentNode.parentElement.style.position = 'absolute';
+        // console.log(this.domNode.parentNode);
+
+        this.domNode.parentNode.parentElement.style.position = 'relative';
     }
 
     /**

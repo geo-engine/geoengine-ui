@@ -1,4 +1,6 @@
-@import '../../../../../node_modules/@angular/material/button/button-base';
+//@import '../../../../../node_modules/@angular/material/button/button-base';
+$mat-icon-button-size: 40px !default; // TODO: import when this is possible again
+$mat-fab-size: 56px !default; // TODO: import when this is possible again
 
 .imageContainer{
 
@@ -26,7 +28,7 @@
         height:100%;
         top: 0;
         left: 0;
-        background: rgba(#ffffff, 50%);
+        background: fade_out(#ffffff, 0.5);
 
         .spinner{
             position: relative;

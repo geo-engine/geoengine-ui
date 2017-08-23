@@ -19,7 +19,7 @@ table {
 
     .tableFixed {
         position: relative;
-        background: rgba(#ffffff, 90%);
+        background: fade-out(#ffffff, 0.1);
     }
     .tableFixedVertical{
         z-index: 10;
@@ -67,7 +67,7 @@ table {
     }
 
     .rowSelected {
-        background: rgba(mat-color($wave-app-accent), 60%);
+        background: fade-out(mat-color($wave-app-accent), 0.6);
 
         .tableFixed::before {
             content: " ";
@@ -76,7 +76,7 @@ table {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(mat-color($wave-app-accent), 60%);
+            background: fade-out(mat-color($wave-app-accent), 0.6);
         }
     }
 
@@ -107,7 +107,7 @@ table {
     height: 100%;
     top:0;
     left:0;
-    background: rgba(#ffffff, 70%);
+    background: fade-out(#ffffff, 0.3);
     z-index: 10;
 
     .spinner{
