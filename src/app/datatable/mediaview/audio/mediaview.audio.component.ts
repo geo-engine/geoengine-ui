@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, ElementRef, Inject, Input} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {Component, Input} from '@angular/core';
+import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-header.component';
 
 @Component({
-    selector: 'wave-dialog-audio',
-    templateUrl: './dialog.audio.component.html',
-    styleUrls: ['./dialog.audio.component.less']
+    selector: 'wave-mediaview-audio',
+    templateUrl: './mediaview.audio.component.html',
+    styleUrls: ['./mediaview.audio.component.scss']
 })
 
 /**
@@ -13,7 +13,7 @@ import {MdDialogRef} from '@angular/material';
  * Displays an audio-player with a playlist.
  * The component receives an array of urls to audio-files (audioURLS) and the id of the audio to play first (currentAudio) as inputs.
  */
-export class DialogAudioComponent implements AfterViewInit{
+export class MediaviewAudioComponent{
 
     /**
      * Input: An array of audio-urls to display in the dialog
@@ -27,27 +27,7 @@ export class DialogAudioComponent implements AfterViewInit{
     @Input()
     public currentAudio: number;
 
-    // audioNames: string[];
     public autoPlay: boolean;
-
-    private domNode;
-
-    /**
-     * Sets up all variables
-     * @param dialogRef reference to this Dialog-Type
-     */
-    constructor(public dialogRef: MdDialogRef<DialogAudioComponent>, @Inject(ElementRef) elementRef: ElementRef) {
-        this.autoPlay = false;
-        this.domNode = elementRef.nativeElement;
-    }
-
-    /**
-     * Hack to set Dialog's parent's position to absolute
-     */
-    ngAfterViewInit() {
-        // console.log(this.domNode.parentNode.parentNode.parentNode.parentNode);
-        this.domNode.parentNode.parentNode.parentNode.parentElement.style.position = 'absolute';
-    }
 
     /**
      * Plays the audio with given id, skipping the currently playing one

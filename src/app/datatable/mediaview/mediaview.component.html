@@ -1,20 +1,20 @@
 <!--<ng-template ngFor let-u [ngForOf]="urls" let-i="index">
-    <span [ngSwitch]="dialogType[i]">
-        <a *ngSwitchCase="'image'" href="#" (click)="openImageDialog(i)"><md-icon class="md-24">image</md-icon>{{u}}</a>
-        <a *ngSwitchCase="'audio'" href="#" (click)="openAudioDialog(i)"><md-icon class="md-24">music_video</md-icon>{{u}}</a>
-        <a *ngSwitchCase="'video'" href="#" (click)="openVideoDialog(i)"><md-icon class="md-24">movie</md-icon>{{u}}</a>
+    <span [ngSwitch]="mediaType[i]">
+        <a *ngSwitchCase="'image'" href="#" (click)="openImageMediaview(i)"><md-icon class="md-24">image</md-icon>{{u}}</a>
+        <a *ngSwitchCase="'audio'" href="#" (click)="openAudioMediaview(i)"><md-icon class="md-24">music_video</md-icon>{{u}}</a>
+        <a *ngSwitchCase="'video'" href="#" (click)="openVideoMediaview(i)"><md-icon class="md-24">movie</md-icon>{{u}}</a>
         <ng-template ngSwitchDefault>{{u}}</ng-template>
     </span>
 </ng-template>-->
 
 <span>
-    <a *ngIf="imageUrls.length > 0" href="#" (click)="openImageDialog(0)">
+    <a *ngIf="imageUrls.length > 0" href="#" (click)="openImageMediaview(0)">
         <md-icon class="md-24">image</md-icon>{{imageUrls.length}} <ng-template [ngIf]="imageUrls.length == 1">image</ng-template><ng-template [ngIf]="imageUrls.length != 1">images</ng-template>
     </a>
-    <a *ngIf="audioUrls.length > 0" href="#" (click)="openAudioDialog(0)">
+    <a *ngIf="audioUrls.length > 0" href="#" (click)="openAudioMediaview(0)">
         <md-icon class="md-24">music_video</md-icon>{{audioUrls.length}} <ng-template [ngIf]="audioUrls.length == 1">audio-file</ng-template><ng-template [ngIf]="audioUrls.length != 1">audio-files</ng-template>
     </a>
-    <a *ngIf="videoUrls.length > 0" href="#" (click)="openVideoDialog(0)">
+    <a *ngIf="videoUrls.length > 0" href="#" (click)="openVideoMediaview(0)">
         <md-icon class="md-24">movie</md-icon>{{videoUrls.length}} <ng-template [ngIf]="videoUrls.length == 1">video</ng-template><ng-template [ngIf]="videoUrls.length != 1">videos</ng-template>
     </a>
     <ng-template [ngIf]="textNoUrls.length > 0">

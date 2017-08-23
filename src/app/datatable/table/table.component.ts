@@ -1,9 +1,10 @@
 import {
-    Component, ViewChild, ElementRef, ChangeDetectorRef, OnChanges, Input, AfterViewInit, EventEmitter,
+    Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit, EventEmitter,
     ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
-import {DialogComponent} from '../dialog/dialog.component';
-import {Observable, Subscription} from 'rxjs';
+import {MediaviewComponent} from '../mediaview/mediaview.component';
+import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
 import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
@@ -13,6 +14,7 @@ import {FeatureID} from '../../queries/geojson.model';
 import {MapService} from '../../map/map.service';
 import * as ol from 'openlayers';
 import {ProjectService} from '../../project/project.service';
+import {Unit} from '../../operators/unit.model';
 
 interface FeatureData {
     id: number | string;
@@ -25,17 +27,14 @@ interface FeatureData {
 @Component({
     selector: 'wave-datatable',
     templateUrl: './table.component.html',
-    styleUrls: [
-        'table.component.less',
-        'table.component.scss'
-    ],
+    styleUrls: ['table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 /**
  * Data-Table-Component
  * Displays a Data-Table
  */
-export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     /*@HostListener('scroll', ['$event']) private onScroll($event:Event):void {
      //if($event.target){
@@ -48,7 +47,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      //}
      this.updateScroll();
      };*/
-
 
     public LoadingState = LoadingState;
 
@@ -71,6 +69,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
     // Data-Subsets
     public dataHead: Array<string>;
+    public dataHeadUnits: Array<string>;
     private testData: Array<any>;
 
     // For row-selection
@@ -89,7 +88,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      */
 
     // For text-width-calculation
-    private styleString = '16px serif';
+    private styleString = '16px Roboto, sans-serif';
     private oneLineMaxWidth = 300;
     private canvas;
 
@@ -103,10 +102,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
     private scrollTopBefore = 0;
     private scrollLeftBefore = 0;
-    // tableHeight: number;
 
-    public offsetTop = 0;
-    public offsetBottom = 0;
     private elementHeight = 42;
 
 
@@ -131,6 +127,9 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public data$: Observable<Array<ol.Feature>>;
     public state$: Observable<LoadingState>;
 
+    public offsetTop$: Observable<number>;
+    public offsetBottom$: Observable<number>;
+
     private selectable$: Observable<boolean>;
     private dataSubscription: Subscription;
     private featureSubscription: Subscription;
@@ -145,11 +144,26 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         return Object.keys(object).filter(x => !(x.startsWith('___') || x === 'geometry'));
     }
 
+
+    /**
+     * Checks if the given unit is the default unit. If so returns an empty string, if not returns the unit formated for the header
+     * @param x the unit to display
+     * @returns {string} the formated unit-string
+     */
+    private static printUnits(x: Unit) {
+        if (x.unit !== Unit.defaultUnit.unit) {
+            return ' [' + x.unit + ']';
+        } else {
+            return '';
+        }
+    }
+
     /**
      * Sets up all variables
      * Extracts the column names from the data input and calculates the average widths of all rows
      * @param cdr ChangeDetector Reference
      * @param layerService LayerService Reference
+     * @param mapService MapService Reference
      */
     constructor(cdr: ChangeDetectorRef,
                 layerService: LayerService,
@@ -166,6 +180,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     ngOnInit() {
         this.dataSubscription = this.data$.subscribe((features: Array<ol.Feature>) => {
             this.dataHead = [];
+            this.dataHeadUnits = [];
             this.data = [];
 
             this.data = features.map(x => {
@@ -183,59 +198,19 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     /**
-     * Run, when input data has changed
-     * resets row-selection
-     * recalculates average column widths
-     * resets virtual scrolling
-     */
-    ngOnChanges() {
-        // let time1 = Math.floor(Date.now());
-
-        /*if(this.data != null) {
-         //this.loading = true;
-
-         this.dataInit();
-
-         this.loading = false;
-         }
-         else{
-         this.dataHead = null;
-
-         this.offsetTop = 0;
-         this.offsetBottom = 0;
-
-         this.displayItemCounter = [];
-
-         this.loading = false;
-         }*/
-
-        /*let time2 = Math.floor(Date.now());
-         console.log("Update calc time: "+(time2-time1));*/
-    }
-
-    /**
      * Get the height of the container and save it to variable
      */
     ngAfterViewInit() {
+        /*this.styleString = window.getComputedStyle(this.container.nativeElement).fontSize + ' ' +
+            window.getComputedStyle(this.container.nativeElement).getPropertyValue('font-family');*/
+
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
 
             for (let i = 0; i < this.data.length; i++) {
                 const selectedContainsId = x.selected.contains(this.data[i].id);
                 if (!this.selected[i] && selectedContainsId) {
 
-                    let newOffset = i * this.elementHeight;
-                    /* Not necessary. Scroll-Offset is automatically capped.
-                    let tableHeight = (this.data.length + 1) * this.elementHeight;
-                    console.log(newOffset, this.containerHeight, tableHeight);
-                    if (newOffset + this.elementHeight + this.containerHeight > tableHeight) {
-                        newOffset = tableHeight - this.containerHeight;
-                    }
-                    if (newOffset < 0) {
-                        newOffset = 0;
-                    }*/
-
-                    this.container.nativeElement.scrollTop = newOffset;
-                    // console.log(newOffset, this.container.nativeElement.scrollTop);
+                    this.container.nativeElement.scrollTop = i * this.elementHeight;
                 }
 
                 this.selected[i] = selectedContainsId;
@@ -258,11 +233,11 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Sets the loading-variable to show or hide a Loading-Spinner.
      * It is alway hidden, after the input-variable data has changed and the view is updated
      */
-    public setLoading(loading) {
+    /*public setLoading(loading) {
         this.loading = loading;
         // console.log("Loading:"+this.loading);
         this.cdr.markForCheck();
-    }
+    }*/
 
     private initDataStream() {
         const dataStream = this.layerService.getSelectedLayerStream().map(layer => {
@@ -324,11 +299,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         this.container.nativeElement.scrollTop = 0;
         this.container.nativeElement.scrollLeft = 0;
 
-        this.offsetTop = 0;
-        this.offsetBottom = (this.data.length - this.displayItemCount) * this.elementHeight;
-        if (this.offsetBottom < 0) {
-            this.offsetBottom = 0;
+        this.offsetTop$ = Observable.of(0);
+        let offsetBottom = (this.data.length - this.displayItemCount) * this.elementHeight;
+        if (offsetBottom < 0) {
+            offsetBottom = 0;
         }
+        this.offsetBottom$ = Observable.of(offsetBottom);
 
 
         // Reset selection
@@ -342,6 +318,24 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
         }
 
+        if (this.layerService) {
+            if (this.layerService.getSelectedLayer()) {
+                let units = this.layerService.getSelectedLayer().operator.units;
+
+                if (units) {
+                    // console.log('1:' + this.dataHeadUnits);
+                    this.dataHeadUnits = [];
+
+                    for (let d in this.dataHead) {
+                        if (this.dataHead.hasOwnProperty(d)) {
+                            this.dataHeadUnits.push(this.dataHead[d] + TableComponent.printUnits(units.get(this.dataHead[d])));
+                        }
+                    }
+                    // console.log('2:' + this.dataHeadUnits);
+                }
+            }
+        }
+
         // Reset avg widths
         this.avgWidths = [];
         for (let i = 0; i < this.data.length; i++) {
@@ -350,7 +344,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
         // Calculate Column widths
         this.testData = this.selectRandomSubData(20);
-        [this.avgWidths, this.colTypes] = this.calculateColumnProperties(this.testData, this.dataHead);
+        [this.avgWidths, this.colTypes] = this.calculateColumnProperties(this.testData, this.dataHead, this.dataHeadUnits);
 
         // Recreate displayItemCounter
         this.displayItemCounter = [];
@@ -365,7 +359,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         this.testEqual();
     }
 
-
     /**
      * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
      *
@@ -377,6 +370,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         let context = this.canvas.getContext('2d');
         context.font = font;
         let metrics = context.measureText(text);
+        // console.log(metrics);
         return metrics.width;
     }
 
@@ -402,9 +396,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Tests for the contents of the sample-data to predict the content type of each column
      * @param testData the dataset, to calculate column widths from
      * @param dataHead the column names of the given dataset
+     * @param dataHeadUnits the column names of the given dataset (with units)
      * @returns ({Array},{Array}) an array of average-widths and an array with the predicted content types
      */
-    private calculateColumnProperties(testData, dataHead) {
+    private calculateColumnProperties(testData, dataHead, dataHeadUnits) {
 
         let headCount = dataHead.length;
 
@@ -418,25 +413,42 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
                 // Header Row
                 if (i === testData.length) {
-                    w = this.getTextWidth(dataHead[j], 'bold ' + this.styleString);
+                    w = this.getTextWidth(dataHeadUnits[j], 'bold ' + this.styleString);
+
+                    // console.log(dataHeadUnits[j] + ': ' + w);
 
                     t = '';
                 } else { // Normal Table Rows
                     let tmp = testData[i]['properties'][dataHead[j]];
-                    w = this.getTextWidth(tmp, this.styleString);
+
+                    // console.log(tmp);
 
                     if (typeof tmp === 'string' && tmp !== '') {
                         let urls = tmp.split(/(,)/g);
+
+                        let mediaCount = [0, 0, 0];
+                        let nonUrlsString = '';
+
                         for (let u in urls) {
                             if (urls.hasOwnProperty(u)) {
-                                t = DialogComponent.getType(urls[u]);
+                                t = MediaviewComponent.getType(urls[u]);
 
                                 if (t !== '') {
-                                    if (t !== 'text') {
+                                    if (t === 'text') {
+                                        nonUrlsString += urls[u] + ' ';
+                                    } else {
+                                        if (t === 'image') {
+                                            mediaCount[0] += 1;
+                                        } else if (t === 'audio') {
+                                            mediaCount[1] += 1;
+                                        } else if (t === 'video') {
+                                            mediaCount[2] += 1;
+                                        }
+
                                         t = 'media';
                                     }
 
-                                    if (types[j] === 'text' && t !== 'text') {
+                                    if (types[j] !== 'media' && t === 'media') {
                                         types[j] = t;
                                     }
                                 }
@@ -446,18 +458,33 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                                 }
                             }
                         }
-                    } else {
-                        t = '';
+
+                        let mediaString = '';
+
+                        if (mediaCount[0] > 0) {
+                            mediaString += '___ ' + mediaCount[0] + ' images';
+                        }
+                        if (mediaCount[1] > 0) {
+                            mediaString += '___ ' + mediaCount[1] + ' audio-files';
+                        }
+                        if (mediaCount[2] > 0) {
+                            mediaString += '___ ' + mediaCount[2] + ' videos';
+                        }
+
+                        mediaString += ' ' + nonUrlsString;
+
+                        // console.log(mediaString);
+
+                        w = this.getTextWidth(mediaString, this.styleString);
                     }
                 }
 
                 // Widths
                 if (w > this.oneLineMaxWidth) {
-                    w = w / 2 + 50;
+                    w = w / 2;
                 }
                 if (w > widths[j] || widths[j] == null) {
                     widths[j] = w;
-                    // console.log(dataHead[j]+": "+widths[j]);
                 }
 
                 // Types
@@ -485,27 +512,14 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param colID the ID of the column to test for
      * @returns {boolean} true, if the text is too wide for the column, false otherwise
      */
-    public textTooWideForColumn(text, colID) {
+    /*public textTooWideForColumn(text, colID) {
         let w = this.getTextWidth(text, this.styleString);
         if (w > this.oneLineMaxWidth) {
             w = w / 2 + 50;
         }
         // console.log(w > this.avgWidths[colID]);
         return w > this.avgWidths[colID];
-    }
-
-
-    public updateContainer() {
-        this.height = this.container.nativeElement.offsetHeight;
-        // console.log("new height: "+this.containerHeight);
-    }
-
-
-    /*private updateScroll2() {
-     console.log("Test1");
-     console.log("Test2");
-     }*/
-
+    }*/
 
     /**
      * Called on Scrolling the Data-Table
@@ -578,8 +592,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
             this.firstDisplay = numberOfTopRows;
 
-            this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
-            this.offsetTop = numberOfTopRows * this.elementHeight;
+            this.offsetBottom$ = Observable.of((this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight);
+            // this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+            this.offsetTop$ = Observable.of(numberOfTopRows * this.elementHeight);
+            // this.offsetTop = numberOfTopRows * this.elementHeight;
 
             // this.offsetBottom - (this.offsetTop - newOffsetTop);
         }
@@ -607,8 +623,11 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
             this.firstDisplay = numberOfTopRows;
 
-            this.offsetTop = numberOfTopRows * this.elementHeight;
-            this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+            this.offsetTop$ = Observable.of(numberOfTopRows * this.elementHeight);
+            // this.offsetTop = numberOfTopRows * this.elementHeight;
+            this.offsetBottom$ = Observable.of((this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight);
+            // this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
+
         }
     }
 

@@ -1,13 +1,13 @@
-import {Component, Input, ViewContainerRef, OnChanges, ChangeDetectionStrategy} from '@angular/core';
-import {MdDialogRef, MdDialog, MdDialogConfig} from '@angular/material';
-import {DialogImageComponent} from './image/dialog.image.component';
-import {DialogAudioComponent} from './audio/dialog.audio.component';
-import {DialogVideoComponent} from './video/dialog.video.component';
+import {Component, Input, OnChanges, ChangeDetectionStrategy} from '@angular/core';
+import {MediaviewImageComponent} from './image/mediaview.image.component';
+import {MediaviewAudioComponent} from './audio/mediaview.audio.component';
+import {MediaviewVideoComponent} from './video/mediaview.video.component';
+import {LayoutService} from '../../layout.service';
 
 @Component({
-    selector: 'wave-datatable-dialog',
-    templateUrl: './dialog.component.html',
-    styleUrls: ['./dialog.component.less'],
+    selector: 'wave-datatable-mediaview',
+    templateUrl: './mediaview.component.html',
+    styleUrls: ['./mediaview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
@@ -16,11 +16,10 @@ import {DialogVideoComponent} from './video/dialog.video.component';
  * Checks the file-type of the comma-separated urls given as input-argument and sets up links to open dialogs.
  * The dialogs will show the images or play the audios or videos
  */
-export class DialogComponent implements OnChanges {
+export class MediaviewComponent implements OnChanges {
 
-    private dialogRef: MdDialogRef<any>;
     private urls: string[];
-    public dialogType: string[];
+    public mediaType: string[];
 
     public imageUrls: string[];
     public audioUrls: string[];
@@ -98,12 +97,10 @@ export class DialogComponent implements OnChanges {
 
     /**
      * Sets up all variables
-     * @param dialog reference to MDDialog
-     * @param viewContainerRef reference to ViewContainer
+     * @param layoutService reference to LayoutService
      */
     constructor(
-        private dialog: MdDialog,
-        private viewContainerRef: ViewContainerRef
+        public layoutService: LayoutService,
     ) { }
 
     /**
@@ -111,10 +108,9 @@ export class DialogComponent implements OnChanges {
      * Calculates the file-type of the comma-separated urls given as input-argument
      */
     ngOnChanges() {
-
         if (this.type === 'media') {
             this.urls = this.url.split(',');
-            this.dialogType = new Array(this.urls.length);
+            this.mediaType = new Array(this.urls.length);
 
             this.imageUrls = [];
             this.audioUrls = [];
@@ -123,18 +119,18 @@ export class DialogComponent implements OnChanges {
 
             for (let i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
-                    this.dialogType[i] = DialogComponent.getType(this.urls[i]);
-                    // console.log(this.dialogType[i]);
+                    this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
+                    // console.log(this.mediaType[i]);
 
-                    if (this.dialogType[i] !== '') {
+                    if (this.mediaType[i] !== '') {
                         this.urls[i] = this.urls[i].trim();
                     }
 
-                    if (this.dialogType[i] === 'image') {
+                    if (this.mediaType[i] === 'image') {
                         this.imageUrls.push(this.urls[i]);
-                    } else if (this.dialogType[i] === 'audio') {
+                    } else if (this.mediaType[i] === 'audio') {
                         this.audioUrls.push(this.urls[i]);
-                    } else if (this.dialogType[i] === 'video') {
+                    } else if (this.mediaType[i] === 'video') {
                         this.videoUrls.push(this.urls[i]);
                     } else {
                         this.textNoUrls.push(this.urls[i]);
@@ -143,7 +139,7 @@ export class DialogComponent implements OnChanges {
             }
         } else {
             this.urls = [this.url.toString()];
-            this.dialogType = [''];
+            this.mediaType = [''];
 
             this.imageUrls = [];
             this.audioUrls = [];
@@ -153,56 +149,35 @@ export class DialogComponent implements OnChanges {
     }
 
     /**
-     * Opens a dialog-popup, showing images
+     * Opens the images in the sidenav
      * @param imageID the ID of the first image to be shown
      */
-    public openImageDialog(imageID: number) {
-        let config = new MdDialogConfig();
-        config.viewContainerRef = this.viewContainerRef;
-
-        this.dialogRef = this.dialog.open(DialogImageComponent, config);
-
-        this.dialogRef.componentInstance.imageURLs = this.imageUrls;
-        this.dialogRef.componentInstance.currentImage = imageID;
-
-        this.dialogRef.afterClosed().subscribe(result => {
-            this.dialogRef = null;
+    public openImageMediaview(imageID: number) {
+        this.layoutService.setSidenavContentComponent({
+            component: MediaviewImageComponent,
+            config: {imageURLs: this.imageUrls, currentImage: imageID}
         });
     }
 
     /**
-     * Opens a dialog-popup, playing audio-files
+     * Opens the audio-files in the sidenav
      * @param audioID the ID of the first audio-file to be played
      */
-    public openAudioDialog(audioID: number) {
-        let config = new MdDialogConfig();
-        config.viewContainerRef = this.viewContainerRef;
-
-        this.dialogRef = this.dialog.open(DialogAudioComponent, config);
-
-        this.dialogRef.componentInstance.audioURLs = this.audioUrls;
-        this.dialogRef.componentInstance.currentAudio = audioID;
-
-        this.dialogRef.afterClosed().subscribe(result => {
-            this.dialogRef = null;
+    public openAudioMediaview(audioID: number) {
+        this.layoutService.setSidenavContentComponent({
+            component: MediaviewAudioComponent,
+            config: {audioURLs: this.audioUrls, currentAudio: audioID}
         });
     }
 
     /**
-     * Opens a dialog-popup, playing videos
+     * Opens the videos in the sidenav
      * @param videoID the ID of the first video to be played
      */
-    public openVideoDialog(videoID: number) {
-        let config = new MdDialogConfig();
-        config.viewContainerRef = this.viewContainerRef;
-
-        this.dialogRef = this.dialog.open(DialogVideoComponent, config);
-
-        this.dialogRef.componentInstance.videoURLs = this.videoUrls;
-        this.dialogRef.componentInstance.currentVideo = videoID;
-
-        this.dialogRef.afterClosed().subscribe(result => {
-            this.dialogRef = null;
+    public openVideoMediaview(videoID: number) {
+        this.layoutService.setSidenavContentComponent({
+            component: MediaviewVideoComponent,
+            config: {videoURLs: this.videoUrls, currentVideo: videoID}
         });
     }
 }

@@ -4,9 +4,70 @@
     font-size: 0.87rem;
 }
 
+.scrollContent{
+    overflow: auto;
+    width: 100%;
+    position: relative;
+    overflow-anchor: none;
+}
+
 table {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border-spacing: 0;
+
+    .tableFixed {
+        position: relative;
+        background: rgba(#ffffff, 90%);
+    }
+    .tableFixedVertical{
+        z-index: 10;
+    }
+
+    thead{
+        .tableFixedHorizontal{
+            z-index: 11;
+        }
+
+        .tableFixedHorizontal.tableFixedVertical{
+            z-index: 12;
+        }
+
+        .tableCell{
+            overflow: hidden;
+            word-break: break-all;
+            hyphens: auto;
+        }
+    }
+
+    tbody{
+        td:not(.tableFixed) .tableCell, td:not(.tableFixed) .tableCell span{
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    td, th{
+        border: 1px solid #ccc;
+        border-spacing: 0;
+        padding: 2px 5px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .tableCell {
+        height: 36px;
+        max-width: 400px;
+
+        span{
+            height: 36px;
+            display: block;
+        }
+    }
+
     .rowSelected {
-        background: fade-out(mat-color($wave-app-accent), 0.6);
+        background: rgba(mat-color($wave-app-accent), 60%);
 
         .tableFixed::before {
             content: " ";
@@ -15,7 +76,14 @@ table {
             left: 0;
             width: 100%;
             height: 100%;
-            background: fade-out(mat-color($wave-app-accent), 0.6);
+            background: rgba(mat-color($wave-app-accent), 60%);
+        }
+    }
+
+    .offsetterTop, .offsetterBottom{
+        td {
+            padding: 0;
+            border: 0;
         }
     }
 }
@@ -26,9 +94,25 @@ table {
     height: 100%;
     text-align: center;
     color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+
+    span {
+        display: table-cell;
+        vertical-align: middle;
+    }
 }
 
-.no-layer span {
-    display: table-cell;
-    vertical-align: middle;
+.spinnerContainer{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0;
+    left:0;
+    background: rgba(#ffffff, 70%);
+    z-index: 10;
+
+    .spinner{
+        position: absolute;
+        top: calc(50% - 50px);
+        left: calc(50% - 50px);
+    }
 }

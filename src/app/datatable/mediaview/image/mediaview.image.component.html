@@ -1,0 +1,35 @@
+<wave-sidenav-header>Images</wave-sidenav-header>
+
+<div class="imageContainer">
+
+    <wave-dialog-section-heading title="Image {{currentImage + 1}} of {{imageURLs.length}}" subtitle="{{imageURLs[currentImage] | fileName}}"></wave-dialog-section-heading>
+
+    <a md-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
+        <md-icon class="md-24">open_in_new</md-icon>
+    </a>
+
+    <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+
+    <div *ngIf="loading" class="loading">
+        <div class="spinner">
+            <md-spinner color="primary"></md-spinner>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="previousImage()" class="previous" [title]="'previous image'">
+            <md-icon class="md-24">chevron_left</md-icon>
+        </button>
+
+        <button md-mini-fab color="primary" (click)="openImageFullSize()" class="imageSize" [title]="'show in full size'">
+            <md-icon class="md-24">fullscreen</md-icon>
+        </button>
+
+        <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="nextImage()" class="next" [title]="'next image'">
+            <md-icon class="md-24">chevron_right</md-icon>
+        </button>
+    </div>
+
+</div>
+
+
