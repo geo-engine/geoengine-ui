@@ -105,6 +105,7 @@ import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script
 import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
+import {ScatterPlotComponent} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.component';
 import {RouterModule} from '@angular/router';
 import {
     WorkflowParameterChoiceDialogComponent
@@ -207,6 +208,7 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
     ],
@@ -255,6 +257,7 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         PieChartComponent,
+        ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
     ],
