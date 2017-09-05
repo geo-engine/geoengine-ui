@@ -6,7 +6,9 @@ import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
-import {PieChartType} from '../../types/piechart-type.model';
+import {DataTypes} from '../../datatype.model';
+import {NumericPipe} from './numeric-pipe';
+import {ScatterPlotType} from '../../types/scatterplot-type.model';
 
 @Component({
     selector: 'wave-pie-chart-operator',
@@ -21,6 +23,8 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
     pointLayers: Array<Layer<Symbology>>;
 
     ResultTypes = ResultTypes;
+    NumericPipe = NumericPipe;
+    DataTypes = DataTypes;
 
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService) {
@@ -28,14 +32,33 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            layer: [undefined, Validators.required],
-            attribute: [undefined, Validators.required],
+            vLayer: [undefined, Validators.required],
+            attribute1: [undefined, Validators.required],
+            attribute2: [undefined, Validators.required],
+            isRegression: [false, Validators.required],
             name: 'Scatter plot',
         });
     }
 
     add() {
-
+        const outputName = this.form.controls['vLayer'].value.name + ' - ' + this.form.controls['attribute1'].value.toString() + "|" + this.form.controls['attribute2'].value.toString();
+        const projection = this.form.controls['vLayer'].value.operator.projection;
+        const operator: Operator = new Operator({
+            operatorType: new ScatterPlotType({
+                name: outputName,
+                attribute1: this.form.controls['attribute1'].value.toString(),
+                attribute2: this.form.controls['attribute2'].value.toString(),
+                regression: this.form.controls['isRegression'].value.toString(),
+            }),
+            resultType: ResultTypes.PLOT,
+            projection: projection,
+            pointSources: [this.form.controls['vLayer'].value.operator.getProjectedOperator(projection)],
+        });
+        const plot = new Plot({
+            name: outputName,
+            operator: operator,
+        });
+        this.projectService.addPlot(plot);
     }
 
     ngOnDestroy() {
@@ -47,7 +70,7 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
                 onlySelf: false,
                 emitEvent: true
             });
-            this.form.controls['layer'].updateValueAndValidity();
+            this.form.controls['vLayer'].updateValueAndValidity();
         });
     }
 }

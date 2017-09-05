@@ -9,11 +9,17 @@ interface ScatterPlotTypeMappingDict extends OperatorTypeMappingDict {
 }
 
 export interface ScatterPlotTypeDict extends OperatorTypeDict {
-    attribute: string;
+    name: string;
+    attribute1: string;
+    attribute2: string;
+    regression: boolean;
 }
 
 interface ScatterPlotTypeConfig {
-    attribute: string;
+    name: string;
+    attribute1: string;
+    attribute2: string;
+    regression: boolean;
 }
 
 /**
@@ -29,24 +35,39 @@ export class ScatterPlotType extends OperatorType {
     static get NAME(): string { return ScatterPlotType._NAME; }
 
     private code: string;
-    private attribute: string;
+    private name: string;
+    private attribute1: string;
+    private attribute2: string;
+    private regression: boolean;
     private resultType: ResultType;
 
     static fromDict(dict: ScatterPlotTypeDict): ScatterPlotType {
         return new ScatterPlotType({
-            attribute: dict.attribute,
+            name: dict.name,
+            attribute1: dict.attribute1,
+            attribute2: dict.attribute2,
+            regression: dict.regression
         });
     }
 
     constructor(config: ScatterPlotTypeConfig) {
         super();
-        this.attribute = config.attribute;
+        this.name = config.name;
+        this.attribute1 = config.attribute1;
+        this.attribute2 = config.attribute2;
+        this.regression = config.regression;
         this.code = `
 points <- mapping.loadPoints(0, mapping.qrect)
 if (length(points) > 0) {
-  kv <- table(points$\`${config.attribute}\`)
-  labels <- paste("(",names(kv),")", "\n", kv, sep="")
-  pie(kv, labels = labels)
+  x <- points&\`${config.attribute1}\`
+  y <- points$\`${config.attribute2}\`
+  plot(x, y,
+  +   main="\`${config.name}\`"
+  +   xlab="\`${config.attribute1}\`",
+  +   ylab="\`${config.attribute1}\`")
+  if(\`${config.regression}\`) {
+    abline(lm(y~x), col="red")
+  }
 } else {
   plot.new()
   mtext("Empty Dataset")
@@ -84,7 +105,10 @@ if (length(points) > 0) {
     toDict(): ScatterPlotTypeDict {
         return {
             operatorType: ScatterPlotType.TYPE,
-            attribute: this.attribute,
+            name: this.name,
+            attribute1: this.attribute1,
+            attribute2: this.attribute2,
+            regression: this.regression
         };
     }
 

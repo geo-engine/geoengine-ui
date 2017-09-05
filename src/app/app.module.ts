@@ -111,6 +111,7 @@ import {
     WorkflowParameterChoiceDialogComponent
 } from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 import { LayerShareComponent } from './layers/dialogs/layer-share/layer-share.component';
+import {NumericPipe} from './operators/dialogs/scatter-plot-operator/numeric-pipe';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -211,6 +212,7 @@ export function configInitializer(config: Config) {
         ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
+        NumericPipe,
     ],
     imports: [
         BrowserModule,
