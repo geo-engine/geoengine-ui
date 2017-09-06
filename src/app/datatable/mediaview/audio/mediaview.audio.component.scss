@@ -3,20 +3,28 @@ $mat-icon-button-size: 40px !default; // TODO: import when this is possible agai
 
 .audioContainer {
 
-    wave-dialog-section-heading {
-        float: left;
-        margin: 0 1rem;
-        width: calc(100% - 4rem - #{$mat-icon-button-size});
-    }
-
-    .externalLink{
-        float: right;
-        margin: 1rem;
-    }
-
     audio {
         width: calc(100% - 2rem);
         margin: 1rem;
+    }
+
+    .info {
+        float: left;
+        width: 100%;
+
+        h3 {
+            float: left;
+            margin: 1rem;
+            width: calc(100% - 4rem - #{$mat-icon-button-size});
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }
+
+        .externalLink {
+            float: right;
+            margin: 1rem;
+        }
     }
 }
 

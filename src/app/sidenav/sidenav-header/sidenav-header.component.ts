@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit,} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, AfterViewChecked,} from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
 @Component({
@@ -7,7 +7,7 @@ import {SidenavRef} from '../sidenav-ref.service';
     styleUrls: ['./sidenav-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SidenavHeaderComponent implements AfterViewInit {
+export class SidenavHeaderComponent implements AfterViewInit, AfterViewChecked {
 
     constructor(private elementRef: ElementRef,
                 private sidenavRef: SidenavRef) {
@@ -17,4 +17,7 @@ export class SidenavHeaderComponent implements AfterViewInit {
         this.sidenavRef.setTitle(this.elementRef.nativeElement.textContent);
     }
 
+    ngAfterViewChecked() {
+        this.sidenavRef.setTitle(this.elementRef.nativeElement.textContent);
+    }
 }

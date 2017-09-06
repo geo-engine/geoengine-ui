@@ -16,10 +16,11 @@ import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
-import {Time} from '../time/time.model';
+import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
+import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -175,7 +176,7 @@ export class MappingQueryService {
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: config.time.asRequestString(),
+                // time: config.time.asRequestString(),
             },
         });
     }
@@ -190,7 +191,63 @@ export class MappingQueryService {
         time: Time,
         projection: Projection
     }): string {
+        if (config.time.getEnd().isAfter(config.time.getStart())) {
+            const duration = config.time.getEnd().diff(config.time.getStart());
+            const aggregationType = 'avg';
+
+            console.log('Duration: ' + config.time.getStart() + ' to ' + config.time.getEnd() + ': ' + duration);
+
+            const aggregationOperator2 = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregationType: aggregationType,
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: [],
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [config.operator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [config.operator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [config.operator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [config.operator] : [],
+            });
+
+            const aggregationOperator = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregationType: aggregationType,
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: [],
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.getSources(ResultTypes.RASTER),
+                pointSources: config.operator.getSources(ResultTypes.POINTS),
+                lineSources: config.operator.getSources(ResultTypes.LINES),
+                polygonSources: config.operator.getSources(ResultTypes.POLYGONS),
+            });
+
+            const originalOperator = new Operator({
+                operatorType: config.operator.operatorType,
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [aggregationOperator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [aggregationOperator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [aggregationOperator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [aggregationOperator] : [],
+            });
+
+            config.time = new TimePoint(config.time.getStart());
+            config.operator = originalOperator;
+        }
         const parameters = this.getWMSQueryParameters(config);
+
+        console.log(config);
 
         return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }

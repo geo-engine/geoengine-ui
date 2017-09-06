@@ -1,12 +1,6 @@
-<wave-sidenav-header>Images</wave-sidenav-header>
+<wave-sidenav-header>Image {{currentImage + 1}} of {{imageURLs.length}}</wave-sidenav-header>
 
 <div class="imageContainer">
-
-    <wave-dialog-section-heading title="Image {{currentImage + 1}} of {{imageURLs.length}}" subtitle="{{imageURLs[currentImage] | fileName}}"></wave-dialog-section-heading>
-
-    <a md-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
-        <md-icon class="md-24">open_in_new</md-icon>
-    </a>
 
     <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
 
@@ -14,6 +8,14 @@
         <div class="spinner">
             <md-spinner color="primary"></md-spinner>
         </div>
+    </div>
+
+    <div class="info">
+        <h3 mdTooltip="{{imageURLs[currentImage] | fileName}}"> {{imageURLs[currentImage] | fileName}} </h3>
+
+        <a md-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
+            <md-icon class="md-24">open_in_new</md-icon>
+        </a>
     </div>
 
     <div class="buttons">
