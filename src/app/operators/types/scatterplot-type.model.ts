@@ -9,14 +9,12 @@ interface ScatterPlotTypeMappingDict extends OperatorTypeMappingDict {
 }
 
 export interface ScatterPlotTypeDict extends OperatorTypeDict {
-    name: string;
     attribute1: string;
     attribute2: string;
     regression: boolean;
 }
 
 interface ScatterPlotTypeConfig {
-    name: string;
     attribute1: string;
     attribute2: string;
     regression: boolean;
@@ -35,7 +33,6 @@ export class ScatterPlotType extends OperatorType {
     static get NAME(): string { return ScatterPlotType._NAME; }
 
     private code: string;
-    private name: string;
     private attribute1: string;
     private attribute2: string;
     private regression: boolean;
@@ -43,7 +40,6 @@ export class ScatterPlotType extends OperatorType {
 
     static fromDict(dict: ScatterPlotTypeDict): ScatterPlotType {
         return new ScatterPlotType({
-            name: dict.name,
             attribute1: dict.attribute1,
             attribute2: dict.attribute2,
             regression: dict.regression
@@ -52,7 +48,6 @@ export class ScatterPlotType extends OperatorType {
 
     constructor(config: ScatterPlotTypeConfig) {
         super();
-        this.name = config.name;
         this.attribute1 = config.attribute1;
         this.attribute2 = config.attribute2;
         this.regression = config.regression;
@@ -61,10 +56,7 @@ points <- mapping.loadPoints(0, mapping.qrect)
 if (length(points) > 0) {
   x <- points&\`${config.attribute1}\`
   y <- points$\`${config.attribute2}\`
-  plot(x, y,
-  +   main="\`${config.name}\`"
-  +   xlab="\`${config.attribute1}\`",
-  +   ylab="\`${config.attribute1}\`")
+  plot(x, y, xlab="\`${config.attribute1}\`", ylab="\`${config.attribute1}\`")
   if(\`${config.regression}\`) {
     abline(lm(y~x), col="red")
   }
@@ -105,7 +97,6 @@ if (length(points) > 0) {
     toDict(): ScatterPlotTypeDict {
         return {
             operatorType: ScatterPlotType.TYPE,
-            name: this.name,
             attribute1: this.attribute1,
             attribute2: this.attribute2,
             regression: this.regression
