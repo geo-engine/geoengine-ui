@@ -1,0 +1,31 @@
+<wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
+<div class="container" fxLayout="column">
+    <md-toolbar>
+        <label>Basket:&nbsp;</label>
+        <md-select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
+            <md-option *ngFor='let basket of baskets' [value]='basket'>
+                {{basket.timestamp}} - {{basket.query}}
+            </md-option>
+        </md-select>
+        <span class="toolbar-fill-remaining-space"></span>
+        <button md-icon-button aria-label='sync' (click)='reload()'>
+            <md-icon>sync</md-icon>
+        </button>
+    </md-toolbar>
+    <div *ngIf="isLoading$ | async" class="loading">
+        <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+    </div>
+    <div *ngIf="!(isLoading$ | async)" fxFlex="grow" fxLayout="column">
+        <ng-template [ngIf]='selectedBasket'>
+            <ng-template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
+
+                <ng-template [ngIf]='result.type === _abcdGroupedType'>
+                    <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
+                </ng-template>
+                <ng-template [ngIf]='result.type !== _abcdGroupedType'>
+                    <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
+                </ng-template>
+            </ng-template>
+        </ng-template>
+    </div>
+</div>
