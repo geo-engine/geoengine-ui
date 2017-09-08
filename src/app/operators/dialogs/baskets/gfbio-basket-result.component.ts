@@ -91,7 +91,7 @@ export class BasketResult<T extends IBasketResult>  {
                     <i>This dataset is currently not available in the VAT system</i>
                     <ul>
                         <li *ngIf='!result.isTabSeparated'> the data is not tab-separated </li>                  
-                        <li *ngIf='!result.isGeoreferenced'> no georeference detected </li>
+                        <li *ngIf='!result.isGeoReferenced'> no georeference detected </li>
                     </ul>
                 </md-card-content>
             </ng-template>
@@ -271,7 +271,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
                  <md-card-content>
                     <i>This dataset is currently not available in the VAT system</i>
                     <ul>
-                        <li *ngIf='!result.isGeoreferenced'> no georeference detected </li>
+                        <li *ngIf='!result.isGeoReferenced'> no georeference detected </li>
                     </ul>
                 </md-card-content>
             </ng-template>          
