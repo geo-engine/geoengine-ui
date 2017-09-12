@@ -7,74 +7,8 @@ import {UserService} from '../../../users/user.service';
 
 @Component({
     selector: 'wave-gfbio-baskets',
-    template: `
-    <wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
-    <div class="container" layout="column">
-        <md-toolbar>
-          <label>Basket:&nbsp;</label>
-            <md-select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
-                <md-option *ngFor='let basket of baskets' [value]='basket'> 
-                    {{basket.timestamp}} - {{basket.query}}
-                    </md-option>
-            </md-select> 
-          <span class="toolbar-fill-remaining-space"></span>
-          <button md-icon-button aria-label='sync' (click)='reload()'>
-            <md-icon>sync</md-icon>
-          </button>
-        </md-toolbar>
-        <div *ngIf="isLoading$ | async" class="loading">
-            <md-progress-spinner mode="indeterminate"></md-progress-spinner>
-        </div>
-        <div *ngIf="!(isLoading$ | async)" fxFlex="grow" fxLayout="column">
-             <ng-template [ngIf]='selectedBasket'>       
-                <ng-template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
-                      
-                      <ng-template [ngIf]='result.type === _abcdGroupedType'>
-                        <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
-                      </ng-template>
-                      <ng-template [ngIf]='result.type !== _abcdGroupedType'>
-                        <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
-                      </ng-template>
-                </ng-template>
-             </ng-template>
-        </div>
-    </div>
-    `,
-    styles: [`
-    select {
-        max-width: 80%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .container {
-        height: 100%;
-        min-width: 300px;
-        max-width: 100%;
-    }
-    
-    .toolbar-fill-remaining-space {
-        flex: 1 1 auto;
-    }
-    md-list-item {
-        cursor: pointer;
-    }
-    md-list >>> md-subheader {
-        color: white;
-        background-color: #009688;
-        font-weight: bold;
-    }
-    img {
-      padding: 5px 5px 5px 0;
-    }
-    div.loading {
-        padding: 32px calc(50% - 100px/2);
-    }
-    md-progress-spinner {
-        width: 100px;
-        height: 100px;
-    }
-    `],
+    templateUrl: './gfbio-baskets.component.html',
+    styleUrls: ['./gfbio-baskets.component.css']
 })
 
 export class GfbioBasketsComponent implements OnDestroy {
