@@ -4,12 +4,12 @@ import {TrimPipe} from '../../../util/pipes/trim.pipe';
 import {IBasketPangaeaResult, IBasketResult, IBasketGroupedAbcdResult} from './gfbio-basket.model';
 import {Operator} from '../../../operators/operator.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../../..//operators/types/abcd-source-type.model';
-import {ResultTypes} from '../../../operators/result-type.model';
+import {ResultType, ResultTypes} from '../../../operators/result-type.model';
 import {Projections} from '../../../operators/projection.model';
 import {DataType, DataTypes} from '../../../operators/datatype.model';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Unit} from '../../../operators/unit.model';
-import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
+import {ClusteredPointSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -18,6 +18,7 @@ import {CsvParameters, CsvColumns, CsvColumn, BasicColumns} from './csv.model';
 import {UserService} from '../../../users/user.service';
 import {Subscription} from 'rxjs/Rx';
 import {ProjectService} from '../../../project/project.service';
+import {UnexpectedResultType} from "../../../util/errors";
 
 export class BasketResult<T extends IBasketResult>  {
     @Input() result: T;
@@ -35,21 +36,31 @@ export class BasketResult<T extends IBasketResult>  {
     }
 
     protected createAndAddLayer(operator: Operator, name: string) {
-        const clustered = true;
-        const layer = new VectorLayer<ClusteredPointSymbology>({
+        let clustered = false;
+        let symbology;
+
+        switch (operator.resultType) {
+            case ResultTypes.POINTS:
+                symbology = new ClusteredPointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                });
+                clustered = true;
+                break;
+            case ResultTypes.POLYGONS:
+                symbology = new SimpleVectorSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                });
+                break;
+            default:
+                throw new UnexpectedResultType();
+        }
+
+        const layer = new VectorLayer({
             name: name,
             operator: operator,
-            symbology: new ClusteredPointSymbology({
-                fillRGBA: this.randomColorService.getRandomColor(),
-            }),
-            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-            //    operator,
-            //    clustered,
-            // }),
-            // provenance: this.mappingQueryService.getProvenanceStream(operator),
+            symbology: symbology,
             clustered: clustered,
         });
-        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
     }
 }
@@ -159,17 +170,6 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
         const units = new Map<string, Unit>();
 
         for (let attribute of this.result.parameters) {
-
-            if ( attribute.name.toLowerCase().indexOf('longitude') !== -1 ) {
-                csvColumns.x = attribute.name;
-                continue;
-            }
-
-            if ( attribute.name.toLowerCase().indexOf('latitude') !== -1 ) {
-                csvColumns.y = attribute.name;
-                continue;
-            }
-
             if (attribute.numeric) {
                 csvColumns.numeric.push(attribute.name);
                 attributes.push(attribute.name);
@@ -183,20 +183,25 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
             }
         }
 
+        csvColumns.x = this.result.column_x;
+        csvColumns.y = this.result.column_y;
+
         const csvParameters: CsvParameters = {
-            geometry: 'xy',
+            geometry: this.result.geometrySpecification,
             separator: '\t',
             time: 'none',
             columns: csvColumns,
             on_error: 'keep', // TODO: let the user decide on this
         };
 
+
+
         return new Operator({
             operatorType: new PangaeaSourceType({
-                dataLink: this.result.dataLink,
+                doi: this.result.doi,
                 csvParameters: csvParameters,
             }),
-            resultType: ResultTypes.POINTS,
+            resultType: ResultTypes.fromCode(this.result.resultType),
             projection: Projections.WGS_84,
             attributes: attributes,
             dataTypes: dataTypes,

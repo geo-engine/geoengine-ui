@@ -30,6 +30,7 @@ export class BasketResultGroupByDatasetPipe implements PipeTransform {
                       metadataLink: metadataLink,
                       units: (unit)? [unit] : [],
                       type: 'abcd_grouped',
+                      resultType: 'points',
                   };
                   array.push(grouped);
               } else {
