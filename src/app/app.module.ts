@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, APP_INITIALIZER} from '@angular/core';
-import {FormsModule, FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {MdIconRegistry} from '@angular/material';
 import {MaterialModule} from './material.module';
@@ -11,10 +11,12 @@ import {AppComponent} from './app.component';
 import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
 import {MapComponent} from './map/map.component';
 import {
-    OlPointLayerComponent, OlLineLayerComponent, OlRasterLayerComponent,
+    OlLineLayerComponent,
+    OlPointLayerComponent,
     OlPolygonLayerComponent,
+    OlRasterLayerComponent,
 } from './map/map-layer.component';
-import {ProvenanceListComponent, NbspPipe} from './provenance/provenance-list/provenance-list.component';
+import {NbspPipe, ProvenanceListComponent} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
@@ -25,13 +27,16 @@ import {CodeEditorComponent} from './util/components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
 import {
-    LegendaryPointComponent, LegendaryRasterComponent,
-    LegendaryVectorComponent, LegendaryMappingColorizerRasterComponent, LegendaryClusteredPointComponent,
-    LegendaryComponent
+    LegendaryClusteredPointComponent,
+    LegendaryComponent,
+    LegendaryMappingColorizerRasterComponent,
+    LegendaryPointComponent,
+    LegendaryRasterComponent,
+    LegendaryVectorComponent
 } from './layers/symbology/legendary.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
-import {VatLogoComponent, GFBioLogoComponent, IdessaLogoComponent} from './logo.component';
+import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
 import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
@@ -108,18 +113,17 @@ import {RouterModule} from '@angular/router';
 import {
     WorkflowParameterChoiceDialogComponent
 } from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
-import { LayerShareComponent } from './layers/dialogs/layer-share/layer-share.component';
-
-// import {DataTableModule} from './datatable/datatable.module';
-import { TableComponent } from './datatable/table/table.component';
-import { MediaviewComponent } from './datatable/mediaview/mediaview.component';
-import { MediaviewImageComponent } from './datatable/mediaview/image/mediaview.image.component';
-import { MediaviewImageDialogComponent } from './datatable/mediaview/image-dialog/mediaview.image-dialog.component';
-import { MediaviewAudioComponent } from './datatable/mediaview/audio/mediaview.audio.component';
-import { MediaviewVideoComponent } from './datatable/mediaview/video/mediaview.video.component';
-import { MediaviewPlaylistComponent } from './datatable/mediaview/playlist/mediaview.playlist.component';
-import { FileNamePipe } from './datatable/mediaview/filename.pipe';
-import { TableService } from './datatable/table/table.service';
+import {LayerShareComponent} from './layers/dialogs/layer-share/layer-share.component';
+import {TableComponent} from './datatable/table/table.component';
+import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
+import {MediaviewImageComponent} from './datatable/mediaview/image/mediaview.image.component';
+import {MediaviewImageDialogComponent} from './datatable/mediaview/image-dialog/mediaview.image-dialog.component';
+import {MediaviewAudioComponent} from './datatable/mediaview/audio/mediaview.audio.component';
+import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
+import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
+import {FileNamePipe} from './datatable/mediaview/filename.pipe';
+import {TableService} from './datatable/table/table.service';
+import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -130,8 +134,6 @@ export function configInitializer(config: Config) {
         AppComponent,
         RasterRepositoryComponent,
         MapComponent,
-        // OlMapLayerComponent,
-        // OlVectorLayerComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,
         OlRasterLayerComponent,
@@ -170,6 +172,7 @@ export function configInitializer(config: Config) {
         HistogramComponent,
         PointInPolygonFilterOperatorComponent,
         NumericAttributeFilterOperatorComponent,
+        TextualAttributeFilterOperatorComponent,
         DialogHeaderComponent,
         DialogSectionHeadingComponent,
         RenameLayerComponent,
@@ -247,6 +250,7 @@ export function configInitializer(config: Config) {
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,
         NumericAttributeFilterOperatorComponent,
+        TextualAttributeFilterOperatorComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
         RasterValueExtractionOperatorComponent,
