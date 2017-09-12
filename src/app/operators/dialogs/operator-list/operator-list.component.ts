@@ -19,6 +19,8 @@ import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 import {RScriptType} from '../../types/r-script-type.model';
 import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
 import {PieChartType} from '../../types/piechart-type.model';
+import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filter/textual-attribute-filter.component';
+import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -71,6 +73,11 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         type: PointInPolygonFilterType,
         description: 'Filter points that are enclosed by a polygon',
     },
+    {
+        component: TextualAttributeFilterOperatorComponent,
+        type: TextualAttributeFilterType,
+        description: 'Filter data via text filter',
+    }
 ];
 
 const ALL_OPERATORS: Array<{name: string, list: Array<OperatorListType>}> = [
