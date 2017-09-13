@@ -406,101 +406,77 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         let widths = [];
         let types = [];
 
-        for (let i = 0; i < testData.length + 1; i++) {
-            for (let j = 0; j < headCount; j++) {
-                let w = 0;
-                let t;
+        for (let column = 0; column < headCount; column++) {
+            let columnWidth = 0;
+            let columnType;
 
-                // Header Row
-                if (i === testData.length) {
-                    w = this.getTextWidth(dataHeadUnits[j], 'bold ' + this.styleString);
+            // Header Row
+            columnWidth = this.getTextWidth(dataHeadUnits[column], 'bold ' + this.styleString);
 
-                    // console.log(dataHeadUnits[j] + ': ' + w);
+            columnType = 'text';
 
-                    t = '';
-                } else { // Normal Table Rows
-                    let tmp = testData[i]['properties'][dataHead[j]];
+            for (let row = 0; row < testData.length; row++) {
+                // Normal Table Rows
+                let tmp = testData[row]['properties'][dataHead[column]];
 
-                    // console.log(tmp);
+                // console.log(tmp);
 
-                    if (typeof tmp === 'string' && tmp !== '') {
-                        let urls = tmp.split(/(,)/g);
+                if (typeof tmp === 'string' && tmp !== '') {
+                    let urls = tmp.split(/(,)/g);
 
-                        let mediaCount = [0, 0, 0];
-                        let nonUrlsString = '';
+                    let mediaCount = [0, 0, 0];
+                    let nonUrlsString = '';
 
-                        for (let u in urls) {
-                            if (urls.hasOwnProperty(u)) {
-                                t = MediaviewComponent.getType(urls[u]);
+                    for (let u in urls) {
+                        if (urls.hasOwnProperty(u)) {
+                            let mediaType = MediaviewComponent.getType(urls[u]);
 
-                                if (t !== '') {
-                                    if (t === 'text') {
-                                        nonUrlsString += urls[u] + ' ';
-                                    } else {
-                                        if (t === 'image') {
-                                            mediaCount[0] += 1;
-                                        } else if (t === 'audio') {
-                                            mediaCount[1] += 1;
-                                        } else if (t === 'video') {
-                                            mediaCount[2] += 1;
-                                        }
-
-                                        t = 'media';
+                            if (mediaType !== '') {
+                                if (mediaType === 'text') {
+                                    nonUrlsString += urls[u] + ' ';
+                                } else {
+                                    if (mediaType === 'image') {
+                                        mediaCount[0] += 1;
+                                    } else if (mediaType === 'audio') {
+                                        mediaCount[1] += 1;
+                                    } else if (mediaType === 'video') {
+                                        mediaCount[2] += 1;
                                     }
 
-                                    if (types[j] !== 'media' && t === 'media') {
-                                        types[j] = t;
-                                    }
+                                    columnType = 'media';
                                 }
 
-                                if (types[j] == null || types[j] === '') {
-                                    types[j] = t;
-                                }
                             }
                         }
-
-                        let mediaString = '';
-
-                        if (mediaCount[0] > 0) {
-                            mediaString += '___ ' + mediaCount[0] + ' images';
-                        }
-                        if (mediaCount[1] > 0) {
-                            mediaString += '___ ' + mediaCount[1] + ' audio-files';
-                        }
-                        if (mediaCount[2] > 0) {
-                            mediaString += '___ ' + mediaCount[2] + ' videos';
-                        }
-
-                        mediaString += ' ' + nonUrlsString;
-
-                        // console.log(mediaString);
-
-                        w = this.getTextWidth(mediaString, this.styleString);
-                    }
-                }
-
-                // Widths
-                if (w > this.oneLineMaxWidth) {
-                    w = w / 2;
-                }
-                if (w > widths[j] || widths[j] == null) {
-                    widths[j] = w;
-                }
-
-                // Types
-                if (t !== '') {
-                    if (t !== 'text') {
-                        t = 'media';
                     }
 
-                    if (types[j] === 'text' && t !== 'text') {
-                        types[j] = t;
+                    let mediaString = '';
+
+                    if (mediaCount[0] > 0) {
+                        mediaString += '___ ' + mediaCount[0] + ' images';
                     }
-                }
-                if (types[j] == null) {
-                    types[j] = t;
+                    if (mediaCount[1] > 0) {
+                        mediaString += '___ ' + mediaCount[1] + ' audio-files';
+                    }
+                    if (mediaCount[2] > 0) {
+                        mediaString += '___ ' + mediaCount[2] + ' videos';
+                    }
+
+                    mediaString += ' ' + nonUrlsString;
+
+                    // console.log(mediaString);
+
+                    columnWidth = Math.max(columnWidth, this.getTextWidth(mediaString, this.styleString));
                 }
             }
+
+            // Widths
+            if (columnWidth > widths[column] || widths[column] == null) {
+                widths[column] = columnWidth;
+            }
+
+            // Types
+            types[column] = columnType;
         }
 
         return ([widths, types]);

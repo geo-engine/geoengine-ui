@@ -1,6 +1,6 @@
 {
     "/cgi-bin/*": {
-        "target": "https://sng107.sng.uni-frankfurt.de/dev/",
+        "target": "http://sng107.sng.uni-frankfurt.de/dev/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"

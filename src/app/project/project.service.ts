@@ -21,6 +21,7 @@ import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
 import {ResultTypes} from '../operators/result-type.model';
+import {LayerService} from '../layers/layer.service';
 
 @Injectable()
 export class ProjectService {
@@ -46,7 +47,8 @@ export class ProjectService {
     constructor(private config: Config,
                 private notificationService: NotificationService,
                 private mappingQueryService: MappingQueryService,
-                private mapService: MapService) {
+                private mapService: MapService,
+                private layerService: LayerService) {
         this.plotData$ = new Map();
         this.plotDataState$ = new Map();
         this.plotSubscriptions = new Map();
@@ -478,6 +480,10 @@ export class ProjectService {
      */
     removeLayer(layer: Layer<Symbology>): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
+
+        if (this.layerService.getSelectedLayer() === layer) {
+            this.layerService.setSelectedLayer(undefined);
+        }
 
         this.project$.first().subscribe(project => {
             // const layers = Array.from(this.getProject().layers);

@@ -16,6 +16,7 @@ export interface IBasketResult {
     metadataLink: string;
     title: string;
     type: BasketType;
+    resultType: string;
 }
 
 export interface IBasketAbcdResult extends IBasketResult {
@@ -39,6 +40,9 @@ export interface IBasketPangaeaResult extends IBasketResult {
     isGeoReferenced?: boolean;
     isTabSeparated?: boolean;
     parameters: Array<CsvColumn>;
+    geometrySpecification: string;
+    column_x?: string;
+    column_y?: string;
 }
 
 export interface IBasket {
