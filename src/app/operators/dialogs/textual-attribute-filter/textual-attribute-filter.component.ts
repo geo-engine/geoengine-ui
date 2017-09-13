@@ -1,17 +1,17 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy,} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {AbstractVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable, Subscription} from 'rxjs/Rx';
+import {Observable} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {
     TextualAttributeFilterEngineType,
-    TextualAttributeFilterType
+    TextualAttributeFilterType,
 } from '../../types/textual-attribute-filter-type.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 
@@ -24,15 +24,13 @@ import {RandomColorService} from '../../../util/services/random-color.service';
     styleUrls: ['./textual-attribute-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TextualAttributeFilterOperatorComponent implements AfterViewInit, OnDestroy {
+export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
     // for the template
     ResultTypes = ResultTypes;
     TextualAttributeFilterEngineType = TextualAttributeFilterEngineType;
 
     form: FormGroup;
     attributes$: Observable<Array<string>>;
-
-    private subscriptions: Array<Subscription> = [];
 
     constructor(private projectService: ProjectService,
                 private formBuilder: FormBuilder,
@@ -59,7 +57,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit, O
                 if (layer) {
                     return layer.operator.attributes.filter((attribute: string) => {
                         return DataTypes.Alphanumeric === layer.operator.dataTypes.get(attribute);
-                    }).toArray();
+                    }).toArray().sort();
                 } else {
                     return [];
                 }
@@ -69,10 +67,6 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit, O
     ngAfterViewInit() {
         // initially get attributes
         setTimeout(() => this.form.controls['vectorLayer'].enable({emitEvent: true}));
-    }
-
-    ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     add() {
