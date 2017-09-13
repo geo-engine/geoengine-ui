@@ -11,7 +11,7 @@
             <md-option [value]="TextualAttributeFilterEngineType.CONTAINS">contains</md-option>
             <md-option [value]="TextualAttributeFilterEngineType.STARTSWITH">starts with</md-option>
         </md-select>
-        <md-input-container>
+        <md-form-field>
             <input mdInput formControlName="searchString" placeholder="Search String">
             <md-hint
                 align="end" class="error"
@@ -19,7 +19,7 @@
             >
                 The search string must be non-empty.
             </md-hint>
-        </md-input-container>
+        </md-form-field>
         <wave-operator-output-name
             formControlName="name"
             [suggestion]="'Filtered ' + (form.controls.vectorLayer.valueChanges | async)?.name"

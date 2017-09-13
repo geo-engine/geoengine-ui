@@ -16,9 +16,9 @@ form {
     padding: 1rem;
 }
 
-md-select, md-input-container {
-    width: 100%;
-    margin: 1rem 0;
+md-select, md-form-field {
+    width: 100% !important;
+    margin: 0 0 1rem 0;
 }
 
 .error {
