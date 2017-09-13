@@ -1,0 +1,16 @@
+<wave-sidenav-header>Audio-Files</wave-sidenav-header>
+
+<div class="audioContainer">
+
+    <wave-dialog-section-heading title="Audio {{currentAudio + 1}} of {{audioURLs.length}}" subtitle="{{audioURLs[currentAudio] | fileName}}"></wave-dialog-section-heading>
+
+    <a md-mini-fab color="primary" [href]="audioURLs[currentAudio]" target="_blank" class="externalLink" [title]="'open in new tab'">
+        <md-icon class="md-24">open_in_new</md-icon>
+    </a>
+
+    <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></audio>
+
+    <wave-mediaview-playlist [tracks]="audioURLs" [currentTrack]="currentAudio" (gotoTrack)="goToAudio($event)"></wave-mediaview-playlist>
+</div>
+
+

@@ -8,7 +8,7 @@
                     <dt>License</dt>
                     <dd [innerHtml]="p.license | waveNbsp"></dd>
                     <dt>URI</dt>
-                    <dd><a [href]="p.uri" [innerHtml]="p.uri | waveNbsp"></a></dd>
+                    <dd><a [href]="p.uri" target='_blank' [innerHtml]="p.uri | waveNbsp"></a></dd>
                 </dl>
                 <md-divider *ngIf="!last"></md-divider>
             </md-list-item>
