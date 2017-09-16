@@ -12,18 +12,25 @@ import {PointInPolygonFilterType, PointInPolygonFilterTypeDict} from './point-in
 import {WKTSourceType, WKTSourceTypeDict} from './wkt-source-type.model';
 import {ABCDSourceType, ABCDSourceTypeDict} from './abcd-source-type.model';
 import {
-    MsgRadianceType,
-    MsgReflectanceType, MsgReflectanceTypeDict,
-    MsgSolarangleType, MsgSolarangleTypeDict,
-    MsgTemperatureType,
-    MsgPansharpenType, MsgPansharpenTypeDict,
     MsgCo2CorrectionType,
+    MsgPansharpenType,
+    MsgPansharpenTypeDict,
+    MsgRadianceType,
+    MsgReflectanceType,
+    MsgReflectanceTypeDict,
     MsgSofosGccThermalThresholdType,
+    MsgSolarangleType,
+    MsgSolarangleTypeDict,
+    MsgTemperatureType,
 } from './msg-types.model';
 import {CsvSourceType, CsvSourceTypeDict} from './csv-source-type.model';
 import {PangaeaSourceType, PangaeaSourceTypeDict} from './pangaea-source-type.model';
-import {ClassificationTypeDict, ClassificationType} from './classification-type.model';
-import {FeatureCollectionDBSourceType, FeatureCollectionDBSourceTypeDict} from './feature-collection-db-source-type.model';
+import {ClassificationType, ClassificationTypeDict} from './classification-type.model';
+import {
+    FeatureCollectionDBSourceType,
+    FeatureCollectionDBSourceTypeDict
+} from './feature-collection-db-source-type.model';
+import {TextualAttributeFilterType, TextualAttributeFilterTypeDict} from './textual-attribute-filter-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -36,6 +43,8 @@ export abstract class OperatorTypeFactory {
         switch (dict.operatorType) {
             case NumericAttributeFilterType.TYPE:
                 return NumericAttributeFilterType.fromDict(dict as NumericAttributeFilterTypeDict);
+            case TextualAttributeFilterType.TYPE:
+                return TextualAttributeFilterType.fromDict(dict as TextualAttributeFilterTypeDict);
             case RasterValueExtractionType.TYPE:
                 return RasterValueExtractionType.fromDict(dict as RasterValueExtractionTypeDict);
             case ExpressionType.TYPE:

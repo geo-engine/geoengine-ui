@@ -30,11 +30,7 @@ export class LayerService {
     });
     private isAnyLayerSelected$: Observable<boolean>;
 
-    constructor(
-        private mappingQueryService: MappingQueryService,
-        private notificationService: NotificationService,
-        private projectService: ProjectService
-    ) {
+    constructor() {
         this.isAnyLayerSelected$ = this.getSelectedLayerStream().map(layer => layer !== undefined);
     }
 

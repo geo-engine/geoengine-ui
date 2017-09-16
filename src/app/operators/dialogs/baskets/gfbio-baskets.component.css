@@ -1,0 +1,33 @@
+select {
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.container {
+    height: 100%;
+    min-width: 300px;
+    max-width: 100%;
+}
+
+.toolbar-fill-remaining-space {
+    flex: 1 1 auto;
+}
+md-list-item {
+    cursor: pointer;
+}
+md-list >>> md-subheader {
+    color: white;
+    background-color: #009688;
+    font-weight: bold;
+}
+img {
+    padding: 5px 5px 5px 0;
+}
+div.loading {
+    padding: 32px calc(50% - 100px/2);
+}
+md-progress-spinner {
+    width: 100px;
+    height: 100px;
+}

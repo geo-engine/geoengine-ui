@@ -4,8 +4,8 @@ export interface BasicColumns {
 }
 
 export interface CsvColumns extends BasicColumns {
-    x: string;
-    y: string;
+    x?: string;
+    y?: string;
     time1?: string;
     time2?: string;
 }
@@ -21,7 +21,7 @@ export type CsvErrorCase = 'skip' | 'abort' | 'keep';
 export interface CsvParameters {
     separator?: string;
     on_error?: CsvErrorCase;
-    geometry: 'xy' | 'wkt';
+    geometry: string;
     time: 'none' | 'start' | 'start+end' | 'start+duration';
     time1_format?: CsvTimeFormat;
     time2_format?: CsvTimeFormat;

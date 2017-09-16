@@ -1,4 +1,4 @@
-import {Injectable, Type, Component} from '@angular/core';
+import {Injectable, Type} from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs/Rx';
 
 /**
@@ -109,7 +109,9 @@ export class LayoutService {
             return 2.5 * LayoutService.remInPx();
         }
 
-        return 3 * LayoutService.remInPx();
+        const borderSizePx = 1;
+
+        return 3 * LayoutService.remInPx() + borderSizePx;
     }
 
     /**
