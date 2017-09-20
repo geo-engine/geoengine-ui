@@ -53,16 +53,22 @@ export class ScatterPlotType extends OperatorType {
         this.regression = config.regression;
         this.code = `
 points <- mapping.loadPoints(0, mapping.qrect)
+
 if (length(points) > 0) {
-  x <- points&\`${config.attribute1}\`
-  y <- points$\`${config.attribute2}\`
-  plot(x, y, xlab="\`${config.attribute1}\`", ylab="\`${config.attribute1}\`")
-  if(\`${config.regression}\`) {
-    abline(lm(y~x), col="red")
-  }
+
+x <- points&\`${config.attribute1}\`
+
+y <- points$\`${config.attribute2}\`
+
+plot(x, y, xlab="\`${config.attribute1}\`", ylab="\`${config.attribute1}\`")`
++ (config.regression ? 'abline(lm(y~x), col="red")' : "") +
+`
 } else {
-  plot.new()
-  mtext("Empty Dataset")
+
+plot.new()
+
+mtext("Empty Dataset")
+
 }
         `;
         this.resultType = ResultTypes.PLOT;
