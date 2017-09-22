@@ -37,7 +37,7 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
             attribute1: [undefined, Validators.required],
             attribute2: [undefined, Validators.required],
             isRegression: [false, Validators.required],
-            name: ["", [Validators.required, WaveValidators.notOnlyWhitespace]],
+            name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
     }
 
@@ -47,7 +47,7 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
             operatorType: new ScatterPlotType({
                 attribute1: this.form.controls['attribute1'].value.toString(),
                 attribute2: this.form.controls['attribute2'].value.toString(),
-                regression: this.form.controls['isRegression'].value.toString(),
+                regression: this.form.controls['isRegression'].value,
             }),
             resultType: ResultTypes.PLOT,
             projection: projection,

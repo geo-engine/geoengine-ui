@@ -35,7 +35,7 @@
         <button md-button (click)="dialog.open(PlotDetailViewComponent, {data: plot})"><md-icon>fullscreen</md-icon></button>
         <span fxFlex></span>
         <button
-            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
+            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE && editExceptions.indexOf(plot.operator.operatorType.toString()) < 0"
             md-button (click)="editRPlot(plot)"
         >
             <md-icon>mode_edit</md-icon>
