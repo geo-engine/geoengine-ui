@@ -8,7 +8,7 @@
     <div *ngIf="!!data && !(uploading$ | async)" style="text-align: center">
         <wave-csv-properties
             #csvProperties
-            [table]="csvTable"
+            [csvTable]="csvTable"
             [data]="data"
         ></wave-csv-properties>
         <wave-csv-table
