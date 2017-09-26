@@ -73,23 +73,23 @@ export class MappingQueryService {
     }
 
     /**
-     * Get a MAPPING url for the WFS request.
+     * Get a MAPPING parameters for the WFS request.
      * @param config.operator the operator graph
      * @param config.time the point in time
      * @param config.projection the desired projection
      * @param config.outputFormat the output format
      * @param config.viewportSize the viewport size
      * @param config.clustered if the result should be clustered
-     * @returns the query url
+     * @returns the query parameters
      */
-    getWFSQueryUrl(config: {
+    getWFSQueryParameters(config: {
         operator: Operator,
         time: Time,
         projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: ViewportSize,
         clustered?: boolean
-    }): string {
+    }): MappingRequestParameters {
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
         const parameters = new MappingRequestParameters({
@@ -127,7 +127,28 @@ export class MappingQueryService {
             // parameters.setParameter('width', Math.max(1, resolution));
         }
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return parameters;
+    }
+
+    /**
+     * Get a MAPPING url for the WFS request.
+     * @param config.operator the operator graph
+     * @param config.time the point in time
+     * @param config.projection the desired projection
+     * @param config.outputFormat the output format
+     * @param config.viewportSize the viewport size
+     * @param config.clustered if the result should be clustered
+     * @returns the query url
+     */
+    getWFSQueryUrl(config: {
+        operator: Operator,
+        time: Time,
+        projection: Projection,
+        outputFormat: WFSOutputFormat,
+        viewportSize?: ViewportSize,
+        clustered?: boolean
+    }): string {
+        return this.config.MAPPING_URL + '?' + this.getWFSQueryParameters(config).toMessageBody();
     }
 
     /**
@@ -148,8 +169,12 @@ export class MappingQueryService {
         viewportSize: ViewportSize,
         clustered: boolean
     }): Observable<string> {
-        return this.http.get(this.getWFSQueryUrl(config))
-            .map(response => response.text());
+        const requestParameters = this.getWFSQueryParameters(config);
+        return this.http.post(
+            this.config.MAPPING_URL,
+            requestParameters.toMessageBody(false),
+            {headers: requestParameters.getHeaders()}
+        ).map(response => response.text());
     }
 
     /**
@@ -295,13 +320,21 @@ export class MappingQueryService {
             request.setParameter('width', 1024);
         }
 
-        return this.http.get(
-            this.config.MAPPING_URL + '?' + request.toMessageBody()
-        ).map(
-            (res: Response) => res.json()
-        ).map(
-            json => json as [Provenance]
-        ).toPromise();
+        // return this.http.get(
+        //     this.config.MAPPING_URL + '?' + request.toMessageBody()
+        // ).map(
+        //     (res: Response) => res.json()
+        // ).map(
+        //     json => json as [Provenance]
+        // ).toPromise();
+
+        return this.http.post(
+                this.config.MAPPING_URL,
+                request.toMessageBody(false),
+                {headers: request.getHeaders()}
+            ).map((res: Response) => res.json())
+            .map(json => json as [Provenance])
+            .toPromise();
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
