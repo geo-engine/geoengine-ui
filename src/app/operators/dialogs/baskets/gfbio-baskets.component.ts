@@ -1,62 +1,102 @@
-import {Component, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 
-import {Observable, Subscription, BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
+import * as moment from 'moment';
 
-import {IBasket, BasketTypeAbcdGrouped} from './gfbio-basket.model';
-import {UserService} from '../../../users/user.service';
+import {Basket, BasketsOverview, BasketTypeAbcdGrouped} from './gfbio-basket.model';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {NotificationService} from '../../../notification.service';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
 
 @Component({
     selector: 'wave-gfbio-baskets',
     templateUrl: './gfbio-baskets.component.html',
-    styleUrls: ['./gfbio-baskets.component.css']
+    styleUrls: ['./gfbio-baskets.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class GfbioBasketsComponent implements OnDestroy {
+    // for template
+    BasketTypeAbcdGrouped: BasketTypeAbcdGrouped = 'abcd_grouped';
 
-    baskets: Array<IBasket> = [];
-    selectedBasket: IBasket;
+    page$ = new BehaviorSubject(0);
+    limit$ = new BehaviorSubject(5);
 
-    private _abcdGroupedType: BasketTypeAbcdGrouped = 'abcd_grouped';
+    basketsOverview$ = new ReplaySubject<BasketsOverview>(1);
+    selectedBasketId$ = new ReplaySubject<number>(1);
+    selectedBasket$ = new ReplaySubject<Basket>(1);
 
-    private gfbioBasketStream: Observable<Array<IBasket>>;
-    private subscription: Subscription;
-    private isLoading$ = new BehaviorSubject<boolean>(true);
+    isOverviewLoading$ = new BehaviorSubject(true);
+    isDetailsLoading$ = new BehaviorSubject(true);
+    isError$ = new BehaviorSubject(false);
+    reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
 
-    constructor(
-        private userService: UserService,
-        private changeDetectorRef: ChangeDetectorRef
-    ) {
-        this.gfbioBasketStream = this.userService.getGfbioBasketStream();
-        this.subscribeToBasketStream();
+    historyExpanded$ = new BehaviorSubject(false);
+
+    private subscriptions: Array<Subscription> = [];
+
+    constructor(private mappingQueryService: MappingQueryService,
+                private notificationService: NotificationService) {
+        let initialBasketLoaded = false;
+
+        this.subscriptions.push(
+            Observable
+                .combineLatest(this.page$, this.limit$, this.reload$)
+                .do(() => this.isOverviewLoading$.next(true))
+                .flatMap(([page, limit]) => this.mappingQueryService
+                    .getGFBioBaskets({offset: page * limit, limit: limit})
+                    .do(() => this.isError$.next(false))
+                    .catch(error => {
+                        this.isError$.next(true);
+                        this.notificationService.error(error);
+                        return Observable.of({
+                            baskets: [],
+                            totalNumberOfBaskets: NaN,
+                        } as BasketsOverview);
+                    }))
+                .do(() => this.isOverviewLoading$.next(false))
+                .do(basketsOverviews => {
+                    if (!initialBasketLoaded && basketsOverviews.baskets.length > 0) {
+                        this.loadBasket(basketsOverviews.baskets[0].basketId);
+                        initialBasketLoaded = true;
+                    }
+                })
+                .subscribe(basketsOverview => this.basketsOverview$.next(basketsOverview))
+        );
+
+        this.subscriptions.push(
+            Observable
+                .combineLatest(this.selectedBasketId$, this.reload$)
+                .do(() => this.isDetailsLoading$.next(true))
+                .flatMap(([id]) => this.mappingQueryService
+                    .getGFBioBasket(id)
+                    .do(() => this.isError$.next(false))
+                    .catch(error => {
+                        this.isError$.next(true);
+                        this.notificationService.error(error);
+                        return Observable.of({
+                            query: '',
+                            results: [],
+                            timestamp: moment.invalid(),
+                        } as Basket);
+                    }))
+                .do(() => this.isDetailsLoading$.next(false))
+                .subscribe(basket => this.selectedBasket$.next(basket))
+        );
     }
 
     ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
+        this.subscriptions.forEach(subscription => {
+            subscription.unsubscribe();
+        });
+    }
+
+    loadBasket(id: number) {
+        this.selectedBasketId$.next(id);
+        this.historyExpanded$.next(false);
     }
 
     reload() {
-        this.baskets = [];
-        this.selectedBasket = undefined;
-
-        this.subscribeToBasketStream();
-
-        this.isLoading$.next(true);
-    }
-
-    private subscribeToBasketStream() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-
-        this.subscription = this.gfbioBasketStream.subscribe(baskets => {
-            this.baskets = baskets;
-            if (!this.selectedBasket && !!baskets && baskets.length > 0) {
-                this.selectedBasket = baskets[0];
-            }
-            this.isLoading$.next(false);
-            this.changeDetectorRef.markForCheck();
-        });
+        this.reload$.next(undefined);
     }
 }

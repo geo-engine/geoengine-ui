@@ -20,6 +20,15 @@ import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
+import {
+    Basket,
+    BasketResult,
+    BasketsOverview,
+    IBasketAbcdResult,
+    IBasketGroupedAbcdResult
+} from '../operators/dialogs/baskets/gfbio-basket.model';
+import * as moment from 'moment';
+import {BasketResultGroupByDatasetPipe} from '../operators/dialogs/baskets/gfbio-basket.pipe';
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -329,10 +338,10 @@ export class MappingQueryService {
         // ).toPromise();
 
         return this.http.post(
-                this.config.MAPPING_URL,
-                request.toMessageBody(false),
-                {headers: request.getHeaders()}
-            ).map((res: Response) => res.json())
+            this.config.MAPPING_URL,
+            request.toMessageBody(false),
+            {headers: request.getHeaders()}
+        ).map((res: Response) => res.json())
             .map(json => json as [Provenance])
             .toPromise();
     }
@@ -371,6 +380,115 @@ export class MappingQueryService {
         return this.http.get(queryUrl).toPromise().then(
             response => response.json()['dataSources']
         );
+    }
+
+    getGFBioBaskets(config: {
+        offset: number,
+        limit: number,
+    }): Observable<BasketsOverview> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'baskets',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                offset: config.offset,
+                limit: config.limit,
+            },
+        });
+
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        interface BasketsOverviewRaw {
+            baskets: Array<{
+                basketId: number,
+                query: string,
+                timestamp: string,
+            }>,
+            totalNumberOfBaskets: number,
+        }
+
+        return this.http
+            .get(queryUrl)
+            .map(jsonResponse => jsonResponse.json())
+            .map((basketsOverview: BasketsOverviewRaw) => {
+                return {
+                    baskets: basketsOverview.baskets.map(basket => {
+                        return {
+                            basketId: basket.basketId,
+                            query: basket.query,
+                            timestamp: moment(basket.timestamp, 'YYYY-MM-DD HH:mm:ss.S'),
+                        };
+                    }),
+                    totalNumberOfBaskets: basketsOverview.totalNumberOfBaskets,
+                };
+            });
+    }
+
+    getGFBioBasket(id: number): Observable<Basket> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'basket',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                id: id,
+            },
+        });
+
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        return this.http
+            .get(queryUrl)
+            .map(jsonResponse => jsonResponse.json())
+            .map((basket: Basket) => {
+                const regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
+
+                const basketResults: Array<BasketResult> = [];
+                basket.results.forEach(result => {
+                    let entry = basketResults.find((b) => b.dataLink === result.dataLink);
+
+                    if (result.type === 'abcd') {
+                        const abcd = result as IBasketAbcdResult;
+
+                        const unit_type_title_id = regex.exec(abcd.title);
+                        const title = (unit_type_title_id && unit_type_title_id[3]) ? unit_type_title_id[3] : abcd.title;
+                        const unit = (unit_type_title_id && unit_type_title_id[4]) ? {
+                            unitId: unit_type_title_id[4],
+                            prefix: unit_type_title_id[1],
+                            type: unit_type_title_id[2],
+                            metadataLink: abcd.metadataLink
+                        } : undefined;
+
+                        if (!entry) {
+                            const metadataLink = abcd.metadataLink;
+                            const grouped: IBasketGroupedAbcdResult = {
+                                title: title,
+                                dataLink: abcd.dataLink,
+                                authors: abcd.authors,
+                                available: abcd.available,
+                                dataCenter: abcd.dataCenter,
+                                metadataLink: metadataLink,
+                                units: (unit) ? [unit] : [],
+                                type: 'abcd_grouped',
+                                resultType: 'points',
+                            };
+                            basketResults.push(grouped);
+                        } else {
+                            if (unit) {
+                                const grouped = entry as IBasketGroupedAbcdResult;
+                                grouped.units.push(unit);
+                            }
+                        }
+                    } else if (!entry) {
+                        basketResults.push(result);
+                    }
+                });
+
+                return {
+                    query: basket.query,
+                    results: basketResults,
+                    timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
+                }
+            });
     }
 
 }

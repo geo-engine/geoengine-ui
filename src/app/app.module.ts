@@ -41,10 +41,6 @@ import {MappingDataSourceFilter} from './util/pipes/mapping-data-sources.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
-import {
-    GroupedAbcdBasketResultComponent,
-    PangaeaBasketResultComponent
-} from './operators/dialogs/baskets/gfbio-basket-result.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
@@ -124,6 +120,10 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
+import {
+    GroupedAbcdBasketResultComponent
+} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
+import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();

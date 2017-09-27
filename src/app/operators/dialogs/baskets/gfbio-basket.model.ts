@@ -1,7 +1,8 @@
-import {CsvColumn} from './csv.model';
-export type BasketResult = IBasketAbcdResult | IBasketPangaeaResult;
+import * as moment from 'moment';
 
-export type UnitGroupedBasketResult = IBasketGroupedAbcdResult | IBasketPangaeaResult;
+import {CsvColumn} from './csv.model';
+
+export type BasketResult = IBasketAbcdResult | IBasketPangaeaResult;
 
 export type BasketType = BasketTypeAbcd | BasketTypePangaea | BasketTypeAbcdGrouped;
 export type BasketTypeAbcd = 'abcd';
@@ -45,8 +46,19 @@ export interface IBasketPangaeaResult extends IBasketResult {
     column_y?: string;
 }
 
-export interface IBasket {
+export interface Basket {
     query: string;
     results: Array<BasketResult>;
-    timestamp: string;
+    timestamp: moment.Moment;
+}
+
+export interface BasketsOverviewBasket {
+    basketId: number,
+    query: string,
+    timestamp: moment.Moment,
+}
+
+export interface BasketsOverview {
+    baskets: Array<BasketsOverviewBasket>,
+    totalNumberOfBaskets: number,
 }
