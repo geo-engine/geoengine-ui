@@ -22,15 +22,7 @@ import {PangaeaSourceType} from '../../../types/pangaea-source-type.model';
 })
 export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaResult> {
 
-    constructor(mappingQueryService: MappingQueryService,
-                layerService: LayerService,
-                randomColorService: RandomColorService,
-                userService: UserService,
-                projectService: ProjectService) {
-        super(mappingQueryService, layerService, randomColorService, userService, projectService);
-    };
-
-    createResultOperator(): Operator {
+    static createOperatorFromPangaeaData(result: IBasketPangaeaResult): Operator {
         const csvColumns: CsvColumns = {
             numeric: [],
             textual: [],
@@ -42,7 +34,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
 
-        for (let attribute of this.result.parameters) {
+        for (let attribute of result.parameters) {
             if (attribute.numeric) {
                 csvColumns.numeric.push(attribute.name);
                 attributes.push(attribute.name);
@@ -56,11 +48,11 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
             }
         }
 
-        csvColumns.x = this.result.column_x;
-        csvColumns.y = this.result.column_y;
+        csvColumns.x = result.column_x;
+        csvColumns.y = result.column_y;
 
         const csvParameters: CsvParameters = {
-            geometry: this.result.geometrySpecification,
+            geometry: result.geometrySpecification,
             separator: '\t',
             time: 'none',
             columns: csvColumns,
@@ -70,15 +62,27 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
 
         return new Operator({
             operatorType: new PangaeaSourceType({
-                doi: this.result.doi,
+                doi: result.doi,
                 csvParameters: csvParameters,
             }),
-            resultType: ResultTypes.fromCode(this.result.resultType),
+            resultType: ResultTypes.fromCode(result.resultType),
             projection: Projections.WGS_84,
             attributes: attributes,
             dataTypes: dataTypes,
             units: units,
         });
+    }
+
+    constructor(mappingQueryService: MappingQueryService,
+                layerService: LayerService,
+                randomColorService: RandomColorService,
+                userService: UserService,
+                projectService: ProjectService) {
+        super(mappingQueryService, layerService, randomColorService, userService, projectService);
+    };
+
+    createResultOperator(): Operator {
+        return PangaeaBasketResultComponent.createOperatorFromPangaeaData(this.result);
     }
 
     addDataset() {

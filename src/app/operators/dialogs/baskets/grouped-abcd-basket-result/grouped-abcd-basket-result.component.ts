@@ -28,7 +28,8 @@ class UnitDataSource extends DataSource<IBasketGroupedAbcdUnits> {
         return Observable.of(this.units);
     }
 
-    disconnect() {}
+    disconnect() {
+    }
 }
 
 @Component({
@@ -45,6 +46,53 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     displayedUnitColumns = ['prefix', 'type', 'unitId'];
 
     private abcdSchemaSubscription: Subscription;
+
+    static createOperatorFromGroupedABCDData(result: IBasketGroupedAbcdResult,
+                                             sourceSchema: Array<CsvColumn>,
+                                             filterUnits: boolean): Operator {
+        const basicColumns: BasicColumns = {
+            numeric: [],
+            textual: [],
+        };
+
+        const attributes: Array<string> = [];
+        const dataTypes = new Map<string, DataType>();
+        const units = new Map<string, Unit>();
+
+        for (let attribute of sourceSchema) {
+
+            if (attribute.numeric) {
+                basicColumns.numeric.push(attribute.name);
+                attributes.push(attribute.name);
+                dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                units.set(attribute.name, Unit.defaultUnit);
+            } else {
+                basicColumns.textual.push(attribute.name);
+                attributes.push(attribute.name);
+                dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
+                units.set(attribute.name, Unit.defaultUnit);
+            }
+        }
+
+        const sourceTypeConfig: ABCDSourceTypeConfig = {
+            provider: result.dataCenter,
+            id: result.dataLink,
+            columns: basicColumns,
+        };
+
+        if (filterUnits) {
+            sourceTypeConfig.units = result.units.map((u) => u.unitId);
+        }
+
+        return new Operator({
+            operatorType: new ABCDSourceType(sourceTypeConfig),
+            resultType: ResultTypes.POINTS,
+            projection: Projections.WGS_84,
+            attributes: attributes,
+            dataTypes: dataTypes,
+            units: units,
+        });
+    }
 
     constructor(protected mappingQueryService: MappingQueryService,
                 protected layerService: LayerService,
@@ -69,50 +117,10 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
     }
 
     add(filterUnits: boolean) {
-
-        const basicColumns: BasicColumns = {
-            numeric: [],
-            textual: [],
-        };
-
-        const attributes: Array<string> = [];
-        const dataTypes = new Map<string, DataType>();
-        const units = new Map<string, Unit>();
-
-        for (let attribute of this.sourceSchema) {
-
-            if (attribute.numeric) {
-                basicColumns.numeric.push(attribute.name);
-                attributes.push(attribute.name);
-                dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
-                units.set(attribute.name, Unit.defaultUnit);
-            } else {
-                basicColumns.textual.push(attribute.name);
-                attributes.push(attribute.name);
-                dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
-                units.set(attribute.name, Unit.defaultUnit);
-            }
-        }
-
-        const sourceTypeConfig: ABCDSourceTypeConfig = {
-            provider: this.result.dataCenter,
-            id: this.result.dataLink,
-            columns: basicColumns,
-        };
-
-        if (filterUnits) {
-            sourceTypeConfig.units = this.result.units.map((u) => u.unitId);
-        }
-
-        const operator = new Operator({
-            operatorType: new ABCDSourceType(sourceTypeConfig),
-            resultType: ResultTypes.POINTS,
-            projection: Projections.WGS_84,
-            attributes: attributes,
-            dataTypes: dataTypes,
-            units: units,
-        });
-        this.createAndAddLayer(operator, this.result.title);
+        this.createAndAddLayer(
+            GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(this.result, this.sourceSchema, filterUnits),
+            this.result.title
+        );
     }
 
 }
