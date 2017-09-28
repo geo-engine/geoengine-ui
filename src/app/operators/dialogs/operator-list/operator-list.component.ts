@@ -19,6 +19,8 @@ import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 import {RScriptType} from '../../types/r-script-type.model';
 import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
 import {PieChartType} from '../../types/piechart-type.model';
+import {ScatterPlotComponent} from '../scatter-plot-operator/scatter-plot-operator.component';
+import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filter/textual-attribute-filter.component';
 import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
 
@@ -51,6 +53,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: PieChartComponent,
         type: PieChartType,
         description: 'Plot your data as a pie chart',
+    },
+    {
+        component: ScatterPlotComponent,
+        type: ScatterPlotType,
+        description: 'Scatter plot your data'
     },
 ];
 

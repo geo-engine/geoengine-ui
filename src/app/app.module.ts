@@ -105,6 +105,7 @@ import {RScriptLoadComponent} from './operators/dialogs/r/r-script-load/r-script
 import {CsvPropertiesComponent} from './operators/dialogs/csv/csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/csv-table.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
+import {ScatterPlotComponent} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.component';
 import {RouterModule} from '@angular/router';
 import {
     WorkflowParameterChoiceDialogComponent
@@ -120,6 +121,7 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
+import {NumericPipe} from './operators/dialogs/scatter-plot-operator/numeric-pipe';
 import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
@@ -220,6 +222,7 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         TableComponent,
@@ -230,6 +233,7 @@ export function configInitializer(config: Config) {
         MediaviewVideoComponent,
         MediaviewPlaylistComponent,
         FileNamePipe,
+        NumericPipe,
     ],
     imports: [
         BrowserModule,
@@ -276,6 +280,7 @@ export function configInitializer(config: Config) {
         RScriptSaveComponent,
         RScriptLoadComponent,
         PieChartComponent,
+        ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         MediaviewImageComponent,

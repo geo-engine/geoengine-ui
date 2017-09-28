@@ -1,6 +1,3 @@
-/**
- * Created by Julian on 23/06/2017.
- */
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -9,22 +6,26 @@ import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
-import {PieChartType} from '../../types/piechart-type.model';
-import {WaveValidators} from "../../../util/form.validators";
+import {DataTypes} from '../../datatype.model';
+import {NumericPipe} from './numeric-pipe';
+import {ScatterPlotType} from '../../types/scatterplot-type.model';
+import {WaveValidators} from '../../../util/form.validators';
 
 @Component({
     selector: 'wave-pie-chart-operator',
-    templateUrl: './pie-chart-operator.component.html',
-    styleUrls: ['./pie-chart-operator.component.scss'],
+    templateUrl: './scatter-plot-operator.component.html',
+    styleUrls: ['./scatter-plot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
     pointLayers: Array<Layer<Symbology>>;
 
     ResultTypes = ResultTypes;
+    NumericPipe = NumericPipe;
+    DataTypes = DataTypes;
 
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService) {
@@ -32,21 +33,25 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            layer: [undefined, Validators.required],
-            attribute: [undefined, Validators.required],
+            vLayer: [undefined, Validators.required],
+            attribute1: [undefined, Validators.required],
+            attribute2: [undefined, Validators.required],
+            isRegression: [false, Validators.required],
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
     }
 
     add() {
-        const projection = this.form.controls['layer'].value.operator.projection;
+        const projection = this.form.controls['vLayer'].value.operator.projection;
         const operator: Operator = new Operator({
-            operatorType: new PieChartType({
-                attribute: this.form.controls['attribute'].value.toString(),
+            operatorType: new ScatterPlotType({
+                attribute1: this.form.controls['attribute1'].value.toString(),
+                attribute2: this.form.controls['attribute2'].value.toString(),
+                regression: this.form.controls['isRegression'].value,
             }),
             resultType: ResultTypes.PLOT,
             projection: projection,
-            pointSources: [this.form.controls['layer'].value.operator.getProjectedOperator(projection)],
+            pointSources: [this.form.controls['vLayer'].value.operator.getProjectedOperator(projection)],
         });
         const plot = new Plot({
             name: this.form.controls['name'].value,
@@ -64,7 +69,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 onlySelf: false,
                 emitEvent: true
             });
-            this.form.controls['layer'].updateValueAndValidity();
+            this.form.controls['vLayer'].updateValueAndValidity();
         });
     }
 }
