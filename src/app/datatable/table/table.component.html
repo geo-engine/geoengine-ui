@@ -11,62 +11,55 @@
 
     <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
         <!-- Data-Table -->
-        <table #scrollContainerContent>
-            <thead> <!--#tableHead-->
-            <tr>
-                <th [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
-                    class="tableFixed tableFixedHorizontal tableFixedVertical">
-                    <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
-                                     (change)="toggleAll()"></md-checkbox>
-                    </div>
-                </th>
-                <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
-                    class="tableFixed tableFixedHorizontal">
-                    <div class="tableCell" [style.width.px]="avgWidths[i]">
-                        {{dataHeadUnits[i]}}
-                    </div>
-                </th>
-            </tr>
-            </thead>
+        <md-table [dataSource]="tableData">
 
-            <tbody> <!--#tableBody-->
-            <!-- Top Offset for virtual scrolling-->
-            <tr #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop">
-                <td [style.width]="'100%'"></td>
-            </tr>
+            <ng-container mdColumnDef="selection">
+                <md-header-cell *mdHeaderCellDef [style.left.px]="scrollContainer.scrollLeft" class="tableFixed tableFixedVertical">
+                    <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
+                                 (change)="toggleAll()"></md-checkbox>
+                </md-header-cell>
 
-            <!-- Content -->
-            <tr *ngFor="let tr of displayItemCounter" [class]="'tr'+tr" [class.rowSelected]="selected[tr+firstDisplay]">
-                <td [style.left.px]="scrollContainer.scrollLeft" [style.position]="'relative'" class="tableFixed tableFixedVertical">
-                    <div class="tableCell">
-                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]"
-                                     (change)="toggle(tr+firstDisplay)"></md-checkbox>
-                    </div>
-                </td>
-                <td *ngFor="let t of dataHead; let i=index">
-                    <!--<div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="!textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
-                      <wave-datatable-mediaview [url]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </wave-datatable-mediaview>
-                    </div>
-                    <div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
-                      <wave-datatable-mediaview [url]="data[tr+firstDisplay]['properties'][t]" [md-tooltip]="data[tr+firstDisplay]['properties'][t]" [tooltip-position]="'below'"> {{data[tr+firstDisplay]['properties'][t]}} </wave-datatable-mediaview>
-                    </div>
-                    -->
-                    <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width.px]="avgWidths[i]">
-                        <wave-datatable-mediaview *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]"
-                                    [type]="colTypes[i]"> </wave-datatable-mediaview>
-                        <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </span>
-                    </div>
-                </td>
-            </tr>
+                <md-cell *mdCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.left.px]="scrollContainer.scrollLeft"
+                         class="tableFixed tableFixedVertical">
+                    <md-checkbox *ngIf="data != null && !isFirst && !isLast" [checked]="selected[i-1+firstDisplay]"
+                                 (change)="toggle(i-1+firstDisplay)"></md-checkbox>
+                </md-cell>
+            </ng-container>
 
-            <!-- Bottom Offset for virtual scrolling-->
-            <tr #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom">
-                <td [style.width]="'100%'"></td>
-            </tr>
-            </tbody>
-        </table>
+            <ng-container mdColumnDef="empty">
+                <md-cell *mdCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.height.px]="(offsetTop$ | async)"
+                         class="offsetterTop">
+                </md-cell>
+            </ng-container>
+
+
+            <ng-container *ngFor="let t of dataHead; let j=index;" [mdColumnDef]="t">
+                <md-header-cell *mdHeaderCellDef [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
+                    {{dataHeadUnits[j]}}
+                </md-header-cell>
+
+                <md-cell *mdCellDef="let element; let isFirst=first; let isLast=last" [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
+                    <template [ngIf]="!isFirst && !isLast">
+                        <wave-datatable-mediaview *ngIf="colTypes[j] == 'media'" [url]="element.properties[t]" [type]="colTypes[j]"></wave-datatable-mediaview>
+                        <span *ngIf="colTypes[j] != 'media'" [title]="element.properties[t]"> {{element.properties[t]}} </span>
+                    </template>
+                </md-cell>
+            </ng-container>
+
+
+            <md-header-row *mdHeaderRowDef="['selection'].concat(dataHead)" [style.top.px]="scrollContainer.scrollTop"
+                           class="tableFixed tableFixedHorizontal"></md-header-row>
+
+            <!--<div #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop"> </div>-->
+            <md-row *mdRowDef="let row; columns: ['selection'].concat(dataHead); let i = index; let isFirst=first; let isLast=last;"
+                    [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
+                    [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
+                    [class.rowSelected]="selected[i-1+firstDisplay]"></md-row>
+            <!--<div #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom"> </div >-->
+
+        </md-table>
     </ng-template>
+
     <div *ngIf="!(layerService.getIsAnyLayerSelectedStream() | async)" class="no-layer">
         <span>no layer selected</span>
     </div>

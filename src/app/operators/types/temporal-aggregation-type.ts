@@ -4,17 +4,17 @@ type AggregationType = 'min' | 'max' | 'avg';
 
 interface TemporalAggregationTypeMappingDict extends OperatorTypeMappingDict {
     duration: number;
-    aggregationType: AggregationType;
+    aggregation: AggregationType;
 }
 
 export interface TemporalAggregationTypeDict extends OperatorTypeDict {
     duration: number;
-    aggregationType: AggregationType;
+    aggregation: AggregationType;
 }
 
 interface TemporalAggregationTypeConfig {
     duration: number;
-    aggregationType: AggregationType;
+    aggregation: AggregationType;
 }
 
 /**
@@ -30,19 +30,19 @@ export class TemporalAggregationType extends OperatorType {
     static get NAME(): string { return TemporalAggregationType._NAME; }
 
     private duration: number;
-    private aggregationType: AggregationType;
+    private aggregation: AggregationType;
 
     static fromDict(dict: TemporalAggregationTypeDict): TemporalAggregationType {
         return new TemporalAggregationType({
             duration: dict.duration,
-            aggregationType: dict.aggregationType,
+            aggregation: dict.aggregation,
         });
     }
 
     constructor(config: TemporalAggregationTypeConfig) {
         super();
         this.duration = config.duration;
-        this.aggregationType = config.aggregationType;
+        this.aggregation = config.aggregation;
     }
 
     getMappingName(): string {
@@ -60,14 +60,14 @@ export class TemporalAggregationType extends OperatorType {
     getParametersAsStrings(): Array<[string, string]> {
         return [
             ['duration', this.duration.toString()],
-            ['aggregationType', this.aggregationType.toString()],
+            ['aggregation', this.aggregation.toString()],
         ];
     }
 
     toMappingDict(): TemporalAggregationTypeMappingDict {
         return {
             duration: this.duration,
-            aggregationType: this.aggregationType,
+            aggregation: this.aggregation,
         };
     }
 
@@ -75,7 +75,7 @@ export class TemporalAggregationType extends OperatorType {
         return {
             operatorType: TemporalAggregationType.TYPE,
             duration: this.duration,
-            aggregationType: this.aggregationType,
+            aggregation: this.aggregation,
         };
     }
 

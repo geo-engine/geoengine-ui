@@ -1,0 +1,55 @@
+<table #scrollContainerContent>
+            <thead> <!--#tableHead-->
+            <tr>
+                <th [style.left.px]="scrollContainer.scrollLeft" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
+                    class="tableFixed tableFixedHorizontal tableFixedVertical">
+                    <div class="tableCell">
+                        <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
+                                     (change)="toggleAll()"></md-checkbox>
+                    </div>
+                </th>
+                <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
+                    class="tableFixed tableFixedHorizontal">
+                    <div class="tableCell" [style.width.px]="avgWidths[i]">
+                        {{dataHeadUnits[i]}}
+                    </div>
+                </th>
+            </tr>
+            </thead>
+
+            <tbody> <!--#tableBody-->
+            <!-- Top Offset for virtual scrolling-->
+            <tr #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop">
+                <td [style.width]="'100%'"></td>
+            </tr>
+
+            <!-- Content -->
+            <tr *ngFor="let tr of displayItemCounter" [class]="'tr'+tr" [class.rowSelected]="selected[tr+firstDisplay]">
+                <td [style.left.px]="scrollContainer.scrollLeft" [style.position]="'relative'" class="tableFixed tableFixedVertical">
+                    <div class="tableCell">
+                        <md-checkbox *ngIf="data != null" [checked]="selected[tr+firstDisplay]"
+                                     (change)="toggle(tr+firstDisplay)"></md-checkbox>
+                    </div>
+                </td>
+                <td *ngFor="let t of dataHead; let i=index">
+                    <!--<div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="!textTooWideForColumn(data[tr+firstDisplay][t],i)">
+                      <wave-datatable-mediaview [url]="data[tr+firstDisplay][t]"> {{data[tr+firstDisplay][t]}} </wave-datatable-mediaview>
+                    </div>
+                    <div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="textTooWideForColumn(data[tr+firstDisplay][t],i)">
+                      <wave-datatable-mediaview [url]="data[tr+firstDisplay][t]" [md-tooltip]="data[tr+firstDisplay][t]" [tooltip-position]="'below'"> {{data[tr+firstDisplay][t]}} </wave-datatable-mediaview>
+                    </div>
+                    -->
+                    <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width.px]="avgWidths[i]">
+                        <wave-datatable-mediaview *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay][t]"
+                                    [type]="colTypes[i]"> </wave-datatable-mediaview>
+                        <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay][t]"> {{data[tr+firstDisplay][t]}} </span>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Bottom Offset for virtual scrolling-->
+            <tr #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom">
+                <td [style.width]="'100%'"></td>
+            </tr>
+            </tbody>
+        </table>

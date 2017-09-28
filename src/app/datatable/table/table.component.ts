@@ -1,7 +1,9 @@
 import {
-    Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit, EventEmitter,
+    Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit,
     ChangeDetectionStrategy, OnInit, OnDestroy
 } from '@angular/core';
+import {CdkTableModule} from '@angular/cdk/table';
+import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
 import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
@@ -15,11 +17,8 @@ import {MapService} from '../../map/map.service';
 import * as ol from 'openlayers';
 import {ProjectService} from '../../project/project.service';
 import {Unit} from '../../operators/unit.model';
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
-interface FeatureData {
-    id: number | string;
-    properties: {[key: string]: string | number };
-}
 /**
  * Data-Table-Component
  * Displays a Data-Table
@@ -36,60 +35,33 @@ interface FeatureData {
  */
 export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
-    /*@HostListener('scroll', ['$event']) private onScroll($event:Event):void {
-     //if($event.target){
-     this.scrollTopBefore = this.scrollTop;
-     this.scrollLeftBefore = this.scrollLeft;
-
-     this.scrollTop = $event.target['scrollTop'];
-     this.scrollLeft = $event.target['scrollLeft'];
-     //console.log($event.target['scrollLeft'], $event.target['scrollTop']);
-     //}
-     this.updateScroll();
-     };*/
-
     public LoadingState = LoadingState;
 
     @Input()
     public height: number;
 
-    /**
-     * Input: Data to display in the table
-     */
-    // @Input()
+    // Data and Data-Subsets
     public data: Array<any>;
-
-    /**
-     * Output: Is emitted when the row-selection changes. The selected rows are emitted
-     * @type {EventEmitter}
-     */
-    // @Output()
-    private rowsSelected: EventEmitter<Array<number>> = new EventEmitter();
-
-
-    // Data-Subsets
+    public tableData: TableDataSource;
     public dataHead: Array<string>;
     public dataHeadUnits: Array<string>;
-    private testData: Array<any>;
 
     // For row-selection
+    // private rowsSelected: EventEmitter<Array<number>> = new EventEmitter();
     public selected: boolean[];
-    private selectedRowsList: Array<number>;
+    // private selectedRowsList: Array<number>;
     public allSelected: boolean;
     public allEqual: boolean;
 
     // Element-References
     @ViewChild('scrollContainer') public container: ElementRef;
-    /*
-     @ViewChild('scrollContainerContent') table:ElementRef;
-     @ViewChild('tableHead') tableHead:ElementRef;
-     @ViewChild('tableBody') tableBody:ElementRef;
-     @ViewChildren('tableElements') tableElements:QueryList<ElementRef>;
-     */
 
     // For text-width-calculation
     private styleString = '16px Roboto, sans-serif';
+    private styleStringHead = '12px Roboto, sans-serif';
     private oneLineMaxWidth = 300;
+    private columnMinWidth = 100;
+    private columnMaxWidth = 400;
     private canvas;
 
 
@@ -103,7 +75,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     private scrollTopBefore = 0;
     private scrollLeftBefore = 0;
 
-    private elementHeight = 42;
+    private elementHeight = 41;
 
 
     public displayItemCount = 40;
@@ -184,11 +156,16 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             this.data = [];
 
             this.data = features.map(x => {
+                /*let properties = x.getProperties();
+                properties['id'] = x.getId();
+                return properties;*/
                 return {
                     id: x.getId(),
-                    properties: x.getProperties(),
+                    properties: x.getProperties()
                 };
             });
+
+            //console.log(this.data);
 
             // only needs to be called once for each "data"
             this.dataInit();
@@ -260,7 +237,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                         return d.data.filter(x => {
                             const xe = x.getGeometry().getExtent();
                             const ve = v.extent;
-                            const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); //todo not only point
+                            const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); // todo not only point
                             // console.log(ve, x.getGeometry(), int);
                             return int;
                         });
@@ -296,6 +273,8 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         this.firstDisplay = 0;
         // this.lastDisplay = 15;
 
+        this.tableData = new TableDataSource(this.data, this.firstDisplay, this.displayItemCount);
+
         this.container.nativeElement.scrollTop = 0;
         this.container.nativeElement.scrollLeft = 0;
 
@@ -306,7 +285,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.offsetBottom$ = Observable.of(offsetBottom);
 
-
         // Reset selection
         this.selected = [];
         for (let i = 0; i < this.data.length; i++) {
@@ -314,10 +292,11 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         // Get Header
-        if (this.data.length > 0 && this.data[0]['properties']) {
-            this.dataHead = TableComponent.getArrayOfKeys(this.data[0]['properties']);
+        if (this.data.length > 0 && this.data[0].properties) {
+            this.dataHead = TableComponent.getArrayOfKeys(this.data[0].properties);
         }
 
+        // console.log(this.dataHead);
         if (this.layerService) {
             if (this.layerService.getSelectedLayer()) {
                 let units = this.layerService.getSelectedLayer().operator.units;
@@ -339,19 +318,23 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         // Reset avg widths
         this.avgWidths = [];
         for (let i = 0; i < this.data.length; i++) {
-            this.avgWidths[i] = 300;
+            this.avgWidths[i] = this.columnMinWidth;
         }
 
         // Calculate Column widths
-        this.testData = this.selectRandomSubData(20);
-        [this.avgWidths, this.colTypes] = this.calculateColumnProperties(this.testData, this.dataHead, this.dataHeadUnits);
+        const testData = this.selectRandomSubData(20);
+        [this.avgWidths, this.colTypes] = this.calculateColumnProperties(testData, this.dataHead, this.dataHeadUnits);
+
+        /*console.log('--------------------------------');
+        console.log(testData);
+        console.log(this.avgWidths);*/
 
         // Recreate displayItemCounter
         this.displayItemCounter = [];
-        let i = 0;
+        let j = 0;
         while (this.displayItemCounter.length < this.displayItemCount && this.displayItemCounter.length < this.data.length) {
-            this.displayItemCounter.push(i);
-            i++;
+            this.displayItemCounter.push(j);
+            j++;
         }
 
         // Test for Selections
@@ -411,13 +394,13 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             let columnType;
 
             // Header Row
-            columnWidth = this.getTextWidth(dataHeadUnits[column], 'bold ' + this.styleString);
+            columnWidth = this.getTextWidth(dataHeadUnits[column], this.styleStringHead);
 
             columnType = 'text';
 
             for (let row = 0; row < testData.length; row++) {
                 // Normal Table Rows
-                let tmp = testData[row]['properties'][dataHead[column]];
+                let tmp = testData[row].properties[dataHead[column]];
 
                 // console.log(tmp);
 
@@ -471,9 +454,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             // Widths
-            if (columnWidth > widths[column] || widths[column] == null) {
-                widths[column] = columnWidth;
+            if (columnWidth > this.columnMaxWidth) {
+                columnWidth = this.columnMaxWidth;
             }
+            widths[column] = columnWidth;
 
             // Types
             types[column] = columnType;
@@ -567,6 +551,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
             this.firstDisplay = numberOfTopRows;
+            this.tableData.update(this.data, this.firstDisplay, this.displayItemCount);
 
             this.offsetBottom$ = Observable.of((this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight);
             // this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
@@ -598,6 +583,7 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
             }
 
             this.firstDisplay = numberOfTopRows;
+            this.tableData.update(this.data, this.firstDisplay, this.displayItemCount);
 
             this.offsetTop$ = Observable.of(numberOfTopRows * this.elementHeight);
             // this.offsetTop = numberOfTopRows * this.elementHeight;
@@ -658,18 +644,18 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
      */
     private testSelected(): void {
         this.allSelected = true;
-        this.selectedRowsList = [];
+        // this.selectedRowsList = [];
         for (let i in this.selected) {
             if (this.selected.hasOwnProperty(i)) {
                 this.allSelected = this.allSelected && this.selected[i];
 
-                if (this.selected[i]) {
+                /*if (this.selected[i]) {
                     this.selectedRowsList.push(Number(i));
-                }
+                }*/
             }
         }
 
-        this.rowsSelected.emit(this.selectedRowsList);
+        // this.rowsSelected.emit(this.selectedRowsList);
         // console.log("allSelected:"+this.allSelected);
     }
 
@@ -684,5 +670,31 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         // console.log("allEqual:"+this.allEqual);
     }
+}
 
+export class TableDataSource extends DataSource<any> {
+
+    private data: Array<any>;
+    private dataObs$: BehaviorSubject<Element[]>;
+
+    constructor(data: Array<any>, start: number, length: number) {
+        super();
+        this.dataObs$ = new BehaviorSubject([]);
+        this.update(data, start, length);
+    }
+
+    update(data: Array<any>, start: number, length: number) {
+        let slice = data.slice(start, start + length);
+        this.data = [''].concat(slice).concat(['']);
+        // console.log(start, length);
+        // console.log(this.data);
+        this.dataObs$.next(this.data);
+    }
+
+    /** Connect function called by the table to retrieve one stream containing the data to render. */
+    connect(): Observable<Element[]> {
+        return Observable.merge(this.dataObs$);
+    }
+
+    disconnect() {}
 }
