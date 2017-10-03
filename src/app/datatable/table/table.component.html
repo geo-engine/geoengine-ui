@@ -1,7 +1,7 @@
 <div class="scrollContent" [style.height.px]="height" #scrollContainer (scroll)="updateScroll()">
 
     <!-- Loading Spinner -->
-    <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
+    <div class="spinnerContainer" *ngIf="(state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
          [style.top.px]="scrollContainer.scrollTop">
         <div class="spinner">
             <md-spinner color="primary"></md-spinner>
@@ -26,13 +26,6 @@
                 </md-cell>
             </ng-container>
 
-            <ng-container mdColumnDef="empty">
-                <md-cell *mdCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.height.px]="(offsetTop$ | async)"
-                         class="offsetterTop">
-                </md-cell>
-            </ng-container>
-
-
             <ng-container *ngFor="let t of dataHead; let j=index;" [mdColumnDef]="t">
                 <md-header-cell *mdHeaderCellDef [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
                     {{dataHeadUnits[j]}}
@@ -47,11 +40,11 @@
             </ng-container>
 
 
-            <md-header-row *mdHeaderRowDef="['selection'].concat(dataHead)" [style.top.px]="scrollContainer.scrollTop"
+            <md-header-row *mdHeaderRowDef="tableDataHead" [style.top.px]="scrollContainer.scrollTop"
                            class="tableFixed tableFixedHorizontal"></md-header-row>
 
             <!--<div #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop"> </div>-->
-            <md-row *mdRowDef="let row; columns: ['selection'].concat(dataHead); let i = index; let isFirst=first; let isLast=last;"
+            <md-row *mdRowDef="let row; columns: tableDataHead; let i = index; let isFirst=first; let isLast=last;"
                     [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
                     [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
                     [class.rowSelected]="selected[i-1+firstDisplay]"></md-row>

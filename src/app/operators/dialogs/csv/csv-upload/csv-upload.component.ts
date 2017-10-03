@@ -112,7 +112,7 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
         this.status$.next(FormStatus.Selection);
     }
 
-    /**This method generates an number array containing all integers i with n <= j < m
+    /**This method generates a number array containing all integers i with n <= i < m
      *
      * @param n lowest integer. !Warning: This integer is still contained in array.
      * @param m highest integer. !Warning: This integer is not contained in array.

@@ -21,7 +21,6 @@ import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
 import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
-// import projection = d3.geo.projection;
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -250,12 +249,12 @@ export class MappingQueryService {
             console.log(newConfig.operator);
 
             const parameters = this.getWMSQueryParameters(newConfig);
-            console.log("Time Interval: " + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+            console.log('Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
 
             return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
         } else {
             const parameters = this.getWMSQueryParameters(config);
-            console.log("No Time Interval: " + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+            console.log('No Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
 
             return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
         }
@@ -301,12 +300,8 @@ export class MappingQueryService {
                  projection: Projection): Observable<MappingColorizer> {
 
 
-        let timeStart;
-        if (time.getEnd().isAfter(time.getStart())) {
-            timeStart = new TimePoint(time.getStart());
-        } else {
-            timeStart = time;
-        }
+        // TODO
+        let timeStart = this.stripEndingTime(time);
 
         const request = new MappingRequestParameters({
             service: 'WMS',
@@ -346,12 +341,8 @@ export class MappingQueryService {
         extent: ol.Extent,
     }): Promise<Array<Provenance>> {
 
-        let timeStart;
-        if (config.time.getEnd().isAfter(config.time.getStart())) {
-            timeStart = new TimePoint(config.time.getStart());
-        } else {
-            timeStart = config.time;
-        }
+        // TODO
+        let timeStart = this.stripEndingTime(config.time);
 
         const request = new MappingRequestParameters({
             service: 'provenance',
@@ -384,6 +375,16 @@ export class MappingQueryService {
         ).map(
             json => json as [Provenance]
         ).toPromise();
+    }
+
+    private stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
