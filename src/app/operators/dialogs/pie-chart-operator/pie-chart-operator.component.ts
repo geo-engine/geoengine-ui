@@ -10,6 +10,7 @@ import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
 import {PieChartType} from '../../types/piechart-type.model';
+import {WaveValidators} from "../../../util/form.validators";
 
 @Component({
     selector: 'wave-pie-chart-operator',
@@ -33,12 +34,11 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form = this.formBuilder.group({
             layer: [undefined, Validators.required],
             attribute: [undefined, Validators.required],
-            name: 'Pie chart',
+            name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
     }
 
     add() {
-        const outputName = this.form.controls['layer'].value.name + ' - ' + this.form.controls['attribute'].value.toString();
         const projection = this.form.controls['layer'].value.operator.projection;
         const operator: Operator = new Operator({
             operatorType: new PieChartType({
@@ -49,7 +49,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
             pointSources: [this.form.controls['layer'].value.operator.getProjectedOperator(projection)],
         });
         const plot = new Plot({
-            name: outputName,
+            name: this.form.controls['name'].value,
             operator: operator,
         });
         this.projectService.addPlot(plot);

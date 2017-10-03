@@ -51,20 +51,22 @@ export class ScatterPlotType extends OperatorType {
         this.attribute1 = config.attribute1;
         this.attribute2 = config.attribute2;
         this.regression = config.regression;
+        let isRegression = (this.regression ? '\nabline(lm(second~first), col="red");' : '');
+        let legend = 'legend("topright", legend=c("'
+            + config.attribute2 + (this.regression ? '", "Regression line"' : '"')
+            + '), pch=c(1' + (this.regression ? ', -1' : '') + '), lty=c(0' + (this.regression ? ', 1' : '') + '), col=c("black", "red"));';
         this.code = `
-points <- mapping.loadPoints(0, mapping.qrect)
+points <- mapping.loadPoints(0, mapping.qrect);
 if (length(points) > 0) {
-  x <- points&\`${config.attribute1}\`
-  y <- points$\`${config.attribute2}\`
-  plot(x, y, xlab="\`${config.attribute1}\`", ylab="\`${config.attribute1}\`")
-  if(\`${config.regression}\`) {
-    abline(lm(y~x), col="red")
-  }
-} else {
-  plot.new()
-  mtext("Empty Dataset")
+first = points$\`${config.attribute1}\`;
+second = points$\`${config.attribute2}\`;
+plot(first, second, xlab="${config.attribute1}", ylab="${config.attribute2}");
+${legend}${isRegression}
+}else {
+plot.new();
+mtext("Empty Dataset");
 }
-        `;
+`;
         this.resultType = ResultTypes.PLOT;
     }
 
@@ -102,5 +104,4 @@ if (length(points) > 0) {
             regression: this.regression
         };
     }
-
 }

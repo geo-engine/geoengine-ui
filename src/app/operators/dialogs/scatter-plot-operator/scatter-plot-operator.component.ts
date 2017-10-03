@@ -9,6 +9,7 @@ import {ProjectService} from '../../../project/project.service';
 import {DataTypes} from '../../datatype.model';
 import {NumericPipe} from './numeric-pipe';
 import {ScatterPlotType} from '../../types/scatterplot-type.model';
+import {WaveValidators} from '../../../util/form.validators';
 
 @Component({
     selector: 'wave-pie-chart-operator',
@@ -36,25 +37,24 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
             attribute1: [undefined, Validators.required],
             attribute2: [undefined, Validators.required],
             isRegression: [false, Validators.required],
-            name: 'Scatter plot',
+            name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
     }
 
     add() {
-        const outputName = this.form.controls['vLayer'].value.name + ' - ' + this.form.controls['attribute1'].value.toString() + "|" + this.form.controls['attribute2'].value.toString();
         const projection = this.form.controls['vLayer'].value.operator.projection;
         const operator: Operator = new Operator({
             operatorType: new ScatterPlotType({
                 attribute1: this.form.controls['attribute1'].value.toString(),
                 attribute2: this.form.controls['attribute2'].value.toString(),
-                regression: this.form.controls['isRegression'].value.toString(),
+                regression: this.form.controls['isRegression'].value,
             }),
             resultType: ResultTypes.PLOT,
             projection: projection,
             pointSources: [this.form.controls['vLayer'].value.operator.getProjectedOperator(projection)],
         });
         const plot = new Plot({
-            name: outputName,
+            name: this.form.controls['name'].value,
             operator: operator,
         });
         this.projectService.addPlot(plot);
