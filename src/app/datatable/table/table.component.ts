@@ -1,6 +1,6 @@
 import {
     Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit,
-    ChangeDetectionStrategy, OnInit, OnDestroy
+    ChangeDetectionStrategy, OnInit, OnDestroy, OnChanges, SimpleChanges
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
@@ -33,7 +33,7 @@ import {Unit} from '../../operators/unit.model';
  * Data-Table-Component
  * Displays a Data-Table
  */
-export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
     public LoadingState = LoadingState;
 
@@ -79,9 +79,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
     private headerHeight = 41;
 
 
-    public displayItemCount = 40;
+    private minDisplayItemCount = 6;
+    public displayItemCount = this.minDisplayItemCount;
     // private displayOffsetMax = 10;
-    private displayOffsetMin = 5;
+    private displayOffsetMin = 1;
 
     public displayItemCounter: number[];
 
@@ -165,6 +166,10 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
                 };
             });
 
+            if (this.height / this.elementHeight > this.minDisplayItemCount) {
+                this.displayItemCount = Math.ceil(1.5 * this.height / this.elementHeight);
+            }
+
             // console.log(this.data);
 
             // only needs to be called once for each "data"
@@ -198,6 +203,13 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
             this.cdr.markForCheck();
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+
+        if (this.height / this.elementHeight > this.minDisplayItemCount) {
+            this.displayItemCount = Math.ceil(1.5 * this.height / this.elementHeight);
+        }
     }
 
     ngOnDestroy() {
@@ -679,7 +691,6 @@ export class TableComponent implements OnInit, OnDestroy, AfterViewInit {
 
 export class TableDataSource extends DataSource<any> {
 
-    private data: Array<any>;
     private dataObs$: BehaviorSubject<Element[]>;
 
     constructor(data: Array<any>, start: number, length: number) {
@@ -690,10 +701,10 @@ export class TableDataSource extends DataSource<any> {
 
     update(data: Array<any>, start: number, length: number): void {
         let slice = data.slice(start, start + length);
-        this.data = [undefined, ...slice, undefined];
+        let dataNew = [undefined, ...slice, undefined];
         // console.log(start, length);
         // console.log(this.data);
-        this.dataObs$.next(this.data);
+        this.dataObs$.next(dataNew);
     }
 
     /** Connect function called by the table to retrieve one stream containing the data to render. */

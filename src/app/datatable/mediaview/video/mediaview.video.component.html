@@ -2,7 +2,9 @@
 
 <div fxFlex class="videoContainer">
 
-    <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
+    <md-card>
+        <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
+    </md-card>
 
     <div class="info">
         <h3 mdTooltip="{{videoURLs[currentVideo] | fileName}}"> {{videoURLs[currentVideo] | fileName}} </h3>

@@ -2,7 +2,9 @@
 
 <div class="audioContainer">
 
-    <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></audio>
+    <md-card>
+        <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></audio>
+    </md-card>
 
     <div class="info">
         <h3 mdTooltip="{{audioURLs[currentAudio] | fileName}}"> {{audioURLs[currentAudio] | fileName}} </h3>

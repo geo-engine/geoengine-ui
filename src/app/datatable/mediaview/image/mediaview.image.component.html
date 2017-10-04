@@ -2,7 +2,9 @@
 
 <div class="imageContainer">
 
-    <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+    <md-card>
+        <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+    </md-card>
 
     <div *ngIf="loading" class="loading">
         <div class="spinner">
