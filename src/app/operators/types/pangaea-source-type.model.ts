@@ -3,16 +3,16 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
 import {CsvParameters} from '../dialogs/baskets/csv.model';
 
 interface PangaeaSourceTypeConfig {
-    dataLink: string;
+    doi: string;
     csvParameters: CsvParameters;
 }
 
 interface PangaeaSourceTypeMappingDict extends OperatorTypeMappingDict, CsvParameters {
-    dataLink: string;
+    doi: string;
 }
 
 export interface PangaeaSourceTypeDict extends OperatorTypeDict  {
-    dataLink: string;
+    doi: string;
     csvParameters: CsvParameters;
 }
 
@@ -28,18 +28,18 @@ export class PangaeaSourceType extends OperatorType {
     static get ICON_URL(): string { return PangaeaSourceType._ICON_URL; }
     static get NAME(): string { return PangaeaSourceType._NAME; }
 
-    private dataLink: string;
+    private doi: string;
     private csvParameters: CsvParameters;
 
     constructor(config: PangaeaSourceTypeConfig) {
         super();
-        this.dataLink = config.dataLink;
+        this.doi = config.doi;
         this.csvParameters = config.csvParameters;
     }
 
     static fromDict(dict: PangaeaSourceTypeDict): PangaeaSourceType {
         return new PangaeaSourceType({
-            dataLink: dict.dataLink,
+            doi: dict.doi,
             csvParameters: dict.csvParameters,
     });
     }
@@ -58,7 +58,7 @@ export class PangaeaSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['dataLink', this.dataLink],
+            ['doi', this.doi],
             ['geometry', this.csvParameters.geometry],
             ['separator', (this.csvParameters.separator) ?
                 this.csvParameters.separator : ''],
@@ -68,14 +68,14 @@ export class PangaeaSourceType extends OperatorType {
 
     toMappingDict(): PangaeaSourceTypeMappingDict {
         let dict = this.csvParameters as PangaeaSourceTypeMappingDict;
-        dict.dataLink = this.dataLink;
+        dict.doi = this.doi;
         return dict;
     }
 
     toDict(): PangaeaSourceTypeDict {
         return {
             operatorType: PangaeaSourceType.TYPE,
-            dataLink: this.dataLink,
+            doi: this.doi,
             csvParameters: this.csvParameters,
         };
     }

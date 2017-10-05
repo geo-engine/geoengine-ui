@@ -1,4 +1,4 @@
-<div class="scrollContent" [style.height.px]="height" #scrollContainer (window:resize)="updateContainer()" (scroll)="updateScroll()">
+<div class="scrollContent" [style.height.px]="height" #scrollContainer (scroll)="updateScroll()">
 
     <!-- Loading Spinner -->
     <div class="spinnerContainer" *ngIf="loading || (state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
@@ -24,7 +24,7 @@
                 <th *ngFor="let t of dataHead; let i=index" [style.top.px]="scrollContainer.scrollTop" [style.position]="'relative'"
                     class="tableFixed tableFixedHorizontal">
                     <div class="tableCell" [style.width.px]="avgWidths[i]">
-                        {{t}}
+                        {{dataHeadUnits[i]}}
                     </div>
                 </th>
             </tr>
@@ -32,7 +32,7 @@
 
             <tbody> <!--#tableBody-->
             <!-- Top Offset for virtual scrolling-->
-            <tr #offsetterTop [style.height.px]="offsetTop" class="offsetterTop">
+            <tr #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop">
                 <td [style.width]="'100%'"></td>
             </tr>
 
@@ -46,22 +46,22 @@
                 </td>
                 <td *ngFor="let t of dataHead; let i=index">
                     <!--<div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="!textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
-                      <app-dialog [url]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </app-dialog>
+                      <wave-datatable-mediaview [url]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </wave-datatable-mediaview>
                     </div>
                     <div class="tableCell" [style.width]="avgWidths[i]+'px'" *ngIf="textTooWideForColumn(data[tr+firstDisplay]['properties'][t],i)">
-                      <app-dialog [url]="data[tr+firstDisplay]['properties'][t]" [md-tooltip]="data[tr+firstDisplay]['properties'][t]" [tooltip-position]="'below'"> {{data[tr+firstDisplay]['properties'][t]}} </app-dialog>
+                      <wave-datatable-mediaview [url]="data[tr+firstDisplay]['properties'][t]" [md-tooltip]="data[tr+firstDisplay]['properties'][t]" [tooltip-position]="'below'"> {{data[tr+firstDisplay]['properties'][t]}} </wave-datatable-mediaview>
                     </div>
                     -->
                     <div class="tableCell" *ngIf="(tr+firstDisplay) < data.length" [style.width.px]="avgWidths[i]">
-                        <wave-datatable-dialog *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]"
-                                    [type]="colTypes[i]"> </wave-datatable-dialog>
+                        <wave-datatable-mediaview *ngIf="colTypes[i] == 'media'" [url]="data[tr+firstDisplay]['properties'][t]"
+                                    [type]="colTypes[i]"> </wave-datatable-mediaview>
                         <span *ngIf="colTypes[i] != 'media'" [title]="data[tr+firstDisplay]['properties'][t]"> {{data[tr+firstDisplay]['properties'][t]}} </span>
                     </div>
                 </td>
             </tr>
 
             <!-- Bottom Offset for virtual scrolling-->
-            <tr #offsetterBottom [style.height.px]="offsetBottom" class="offsetterBottom">
+            <tr #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom">
                 <td [style.width]="'100%'"></td>
             </tr>
             </tbody>
@@ -69,6 +69,6 @@
     </ng-template>
     <div *ngIf="!(layerService.getIsAnyLayerSelectedStream() | async)" class="no-layer">
         <span>no layer selected</span>
-        </div>
+    </div>
 
 </div>

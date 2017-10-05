@@ -1,0 +1,71 @@
+//@import '../../../../../node_modules/@angular/material/dialog/dialog';
+//@import '../../../../../node_modules/@angular/material/button/button-base';
+$mat-dialog-padding: 24px !default; // TODO: import when this is possible again
+$mat-fab-size: 56px !default; // TODO: import when this is possible again
+
+
+.previous{
+    position: absolute;
+    top: calc(50% - #{$mat-fab-size/2});
+    left: #{-$mat-fab-size/2};
+}
+
+.next{
+    position: absolute;
+    top: calc(50% - #{$mat-fab-size/2});
+    right: #{-$mat-fab-size/2};
+}
+
+.imageContainer{
+    max-width: calc(100vw - 4rem);
+    max-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+    margin: #{-$mat-dialog-padding};
+
+    img {
+        margin: 0 auto;
+        display: block;
+    }
+
+    md-dialog-content{
+        padding: 0;
+        margin: 0;
+        max-height: inherit;
+        max-width: inherit;
+        overflow: auto;
+    }
+
+    md-toolbar {
+        margin: 0;
+
+        .separator{
+            flex-grow: 1;
+        }
+
+        .externalLink {
+            margin-left: 2rem;
+        }
+
+        .closeLink {
+
+        }
+    }
+
+    .loading{
+        position: absolute;
+        width: 100%;
+        height:100%;
+        top: 0;
+        left: 0;
+        background: rgba(#ffffff, 50%);
+
+        .spinner{
+            position: relative;
+            top: calc(50% - 100px);
+            left: calc(50% - 100px);
+        }
+    }
+}
+
+

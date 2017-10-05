@@ -1,0 +1,16 @@
+<wave-sidenav-header>Videos</wave-sidenav-header>
+
+<div fxFlex class="videoContainer">
+
+    <wave-dialog-section-heading title="Video {{currentVideo + 1}} of {{videoURLs.length}}" subtitle="{{videoURLs[currentVideo] | fileName}}"></wave-dialog-section-heading>
+
+    <a md-mini-fab color="primary" [href]="videoURLs[currentVideo]" target="_blank" class="externalLink" [title]="'open in new tab'">
+        <md-icon class="md-24">open_in_new</md-icon>
+    </a>
+
+    <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
+
+    <wave-mediaview-playlist [tracks]="videoURLs" [currentTrack]="currentVideo" (gotoTrack)="goToVideo($event)"></wave-mediaview-playlist>
+</div>
+
+

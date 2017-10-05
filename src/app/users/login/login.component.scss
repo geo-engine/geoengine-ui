@@ -8,12 +8,21 @@ md-button-toggle-group {
     margin-bottom: 1rem;
 }
 
-img {
+md-button-toggle {
+    text-align: center;
+}
+
+md-button-toggle img {
     height: 1rem;
 }
 
+md-form-field {
+    width: 100% !important;
+}
+
 md-checkbox {
-    margin-top: 1rem;
+    display: block;
+    margin-bottom: 1rem;
 }
 
 md-spinner {

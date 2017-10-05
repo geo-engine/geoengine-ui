@@ -1,0 +1,65 @@
+//@import '../../../../../node_modules/@angular/material/button/button-base';
+$mat-icon-button-size: 40px !default; // TODO: import when this is possible again
+$mat-fab-size: 56px !default; // TODO: import when this is possible again
+
+.imageContainer{
+
+    wave-dialog-section-heading {
+        float: left;
+        margin: 0 1rem;
+        width: calc(100% - 4rem - #{$mat-icon-button-size});
+    }
+
+    .externalLink{
+        float: right;
+        margin: 1rem;
+    }
+
+    img {
+        width: calc(100% - 2rem);
+        height: auto;
+        margin: 0rem 1rem calc(1rem + #{$mat-fab-size/2}) 1rem;
+        float: left;
+    }
+
+    .loading{
+        position: absolute;
+        width: 100%;
+        height:100%;
+        top: 0;
+        left: 0;
+        background: fade_out(#ffffff, 0.5);
+
+        .spinner{
+            position: relative;
+            top: calc(50% - 50px);
+            left: calc(50% - 50px);
+        }
+    }
+
+    .buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+
+        button {
+            margin: 1rem;
+        }
+
+        /*.previous{
+            margin: 1rem 2rem 1rem 1rem;
+        }
+
+        .next{
+            margin: 1rem 1rem 1rem 2rem;
+        }
+
+        .imageSize{
+
+        }*/
+    }
+}
+
+

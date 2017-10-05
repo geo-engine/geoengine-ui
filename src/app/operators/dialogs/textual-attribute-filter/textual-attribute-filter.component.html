@@ -1,0 +1,40 @@
+<wave-sidenav-header>Textual Attribute Filter</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="vectorLayer"></wave-layer-selection>
+        <wave-dialog-section-heading title="Filter" subtitle="Select the attribute."></wave-dialog-section-heading>
+        <md-select placeholder="Attribute" formControlName="attribute">
+            <md-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}</md-option>
+        </md-select>
+        <md-select placeholder="Match Type" formControlName="engine">
+            <md-option [value]="TextualAttributeFilterEngineType.EXACT">is exactly</md-option>
+            <md-option [value]="TextualAttributeFilterEngineType.CONTAINS">contains</md-option>
+            <md-option [value]="TextualAttributeFilterEngineType.STARTSWITH">starts with</md-option>
+        </md-select>
+        <md-form-field>
+            <input mdInput formControlName="searchString" placeholder="Search String">
+            <md-hint
+                align="end" class="error"
+                *ngIf="form.controls.searchString.errors?.required || form.controls.searchString.errors?.onlyWhitespace"
+            >
+                The search string must be non-empty.
+            </md-hint>
+        </md-form-field>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Filtered ' + (form.controls.vectorLayer.valueChanges | async)?.name"
+        >
+            <md-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </md-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>

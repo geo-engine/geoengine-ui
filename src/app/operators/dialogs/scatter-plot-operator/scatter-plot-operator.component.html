@@ -1,0 +1,41 @@
+<wave-sidenav-header>Scatter plot</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="vLayer"></wave-layer-selection>
+        <div *ngIf="form.controls['vLayer'].valueChanges | async">
+            <wave-dialog-section-heading title="Attributes" [subtitle]="'Select two attributes of layer ' + form.controls['vLayer'].value.name">
+            </wave-dialog-section-heading>
+            <md-select placeholder="First attribute" formControlName="attribute1">
+                <md-option
+                    *ngFor="let attribute of form.controls['vLayer'].value.operator.attributes | NumericPipe:form.controls['vLayer'].value.operator:attribute"
+                    [value]="attribute"
+                >{{attribute}}
+                </md-option>
+            </md-select>
+            <md-select placeholder="Second attribute" formControlName="attribute2">
+                <md-option
+                    *ngFor="let attribute of form.controls['vLayer'].value.operator.attributes | NumericPipe:form.controls['vLayer'].value.operator:attribute"
+                    [value]="attribute"
+                >{{attribute}}
+                </md-option>
+            </md-select>
+            <wave-dialog-section-heading title="Regression line" [subtitle]="'Should a regression line be drawn?'">
+            </wave-dialog-section-heading>
+            <md-checkbox formControlName="isRegression">Regression line</md-checkbox>
+        </div>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Scatter plot of ' + (form.controls['vLayer'].valueChanges | async)?.name"
+        >
+            <md-hint
+                align="end" class="error"
+                *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </md-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>
