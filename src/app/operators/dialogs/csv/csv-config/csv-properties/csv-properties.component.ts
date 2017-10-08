@@ -1,14 +1,8 @@
-/**
- * Created by Julian on 04/05/2017.
- */
 import {
     Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef
 } from '@angular/core';
 import {FormGroup, Validators, FormControl} from '@angular/forms';
-import {Observable} from 'rxjs/observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subscription} from 'rxjs/Subscription';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs/Rx';
 import {IntervalFormat} from '../../interval.enum';
 import {CsvTableComponent} from '../csv-table/csv-table.component';
 import {Projections} from '../../../../projection.model';

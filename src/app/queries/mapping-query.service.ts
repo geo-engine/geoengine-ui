@@ -16,10 +16,20 @@ import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
-import {Time} from '../time/time.model';
+import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
+import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
+import {
+    Basket,
+    BasketResult,
+    BasketsOverview,
+    IBasketAbcdResult,
+    IBasketGroupedAbcdResult
+} from '../operators/dialogs/baskets/gfbio-basket.model';
+import * as moment from 'moment';
+import {BasketResultGroupByDatasetPipe} from '../operators/dialogs/baskets/gfbio-basket.pipe';
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -73,23 +83,23 @@ export class MappingQueryService {
     }
 
     /**
-     * Get a MAPPING url for the WFS request.
+     * Get a MAPPING parameters for the WFS request.
      * @param config.operator the operator graph
      * @param config.time the point in time
      * @param config.projection the desired projection
      * @param config.outputFormat the output format
      * @param config.viewportSize the viewport size
      * @param config.clustered if the result should be clustered
-     * @returns the query url
+     * @returns the query parameters
      */
-    getWFSQueryUrl(config: {
+    getWFSQueryParameters(config: {
         operator: Operator,
         time: Time,
         projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: ViewportSize,
         clustered?: boolean
-    }): string {
+    }): MappingRequestParameters {
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
         const parameters = new MappingRequestParameters({
@@ -127,7 +137,28 @@ export class MappingQueryService {
             // parameters.setParameter('width', Math.max(1, resolution));
         }
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return parameters;
+    }
+
+    /**
+     * Get a MAPPING url for the WFS request.
+     * @param config.operator the operator graph
+     * @param config.time the point in time
+     * @param config.projection the desired projection
+     * @param config.outputFormat the output format
+     * @param config.viewportSize the viewport size
+     * @param config.clustered if the result should be clustered
+     * @returns the query url
+     */
+    getWFSQueryUrl(config: {
+        operator: Operator,
+        time: Time,
+        projection: Projection,
+        outputFormat: WFSOutputFormat,
+        viewportSize?: ViewportSize,
+        clustered?: boolean
+    }): string {
+        return this.config.MAPPING_URL + '?' + this.getWFSQueryParameters(config).toMessageBody();
     }
 
     /**
@@ -148,8 +179,12 @@ export class MappingQueryService {
         viewportSize: ViewportSize,
         clustered: boolean
     }): Observable<string> {
-        return this.http.get(this.getWFSQueryUrl(config))
-            .map(response => response.text());
+        const requestParameters = this.getWFSQueryParameters(config);
+        return this.http.post(
+            this.config.MAPPING_URL,
+            requestParameters.toMessageBody(false),
+            {headers: requestParameters.getHeaders()}
+        ).map(response => response.text());
     }
 
     /**
@@ -175,7 +210,7 @@ export class MappingQueryService {
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: config.time.asRequestString(),
+                // time: config.time.asRequestString(),
             },
         });
     }
@@ -190,9 +225,73 @@ export class MappingQueryService {
         time: Time,
         projection: Projection
     }): string {
-        const parameters = this.getWMSQueryParameters(config);
+        if (config.time.getEnd().isAfter(config.time.getStart())) {
+            const duration = config.time.getEnd().diff(config.time.getStart()) / 1000;
+            console.log('Duration: ' + config.time.getStart() + ' to ' + config.time.getEnd() + ': ' + duration);
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+            const aggregationOperator2 = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregation: 'min',
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [config.operator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [config.operator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [config.operator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [config.operator] : [],
+            });
+
+            /*const aggregationOperator = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregation: 'min',
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: [],
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.getSources(ResultTypes.RASTER),
+                pointSources: config.operator.getSources(ResultTypes.POINTS),
+                lineSources: config.operator.getSources(ResultTypes.LINES),
+                polygonSources: config.operator.getSources(ResultTypes.POLYGONS),
+            });
+
+            const originalOperator = new Operator({
+                operatorType: config.operator.operatorType,
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [aggregationOperator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [aggregationOperator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [aggregationOperator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [aggregationOperator] : [],
+            });*/
+
+            const newConfig = {
+                operator: aggregationOperator2,
+                time: new TimePoint(config.time.getStart()),
+                projection: config.projection
+            };
+
+            console.log(newConfig.operator);
+
+            const parameters = this.getWMSQueryParameters(newConfig);
+            console.log('Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+
+            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        } else {
+            const parameters = this.getWMSQueryParameters(config);
+            console.log('No Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+
+            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        }
     }
 
     getWCSQueryUrl(config: {
@@ -234,6 +333,10 @@ export class MappingQueryService {
                  time: Time,
                  projection: Projection): Observable<MappingColorizer> {
 
+
+        // TODO
+        let timeStart = this.stripEndingTime(time);
+
         const request = new MappingRequestParameters({
             service: 'WMS',
             request: 'GetColorizer',
@@ -242,7 +345,7 @@ export class MappingQueryService {
                 version: this.config.WMS.VERSION,
                 layers: operator.getProjectedOperator(projection).toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: time.asRequestString(),
+                time: timeStart.asRequestString(),
                 crs: projection.getCode(),
             },
         });
@@ -271,6 +374,10 @@ export class MappingQueryService {
         projection: Projection,
         extent: ol.Extent,
     }): Promise<Array<Provenance>> {
+
+        // TODO
+        let timeStart = this.stripEndingTime(config.time);
+
         const request = new MappingRequestParameters({
             service: 'provenance',
             request: '',
@@ -278,7 +385,7 @@ export class MappingQueryService {
             parameters: {
                 query: encodeURIComponent(config.operator.getProjectedOperator(config.projection).toQueryJSON()),
                 crs: config.projection.getCode(),
-                time: config.time.asRequestString(),
+                time: timeStart.asRequestString(),
                 bbox: config.projection.getCode() === 'EPSG:4326' ?
                     config.projection.getExtent()[1]
                     + ',' + config.projection.getExtent()[0] + ','
@@ -295,13 +402,31 @@ export class MappingQueryService {
             request.setParameter('width', 1024);
         }
 
-        return this.http.get(
-            this.config.MAPPING_URL + '?' + request.toMessageBody()
-        ).map(
-            (res: Response) => res.json()
-        ).map(
-            json => json as [Provenance]
-        ).toPromise();
+        // return this.http.get(
+        //     this.config.MAPPING_URL + '?' + request.toMessageBody()
+        // ).map(
+        //     (res: Response) => res.json()
+        // ).map(
+        //     json => json as [Provenance]
+        // ).toPromise();
+
+        return this.http.post(
+            this.config.MAPPING_URL,
+            request.toMessageBody(false),
+            {headers: request.getHeaders()}
+        ).map((res: Response) => res.json())
+            .map(json => json as [Provenance])
+            .toPromise();
+    }
+
+    private stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
@@ -338,6 +463,115 @@ export class MappingQueryService {
         return this.http.get(queryUrl).toPromise().then(
             response => response.json()['dataSources']
         );
+    }
+
+    getGFBioBaskets(config: {
+        offset: number,
+        limit: number,
+    }): Observable<BasketsOverview> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'baskets',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                offset: config.offset,
+                limit: config.limit,
+            },
+        });
+
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        interface BasketsOverviewRaw {
+            baskets: Array<{
+                basketId: number,
+                query: string,
+                timestamp: string,
+            }>,
+            totalNumberOfBaskets: number,
+        }
+
+        return this.http
+            .get(queryUrl)
+            .map(jsonResponse => jsonResponse.json())
+            .map((basketsOverview: BasketsOverviewRaw) => {
+                return {
+                    baskets: basketsOverview.baskets.map(basket => {
+                        return {
+                            basketId: basket.basketId,
+                            query: basket.query,
+                            timestamp: moment(basket.timestamp, 'YYYY-MM-DD HH:mm:ss.S'),
+                        };
+                    }),
+                    totalNumberOfBaskets: basketsOverview.totalNumberOfBaskets,
+                };
+            });
+    }
+
+    getGFBioBasket(id: number): Observable<Basket> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            request: 'basket',
+            sessionToken: this.userService.getSession().sessionToken,
+            parameters: {
+                id: id,
+            },
+        });
+
+        const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+
+        return this.http
+            .get(queryUrl)
+            .map(jsonResponse => jsonResponse.json())
+            .map((basket: Basket) => {
+                const regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
+
+                const basketResults: Array<BasketResult> = [];
+                basket.results.forEach(result => {
+                    let entry = basketResults.find((b) => b.dataLink === result.dataLink);
+
+                    if (result.type === 'abcd') {
+                        const abcd = result as IBasketAbcdResult;
+
+                        const unit_type_title_id = regex.exec(abcd.title);
+                        const title = (unit_type_title_id && unit_type_title_id[3]) ? unit_type_title_id[3] : abcd.title;
+                        const unit = (unit_type_title_id && unit_type_title_id[4]) ? {
+                            unitId: unit_type_title_id[4],
+                            prefix: unit_type_title_id[1],
+                            type: unit_type_title_id[2],
+                            metadataLink: abcd.metadataLink
+                        } : undefined;
+
+                        if (!entry) {
+                            const metadataLink = abcd.metadataLink;
+                            const grouped: IBasketGroupedAbcdResult = {
+                                title: title,
+                                dataLink: abcd.dataLink,
+                                authors: abcd.authors,
+                                available: abcd.available,
+                                dataCenter: abcd.dataCenter,
+                                metadataLink: metadataLink,
+                                units: (unit) ? [unit] : [],
+                                type: 'abcd_grouped',
+                                resultType: 'points',
+                            };
+                            basketResults.push(grouped);
+                        } else {
+                            if (unit) {
+                                const grouped = entry as IBasketGroupedAbcdResult;
+                                grouped.units.push(unit);
+                            }
+                        }
+                    } else if (!entry) {
+                        basketResults.push(result);
+                    }
+                });
+
+                return {
+                    query: basket.query,
+                    results: basketResults,
+                    timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
+                }
+            });
     }
 
 }

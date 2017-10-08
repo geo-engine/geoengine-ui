@@ -1,31 +1,53 @@
 <wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
-<div class="container" fxLayout="column">
-    <md-toolbar>
-        <label>Basket:&nbsp;</label>
-        <md-select [(ngModel)]='selectedBasket' class='toolbar-fill-remaining-space' >
-            <md-option *ngFor='let basket of baskets' [value]='basket'>
-                {{basket.timestamp}} - {{basket.query}}
-            </md-option>
-        </md-select>
-        <span class="toolbar-fill-remaining-space"></span>
-        <button md-icon-button aria-label='sync' (click)='reload()'>
-            <md-icon>sync</md-icon>
-        </button>
-    </md-toolbar>
-    <div *ngIf="isLoading$ | async" class="loading">
+
+<button md-mini-fab color="warn" *ngIf="(isError$ | async)" (click)="reload()" class="error-button">
+    <md-icon>sync</md-icon>
+</button>
+
+<md-expansion-panel [expanded]="historyExpanded$ | async" (opened)="historyExpanded$.next(true)">
+    <md-expansion-panel-header>
+        <md-panel-title>Basket History</md-panel-title>
+        <md-panel-description>Select other search results</md-panel-description>
+    </md-expansion-panel-header>
+
+    <div *ngIf="(isOverviewLoading$ | async); else basketOverviews" class="loading">
         <md-progress-spinner mode="indeterminate"></md-progress-spinner>
     </div>
-    <div *ngIf="!(isLoading$ | async)" fxFlex="grow" fxLayout="column">
-        <ng-template [ngIf]='selectedBasket'>
-            <ng-template ngFor let-result [ngForOf]='selectedBasket.results | waveBasketResultGroupByDatasetPipe' >
 
-                <ng-template [ngIf]='result.type === _abcdGroupedType'>
-                    <wave-grouped-abcd-basket-result [result]='result'></wave-grouped-abcd-basket-result>
-                </ng-template>
-                <ng-template [ngIf]='result.type !== _abcdGroupedType'>
-                    <wave-pangaea-basket-result [result]='result'></wave-pangaea-basket-result>
-                </ng-template>
-            </ng-template>
-        </ng-template>
-    </div>
+    <ng-template #basketOverviews>
+        <md-list>
+            <md-list-item
+                *ngFor="let basketOverview of (basketsOverview$ | async)?.baskets"
+                (click)="loadBasket(basketOverview.basketId)"
+                class="clickable"
+            >
+                <h4 md-line *ngIf="basketOverview.query.length">{{basketOverview.query}}</h4>
+                <h4 md-line *ngIf="!basketOverview.query.length" class="no-search-term">no search term</h4>
+                <p md-line class="small">{{basketOverview.timestamp | date}}</p>
+            </md-list-item>
+        </md-list>
+        <md-paginator [length]="(basketsOverview$ | async)?.totalNumberOfBaskets"
+                      [pageSize]="(limit$ | async)"
+                      [pageSizeOptions]="[5, 10, 25, 50]"
+                      [pageIndex]="page$ | async"
+                      (page)="page$.next($event.pageIndex);limit$.next($event.pageSize)">
+        </md-paginator>
+    </ng-template>
+</md-expansion-panel>
+
+<div *ngIf="(isDetailsLoading$ | async); else basketResults" class="loading">
+    <md-progress-spinner mode="indeterminate"></md-progress-spinner>
 </div>
+
+<ng-template #basketResults>
+    <ng-template ngFor let-result [ngForOf]="(selectedBasket$ | async)?.results">
+        <wave-grouped-abcd-basket-result
+            *ngIf="result.type === BasketTypeAbcdGrouped"
+            [result]="result"
+        ></wave-grouped-abcd-basket-result>
+        <wave-pangaea-basket-result
+            *ngIf="result.type !== BasketTypeAbcdGrouped"
+            [result]="result"
+        ></wave-pangaea-basket-result>
+    </ng-template>
+</ng-template>
