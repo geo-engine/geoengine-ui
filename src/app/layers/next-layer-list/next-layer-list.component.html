@@ -24,8 +24,9 @@
     </md-menu>
 
     <md-toolbar color="primary">
-        <md-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+        <span fxFlex fxLayout="row" fxLayoutAlign="space-between center">
             <div></div>
+
             <div class="logo">
                 <md-icon md-list-icon svgIcon="vat:logo" alt="VAT"></md-icon>
                 <span class="title">VAT</span><sub class="subtitle">BETA</sub>
@@ -34,8 +35,7 @@
             <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
                 <md-icon>more_vert</md-icon>
             </button>
-
-        </md-toolbar-row>
+        </span>
     </md-toolbar>
 
     <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">

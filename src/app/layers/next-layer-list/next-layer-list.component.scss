@@ -61,6 +61,10 @@ $accent: map-get($wave-app-theme, accent);
     padding: 0 !important;
 }
 
+md-toolbar div:first-child, button {
+    width: 40px;
+}
+
 md-toolbar /deep/ md-toolbar-row:first-child {
     display: none !important;
 }
