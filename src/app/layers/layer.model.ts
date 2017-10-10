@@ -7,7 +7,7 @@ import {
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
 import * as ol from 'openlayers';
-import {Time} from '../time/time.model';
+import {Time, TimePoint} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
 export abstract class LayerData<D> {
@@ -75,6 +75,9 @@ export class RasterData extends LayerData<string> {
     constructor(time: Time,
                 projection: Projection,
                 data: string) {
+        if (time.getEnd().isAfter(time.getStart())) {
+            time = new TimePoint(time.getStart());
+        }
         super('raster', time, projection);
         this._data = data;
     }

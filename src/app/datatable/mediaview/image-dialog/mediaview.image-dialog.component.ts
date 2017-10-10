@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, Input, AfterViewInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
@@ -13,7 +13,7 @@ import {MdDialogRef} from '@angular/material';
  * Displays an image-gallery. One image is shown at a time with two buttons to the previous and next images in the list.
  * The component receives an array of urls to images (imageURLS) and the id of the image to show first (currentImage) as inputs.
  */
-export class MediaviewImageDialogComponent implements AfterViewInit {
+export class MediaviewImageDialogComponent {
 
     /**
      * Input: An array of image-urls to display in the dialog
@@ -29,26 +29,26 @@ export class MediaviewImageDialogComponent implements AfterViewInit {
 
     public loading = true;
 
-    private domNode;
+    // private domNode;
 
     /**
      * Sets up all variables
      * @param dialogRef reference to this Dialog-Type
      */
-    constructor(public dialogRef: MdDialogRef<MediaviewImageDialogComponent>, @Inject(ElementRef) elementRef: ElementRef) {
+    constructor(public dialogRef: MdDialogRef<MediaviewImageDialogComponent>) {     // , @Inject(ElementRef) elementRef: ElementRef
         this.loading = true;
 
-        this.domNode = elementRef.nativeElement;
+        // this.domNode = elementRef.nativeElement;
     }
 
     /**
      * Hack to set Dialog's parent's position to absolute
      */
-    ngAfterViewInit() {
+    /*ngAfterViewInit() {
         // console.log(this.domNode.parentNode);
 
-        this.domNode.parentNode.parentElement.style.position = 'relative';
-    }
+        //this.domNode.parentNode.parentElement.style.position = 'relative';
+    }*/
 
     /**
      * Shows the next image in the list of image-urls

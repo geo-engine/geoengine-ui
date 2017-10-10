@@ -16,10 +16,11 @@ import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
-import {Time} from '../time/time.model';
+import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
+import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 import {
     Basket,
     BasketResult,
@@ -209,7 +210,7 @@ export class MappingQueryService {
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: config.time.asRequestString(),
+                // time: config.time.asRequestString(),
             },
         });
     }
@@ -224,9 +225,73 @@ export class MappingQueryService {
         time: Time,
         projection: Projection
     }): string {
-        const parameters = this.getWMSQueryParameters(config);
+        if (config.time.getEnd().isAfter(config.time.getStart())) {
+            const duration = config.time.getEnd().diff(config.time.getStart()) / 1000;
+            console.log('Duration: ' + config.time.getStart() + ' to ' + config.time.getEnd() + ': ' + duration);
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+            const aggregationOperator2 = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregation: 'min',
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [config.operator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [config.operator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [config.operator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [config.operator] : [],
+            });
+
+            /*const aggregationOperator = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregation: 'min',
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: [],
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.getSources(ResultTypes.RASTER),
+                pointSources: config.operator.getSources(ResultTypes.POINTS),
+                lineSources: config.operator.getSources(ResultTypes.LINES),
+                polygonSources: config.operator.getSources(ResultTypes.POLYGONS),
+            });
+
+            const originalOperator = new Operator({
+                operatorType: config.operator.operatorType,
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [aggregationOperator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [aggregationOperator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [aggregationOperator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [aggregationOperator] : [],
+            });*/
+
+            const newConfig = {
+                operator: aggregationOperator2,
+                time: new TimePoint(config.time.getStart()),
+                projection: config.projection
+            };
+
+            console.log(newConfig.operator);
+
+            const parameters = this.getWMSQueryParameters(newConfig);
+            console.log('Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+
+            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        } else {
+            const parameters = this.getWMSQueryParameters(config);
+            console.log('No Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
+
+            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        }
     }
 
     getWCSQueryUrl(config: {
@@ -268,6 +333,10 @@ export class MappingQueryService {
                  time: Time,
                  projection: Projection): Observable<MappingColorizer> {
 
+
+        // TODO
+        let timeStart = this.stripEndingTime(time);
+
         const request = new MappingRequestParameters({
             service: 'WMS',
             request: 'GetColorizer',
@@ -276,7 +345,7 @@ export class MappingQueryService {
                 version: this.config.WMS.VERSION,
                 layers: operator.getProjectedOperator(projection).toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: time.asRequestString(),
+                time: timeStart.asRequestString(),
                 crs: projection.getCode(),
             },
         });
@@ -305,6 +374,10 @@ export class MappingQueryService {
         projection: Projection,
         extent: ol.Extent,
     }): Promise<Array<Provenance>> {
+
+        // TODO
+        let timeStart = this.stripEndingTime(config.time);
+
         const request = new MappingRequestParameters({
             service: 'provenance',
             request: '',
@@ -312,7 +385,7 @@ export class MappingQueryService {
             parameters: {
                 query: encodeURIComponent(config.operator.getProjectedOperator(config.projection).toQueryJSON()),
                 crs: config.projection.getCode(),
-                time: config.time.asRequestString(),
+                time: timeStart.asRequestString(),
                 bbox: config.projection.getCode() === 'EPSG:4326' ?
                     config.projection.getExtent()[1]
                     + ',' + config.projection.getExtent()[0] + ','
@@ -344,6 +417,16 @@ export class MappingQueryService {
         ).map((res: Response) => res.json())
             .map(json => json as [Provenance])
             .toPromise();
+    }
+
+    private stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
