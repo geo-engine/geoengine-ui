@@ -21,6 +21,7 @@ export interface MappingSourceChannel {
 }
 
 export interface MappingSource {
+    operator: string;
     source: string;
     name: string;
     uri: string;
@@ -37,6 +38,7 @@ export interface MappingSource {
 }
 
 export interface MappingSourceDict {
+    operator?: string,
     name: string;
     colorizer: string;
     provenance?: {
