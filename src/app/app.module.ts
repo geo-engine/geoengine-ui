@@ -121,7 +121,7 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
-import {NumericPipe} from './operators/dialogs/scatter-plot-operator/numeric-pipe';
+import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
 import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
