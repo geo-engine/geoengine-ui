@@ -4,13 +4,14 @@
 import {IntervalFormat} from '../../interval.enum';
 import {
     Component, ChangeDetectionStrategy, Input, ViewChild, ElementRef, OnInit, AfterViewInit,
-    ApplicationRef, ChangeDetectorRef, OnDestroy
+    ChangeDetectorRef, OnDestroy
 } from '@angular/core';
 import {CsvPropertiesComponent, FormStatus} from '../csv-properties/csv-properties.component';
 import * as Papa from 'papaparse';
-import {Observable, Subscription} from 'rxjs';
-import {FormControl, AbstractControl} from '@angular/forms';
+import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
 import {CsvDialogComponent} from '../../csv-dialog/csv-dialog.component';
+import {UploadData} from '../../csv-upload/csv-upload.component';
 
 @Component({
     selector: 'wave-csv-table',
@@ -24,13 +25,14 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         return document.documentElement.clientWidth;
     });
 
-    @Input('properties') csvProperty: CsvPropertiesComponent;
-    @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
+    @Input() csvProperty: CsvPropertiesComponent;
+    @Input() data: UploadData;
     @Input() cellSpacing: number;
     @Input() linesToParse: number;
     @Input() dialog: CsvDialogComponent;
 
     IntervalFormat = IntervalFormat;
+    isNumberArray: number[];
 
     @ViewChild('headerdiv') headerDiv: ElementRef;
     @ViewChild('bodydiv') bodyDiv: ElementRef;
@@ -41,10 +43,10 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('tableframe') tableFrame: ElementRef;
 
     parsedData: Array<Array<string>>;
-    customHeader: string[] = [];
-    header: string[] = [];
+    customHeader: {value: string}[] = [];
+    header: {value: string}[] = [];
     elements: string[][] = [];
-    cellSizes:number[] = [];
+    cellSizes: number[] = [];
 
     private subscriptions: Array<Subscription> = [];
 
@@ -60,7 +62,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         this.parse();
         this.cellSizes = new Array(this.header.length);
-        for(let i: number = 0; i < this.header.length; i++) {
+        for (let i = 0; i < this.header.length; i++) {
             this.cellSizes[i] = 0;
         }
     }
@@ -73,9 +75,11 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     parse() {
-        if(!!this.csvProperty) {
-            let textQualifier: string = this.csvProperty.dataProperties.get('isTextQualifier').value ? this.csvProperty.dataProperties.get('textQualifier').value : null;
-            let prev: number = this.csvProperty.dataProperties.get('isHeaderRow').value ? this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1 : this.linesToParse;
+        if (!!this.csvProperty) {
+            let textQualifier: string = this.csvProperty.dataProperties.get('isTextQualifier').value ?
+                this.csvProperty.dataProperties.get('textQualifier').value : null;
+            let prev: number = this.csvProperty.dataProperties.get('isHeaderRow').value ?
+                this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1 : this.linesToParse;
             this.parsedData = Papa.parse(this.data.content as string, {
                 delimiter: this.csvProperty.dataProperties.get('delimiter').value,
                 newline: '',
@@ -85,11 +89,20 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 preview: prev,
             } as any).data;
             if (this.csvProperty.dataProperties.get('isHeaderRow').value) {
-                this.header = this.parsedData[this.csvProperty.dataProperties.get('headerRow').value];
+                this.header = new Array(this.parsedData[this.csvProperty.dataProperties.get('headerRow').value].length);
+                for (let i = 0; i < this.header.length; i++) {
+                    this.header[i] = {value: this.parsedData[this.csvProperty.dataProperties.get('headerRow').value][i]};
+                }
                 this.elements = this.parsedData.slice(this.csvProperty.dataProperties.get('headerRow').value + 1,
                     this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1);
             } else {
                 this.elements = this.parsedData;
+                if (this.header.length !== this.elements[0].length) {
+                    this.header = new Array(this.elements[0].length);
+                    for (let i = 0; i < this.header.length; i++) {
+                        this.header[i] = {value: ''};
+                    }
+                }
             }
             if (!this.header || !this.elements) {
                 console.log('to large data');
@@ -106,10 +119,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     resetNumberArr() {
-        this.data.isNumberArray = [];
-        for (let i = 0; i < this.header.length; i++) {
-            this.data.isNumberArray.push(false);
-        }
+        this.isNumberArray = new Array(this.header.length);
+        this.isNumberArray.fill(0, 0, this.header.length);
     }
 
     /**Gets called on table property changes. Resets the min-width property of the first rows cells to 0.
@@ -117,7 +128,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     resetTableSize() {
         this.cellSizes = [];
-        for(let i: number = 0; i < Math.max(this.header.length, this.elements.length); i++) {
+        for (let i = 0; i < Math.max(this.header.length, this.elements.length); i++) {
             this.cellSizes.push(0);
         }
     }
@@ -145,7 +156,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
             let row: HTMLTableRowElement = t.rows.item(0) as HTMLTableRowElement;
             for (let j = 0; j < row.cells.length; j++) {
                 let cell: HTMLElement = row.cells.item(j) as HTMLElement;
-                if(cell.getAttribute('name') === 'spacer') {
+                if (cell.getAttribute('name') === 'spacer') {
                     this.cellSizes[j] = this.cellSpacing;
                 }else if (!this.cellSizes[j] || this.cellSizes[j] < cell.getBoundingClientRect().width) {
                     this.cellSizes[j] = cell.getBoundingClientRect().width;
@@ -215,11 +226,12 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
             this._changeDetectorRef.reattach();
             this._changeDetectorRef.detectChanges();
         }, timeOut);
-        if(this.header.length < 2) {
+        if (this.header.length < 2) {
             this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
             this.csvProperty.temporalProperties.controls['isTime'].disable();
-        } else if(this.header.length <= 3) {
-            if([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
+        } else if (this.header.length <= 3) {
+            if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
+                    .indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
                 this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
             }
         } else {
@@ -227,9 +239,11 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    get notOnlyWhiteSpace() : boolean {
-        for(let h of this.header) {
-            if(h === '' || h === null || h === undefined) return false;
+    get notOnlyWhiteSpace(): boolean {
+        for (let h of this.header) {
+            if (h.value === '' || h.value === null || h.value === undefined) {
+                return false;
+            }
         }
         return true;
     }
