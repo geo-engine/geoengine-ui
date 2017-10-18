@@ -12,6 +12,7 @@ import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
+import {isNullOrUndefined} from 'util';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -78,7 +79,9 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: VectorData) => {
             // console.log("OlVectorLayerComponent dataSub", x);
             this.source.clear(); // TODO: check if this is needed always...
-            this.source.addFeatures(x.data);
+            if (!isNullOrUndefined(x)) {
+                this.source.addFeatures(x.data);
+            }
         })
     }
 
@@ -189,6 +192,11 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
         let time = undefined;
 
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((rasterData: RasterData) => {
+            if (isNullOrUndefined(rasterData)) {
+                console.log("asdasdasdadasd", rasterData);
+                return;
+            }
+
             if (this.source) {
                 if (time !== rasterData.time.asRequestString()) {
                     // console.log("time", time, rasterData.time.asRequestString());
