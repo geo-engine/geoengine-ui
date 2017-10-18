@@ -1,12 +1,15 @@
 import {
-    Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef
+    Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef, ViewChild,
+    ElementRef
 } from '@angular/core';
-import {FormGroup, Validators, FormControl} from '@angular/forms';
+import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, Form} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs/Rx';
 import {IntervalFormat} from '../../interval.enum';
 import {CsvTableComponent} from '../csv-table/csv-table.component';
 import {Projections} from '../../../../projection.model';
 import {UserService} from '../../../../../users/user.service';
+import {WaveValidators} from '../../../../../util/form.validators';
+import {MdStepper} from '@angular/material';
 
 export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -92,14 +95,12 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     xColumn$: Observable<number>;
     yColumn$: Observable<number>;
 
-    layerName: string;
-
-    nameIsReserved$: Observable<boolean>;
     storageName$ = new ReplaySubject<string>(1);
     private reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
     @Input('csvTable') csvTable: CsvTableComponent;
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
+    @ViewChild('stepper') public stepper: MdStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
@@ -121,15 +122,18 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             .map(entries => entries.map(entry => entry.name))
             .subscribe(names => this.reservedNames$.next(names));
 
-        this.nameIsReserved$ = Observable.combineLatest(
-            this.reservedNames$,
-            this.storageName$,
-            (reservedNames, storageName) => reservedNames.indexOf(storageName) >= 0
-        );
+        this.typingProperties = new FormGroup({
+            layerName: new FormControl('', [
+                Validators.required,
+                WaveValidators.notOnlyWhitespace,
+                layerNameNoDuplicateValidator(this.reservedNames$),
+            ]),
+        });
     }
 
     ngOnInit() {
-        this.layerName = this.data.file.name;
+        this.storageName$.next(this.data.file.name);
+        this.typingProperties.patchValue({layerName: this.data.file.name});
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
                 switch (status) {
@@ -163,7 +167,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             }),
             this.dataProperties.controls['isHeaderRow'].valueChanges.subscribe(data => {
                 if (data === true) {
-                    this.csvTable.customHeader = [];
+                    this.csvTable.customHeader = new Array(this.csvTable.elements[0].length);
                     for (let i = 0; i < this.csvTable.header.length; i++) {
                         this.csvTable.customHeader[i] = this.csvTable.header[i];
                     }
@@ -173,8 +177,12 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                             this.csvTable.header[i] = this.csvTable.customHeader[i];
                         }
                     } else {
-                        this.csvTable.customHeader = [];
+                        this.csvTable.customHeader = new Array(this.csvTable.elements[0].length);
                         this.csvTable.header = new Array(this.csvTable.elements[0].length);
+                        for (let i = 0; i < this.csvTable.customHeader.length; i++) {
+                            this.csvTable.header[i] = {value: ''};
+                            this.csvTable.customHeader[i] = {value: ''};
+                        }
                     }
                 }
             }),
@@ -270,7 +278,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             onlySelf: false,
             emitEvent: true
         });
-        this.update(10);
     }
 
     ngOnDestroy() {
@@ -303,20 +310,27 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         event.preventDefault();
     }
 
-    nextPage() {
-        switch (this.formStatus$.getValue()) {
-            case this.FormStatus.DataProperties:
-                this.actualPage$.next(this.spatialProperties);
-                this.formStatus$.next(this.FormStatus.SpatialProperties);
+    next(event) {
+        let group: FormGroup;
+        let status: FormStatus;
+        switch (event.selectedIndex) {
+            case 0: group = this.dataProperties;
+                status = this.FormStatus.DataProperties;
                 break;
-            case this.FormStatus.SpatialProperties:
-                this.actualPage$.next(this.temporalProperties);
-                this.formStatus$.next(this.FormStatus.TemporalProperties);
+            case 1: group = this.spatialProperties;
+                status = this.FormStatus.SpatialProperties;
                 break;
-            default:
-                this.actualPage$.next(this.typingProperties);
-                this.formStatus$.next(this.FormStatus.TypingProperties);
+            case 2: group = this.temporalProperties;
+                status = this.FormStatus.TemporalProperties;
+                break;
+            case 3: group = this.typingProperties;
+                status = this.FormStatus.TypingProperties;
+                group.controls['layerName'].updateValueAndValidity();
+                break;
         }
+        this.actualPage$.next(group);
+        this.formStatus$.next(status);
+        this._changeDetectorRef.detectChanges();
         if (this.actualPage$.getValue() === this.temporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                 y: this.temporalProperties.controls['endColumn'].value});
@@ -326,33 +340,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 y: this.spatialProperties.controls['yColumn'].value});
         }
         if (this.actualPage$.getValue() === this.typingProperties) {
-            this.csvTable.resize();
-        }
-    }
-
-    previousPage() {
-        switch (this.formStatus$.getValue()) {
-            case this.FormStatus.TemporalProperties:
-                this.actualPage$.next(this.spatialProperties);
-                this.formStatus$.next(this.FormStatus.SpatialProperties);
-                break;
-            case this.FormStatus.TypingProperties:
-                this.actualPage$.next(this.temporalProperties);
-                this.formStatus$.next(this.FormStatus.TemporalProperties);
-                break;
-            default:
-                this.actualPage$.next(this.dataProperties);
-                this.formStatus$.next(this.FormStatus.DataProperties);
-        }
-        if (this.actualPage$.getValue() === this.temporalProperties) {
-            this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
-                y: this.temporalProperties.controls['endColumn'].value});
-        }
-        if (this.actualPage$.getValue() === this.spatialProperties) {
-            this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
-                y: this.spatialProperties.controls['yColumn'].value});
-        }
-        if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
             this.csvTable.resize();
         }
     }
@@ -395,5 +382,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     {onlySelf: true, emitEvent: false});
             }
         }
+    }
+}
+export function layerNameNoDuplicateValidator(reservedNames: BehaviorSubject<Array<string>>): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} => {
+        return reservedNames.getValue().indexOf(control.value) < 0 ? null :
+            {'layerNameNoDuplicate': {value: 'Layer name already in use ' + control.value}};
     }
 }
