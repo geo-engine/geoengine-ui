@@ -708,7 +708,7 @@ export class ProjectService {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
-            this.mapService.getViewportSizeStream()
+            this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection, viewportSize]) => {
