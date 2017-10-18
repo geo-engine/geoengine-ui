@@ -20,9 +20,6 @@ interface ScatterPlotTypeConfig {
     regression: boolean;
 }
 
-/**
- * The R type.
- */
 export class ScatterPlotType extends OperatorType {
     private static _TYPE = 'r_script';
     private static _ICON_URL = OperatorType.createIconDataUrl(ScatterPlotType._TYPE);
@@ -52,8 +49,8 @@ export class ScatterPlotType extends OperatorType {
         this.attribute2 = config.attribute2;
         this.regression = config.regression;
         let isRegression = (this.regression ? '\nabline(lm(second~first), col="red");' : '');
-        let legend = 'legend("topright", legend=c("'
-            + config.attribute2 + (this.regression ? '", "Regression line"' : '"')
+        let legend = 'legend("topright", legend=c("Data points'
+            + (this.regression ? '", "Regression line"' : '"')
             + '), pch=c(1' + (this.regression ? ', -1' : '') + '), lty=c(0' + (this.regression ? ', 1' : '') + '), col=c("black", "red"));';
         this.code = `
 points <- mapping.loadPoints(0, mapping.qrect);

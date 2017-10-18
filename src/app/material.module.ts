@@ -27,6 +27,7 @@ import {
     MdDatepickerModule,
     MdExpansionModule,
     MdPaginatorModule,
+    MdStepperModule,
     MdTableModule,
 } from '@angular/material';
 
@@ -58,6 +59,7 @@ const MATERIAL_MODULES = [
     MdExpansionModule,
     MdPaginatorModule,
     MdTableModule,
+    MdStepperModule,
 ];
 
 @NgModule({

@@ -7,7 +7,7 @@ import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataTypes} from '../../datatype.model';
-import {NumericPipe} from './numeric-pipe';
+import {NumericPipe} from './scatter-plot-operator.pipe';
 import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {WaveValidators} from '../../../util/form.validators';
 

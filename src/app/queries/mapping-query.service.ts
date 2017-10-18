@@ -29,7 +29,6 @@ import {
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
-import {BasketResultGroupByDatasetPipe} from '../operators/dialogs/baskets/gfbio-basket.pipe';
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -225,14 +224,15 @@ export class MappingQueryService {
         time: Time,
         projection: Projection
     }): string {
+        let parameters: MappingRequestParameters;
+
         if (config.time.getEnd().isAfter(config.time.getStart())) {
             const duration = config.time.getEnd().diff(config.time.getStart()) / 1000;
-            console.log('Duration: ' + config.time.getStart() + ' to ' + config.time.getEnd() + ': ' + duration);
 
-            const aggregationOperator2 = new Operator({
+            const aggregationOperator = new Operator({
                 operatorType: new TemporalAggregationType({
                     duration: duration,
-                    aggregation: 'min',
+                    aggregation: 'avg',
                 }),
                 resultType: config.operator.resultType,
                 projection: config.operator.projection,
@@ -245,53 +245,17 @@ export class MappingQueryService {
                 polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [config.operator] : [],
             });
 
-            /*const aggregationOperator = new Operator({
-                operatorType: new TemporalAggregationType({
-                    duration: duration,
-                    aggregation: 'min',
-                }),
-                resultType: config.operator.resultType,
-                projection: config.operator.projection,
-                attributes: [],
-                dataTypes: config.operator.dataTypes,
-                units: config.operator.units,
-                rasterSources: config.operator.getSources(ResultTypes.RASTER),
-                pointSources: config.operator.getSources(ResultTypes.POINTS),
-                lineSources: config.operator.getSources(ResultTypes.LINES),
-                polygonSources: config.operator.getSources(ResultTypes.POLYGONS),
-            });
-
-            const originalOperator = new Operator({
-                operatorType: config.operator.operatorType,
-                resultType: config.operator.resultType,
-                projection: config.operator.projection,
-                attributes: config.operator.attributes,
-                dataTypes: config.operator.dataTypes,
-                units: config.operator.units,
-                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [aggregationOperator] : [],
-                pointSources: config.operator.resultType === ResultTypes.POINTS ? [aggregationOperator] : [],
-                lineSources: config.operator.resultType === ResultTypes.LINES ? [aggregationOperator] : [],
-                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [aggregationOperator] : [],
-            });*/
-
-            const newConfig = {
-                operator: aggregationOperator2,
+            parameters = this.getWMSQueryParameters({
+                operator: aggregationOperator,
                 time: new TimePoint(config.time.getStart()),
                 projection: config.projection
-            };
-
-            console.log(newConfig.operator);
-
-            const parameters = this.getWMSQueryParameters(newConfig);
-            console.log('Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
-
-            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+            });
         } else {
-            const parameters = this.getWMSQueryParameters(config);
-            console.log('No Time Interval: ' + this.config.MAPPING_URL + '?' + parameters.toMessageBody());
-
-            return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+            parameters = this.getWMSQueryParameters(config);
         }
+
+        // console.log(config.time, parameters.toMessageBody());
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
     getWCSQueryUrl(config: {
@@ -418,16 +382,6 @@ export class MappingQueryService {
         ).map((res: Response) => res.json())
             .map(json => json as [Provenance])
             .toPromise();
-    }
-
-    private stripEndingTime(time: Time) {
-        let timeStart;
-        if (time.getEnd().isAfter(time.getStart())) {
-            timeStart = new TimePoint(time.getStart());
-        } else {
-            timeStart = time;
-        }
-        return timeStart;
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
@@ -573,6 +527,16 @@ export class MappingQueryService {
                     timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
                 }
             });
+    }
+
+    private stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
 }

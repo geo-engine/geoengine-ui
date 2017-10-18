@@ -16,6 +16,7 @@ import {ProjectionType} from '../../../types/projection-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {IntervalFormat} from '../interval.enum';
 import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
+import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 
 @Component({
     selector: 'wave-csv-dialog',
@@ -27,7 +28,8 @@ export class CsvDialogComponent implements OnInit {
 
     IntervalFormat = IntervalFormat;
     @ViewChild(CsvPropertiesComponent) csvProperties;
-    data: UploadData = undefined;
+    @ViewChild(CsvTableComponent) csvTable;
+    data: UploadData;
     uploading$ = new BehaviorSubject(false);
 
     constructor(private userService: UserService,
@@ -42,19 +44,36 @@ export class CsvDialogComponent implements OnInit {
     }
 
     submit() {
+        const untypedCols = [this.csvProperties.spatialProperties.controls['xColumn'].value,
+            this.csvProperties.spatialProperties.controls['yColumn'].value];
+        if (this.csvProperties.temporalProperties.controls['isTime'].value) {
+            untypedCols.push(this.csvProperties.temporalProperties.controls['startColumn'].value);
+            if (this.csvProperties.temporalProperties.controls['intervalType'].value !== this.IntervalFormat.StartInf) {
+                untypedCols.push(this.csvProperties.temporalProperties.controls['endColumn'].value);
+            }
+        }
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
         const geometry = 'xy';
         const time = this.intervalString;
         const time1Format = this.csvProperties.temporalProperties.controls['startFormat'].value;
         const time2Format = this.csvProperties.temporalProperties.controls['endFormat'].value;
-        const header = this.csvProperties.csvTable.header;
+        const header = new Array(this.csvProperties.csvTable.header.length);
+        for (let i = 0; i < this.csvProperties.csvTable.header.length; i++) {
+            header[i] = this.csvProperties.csvTable.header[i].value;
+        }
         const columnX = header[this.csvProperties.spatialProperties.controls['xColumn'].value];
         const columnY = header[this.csvProperties.spatialProperties.controls['yColumn'].value];
-        const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ? header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
-        const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ? header[this.csvProperties.temporalProperties.controls['endColumn'].value] : '';
-        const numericColumns = header.filter((name, index) => this.data.isNumberArr[index]);
-        const textualColumns = header.filter((name, index) => !this.data.isNumberArr[index]);
+        const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ?
+            header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
+        const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ?
+            header[this.csvProperties.temporalProperties.controls['endColumn'].value] : '';
+        const numericColumns = header.filter((name, index) => {
+            return this.csvTable.isNumberArray[index] === 1 && untypedCols.indexOf(index) < 0;
+        });
+        const textualColumns = header.filter((name, index) => {
+            return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
+        });
         const onError = 'skip';
 
         let parameters: CSVParameters = {
@@ -132,14 +151,18 @@ export class CsvDialogComponent implements OnInit {
         this.uploading$.next(true);
 
         // console.log("SAVE", config, csvSourceType);
-        this.userService.addFeatureToDB(this.csvProperties.layerName, operator)
-            .subscribe(data => {
-                this.uploading$.next(false);
+        try {
+            this.userService.addFeatureToDB(this.csvProperties.typingProperties.controls['layerName'].value, operator)
+                .subscribe(data => {
+                    this.uploading$.next(false);
 
-                this.addLayer(data);
+                    this.addLayer(data);
 
-                this.dialogRef.close();
-            });
+                    this.dialogRef.close();
+                });
+        }catch (e) {
+            console.log('Error: ' + e);
+        }
     }
 
     private addLayer(entry: {name: string, operator: Operator}) {

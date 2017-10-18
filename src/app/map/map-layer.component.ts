@@ -1,16 +1,12 @@
-import {
-    Component, Input, OnInit, OnChanges, SimpleChange, ChangeDetectionStrategy, OnDestroy,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 
 import * as ol from 'openlayers';
 
 import {Projection} from '../operators/projection.model';
-import {
-    Symbology, AbstractVectorSymbology, RasterSymbology
-} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
 
-import {Layer, VectorLayer, RasterLayer, LayerData, VectorData, RasterData} from '../layers/layer.model';
+import {Layer, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {Time} from '../time/time.model';
 import {Config} from '../config.service';
@@ -44,9 +40,9 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     @Input() symbology: S;
     @Input() time: Time;
     @Input() visible = true;
+    protected source: OlSource;
 
     protected _mapLayer: OlLayer;
-    protected source: OlSource;
 
     constructor(protected projectService: ProjectService) {
     }
@@ -58,15 +54,6 @@ export abstract class OlMapLayerComponent<OlLayer extends ol.layer.Layer,
     abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
 
     abstract getExtent(): [number, number, number, number];
-
-    protected isFirstChange(changes: { [propName: string]: SimpleChange }): boolean {
-        for (const property in changes) {
-            if (changes[property].isFirstChange()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 
 export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector,
@@ -197,32 +184,69 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
     }
 
     ngOnInit() {
-        this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: RasterData) => {
-            // console.log("OlRasterLayerComponent dataSub", x);
+        // closure variables for checking the old state
+        let data = undefined;
+        let time = undefined;
 
-            if (!this.source || this.source.getProjection().getCode() !== x.projection.getCode()) {
+        this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((rasterData: RasterData) => {
+            if (this.source) {
+                if (time !== rasterData.time.asRequestString()) {
+                    // console.log("time", time, rasterData.time.asRequestString());
+
+                    this.source.updateParams({
+                        time: rasterData.time.asRequestString()
+                    });
+                    time = rasterData.time.asRequestString();
+                }
+                if (this.source.getProjection().getCode() !== rasterData.projection.getCode()) {
+                    // console.log("projection", this.source.getProjection().getCode, rasterData.projection.getCode());
+
+                    // unfortunally there is no setProjection function, so reset the whole source
+                    this.source = new ol.source.TileWMS({
+                        url: rasterData.data,
+                        params: {
+                            time: rasterData.time.asRequestString()
+                        },
+                        projection: rasterData.projection.getCode(),
+                        wrapX: false,
+                    });
+
+                    if (this._mapLayer) {
+                        this._mapLayer.setSource(this.source);
+                    }
+                }
+                if (data !== rasterData.data) {
+                    // console.log("data", data, rasterData.data);
+
+                    this.source.setUrl(rasterData.data);
+                    data = rasterData.data;
+                }
+
+                if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
+                    this.source.refresh();
+                }
+            } else {
                 this.source = new ol.source.TileWMS({
-                    url: x.data,
+                    url: rasterData.data,
                     params: {
-                        time: x._time.asRequestString()
+                        time: rasterData.time.asRequestString()
                     },
-                    projection: x.projection.getCode(),
+                    projection: rasterData.projection.getCode(),
                     wrapX: false,
                 });
+                data = rasterData.data;
+                time = rasterData.time.asRequestString();
+            }
+
+            if (this._mapLayer) {
+                this._mapLayer.setSource(this.source);
+            } else {
                 this._mapLayer = new ol.layer.Tile({
                     source: this.source,
                     opacity: this.symbology.opacity,
                 });
-                // console.log("OlRasterLayerComponent dataSub new source", this.source);
-            } else {
-                this.source.updateParams({
-                    time: x.time.asRequestString(),
-                });
-                if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
-                    this.source.refresh();
-                }
-                // console.log("OlRasterLayerComponent dataSub update source", this.source);
             }
+
         });
 
         // TILE LOADING STATE
