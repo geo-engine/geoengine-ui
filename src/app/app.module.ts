@@ -2,7 +2,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
-import {MdIconRegistry, MdStepperModule} from '@angular/material';
 import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import 'hammerjs';
@@ -126,6 +125,7 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
+import {MdIconRegistry} from '@angular/material';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -246,7 +246,6 @@ export function configInitializer(config: Config) {
         DragulaModule,
         ReactiveFormsModule,
         ColorPickerModule,
-        MdStepperModule,
     ],
     entryComponents: [
         RenameLayerComponent,
