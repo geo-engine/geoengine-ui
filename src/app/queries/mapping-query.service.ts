@@ -352,13 +352,14 @@ export class MappingQueryService {
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
             .map((res: Response) => res.json() as MappingColorizer)
-            .catch((error, {}) => {
-                this.notificationService.error(`Could not load colorizer: »${error}«`);
-                return Observable.of({interpolation: 'unknown', breakpoints: []});
-            }).map(c => {
+            // .catch((error, {}) => {
+            //    this.notificationService.error(`Could not load colorizer: »${error}«`);
+            //    return Observable.of({interpolation: 'unknown', breakpoints: []});
+            // })
+            .map(c => {
 
                 if (c['result'] && c['result'] === 'No raster for the given time available.') {
-                    this.notificationService.info('No raster for the given time available.');
+                    console.log('No raster for the given time available.');
                 }
 
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {

@@ -107,14 +107,14 @@
                         <div fxLayout="row" fxLayoutAlign="space-between center" >
 
                             <button md-icon-button class="mat-warn error-button" aria-label="Reload"
-                                    *ngIf="(layer.loadingState| async) === LoadingState.ERROR"
-                                    (click)="layer.reload()"
+                                    *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) === LoadingState.ERROR"
+                                    (click)="projectService.reloadLayer(layer)"
                             >
                                 <md-icon>replay</md-icon>
                             </button>
 
                             <button md-icon-button
-                                *ngIf="(layer.loadingState| async) !== LoadingState.ERROR"
+                                *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) !== LoadingState.ERROR"
                                 aria-label="Show Legend"
                                 (click)="toggleLayer(layer)">
 
@@ -245,7 +245,7 @@
                         </div>
 
                         <md-progress-bar
-                            [mode]="(projectService.getLayerDataStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
+                            [mode]="(projectService.getLayerCombinedStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
                             [value]="100"
                             [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : ''"
                         ></md-progress-bar>
