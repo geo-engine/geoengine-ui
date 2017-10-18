@@ -337,8 +337,8 @@ export class ProjectService {
 
     private createLayerDataStreams(layer: Layer<Symbology>) {
         // each layer has data. The type depends on the layer type
-        const layerDataLoadingState$ = new ReplaySubject<LoadingState>(LoadingState.LOADING);
-        const layerData$ = new ReplaySubject<LayerData<any>>(LoadingState.LOADING);
+        const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const layerData$ = new ReplaySubject<LayerData<any>>(1);
         let layerDataSub: Subscription;
         switch (layer.getLayerType()) {
             case 'raster':
@@ -356,21 +356,24 @@ export class ProjectService {
         this.layerDataState$.set(layer, layerDataLoadingState$);
         this.layerData$.set(layer, layerData$);
 
+        const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const symbologyData$ = new ReplaySubject<MappingColorizer>(1);
+        this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
+        this.layerSymbologyData$.set(layer, symbologyData$);
+
         if (layer.getLayerType() === 'raster') {
-            const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(LoadingState.LOADING);
-            const symbologyData$ = new ReplaySubject<MappingColorizer>(LoadingState.LOADING);
             const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
                 symbologyData$,
                 symbologyDataLoadingState$
             );
             this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSubscription);
-            this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
-            this.layerSymbologyData$.set(layer, symbologyData$);
+        } else {
+            symbologyDataLoadingState$.next(LoadingState.OK);
         }
 
         // each layer has provenance...
-        const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(LoadingState.LOADING);
-        const provenanceData$ = new ReplaySubject<Array<Provenance>>(LoadingState.LOADING);
+        const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const provenanceData$ = new ReplaySubject<Array<Provenance>>(1);
         const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
         this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
         this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
@@ -876,7 +879,9 @@ export class ProjectService {
     }
 
     getLayerCombinedStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
-        return this.layerCombinedState$.get(layer);
+        const state =  this.layerCombinedState$.get(layer);
+        //console.log(layer.name, state);
+        return state;
     }
 
     /**
