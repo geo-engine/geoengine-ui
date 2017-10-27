@@ -4,7 +4,7 @@ $mat-dialog-padding: 24px !default; // TODO: import when this is possible again
 $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
 
-.previous{
+/*.previous{
     position: absolute;
     top: calc(50% - #{$mat-fab-size/2});
     left: #{-$mat-fab-size/2};
@@ -14,7 +14,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
     position: absolute;
     top: calc(50% - #{$mat-fab-size/2});
     right: #{-$mat-fab-size/2};
-}
+}*/
 
 .imageContainer{
     max-width: calc(100vw - 4rem);
@@ -34,17 +34,24 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         max-height: inherit;
         max-width: inherit;
         overflow: auto;
+        position: relative;
     }
 
     md-toolbar {
         margin: 0;
+
+        /*h3 small{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }*/
 
         .separator{
             flex-grow: 1;
         }
 
         .externalLink {
-            margin-left: 2rem;
+            margin-right: 2rem;
         }
 
         .closeLink {
@@ -64,6 +71,26 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
             position: relative;
             top: calc(50% - 100px);
             left: calc(50% - 100px);
+        }
+    }
+
+    .buttons {
+        position: fixed;
+        bottom: 2*$mat-dialog-padding;
+        left: 0;
+        width: 100%;
+        text-align: center;
+
+        button {
+            margin: 1rem;
+        }
+
+        .previous{
+            margin-right: 2rem;
+        }
+
+        .next{
+            margin-left: 2rem;
         }
     }
 }

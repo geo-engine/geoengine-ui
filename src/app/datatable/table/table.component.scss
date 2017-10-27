@@ -11,82 +11,95 @@
     overflow-anchor: none;
 }
 
-table {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    border-spacing: 0;
+.mat-table {
+    float: left;
+}
 
-    .tableFixed {
-        position: relative;
-        background: fade-out(#ffffff, 0.1);
-    }
-    .tableFixedVertical{
-        z-index: 10;
-    }
+.tableFixed {
+    position: relative;
+    background: fade-out(#ffffff, 0.1);
+}
 
-    thead{
-        .tableFixedHorizontal{
-            z-index: 11;
-        }
+.mat-header-row, .mat-row {
+    min-height: 40px;
+    padding-left: 0;
+}
+.mat-header-row.tableFixedHorizontal{
+    z-index: 11;
+}
 
-        .tableFixedHorizontal.tableFixedVertical{
-            z-index: 12;
-        }
+.mat-header-cell, .mat-cell{
+    height: 36px;
 
-        .tableCell{
-            overflow: hidden;
-            word-break: break-all;
-            hyphens: auto;
-        }
-    }
-
-    tbody{
-        td:not(.tableFixed) .tableCell, td:not(.tableFixed) .tableCell span{
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    }
-
-    td, th{
-        border: 1px solid #ccc;
-        border-spacing: 0;
+    &:not(.tableFixedVertical) {
+        overflow: hidden;
+        word-wrap: break-word;
+        hyphens: auto;
+        text-overflow: ellipsis;
         padding: 2px 5px;
-        text-align: left;
-        vertical-align: middle;
     }
 
-    .tableCell {
-        height: 36px;
-        max-width: 400px;
-
-        span{
-            height: 36px;
-            display: block;
-        }
-    }
-
-    .rowSelected {
-        background: fade-out(mat-color($wave-app-accent), 0.6);
-
-        .tableFixed::before {
-            content: " ";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: fade-out(mat-color($wave-app-accent), 0.6);
-        }
-    }
-
-    .offsetterTop, .offsetterBottom{
-        td {
-            padding: 0;
-            border: 0;
-        }
+    &.tableFixedVertical{
+        padding: 2px 14px;
+        display: flex;
+        align-items: center;
     }
 }
+
+.mat-header-cell.tableFixedVertical{
+    z-index: 12;
+}
+.mat-cell.tableFixedVertical{
+    z-index: 10;
+    min-width: 20px;
+    max-width: 20px;
+}
+
+.mat-cell span{
+    height: 36px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /*Multi-Line-Clamping*/
+    /*&:after {
+        content: "";
+        text-align: right;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100px;
+        height: 1.2em;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 80%);
+    }*/
+}
+
+.rowSelected {
+    background: fade-out(mat-color($wave-app-accent), 0.6);
+
+    .tableFixed::before {
+        content: " ";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: fade-out(mat-color($wave-app-accent), 0.6);
+    }
+}
+
+.offsetterTop, .offsetterBottom {
+    padding: 0;
+    border: 0;
+    min-height: 0;
+    height: 0;
+
+    .mat-cell{
+        height: 0;
+        padding: 0;
+    }
+}
+
 
 .no-layer {
     display: table;

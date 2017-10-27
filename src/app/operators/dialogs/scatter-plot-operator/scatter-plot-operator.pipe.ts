@@ -1,6 +1,3 @@
-/**
- * Created by Julian on 01/09/2017.
- */
 import {Pipe} from '@angular/core';
 import {DataTypes} from '../../datatype.model';
 import {Operator} from '../../operator.model';

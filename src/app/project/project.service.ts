@@ -36,6 +36,7 @@ export class ProjectService {
     private layerProvenanceData$: Map<Layer<Symbology>, ReplaySubject<Array<Provenance>>>;
     private layerProvenanceDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
     private layerProvenanceDataSubscriptions: Map<Layer<Symbology>, Subscription>;
+    private layerCombinedState$: Map<Layer<Symbology>, Observable<LoadingState>>;
 
     private newLayer$: Subject<Layer<Symbology>>;
 
@@ -63,6 +64,7 @@ export class ProjectService {
         this.layerProvenanceData$ = new Map();
         this.layerProvenanceDataState$ = new Map();
         this.layerProvenanceDataSubscriptions = new Map();
+        this.layerCombinedState$ = new Map();
         this.newLayer$ = new Subject<Layer<Symbology>>();
     }
 
@@ -100,6 +102,7 @@ export class ProjectService {
         this.layerSymbologyDataState$.clear();
         this.layerSymbologyDataSubscriptions.forEach(subscription => subscription.unsubscribe());
         this.layerSymbologyDataSubscriptions.clear();
+        this.layerCombinedState$.clear();
 
         // clear plot data
         this.plotData$.forEach(subject => subject.complete());
@@ -343,25 +346,29 @@ export class ProjectService {
                     layer as RasterLayer<RasterSymbology>, layerData$, layerDataLoadingState$
                 );
                 break;
-            default :
+            case 'vector':
                 layerDataSub = this.createVectorLayerDataSubscription(
                     layer as VectorLayer<AbstractVectorSymbology>, layerData$, layerDataLoadingState$
                 );
+                break;
         }
         this.layerDataSubscriptions.set(layer, layerDataSub);
         this.layerDataState$.set(layer, layerDataLoadingState$);
         this.layerData$.set(layer, layerData$);
 
+        const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const symbologyData$ = new ReplaySubject<MappingColorizer>(1);
+        this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
+        this.layerSymbologyData$.set(layer, symbologyData$);
+
         if (layer.getLayerType() === 'raster') {
-            const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-            const symbologyData$ = new ReplaySubject<MappingColorizer>(1);
-            const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
+            const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
                 symbologyData$,
                 symbologyDataLoadingState$
             );
-            this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSybscription);
-            this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
-            this.layerSymbologyData$.set(layer, symbologyData$);
+            this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSubscription);
+        } else {
+            symbologyDataLoadingState$.next(LoadingState.OK);
         }
 
         // each layer has provenance...
@@ -371,6 +378,29 @@ export class ProjectService {
         this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
         this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
         this.layerProvenanceData$.set(layer, provenanceData$);
+
+        const combinedState$ = Observable.combineLatest(
+            this.layerSymbologyDataState$.get(layer),
+            this.layerDataState$.get(layer),
+            this.layerProvenanceDataState$.get(layer))
+            .map(([sym, data, prov]) => {
+                //console.log("combinedLayerState", sym, data, prov);
+                if (sym === LoadingState.LOADING
+                    || data === LoadingState.LOADING
+                /*|| prov === LoadingState.LOADING*/) {
+                    return LoadingState.LOADING;
+                }
+                if (sym === LoadingState.ERROR
+                    || data === LoadingState.ERROR
+                /*|| prov === LoadingState.ERROR*/) {
+                    return LoadingState.ERROR;
+                }
+                return LoadingState.OK;
+            }).catch(err => {
+                return Observable.of(LoadingState.ERROR);
+            });
+
+        this.layerCombinedState$.set(layer, combinedState$);
     }
 
     /**
@@ -525,6 +555,7 @@ export class ProjectService {
                         lsd.complete();
                     }
                     this.layerSymbologyData$.delete(layer);
+                    this.layerCombinedState$.delete(layer);
 
                     subject.next();
                     subject.complete();
@@ -538,8 +569,10 @@ export class ProjectService {
     reloadLayerData(layer: Layer<Symbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
 
-        this.layerDataSubscriptions.get(layer).unsubscribe();
-        this.layerDataSubscriptions.delete(layer);
+        if (this.layerDataSubscriptions.has(layer)) {
+            this.layerDataSubscriptions.get(layer).unsubscribe();
+            this.layerDataSubscriptions.delete(layer);
+        }
 
         switch (layer.getLayerType()) {
             case 'raster': {
@@ -573,11 +606,15 @@ export class ProjectService {
     reloadLayer(layer: Layer<Symbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
 
-        this.layerDataSubscriptions.get(layer).unsubscribe();
-        this.layerDataSubscriptions.delete(layer);
+        if (this.layerDataSubscriptions.has(layer)) {
+            this.layerDataSubscriptions.get(layer).unsubscribe();
+            this.layerDataSubscriptions.delete(layer);
+        }
 
-        this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
-        this.layerProvenanceDataSubscriptions.delete(layer);
+        if (this.layerProvenanceDataSubscriptions.has(layer)) {
+            this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
+            this.layerProvenanceDataSubscriptions.delete(layer);
+        }
 
         if (this.layerSymbologyDataSubscriptions.has(layer)) {
             this.layerSymbologyDataSubscriptions.get(layer).unsubscribe();
@@ -671,7 +708,7 @@ export class ProjectService {
         return Observable.combineLatest(
             this.getTimeStream(),
             this.getProjectionStream(),
-            this.mapService.getViewportSizeStream()
+            this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection, viewportSize]) => {
@@ -747,19 +784,19 @@ export class ProjectService {
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection]) => {
-                return this.mappingQueryService.getColorizer(
+                const colorizer = this.mappingQueryService.getColorizer(
                     layer.operator,
                     time,
                     projection
-                );
-            })
-            .do(
-                () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
+                )
+                    .do(() => loadingState$.next(LoadingState.OK))
+                    .catch((reason: Response) => {
                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
-                }
-            )
+                    return Observable.of({interpolation: 'unknown', breakpoints: []});
+                });
+                return colorizer;
+            })
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -839,6 +876,12 @@ export class ProjectService {
      */
     getLayerProvenanceDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
         return this.layerProvenanceDataState$.get(layer);
+    }
+
+    getLayerCombinedStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+        const state =  this.layerCombinedState$.get(layer);
+        //console.log(layer.name, state);
+        return state;
     }
 
     /**

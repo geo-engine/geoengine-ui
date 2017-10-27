@@ -1,13 +1,15 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
-import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {
+    AbstractVectorSymbology,
+    ClusteredPointSymbology,
+    SimpleVectorSymbology
+} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {Subject, ReplaySubject, BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
 import {MdDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
@@ -31,10 +33,8 @@ export class FeaturedbSourceListComponent implements OnInit {
     filteredEntries$: Observable<Array<{name: string, operator: Operator}>>;
 
     constructor(private userService: UserService,
-                private layerService: LayerService,
                 private projectService: ProjectService,
                 private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
                 public dialog: MdDialog) {
     }
 
@@ -85,14 +85,8 @@ export class FeaturedbSourceListComponent implements OnInit {
             name: entry.name,
             operator: entry.operator,
             symbology: symbology,
-            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-            //     operator: entry.operator,
-            //     clustered: clustered,
-            // }),
-            // provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
             clustered: clustered,
         });
-        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer)
     }
 

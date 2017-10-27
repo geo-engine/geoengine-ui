@@ -16,10 +16,11 @@ import {MappingColorizer} from '../layers/symbology/symbology.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
-import {Time} from '../time/time.model';
+import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
 import * as ol from 'openlayers';
+import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 import {
     Basket,
     BasketResult,
@@ -28,7 +29,6 @@ import {
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
-import {BasketResultGroupByDatasetPipe} from '../operators/dialogs/baskets/gfbio-basket.pipe';
 
 /**
  * A service that encapsulates MAPPING queries.
@@ -209,7 +209,7 @@ export class MappingQueryService {
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: config.time.asRequestString(),
+                // time: config.time.asRequestString(),
             },
         });
     }
@@ -224,8 +224,37 @@ export class MappingQueryService {
         time: Time,
         projection: Projection
     }): string {
-        const parameters = this.getWMSQueryParameters(config);
+        let parameters: MappingRequestParameters;
 
+        if (config.time.getEnd().isAfter(config.time.getStart())) {
+            const duration = config.time.getEnd().diff(config.time.getStart()) / 1000;
+
+            const aggregationOperator = new Operator({
+                operatorType: new TemporalAggregationType({
+                    duration: duration,
+                    aggregation: 'avg',
+                }),
+                resultType: config.operator.resultType,
+                projection: config.operator.projection,
+                attributes: config.operator.attributes,
+                dataTypes: config.operator.dataTypes,
+                units: config.operator.units,
+                rasterSources: config.operator.resultType === ResultTypes.RASTER ? [config.operator] : [],
+                pointSources: config.operator.resultType === ResultTypes.POINTS ? [config.operator] : [],
+                lineSources: config.operator.resultType === ResultTypes.LINES ? [config.operator] : [],
+                polygonSources: config.operator.resultType === ResultTypes.POLYGONS ? [config.operator] : [],
+            });
+
+            parameters = this.getWMSQueryParameters({
+                operator: aggregationOperator,
+                time: new TimePoint(config.time.getStart()),
+                projection: config.projection
+            });
+        } else {
+            parameters = this.getWMSQueryParameters(config);
+        }
+
+        // console.log(config.time, parameters.toMessageBody());
         return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
@@ -268,6 +297,10 @@ export class MappingQueryService {
                  time: Time,
                  projection: Projection): Observable<MappingColorizer> {
 
+
+        // TODO
+        let timeStart = this.stripEndingTime(time);
+
         const request = new MappingRequestParameters({
             service: 'WMS',
             request: 'GetColorizer',
@@ -276,20 +309,21 @@ export class MappingQueryService {
                 version: this.config.WMS.VERSION,
                 layers: operator.getProjectedOperator(projection).toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),
-                time: time.asRequestString(),
+                time: timeStart.asRequestString(),
                 crs: projection.getCode(),
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
             .map((res: Response) => res.json() as MappingColorizer)
-            .catch((error, {}) => {
-                this.notificationService.error(`Could not load colorizer: »${error}«`);
-                return Observable.of({interpolation: 'unknown', breakpoints: []});
-            }).map(c => {
+            // .catch((error, {}) => {
+            //    this.notificationService.error(`Could not load colorizer: »${error}«`);
+            //    return Observable.of({interpolation: 'unknown', breakpoints: []});
+            // })
+            .map(c => {
 
                 if (c['result'] && c['result'] === 'No raster for the given time available.') {
-                    this.notificationService.info('No raster for the given time available.');
+                    console.log('No raster for the given time available.');
                 }
 
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
@@ -305,6 +339,10 @@ export class MappingQueryService {
         projection: Projection,
         extent: ol.Extent,
     }): Promise<Array<Provenance>> {
+
+        // TODO
+        let timeStart = this.stripEndingTime(config.time);
+
         const request = new MappingRequestParameters({
             service: 'provenance',
             request: '',
@@ -312,7 +350,7 @@ export class MappingQueryService {
             parameters: {
                 query: encodeURIComponent(config.operator.getProjectedOperator(config.projection).toQueryJSON()),
                 crs: config.projection.getCode(),
-                time: config.time.asRequestString(),
+                time: timeStart.asRequestString(),
                 bbox: config.projection.getCode() === 'EPSG:4326' ?
                     config.projection.getExtent()[1]
                     + ',' + config.projection.getExtent()[0] + ','
@@ -489,6 +527,16 @@ export class MappingQueryService {
                     timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
                 }
             });
+    }
+
+    private stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
 }

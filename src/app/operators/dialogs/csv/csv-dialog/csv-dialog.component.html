@@ -13,7 +13,7 @@
         ></wave-csv-properties>
         <wave-csv-table
             #csvTable
-            [properties]="csvProperties"
+            [csvProperty]="csvProperties"
             [data]="data"
             [cellSpacing]="10"
             [linesToParse]="15"
@@ -29,23 +29,14 @@
 
 <md-dialog-actions align="end" *ngIf="!(uploading$ | async)">
     <div class="buttons" *ngIf="!!csvProperties">
-            <span
-                *ngIf="(csvProperties.isSpatialProperties$ | async) || (csvProperties.isTemporalProperties$ | async) || (csvProperties.isTypingProperties$ | async)">
-              <button md-raised-button (click)="csvProperties.previousPage()">
-                  Prev
-              </button>
-            </span>
-        <span
-            *ngIf="((csvProperties.isSpatialProperties$ | async) || (csvProperties.isDataProperties$ | async) || (csvProperties.isTemporalProperties$ | async)) && csvProperties.csvTable">
-                <button #next md-raised-button color="primary" (click)="csvProperties.nextPage()"
-                        [disabled]="!((csvProperties.actualPage$ | async).valid || (csvTable && csvTable.header.length > 1))"
-                >
-                    Next
-                </button>
-            </span>
+        <button md-raised-button color="primary" (click)="csvProperties.stepper.previous()"
+                *ngIf="!(csvProperties.isDataProperties$ | async)">Prev</button>
+        <button md-raised-button color="primary" (click)="csvProperties.stepper.next()"
+                *ngIf="!(csvProperties.isTypingProperties$ | async)"
+                [disabled]="!(csvProperties.actualPage$ | async).valid">Next</button>
         <button md-raised-button color="primary" (click)="submit()"
                 *ngIf="csvProperties.isTypingProperties$ | async"
-                [disabled]="!(csvProperties.actualPage$ | async).valid || (csvProperties.nameIsReserved$ | async)"
+                [disabled]="!(csvProperties.actualPage$ | async).valid"
         >
             Submit
         </button>

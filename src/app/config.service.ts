@@ -125,7 +125,7 @@ const ConfigDefault = Immutable.fromJS({
         REFRESH_LAYERS_ON_CHANGE: false,
     },
     GFBIO: {
-        LIFERAY_PORTAL_URL: 'https://gfbio-dev1.inf-bb.uni-jena.de/',
+        LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
     },
     TIME: {
         ALLOW_RANGES: true,

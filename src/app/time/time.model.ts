@@ -144,7 +144,7 @@ export class TimeInterval implements Time {
         this.start = moment.utc(start);
         this.end = moment.utc(end);
 
-        if( this.start == this.end ){
+        if (this.start === this.end) {
             this.end = this.end.clone();
         }
     }
