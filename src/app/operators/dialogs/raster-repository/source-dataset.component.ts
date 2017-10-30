@@ -11,6 +11,7 @@ import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
+import {GdalSourceType} from '../../types/gdal-source-type.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -21,19 +22,23 @@ import {Observable} from 'rxjs/Observable';
 
 export class SourceDatasetComponent implements OnInit {
 
-    private _dataset: MappingSource;
+    @Input() dataset: MappingSource;
+
+    //private _dataset: MappingSource;
     private _useRawData = false;
     private _showPreview = false;
     private _showDescription = false;
     private _channelSource;
+    private _displayedColumns  = ['name', 'measurement']
 
     constructor(
-        private projectService: ProjectService
+        private projectService: ProjectService,
     ) {
 
     }
 
     ngOnInit(): void {
+        console.log("init", this, this.dataset);
         this._channelSource = new ChannelDataSource(this.dataset.channels);
     }
 
@@ -50,7 +55,6 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     add(channel: MappingSourceChannel, doTransform: boolean) {
-        console.log("meh" + doTransform);
         let dataType = channel.datatype;
         let unit: Unit = channel.unit;
 
@@ -59,14 +63,27 @@ export class SourceDatasetComponent implements OnInit {
             dataType = channel.transform.datatype;
         }
 
-        const operator = new Operator({
-            operatorType: new RasterSourceType({
-                channel: channel.id,
-                sourcename: this._dataset.source,
+        let operatorType;
+
+        if (this.dataset.operator === GdalSourceType.TYPE) {
+            operatorType = new GdalSourceType({
+                channel: channel.id + 1,
+                sourcename: this.dataset.source,
                 transform: doTransform, // TODO: user selectable transform?
-            }),
+            });
+        } else {
+            operatorType = new RasterSourceType({
+                channel: channel.id,
+                sourcename: this.dataset.source,
+                transform: doTransform, // TODO: user selectable transform?
+            });
+        }
+
+
+        const operator = new Operator({
+            operatorType: operatorType,
             resultType: ResultTypes.RASTER,
-            projection: Projections.fromCode('EPSG:' + this._dataset.coords.epsg),
+            projection: Projections.fromCode('EPSG:' + this.dataset.coords.epsg),
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set(
                 'value', DataTypes.fromCode(dataType)
@@ -82,6 +99,7 @@ export class SourceDatasetComponent implements OnInit {
         this.projectService.addLayer(layer);
     }
 
+    /*
     @Input('dataset')
     set dataset(dataset: MappingSource) {
         this._dataset = dataset;
@@ -90,6 +108,7 @@ export class SourceDatasetComponent implements OnInit {
     get dataset(): MappingSource {
         return this._dataset;
     }
+    */
 
     @Input('useRawData')
     set useRawData(useRawData: boolean) {
@@ -102,6 +121,14 @@ export class SourceDatasetComponent implements OnInit {
 
     get channels(): Array<MappingSourceChannel> {
         return this.dataset.channels
+    }
+
+    get channelDataSource(): ChannelDataSource {
+        return this._channelSource;
+    }
+
+    get displayedColumns(): Array<String> {
+        return this._displayedColumns;
     }
 
     isSingleLayerDataset(): boolean {
@@ -128,6 +155,7 @@ class ChannelDataSource extends DataSource<MappingSourceChannel> {
     constructor(channels: Array<MappingSourceChannel>) {
         super();
         this.channels = channels;
+        console.log(this.channels);
     }
 
     connect(): Observable<Array<MappingSourceChannel>> {

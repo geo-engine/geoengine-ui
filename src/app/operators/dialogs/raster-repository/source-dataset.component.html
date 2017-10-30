@@ -1,17 +1,24 @@
 <md-card>
     <md-card-header>
         <md-card-title>
-            <span bind-innerHtml="dataset.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
-            <span><a [href]="dataset?.uri" target="_blank"><md-icon>open_in_new</md-icon></a></span>
+            <span class="dataset-name" bind-innerHtml="dataset.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
         </md-card-title>
     </md-card-header>
 
     <img *ngIf="_showPreview && !!dataset.imgUrl" md-card-image src="{{dataset?.imgUrl}}" alt="no preview image available">
 
-    <md-card-content>
-        <p *ngIf="_showDescription">{{dataset?.descriptionText}}</p>
+    <md-card-content *ngIf="true || _showDescription">
+        <p *ngIf="_showDescription && dataset?.descriptionText">{{dataset?.descriptionText}}</p>
     </md-card-content>
 
+    <md-list>
+        <md-list-item>
+            <md-icon mdListIcon>open_in_new</md-icon>
+            <p class="dataset-uri"><a [href]="dataset?.uri" target="_blank">{{dataset?.uri}}</a></p>
+        </md-list-item>
+    </md-list>
+
+    <!--
     <ng-template [ngIf]="isSingleLayerDataset()">
         <md-card-content>
             <p>Measurement: {{valid_unit(dataset.channels[0])}}</p>
@@ -24,93 +31,25 @@
 
         </md-card-actions>
     </ng-template>
+    -->
 
+    <ng-template [ngIf]="true || !isSingleLayerDataset()">
+        <md-table #table [dataSource]="channelDataSource">
 
-    <ng-template [ngIf]="!isSingleLayerDataset()">
-        <md-card-content>
-            <md-table #table [dataSource]="_channelSource">
-                <ng-container mdColumnDef="name">
-                    <md-header-cell *mdHeaderCellDef>Unit</md-header-cell>
-                    <md-cell *mdCellDef="let unit">{{unit.prefix}}</md-cell>
-                </ng-container>
-                <ng-container mdColumnDef="measurement">
-                    <md-header-cell *mdHeaderCellDef>Type</md-header-cell>
-                    <md-cell *mdCellDef="let unit">{{unit.type}}</md-cell>
-                </ng-container>
-                <ng-container mdColumnDef="unitId">
-                    <md-header-cell *mdHeaderCellDef>Unit Id</md-header-cell>
-                    <md-cell *mdCellDef="let unit">
-                        <a href='{{unit.metadataLink}}' target="_blank">{{unit.unitId}}</a>
-                    </md-cell>
-                </ng-container>
-                <md-header-row *mdHeaderRowDef="displayedUnitColumns"></md-header-row>
-                <md-row *mdRowDef="let row; columns: displayedUnitColumns;"></md-row>
-            </md-table>
+            <ng-container mdColumnDef="name">
+                <md-header-cell *mdHeaderCellDef>Channel</md-header-cell>
+                <md-cell *mdCellDef="let channel" (click)="simple_add(channel)">
+                    {{channel.name}}
+                </md-cell>
+            </ng-container>
 
-            <table>
-                <ng-template ngFor let-channel [ngForOf]="dataset.channels">
-                    <tr>
-                        <ng-template [ngIf]="channel.isSwitchable">
-                            <!--
-                            <md-slide-toggle #t
-                                             [checked]="channel.hasTransform"
-                                             aria-label="transform raw data"
-                                             [disabled]="!channel.hasTransform">
-                            </md-slide-toggle>
-                            -->
-                            <div class="item" (click)="add(source, channel, true)">
-                                <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
-                                <!--
-                                <ng-template [ngIf]="true || t.checked">
-                                    <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                                    <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
-                                </ng-template>
-                                <ng-template [ngIf]="false && !t.checked">
-                                    <p md-line>measurement: {{channel?.unit?.measurement}}</p>
-                                    <p md-line>unit: {{channel?.unit?.unit}}</p>
-                                </ng-template>
-                                -->
-                            </div>
-                        </ng-template>
-                        <ng-template [ngIf]="!channel.isSwitchable">
-                            <div class="item" (click)="add(source, channel, channel.hasTransform)">
-                                <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
-                                <!--
-                                <ng-template [ngIf]="!channel.hasTransform">
-                                    <p md-line>measurement: {{channel?.unit?.measurement}}</p>
-                                    <p md-line>unit: {{channel?.unit?.unit}}</p>
-                                </ng-template>
-                                <ng-template [ngIf]="channel.hasTransform">
-                                    <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                                    <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
-                                </ng-template>
-                                -->
-                            </div>
-                        </ng-template>
-                    </tr>
-                </ng-template>
-            </table>
-        </md-card-content>
+            <ng-container mdColumnDef="measurement">
+                <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
+                <md-cell *mdCellDef="let channel">{{valid_unit(channel)}}</md-cell>
+            </ng-container>
+
+            <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+            <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+        </md-table>
     </ng-template>
 </md-card>
-
-
-
-<!--
-<md-table #table [dataSource]="channelSource(source)">
-    <ng-container mdColumnDef="name">
-        <md-header-cell *mdHeaderCellDef>Name</md-header-cell>
-        <md-cell *mdCellDef="let channel">{{channel.name}}</md-cell>
-    </ng-container>
-    <ng-container mdColumnDef="measurement">
-        <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
-        <md-cell *mdCellDef="let channel">{{channel.unit.measurement}}</md-cell>
-    </ng-container>
-    <ng-container mdColumnDef="unit">
-        <md-header-cell *mdHeaderCellDef>Unit</md-header-cell>
-        <md-cell *mdCellDef="let channel">{{channel.unit.unit}}</md-cell>
-    </ng-container>
-    <md-header-row *mdHeaderRowDef="displayedChannelColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedChannelColumns;"></md-row>
-</md-table>
--->
