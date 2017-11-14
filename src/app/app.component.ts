@@ -23,7 +23,7 @@ import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-con
 
 import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
-import {StorageService} from './storage/storage.service';
+import {StorageService, StorageStatus} from './storage/storage.service';
 
 import {MapComponent} from './map/map.component';
 
@@ -161,7 +161,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             case 'TOKEN_LOGIN':
                 const tokenMessage = message as { type: string, token: string };
                 this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
-                    this.handleWorkflowParameters();
+                    this.storageService.getStatus()
+                        .filter(status => status === StorageStatus.OK)
+                        .first()
+                        .subscribe(() => {
+                            this.handleWorkflowParameters();
+                        });
                 });
                 break;
             default:
