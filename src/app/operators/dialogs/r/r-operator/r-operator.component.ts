@@ -222,10 +222,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
             if (this.editable) {
                 // TODO: implement replace functionality
-                // this.layerService.addLayer(layer);
                 this.projectService.addLayer(layer);
             } else {
-                // this.layerService.addLayer(layer);
                 this.projectService.addLayer(layer);
             }
 

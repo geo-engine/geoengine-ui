@@ -212,18 +212,21 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    replacePlot(oldPlot: Plot, newPlot: Plot): Observable<void> {
+    replacePlot(oldPlot: Plot, newPlot: Plot, notify = true): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
 
         this.addPlot(newPlot, false).subscribe(() => {
             this.project$.first().subscribe(project => {
                 const currentPlots = project.plots;
                 const oldPlotIndex = currentPlots.indexOf(oldPlot);
+                const newPlotIndex = currentPlots.indexOf(newPlot);
                 currentPlots[oldPlotIndex] = newPlot;
-                currentPlots.shift();
+                currentPlots[newPlotIndex] = oldPlot;
 
                 this.removePlot(oldPlot).subscribe(() => {
-                    this.newPlot$.next();
+                    if (notify) {
+                        this.newPlot$.next();
+                    }
 
                     subject.next();
                     subject.complete();
