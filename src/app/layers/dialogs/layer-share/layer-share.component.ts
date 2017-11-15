@@ -28,7 +28,8 @@ export class LayerShareComponent implements OnInit {
         this.layer = this.config.layer;
 
         const layerJSON = JSON.stringify(this.layer.toDict());
-        this.link = `${window.location.origin}/#/?workflow=${encodeURI(layerJSON)}`;
+
+        this.link = `${window.location.origin}${window.location.pathname}#/?workflow=${encodeURI(layerJSON)}`;
     }
 
     copyLink() {
