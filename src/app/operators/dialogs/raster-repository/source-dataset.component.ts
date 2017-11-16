@@ -67,7 +67,7 @@ export class SourceDatasetComponent implements OnInit {
 
         if (this.dataset.operator === GdalSourceType.TYPE) {
             operatorType = new GdalSourceType({
-                channel: channel.id + 1,
+                channel: channel.id,
                 sourcename: this.dataset.source,
                 transform: doTransform, // TODO: user selectable transform?
             });
