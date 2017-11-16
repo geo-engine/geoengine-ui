@@ -313,6 +313,7 @@ export class UserService {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
                                 sources.push({
+                                    operator: (source.operator) ? source.operator : 'rasterdb_source',
                                     source: sourceId,
                                     name: (source.name) ? source.name : sourceId,
                                     uri: (source.provenance) ? source.provenance.uri : '',

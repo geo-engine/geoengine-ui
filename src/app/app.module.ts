@@ -126,6 +126,8 @@ import {
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {MdIconRegistry} from '@angular/material';
+import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
+
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -234,6 +236,7 @@ export function configInitializer(config: Config) {
         MediaviewPlaylistComponent,
         FileNamePipe,
         NumericPipe,
+        SourceDatasetComponent
     ],
     imports: [
         BrowserModule,

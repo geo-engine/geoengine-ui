@@ -31,6 +31,7 @@ import {
     FeatureCollectionDBSourceTypeDict
 } from './feature-collection-db-source-type.model';
 import {TextualAttributeFilterType, TextualAttributeFilterTypeDict} from './textual-attribute-filter-type.model';
+import {GdalSourceType, GdalSourceTypeDict} from './gdal-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -55,6 +56,8 @@ export abstract class OperatorTypeFactory {
                 return GFBioSourceType.fromDict(dict as GFBioSourceTypeDict);
             case RasterSourceType.TYPE:
                 return RasterSourceType.fromDict(dict as RasterSourceTypeDict);
+            case GdalSourceType.TYPE:
+                return GdalSourceType.fromDict(dict as GdalSourceTypeDict);
             case HistogramType.TYPE:
                 return HistogramType.fromDict(dict as HistogramTypeDict);
             case RScriptType.TYPE:
