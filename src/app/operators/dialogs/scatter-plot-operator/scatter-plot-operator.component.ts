@@ -12,7 +12,7 @@ import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {WaveValidators} from '../../../util/form.validators';
 
 @Component({
-    selector: 'wave-pie-chart-operator',
+    selector: 'wave-scatter-plot-operator',
     templateUrl: './scatter-plot-operator.component.html',
     styleUrls: ['./scatter-plot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

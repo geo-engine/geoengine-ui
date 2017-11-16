@@ -5,6 +5,7 @@ import {LoadingState} from '../../project/loading-state.model';
 import {MdDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {RScriptType} from '../../operators/types/r-script-type.model';
+import {BoxPlotType} from '../../operators/types/boxplot-type.model';
 import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
 import {PieChartType} from '../../operators/types/piechart-type.model';
 import {LayoutService} from '../../layout.service';
@@ -24,6 +25,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     RScriptType = RScriptType;
     ScatterPlotType = ScatterPlotType;
     PieChartType = PieChartType;
+    BoxPlotType = BoxPlotType;
     //
 
     LoadingState = LoadingState;

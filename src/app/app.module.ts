@@ -126,6 +126,7 @@ import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
+import {BoxPlotComponent} from "./operators/dialogs/box-plot-operator/box-plot-operator.component";
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -222,6 +223,7 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        BoxPlotComponent,
         ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
@@ -281,6 +283,7 @@ export function configInitializer(config: Config) {
         RScriptLoadComponent,
         PieChartComponent,
         ScatterPlotComponent,
+        BoxPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         MediaviewImageComponent,
