@@ -12,6 +12,13 @@ import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
 import {NotificationService} from '../notification.service';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Subject} from 'rxjs/Subject';
+
+export enum StorageStatus {
+    PENDING,
+    OK,
+}
 
 /**
  * A service that is responsible for saving the app state.
@@ -23,8 +30,10 @@ export class StorageService {
     private projectSubscription: Subscription;
     private layoutSubscription: Subscription;
 
-    private pendingWorkspace: {project: Project};
+    private pendingWorkspace: { project: Project };
     private pendingWorkspaceSubscription: Subscription;
+
+    private storageStatus$ = new BehaviorSubject(StorageStatus.PENDING);
 
     constructor(private config: Config,
                 private projectService: ProjectService,
@@ -35,6 +44,8 @@ export class StorageService {
         // load stored values on session change
         this.userService.getSessionStream()
             .subscribe(session => {
+                this.storageStatus$.next(StorageStatus.PENDING);
+
                 // check validity
                 this.userService.isSessionValid(session).subscribe(valid => {
                     if (valid) {
@@ -77,12 +88,15 @@ export class StorageService {
         return this.storageProvider.getRScripts();
     }
 
+    getStatus(): Observable<StorageStatus> {
+        return this.storageStatus$;
+    }
+
     /**
      * Remove the old provider, create a new one and load saved data.
      */
     private resetStorageProvider(projectName: string = undefined) {
         // clean up old provider stuff
-        this.storageProvider = undefined;
         if (this.projectSubscription) {
             this.projectSubscription.unsubscribe();
         }
@@ -97,6 +111,7 @@ export class StorageService {
 
             this.pendingWorkspace = undefined;
         }
+        this.storageProvider = undefined;
 
         // create suitable provider
         if (this.userService.isGuestUser()) {
@@ -116,6 +131,13 @@ export class StorageService {
                 projectName: projectName,
             });
         }
+
+        const workspaceLoading$ = new Subject<void>();
+        const layoutLoading$ = new Subject<void>();
+        Observable
+            .combineLatest(workspaceLoading$, layoutLoading$)
+            .first()
+            .subscribe(() => this.storageStatus$.next(StorageStatus.OK));
 
         // load workspace
         this.storageProvider.loadWorkspace().subscribe(workspace => {
@@ -162,6 +184,9 @@ export class StorageService {
                         }
                     }
                 });
+
+            workspaceLoading$.next();
+            workspaceLoading$.complete();
         });
 
         // load layout
@@ -176,6 +201,9 @@ export class StorageService {
                 .subscribe(layout => {
                     this.storageProvider.saveLayoutSettings(layout).subscribe();
                 });
+
+            layoutLoading$.next();
+            layoutLoading$.complete();
         });
     }
 

@@ -25,6 +25,10 @@ import {
     MdDialogModule,
     MdAutocompleteModule,
     MdDatepickerModule,
+    MdExpansionModule,
+    MdPaginatorModule,
+    MdStepperModule,
+    MdTableModule,
 } from '@angular/material';
 
 const MATERIAL_MODULES = [
@@ -52,6 +56,10 @@ const MATERIAL_MODULES = [
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,
+    MdExpansionModule,
+    MdPaginatorModule,
+    MdTableModule,
+    MdStepperModule,
 ];
 
 @NgModule({

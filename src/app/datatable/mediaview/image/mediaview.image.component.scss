@@ -2,24 +2,21 @@
 $mat-icon-button-size: 40px !default; // TODO: import when this is possible again
 $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
-.imageContainer{
+.imageContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
 
-    wave-dialog-section-heading {
-        float: left;
-        margin: 0 1rem;
-        width: calc(100% - 4rem - #{$mat-icon-button-size});
-    }
-
-    .externalLink{
-        float: right;
+    md-card{
+        width: calc(100% - 2rem);
         margin: 1rem;
+        padding: 0;
     }
 
     img {
-        width: calc(100% - 2rem);
+        width: 100%;
         height: auto;
-        margin: 0rem 1rem calc(1rem + #{$mat-fab-size/2}) 1rem;
-        float: left;
+        display: block;
     }
 
     .loading{
@@ -34,6 +31,26 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
             position: relative;
             top: calc(50% - 50px);
             left: calc(50% - 50px);
+        }
+    }
+
+    .info {
+        margin-bottom: calc(1rem + #{$mat-fab-size});
+        width: 100%;
+        float: left;
+
+        h3 {
+            float: left;
+            margin: 1rem;
+            width: calc(100% - 4rem - #{$mat-icon-button-size});
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }
+
+        .externalLink {
+            float: right;
+            margin: 1rem;
         }
     }
 

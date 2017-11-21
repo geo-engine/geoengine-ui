@@ -13,7 +13,6 @@ export interface UploadData {
     content: string;
     progress: number;
     isNull: boolean;
-    isNumberArr: boolean[];
 }
 
 @Component({
@@ -37,7 +36,6 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
         content: '',
         progress: 0,
         isNull: true,
-        isNumberArr: [],
     };
 
     private subscriptions: Array<Subscription> = [];
@@ -66,7 +64,6 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
                 content: '',
                 progress: 0,
                 isNull: false,
-                isNumberArr: []
             };
             $event.target.value = '';
             this.upload();
@@ -77,7 +74,6 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
                 content: '',
                 progress: 0,
                 isNull: true,
-                isNumberArr: []
             };
             if ($event.target.files[0].size > this.file_size_limit) {
                 $event.target.value = '';
@@ -112,7 +108,7 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
         this.status$.next(FormStatus.Selection);
     }
 
-    /**This method generates an number array containing all integers i with n <= i < m
+    /**This method generates a number array containing all integers i with n <= i < m
      *
      * @param n lowest integer. !Warning: This integer is still contained in array.
      * @param m highest integer. !Warning: This integer is not contained in array.

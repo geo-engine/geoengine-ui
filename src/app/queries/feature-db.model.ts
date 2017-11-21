@@ -1,10 +1,11 @@
-import {ParametersType, MappingRequestParameters} from './request-parameters.model';
+import {MappingRequestParameters, ParametersType} from './request-parameters.model';
 import {Projection, Projections} from '../operators/projection.model';
-import {Time, TimeInterval} from '../time/time.model';
+import {TimeInterval} from '../time/time.model';
 import {DataTypes} from '../operators/datatype.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {FeatureCollectionDBSourceType} from '../operators/types/feature-collection-db-source-type.model';
 import {Operator} from '../operators/operator.model';
+import {Unit} from '../operators/unit.model';
 
 export interface FeatureDBList {
     data_sets: Array<FeatureDBListEntry>;
@@ -74,6 +75,7 @@ export class FeatureDBServiceUploadParameters extends FeatureDBServiceRequestPar
 
 export function featureDBListEntryToOperator(entry: FeatureDBListEntry) {
     const attributes = [...entry.numeric_attributes, ...entry.textual_attributes];
+
     const dataTypes = new Map();
     for (const attributeName of attributes) {
         if (entry.numeric_attributes.indexOf(attributeName) >= 0) {
@@ -81,6 +83,11 @@ export function featureDBListEntryToOperator(entry: FeatureDBListEntry) {
         } else {
             dataTypes.set(attributeName, DataTypes.Alphanumeric);
         }
+    }
+
+    const units = new Map();
+    for (const attributeName of attributes) {
+        units.set(attributeName, Unit.defaultUnit);
     }
 
     return {
@@ -94,6 +101,7 @@ export function featureDBListEntryToOperator(entry: FeatureDBListEntry) {
             projection: Projections.WGS_84, // TODO: this must be changed on mapping first and then here
             attributes: attributes,
             dataTypes: dataTypes,
+            units: units,
         })
     };
 }

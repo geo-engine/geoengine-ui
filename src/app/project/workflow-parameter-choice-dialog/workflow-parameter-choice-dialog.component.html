@@ -1,7 +1,10 @@
 <wave-dialog-header>Workflow URL Parameter</wave-dialog-header>
 <md-dialog-content>
     <p>
-        There is a layer available from the URL parameters.
+        There
+        <span *ngIf="config?.layers?.length === 1; else numberOfLayers">is a layer</span>
+        <ng-template #numberOfLayers>are {{config?.layers?.length}} layers</ng-template>
+        available from the URL parameters.
         You have the following options:
     </p>
 </md-dialog-content>

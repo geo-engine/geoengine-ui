@@ -1,52 +1,24 @@
 <wave-sidenav-header>Raster Repository</wave-sidenav-header>
-<wave-sidenav-search (searchString)="searchTerm = $event"></wave-sidenav-search>
+<wave-sidenav-search (searchString)="searchTerm = $event">
+    <button md-icon-button [mdMenuTriggerFor]="optionsMenu" waveSidenavSearchRight>
+        <md-icon>more_vert</md-icon>
+    </button>
+    <md-menu #optionsMenu="mdMenu">
+        <button md-menu-item (click)="toggleImages()" disabled>
+            Show images
+        </button>
+        <button md-menu-item (click)="toggleDescriptions()" disabled>
+            Show descriptions
+        </button>
+        <button md-menu-item (click)="toggleTransformData()" disabled>
+            Raw, unscaled data
+        </button>
+    </md-menu>
+</wave-sidenav-search>
+
 <md-list *ngIf="(sources | async).length > 0; else noSources">
-    <ng-template
-        ngFor let-source
-        [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm"
-    >
-        <div md-subheader class="datagroup" fxLayout="row" fxLayoutAlign="space-between center">
-            <span bind-innerHtml="source.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
-            <span><a [href]="source?.uri" target="_blank"><md-icon>open_in_new</md-icon></a></span>
-        </div>
-        <ng-template ngFor let-channel [ngForOf]="source.channels">
-            <md-list-item>
-                <ng-template [ngIf]="channel.isSwitchable">
-                    <!--
-                    <md-slide-toggle #t
-                                     [checked]="channel.hasTransform"
-                                     aria-label="transform raw data"
-                                     [disabled]="!channel.hasTransform">
-                    </md-slide-toggle>
-                    -->
-                    <div class="item" (click)="add(source, channel, true)">
-                        <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
-                        <ng-template [ngIf]="true || t.checked">
-                            <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                            <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
-                        </ng-template>
-                        <ng-template [ngIf]="false && !t.checked">
-                            <p md-line>measurement: {{channel?.unit?.measurement}}</p>
-                            <p md-line>unit: {{channel?.unit?.unit}}</p>
-                        </ng-template>
-                    </div>
-                </ng-template>
-                <ng-template [ngIf]="!channel.isSwitchable">
-                    <div class="item" (click)="add(source, channel, channel.hasTransform)">
-                        <p md-line bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></p>
-                        <ng-template [ngIf]="!channel.hasTransform">
-                            <p md-line>measurement: {{channel?.unit?.measurement}}</p>
-                            <p md-line>unit: {{channel?.unit?.unit}}</p>
-                        </ng-template>
-                        <ng-template [ngIf]="channel.hasTransform">
-                            <p md-line>measurement: {{channel?.transform?.unit?.measurement}}</p>
-                            <p md-line>unit: {{channel?.transform?.unit?.unit}}</p>
-                        </ng-template>
-                    </div>
-                </ng-template>
-            </md-list-item>
-            <md-divider></md-divider>
-        </ng-template>
+    <ng-template ngFor let-source [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm">
+        <wave-source-dataset [dataset]="source"></wave-source-dataset>
     </ng-template>
 </md-list>
 <ng-template #noSources>

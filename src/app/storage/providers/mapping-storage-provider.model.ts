@@ -1,6 +1,6 @@
 import {Http} from '@angular/http';
 
-import {StorageProvider, Workspace, WorkspaceDict, RScript, RScriptDict} from '../storage-provider.model';
+import {RScript, RScriptDict, StorageProvider, Workspace, WorkspaceDict} from '../storage-provider.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
@@ -8,8 +8,6 @@ import {ResultTypes} from '../../operators/result-type.model';
 import {LayoutDict} from '../../layout.service';
 import {Project} from '../../project/project.model';
 import {Session} from '../../users/user.service';
-
-import {LayerService} from '../../layers/layer.service';
 import {Config} from '../../config.service';
 import {ProjectService} from '../../project/project.service';
 import {Observable, ReplaySubject, Subject} from 'rxjs/Rx';

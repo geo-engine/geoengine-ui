@@ -1,0 +1,60 @@
+<md-card>
+    <md-card-header>
+        <md-card-title>{{result.title | waveTrimPipe}}</md-card-title>
+    </md-card-header>
+
+    <md-card-content>
+        <table class='main'>
+            <tr>
+                <td>Authors</td>
+                <td><span *ngFor="let author of result.authors" class='author'>{{author | waveTrimPipe}}</span></td>
+            </tr>
+            <tr>
+                <td>Data center</td>
+                <td>{{result.dataCenter | waveTrimPipe}}</td>
+            </tr>
+            <tr>
+                <td>Metadata</td>
+                <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
+            </tr>
+        </table>
+
+        <ng-template [ngIf]='hasUnits'>
+            <p class="no-bottom-margin">Units from multiple search results based on this dataset:</p>
+            <md-table #table [dataSource]="unitDataSource">
+                <ng-container mdColumnDef="prefix">
+                    <md-header-cell *mdHeaderCellDef>Unit</md-header-cell>
+                    <md-cell *mdCellDef="let unit">{{unit.prefix}}</md-cell>
+                </ng-container>
+                <ng-container mdColumnDef="type">
+                    <md-header-cell *mdHeaderCellDef>Type</md-header-cell>
+                    <md-cell *mdCellDef="let unit">{{unit.type}}</md-cell>
+                </ng-container>
+                <ng-container mdColumnDef="unitId">
+                    <md-header-cell *mdHeaderCellDef>Unit Id</md-header-cell>
+                    <md-cell *mdCellDef="let unit">
+                        <a href='{{unit.metadataLink}}' target="_blank">{{unit.unitId}}</a>
+                    </md-cell>
+                </ng-container>
+                <md-header-row *mdHeaderRowDef="displayedUnitColumns"></md-header-row>
+                <md-row *mdRowDef="let row; columns: displayedUnitColumns;"></md-row>
+            </md-table>
+        </ng-template>
+    </md-card-content>
+
+    <md-card-actions>
+        <div *ngIf="result.available; else noResult">
+            <button md-button color='primary' (click)='add(true)' *ngIf="hasUnits"><span>Add</span> <u>units</u> as <span>layer</span></button>
+            <button md-button color='primary' (click)='add(false)'><span>Add</span> <u>dataset</u> <span>as layer</span></button>
+        </div>
+
+        <ng-template #noResult>
+            <em>This dataset is currently not available in the VAT system</em>
+            <ul>
+                <li *ngIf='!result.isGeoReferenced'> no georeference detected</li>
+            </ul>
+        </ng-template>
+    </md-card-actions>
+</md-card>
+
+<md-divider></md-divider>

@@ -7,7 +7,7 @@ import {User, Guest} from './user.model';
 
 import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
-import {IBasket} from '../operators/dialogs/baskets/gfbio-basket.model';
+import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource,
@@ -313,6 +313,7 @@ export class UserService {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
                                 sources.push({
+                                    operator: (source.operator) ? source.operator : 'rasterdb_source',
                                     source: sourceId,
                                     name: (source.name) ? source.name : sourceId,
                                     uri: (source.provenance) ? source.provenance.uri : '',
@@ -422,9 +423,9 @@ export class UserService {
     /**
      * Get as stream of GFBio baskets sources depending on the logged in user.
      */
-    getGfbioBasketStream(): Observable<Array<IBasket>> {
+    getGfbioBasketStream(): Observable<Array<Basket>> {
         interface GfbioBasketResponse {
-            baskets: Array<IBasket>;
+            baskets: Array<Basket>;
             result: boolean;
         }
 

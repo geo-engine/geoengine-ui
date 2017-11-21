@@ -1,7 +1,7 @@
 <wave-sidenav-header>R Operator</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
     <div fxFlex class="container">
-        <ng-template [ngIf]="!this.editable">
+        <ng-template [ngIf]="!editable">
             <wave-multi-layer-selection
                 [types]="[ResultTypes.RASTER]"
                 formControlName="rasterLayers"
@@ -13,7 +13,7 @@
                 [min]="0" [max]="5" [initialAmount]="0"
             ></wave-multi-layer-selection>
         </ng-template>
-        <ng-template [ngIf]="this.editable">
+        <ng-template [ngIf]="editable">
             <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourceRasters">No Input Available</p>
@@ -109,7 +109,8 @@
     </div>
     <div class="actions">
         <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
-            Create
+            <span *ngIf="!editable">Create</span>
+            <span *ngIf="editable">Update</span>
         </button>
     </div>
 </form>
