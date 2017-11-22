@@ -24,7 +24,6 @@ export class SourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
 
-    //private _dataset: MappingSource;
     private _useRawData = false;
     private _showPreview = false;
     private _showDescription = false;
@@ -38,7 +37,6 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log("init", this, this.dataset);
         this._channelSource = new ChannelDataSource(this.dataset.channels);
     }
 
@@ -98,17 +96,6 @@ export class SourceDatasetComponent implements OnInit {
         });
         this.projectService.addLayer(layer);
     }
-
-    /*
-    @Input('dataset')
-    set dataset(dataset: MappingSource) {
-        this._dataset = dataset;
-    }
-
-    get dataset(): MappingSource {
-        return this._dataset;
-    }
-    */
 
     @Input('useRawData')
     set useRawData(useRawData: boolean) {
