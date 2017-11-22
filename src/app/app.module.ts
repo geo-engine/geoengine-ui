@@ -127,6 +127,7 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {MdIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
+import {FeedbackComponent} from './help/feedback/feedback.component';
 
 
 export function configInitializer(config: Config) {
@@ -236,7 +237,8 @@ export function configInitializer(config: Config) {
         MediaviewPlaylistComponent,
         FileNamePipe,
         NumericPipe,
-        SourceDatasetComponent
+        SourceDatasetComponent,
+        FeedbackComponent
     ],
     imports: [
         BrowserModule,
