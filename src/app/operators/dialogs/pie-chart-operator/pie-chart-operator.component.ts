@@ -39,19 +39,25 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     add() {
-        const projection = this.form.controls['layer'].value.operator.projection;
+        const sourceOperator: Operator = this.form.controls['layer'].value.operator;
+
         const operator: Operator = new Operator({
             operatorType: new PieChartType({
                 attribute: this.form.controls['attribute'].value.toString(),
+                inputType: sourceOperator.resultType,
             }),
             resultType: ResultTypes.PLOT,
-            projection: projection,
-            pointSources: [this.form.controls['layer'].value.operator.getProjectedOperator(projection)],
+            projection: sourceOperator.projection,
+            pointSources: sourceOperator.resultType === ResultTypes.POINTS ? [sourceOperator] : undefined,
+            lineSources: sourceOperator.resultType === ResultTypes.LINES ? [sourceOperator] : undefined,
+            polygonSources: sourceOperator.resultType === ResultTypes.POLYGONS ? [sourceOperator] : undefined,
         });
+
         const plot = new Plot({
-            name: this.form.controls['name'].value,
+            name: this.form.controls['name'].value.toString(),
             operator: operator,
         });
+
         this.projectService.addPlot(plot);
     }
 

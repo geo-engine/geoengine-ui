@@ -112,8 +112,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param object the object containing the keys
      * @returns {string[]} a string-array containing all the keys
      */
-    private static getArrayOfKeys(object): string[] {
-        return Object.keys(object).filter(x => !(x.startsWith('___') || x === 'geometry'));
+    private static getArrayOfKeys(object: {[key: string]: any}): Array<string> {
+        return Object
+            .keys(object)
+            .filter(x => !(x.startsWith('___') || x === 'geometry'));
     }
 
 
@@ -123,7 +125,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @returns {string} the formated unit-string
      */
     private static formatUnits(x: Unit): string {
-        if (x.unit !== Unit.defaultUnit.unit) {
+        if (x && x.unit !== Unit.defaultUnit.unit) {
             return ' [' + x.unit + ']';
         } else {
             return '';

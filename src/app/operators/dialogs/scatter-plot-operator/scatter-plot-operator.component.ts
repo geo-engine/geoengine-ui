@@ -42,16 +42,20 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     add() {
-        const projection = this.form.controls['vLayer'].value.operator.projection;
+        const sourceOperator: Operator = this.form.controls['vLayer'].value.operator;
+
         const operator: Operator = new Operator({
             operatorType: new ScatterPlotType({
                 attribute1: this.form.controls['attribute1'].value.toString(),
                 attribute2: this.form.controls['attribute2'].value.toString(),
                 regression: this.form.controls['isRegression'].value,
+                inputType: sourceOperator.resultType,
             }),
             resultType: ResultTypes.PLOT,
-            projection: projection,
-            pointSources: [this.form.controls['vLayer'].value.operator.getProjectedOperator(projection)],
+            projection: sourceOperator.projection,
+            pointSources: sourceOperator.resultType === ResultTypes.POINTS ? [sourceOperator] : undefined,
+            lineSources: sourceOperator.resultType === ResultTypes.LINES ? [sourceOperator] : undefined,
+            polygonSources: sourceOperator.resultType === ResultTypes.POLYGONS ? [sourceOperator] : undefined,
         });
         const plot = new Plot({
             name: this.form.controls['name'].value,

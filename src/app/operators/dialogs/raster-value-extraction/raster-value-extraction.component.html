@@ -2,8 +2,8 @@
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
     <div fxFlex class="container">
         <wave-layer-selection
-            [types]="[ResultTypes.POINTS]"
-            formControlName="pointLayer"
+            [types]="[ResultTypes.POINTS, ResultTypes.POLYGONS]"
+            formControlName="vectorLayer"
         ></wave-layer-selection>
         <wave-multi-layer-selection
             [types]="[ResultTypes.RASTER]"

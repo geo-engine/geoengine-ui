@@ -8,34 +8,42 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,
     ClusteredPointSymbology,
-    SimplePointSymbology
+    SimplePointSymbology,
+    SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 
-function valueNameCollision(pointLayerControl: FormControl, valueNames: FormArray) {
-    return (control: FormControl): {[key: string]: boolean} => {
+/**
+ * Checks for collisions of value name.
+ * Uses `startsWith` semantics.
+ * @param {FormControl} vectorLayerControl
+ * @param {FormArray} valueNames
+ * @returns {(control: FormControl) => {[p: string]: boolean}}
+ */
+function valueNameCollision(vectorLayerControl: FormControl, valueNames: FormArray) {
+    return (control: FormControl): { [key: string]: boolean } => {
         const errors: {
             duplicateName?: boolean,
         } = {};
 
-        const valueName = control.value;
+        const valueName: string = control.value;
 
         let duplicates = 0;
 
-        for (const otherValueName of valueNames.value) {
-            if (valueName === otherValueName) {
+        for (const otherValueName of valueNames.value as Array<string>) {
+            if (otherValueName.startsWith(valueName)) {
                 duplicates++;
             }
         }
 
         if (duplicates < 2) {
-            const pointLayer: VectorLayer<AbstractVectorSymbology> = pointLayerControl.value;
-            if (pointLayer) {
-                for (const otherValueName of pointLayer.operator.attributes.toArray()) {
-                    if (valueName === otherValueName) {
+            const vectorLayer: VectorLayer<AbstractVectorSymbology> = vectorLayerControl.value;
+            if (vectorLayer) {
+                for (const otherValueName of vectorLayer.operator.attributes.toArray()) {
+                    if (otherValueName.startsWith(valueName)) {
                         duplicates++;
                     }
                 }
@@ -73,10 +81,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 private formBuilder: FormBuilder,
                 private changeDetectorRef: ChangeDetectorRef) {
         this.form = this.formBuilder.group({
-            pointLayer: [undefined, Validators.required],
+            vectorLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
             valueNames: this.formBuilder.array([]),
-            name: ['Points With Raster Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
+            name: ['Vectors With Raster Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
         this.subscriptions.push(
@@ -97,7 +105,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                             rasters[i].name, Validators.compose([
                                 Validators.required,
                                 valueNameCollision(
-                                    this.form.controls['pointLayer'] as FormControl,
+                                    this.form.controls['vectorLayer'] as FormControl,
                                     this.form.controls['valueNames'] as FormArray,
                                 )
                             ])
@@ -142,7 +150,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
     }
 
     add() {
-        const vectorOperator: Operator = this.form.controls['pointLayer'].value.operator;
+        const vectorOperator: Operator = this.form.controls['vectorLayer'].value.operator;
         const projection = vectorOperator.projection;
         const resultType = vectorOperator.resultType;
 
@@ -158,17 +166,53 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         const dataTypes = vectorOperator.dataTypes.asMutable();
         const attributes = vectorOperator.attributes.asMutable();
 
-        for (let i = 0; i < rasterOperators.length; i++) {
-            units.set(valueNames[i], rasterOperators[i].getUnit('value'));
-            dataTypes.set(valueNames[i], rasterOperators[i].getDataType('value'));
-            attributes.push(valueNames[i]);
-        }
-
         const name: string = this.form.controls['name'].value;
 
         // TODO: magic numbers
         const resolutionX = 1024;
         const resolutionY = 1024;
+
+        let clustered = false;
+        let symbology: AbstractVectorSymbology;
+
+        switch (resultType) {
+            case ResultTypes.POINTS:
+                clustered = this.form.controls['vectorLayer'].value.clustered;
+
+                symbology = clustered ?
+                    new ClusteredPointSymbology({
+                        fillRGBA: this.randomColorService.getRandomColor(),
+                    }) :
+                    new SimplePointSymbology({
+                        fillRGBA: this.randomColorService.getRandomColor(),
+                    });
+
+                for (let i = 0; i < rasterOperators.length; i++) {
+                    units.set(valueNames[i], rasterOperators[i].getUnit('value'));
+                    dataTypes.set(valueNames[i], rasterOperators[i].getDataType('value'));
+                    attributes.push(valueNames[i]);
+                }
+
+                break;
+            case ResultTypes.POLYGONS:
+                symbology = new SimpleVectorSymbology({
+                    fillRGBA: this.randomColorService.getRandomColor(),
+                });
+
+                for (let i = 0; i < rasterOperators.length; i++) {
+                    for (const valueSuffix of ['mean', 'stdev', 'min', 'max']) {
+                        const attributeName = `${valueNames[i]}_${valueSuffix}`;
+
+                        units.set(attributeName, rasterOperators[i].getUnit('value'));
+                        dataTypes.set(attributeName, rasterOperators[i].getDataType('value'));
+                        attributes.push(attributeName);
+                    }
+                }
+
+                break;
+            default:
+                throw Error('Unsupported result type for raster_value_extraction operator');
+        }
 
         const operator = new Operator({
             operatorType: new RasterValueExtractionType({
@@ -187,17 +231,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             rasterSources: rasterOperators,
         });
 
-        const clustered: boolean = this.form.controls['pointLayer'].value.clustered;
         const layer = new VectorLayer({
             name: name,
             operator: operator,
-            symbology: clustered ?
-                new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
-                }) :
-                new SimplePointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
-                }),
+            symbology: symbology,
             clustered: clustered,
         });
 
