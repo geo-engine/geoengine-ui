@@ -1,7 +1,6 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-    from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-import {ResultTypes, ResultType} from '../result-type.model';
+import {ResultType, ResultTypes} from '../result-type.model';
 
 interface PieChartTypeMappingDict extends OperatorTypeMappingDict {
     source: string;
@@ -10,10 +9,12 @@ interface PieChartTypeMappingDict extends OperatorTypeMappingDict {
 
 export interface PieChartTypeDict extends OperatorTypeDict {
     attribute: string;
+    inputType: string;
 }
 
 interface PieChartTypeConfig {
     attribute: string;
+    inputType: ResultType;
 }
 
 /**
@@ -30,38 +31,45 @@ export class PieChartType extends OperatorType {
 
     private code: string;
     private attribute: string;
+    private inputType: ResultType;
     private resultType: ResultType;
 
     static fromDict(dict: PieChartTypeDict): PieChartType {
         return new PieChartType({
             attribute: dict.attribute,
+            inputType: ResultTypes.fromCode(dict.inputType),
         });
     }
 
     constructor(config: PieChartTypeConfig) {
         super();
         this.attribute = config.attribute;
-        this.code = `
-points <- mapping.loadPoints(0, mapping.qrect);
-
-if (length(points) > 0) {
-
-  kv <- table(points$\`${config.attribute}\`);
-
-  labels <- paste("(",names(kv),")", "\n", kv, sep="");
-
-  pie(kv, labels = labels);
-
-} else {
-
-  plot.new();
-
-  mtext("Empty Dataset");
-
-}
-
-`;
+        this.inputType = config.inputType;
         this.resultType = ResultTypes.PLOT;
+
+        const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
+
+        this.code = `
+            features <- mapping.load${camelInputType}(0, mapping.qrect);
+
+            if (length(features) > 0) {
+
+                kv <- table(features$\`${config.attribute}\`);
+
+                labels <- paste("(",names(kv),")", "\n", kv, sep="");
+
+                pie(kv, labels = labels);
+
+            } else {
+
+                plot.new();
+
+                mtext("Empty Dataset");
+
+            }
+
+        `;
+
     }
 
     getMappingName(): string {
@@ -94,6 +102,7 @@ if (length(points) > 0) {
         return {
             operatorType: PieChartType.TYPE,
             attribute: this.attribute,
+            inputType: this.inputType.getCode(),
         };
     }
 
