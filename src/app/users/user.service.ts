@@ -319,7 +319,7 @@ export class UserService {
                                     uri: (source.provenance) ? source.provenance.uri : '',
                                     citation: source.provenance ? source.provenance.citation : '',
                                     license: source.provenance ? source.provenance.license : '',
-                                    colorizer: source.colorizer,
+                                    colorizer: undefined,
                                     coords: source.coords,
                                     channels: source.channels.map((channel, index) => {
                                         return {

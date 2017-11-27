@@ -18,8 +18,8 @@ export interface SymbologyDict {
     symbologyType: string;
 }
 
-export interface ISymbology {
-}
+// tslint:disable-next-line: no-empty-interface
+export interface ISymbology {}
 
 export abstract class Symbology implements ISymbology {
 
@@ -45,16 +45,15 @@ export abstract class Symbology implements ISymbology {
                 });
             case SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER]:
                 const mappingColorizerRasterSymbologyDict = dict as RasterSymbologyDict;
-                return new MappingColorizerRasterSymbology(
-                    {
+                return new MappingColorizerRasterSymbology({
                         hue: mappingColorizerRasterSymbologyDict.hue,
                         opacity: mappingColorizerRasterSymbologyDict.opacity,
                         saturation: mappingColorizerRasterSymbologyDict.saturation,
                         unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
-                    },
-                );
+                        colorizer: new MappingRasterColorizer(mappingColorizerRasterSymbologyDict.colorizer)
+                    });
             default:
-                throw 'Unsupported Symbology';
+                throw new Error('Unsupported Symbology');
         }
     }
 
@@ -86,7 +85,7 @@ interface VectorSymbologyDict extends SymbologyDict {
 export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
     fillRGBA: [number, number, number, number];
     strokeRGBA: [number, number, number, number] = [0, 0, 0, 1];
-    strokeWidth: number = 1;
+    strokeWidth = 1;
 
     abstract getOlStyle(): ol.style.Style | ol.StyleFunction;
     abstract describesArea(): boolean;
@@ -121,12 +120,12 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
 
 export class SimpleVectorSymbology extends AbstractVectorSymbology {
 
-    constructor(config: IVectorSymbology) {
-        super(config);
-    }
-
     static fromConfig(config: IVectorSymbology) {
         return new SimpleVectorSymbology(config);
+    }
+
+    constructor(config: IVectorSymbology) {
+        super(config);
     }
 
     getSymbologyType(): SymbologyType {
@@ -151,7 +150,7 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
     describesArea(): boolean {
         return true;
     }
-    describesRadius(): boolean{
+    describesRadius(): boolean {
         return false;
     }
 
@@ -174,7 +173,7 @@ interface SimplePointSymbologyDict extends VectorSymbologyDict {
 }
 
 export class SimplePointSymbology extends AbstractVectorSymbology implements ISimplePointSymbology {
-  radius: number = 5;
+  radius = 5;
 
   constructor(config: ISimplePointSymbology) {
       super(config);
@@ -206,7 +205,7 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
   describesArea(): boolean {
       return true;
   }
-  describesRadius(): boolean{
+  describesRadius(): boolean {
       return true;
   }
 
@@ -294,7 +293,7 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
     describesArea(): boolean {
         return true;
     }
-    describesRadius(): boolean{
+    describesRadius(): boolean {
         return false;
     }
 
@@ -328,12 +327,13 @@ export interface RasterSymbologyDict extends SymbologyDict {
     hue: number;
     saturation: number;
     unit: UnitDict;
+    colorizer?: MappingRasterColorizer;
 }
 
 export class RasterSymbology extends Symbology implements IRasterSymbology {
-    opacity: number = 1;
-    hue: number = 0;
-    saturation: number = 0;
+    opacity = 1;
+    hue = 0;
+    saturation = 0;
     unit: Unit;
 
     constructor(config: IRasterSymbology) {
@@ -385,11 +385,73 @@ export interface MappingColorizer {
     result?: string | number;
 }
 
-export class MappingColorizerRasterSymbology extends RasterSymbology
-    implements IRasterSymbology {
+export interface IMappingRasterColorizer {
+    breakpoints: Array<MappingRasterColorizerBreakpoint>;
+}
 
-    constructor(config: IRasterSymbology) {
+export interface MappingRasterColorizerBreakpoint {
+    value: number;
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
+    name?: string;
+}
+
+export class MappingRasterColorizer implements IMappingRasterColorizer {
+    breakpoints: Array<MappingRasterColorizerBreakpoint>;
+
+    static grayScaleMappingColorizer(unit: Unit): MappingRasterColorizer {
+        console.log("grayScaleMappingColorizer", unit);
+
+        const min_br: MappingRasterColorizerBreakpoint = {
+            value: (unit.min) ? unit.min : 0,
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 255,
+            name: 'min'
+        }
+
+        const max_br: MappingRasterColorizerBreakpoint = {
+            value: (unit.max) ? unit.max : 1000,
+            r: 255,
+            g: 255,
+            b: 255,
+            a: 255,
+            name: 'max'
+        }
+        return new MappingRasterColorizer({
+            breakpoints: [min_br, max_br]
+        });
+    }
+
+    constructor(config: IMappingRasterColorizer) {
+        this.breakpoints = config.breakpoints;
+    }
+
+    clone(): MappingRasterColorizer {
+        return new MappingRasterColorizer(this);
+    }
+
+    asMappingRequestString(): string {
+        return JSON.stringify ( this as IMappingRasterColorizer );
+    }
+}
+
+
+export interface IColorizerRasterSymbology extends IRasterSymbology {
+    colorizer?: MappingRasterColorizer;
+}
+
+export class MappingColorizerRasterSymbology extends RasterSymbology
+    implements IColorizerRasterSymbology {
+
+    colorizer: MappingRasterColorizer;
+
+    constructor(config: IColorizerRasterSymbology) {
         super(config);
+        this.colorizer = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit);
     }
 
     getSymbologyType(): SymbologyType {
@@ -400,8 +462,8 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
         return super.isUnknown();
     }
 
-    toConfig(): IRasterSymbology {
-        return super.clone() as IRasterSymbology;
+    toConfig(): IColorizerRasterSymbology {
+        return this.clone() as IColorizerRasterSymbology;
     }
 
     clone(): MappingColorizerRasterSymbology {
@@ -415,6 +477,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
             hue: this.hue,
             saturation: this.saturation,
             unit: this.unit.toDict(),
+            colorizer: this.colorizer,
         };
     }
 }

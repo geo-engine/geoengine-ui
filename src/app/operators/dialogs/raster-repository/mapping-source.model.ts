@@ -1,4 +1,5 @@
 import {Unit, UnitMappingDict} from '../../unit.model';
+import { MappingRasterColorizer, MappingRasterColorizerBreakpoint } from '../../../layers/symbology/symbology.model';
 
 export interface MappingTransform {
   datatype: string;
@@ -13,7 +14,7 @@ export interface MappingSourceChannel {
   datatype: string;
   nodata: number;
   unit: Unit;
-  colorizer?: string;
+  colorizer?: MappingRasterColorizer;
   transform?: MappingTransform;
   hasTransform: boolean;
   isSwitchable: boolean;
@@ -28,7 +29,7 @@ export interface MappingSource {
     license: string;
     citation: string;
     channels: MappingSourceChannel[];
-    colorizer: string;
+    colorizer?: MappingRasterColorizer;
     coords: {
         epsg: number,
         origin: number[],
