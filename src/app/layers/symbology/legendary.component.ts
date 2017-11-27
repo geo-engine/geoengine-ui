@@ -107,18 +107,15 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                     </tr>                    
                 </ng-template>
                 <ng-template [ngIf]='!symbology.isUnknown()'>
-                    <tr
-                        *ngFor='let breakpoint of symbologyData.breakpoints;
-                                let isFirst = first'
-                    >
+                    <tr *ngFor='let breakpoint of symbology.colorizer.breakpoints; let isFirst = first'>
                         <ng-template [ngIf]='symbology.isContinuous()'>
                             <td class='gradient'
                                 *ngIf='isFirst'
-                                [rowSpan]='symbologyData.breakpoints.length'
-                                [style.background]='symbologyData | waveWappingColorizerToGradient
+                                [rowSpan]='symbology.colorizer.breakpoints.length'
+                                [style.background]='symbology.colorizer | waveWappingColorizerToGradient
                                                     | waveSafeStyle'
                             ></td>
-                            <td>{{breakpoint[0]}}</td>
+                            <td>{{breakpoint.value}}</td>
                             <td *ngIf='isFirst'>{{symbology?.unit.unit}}</td>
                         </ng-template>
                         <ng-template [ngIf]='symbology.isDiscrete()'>

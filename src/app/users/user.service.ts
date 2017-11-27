@@ -29,6 +29,7 @@ import {
     featureDBListEntryToOperator
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
+import {IMappingRasterColorizer} from "../layers/symbology/symbology.model";
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -319,7 +320,7 @@ export class UserService {
                                     uri: (source.provenance) ? source.provenance.uri : '',
                                     citation: source.provenance ? source.provenance.citation : '',
                                     license: source.provenance ? source.provenance.license : '',
-                                    colorizer: undefined,
+                                    colorizer: source.colorizer,
                                     coords: source.coords,
                                     channels: source.channels.map((channel, index) => {
                                         return {
@@ -329,6 +330,7 @@ export class UserService {
                                             nodata: channel.nodata,
                                             unit: channel.unit ?
                                                 Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
+                                            colorizer: channel.colorizer,
                                             hasTransform: !!channel.transform,
                                             isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
                                             transform: channel.transform === undefined ?

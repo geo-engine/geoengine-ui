@@ -6,7 +6,7 @@ import {ResultTypes} from '../../result-type.model';
 import {Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingColorizerRasterSymbology, MappingRasterColorizer} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';

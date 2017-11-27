@@ -411,7 +411,7 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
             b: 0,
             a: 255,
             name: 'min'
-        }
+        };
 
         const max_br: MappingRasterColorizerBreakpoint = {
             value: (unit.max) ? unit.max : 1000,
@@ -420,7 +420,8 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
             b: 255,
             a: 255,
             name: 'max'
-        }
+        };
+
         return new MappingRasterColorizer({
             breakpoints: [min_br, max_br]
         });
@@ -441,7 +442,7 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
 
 
 export interface IColorizerRasterSymbology extends IRasterSymbology {
-    colorizer?: MappingRasterColorizer;
+    colorizer?: IMappingRasterColorizer;
 }
 
 export class MappingColorizerRasterSymbology extends RasterSymbology
@@ -451,7 +452,9 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
 
     constructor(config: IColorizerRasterSymbology) {
         super(config);
-        this.colorizer = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit);
+        console.log("MappingColorizerRasterSymbology.constructor", config);
+        const colorizerConfig = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit); // TODO don't create grayscale
+        this.colorizer = new MappingRasterColorizer(colorizerConfig);
     }
 
     getSymbologyType(): SymbologyType {
