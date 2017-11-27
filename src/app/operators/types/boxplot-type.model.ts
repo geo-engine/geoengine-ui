@@ -61,11 +61,12 @@ export class BoxPlotType extends OperatorType {
         if (!this.mean) {
             means = '';
         }
-        this.code = `
+        this.code = `library(ggplot2);
 points <- mapping.loadPoints(0, mapping.qrect);
 if (length(points) > 0) {
-attr <- ${attributeCode}
-boxplot(attr);
+attr <- ${attributeCode};
+p <- ggplot(attr, aes(x = "", y = attr)) + geom_boxplot();
+print(p);
 }else {
 plot.new();
 mtext("Empty Dataset");

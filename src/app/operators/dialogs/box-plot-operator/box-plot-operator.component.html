@@ -30,7 +30,7 @@
                         *ngFor="let value of attributes | async; let i = index"
                         placeholder="Attribute {{i+1}}"
                         [ngModel]="value" (ngModelChange)="updateAttribute(i, $event)"
-                        (onBlur)="onBlur()" [ngModelOptions]="{standalone: true}"
+                        [ngModelOptions]="{standalone: true}"
                         fxFlex
                     >
                         <md-option

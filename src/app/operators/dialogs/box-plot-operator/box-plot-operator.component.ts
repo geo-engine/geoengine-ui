@@ -109,15 +109,15 @@ export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     updateAttribute(i: number, attribute: string) {
-        console.log(i, attribute);
-        let attributes = this.attributes.getValue();
-        const newAttributes = [];
-        for (let j = 0; j < attributes.length; j++) {
-            newAttributes[j] = attributes[j];
-        }
-        newAttributes[i] = attribute;
-        this.attributes.next(newAttributes);
+    console.log(i, attribute);
+    let attributes = this.attributes.getValue();
+    const newAttributes = [];
+    for (let j = 0; j < attributes.length; j++) {
+        newAttributes[j] = attributes[j];
     }
+    newAttributes[i] = attribute;
+    this.attributes.next(newAttributes);
+}
 
     nonNegative(val: number): ValidatorFn {
         return (control: AbstractControl): {[key: string]: any} => {
