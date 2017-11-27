@@ -18,38 +18,25 @@
         </md-list-item>
     </md-list>
 
-    <!--
-    <ng-template [ngIf]="isSingleLayerDataset()">
-        <md-card-content>
-            <p>Measurement: {{valid_unit(dataset.channels[0])}}</p>
-        </md-card-content>
-
-        <md-card-actions>
-            <button md-button color='primary' (click)='simple_add(dataset.channels[0])'>
-                <md-icon>add</md-icon> <span><u>{{dataset.channels[0].name}}</u></span>
-            </button>
-
-        </md-card-actions>
-    </ng-template>
-    -->
-
     <ng-template [ngIf]="true || !isSingleLayerDataset()">
         <md-table #table [dataSource]="channelDataSource">
 
             <ng-container mdColumnDef="name">
                 <md-header-cell *mdHeaderCellDef>Channel</md-header-cell>
-                <md-cell *mdCellDef="let channel" (click)="simple_add(channel)">
+                <md-cell *mdCellDef="let channel">
                     {{channel.name}}
                 </md-cell>
             </ng-container>
 
             <ng-container mdColumnDef="measurement">
                 <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
-                <md-cell *mdCellDef="let channel">{{valid_unit(channel)}}</md-cell>
+                <md-cell *mdCellDef="let channel">
+                    {{valid_unit(channel)}}
+                </md-cell>
             </ng-container>
 
             <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-            <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+            <md-row *mdRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></md-row>
         </md-table>
     </ng-template>
 </md-card>

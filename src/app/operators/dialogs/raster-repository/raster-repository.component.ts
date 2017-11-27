@@ -4,7 +4,6 @@ import {Observable} from 'rxjs/Rx';
 
 import {MappingSource} from './mapping-source.model';
 import {UserService} from '../../../users/user.service';
-// import {ProjectService} from '../../../project/project.service';
 
 @Component({
     selector: 'wave-raster-repository',
@@ -19,7 +18,6 @@ export class RasterRepositoryComponent {
     private sources: Observable<Array<MappingSource>>;
 
     constructor(
-        // private projectService: ProjectService,
         private userService: UserService
     ) {
         this.sources = this.userService.getRasterSourcesStream();
