@@ -4,7 +4,7 @@ import {Subscription} from 'rxjs/Rx';
 import * as ol from 'openlayers';
 
 import {Projection} from '../operators/projection.model';
-import {AbstractVectorSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
 
 import {Layer, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
@@ -176,7 +176,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS,
-    RasterSymbology, RasterLayer<RasterSymbology>> implements OnChanges, OnInit {
+    MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnChanges, OnInit {
 
     private dataSubscription: Subscription;
 
@@ -202,7 +202,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     // console.log("time", time, rasterData.time.asRequestString());
 
                     this.source.updateParams({
-                        time: rasterData.time.asRequestString()
+                        time: rasterData.time.asRequestString(),
+                        colors: this.symbology.colorizer.asMappingRequestString()
                     });
                     time = rasterData.time.asRequestString();
                 }
@@ -213,7 +214,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     this.source = new ol.source.TileWMS({
                         url: rasterData.data,
                         params: {
-                            time: rasterData.time.asRequestString()
+                            time: rasterData.time.asRequestString(),
+                            colors: this.symbology.colorizer.asMappingRequestString()
                         },
                         projection: rasterData.projection.getCode(),
                         wrapX: false,
@@ -237,7 +239,8 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 this.source = new ol.source.TileWMS({
                     url: rasterData.data,
                     params: {
-                        time: rasterData.time.asRequestString()
+                        time: rasterData.time.asRequestString(),
+                        colors: this.symbology.colorizer.asMappingRequestString()
                     },
                     projection: rasterData.projection.getCode(),
                     wrapX: false,

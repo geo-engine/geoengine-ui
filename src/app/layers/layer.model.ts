@@ -2,7 +2,7 @@ import {Observable, Observer} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
-    Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, ClusteredPointSymbology
+    Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, ClusteredPointSymbology, MappingColorizerRasterSymbology
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
@@ -310,11 +310,13 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
 
     static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
+        const symbology = Symbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
+        console.log("RasterLayer.fromDict()", dict, symbology);
 
         return new RasterLayer({
             name: dict.name,
             operator: operator,
-            symbology: Symbology.fromDict(dict.symbology) as RasterSymbology,
+            symbology: symbology,
             visible: dict.visible,
             expanded: dict.expanded,
             editSymbology: dict.editSymbology,

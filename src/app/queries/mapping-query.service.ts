@@ -205,7 +205,7 @@ export class MappingQueryService {
             parameters: {
                 version: this.config.WMS.VERSION,
                 format: this.config.WMS.FORMAT,
-                EXCEPTIONS: this.config.DEBUG_MODE.MAPPING ? 'INIMAGE' : 'BLANK',
+                EXCEPTIONS: this.config.DEBUG_MODE.MAPPING ? 'INIMAGE' : 'INIMAGE',
                 transparent: true,
                 layers: projectedOperator.toQueryJSON(),
                 debug: (this.config.DEBUG_MODE.MAPPING ? 1 : 0),

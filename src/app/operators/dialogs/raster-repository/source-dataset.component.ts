@@ -92,7 +92,10 @@ export class SourceDatasetComponent implements OnInit {
         const layer = new RasterLayer({
             name: channel.name,
             operator: operator,
-            symbology: new MappingColorizerRasterSymbology({unit: unit}),
+            symbology: new MappingColorizerRasterSymbology({
+                unit: unit,
+                colorizer: (channel.colorizer) ? channel.colorizer : this.dataset.colorizer,
+            }),
         });
         this.projectService.addLayer(layer);
     }

@@ -16,7 +16,7 @@ function interpolationToName(interpolation: Interpolation): string {
         case Interpolation.Discrete:
             return 'discrete';
         default:
-            throw 'Unknown Unit Interpolation';
+            throw new Error('Unknown Unit Interpolation');
     }
 }
 
