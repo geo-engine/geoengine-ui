@@ -385,8 +385,11 @@ export interface MappingColorizer {
     result?: string | number;
 }
 
+export type ColorizerType = 'gradient' | 'classes';
+
 export interface IMappingRasterColorizer {
     breakpoints: Array<MappingRasterColorizerBreakpoint>;
+    type?: ColorizerType;
 }
 
 export interface MappingRasterColorizerBreakpoint {
@@ -400,6 +403,7 @@ export interface MappingRasterColorizerBreakpoint {
 
 export class MappingRasterColorizer implements IMappingRasterColorizer {
     breakpoints: Array<MappingRasterColorizerBreakpoint>;
+    type: ColorizerType;
 
     static grayScaleMappingColorizer(unit: Unit): MappingRasterColorizer {
         console.log("grayScaleMappingColorizer", unit);
@@ -429,6 +433,7 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
 
     constructor(config: IMappingRasterColorizer) {
         this.breakpoints = config.breakpoints;
+        this.type = (config.type) ? config.type : 'gradient';
     }
 
     clone(): MappingRasterColorizer {

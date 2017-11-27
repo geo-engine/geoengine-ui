@@ -11,7 +11,7 @@ import {MdSliderChange} from "@angular/material";
             <td><span>Opacity</span></td>
             <td>
                     <md-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
-                        (change)="updateOpacity($event)">                        
+                        (change)="updateOpacity($event)">
                     </md-slider>
             </td>
             <td>{{slo.displayValue}} %</td>
