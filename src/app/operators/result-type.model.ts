@@ -117,7 +117,7 @@ class ResultTypeCollection {
             case this.TEXT.getCode():
                 return this.TEXT;
             default:
-                throw 'Invalid Result Type';
+                throw new Error('Invalid Result Type');
         }
     }
 }
