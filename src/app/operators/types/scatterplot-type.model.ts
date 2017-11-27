@@ -48,6 +48,7 @@ export class ScatterPlotType extends OperatorType {
 
     constructor(config: ScatterPlotTypeConfig) {
         super();
+
         this.attribute1 = config.attribute1;
         this.attribute2 = config.attribute2;
         this.regression = config.regression;
@@ -57,11 +58,17 @@ export class ScatterPlotType extends OperatorType {
 
         this.code = `
             features <- mapping.load${camelInputType}(0, mapping.qrect);
+
             if (length(features) > 0) {
+
                 first = features$\`${config.attribute1}\`;
+
                 second = features$\`${config.attribute2}\`;
+
                 plot(first, second, xlab="${config.attribute1}", ylab="${config.attribute2}");
+
                 ${this.regression ? 'abline(lm(second~first), col="red");' : ''}
+
                 legend(
                     "topright",
                     legend=c("Data Points" ${this.regression ? ', "Regression Line"' : ''}),
@@ -69,11 +76,16 @@ export class ScatterPlotType extends OperatorType {
                     lty=c(0 ${this.regression ? ', 1' : ''}),
                     col=c("black", "red")
                 );
+
             } else {
+
                 plot.new();
+
                 mtext("Empty Dataset");
+
             }
         `;
+
         this.resultType = ResultTypes.PLOT;
     }
 
