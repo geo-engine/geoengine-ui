@@ -53,8 +53,10 @@ export class BoxPlotType extends OperatorType {
         this.range = config.range;
         this.attributes = config.attributes;
         let attributeCode = 'data.frame(';
+        let colNameCode = 'c(';
         for (let i = 0; i < this.attributes.length; i++) {
             attributeCode += 'points$\`' + this.attributes[i] + (i < this.attributes.length - 1 ? '\`, ' : '\`);');
+            colNameCode += '\"' + this.attributes[i] + (i < this.attributes.length - 1 ? '\", ' : '\");');
         }
         let means = `points(1:` + this.attributes.length + `, means$value, col="red");
         text(1:` + this.attributes.length + `, means$value + 0.1, labels = means$value);`;
@@ -64,8 +66,9 @@ export class BoxPlotType extends OperatorType {
         this.code = `library(ggplot2);
 points <- mapping.loadPoints(0, mapping.qrect);
 if (length(points) > 0) {
-attr <- ${attributeCode};
-p <- ggplot(attr, aes(x = "", y = attr)) + geom_boxplot();
+attr <- ${attributeCode}
+require(reshape2);
+p <- ggplot(data = melt(attr), aes(x = variable, y = value)) + geom_boxplot(aes(fill=variables));
 print(p);
 }else {
 plot.new();
