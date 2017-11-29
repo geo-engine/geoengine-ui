@@ -20,6 +20,7 @@ import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-con
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
+import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 import {SymbologyPointsComponent, SymbologyVectorComponent} from './layers/symbology/symbology-points.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
@@ -148,6 +149,7 @@ export function configInitializer(config: Config) {
         AbcdRepositoryComponent,
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
+        BreakpointToCssStringPipe,
         SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyVectorComponent,

@@ -3,6 +3,7 @@ import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
     Symbology, SimplePointSymbology, RasterSymbology, SimpleVectorSymbology,
     MappingColorizerRasterSymbology, ClusteredPointSymbology, MappingColorizer,
+    MappingRasterColorizerBreakpoint
 } from './symbology.model';
 
 @Component({
@@ -14,6 +15,7 @@ import {
 export class LegendaryComponent<S extends Symbology> {
     @Input() symbology: S;
 }
+
 
 @Component({
     selector: 'wave-legendary-points',
@@ -121,9 +123,9 @@ export class LegendaryRasterComponent<S extends RasterSymbology> extends Legenda
                         <ng-template [ngIf]='symbology.isDiscrete()'>
                             <td class ='classes'><div
                                 class='icon'
-                                [style.background-color]='breakpoint[1]'
+                                [style.background-color]='breakpoint | breakpointToCssStringPipe'
                             ></div></td>
-                            <td>{{symbology?.unit.classes.get(breakpoint[0])}}</td>                        
+                            <td>{{symbology?.unit.classes.get(breakpoint.value)}}</td>                        
                         </ng-template>                        
                     </tr>
                 </ng-template>
@@ -171,4 +173,6 @@ export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizer
     extends LegendaryRasterComponent<S> {
 
     symbologyData: MappingColorizer;
+
+
 }
