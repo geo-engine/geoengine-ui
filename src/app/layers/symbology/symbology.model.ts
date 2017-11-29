@@ -441,7 +441,8 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
     }
 
     asMappingRequestString(): string {
-        return JSON.stringify ( this as IMappingRasterColorizer );
+       // return JSON.stringify ( this as IMappingRasterColorizer );
+       return JSON.stringify ( {breakpoints: this.breakpoints} );
     }
 }
 
