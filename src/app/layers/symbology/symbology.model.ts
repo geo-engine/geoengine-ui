@@ -385,7 +385,7 @@ export interface MappingColorizer {
     result?: string | number;
 }
 
-export type ColorizerType = 'gradient' | 'classes';
+export type ColorizerType = 'gradient' | 'palette';
 
 export interface IMappingRasterColorizer {
     breakpoints: Array<MappingRasterColorizerBreakpoint>;
@@ -441,8 +441,7 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
     }
 
     asMappingRequestString(): string {
-       // return JSON.stringify ( this as IMappingRasterColorizer );
-       return JSON.stringify ( {breakpoints: this.breakpoints} );
+       return JSON.stringify ( this as IMappingRasterColorizer );
     }
 }
 
