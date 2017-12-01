@@ -105,6 +105,7 @@ export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
                 emitEvent: true
             });
             this.form.controls['vLayer'].updateValueAndValidity();
+            this.form.controls['name'].setValue('Box plot of ' + this.form.controls['vLayer'].value.name);
         });
     }
 

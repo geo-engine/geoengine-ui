@@ -34,7 +34,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
 
     // to distinguish some r-script operators out of the editable ones.
-    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME];
+    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME];
 
     private subsriptions: Array<Subscription> = [];
 

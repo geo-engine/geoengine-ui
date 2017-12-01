@@ -53,23 +53,20 @@ export class BoxPlotType extends OperatorType {
         this.range = config.range;
         this.attributes = config.attributes;
         let attributeCode = '';
+        let notchCode = this.notch.toString().toUpperCase();
         let dataCode = 'plot.data <- rbind(';
+        let meanCode = this.mean ? ' + stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) + stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, vjust=-0.7, aes( label=round(..y.., digits=1)))' : '';
         for (let i = 0; i < this.attributes.length; i++) {
             attributeCode += 'dat' + i + ' <- data.frame(group = "' + this.attributes[i] + '", value = points$\`' +
                 this.attributes[i] + '\`);' + (i === this.attributes.length - 1 ? '' : '\n');
             dataCode += 'dat' + i + (i === this.attributes.length - 1 ? ');' : ', ');
-        }
-        let means = `points(1:` + this.attributes.length + `, means$value, col="red");
-        text(1:` + this.attributes.length + `, means$value + 0.1, labels = means$value);`;
-        if (!this.mean) {
-            means = '';
         }
         this.code = `library(ggplot2);
 points <- mapping.loadPoints(0, mapping.qrect);
 if (length(points) > 0) {
 ${attributeCode}
 ${dataCode}
-p <- ggplot(plot.data, aes=(x=group, y=value, fill=group)) + geom_boxplot();
+p <- ggplot(plot.data, aes(x=group, y=value, fill=group)) + geom_boxplot(notch = ${notchCode})${meanCode};
 print(p);
 }else {
 plot.new();
