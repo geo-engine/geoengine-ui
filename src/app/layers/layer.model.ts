@@ -311,7 +311,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         const symbology = Symbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
-        console.log("RasterLayer.fromDict()", dict, symbology);
+        // console.log("RasterLayer.fromDict()", dict, symbology);
 
         return new RasterLayer({
             name: dict.name,

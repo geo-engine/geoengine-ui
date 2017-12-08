@@ -1,17 +1,20 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {MappingSource, MappingSourceChannel} from './mapping-source.model';
+import {MappingSource, MappingSourceChannel, MappingTransform} from './mapping-source.model';
 import {Unit} from '../../unit.model';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {ResultTypes} from '../../result-type.model';
 import {Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology, MappingRasterColorizer} from '../../../layers/symbology/symbology.model';
+import {
+    IMappingRasterColorizer, MappingColorizerRasterSymbology, MappingRasterColorizerBreakpoint
+} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
+import {ExpressionType} from '../../types/expression-type.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -28,7 +31,34 @@ export class SourceDatasetComponent implements OnInit {
     private _showPreview = false;
     private _showDescription = false;
     private _channelSource;
-    private _displayedColumns  = ['name', 'measurement']
+    private _displayedColumns  = ['name', 'measurement'];
+
+    /**
+     * Transform the values of a colorizer to match the transformation of the raster transformation.
+     * @param {IMappingRasterColorizer} colorizerConfig
+     * @param {MappingTransform} transform
+     * @returns {IMappingRasterColorizer}
+     */
+    static createAndTransformColorizer(colorizerConfig: IMappingRasterColorizer, transform: MappingTransform): IMappingRasterColorizer {
+        if ( transform ) {
+            const transformedColorizerConfig: IMappingRasterColorizer = {
+                type: colorizerConfig.type,
+                breakpoints: colorizerConfig.breakpoints.map( (bp: MappingRasterColorizerBreakpoint) => {
+                    return  {
+                        value: (bp.value - transform.offset) * transform.scale,
+                        r: bp.r,
+                        g: bp.g,
+                        b: bp.b,
+                        a: bp.a,
+                        name: bp.name
+                    };
+                })
+            };
+            return transformedColorizerConfig;
+        } else {
+            return colorizerConfig;
+        }
+    }
 
     constructor(
         private projectService: ProjectService,
@@ -53,48 +83,28 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     add(channel: MappingSourceChannel, doTransform: boolean) {
-        let dataType = channel.datatype;
-        let unit: Unit = channel.unit;
+        const unit: Unit = channel.unit;
+        const mappingTransformation = channel.transform;
 
-        if (doTransform && channel.hasTransform) {
-            unit = channel.transform.unit;
-            dataType = channel.transform.datatype;
-        }
 
-        let operatorType;
-
+        let operator;
         if (this.dataset.operator === GdalSourceType.TYPE) {
-            operatorType = new GdalSourceType({
-                channel: channel.id,
-                sourcename: this.dataset.source,
-                transform: doTransform, // TODO: user selectable transform?
-            });
+            operator = this.createGdalSourceOperator(channel, doTransform);
         } else {
-            operatorType = new RasterSourceType({
-                channel: channel.id,
-                sourcename: this.dataset.source,
-                transform: doTransform, // TODO: user selectable transform?
-            });
+            operator = this.createMappingRasterDbSourceOperator(channel, doTransform);
         }
 
-
-        const operator = new Operator({
-            operatorType: operatorType,
-            resultType: ResultTypes.RASTER,
-            projection: Projections.fromCode('EPSG:' + this.dataset.coords.epsg),
-            attributes: ['value'],
-            dataTypes: new Map<string, DataType>().set(
-                'value', DataTypes.fromCode(dataType)
-            ),
-            units: new Map<string, Unit>().set('value', unit),
-        });
+        let colorizerConfig = (channel.colorizer) ? channel.colorizer : this.dataset.colorizer;
+        if (doTransform) {
+            colorizerConfig = SourceDatasetComponent.createAndTransformColorizer(colorizerConfig, mappingTransformation);
+        }
 
         const layer = new RasterLayer({
             name: channel.name,
             operator: operator,
             symbology: new MappingColorizerRasterSymbology({
-                unit: unit,
-                colorizer: (channel.colorizer) ? channel.colorizer : this.dataset.colorizer,
+                unit: (doTransform) ? channel.transform.unit : unit,
+                colorizer: colorizerConfig,
             }),
         });
         this.projectService.addLayer(layer);
@@ -137,6 +147,85 @@ export class SourceDatasetComponent implements OnInit {
         this._useRawData = !this._useRawData;
     }
 
+    /**
+     * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
+     * @param {MappingSourceChannel} channel
+     * @param {boolean} doTransform
+     * @returns {Operator}
+     */
+    createGdalSourceOperator(channel: MappingSourceChannel,  doTransform: boolean): Operator {
+        const sourceDataType = channel.datatype;
+        const sourceUnit: Unit = channel.unit;
+        const sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+
+        const operatorType = new GdalSourceType({
+            channel: channel.id,
+            sourcename: this.dataset.source,
+            transform: doTransform, // TODO: user selectable transform?
+        });
+
+        const sourceOperator = new Operator({
+            operatorType: operatorType,
+            resultType: ResultTypes.RASTER,
+            projection: sourceProjection,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.fromCode(sourceDataType)),
+            units: new Map<string, Unit>().set('value', sourceUnit),
+        });
+
+        // console.log('doTransform', doTransform, 'unit', sourceUnit, 'expression', 'A', 'datatype', sourceDataType, 'channel', channel);
+        if (doTransform && channel.hasTransform) {
+            const transformUnit = channel.transform.unit;
+            const transformDatatype = DataTypes.fromCode(channel.transform.datatype);
+
+            const transformOperatorType = new ExpressionType({
+                unit: transformUnit,
+                expression: '(A -' + channel.transform.offset.toString() + ') *' + channel.transform.scale.toString(),
+                datatype: transformDatatype,
+            });
+
+            const transformOperator = new Operator({
+                operatorType: transformOperatorType,
+                resultType: ResultTypes.RASTER,
+                projection: sourceProjection,
+                attributes: ['value'],
+                dataTypes: new Map<string, DataType>().set('value', transformDatatype),
+                units: new Map<string, Unit>().set('value', transformUnit),
+                rasterSources: [sourceOperator],
+            });
+            return transformOperator;
+        }
+
+        return sourceOperator;
+    }
+
+    createMappingRasterDbSourceOperator(channel: MappingSourceChannel, doTransform: boolean) {
+        let dataType = channel.datatype;
+        let unit: Unit = channel.unit;
+
+        if (doTransform && channel.hasTransform) {
+            unit = channel.transform.unit;
+            dataType = channel.transform.datatype;
+        }
+
+        const operatorType = new RasterSourceType({
+            channel: channel.id,
+            sourcename: this.dataset.source,
+            transform: doTransform, // TODO: user selectable transform?
+        });
+
+        const operator = new Operator({
+            operatorType: operatorType,
+            resultType: ResultTypes.RASTER,
+            projection: Projections.fromCode('EPSG:' + this.dataset.coords.epsg),
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.fromCode(dataType)),
+            units: new Map<string, Unit>().set('value', unit),
+        });
+
+        return operator;
+    }
+
 }
 
 class ChannelDataSource extends DataSource<MappingSourceChannel> {
@@ -145,7 +234,6 @@ class ChannelDataSource extends DataSource<MappingSourceChannel> {
     constructor(channels: Array<MappingSourceChannel>) {
         super();
         this.channels = channels;
-        console.log(this.channels);
     }
 
     connect(): Observable<Array<MappingSourceChannel>> {

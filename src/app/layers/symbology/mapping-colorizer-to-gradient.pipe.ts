@@ -40,7 +40,7 @@ export class MappingColorizerToGradientPipe implements PipeTransform {
 
     transform(colorizer: IMappingRasterColorizer): string {
         const gradient = MappingColorizerToGradientPipe.colorsRgbaAsCssGradient(colorizer);
-        console.log('MappingColorizerToGradient.Pipe', gradient);
+        // console.log('MappingColorizerToGradient.Pipe', gradient);
         return gradient;
     }
 }

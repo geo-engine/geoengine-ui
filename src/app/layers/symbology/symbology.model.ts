@@ -406,7 +406,7 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
     type: ColorizerType;
 
     static grayScaleMappingColorizer(unit: Unit): MappingRasterColorizer {
-        console.log("grayScaleMappingColorizer", unit);
+        // console.log("grayScaleMappingColorizer", unit);
 
         const min_br: MappingRasterColorizerBreakpoint = {
             value: (unit.min) ? unit.min : 0,
@@ -457,7 +457,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
 
     constructor(config: IColorizerRasterSymbology) {
         super(config);
-        console.log("MappingColorizerRasterSymbology.constructor", config);
+        // console.log("MappingColorizerRasterSymbology.constructor", config);
         const colorizerConfig = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit); // TODO don't create grayscale
         this.colorizer = new MappingRasterColorizer(colorizerConfig);
     }

@@ -113,7 +113,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        console.log('map changes', changes, this);
+        // console.log('map changes', changes, this);
 
         for (let propName in changes) {
             if (propName === 'height') {

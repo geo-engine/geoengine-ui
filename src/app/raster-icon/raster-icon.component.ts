@@ -30,14 +30,14 @@ export class RasterIconComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
     this.updateColorMapping();
-    console.log("RasterIconComponent.ngOnChanges", this);
+    // console.log("RasterIconComponent.ngOnChanges", this);
   }
 
   ngOnInit() {
       this.xCellStarts = Array.from({length: this.xCells}, (v, k) => k);
       this.yCellStarts = Array.from({length: this.yCells}, (v, k) => k);
       this.updateColorMapping();
-      console.log("RasterIconComponent.ngOnInit", this);
+      // console.log("RasterIconComponent.ngOnInit", this);
   }
 
   updateColorMapping() {
