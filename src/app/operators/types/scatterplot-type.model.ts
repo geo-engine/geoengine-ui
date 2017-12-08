@@ -48,17 +48,16 @@ export class ScatterPlotType extends OperatorType {
         this.attribute1 = config.attribute1;
         this.attribute2 = config.attribute2;
         this.regression = config.regression;
-        let isRegression = (this.regression ? '\nabline(lm(second~first), col="red");' : '');
-        let legend = 'legend("topright", legend=c("Data points'
-            + (this.regression ? '", "Regression line"' : '"')
-            + '), pch=c(1' + (this.regression ? ', -1' : '') + '), lty=c(0' + (this.regression ? ', 1' : '') + '), col=c("black", "red"));';
-        this.code = `
+        let plotCode = ' + geom_point(shape=1)';
+        if(this.regression) {
+            plotCode += ' + geom_smooth(method=lm, se=FALSE)'
+        }
+        this.code = `library(ggplot2);
 points <- mapping.loadPoints(0, mapping.qrect);
 if (length(points) > 0) {
-first = points$\`${config.attribute1}\`;
-second = points$\`${config.attribute2}\`;
-plot(first, second, xlab="${config.attribute1}", ylab="${config.attribute2}");
-${legend}${isRegression}
+dat <- data.frame(xVal = points$\`${config.attribute1}\`, yVal = points$\`${config.attribute2}\`);
+p <- ggplot(dat, aes(x=xVal, y=yVal))${plotCode} + labs(x = "${config.attribute1}", y = "${config.attribute2}");
+print(p);
 }else {
 plot.new();
 mtext("Empty Dataset");
