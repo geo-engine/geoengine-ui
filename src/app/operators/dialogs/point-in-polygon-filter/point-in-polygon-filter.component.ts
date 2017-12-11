@@ -1,8 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
@@ -13,7 +11,7 @@ import {
 } from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
-import {ProjectService} from "../../../project/project.service";
+import {ProjectService} from '../../../project/project.service';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -31,8 +29,6 @@ export class PointInPolygonFilterOperatorComponent {
     form: FormGroup;
 
     constructor(private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
-                private layerService: LayerService,
                 private projectService: ProjectService,
                 private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
