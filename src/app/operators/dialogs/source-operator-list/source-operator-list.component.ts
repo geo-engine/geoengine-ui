@@ -9,6 +9,7 @@ import {ABCDSourceType} from '../../types/abcd-source-type.model';
 import {CsvSourceType} from '../../types/csv-source-type.model';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
+import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
 
 @Component({
     selector: 'wave-source-operator-list',
@@ -33,6 +34,8 @@ export class SourceOperatorListComponent implements OnInit {
 
     GbifOperatorComponent = GbifOperatorComponent;
     GFBioSourceType = GFBioSourceType;
+
+    DrawFeaturesComponent = OlDrawFeaturesComponent;
     //
 
     constructor(public layoutService: LayoutService) {

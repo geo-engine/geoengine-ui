@@ -50,6 +50,7 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {UnexpectedResultType} from './util/errors';
 import {Operator} from './operators/operator.model';
+import {MapService} from './map/map.service';
 
 @Component({
     selector: 'wave-app',
@@ -87,7 +88,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
-                private notificationService: NotificationService) {
+                private notificationService: NotificationService,
+                private mapService: MapService) {
         iconRegistry.addSvgIconInNamespace(
             'vat',
             'logo',
@@ -104,6 +106,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.mapService.registerMapComponent(this.mapComponent);
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$)
             .do(() => this.mapComponent.resize());
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);

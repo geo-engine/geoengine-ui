@@ -49,6 +49,10 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
 
     private map: ol.Map;
 
+    private drawInteraction: ol.interaction.Draw;
+    private drawInteractionSource: ol.source.Vector;
+    private drawInteractionLayer: ol.layer.Vector;
+
     private layers: Array<Layer<Symbology>> = []; // HACK
 
     private subscriptions: Array<Subscription> = [];
@@ -142,6 +146,9 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                 this.contentChildren.forEach(
                     layerComponent => this.map.getLayers().push(layerComponent.mapLayer)
                 );
+                if (this.drawInteractionLayer) {
+                    this.map.getLayers().push(this.drawInteractionLayer);
+                }
             })
         );
 
@@ -301,7 +308,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
             }
 
             let newSelect = new ol.Collection<ol.Feature>();
-            //SEITENEFFEKT SORGTE DAFÜR, DASS NUR JEDES ZWEITE ITEM DER REMOVE-LIST GELÖSCHT WURDE!
             select.getFeatures().forEach(feature => {
                 if (selected.remove && selected.remove.contains(feature.getId())) {
                     newSelect.push(feature);
@@ -438,5 +444,48 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
             default:
                 throw Error('Unknown Background Layer Name');
         }
+    }
+
+    public startDrawInteraction(drawType: ol.geom.GeometryType) {
+        if (this.drawInteraction) {
+            throw new Error('only one draw interaction can be active!');
+        }
+
+        if (this.drawInteractionLayer) {
+            throw new Error('only one draw layer can be active!');
+        }
+
+        const source = new ol.source.Vector({wrapX: false});
+
+        this.drawInteractionLayer = new ol.layer.Vector({
+            source: source
+        });
+
+        this.drawInteraction = new ol.interaction.Draw({
+            source: source,
+            type: drawType
+        });
+
+        this.map.addLayer(this.drawInteractionLayer);
+        this.map.addInteraction(this.drawInteraction);
+    }
+
+    public isDrawInteractionAttached(): boolean {
+        return (!!this.drawInteraction && !!this.drawInteractionLayer);
+    }
+
+    public endDrawInteraction(): ol.source.Vector {
+        if (!this.drawInteraction || ! this.drawInteractionLayer ) {
+            console.error('no interaction or layer active!');
+            return undefined;
+        }
+
+        const source = this.drawInteractionLayer.getSource();
+        this.map.removeInteraction(this.drawInteraction);
+        this.map.removeLayer(this.drawInteractionLayer);
+        this.drawInteractionLayer = undefined;
+        this.drawInteraction = undefined;
+
+        return source;
     }
 }

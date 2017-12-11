@@ -3,14 +3,10 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Set as ImmutableSet} from 'immutable';
 
-import {MappingQueryService} from '../queries/mapping-query.service';
 
-import {Layer, LayerDict, RasterLayer, VectorLayer} from './layer.model';
-import {Operator} from '../operators/operator.model';
+import {Layer} from './layer.model';
 import {FeatureID} from '../queries/geojson.model';
 import {Symbology} from './symbology/symbology.model';
-import {NotificationService} from '../notification.service';
-import {ProjectService} from "../project/project.service";
 
 export interface SelectedFeatures {
     selected: ImmutableSet<FeatureID>;
@@ -132,7 +128,7 @@ export class LayerService {
                 next.focus = add[add.length - 1];
             }
 
-            //console.log('featureIds next', next);
+            // console.log('featureIds next', next);
             this.selectedFeatures$.next(next);
         }
     }
