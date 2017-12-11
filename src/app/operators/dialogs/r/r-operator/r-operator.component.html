@@ -3,8 +3,8 @@
     <div fxFlex class="container">
         <ng-template [ngIf]="!editable">
             <wave-multi-layer-selection
-                [types]="[ResultTypes.RASTER]"
-                formControlName="rasterLayers"
+                [types]="[ResultTypes.LINES]"
+                formControlName="lineLayers"
                 [min]="0" [max]="5" [initialAmount]="0"
             ></wave-multi-layer-selection>
             <wave-multi-layer-selection
@@ -12,14 +12,30 @@
                 formControlName="pointLayers"
                 [min]="0" [max]="5" [initialAmount]="0"
             ></wave-multi-layer-selection>
+            <wave-multi-layer-selection
+                [types]="[ResultTypes.POLYGONS]"
+                formControlName="polygonLayers"
+                [min]="0" [max]="5" [initialAmount]="0"
+            ></wave-multi-layer-selection>
+            <wave-multi-layer-selection
+                [types]="[ResultTypes.RASTER]"
+                formControlName="rasterLayers"
+                [min]="0" [max]="5" [initialAmount]="0"
+            ></wave-multi-layer-selection>
         </ng-template>
         <ng-template [ngIf]="editable">
-            <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
-            <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
-            <p *ngIf="!editableSourceRasters">No Input Available</p>
+            <wave-dialog-section-heading title="Lines" subtitle="Select input Lines"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourceLines">{{operator.operatorType}}</p>
+            <p *ngIf="!editableSourceLines">No Input Available</p>
             <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourcePoints">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourcePoints">No Input Available</p>
+            <wave-dialog-section-heading title="Polygons" subtitle="Select input Polygons"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourcePolygons">{{operator.operatorType}}</p>
+            <p *ngIf="!editableSourcePolygons">No Input Available</p>
+            <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
+            <p *ngIf="!editableSourceRasters">No Input Available</p>
         </ng-template>
 
         <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
