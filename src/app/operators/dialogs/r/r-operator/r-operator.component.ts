@@ -135,11 +135,13 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         this.dialog.open(
             RScriptSaveComponent,
             {
-                script: {
-                    code: this.form.controls['code'].value,
-                    resultType: this.form.controls['resultType'].value,
-                }
-            } as RScriptSaveComponentConfig
+                data: {
+                    script: {
+                        code: this.form.controls['code'].value,
+                        resultType: this.form.controls['resultType'].value,
+                    }
+                }  as RScriptSaveComponentConfig
+            }
         );
     }
 
