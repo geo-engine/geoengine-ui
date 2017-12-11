@@ -7,7 +7,8 @@ import {Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {
-    IMappingRasterColorizer, MappingColorizerRasterSymbology, MappingRasterColorizerBreakpoint
+    IMappingRasterColorizer, MappingColorizer, MappingColorizerRasterSymbology, MappingRasterColorizer,
+    MappingRasterColorizerBreakpoint
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
@@ -68,6 +69,16 @@ export class SourceDatasetComponent implements OnInit {
 
     ngOnInit(): void {
         this._channelSource = new ChannelDataSource(this.dataset.channels);
+    }
+
+    valid_colorizer(channel: MappingSourceChannel): IMappingRasterColorizer {
+        if (channel.colorizer) {
+            return channel.colorizer;
+        } else if (this.dataset.colorizer) {
+            return this.dataset.colorizer;
+        } else {
+            return MappingRasterColorizer.grayScaleMappingColorizer(this.valid_unit(channel));
+        }
     }
 
     valid_unit(channel: MappingSourceChannel): Unit {
