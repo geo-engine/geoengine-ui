@@ -52,4 +52,13 @@
         <h4 md-line>Draw Features</h4>
         <p md-line>Draw features on the map</p>
     </md-list-item>
+
+    <md-list-item
+        (click)="layoutService.setSidenavContentComponent({component: PolygonSelectionComponent, parent: SourceOperatorListComponent})"
+    >
+        <md-icon md-list-icon >border_style</md-icon>
+        <h4 md-line>Country Selection</h4>
+        <p md-line>Select by country</p>
+    </md-list-item>
+
 </md-nav-list>

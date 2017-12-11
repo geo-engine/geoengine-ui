@@ -130,6 +130,7 @@ import {MdIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
+import {GeobonPolygonSelectionComponent} from './operators/dialogs/geobon-polygon-selection/geobon-polygon-selection.component';
 
 
 export function configInitializer(config: Config) {
@@ -242,7 +243,8 @@ export function configInitializer(config: Config) {
         NumericPipe,
         SourceDatasetComponent,
         FeedbackComponent,
-        OlDrawFeaturesComponent
+        OlDrawFeaturesComponent,
+        GeobonPolygonSelectionComponent
     ],
     imports: [
         BrowserModule,
@@ -297,6 +299,7 @@ export function configInitializer(config: Config) {
         MediaviewAudioComponent,
         MediaviewVideoComponent,
         OlDrawFeaturesComponent,
+        GeobonPolygonSelectionComponent,
     ],
     providers: [
         DragulaService,

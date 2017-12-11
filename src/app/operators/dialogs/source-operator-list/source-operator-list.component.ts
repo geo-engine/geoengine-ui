@@ -10,6 +10,7 @@ import {CsvSourceType} from '../../types/csv-source-type.model';
 import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
 import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
+import {GeobonPolygonSelectionComponent} from "../geobon-polygon-selection/geobon-polygon-selection.component";
 
 @Component({
     selector: 'wave-source-operator-list',
@@ -36,6 +37,7 @@ export class SourceOperatorListComponent implements OnInit {
     GFBioSourceType = GFBioSourceType;
 
     DrawFeaturesComponent = OlDrawFeaturesComponent;
+    PolygonSelectionComponent = GeobonPolygonSelectionComponent;
     //
 
     constructor(public layoutService: LayoutService) {
