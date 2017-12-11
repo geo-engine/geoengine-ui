@@ -40,8 +40,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     form: FormGroup;
 
     @Input() editable: Layer<Symbology> | Plot = undefined;
-    editableSourceRasters: Array<Operator> = undefined;
+    editableSourceLines: Array<Operator> = undefined;
     editableSourcePoints: Array<Operator> = undefined;
+    editableSourcePolygons: Array<Operator> = undefined;
+    editableSourceRasters: Array<Operator> = undefined;
 
     outputTypes: Array<ResultType>;
 
@@ -60,6 +62,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         }
 
         this.form = this.formBuilder.group({
+            lineLayers: [[]],
+            polygonLayers: [[]],
             rasterLayers: [[]],
             pointLayers: [[]],
             code: [`print("Hello world");\na <- 1:5;\nprint(a);`, Validators.required],
@@ -75,6 +79,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             let resultType: ResultType;
             let rasterOperators: Array<Operator>;
             let pointOperators: Array<Operator>;
+            let lineOperators: Array<Operator>;
+            let polygonOperators: Array<Operator>;
 
             if (this.editable instanceof VectorLayer) {
                 const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.editable;
@@ -82,6 +88,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 resultType = vectorLayer.operator.resultType;
                 rasterOperators = vectorLayer.operator.getSources(ResultTypes.RASTER).toArray();
                 pointOperators = vectorLayer.operator.getSources(ResultTypes.POINTS).toArray();
+                lineOperators = vectorLayer.operator.getSources(ResultTypes.LINES).toArray();
+                polygonOperators = vectorLayer.operator.getSources(ResultTypes.POLYGONS).toArray();
                 operatorType = vectorLayer.operator.operatorType as RScriptType;
             } else if (this.editable instanceof RasterLayer) {
                 const rasterLayer: RasterLayer<RasterSymbology> = this.editable as RasterLayer<RasterSymbology>;
@@ -89,6 +97,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 resultType = rasterLayer.operator.resultType;
                 rasterOperators = rasterLayer.operator.getSources(ResultTypes.RASTER).toArray();
                 pointOperators = rasterLayer.operator.getSources(ResultTypes.POINTS).toArray();
+                lineOperators = rasterLayer.operator.getSources(ResultTypes.LINES).toArray();
+                polygonOperators = rasterLayer.operator.getSources(ResultTypes.POLYGONS).toArray();
                 operatorType = rasterLayer.operator.operatorType as RScriptType;
             } else if (this.editable instanceof Plot) {
                 const plot: Plot = this.editable;
@@ -96,6 +106,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 resultType = plot.operator.resultType;
                 rasterOperators = plot.operator.getSources(ResultTypes.RASTER).toArray();
                 pointOperators = plot.operator.getSources(ResultTypes.POINTS).toArray();
+                lineOperators = plot.operator.getSources(ResultTypes.LINES).toArray();
+                polygonOperators = plot.operator.getSources(ResultTypes.POLYGONS).toArray();
                 operatorType = plot.operator.operatorType as RScriptType;
             } else {
                 throw Error('unknown type to edit');
@@ -109,6 +121,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             // this.form.controls['pointLayers'].setValue(pointLayers);
             this.editableSourceRasters = rasterOperators;
             this.editableSourcePoints = pointOperators;
+            this.editableSourceLines = lineOperators;
+            this.editableSourcePolygons = polygonOperators;
         }
     }
 
@@ -135,20 +149,24 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         this.dialog.open(
             RScriptSaveComponent,
             {
-                script: {
-                    code: this.form.controls['code'].value,
-                    resultType: this.form.controls['resultType'].value,
-                }
-            } as RScriptSaveComponentConfig
+                data: {
+                    script: {
+                        code: this.form.controls['code'].value,
+                        resultType: this.form.controls['resultType'].value,
+                    }
+                }  as RScriptSaveComponentConfig
+            }
         );
     }
 
     add() {
         const rasterLayers: Array<RasterLayer<RasterSymbology>> = this.form.controls['rasterLayers'].value;
         const pointLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['pointLayers'].value;
+        const lineLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['lineLayers'].value;
+        const polygonLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['polygonLayers'].value;
 
         const getAnySource = (index: number) => {
-            const allSources = [...rasterLayers, ...pointLayers];
+            const allSources = [...rasterLayers, ...pointLayers, ...lineLayers, ...polygonLayers];
             return allSources[index];
         };
 
@@ -162,15 +180,25 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
         let rasterSources: Array<Operator>;
         let pointSources: Array<Operator>;
+        let lineSources: Array<Operator>;
+        let polygonSources: Array<Operator>;
 
         if (this.editable) {
             rasterSources = this.editableSourceRasters.map(o => o.getProjectedOperator(projection));
             pointSources = this.editableSourcePoints.map(o => o.getProjectedOperator(projection));
+            lineSources = this.editableSourceLines.map(o => o.getProjectedOperator(projection));
+            polygonSources = this.editableSourcePolygons.map(o => o.getProjectedOperator(projection));
         } else {
             rasterSources = rasterLayers.map(
                 layer => layer.operator.getProjectedOperator(projection)
             );
             pointSources = pointLayers.map(
+                layer => layer.operator.getProjectedOperator(projection)
+            );
+            lineSources = lineLayers.map(
+                layer => layer.operator.getProjectedOperator(projection)
+            );
+            polygonSources = polygonLayers.map(
                 layer => layer.operator.getProjectedOperator(projection)
             );
         }
@@ -187,6 +215,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             units: new Map<string, Unit>(), // TODO: user input?
             rasterSources: rasterSources,
             pointSources: pointSources,
+            lineSources: lineSources,
+            polygonSources: polygonSources
         });
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {

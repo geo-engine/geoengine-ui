@@ -7,7 +7,7 @@ import {BehaviorSubject} from 'rxjs/Rx';
 import {NotificationService} from '../../../../notification.service';
 import {WaveValidators} from '../../../../util/form.validators';
 
-export interface RScriptSaveComponentConfig extends MdDialogConfig {
+export interface RScriptSaveComponentConfig {
     script: RScript;
 }
 
@@ -32,8 +32,6 @@ export class RScriptSaveComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        // const config = this.dialogRef.config as RScriptSaveComponentConfig;
-
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             script: [this.config.script, Validators.required],
