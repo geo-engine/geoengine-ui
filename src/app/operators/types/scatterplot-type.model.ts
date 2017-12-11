@@ -57,25 +57,26 @@ export class ScatterPlotType extends OperatorType {
         const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
 
         this.code = `
+            library(ggplot2);
+            
             features <- mapping.load${camelInputType}(0, mapping.qrect);
 
             if (length(features) > 0) {
 
-                first = features$\`${config.attribute1}\`;
+                first = features$\\\`${config.attribute1}\\\`;
 
-                second = features$\`${config.attribute2}\`;
+                second = features$\\\`${config.attribute2}\\\`;
+                
+                df <- data.frame(xVal = first, yVal = second);
 
-                plot(first, second, xlab="${config.attribute1}", ylab="${config.attribute2}");
-
-                ${this.regression ? 'abline(lm(second~first), col="red");' : ''}
-
-                legend(
-                    "topright",
-                    legend=c("Data Points" ${this.regression ? ', "Regression Line"' : ''}),
-                    pch=c(1 ${this.regression ? ', -1' : ''}),
-                    lty=c(0 ${this.regression ? ', 1' : ''}),
-                    col=c("black", "red")
+                p <- (
+                    ggplot(df, aes(x=xVal, y=yVal))
+                    + geom_point(shape=1)
+                    ${this.regression ? '+ geom_smooth(method=lm, se=FALSE)' : ''}
+                    + labs(x = "${config.attribute1}", y = "${config.attribute2}")
                 );
+
+                print(p);
 
             } else {
 
