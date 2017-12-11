@@ -72,7 +72,6 @@ export class MapService {
         return this.mapComponent.endDrawInteraction();
     }
 
-
     setViewportSize(newViewportSize: ViewportSize) {
         if (newViewportSize.extent.length !== 4 || newViewportSize.resolution <= 0) {
             throw Error('Corrupt Viewport Size');

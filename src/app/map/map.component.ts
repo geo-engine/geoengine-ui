@@ -458,7 +458,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         const source = new ol.source.Vector({wrapX: false});
 
         this.drawInteractionLayer = new ol.layer.Vector({
-            source: source
+            source: source,
         });
 
         this.drawInteraction = new ol.interaction.Draw({
