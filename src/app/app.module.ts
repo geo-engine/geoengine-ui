@@ -129,8 +129,7 @@ import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-
 import {MdIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
-
-import {BoxPlotComponent} from "./operators/dialogs/box-plot-operator/box-plot-operator.component";
+import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();

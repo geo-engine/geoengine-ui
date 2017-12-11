@@ -17,17 +17,17 @@
                     <div fxFlex fxLayout="row" fxLayoutAlign="end">
                         <button md-button color="primary"
                                 (click)="$event.preventDefault();increase()"
-                                [disabled]="(attributes | async).length >= max"
+                                [disabled]="(form.controls['attributes'].valueChanges | async)?.length >= max"
                         ><md-icon>add_circle_outline</md-icon></button>
                         <button md-button color="primary"
                                 (click)="$event.preventDefault();decrease()"
-                                [disabled]="(attributes | async).length <= 0"
+                                [disabled]="(form.controls['attributes'].valueChanges | async)?.length <= 0"
                         ><md-icon>remove_circle_outline</md-icon></button>
                     </div>
                 </div>
                 <div fxLayout="column">
                     <md-select
-                        *ngFor="let value of attributes | async; let i = index"
+                        *ngFor="let value of (form.controls['attributes'].valueChanges | async); let i = index"
                         placeholder="Attribute {{i+1}}"
                         [ngModel]="value" (ngModelChange)="updateAttribute(i, $event)"
                         [ngModelOptions]="{standalone: true}"

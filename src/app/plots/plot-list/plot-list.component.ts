@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
@@ -11,7 +11,6 @@ import {PieChartType} from '../../operators/types/piechart-type.model';
 import {LayoutService} from '../../layout.service';
 import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
 import {Plot} from '../plot.model';
-import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-plot-list',

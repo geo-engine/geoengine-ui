@@ -22,7 +22,7 @@ interface ScatterPlotTypeConfig {
 }
 
 export class ScatterPlotType extends OperatorType {
-    private static _TYPE = 'r_script';
+    private static _TYPE = 'scatterplot';
     private static _ICON_URL = OperatorType.createIconDataUrl(ScatterPlotType._TYPE);
     private static _NAME = 'Scatter Plot';
 
@@ -58,15 +58,15 @@ export class ScatterPlotType extends OperatorType {
 
         this.code = `
             library(ggplot2);
-            
+
             features <- mapping.load${camelInputType}(0, mapping.qrect);
 
             if (length(features) > 0) {
 
-                first = features$\\\`${config.attribute1}\\\`;
+                first = features$\`${config.attribute1}\`;
 
-                second = features$\\\`${config.attribute2}\\\`;
-                
+                second = features$\`${config.attribute2}\`;
+
                 df <- data.frame(xVal = first, yVal = second);
 
                 p <- (
@@ -91,7 +91,7 @@ export class ScatterPlotType extends OperatorType {
     }
 
     getMappingName(): string {
-        return ScatterPlotType.TYPE;
+        return 'r_script';
     }
 
     getIconUrl(): string {

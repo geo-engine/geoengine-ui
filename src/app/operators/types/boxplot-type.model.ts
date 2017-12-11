@@ -12,6 +12,7 @@ export interface BoxPlotTypeDict extends OperatorTypeDict {
     mean: boolean;
     range: number;
     attributes: string[];
+    inputType: string;
 }
 
 interface BoxPlotTypeConfig {
@@ -19,10 +20,11 @@ interface BoxPlotTypeConfig {
     mean: boolean;
     range: number;
     attributes: string[];
+    inputType: ResultType;
 }
 
 export class BoxPlotType extends OperatorType {
-    private static _TYPE = 'r_script';
+    private static _TYPE = 'boxplot';
     private static _ICON_URL = OperatorType.createIconDataUrl(BoxPlotType._TYPE);
     private static _NAME = 'Box Plot';
 
@@ -35,6 +37,7 @@ export class BoxPlotType extends OperatorType {
     private mean: boolean;
     private range: number;
     private attributes: string[];
+    private inputType: ResultType;
     private resultType: ResultType;
 
     static fromDict(dict: BoxPlotTypeDict): BoxPlotType {
@@ -43,6 +46,7 @@ export class BoxPlotType extends OperatorType {
             mean: dict.mean,
             range: dict.range,
             attributes: dict.attributes,
+            inputType: ResultTypes.fromCode(dict.inputType),
         });
     }
 
@@ -52,34 +56,49 @@ export class BoxPlotType extends OperatorType {
         this.mean = config.mean;
         this.range = config.range;
         this.attributes = config.attributes;
-        let attributeCode = '';
-        let notchCode = this.notch.toString().toUpperCase();
-        let dataCode = 'plot.data <- rbind(';
-        let meanCode = this.mean ? ' + stat_summary(fun.y=mean, colour="darkred", geom="point", shape=18, size=3,show_guide = FALSE) + stat_summary(fun.y=mean, colour="black", geom="text", show_guide = FALSE, vjust=-0.7, aes( label=round(..y.., digits=1)))' : '';
-        for (let i = 0; i < this.attributes.length; i++) {
-            attributeCode += 'dat' + i + ' <- data.frame(group = "' + this.attributes[i] + '", value = points$\`' +
-                this.attributes[i] + '\`);' + (i === this.attributes.length - 1 ? '' : '\n');
-            dataCode += 'dat' + i + (i === this.attributes.length - 1 ? ');' : ', ');
-        }
-        this.code = `library(ggplot2);
-points <- mapping.loadPoints(0, mapping.qrect);
-if (length(points) > 0) {
-${attributeCode}
-${dataCode}
-p <- ggplot(plot.data, aes(x=group, y=value, fill=group)) + geom_boxplot(notch = ${notchCode})${meanCode};
-print(p);
-}else {
-plot.new();
-mtext("Empty Dataset");
-}
-`;
-        console.log(this.code);
-        console.log(this.attributes);
+        this.inputType = config.inputType;
+
+        const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
+
+        this.code = `
+            library(ggplot2);
+
+            features <- mapping.load${camelInputType}(0, mapping.qrect);
+
+            if (length(features) > 0) {
+
+                ${this.attributes.map((attribute, i) => {
+                    return `dat${i} <- data.frame(group = "${attribute}", value = features$\`${attribute}\`);`;
+                }).join('\n')}
+
+                plot.data <- rbind(
+                    ${this.attributes.map((attribute, i) => `dat${i}`).join(', ')}
+                );
+
+                p <- (
+                    ggplot(plot.data, aes(x=group, y=value, fill=group))
+                    + geom_boxplot(notch = ${this.notch.toString().toUpperCase()})
+                    ${this.mean ? '+ stat_summary(fun.y=mean, colour="darkred", geom="point", show_guide = FALSE, shape=18, size=3)' : ''}
+                    ${this.mean ? '+ stat_summary(fun.y=mean, colour="black",   geom="text",  show_guide = FALSE, vjust=-0.7, aes(label=round(..y.., digits=1)))' : ''}
+                );
+
+                print(p);
+
+            } else {
+
+                plot.new();
+
+                mtext("Empty Dataset");
+
+            }
+        `;
+        // console.log(this.code);
+        // console.log(this.attributes);
         this.resultType = ResultTypes.PLOT;
     }
 
     getMappingName(): string {
-        return BoxPlotType.TYPE;
+        return 'r_script';
     }
 
     getIconUrl(): string {
@@ -110,7 +129,8 @@ mtext("Empty Dataset");
             notch: this.notch,
             mean: this.mean,
             range: this.range,
-            attributes: this.attributes
+            attributes: this.attributes,
+            inputType: this.inputType.getCode(),
         };
     }
 }

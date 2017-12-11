@@ -23,8 +23,8 @@ import {ScatterPlotComponent} from '../scatter-plot-operator/scatter-plot-operat
 import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filter/textual-attribute-filter.component';
 import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
-import {BoxPlotComponent} from "../box-plot-operator/box-plot-operator.component";
-import {BoxPlotType} from "../../types/boxplot-type.model";
+import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component';
+import {BoxPlotType} from '../../types/boxplot-type.model';
 
 interface OperatorListType {
     component: Type<any>;

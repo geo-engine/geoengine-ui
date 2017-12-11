@@ -21,7 +21,7 @@ interface PieChartTypeConfig {
  * The R type.
  */
 export class PieChartType extends OperatorType {
-    private static _TYPE = 'r_script';
+    private static _TYPE = 'piechart';
     private static _ICON_URL = OperatorType.createIconDataUrl(PieChartType._TYPE);
     private static _NAME = 'Pie Chart';
 
@@ -73,7 +73,7 @@ export class PieChartType extends OperatorType {
     }
 
     getMappingName(): string {
-        return PieChartType.TYPE;
+        return 'r_script';
     }
 
     getIconUrl(): string {
