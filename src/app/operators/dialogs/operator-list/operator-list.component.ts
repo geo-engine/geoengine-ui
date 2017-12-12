@@ -23,6 +23,8 @@ import {ScatterPlotComponent} from '../scatter-plot-operator/scatter-plot-operat
 import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filter/textual-attribute-filter.component';
 import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
+import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component';
+import {BoxPlotType} from '../../types/boxplot-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -59,6 +61,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         type: ScatterPlotType,
         description: 'Scatter plot your data'
     },
+    {
+        component: BoxPlotComponent,
+        type: BoxPlotType,
+        description: 'Box plot your data'
+    }
 ];
 
 const RASTER_OPERATORS: Array<OperatorListType> = [

@@ -22,7 +22,7 @@ interface ScatterPlotTypeConfig {
 }
 
 export class ScatterPlotType extends OperatorType {
-    private static _TYPE = 'r_script';
+    private static _TYPE = 'scatterplot';
     private static _ICON_URL = OperatorType.createIconDataUrl(ScatterPlotType._TYPE);
     private static _NAME = 'Scatter Plot';
 
@@ -57,6 +57,8 @@ export class ScatterPlotType extends OperatorType {
         const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
 
         this.code = `
+            library(ggplot2);
+
             features <- mapping.load${camelInputType}(0, mapping.qrect);
 
             if (length(features) > 0) {
@@ -65,17 +67,16 @@ export class ScatterPlotType extends OperatorType {
 
                 second = features$\`${config.attribute2}\`;
 
-                plot(first, second, xlab="${config.attribute1}", ylab="${config.attribute2}");
+                df <- data.frame(xVal = first, yVal = second);
 
-                ${this.regression ? 'abline(lm(second~first), col="red");' : ''}
-
-                legend(
-                    "topright",
-                    legend=c("Data Points" ${this.regression ? ', "Regression Line"' : ''}),
-                    pch=c(1 ${this.regression ? ', -1' : ''}),
-                    lty=c(0 ${this.regression ? ', 1' : ''}),
-                    col=c("black", "red")
+                p <- (
+                    ggplot(df, aes(x=xVal, y=yVal))
+                    + geom_point(shape=1)
+                    ${this.regression ? '+ geom_smooth(method=lm, se=FALSE)' : ''}
+                    + labs(x = "${config.attribute1}", y = "${config.attribute2}")
                 );
+
+                print(p);
 
             } else {
 
@@ -90,7 +91,7 @@ export class ScatterPlotType extends OperatorType {
     }
 
     getMappingName(): string {
-        return ScatterPlotType.TYPE;
+        return 'r_script';
     }
 
     getIconUrl(): string {
