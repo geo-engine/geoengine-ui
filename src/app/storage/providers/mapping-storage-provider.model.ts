@@ -272,7 +272,7 @@ export class MappingStorageProvider extends StorageProvider {
         return this.http
             .post(
                 this.config.MAPPING_URL,
-                updateRequest.toMessageBody(),
+                updateRequest.toMessageBody(true),
                 {headers: updateRequest.getHeaders()}
             )
             .map(response => response.json())
