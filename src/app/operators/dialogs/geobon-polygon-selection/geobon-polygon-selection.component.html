@@ -1,10 +1,28 @@
-<wave-sidenav-header>Polygon Selection</wave-sidenav-header>
+<wave-sidenav-header>Country Selection</wave-sidenav-header>
     <wave-sidenav-search (searchString)="searchString$.next($event)">
-</wave-sidenav-search>
+    </wave-sidenav-search>
+
 <md-list>
 
-    <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
+  <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
         <h4 md-line bind-innerHtml="entry.name | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
-    </md-list-item>
+  </md-list-item>
 
 </md-list>
+
+<!--<md-table #table [dataSource]="channelDataSource">-->
+    <!--<ng-container mdColumnDef="NAME">-->
+        <!--<md-header-cell *mdHeaderCellDef>Country</md-header-cell>-->
+        <!--<md-cell *mdCellDef="let country">-->
+            <!--{{country.name}}-->
+        <!--</md-cell>-->
+    <!--</ng-container>-->
+    <!--<ng-container mdColumnDef="AREA">-->
+        <!--<md-header-cell *mdHeaderCellDef>Area</md-header-cell>-->
+        <!--<md-cell *mdCellDef="let country">-->
+            <!--{{country.AREA}}-->
+        <!--</md-cell>-->
+    <!--</ng-container>-->
+    <!--<md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>-->
+    <!--<md-row *mdRowDef="let country; columns: displayedColumns;" (click)="simple_add(country)"></md-row>-->
+<!--</md-table>-->

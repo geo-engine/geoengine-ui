@@ -28,7 +28,7 @@ function nameComparator(a: string, b: string): number {
 export class GeobonPolygonSelectionComponent implements OnInit {
 
     searchString$ = new BehaviorSubject<string>('');
-    entries$ = Observable.of([{name: 'Germany'}, {name: 'England'}, {name: 'France'}]);
+    entries$ = Observable.of([{name: 'Germany'}, {name: 'England'}]);
     // new ReplaySubject<Array<{name: string, operator: Operator}>>(1);
     filteredEntries$: Observable<Array<{name: string}>>;
 

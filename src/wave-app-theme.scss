@@ -71,16 +71,37 @@ $gfbio-green: (
 );
 
 // Define App Theme
-$wave-app-primary: mat-palette($gfbio-darkblue);
-$wave-app-accent:  mat-palette($gfbio-green, A200, A100, A400);
+//$wave-app-primary: mat-palette($gfbio-darkblue);
+//$wave-app-accent:  mat-palette($gfbio-green, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$wave-app-warn:    mat-palette($mat-red);
+//$wave-app-warn:    mat-palette($mat-red);
+
+
+// define geobon theme color
+$wave-app-primary: mat-palette($mat-teal, 700, 300, 900);
+$wave-app-accent: mat-palette($mat-indigo);
+$wave-app-warn: mat-palette($mat-deep-orange, A200);
+
 
 // Create the theme object (a Sass map containing all of the palettes).
-$wave-app-theme: mat-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+//$wave-app-theme: mat-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+
+// create geobon theme
+$wave-app-theme: mat-light-theme(
+        $wave-app-primary,
+        $wave-app-accent,
+        $wave-app-warn
+);
+
 
 // Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+//@include angular-material-theme($wave-app-theme);
+
+
+// Include geobon theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include angular-material-theme($wave-app-theme);
