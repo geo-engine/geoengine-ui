@@ -1,16 +1,16 @@
-import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
 import {MdDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {RScriptType} from '../../operators/types/r-script-type.model';
+import {BoxPlotType} from '../../operators/types/boxplot-type.model';
 import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
 import {PieChartType} from '../../operators/types/piechart-type.model';
 import {LayoutService} from '../../layout.service';
 import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
 import {Plot} from '../plot.model';
-import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-plot-list',
@@ -24,6 +24,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     RScriptType = RScriptType;
     ScatterPlotType = ScatterPlotType;
     PieChartType = PieChartType;
+    BoxPlotType = BoxPlotType;
     //
 
     LoadingState = LoadingState;
@@ -32,7 +33,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
 
     // to distinguish some r-script operators out of the editable ones.
-    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME];
+    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME];
 
     private subsriptions: Array<Subscription> = [];
 

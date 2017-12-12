@@ -32,6 +32,9 @@ import {
 } from './feature-collection-db-source-type.model';
 import {TextualAttributeFilterType, TextualAttributeFilterTypeDict} from './textual-attribute-filter-type.model';
 import {GdalSourceType, GdalSourceTypeDict} from './gdal-source-type.model';
+import {ScatterPlotType, ScatterPlotTypeDict} from './scatterplot-type.model';
+import {BoxPlotType, BoxPlotTypeDict} from './boxplot-type.model';
+import {PieChartType, PieChartTypeDict} from './piechart-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -90,6 +93,12 @@ export abstract class OperatorTypeFactory {
                 return PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict);
             case FeatureCollectionDBSourceType.TYPE:
                 return FeatureCollectionDBSourceType.fromDict(dict as FeatureCollectionDBSourceTypeDict);
+            case ScatterPlotType.TYPE:
+                return ScatterPlotType.fromDict(dict as ScatterPlotTypeDict);
+            case BoxPlotType.TYPE:
+                return BoxPlotType.fromDict(dict as BoxPlotTypeDict);
+            case PieChartType.TYPE:
+                return PieChartType.fromDict(dict as PieChartTypeDict);
             default:
                 throw Error('There is not factory method defined for this operator.');
         }
