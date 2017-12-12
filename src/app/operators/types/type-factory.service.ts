@@ -35,6 +35,7 @@ import {GdalSourceType, GdalSourceTypeDict} from './gdal-source-type.model';
 import {ScatterPlotType, ScatterPlotTypeDict} from './scatterplot-type.model';
 import {BoxPlotType, BoxPlotTypeDict} from './boxplot-type.model';
 import {PieChartType, PieChartTypeDict} from './piechart-type.model';
+import {RasterizePolygonType, RasterizePolygonTypeDict} from './rasterize-polygon-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -99,6 +100,8 @@ export abstract class OperatorTypeFactory {
                 return BoxPlotType.fromDict(dict as BoxPlotTypeDict);
             case PieChartType.TYPE:
                 return PieChartType.fromDict(dict as PieChartTypeDict);
+            case RasterizePolygonType.TYPE:
+                return RasterizePolygonType.fromDict(dict as RasterizePolygonTypeDict);
             default:
                 throw Error('There is not factory method defined for this operator.');
         }

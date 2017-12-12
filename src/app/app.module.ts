@@ -129,9 +129,8 @@ import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-
 import {MdIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
-import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
-import {GeobonPolygonSelectionComponent} from './operators/dialogs/geobon-polygon-selection/geobon-polygon-selection.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
+import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -244,6 +243,8 @@ export function configInitializer(config: Config) {
         NumericPipe,
         SourceDatasetComponent,
         FeedbackComponent,
+        RasterPolygonClipOperatorComponent,
+        FeedbackComponent,
         OlDrawFeaturesComponent,
         GeobonPolygonSelectionComponent
     ],
@@ -300,6 +301,7 @@ export function configInitializer(config: Config) {
         MediaviewImageDialogComponent,
         MediaviewAudioComponent,
         MediaviewVideoComponent,
+        RasterPolygonClipOperatorComponent,
         OlDrawFeaturesComponent,
         GeobonPolygonSelectionComponent,
     ],
