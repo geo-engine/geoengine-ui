@@ -15,6 +15,10 @@ import {Projection, Projections} from '../../projection.model';
 import {CSVParameters, CsvSourceType} from '../../types/csv-source-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
+import {
+    TextualAttributeFilterEngineType,
+    TextualAttributeFilterType
+} from '../../types/textual-attribute-filter-type.model';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -142,7 +146,20 @@ export class GeobonPolygonSelectionComponent implements OnInit {
     }
 
     createFilterOperator(key: string): Operator {
-        return undefined;
+        const filterOperatorType = new TextualAttributeFilterType({
+            attributeName: this.sourceIdColumn,
+            engine: TextualAttributeFilterEngineType.EXACT,
+            searchString: key,
+        });
+
+        const operator = new Operator({
+            operatorType: filterOperatorType,
+            resultType: this.sourceOperator.resultType,
+            projection: this.sourceOperator.projection,
+            polygonSources: [this.createCsvSourceOperator()]
+        });
+
+        return operator;
     }
 
     addLayer(layerName: string, operator: Operator) {
@@ -159,5 +176,4 @@ export class GeobonPolygonSelectionComponent implements OnInit {
         });
         this.projectService.addLayer(layer);
     }
-
 }

@@ -3,7 +3,7 @@
 </wave-sidenav-search>
 <md-list>
 
-    <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
+    <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="addLayer(entry[sourceIdColumn], createFilterOperator(entry[sourceIdColumn]))">
         <h4 md-line bind-innerHtml="entry[sourceIdColumn] | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
     </md-list-item>
 
