@@ -1,0 +1,70 @@
+<wave-sidenav-header>Box plot</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
+    <div fxLayout="column" class="container">
+        <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="vLayer">
+            <md-hint
+                align="end" class="error"
+                *ngIf="form.controls['vLayer'].errors?.noNumericalAttributes"
+            >
+                There must be at least one numerical attribute in this layer.
+            </md-hint>
+        </wave-layer-selection>
+        <div *ngIf="form.controls['vLayer'].valueChanges | async" fxLayout="column" style="display: block;padding-bottom: 1em;">
+            <div style="display: block;padding-bottom: 1em;">
+                <div fxLayout="row">
+                    <wave-dialog-section-heading title="Attributes">
+                    </wave-dialog-section-heading>
+                    <div fxFlex fxLayout="row" fxLayoutAlign="end">
+                        <button md-button color="primary"
+                                (click)="$event.preventDefault();increase()"
+                                [disabled]="(form.controls['attributes'].valueChanges | async)?.length >= max"
+                        ><md-icon>add_circle_outline</md-icon></button>
+                        <button md-button color="primary"
+                                (click)="$event.preventDefault();decrease()"
+                                [disabled]="(form.controls['attributes'].valueChanges | async)?.length <= 0"
+                        ><md-icon>remove_circle_outline</md-icon></button>
+                    </div>
+                </div>
+                <div fxLayout="column">
+                    <md-select
+                        *ngFor="let value of (form.controls['attributes'].valueChanges | async); let i = index"
+                        placeholder="Attribute {{i+1}}"
+                        [ngModel]="value" (ngModelChange)="updateAttribute(i, $event)"
+                        [ngModelOptions]="{standalone: true}"
+                        fxFlex
+                    >
+                        <md-option
+                            *ngFor="let attribute of form.controls['vLayer'].value.operator.attributes | NumericPipe:form.controls['vLayer'].value.operator:attribute"
+                            [value]="attribute"
+                        >{{attribute}}
+                        </md-option>
+                    </md-select>
+                </div>
+            </div>
+            <div fxLayout="column">
+                <wave-dialog-section-heading title="Boxplot settings" [subtitle]="'Settings for the resulting box plot of the given attributes.'">
+                </wave-dialog-section-heading>
+                <md-checkbox formControlName="notch">Notch</md-checkbox><br>
+                <md-checkbox formControlName="mean">Mean value</md-checkbox><br>
+                <md-input-container>
+                    <label>Range</label>
+                    <input mdInput required type="number" step="0.5" formControlName="range" min="0"/>
+                </md-input-container>
+                <wave-operator-output-name
+                    formControlName="name"
+                    [suggestion]="'Box plot of ' + (form.controls['vLayer'].valueChanges | async)?.name"
+                >
+                    <md-hint
+                        align="end" class="error"
+                        *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
+                    >
+                        The name must be non-empty.
+                    </md-hint>
+                </wave-operator-output-name>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>

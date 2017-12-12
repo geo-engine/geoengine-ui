@@ -131,7 +131,7 @@ import {SourceDatasetComponent} from './operators/dialogs/raster-repository/sour
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
 import {GeobonPolygonSelectionComponent} from './operators/dialogs/geobon-polygon-selection/geobon-polygon-selection.component';
-
+import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -229,6 +229,7 @@ export function configInitializer(config: Config) {
         CsvPropertiesComponent,
         CsvTableComponent,
         PieChartComponent,
+        BoxPlotComponent,
         ScatterPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
@@ -292,6 +293,7 @@ export function configInitializer(config: Config) {
         RScriptLoadComponent,
         PieChartComponent,
         ScatterPlotComponent,
+        BoxPlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         MediaviewImageComponent,
