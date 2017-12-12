@@ -4,7 +4,7 @@
 <md-list>
 
     <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
-        <h4 md-line bind-innerHtml="entry.name | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
+        <h4 md-line bind-innerHtml="entry[sourceIdColumn] | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
     </md-list-item>
 
 </md-list>

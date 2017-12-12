@@ -387,7 +387,7 @@ export class ProjectService {
             this.layerDataState$.get(layer),
             this.layerProvenanceDataState$.get(layer))
             .map(([sym, data, prov]) => {
-                //console.log("combinedLayerState", sym, data, prov);
+                // console.log("combinedLayerState", sym, data, prov);
                 if (sym === LoadingState.LOADING
                     || data === LoadingState.LOADING
                 /*|| prov === LoadingState.LOADING*/) {
@@ -885,7 +885,6 @@ export class ProjectService {
 
     getLayerCombinedStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
         const state =  this.layerCombinedState$.get(layer);
-        //console.log(layer.name, state);
         return state;
     }
 
