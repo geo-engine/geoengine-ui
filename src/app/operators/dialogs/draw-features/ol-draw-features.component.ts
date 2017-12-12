@@ -46,7 +46,7 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
         if (this.isDrawingActive) {
             this.isDrawingActive = false;
             this.mapService.endDrawInteraction();
-            this.notificationService.info('Draw features canceled.')
+            this.notificationService.info('Draw features canceled.');
             this.mapProjectionSubscription.unsubscribe();
         }
     }
@@ -60,11 +60,11 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
     endDrawing() {
         this.isDrawingActive = false;
         const olSource = this.mapService.endDrawInteraction();
-        console.log("endDrawing", this.olFeatureWriter.writeFeatures(olSource.getFeatures(), {
-            featureProjection: this.mapProjection.getCode(),
-            dataProjection: Projections.WGS_84.getCode()
-        }));
-        this.createAndAddOperatorFromSource(olSource);
+        if (olSource.getFeatures().length > 0) {
+            this.createAndAddOperatorFromSource(olSource);
+        } else {
+            this.notificationService.info('Empty layer skipped.')
+        }
     }
 
     private createAndAddOperatorFromSource(olSource: ol.source.Vector) {
@@ -89,10 +89,15 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
                 throw new UnexpectedResultType();
         }
 
-        const wkt = this.olFeatureWriter.writeFeatures(olSource.getFeatures(), {
+        let wkt = this.olFeatureWriter.writeFeatures(olSource.getFeatures(), {
             featureProjection: this.mapProjection.getCode(),
             dataProjection: Projections.WGS_84.getCode()
         });
+
+        // handle layers with only one input
+        if (olSource.getFeatures().length === 1) {
+            wkt = 'GEOMETRYCOLLECTION(' + wkt + ')'
+        }
 
         const sourceType = new WKTSourceType({
             wkt: wkt,

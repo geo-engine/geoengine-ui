@@ -103,7 +103,7 @@ export class MapService {
     }
 
     getViewportSizeStream(): Observable<ViewportSize> {
-        return this.viewportSize$;
+        return this.viewportSize$.distinctUntilChanged();
     }
 
     private resolutionChanged(vps1: ViewportSize, vps2: ViewportSize): boolean {

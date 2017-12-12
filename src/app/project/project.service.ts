@@ -710,11 +710,13 @@ export class ProjectService {
                                               loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
-            this.getProjectionStream(),
-            this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
+            Observable.combineLatest(
+                this.getProjectionStream(),
+                this.mapService.getViewportSizeStream()
+            ).debounceTime(this.config.DELAYS.DEBOUNCE)
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
-            .switchMap(([time, projection, viewportSize]) => {
+            .switchMap(([time, [projection, viewportSize]]) => {
                 const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
                 return this.mappingQueryService.getWFSData({
