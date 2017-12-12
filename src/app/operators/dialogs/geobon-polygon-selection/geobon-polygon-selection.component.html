@@ -2,27 +2,25 @@
     <wave-sidenav-search (searchString)="searchString$.next($event)">
     </wave-sidenav-search>
 
-<md-list>
+<md-table #table [dataSource]="tableEntries$">
 
-  <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="add(entry)">
-        <h4 md-line bind-innerHtml="entry.name | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
-  </md-list-item>
+    <!-- Name Column -->
+    <ng-container mdColumnDef="name">
+        <md-header-cell *mdHeaderCellDef>Country</md-header-cell>
+        <md-cell *mdCellDef="let country">
+            {{country.name}}
+        </md-cell>
+    </ng-container>
 
-</md-list>
+    <!-- Area Column -->
+    <ng-container mdColumnDef="area">
+        <md-header-cell *mdHeaderCellDef>Area</md-header-cell>
+        <md-cell *mdCellDef="let country">
+            {{country.area}}
+        </md-cell>
+    </ng-container>
 
-<!--<md-table #table [dataSource]="channelDataSource">-->
-    <!--<ng-container mdColumnDef="NAME">-->
-        <!--<md-header-cell *mdHeaderCellDef>Country</md-header-cell>-->
-        <!--<md-cell *mdCellDef="let country">-->
-            <!--{{country.name}}-->
-        <!--</md-cell>-->
-    <!--</ng-container>-->
-    <!--<ng-container mdColumnDef="AREA">-->
-        <!--<md-header-cell *mdHeaderCellDef>Area</md-header-cell>-->
-        <!--<md-cell *mdCellDef="let country">-->
-            <!--{{country.AREA}}-->
-        <!--</md-cell>-->
-    <!--</ng-container>-->
-    <!--<md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>-->
-    <!--<md-row *mdRowDef="let country; columns: displayedColumns;" (click)="simple_add(country)"></md-row>-->
-<!--</md-table>-->
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let country; columns: displayedColumns;" (click)="simple_add(country)"></md-row>
+</md-table>
+

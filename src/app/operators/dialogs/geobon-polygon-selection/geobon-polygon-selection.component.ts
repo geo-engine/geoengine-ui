@@ -1,18 +1,11 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
-import {VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
-import {
-    AbstractVectorSymbology,
-    ClusteredPointSymbology,
-    SimpleVectorSymbology
-} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
-import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MdDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
+import {DataSource} from '@angular/cdk/table';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -28,9 +21,14 @@ function nameComparator(a: string, b: string): number {
 export class GeobonPolygonSelectionComponent implements OnInit {
 
     searchString$ = new BehaviorSubject<string>('');
-    entries$ = Observable.of([{name: 'Germany'}, {name: 'England'}]);
+    entries$ = Observable.of(ELEMENT_DATA);
     // new ReplaySubject<Array<{name: string, operator: Operator}>>(1);
-    filteredEntries$: Observable<Array<{name: string}>>;
+    filteredEntries$: Observable<Array<Element>>;
+
+    // define table data
+    tableEntries$: CountryDataSource;
+    displayedColumns: Array<String> = ['name', 'area'];
+
 
     constructor(private userService: UserService,
                 private projectService: ProjectService,
@@ -49,6 +47,7 @@ export class GeobonPolygonSelectionComponent implements OnInit {
                     .filter(entry => entry.name.indexOf(searchString) >= 0)
                     .sort((a, b) => nameComparator(a.name, b.name))
             );
+        this.tableEntries$ = new CountryDataSource(this.filteredEntries$);
     }
 
     /*
@@ -95,3 +94,35 @@ export class GeobonPolygonSelectionComponent implements OnInit {
     }
 
 }
+
+
+
+
+// Define class CountryDataSource
+class CountryDataSource extends DataSource<Element> {
+    private countries: Observable<Array<Element>>;
+
+    constructor(countries: Observable<Array<Element>>) {
+        super();
+        this.countries = countries;
+    }
+
+    connect(): Observable<Array<Element>> {
+        return (this.countries);
+    }
+
+    disconnect() {
+    }
+}
+
+
+// dummy Country data
+export interface Element {
+    name: string;
+    area: number;
+}
+const ELEMENT_DATA: Element[] = [
+    {name: 'Germany', area: 1.0079},
+    {name: 'Italy', area: 4.0026},
+    {name: 'Spain', area: 6.941},
+];
