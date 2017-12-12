@@ -130,6 +130,7 @@ import {MdIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
+import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -241,7 +242,8 @@ export function configInitializer(config: Config) {
         FileNamePipe,
         NumericPipe,
         SourceDatasetComponent,
-        FeedbackComponent
+        FeedbackComponent,
+        RasterPolygonClipOperatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -296,6 +298,7 @@ export function configInitializer(config: Config) {
         MediaviewImageDialogComponent,
         MediaviewAudioComponent,
         MediaviewVideoComponent,
+        RasterPolygonClipOperatorComponent,
     ],
     providers: [
         DragulaService,
