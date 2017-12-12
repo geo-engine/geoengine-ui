@@ -97,7 +97,9 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
                 emitEvent: true
             });
             this.form.controls['vLayer'].updateValueAndValidity();
-            this.form.controls['name'].setValue('Box plot of ' + this.form.controls['vLayer'].value.name);
+
+            const nameSuggestion = ' of ' + (this.form.controls['vLayer'].value ? this.form.controls['vLayer'].value.name : '');
+            this.form.controls['name'].setValue('Box plot' + nameSuggestion);
         });
     }
 
