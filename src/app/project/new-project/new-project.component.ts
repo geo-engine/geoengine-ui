@@ -56,6 +56,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
                     projection: this.form.controls['projection'].value,
                     time: time,
                     layers: [],
+                    timeStepDuration: {durationAmount: 1, durationUnit: 'months'}
                 })
             );
 

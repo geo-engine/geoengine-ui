@@ -7,6 +7,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import * as moment from 'moment';
 
 
+
 @Component({
     selector: 'wave-time-input',
     templateUrl: './time-input.component.html',
@@ -18,7 +19,6 @@ import * as moment from 'moment';
 })
 export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit, OnChanges {
 
-    constructor(private changeDetectorRef: ChangeDetectorRef){}
 
     @Input() disabled: false;
 
@@ -26,16 +26,20 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
     onTouched: () => void;
     onChange: (_: moment.Moment) => void = undefined;
 
+    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    }
+
     get time(): moment.Moment {
         return this._time;
     };
 
-    //set accessor including call the onchange callback
+    // set accessor including call the onchange callback
     set time(time: moment.Moment) {
         if (time !== this._time) {
             this._time = time;
-            if(this.onChange)
+            if (this.onChange) {
                 this.onChange(time);
+            }
         }
     }
 
@@ -48,7 +52,7 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
         this.changeDetectorRef.markForCheck();
     }
 
-    //Set touched on blur
+    // Set touched on blur
     onBlur() {
         this.onTouched();
     }
@@ -68,7 +72,7 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
     }
 
     private update(timeUnit: moment.unitOfTime.Base, value: number){
-        if(value) {
+        if (value) {
             this.time.set(timeUnit, value);
             this.propagateChange();
         }
