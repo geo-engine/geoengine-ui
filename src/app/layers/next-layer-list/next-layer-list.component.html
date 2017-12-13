@@ -25,11 +25,16 @@
 
     <md-toolbar color="primary">
         <span fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <div></div>
+            <div class="only-large"></div>
 
-            <div class="logo">
+            <div class="logo" *waveIfGfbio>
                 <md-icon md-list-icon svgIcon="vat:logo" alt="VAT"></md-icon>
                 <span class="title">VAT</span>
+            </div>
+
+            <div class="geobon-logo" *waveIfGeoBon>
+                <span class="title">VAT <span class="up">@</span></span>
+                <md-icon md-list-icon svgIcon="geobon:logo" alt="GeoBon"></md-icon>
             </div>
 
             <button md-icon-button [mdMenuTriggerFor]="layerListMenu">

@@ -34,7 +34,7 @@ interface DelaysInterface {
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
 }
-type ProjectType = 'GFBio' | 'IDESSA';
+type ProjectType = 'GFBio' | 'IDESSA' | 'GeoBon';
 interface DefaultsInterface {
     PROJECT: {
         NAME: string,
