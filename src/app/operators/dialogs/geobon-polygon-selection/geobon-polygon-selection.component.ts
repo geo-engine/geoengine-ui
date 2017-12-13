@@ -8,7 +8,7 @@ import {
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MdDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
@@ -32,8 +32,6 @@ export class GeobonPolygonSelectionComponent implements OnInit {
 
     searchString$ = new BehaviorSubject<string>('');
 
-    filteredEntries$: Observable<Array<Element>>;
-
     // define table data
     tableEntries$: CountryDataSource;
     displayedColumns: Array<String> = ['name', 'area'];
@@ -55,7 +53,7 @@ export class GeobonPolygonSelectionComponent implements OnInit {
  	}
      */
 
-    private sourceFile: string = 'file:///home/gfbio/data/dev/csv_source/country_borders.csv';
+    private sourceFile = 'file:///home/gfbio/data/dev/csv_source/country_borders.csv';
     private sourceParameters: CSVParameters = {
         header: 0,
         onError: 'keep',
@@ -69,7 +67,7 @@ export class GeobonPolygonSelectionComponent implements OnInit {
         }
     };
     private sourceProjection: Projection = Projections.WGS_84;
-    private sourceIdColumn: string = 'NAME';
+    private sourceIdColumn = 'NAME';
     private sourceOperator: Operator;
 
 
@@ -96,10 +94,17 @@ export class GeobonPolygonSelectionComponent implements OnInit {
                 ),
                 this.searchString$,
                 (entries, searchString) => entries
-                    .filter(entry => entry[this.sourceIdColumn].toString().indexOf(searchString) >= 0)
+                    .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0)
                     .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
             );
-        this.tableEntries$ = new CountryDataSource(this.filteredEntries$);
+        this.tableEntries$ = new CountryDataSource(this.filteredEntries$.map(countries => {
+            return countries.map(entry => {
+                return {
+                    name: entry['NAME'],
+                    area: entry['AREA'],
+                };
+            });
+        }));
     }
 
     /*
@@ -190,7 +195,7 @@ class CountryDataSource extends DataSource<Element> {
 }
 
 
-// dummy Country data
+// Country
 export interface Element {
     name: string;
     area: number;
