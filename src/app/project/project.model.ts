@@ -1,5 +1,5 @@
 import {Projection, Projections} from '../operators/projection.model';
-import {Time, TimeDict, timeFromDict, TimePoint, TimeInterval} from '../time/time.model';
+import {Time, TimeDict, timeFromDict, TimePoint, TimeInterval, TimeStepDuration} from '../time/time.model';
 import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 import {Config} from '../config.service';
@@ -13,6 +13,7 @@ export interface ProjectConfig {
     time: Time;
     plots?: Array<Plot>;
     layers?: Array<Layer<Symbology>>;
+    timeStepDuration: TimeStepDuration;
 }
 
 export interface ProjectDict {
@@ -21,6 +22,7 @@ export interface ProjectDict {
     time: TimeDict;
     plots: Array<PlotDict>;
     layers: Array<LayerDict>;
+    timeStepDuration: TimeStepDuration;
 }
 
 export class Project {
@@ -29,6 +31,7 @@ export class Project {
     private _name: string;
     private _plots: Array<Plot>;
     private _layers: Array<Layer<Symbology>>;
+    private _timeStepDuration: TimeStepDuration;
 
     static fromJSON(parameters: {
         json: string,
@@ -57,6 +60,7 @@ export class Project {
                 time: new TimePoint(parameters.config.DEFAULTS.PROJECT.TIME),
                 plots: [],
                 layers: [],
+                timeStepDuration: {durationAmount: 1, durationUnit: 'months'}, // TODO: move to DEFAULTS!
             });
         }
 
@@ -119,6 +123,12 @@ export class Project {
         } else {
             layers = [];
         }
+        let timeStepDuration: TimeStepDuration;
+        if (parameters.dict.timeStepDuration) {
+            timeStepDuration = parameters.dict.timeStepDuration;
+        } else {
+            timeStepDuration = {durationAmount: 1, durationUnit: 'months'};
+        }
 
         return new Project({
             name: parameters.dict.name,
@@ -126,6 +136,7 @@ export class Project {
             time: time,
             plots: plots,
             layers: layers,
+            timeStepDuration: timeStepDuration,
         });
     }
 
@@ -135,6 +146,7 @@ export class Project {
         this._time = config.time;
         this._plots = config.plots ? config.plots : [];
         this._layers = config.layers ? config.layers : [];
+        this._timeStepDuration = config.timeStepDuration;
     }
 
     get name(): string {
@@ -157,13 +169,18 @@ export class Project {
             return this._layers;
     }
 
+    get timeStepDuration(): TimeStepDuration {
+        return this._timeStepDuration;
+    }
+
     toDict(): ProjectDict {
         return {
             name: this.name,
             projection: this._projection.getCode(),
             time: this._time.asDict(),
             plots: this._plots.map(plot => plot.toDict()),
-            layers: this._layers.map(layer => layer.toDict())
+            layers: this._layers.map(layer => layer.toDict()),
+            timeStepDuration: this._timeStepDuration
         };
     }
 

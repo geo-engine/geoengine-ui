@@ -1,8 +1,9 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../project/project.service';
 import {LayoutService} from '../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
-import {Time} from '../time/time.model';
+import {Time, TimeStepDuration} from '../time/time.model';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
     selector: 'wave-small-time-interaction',
@@ -10,9 +11,12 @@ import {Time} from '../time/time.model';
     styleUrls: ['./small-time-interaction.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SmallTimeInteractionComponent implements OnInit {
+export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
 
+    private timeStreamSubscription: Subscription;
+    timeStepDurationStreamSubscription: Subscription;
     private timeRepresentation: string;
+    private timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
     // private timeIsPlaying = false;
 
     static formatTime(time: Time): string {
@@ -29,22 +33,34 @@ export class SmallTimeInteractionComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.projectService.getTimeStream().subscribe(t => {
+        this.timeStreamSubscription = this.projectService.getTimeStream().subscribe(t => {
             this.timeRepresentation = SmallTimeInteractionComponent.formatTime(t);
             this.changeDetectorRef.markForCheck();
         });
+
+
+        this.timeStepDurationStreamSubscription = this.projectService.getTimeStepDurationStream().subscribe(timeStepDuration => {
+            this.timeStepDuration = timeStepDuration;
+        });
+
     }
+
+    ngOnDestroy(): void {
+        this.timeStreamSubscription.unsubscribe();
+        this.timeStepDurationStreamSubscription.unsubscribe();
+    }
+
 
     timeFwd() {
         this.projectService.getTimeStream().first().subscribe(time => {
-            let nt = time.clone().add(1, 'month');
+            let nt = time.clone().add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(nt);
         });
     }
 
     timeRwd() {
         this.projectService.getTimeStream().first().subscribe(time => {
-            this.projectService.setTime(time.clone().subtract(1, 'month'));
+            this.projectService.setTime(time.clone().subtract(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit));
         });
     }
 

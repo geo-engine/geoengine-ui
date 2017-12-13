@@ -30,6 +30,11 @@ export function timeFromDict(dict: TimeDict) {
     }
 }
 
+export interface TimeStepDuration {
+    durationAmount: moment.DurationInputArg1,
+    durationUnit: moment.DurationInputArg2
+}
+
 export interface Time {
     getType(): TimeType;
     getStart(): moment.Moment;
