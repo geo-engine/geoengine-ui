@@ -11,7 +11,6 @@ background-color 200ms $swift-ease-in-out-timing-function !default;
 .dataset-uri {
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px;
 }
 
 .secondary_action {
@@ -48,21 +47,4 @@ md-list-item {
         // with the readability of focused buttons.
         background-color: rgba(white, 0.5);
     }
-}
-
-// Custom styles for accordion
-.mat-card {
-    padding: 0;
-}
-
-.mat-expansion-panel {
-    box-shadow: none !important;
-}
-
-.mat-expansion-panel-header {
-    padding: 14px 24px 14px 24px;
-}
-
-.mat-card-title {
-    margin-bottom: 0;
 }

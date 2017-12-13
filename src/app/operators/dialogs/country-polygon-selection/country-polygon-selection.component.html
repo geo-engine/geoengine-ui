@@ -1,10 +1,33 @@
-<wave-sidenav-header>Country Polygon Selection</wave-sidenav-header>
+<wave-sidenav-header>Country Selection</wave-sidenav-header>
     <wave-sidenav-search (searchString)="searchString$.next($event)">
 </wave-sidenav-search>
-<md-list>
 
-    <md-list-item *ngFor="let entry of (filteredEntries$ | async)" (click)="addLayer(entry[sourceIdColumn], createFilterOperator(entry[sourceIdColumn]))">
-        <h4 md-line bind-innerHtml="entry[sourceIdColumn] | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"></h4>
-    </md-list-item>
+<ng-template #table>
+    <md-table [dataSource]="tableEntries">
 
-</md-list>
+        <!-- Name Column -->
+        <ng-container mdColumnDef="name">
+            <md-header-cell *mdHeaderCellDef>Country Name</md-header-cell>
+            <md-cell
+                *mdCellDef="let entry"
+                bind-innerHtml="entry[sourceIdColumn] | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"
+            ></md-cell>
+        </ng-container>
+
+        <!-- Area Column -->
+        <ng-container mdColumnDef="area">
+            <md-header-cell *mdHeaderCellDef>Area</md-header-cell>
+            <md-cell *mdCellDef="let entry">{{entry[sourceAreaColumn] * 10}} km²</md-cell>
+        </ng-container>
+
+        <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+        <md-row
+            *mdRowDef="let entry; columns: displayedColumns;"
+            (click)="addLayer(entry[sourceIdColumn], createFilterOperator(entry[sourceIdColumn]))"
+        ></md-row>
+    </md-table>
+</ng-template>
+
+<div *ngIf="(isLoading$ | async); else table" class="loading">
+    <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+</div>

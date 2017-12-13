@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractVectorSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MdDialog} from '@angular/material';
@@ -16,6 +16,9 @@ import {
     TextualAttributeFilterEngineType,
     TextualAttributeFilterType
 } from '../../types/textual-attribute-filter-type.model';
+import {DataSource} from '@angular/cdk/table';
+import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {Subscription} from 'rxjs/Subscription';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -28,12 +31,18 @@ function nameComparator(a: string, b: string): number {
     styleUrls: ['./country-polygon-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CountryPolygonSelectionComponent implements OnInit {
+export class CountryPolygonSelectionComponent implements OnInit, OnDestroy {
 
     searchString$ = new BehaviorSubject<string>('');
-    // entries$ = Observable.of([{name: 'Germany'}, {name: 'England'}, {name: 'France'}]);
-    // new ReplaySubject<Array<{name: string, operator: Operator}>>(1);
-    filteredEntries$: Observable<Array<{ [k: string]: any }>>;
+    filteredEntries$ = new ReplaySubject<Array<CountryMapType>>(1);
+
+    tableEntries: CountryDataSource;
+    displayedColumns: Array<String> = ['name', 'area'];
+
+    sourceIdColumn = 'NAME';
+    sourceAreaColumn = 'AREA';
+
+    isLoading$ = new BehaviorSubject(true);
 
     /*
     {
@@ -79,9 +88,8 @@ Sean Gilles did some clean up and made some enhancements.`,
         },
     };
     private sourceProjection: Projection = Projections.WGS_84;
-    private sourceIdColumn = 'NAME';
     private sourceOperator: Operator;
-
+    private subscription: Subscription;
 
 
     constructor(private userService: UserService,
@@ -94,7 +102,7 @@ Sean Gilles did some clean up and made some enhancements.`,
     ngOnInit() {
         this.sourceOperator = this.createCsvSourceOperator();
 
-        this.filteredEntries$ = Observable
+        this.subscription = Observable
             .combineLatest(
                 this.getOperatorDataStream().map(
                     vectorData => {
@@ -104,27 +112,20 @@ Sean Gilles did some clean up and made some enhancements.`,
                         return data;
                     }
                 ),
-                this.searchString$,
+                this.searchString$.map(searchString => searchString.toLowerCase()),
                 (entries, searchString) => entries
-                    .filter(entry => entry[this.sourceIdColumn].toString().indexOf(searchString) >= 0)
+                    .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
                     .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
-            );
+            )
+            .do(() => this.isLoading$.next(false))
+            .subscribe(entries => this.filteredEntries$.next(entries));
+
+        this.tableEntries = new CountryDataSource(this.filteredEntries$);
     }
 
-    /*
-    refresh() {
-        this.userService.getFeatureDBList()
-            .map(entries => entries.sort())
-            .subscribe(entries => this.entries$.next(entries));
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
-
-    openCSVDialog() {
-        this.dialog.open(CsvDialogComponent)
-            .afterClosed()
-            .first()
-            .subscribe(() => this.refresh());
-    }
-    */
 
     createCsvSourceOperator(): Operator {
         const csvSourceType = new CsvSourceType({
@@ -132,13 +133,11 @@ Sean Gilles did some clean up and made some enhancements.`,
             parameters: this.sourceParameters,
         });
 
-        const operator = new Operator({
+        return new Operator({
             operatorType: csvSourceType,
             resultType: ResultTypes.POLYGONS,
             projection: this.sourceProjection,
         });
-
-        return this.sourceOperator = operator;
     }
 
     getOperatorDataStream(): Observable<VectorData> {
@@ -173,10 +172,8 @@ Sean Gilles did some clean up and made some enhancements.`,
     }
 
     addLayer(layerName: string, operator: Operator) {
-        const color = this.randomColorService.getRandomColor();
-        let symbology: AbstractVectorSymbology;
-        symbology = new SimpleVectorSymbology({
-            fillRGBA: color,
+        let symbology = new SimpleVectorSymbology({
+            fillRGBA: this.randomColorService.getRandomColor(),
         });
 
         const layer = new VectorLayer({
@@ -184,6 +181,27 @@ Sean Gilles did some clean up and made some enhancements.`,
             operator: operator,
             symbology: symbology,
         });
+
         this.projectService.addLayer(layer);
+    }
+}
+
+interface CountryMapType {
+    [key: string]: string | number
+}
+
+class CountryDataSource extends DataSource<CountryMapType> {
+    private countries: Observable<Array<CountryMapType>>;
+
+    constructor(countries: Observable<Array<CountryMapType>>) {
+        super();
+        this.countries = countries;
+    }
+
+    connect(): Observable<Array<CountryMapType>> {
+        return this.countries;
+    }
+
+    disconnect() {
     }
 }
