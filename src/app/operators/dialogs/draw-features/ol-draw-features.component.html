@@ -1,0 +1,13 @@
+<wave-sidenav-header>Draw Features</wave-sidenav-header>
+
+<md-select placeholder="Feature type" [(value)]="selectedFeatureType">
+    <md-option *ngFor="let featureType of featureTypes" [value]="featureType">
+        {{ featureType }}
+    </md-option>
+</md-select>
+
+<button md-raised-button [disabled]="isDrawingActive || !selectedFeatureType" (click)="startDrawing()">Start</button>
+
+<button md-raised-button color="accent" [disabled]="!isDrawingActive" (click)="endDrawing()">End</button>
+
+<button md-raised-button color="warn" [disabled]="!isDrawingActive" (click)="cancelDrawing()">Cancel</button>

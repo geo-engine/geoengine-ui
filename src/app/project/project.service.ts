@@ -387,7 +387,7 @@ export class ProjectService {
             this.layerDataState$.get(layer),
             this.layerProvenanceDataState$.get(layer))
             .map(([sym, data, prov]) => {
-                //console.log("combinedLayerState", sym, data, prov);
+                // console.log("combinedLayerState", sym, data, prov);
                 if (sym === LoadingState.LOADING
                     || data === LoadingState.LOADING
                 /*|| prov === LoadingState.LOADING*/) {
@@ -710,11 +710,13 @@ export class ProjectService {
                                               loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),
-            this.getProjectionStream(),
-            this.mapService.getViewportSizeStream().debounceTime(this.config.DELAYS.DEBOUNCE)
+            Observable.combineLatest(
+                this.getProjectionStream(),
+                this.mapService.getViewportSizeStream()
+            ).debounceTime(this.config.DELAYS.DEBOUNCE)
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
-            .switchMap(([time, projection, viewportSize]) => {
+            .switchMap(([time, [projection, viewportSize]]) => {
                 const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
                 return this.mappingQueryService.getWFSData({
@@ -883,7 +885,6 @@ export class ProjectService {
 
     getLayerCombinedStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
         const state =  this.layerCombinedState$.get(layer);
-        //console.log(layer.name, state);
         return state;
     }
 

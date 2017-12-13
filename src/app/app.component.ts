@@ -53,6 +53,7 @@ import {UnexpectedResultType} from './util/errors';
 import {Operator} from './operators/operator.model';
 import {Config} from './config.service';
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {MapService} from './map/map.service';
 
 @Component({
     selector: 'wave-app',
@@ -91,6 +92,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
+                private mapService: MapService,
                 private config: Config,
                 private elementRef: ElementRef,
                 private overlayContainer: OverlayContainer) {
@@ -118,6 +120,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.mapService.registerMapComponent(this.mapComponent);
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$)
             .do(() => this.mapComponent.resize());
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);

@@ -3,6 +3,7 @@ import {Observable, BehaviorSubject, Subject} from 'rxjs/Rx';
 import * as ol from 'openlayers';
 import {Symbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
+import {MapComponent} from './map.component';
 
 export interface ViewportSize {
     extent: Extent;
@@ -19,6 +20,7 @@ export class MapService {
         resolution: 1,
     });
 
+    private mapComponent: MapComponent;
     private zoomToExtent$ = new Subject<Extent>();
     private zoomToLayer$ = new Subject<Layer<Symbology>>();
 
@@ -46,6 +48,28 @@ export class MapService {
 
     public zoomToExtent(extent: Extent) {
         this.zoomToExtent$.next(extent);
+    }
+
+    public registerMapComponent(mapComponent: MapComponent) {
+        this.mapComponent = mapComponent;
+    }
+
+    public startDrawInteraction(drawType: ol.geom.GeometryType) {
+        if (!this.mapComponent) {
+            throw new Error('no MapComponent registered');
+        }
+        this.mapComponent.startDrawInteraction(drawType);
+    }
+
+    public isDrawInteractionAttached(): boolean {
+        return this.mapComponent.isDrawInteractionAttached();
+    }
+
+    public endDrawInteraction(): ol.source.Vector {
+        if (!this.mapComponent) {
+            throw new Error('no MapComponent registered');
+        }
+        return this.mapComponent.endDrawInteraction();
     }
 
     setViewportSize(newViewportSize: ViewportSize) {
@@ -79,7 +103,7 @@ export class MapService {
     }
 
     getViewportSizeStream(): Observable<ViewportSize> {
-        return this.viewportSize$;
+        return this.viewportSize$.distinctUntilChanged();
     }
 
     private resolutionChanged(vps1: ViewportSize, vps2: ViewportSize): boolean {
