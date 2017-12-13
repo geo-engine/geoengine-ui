@@ -61,7 +61,22 @@ export class CountryPolygonSelectionComponent implements OnInit {
             x: 'WKT',
             textual: ['FIPS', 'ISO2', 'ISO3', 'UN', 'NAME'],
             numeric: ['AREA', 'POP2005', 'REGION', 'SUBREGION', 'LON', 'LAT'],
-        }
+        },
+        provenance: {
+            citation: `TM_WORLD_BORDERS-0.1.ZIP
+
+Provided by Bjorn Sandvik, thematicmapping.org
+
+Use this dataset with care, as several of the borders are disputed.
+
+The original shapefile (world_borders.zip, 3.2 MB) was downloaded from the Mapping Hacks website:
+http://www.mappinghacks.com/data/
+
+The dataset was derived by Schuyler Erle from public domain sources.
+Sean Gilles did some clean up and made some enhancements.`,
+            uri: '',
+            license: 'Creative Commons Attribution-Share Alike License 3.0',
+        },
     };
     private sourceProjection: Projection = Projections.WGS_84;
     private sourceIdColumn = 'NAME';
