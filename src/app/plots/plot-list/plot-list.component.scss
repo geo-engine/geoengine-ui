@@ -14,8 +14,8 @@ img {
     height: auto;
 }
 
-img[md-card-avatar] {
-    height: 100%;
+img.mat-card-avatar {
+    height: 40px;
     width: auto;
     border-radius: 50%;
 }
