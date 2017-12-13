@@ -131,6 +131,7 @@ import {SourceDatasetComponent} from './operators/dialogs/raster-repository/sour
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
+import {IfGeoBonDirective} from './util/directives/if-geobon.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -200,6 +201,7 @@ export function configInitializer(config: Config) {
         SourceOperatorListComponent,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
+        IfGeoBonDirective,
         IfLoggedInDirective,
         IfGuestDirective,
         LoginComponent,

@@ -3,6 +3,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostListener,
     OnInit,
     ViewChild
@@ -50,6 +51,8 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {UnexpectedResultType} from './util/errors';
 import {Operator} from './operators/operator.model';
+import {Config} from './config.service';
+import {OverlayContainer} from '@angular/cdk/overlay';
 
 @Component({
     selector: 'wave-app',
@@ -87,11 +90,20 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
-                private notificationService: NotificationService) {
+                private notificationService: NotificationService,
+                private config: Config,
+                private elementRef: ElementRef,
+                private overlayContainer: OverlayContainer) {
         iconRegistry.addSvgIconInNamespace(
             'vat',
             'logo',
             sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg')
+        );
+
+        iconRegistry.addSvgIconInNamespace(
+            'geobon',
+            'logo',
+            sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg')
         );
 
         this.storageService.toString(); // just register
@@ -101,6 +113,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
+
+        this.setTheme(this.config.PROJECT);
     }
 
     ngOnInit() {
@@ -282,5 +296,28 @@ export class AppComponent implements OnInit, AfterViewInit {
                 clustered: clustered,
             });
         });
+    }
+
+    private setTheme(project: 'GFBio' | 'IDESSA' | 'GeoBon') {
+        const defaultTheme = 'default-theme';
+        const geoBonTheme = 'geobon-theme';
+        const allThemes = [defaultTheme, geoBonTheme];
+
+        for (const theme of allThemes) {
+            this.elementRef.nativeElement.classList.remove(theme);
+            this.overlayContainer.getContainerElement().classList.remove(theme);
+        }
+
+        switch (project) {
+            case 'GeoBon':
+                this.elementRef.nativeElement.classList.add(geoBonTheme);
+                this.overlayContainer.getContainerElement().classList.add(geoBonTheme);
+                break;
+            case 'GFBio':
+            case 'IDESSA':
+            default:
+                this.elementRef.nativeElement.classList.add(defaultTheme);
+                this.overlayContainer.getContainerElement().classList.add(defaultTheme);
+        }
     }
 }

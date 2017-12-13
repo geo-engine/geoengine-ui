@@ -80,7 +80,93 @@ $wave-app-warn:    mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
 $wave-app-theme: mat-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include angular-material-theme($wave-app-theme);
+.default-theme {
+    @include angular-material-theme($wave-app-theme);
+}
+
+.geobon-theme {
+    // Define geobon colors
+    $geobon-green: (
+        50 : #e0f1ef,
+        100 : #b3ddd8,
+        200 : #80c6be,
+        300 : #4dafa4,
+        400 : #269d91,
+        500 : #008c7d,
+        600 : #008475,
+        700 : #00796a,
+        800 : #006f60,
+        900 : #005c4d,
+        A100 : #8dffe9,
+        A200 : #5affde,
+        A400 : #27ffd4,
+        A700 : #0effcf,
+        contrast: (
+            50 : #000000,
+            100 : #000000,
+            200 : #000000,
+            300 : #000000,
+            400 : #ffffff,
+            500 : #ffffff,
+            600 : #ffffff,
+            700 : #ffffff,
+            800 : #ffffff,
+            900 : #ffffff,
+            A100 : #000000,
+            A200 : #000000,
+            A400 : #000000,
+            A700 : #000000,
+        )
+    );
+
+    $geobon-blue: (
+        50 : #eef5f6,
+        100 : #d4e6e9,
+        200 : #b7d5da,
+        300 : #9ac4cb,
+        400 : #84b7bf,
+        500 : #6eaab4,
+        600 : #66a3ad,
+        700 : #5b99a4,
+        800 : #51909c,
+        900 : #3f7f8c,
+        A100 : #e0faff,
+        A200 : #adf1ff,
+        A400 : #7ae8ff,
+        A700 : #61e3ff,
+        contrast: (
+            50 : #000000,
+            100 : #000000,
+            200 : #000000,
+            300 : #000000,
+            400 : #000000,
+            500 : #000000,
+            600 : #000000,
+            700 : #000000,
+            800 : #ffffff,
+            900 : #ffffff,
+            A100 : #000000,
+            A200 : #000000,
+            A400 : #000000,
+            A700 : #000000,
+        )
+    );
+
+    // define geobon theme color
+    $wave-theme-primary: mat-palette($geobon-green, 700, 300, 900);
+    $wave-theme-accent: mat-palette($geobon-blue);
+    $wave-theme-warn: mat-palette($mat-red, A200);
+
+    // create geobon theme
+    $wave-app-theme: mat-light-theme(
+            $wave-theme-primary,
+            $wave-theme-accent,
+            $wave-theme-warn
+    );
+
+    // Include theme styles for core and each component used in your app.
+    // Alternatively, you can import and @include the theme mixins for each component
+    // that you are using.
+    @include angular-material-theme($wave-app-theme);
+
+}
