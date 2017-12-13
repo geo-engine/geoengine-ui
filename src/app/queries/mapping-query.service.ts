@@ -175,7 +175,7 @@ export class MappingQueryService {
         time: Time,
         projection: Projection,
         outputFormat: WFSOutputFormat,
-        viewportSize: ViewportSize,
+        viewportSize?: ViewportSize,
         clustered: boolean
     }): Observable<string> {
         const requestParameters = this.getWFSQueryParameters(config);

@@ -25,6 +25,8 @@ import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filt
 import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
 import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component';
 import {BoxPlotType} from '../../types/boxplot-type.model';
+import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
+import {OperatorType} from '../../operator-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -37,6 +39,14 @@ const MIXED_OPERATORS: Array<OperatorListType> = [
         component: RasterValueExtractionOperatorComponent,
         type: RasterValueExtractionType,
         description: 'Attach raster values to vector data',
+    },
+    {
+        component: RasterPolygonClipOperatorComponent,
+        type: {
+            NAME: 'Raster Polygon Clip',
+            ICON_URL: OperatorType.createIconDataUrl('Raster Polygon Clip'),
+        },
+        description: 'Clip a raster image via polygon boundaries',
     },
     {
         component: ROperatorComponent,

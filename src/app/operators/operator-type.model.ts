@@ -15,7 +15,7 @@ export interface OperatorTypeDict {
  */
 export abstract class OperatorType {
 
-    protected static createIconDataUrl(iconName: string) {
+    public static createIconDataUrl(iconName: string) {
         // TODO: replace with proper icons
         // from `http://stackoverflow.com/questions/3426404/
         // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
