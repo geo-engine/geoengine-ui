@@ -1,42 +1,44 @@
 <md-card>
-    <md-card-header>
-        <md-card-title>
-            <span class="dataset-name" bind-innerHtml="dataset.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
-        </md-card-title>
-    </md-card-header>
-
-    <img *ngIf="_showPreview && !!dataset.imgUrl" md-card-image src="{{dataset?.imgUrl}}" alt="no preview image available">
-
-    <md-card-content *ngIf="true || _showDescription">
-        <p *ngIf="_showDescription && dataset?.descriptionText">{{dataset?.descriptionText}}</p>
-    </md-card-content>
-
-    <md-list>
-        <md-list-item>
-            <md-icon mdListIcon>open_in_new</md-icon>
-            <p class="dataset-uri"><a [href]="dataset?.uri" target="_blank">{{dataset?.uri}}</a></p>
-        </md-list-item>
-    </md-list>
-
-    <ng-template [ngIf]="true || !isSingleLayerDataset()">
-        <md-table #table [dataSource]="channelDataSource">
-
-            <ng-container mdColumnDef="name">
-                <md-header-cell *mdHeaderCellDef>Channel</md-header-cell>
-                <md-cell *mdCellDef="let channel">
-                    {{channel.name}}
-                </md-cell>
-            </ng-container>
-
-            <ng-container mdColumnDef="measurement">
-                <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
-                <md-cell *mdCellDef="let channel">
-                    {{valid_unit(channel)}}
-                </md-cell>
-            </ng-container>
-
-            <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-            <md-row *mdRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></md-row>
-        </md-table>
-    </ng-template>
+    <mat-accordion>
+        <mat-expansion-panel (opened)="panelOpenState = true"
+                             (closed)="panelOpenState = false">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    <md-card-header>
+                        <md-card-title>
+                            <span class="dataset-name" bind-innerHtml="dataset.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
+                        </md-card-title>
+                    </md-card-header>
+                    <img *ngIf="_showPreview && !!dataset.imgUrl" md-card-image src="{{dataset?.imgUrl}}" alt="no preview image available">
+                    <md-card-content *ngIf="true || _showDescription">
+                        <p *ngIf="_showDescription && dataset?.descriptionText">{{dataset?.descriptionText}}</p>
+                    </md-card-content>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <md-list>
+                <md-list-item>
+                    <md-icon mdListIcon>open_in_new</md-icon>
+                    <p class="dataset-uri"><a [href]="dataset?.uri" target="_blank">{{dataset?.uri}}</a></p>
+                </md-list-item>
+            </md-list>
+            <ng-template [ngIf]="true || !isSingleLayerDataset()">
+                <md-table #table [dataSource]="channelDataSource">
+                    <ng-container mdColumnDef="name">
+                        <md-header-cell *mdHeaderCellDef>Channel</md-header-cell>
+                        <md-cell *mdCellDef="let channel">
+                            {{channel.name}}
+                        </md-cell>
+                    </ng-container>
+                    <ng-container mdColumnDef="measurement">
+                        <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
+                        <md-cell *mdCellDef="let channel">
+                            {{valid_unit(channel)}}
+                        </md-cell>
+                    </ng-container>
+                    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+                    <md-row *mdRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></md-row>
+                </md-table>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-accordion>
 </md-card>
