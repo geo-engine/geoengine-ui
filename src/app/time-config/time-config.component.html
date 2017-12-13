@@ -1,44 +1,51 @@
 <wave-sidenav-header>Time Config</wave-sidenav-header>
-<md-card>
-    <md-card-header>Display Time Configuration</md-card-header>
 
-    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime($event)" fxLayout="column">
-        <h3 *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
+<md-card>
+    <md-card-header>
+        <md-card-title><h3>Display Time Configuration</h3></md-card-title>
+        <md-card-subtitle>Use this to specify a time selection for the current data.</md-card-subtitle>
+    </md-card-header>
+
+    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime()" fxLayout="column">
+        <h4 *ngIf="config.TIME.ALLOW_RANGES">Start</h4>
 
         <wave-time-input formControlName="start"></wave-time-input>
 
-        <div *ngIf="config.TIME.ALLOW_RANGES">
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <h3>End</h3>
-                <md-slide-toggle #t formControlName="timeAsPoint">same as start</md-slide-toggle>
-            </div>
+        <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
+            <h4 fxLayout="row" fxLayoutAlign="space-between center">
+                End
+                <md-slide-toggle #timeAsPoint formControlName="timeAsPoint">same as start</md-slide-toggle>
+            </h4>
 
-            <wave-time-input formControlName="end" [disabled]="t.checked"></wave-time-input>
-        </div>
+            <wave-time-input formControlName="end" [disabled]="timeAsPoint.checked"></wave-time-input>
+        </ng-template>
 
 
-        <div class="actions">
+        <div class="actions" fxLayout="row" fxLayoutAlign="end">
+            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
             <button md-raised-button (click)="reset()">
                 Reset
             </button>
             <button md-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">
                 Apply
             </button>
-            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
         </div>
     </form>
 </md-card>
-<md-card>
-    <md-card-header>Time Step Configuration</md-card-header>
 
-    <md-select placeholder="Time step" [(value)]="selectedtimeStepDuration" (change)="updateTimeStepDuration($event)">
+<md-card>
+    <md-card-header>
+        <md-card-title><h3>Time Step Configuration</h3></md-card-title>
+        <md-card-subtitle>Use this to specify a time step for the time component on top of the map.</md-card-subtitle>
+    </md-card-header>
+
+    <md-select placeholder="Time step"
+               [ngModel]="timeStepDuration$ | async" (ngModelChange)="updateTimeStepDuration($event)"
+               [compareWith]="timeStepComparator"
+    >
         <md-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
             {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
         </md-option>
     </md-select>
 
 </md-card>
-<!--</md-card>-->
-<!--<md-card>-->
-    <!--<h3>Step</h3>-->
-<!--</md-card>-->

@@ -1,13 +1,13 @@
-import {Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../project/project.service';
 import {Subscription} from 'rxjs/Rx';
-import {Time, TimeType, TimePoint, TimeInterval} from '../time/time.model';
-import {unitOfTime, Moment} from 'moment';
-import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
+import {Time, TimeInterval, TimePoint, TimeStepDuration} from '../time/time.model';
+import {Moment} from 'moment';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Config} from '../config.service';
-import {TimeStepDuration} from '../time/time.model';
+import {Observable} from 'rxjs/Observable';
 
-const startBeforeEndValidator = (condition) => (control: FormGroup) => {
+const startBeforeEndValidator = () => (control: FormGroup) => {
     let start = control.controls.start.value as Moment;
     let end = control.controls.end.value as Moment;
     let timeAsPoint = control.controls.timeAsPoint.value as boolean;
@@ -35,7 +35,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     start: Moment;
     end: Moment;
 
-    selectedtimeStepDuration: TimeStepDuration;
+    timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
         {durationAmount: 15, durationUnit: 'minutes'},
         {durationAmount: 1, durationUnit: 'hour'},
@@ -44,6 +44,11 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {durationAmount: 6, durationUnit: 'months'},
         {durationAmount: 1, durationUnit: 'year'}
     ];
+    timeStepComparator = (option: TimeStepDuration, selectedElement: TimeStepDuration) => {
+        const equalAmount = option.durationAmount === selectedElement.durationAmount;
+        const equalUnit = option.durationUnit === selectedElement.durationUnit;
+        return equalAmount && equalUnit;
+    };
 
     constructor(private projectService: ProjectService,
                 private changeDetectorRef: ChangeDetectorRef,
@@ -59,31 +64,31 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             timeAsPoint: [this.timeAsPoint, Validators.required],
             end: [{value: this.end, disabled: this.timeAsPoint}, Validators.required],
         });
-        this.timeForm.setValidators(startBeforeEndValidator(null));
 
+        this.timeForm.setValidators(startBeforeEndValidator());
+
+        this.timeStepDuration$ = this.projectService.getTimeStepDurationStream();
     }
 
 
     ngOnInit() {
         let sub = this.projectService.getTimeStream().subscribe(time => {
-
             this.time = time.clone();
             this.reset();
-            // this.changeDetectorRef.markForCheck();
         });
 
         this.subscriptions.push(sub);
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
+        setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
 
-    applyTime(event: any) {
+    applyTime() {
         if (this.timeForm.valid) {
             const start = this.timeForm.controls['start'].value;
             if (this.timeForm.controls['timeAsPoint'].value) {
@@ -103,9 +108,9 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         this.timeForm.controls['end'].setValue(this.end);
     }
 
-    updateTimeStepDuration(event: any) {
-        console.log('updateTimeStepDuration()', event, this.selectedtimeStepDuration);
-        this.projectService.setTimeStepDuration(event.value); // FIXME: this.selectedtimeStepDuration ?
+    updateTimeStepDuration(timeStep: TimeStepDuration) {
+        // console.log('updateTimeStepDuration()', event, this.selectedtimeStepDuration);
+        this.projectService.setTimeStepDuration(timeStep); // FIXME: this.selectedtimeStepDuration ?
     }
 
     private push(time: Time) {

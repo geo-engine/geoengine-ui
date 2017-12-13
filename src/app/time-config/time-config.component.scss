@@ -12,3 +12,15 @@
 .error {
     color: mat-color($wave-app-warn);
 }
+
+md-card-header /deep/ .mat-card-header-text {
+    margin: 0;
+}
+
+.actions button {
+    margin-left: 1rem;
+}
+
+md-card {
+    margin-bottom: 1rem;
+}
