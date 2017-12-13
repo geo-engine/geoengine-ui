@@ -38,7 +38,6 @@
     </md-list-item>
     <md-list-item
         (click)="layoutService.setSidenavContentComponent({component: GbifOperatorComponent, parent: SourceOperatorListComponent})"
-        *waveIfGfbio
     >
         <img md-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
         <h4 md-line>Species Distribution</h4>

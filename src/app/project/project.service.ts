@@ -5,7 +5,7 @@ import {Projections, Projection} from '../operators/projection.model';
 
 import {Project} from './project.model';
 
-import {Time, TimePoint} from '../time/time.model';
+import {Time, TimePoint, TimeStepDuration} from '../time/time.model';
 import {Config} from '../config.service';
 import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
@@ -73,6 +73,7 @@ export class ProjectService {
             name: this.config.DEFAULTS.PROJECT.NAME,
             projection: Projections.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION),
             time: new TimePoint(this.config.DEFAULTS.PROJECT.TIME),
+            timeStepDuration: {durationAmount: 1, durationUnit: 'months'}
         });
     }
 
@@ -136,12 +137,19 @@ export class ProjectService {
         });
     }
 
+    setTimeStepDuration(timeStepDuration: TimeStepDuration) {
+        this.changeProjectConfig({
+            timeStepDuration: timeStepDuration,
+        });
+    }
+
     private changeProjectConfig(config: {
         name?: string,
         projection?: Projection,
         time?: Time,
         plots?: Array<Plot>,
-        layers?: Array<Layer<Symbology>>
+        layers?: Array<Layer<Symbology>>,
+        timeStepDuration?: TimeStepDuration,
     }): Observable<void> {
         // console.log('Project::ProjectService.changeProjectConfig', config);
 
@@ -155,6 +163,7 @@ export class ProjectService {
                     time: config.time ? config.time : project.time,
                     plots: config.plots ? config.plots : project.plots,
                     layers: config.layers ? config.layers : project.layers,
+                    timeStepDuration: config.timeStepDuration ? config.timeStepDuration : project.timeStepDuration,
                 }));
                 subject.next();
                 subject.complete();
@@ -181,6 +190,10 @@ export class ProjectService {
 
     getTimeStream(): Observable<Time> {
         return this.project$.map(project => project.time).distinctUntilChanged();
+    }
+
+    getTimeStepDurationStream(): Observable<TimeStepDuration> {
+        return this.project$.map(project => project.timeStepDuration).distinctUntilChanged();
     }
 
     /**

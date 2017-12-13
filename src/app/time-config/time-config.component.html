@@ -1,5 +1,7 @@
 <wave-sidenav-header>Time Config</wave-sidenav-header>
-<!--<md-card>-->
+<md-card>
+    <md-card-header>Display Time Configuration</md-card-header>
+
     <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime($event)" fxLayout="column">
         <h3 *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
 
@@ -25,6 +27,17 @@
             <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
         </div>
     </form>
+</md-card>
+<md-card>
+    <md-card-header>Time Step Configuration</md-card-header>
+
+    <md-select placeholder="Time step" [(value)]="selectedtimeStepDuration" (change)="updateTimeStepDuration($event)">
+        <md-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
+            {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
+        </md-option>
+    </md-select>
+
+</md-card>
 <!--</md-card>-->
 <!--<md-card>-->
     <!--<h3>Step</h3>-->

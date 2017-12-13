@@ -3,10 +3,7 @@ import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {
-    AbstractVectorSymbology,
-    SimpleVectorSymbology
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MdDialog} from '@angular/material';
@@ -16,6 +13,10 @@ import {Projection, Projections} from '../../projection.model';
 import {CSVParameters, CsvSourceType} from '../../types/csv-source-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
+import {
+    TextualAttributeFilterEngineType,
+    TextualAttributeFilterType
+} from '../../types/textual-attribute-filter-type.model';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -23,12 +24,12 @@ function nameComparator(a: string, b: string): number {
 }
 
 @Component({
-    selector: 'wave-geobon-polygon-selection',
-    templateUrl: './geobon-polygon-selection.component.html',
-    styleUrls: ['./geobon-polygon-selection.component.scss'],
+    selector: 'wave-country-polygon-selection',
+    templateUrl: './country-polygon-selection.component.html',
+    styleUrls: ['./country-polygon-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GeobonPolygonSelectionComponent implements OnInit {
+export class CountryPolygonSelectionComponent implements OnInit {
 
     searchString$ = new BehaviorSubject<string>('');
 
@@ -154,7 +155,18 @@ export class GeobonPolygonSelectionComponent implements OnInit {
     }
 
     createFilterOperator(key: string): Operator {
-        return undefined;
+        const filterOperatorType = new TextualAttributeFilterType({
+            attributeName: this.sourceIdColumn,
+            engine: TextualAttributeFilterEngineType.EXACT,
+            searchString: key,
+        });
+
+        return new Operator({
+            operatorType: filterOperatorType,
+            resultType: this.sourceOperator.resultType,
+            projection: this.sourceOperator.projection,
+            polygonSources: [this.createCsvSourceOperator()]
+        });
     }
 
     addLayer(layerName: string, operator: Operator) {
@@ -171,7 +183,6 @@ export class GeobonPolygonSelectionComponent implements OnInit {
         });
         this.projectService.addLayer(layer);
     }
-
 }
 
 
