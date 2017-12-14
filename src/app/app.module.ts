@@ -64,7 +64,7 @@ import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
-import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
+import {LayerListComponent} from './layers/layer-list/layer-list.component';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
@@ -193,7 +193,7 @@ export function configInitializer(config: Config) {
         ReprojectionSelectionComponent,
         RasterValueExtractionOperatorComponent,
         SmallTimeInteractionComponent,
-        NextLayerListComponent,
+        LayerListComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
         HistogramOperatorComponent,

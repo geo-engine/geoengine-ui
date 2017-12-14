@@ -16,14 +16,15 @@ import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-grap
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';
 import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
+import {Config} from '../../config.service';
 
 @Component({
-    selector: 'wave-next-layer-list',
-    templateUrl: './next-layer-list.component.html',
-    styleUrls: ['./next-layer-list.component.scss'],
+    selector: 'wave-layer-list',
+    templateUrl: './layer-list.component.html',
+    styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NextLayerListComponent implements OnInit, OnDestroy {
+export class LayerListComponent implements OnInit, OnDestroy {
 
     LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
@@ -65,7 +66,8 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
                 private layerService: LayerService,
                 private mapService: MapService,
                 private iconRegistry: MdIconRegistry,
-                private sanitizer: DomSanitizer) {
+                private sanitizer: DomSanitizer,
+                public config: Config) {
         iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology', 'line',
@@ -94,14 +96,14 @@ export class NextLayerListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(
             this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
-                dragIndex = NextLayerListComponent.domIndexOf(listItem, list);
+                dragIndex = LayerListComponent.domIndexOf(listItem, list);
                 // console.log('drag', dragIndex);
             })
         );
         this.subscriptions.push(
             this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
                 const [_, listItem, list] = value;
-                dropIndex = NextLayerListComponent.domIndexOf(listItem, list);
+                dropIndex = LayerListComponent.domIndexOf(listItem, list);
                 // console.log('drop', dropIndex);
 
                 this.projectService.getLayerStream().first().subscribe(layers => {

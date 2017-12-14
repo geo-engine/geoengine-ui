@@ -37,7 +37,10 @@
                 <md-icon md-list-icon svgIcon="geobon:logo" alt="GeoBon"></md-icon>
             </div>
 
-            <button md-icon-button [mdMenuTriggerFor]="layerListMenu">
+            <button md-icon-button
+                    [mdMenuTriggerFor]="layerListMenu"
+                    mdTooltip="Actions for all layers" mdTooltipPosition="after" [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
+            >
                 <md-icon>more_vert</md-icon>
             </button>
         </span>
@@ -50,7 +53,7 @@
             <md-list-item *ngIf="(projectService.getLayerStream() | async)?.length === 0">
                 <button md-button class="no-layer"
                         (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
-                        mdTooltip="Add New Data" mdTooltipPosition="after"
+                        mdTooltip="Add New Data" mdTooltipPosition="after" [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
                 >
                     <md-icon>add</md-icon> add a first layer
                 </button>
@@ -60,8 +63,6 @@
                 <md-list-item
                               [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
                               [class.list-item-extended]="layer.expanded || layer.editSymbology"
-                              [title]="layer.name"
-
                 >
                     <md-menu #layerMenu="mdMenu">
 
@@ -119,10 +120,11 @@
                             </button>
 
                             <button md-icon-button
-                                *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) !== LoadingState.ERROR"
-                                aria-label="Show Legend"
-                                (click)="toggleLayer(layer)">
-
+                                    *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) !== LoadingState.ERROR"
+                                    (click)="toggleLayer(layer)"
+                                    mdTooltip="{{layer.expanded ? 'Hide' : 'Show'}} Legend" mdTooltipPosition="after"
+                                    [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
                                 <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
                                     || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
                                     <md-icon md-list-icon svgIcon="symbology:point"
@@ -154,12 +156,17 @@
                             <div #layerName
                                  class="mat-list-item-text grabbable"
                                  fxFlex="grow"
-                                 (click)="layerService.setSelectedLayer(layer)">
+                                 (click)="layerService.setSelectedLayer(layer)"
+                                 [mdTooltip]="layer.name" mdTooltipPosition="after" [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
                                 {{layer.name}}
                             </div>
 
-                            <button md-icon-button class="secondary_action"
-                                    #menuTrigger [mdMenuTriggerFor]="layerMenu" aria-label="More">
+                            <button #menuTrigger
+                                    md-icon-button class="secondary_action"
+                                    [mdMenuTriggerFor]="layerMenu"
+                                    mdTooltip="Layer Actions" mdTooltipPosition="after" [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
                                 <md-icon>more_vert</md-icon>
                             </button>
                         </div>

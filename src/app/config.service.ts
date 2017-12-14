@@ -30,6 +30,7 @@ interface DelaysInterface {
     LOADING: {
         MIN: number,
     };
+    TOOLTIP: number;
     DEBOUNCE: number;
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
@@ -105,6 +106,7 @@ const ConfigDefault = Immutable.fromJS({
         LOADING: {
             MIN: 500,
         },
+        TOOLTIP: 400,
         DEBOUNCE: 400,
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
