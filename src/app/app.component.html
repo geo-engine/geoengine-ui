@@ -59,6 +59,8 @@
                 class="toggle"
                 (click)="layoutService.toggleLayerDetailViewVisibility()"
                 [ngSwitch]="layerDetailViewVisible$ | async"
+                mdTooltip="{{(layerDetailViewVisible$ | async) ? 'Hide' : 'Show'}}" mdTooltipPosition="above"
+                [mdTooltipShowDelay]="config.DELAYS.TOOLTIP"
         >
             <md-icon *ngSwitchCase="true">expand_more</md-icon>
             <md-icon *ngSwitchCase="false">expand_less</md-icon>

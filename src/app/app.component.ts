@@ -93,7 +93,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
                 private mapService: MapService,
-                private config: Config,
+                public config: Config,
                 private elementRef: ElementRef,
                 private overlayContainer: OverlayContainer) {
         iconRegistry.addSvgIconInNamespace(
