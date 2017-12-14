@@ -40,12 +40,14 @@
 
         <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
 
-        <md-card>
-            <md-card-header>
-                <md-icon md-card-avatar>help</md-icon>
-                <md-card-title>Quick Help</md-card-title>
-                <md-card-subtitle>How the operator works</md-card-subtitle>
-            </md-card-header>
+        <md-expansion-panel>
+            <md-expansion-panel-header>
+                <md-panel-title>
+                    <md-icon>help</md-icon>
+                    Quick Help
+                </md-panel-title>
+                <md-panel-description>How the operator works</md-panel-description>
+            </md-expansion-panel-header>
             <md-card-content>
                 <p>
                     The <em>R operator</em> allows executing arbitrary <em>R</em> code on <em>VAT</em> data.
@@ -89,6 +91,34 @@
                         <td>This variable contains the amount of point collection inputs.</td>
                     </tr>
                     <tr>
+                        <td><code>loadLines(lineId, queryRectangle)</code></td>
+                        <td>
+                            Load the <code>lineId</code>th input line collection as an <em>R</em>
+                            <a
+                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
+                                target="_blank"
+                            ><code>SpatialLinesDataFrame</code></a>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>linescount</code></td>
+                        <td>This variable contains the amount of line collection inputs.</td>
+                    </tr>
+                    <tr>
+                        <td><code>loadPolygons(polygonId, queryRectangle)</code></td>
+                        <td>
+                            Load the <code>polygonId</code>th input polygon collection as an <em>R</em>
+                            <a
+                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
+                                target="_blank"
+                            ><code>SpatialPolygonDataFrame</code></a>.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>polygonscount</code></td>
+                        <td>This variable contains the amount of polygon collection inputs.</td>
+                    </tr>
+                    <tr>
                         <td><code>qrect</code></td>
                         <td>
                             This variable is a list that contains the fields
@@ -98,7 +128,7 @@
                 </table>
                 <p>An example is <code>mapping.loadRaster(0, mapping.qrect)</code> for accessing the first raster.</p>
             </md-card-content>
-        </md-card>
+        </md-expansion-panel>
 
         <wave-code-editor language="r" formControlName="code"></wave-code-editor>
 

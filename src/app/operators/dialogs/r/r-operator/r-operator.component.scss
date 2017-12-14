@@ -42,3 +42,12 @@ wave-code-editor {
 .error {
     color: mat-color($wave-app-warn);
 }
+
+md-panel-title,
+md-panel-description {
+    line-height: 1.5rem;
+}
+
+md-panel-title md-icon {
+    margin-right: 0.25rem;
+}
