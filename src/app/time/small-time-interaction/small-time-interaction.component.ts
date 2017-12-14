@@ -1,9 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {ProjectService} from '../project/project.service';
-import {LayoutService} from '../layout.service';
+import {ProjectService} from '../../project/project.service';
+import {LayoutService} from '../../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
-import {Time, TimeStepDuration} from '../time/time.model';
-import {Subscription} from 'rxjs/Subscription';
+import {Time, TimeStepDuration} from '../time.model';
+import {Subscription} from 'rxjs/Rx';
 
 @Component({
     selector: 'wave-small-time-interaction',
@@ -14,9 +14,11 @@ import {Subscription} from 'rxjs/Subscription';
 export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
 
     private timeStreamSubscription: Subscription;
+
     timeStepDurationStreamSubscription: Subscription;
-    private timeRepresentation: string;
-    private timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
+    timeRepresentation: string;
+    timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
+
     // private timeIsPlaying = false;
 
     static formatTime(time: Time): string {
@@ -51,14 +53,14 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
     }
 
 
-    timeFwd() {
+    timeForward() {
         this.projectService.getTimeStream().first().subscribe(time => {
             let nt = time.clone().add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(nt);
         });
     }
 
-    timeRwd() {
+    timeBackwards() {
         this.projectService.getTimeStream().first().subscribe(time => {
             this.projectService.setTime(time.clone().subtract(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit));
         });

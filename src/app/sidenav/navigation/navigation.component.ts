@@ -3,7 +3,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LoginComponent} from '../../users/login/login.component';
 import {HelpComponent} from '../../help/help.component';
-import {TimeConfigComponent} from '../../time-config/time-config.component';
+import {TimeConfigComponent} from '../../time/time-config/time-config.component';
 import {PlotListComponent} from '../../plots/plot-list/plot-list.component';
 import {WorkspaceSettingsComponent} from '../../project/workspace-settings/workspace-settings.component';
 import {UserService} from '../../users/user.service';

@@ -65,8 +65,8 @@ import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-la
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
 import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
-import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
-import {TimeConfigComponent} from './time-config/time-config.component';
+import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
+import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';

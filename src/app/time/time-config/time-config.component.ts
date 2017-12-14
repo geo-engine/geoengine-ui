@@ -1,11 +1,10 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {ProjectService} from '../project/project.service';
-import {Subscription} from 'rxjs/Rx';
-import {Time, TimeInterval, TimePoint, TimeStepDuration} from '../time/time.model';
+import {ProjectService} from '../../project/project.service';
+import {Observable, Subscription} from 'rxjs/Rx';
+import {Time, TimeInterval, TimePoint, TimeStepDuration} from '../time.model';
 import {Moment} from 'moment';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Config} from '../config.service';
-import {Observable} from 'rxjs/Observable';
+import {Config} from '../../config.service';
 
 const startBeforeEndValidator = () => (control: FormGroup) => {
     let start = control.controls.start.value as Moment;
