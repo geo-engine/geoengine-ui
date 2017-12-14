@@ -1,28 +1,27 @@
-<form class="feedback-container">
+<form class="feedback-container" [formGroup]="form" (ngSubmit)="$event.preventDefault();send()">
 
-    <md-select placeholder="Request type">
-        <md-option value="option">Feedback</md-option>
-        <md-option value="option">Help</md-option>
-        <md-option value="option">Contact</md-option>
+    <md-select placeholder="Request type" formControlName="requestType">
+        <md-option value="Feedback">Feedback</md-option>
+        <md-option value="Help">Help</md-option>
+        <md-option value="Contact">Contact</md-option>
     </md-select>
 
     <md-form-field>
-        <input placeholder="Your name" mdInput>
+        <input placeholder="Your name" mdInput formControlName="name">
     </md-form-field>
 
     <md-form-field>
-        <input placeholder="Email" mdInput>
+        <input placeholder="Email" mdInput formControlName="email">
     </md-form-field>
 
     <md-form-field>
-        <input placeholder="Topic" mdInput>
+        <input placeholder="Topic" mdInput formControlName="topic">
     </md-form-field>
 
     <md-form-field>
-        <textarea placeholder="Feedback text" mdInput mdTextareaAutosize mdAutosizeMinRows="2"></textarea>
+        <textarea placeholder="Feedback text" mdInput mdTextareaAutosize mdAutosizeMinRows="2" formControlName="text"></textarea>
     </md-form-field>
 
-    <button md-button>send</button>
-
+    <button md-button type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">send</button>
 
 </form>
