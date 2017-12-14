@@ -22,18 +22,18 @@
         <span class="icon-cogs"></span>
     </button>
     <button md-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, TimeConfigComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: TimeConfigComponent})"
-            mdTooltip="Time" mdTooltipPosition="before"
-    >
-        <md-icon>access_time</md-icon>
-    </button>
-    <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, PlotListComponent)"
             (click)="layoutService.setSidenavContentComponent({component: PlotListComponent})"
             mdTooltip="Plots" mdTooltipPosition="before"
     >
         <md-icon>equalizer</md-icon>
+    </button>
+    <button md-raised-button
+            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, TimeConfigComponent)"
+            (click)="layoutService.setSidenavContentComponent({component: TimeConfigComponent})"
+            mdTooltip="Time" mdTooltipPosition="before"
+    >
+        <md-icon>access_time</md-icon>
     </button>
     <button md-raised-button
             [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, WorkspaceSettingsComponent)"
