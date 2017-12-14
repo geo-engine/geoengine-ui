@@ -1,4 +1,9 @@
 <wave-sidenav-header>Plots</wave-sidenav-header>
+<p *ngIf="(projectService.getPlotStream() | async)?.length == 0" class="no-plots">
+    no plots available
+    <br>
+    <button md-button (click)="goToOperatorsTab()">⇢ go to operators tab to create a plot ⇢</button>
+</p>
 <md-card *ngFor="let plot of (projectService.getPlotStream() | async)">
     <md-card-header>
         <img md-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()">

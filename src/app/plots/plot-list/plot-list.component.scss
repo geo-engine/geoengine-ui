@@ -33,3 +33,9 @@ md-spinner {
 .error {
     color: mat-color($wave-app-warn);
 }
+
+.no-plots {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    margin-top: 50%;
+    text-align: center;
+}

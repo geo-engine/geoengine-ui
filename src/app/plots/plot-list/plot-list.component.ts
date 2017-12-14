@@ -11,6 +11,7 @@ import {PieChartType} from '../../operators/types/piechart-type.model';
 import {LayoutService} from '../../layout.service';
 import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
 import {Plot} from '../plot.model';
+import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-plot-list',
@@ -72,6 +73,12 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
             config: {
                 editable: plot,
             }
+        });
+    }
+
+    goToOperatorsTab() {
+        this.layoutService.setSidenavContentComponent({
+            component: OperatorListComponent,
         });
     }
 
