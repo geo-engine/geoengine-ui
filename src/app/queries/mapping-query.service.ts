@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Rx';
 
 import {WFSOutputFormat} from './output-formats/wfs-output-format.model';
@@ -7,7 +7,6 @@ import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
 import {UserService} from '../users/user.service';
 import {ViewportSize} from '../map/map.service';
-import {NotificationService} from '../notification.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
@@ -30,19 +29,28 @@ import {
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
 
-/**
- * A service that encapsulates MAPPING queries.
- */
 @Injectable()
 export class MappingQueryService {
+    /**
+     * A service that encapsulates MAPPING queries.
+     */
+
+    private static stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
+    }
 
     /**
-     * Inject the Http-Provider for asynchronous requests.
+     * Inject the HttpClient-Provider for asynchronous requests.
      */
     constructor(private config: Config,
-                private http: Http,
-                private userService: UserService,
-                private notificationService: NotificationService) {
+                private http: HttpClient,
+                private userService: UserService) {
     }
 
     /**
@@ -77,8 +85,7 @@ export class MappingQueryService {
      * @returns a Promise of PlotData
      */
     getPlotData(config: { operator: Operator, time: Time }): Observable<PlotData> {
-        return this.http.get(this.getPlotQueryUrl(config))
-            .map(response => response.json());
+        return this.http.get<PlotData>(this.getPlotQueryUrl(config));
     }
 
     /**
@@ -179,11 +186,11 @@ export class MappingQueryService {
         clustered: boolean
     }): Observable<string> {
         const requestParameters = this.getWFSQueryParameters(config);
-        return this.http.post(
+        return this.http.post<string>(
             this.config.MAPPING_URL,
             requestParameters.toMessageBody(false),
             {headers: requestParameters.getHeaders()}
-        ).map(response => response.text());
+        );
     }
 
     /**
@@ -299,7 +306,7 @@ export class MappingQueryService {
 
 
         // TODO
-        let timeStart = this.stripEndingTime(time);
+        let timeStart = MappingQueryService.stripEndingTime(time);
 
         const request = new MappingRequestParameters({
             service: 'WMS',
@@ -314,8 +321,7 @@ export class MappingQueryService {
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
-            .map((res: Response) => res.json() as MappingColorizer)
+        return this.http.get<MappingColorizer>(this.config.MAPPING_URL + '?' + request.toMessageBody())
             // .catch((error, {}) => {
             //    this.notificationService.error(`Could not load colorizer: »${error}«`);
             //    return Observable.of({interpolation: 'unknown', breakpoints: []});
@@ -341,7 +347,7 @@ export class MappingQueryService {
     }): Promise<Array<Provenance>> {
 
         // TODO
-        let timeStart = this.stripEndingTime(config.time);
+        let timeStart = MappingQueryService.stripEndingTime(config.time);
 
         const request = new MappingRequestParameters({
             service: 'provenance',
@@ -375,13 +381,12 @@ export class MappingQueryService {
         //     json => json as [Provenance]
         // ).toPromise();
 
-        return this.http.post(
-            this.config.MAPPING_URL,
-            request.toMessageBody(false),
-            {headers: request.getHeaders()}
-        ).map((res: Response) => res.json())
-            .map(json => json as [Provenance])
-            .toPromise();
+        return this.http
+            .post<Array<Provenance>>(
+                this.config.MAPPING_URL,
+                request.toMessageBody(false),
+                {headers: request.getHeaders()}
+            ).toPromise();
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
@@ -397,9 +402,7 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
-        return this.http.get(queryUrl).toPromise().then(
-            response => response.json()['speciesNames']
-        );
+        return this.http.get<{ speciesNames: Array<string> }>(queryUrl).toPromise().then(response => response.speciesNames);
     }
 
     getGBIFDataSourceCounts(scientificName: string): Promise<Array<{ name: string, count: number }>> {
@@ -415,9 +418,10 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
-        return this.http.get(queryUrl).toPromise().then(
-            response => response.json()['dataSources']
-        );
+        return this.http
+            .get<{ dataSources: Array<{ name: string, count: number }> }>(queryUrl)
+            .toPromise()
+            .then(response => response.dataSources);
     }
 
     getGFBioBaskets(config: {
@@ -446,8 +450,7 @@ export class MappingQueryService {
         }
 
         return this.http
-            .get(queryUrl)
-            .map(jsonResponse => jsonResponse.json())
+            .get<BasketsOverviewRaw>(queryUrl)
             .map((basketsOverview: BasketsOverviewRaw) => {
                 return {
                     baskets: basketsOverview.baskets.map(basket => {
@@ -475,8 +478,7 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         return this.http
-            .get(queryUrl)
-            .map(jsonResponse => jsonResponse.json())
+            .get<Basket>(queryUrl)
             .map((basket: Basket) => {
                 const regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
 
@@ -527,16 +529,6 @@ export class MappingQueryService {
                     timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
                 }
             });
-    }
-
-    private stripEndingTime(time: Time) {
-        let timeStart;
-        if (time.getEnd().isAfter(time.getStart())) {
-            timeStart = new TimePoint(time.getStart());
-        } else {
-            timeStart = time;
-        }
-        return timeStart;
     }
 
 }

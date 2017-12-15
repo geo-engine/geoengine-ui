@@ -2,23 +2,23 @@
     <div #typingdiv class="typingdiv" *ngIf="(csvProperty.isTypingProperties$ | async)">
         <table #typingtable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
-                <template ngFor let-h [ngForOf]="header" let-i="index">
+                <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;"
                         [ngStyle]="{'min-width.px': cellSizes[2*i]}">
-                        <md-select placeholder="Type" style="margin-top: 1rem;"
+                        <mat-select placeholder="Type" style="margin-top: 1rem;"
                                    name="isNumber_{{i}}" *ngIf="[csvProperty.spatialProperties.controls['xColumn'].value,
                                         csvProperty.spatialProperties.controls['yColumn'].value,
                                         (csvProperty.temporalProperties.controls['isTime'].value)?csvProperty.temporalProperties.controls['startColumn'].value:null,
                                         (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0"
                                    [(ngModel)]="isNumberArray[i]"
                                    [ngStyle]="{'min-width.px': cellSizes[2*i]}">
-                            <md-option [value]="0">
+                            <mat-option [value]="0">
                                 Text
-                            </md-option>
-                            <md-option [value]="1">
+                            </mat-option>
+                            <mat-option [value]="1">
                                 Number
-                            </md-option>
-                        </md-select>
+                            </mat-option>
+                        </mat-select>
                         <p *ngIf="i === csvProperty.spatialProperties.controls['xColumn'].value" class="coordinate_orange">
                             Coordinate
                         </p>
@@ -37,7 +37,7 @@
                         </p>
                     </td>
                     <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
-                </template>
+                </ng-template>
             </tr>
         </table>
     </div>
@@ -46,8 +46,8 @@
         <table #headertable class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <!-- header goes here -->
-                <template [ngIf]="csvProperty.dataProperties.controls['isHeaderRow'].value">
-                    <template ngFor let-h [ngForOf]="header" let-i="index">
+                <ng-template [ngIf]="csvProperty.dataProperties.controls['isHeaderRow'].value">
+                    <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                         <td style="margin-left:0; margin-right:0; padding-bottom: 3px; white-space: nowrap;"
                             [ngStyle]="{'min-width.px': cellSizes[2*i]}"
                             title="{{h.value}}"
@@ -63,10 +63,10 @@
                             </div>
                         </td>
                         <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
-                    </template>
-                </template>
-                <template [ngIf]="!csvProperty.dataProperties.controls['isHeaderRow'].value">
-                    <template ngFor let-h [ngForOf]="header" let-i="index">
+                    </ng-template>
+                </ng-template>
+                <ng-template [ngIf]="!csvProperty.dataProperties.controls['isHeaderRow'].value">
+                    <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                         <td class="custom" style="margin-left:0; margin-right:0;"
                             [ngStyle]="{'min-width.px': cellSizes[2*i]}"
                             [ngClass]="{orangeHead: (csvProperty.isSpatialProperties$ | async) && (i === (csvProperty.xColumn$ | async)),
@@ -74,14 +74,14 @@
                             greenHead: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ |async) && (i === (csvProperty.xColumn$ | async)),
                             violetHead: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ | async) && (i === (csvProperty.yColumn$ | async)) &&
                             (csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd)}">
-                            <md-input-container>
-                                <input mdInput type="text" placeholder="{{i+1}}{{ending(i+1)}} Column"
+                            <mat-input-container>
+                                <input matInput type="text" placeholder="{{i+1}}{{ending(i+1)}} Column"
                                        [(ngModel)]="h.value" name="header_{{i}}">
-                            </md-input-container>
+                            </mat-input-container>
                         </td>
                         <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
-                    </template>
-                </template>
+                    </ng-template>
+                </ng-template>
             </tr>
         </table>
     </div>
@@ -90,7 +90,7 @@
         <table #bodytable class="resizeTable" cellspacing="0" cellpadding="0">
             <!-- body goes here -->
             <tr *ngFor="let el of elements; let i = index; trackBy: trackbyFn" style="white-space: nowrap;">
-                <template ngFor let-e [ngForOf]="el" let-k="index">
+                <ng-template ngFor let-e [ngForOf]="el" let-k="index">
                     <td style="margin-left:0; margin-right:0;"
                         [ngStyle]="{'min-width.px': cellSizes[2*k]}"
                         [ngClass]="{orange: (csvProperty.isSpatialProperties$ | async) && (k === (csvProperty.xColumn$ | async)),
@@ -103,7 +103,7 @@
                         </div>
                     </td>
                     <td *ngIf="k !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[k*2+1]}"></td>
-                </template>
+                </ng-template>
             </tr>
         </table>
     </div>

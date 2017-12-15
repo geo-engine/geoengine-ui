@@ -3,7 +3,7 @@
 div.loading {
     padding: 32px calc(50% - 100px/2);
 }
-md-progress-spinner {
+mat-progress-spinner {
     width: 100px;
     height: 100px;
 }
@@ -12,7 +12,7 @@ md-progress-spinner {
     cursor: pointer;
 }
 
-md-list-item.clickable:hover {
+mat-list-item.clickable:hover {
     background-color: mat-color(map-get($wave-app-theme, background), hover);
 }
 

@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, ElementRef, AfterViewInit, Inject} from '@angular/core';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
 import {BehaviorSubject} from 'rxjs/Rx';
@@ -20,7 +20,7 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
 
     constructor(public projectService: ProjectService,
                 private elementRef: ElementRef,
-                @Inject(MD_DIALOG_DATA) public plot: Plot) {
+                @Inject(MAT_DIALOG_DATA) public plot: Plot) {
     }
 
     ngOnInit() {
@@ -32,13 +32,13 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
             let dialogContainer = undefined;
             let parent = this.elementRef.nativeElement.parentElement;
             while (!dialogContainer) {
-                dialogContainer = parent.querySelector('md-dialog-container');
+                dialogContainer = parent.querySelector('mat-dialog-container');
                 parent = parent.parentElement;
             }
 
             const width = parseInt(getComputedStyle(dialogContainer).maxWidth, 10) - 2 * LayoutService.remInPx();
 
-            let dialogContent = this.elementRef.nativeElement.querySelector('md-dialog-content');
+            let dialogContent = this.elementRef.nativeElement.querySelector('mat-dialog-content');
 
             const maxHeight = parseInt(getComputedStyle(dialogContent).maxHeight, 10) - 2 * LayoutService.remInPx();
 

@@ -8,7 +8,7 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import {MdDialog, MdIconRegistry, MdSidenav, MdTabGroup} from '@angular/material';
+import {MatDialog, MatIconRegistry, MatSidenav, MatTabGroup} from '@angular/material';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {
@@ -63,9 +63,9 @@ import {MapService} from './map/map.service';
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapComponent) mapComponent: MapComponent;
-    @ViewChild(MdTabGroup) bottomTabs: MdTabGroup;
+    @ViewChild(MatTabGroup) bottomTabs: MatTabGroup;
 
-    @ViewChild(MdSidenav) rightSidenav: MdSidenav;
+    @ViewChild(MatSidenav) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent;
 
     layerListVisible$: Observable<boolean>;
@@ -85,8 +85,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private storageService: StorageService,
                 private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MdDialog,
-                private iconRegistry: MdIconRegistry,
+                private dialog: MatDialog,
+                private iconRegistry: MatIconRegistry,
                 private sanitizer: DomSanitizer,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,

@@ -18,22 +18,22 @@ form {
     padding: 1rem;
 }
 
-md-progress-spinner {
+mat-progress-spinner {
     position: relative;
     left: calc(50% - #{$circle-width / 2});
     width: $circle-width;
 }
 
-md-select {
+mat-select {
     width: 100%;
     margin: 1rem 0;
 }
 
-md-input-container {
+mat-input-container {
     margin-bottom: 1rem;
 }
 
-md-input-container:not(:last-child) {
+mat-input-container:not(:last-child) {
     margin-right: 1rem;
 }
 

@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../layers/symbology/symbology.model';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
@@ -55,7 +55,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private projectService: ProjectService,
-                @Inject(MD_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
+                @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
     }
 
     ngOnInit() {
@@ -81,7 +81,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         let dialogContainer = undefined;
         let parent = this.elementRef.nativeElement.parentElement;
         while (!dialogContainer) {
-            dialogContainer = parent.querySelector('md-dialog-container');
+            dialogContainer = parent.querySelector('mat-dialog-container');
             parent = parent.parentElement;
         }
 

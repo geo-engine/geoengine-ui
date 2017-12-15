@@ -4,7 +4,7 @@ import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-forma
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {Subscription} from 'rxjs/Rx';
@@ -39,7 +39,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(private formBuilder: FormBuilder,
                 private mappingQueryService: MappingQueryService,
                 private projectService: ProjectService,
-                @Inject(MD_DIALOG_DATA) private config: LayerExportComponentConfig) {
+                @Inject(MAT_DIALOG_DATA) private config: LayerExportComponentConfig) {
     }
 
     ngOnInit() {

@@ -28,7 +28,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         display: block;
     }
 
-    md-dialog-content{
+    mat-dialog-content{
         padding: 0;
         margin: 0;
         max-height: inherit;
@@ -37,7 +37,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         position: relative;
     }
 
-    md-toolbar {
+    mat-toolbar {
         margin: 0;
 
         /*h3 small{

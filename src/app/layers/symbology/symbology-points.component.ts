@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {SimplePointSymbology, SimpleVectorSymbology} from './symbology.model';
 import {CssStringToRgbaPipe} from '../../util/pipes/css-string-to-rgba.pipe';
-import {MdSliderChange} from '@angular/material';
+import {MatSliderChange} from '@angular/material';
 import {LayerService} from '../layer.service';
 
 @Component({
@@ -40,9 +40,9 @@ import {LayerService} from '../layer.service';
                 <td>                    
                 </td>
                 <td>
-                    <md-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                    <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
                         (change)="updateStrokeWidth($event)">
-                    </md-slider>
+                    </mat-slider>
                     <span>{{sls.displayValue}} px</span>
                 </td>
             </tr>
@@ -51,9 +51,9 @@ import {LayerService} from '../layer.service';
                     <span>Radius</span>
                 </td>
                 <td>
-                    <md-slider #slr thumbLabel min="0" max="10" step="1" [value]="symbology.radius"
+                    <mat-slider #slr thumbLabel min="0" max="10" step="1" [value]="symbology.radius"
                         (change)="updateRadius($event)">
-                    </md-slider>
+                    </mat-slider>
                     <span>{{slr.displayValue}} px</span>
                 </td>
             </tr>
@@ -90,12 +90,12 @@ export class SymbologyPointsComponent {
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
-    updateStrokeWidth(event: MdSliderChange) {
+    updateStrokeWidth(event: MatSliderChange) {
         this.symbology.strokeWidth = event.value;
         this.update();
     }
 
-    updateRadius(event: MdSliderChange) {
+    updateRadius(event: MatSliderChange) {
         this.symbology.radius = event.value;
         this.update();
     }
@@ -149,9 +149,9 @@ export class SymbologyPointsComponent {
                 <td>                    
                 </td>
                 <td>
-                    <md-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                    <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
                         (change)="updateStrokeWidth($event)">
-                    </md-slider>
+                    </mat-slider>
                     <span>{{sls.displayValue}} px</span>
                 </td>
             </tr>
@@ -182,7 +182,7 @@ export class SymbologyVectorComponent {
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
-    updateStrokeWidth(event: MdSliderChange) {
+    updateStrokeWidth(event: MatSliderChange) {
         this.symbology.strokeWidth = event.value;
         this.update();
     }

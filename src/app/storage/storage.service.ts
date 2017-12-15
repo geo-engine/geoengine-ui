@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable, Subscription} from 'rxjs/Rx';
 
 import {RScript, StorageProvider} from './storage-provider.model';
@@ -40,7 +40,7 @@ export class StorageService {
                 private layoutService: LayoutService,
                 private userService: UserService,
                 private notificationService: NotificationService,
-                private http: Http) {
+                private http: HttpClient) {
         // load stored values on session change
         this.userService.getSessionStream()
             .subscribe(session => {

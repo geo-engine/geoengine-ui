@@ -17,7 +17,7 @@ import {
     Symbology,
     SimplePointSymbology
 } from '../../../../layers/symbology/symbology.model';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
 import {Config} from '../../../../config.service';
@@ -50,7 +50,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService,
                 private randomColorService: RandomColorService,
-                private dialog: MdDialog,
+                private dialog: MatDialog,
                 private config: Config) {
     }
 

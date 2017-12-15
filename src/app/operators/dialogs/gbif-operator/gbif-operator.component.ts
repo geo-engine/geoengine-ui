@@ -1,6 +1,6 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import {Config} from '../../../config.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
@@ -9,21 +9,22 @@ import {GFBioSourceType} from '../../types/gfbio-source-type.model';
 import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
 import {
-    AbstractVectorSymbology, ClusteredPointSymbology,
+    AbstractVectorSymbology,
+    ClusteredPointSymbology,
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
 import {Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
-import {MdAutocompleteTrigger} from '@angular/material';
+import {MatAutocompleteTrigger} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
 
-function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
+function oneIsTrue(group: FormGroup): { [key: string]: boolean } {
     const errors: {
         noneIsTrue?: boolean,
     } = {};
@@ -59,7 +60,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    @ViewChild(MdAutocompleteTrigger) autoCompleteTrigger: MdAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger) autoCompleteTrigger: MatAutocompleteTrigger;
 
     mode$ = new BehaviorSubject(1);
     loading$ = new BehaviorSubject(false);
@@ -86,10 +87,9 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 private mappingQueryService: MappingQueryService,
                 private formBuilder: FormBuilder,
                 private randomColorService: RandomColorService,
-                private http: Http,
+                private http: HttpClient,
                 private layerService: LayerService,
-                private projectService: ProjectService,
-    ) {
+                private projectService: ProjectService) {
     }
 
     ngOnInit() {
@@ -131,22 +131,24 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             );
 
         // TODO: think about very unlikely race condition
-        this.http.get('assets/gbif-default-fields.json').toPromise().then(response => {
-            const fieldList: Array<{name: string, datatype: string}> = response.json();
-            for (const field of fieldList) {
-                this.gbifAttributes.push(field.name);
+        this.http
+            .get<Array<{ name: string, datatype: string }>>('assets/gbif-default-fields.json')
+            .toPromise()
+            .then(fieldList => {
+                for (const field of fieldList) {
+                    this.gbifAttributes.push(field.name);
 
-                const datatype = DataTypes.fromCode(field.datatype);
-                if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
-                    this.gbifColumns.numeric.push(field.name);
-                } else {
-                    this.gbifColumns.textual.push(field.name);
+                    const datatype = DataTypes.fromCode(field.datatype);
+                    if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
+                        this.gbifColumns.numeric.push(field.name);
+                    } else {
+                        this.gbifColumns.textual.push(field.name);
+                    }
+
+                    this.gbifDatatypes.set(field.name, datatype);
+                    this.gbifUnits.set(field.name, Unit.defaultUnit);
                 }
-
-                this.gbifDatatypes.set(field.name, datatype);
-                this.gbifUnits.set(field.name, Unit.defaultUnit);
-            }
-        });
+            });
     }
 
     ngAfterViewInit() {

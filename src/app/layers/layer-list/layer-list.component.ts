@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
-import {MdDialog, MdIconRegistry} from '@angular/material';
+import {MatDialog, MatIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs/Rx';
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
@@ -59,13 +59,13 @@ export class LayerListComponent implements OnInit, OnDestroy {
         return Array.prototype.indexOf.call(parent.children, child);
     }
 
-    constructor(public dialog: MdDialog,
+    constructor(public dialog: MatDialog,
                 private layoutService: LayoutService,
                 private dragulaService: DragulaService,
                 private projectService: ProjectService,
                 private layerService: LayerService,
                 private mapService: MapService,
-                private iconRegistry: MdIconRegistry,
+                private iconRegistry: MatIconRegistry,
                 private sanitizer: DomSanitizer,
                 public config: Config) {
         iconRegistry.addSvgIconInNamespace('symbology', 'polygon',

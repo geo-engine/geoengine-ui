@@ -6,21 +6,21 @@
                 subtitle="Lookup a Scientific Name"
             ></wave-dialog-section-heading>
             <div fxLayout="row">
-                <md-input-container fxFlex>
-                    <input mdInput
+                <mat-input-container fxFlex>
+                    <input matInput
                            placeholder="Scientific Name"
-                           [mdAutocomplete]="auto"
+                           [matAutocomplete]="auto"
                            formControlName="searchString"
                     >
-                </md-input-container>
-                <md-autocomplete #auto="mdAutocomplete">
-                    <md-option *ngFor="let result of autoCompleteResults$ | async" [value]="result">
+                </mat-input-container>
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let result of autoCompleteResults$ | async" [value]="result">
                         {{result}}
-                    </md-option>
-                </md-autocomplete>
+                    </mat-option>
+                </mat-autocomplete>
             </div>
             <div fxLayout="row">
-                <button md-raised-button
+                <button mat-raised-button
                         fxFlex
                         *ngIf="(mode$ | async) === Mode.SEARCH"
                         color="accent"
@@ -29,7 +29,7 @@
                 >
                     Lookup
                 </button>
-                <button md-raised-button
+                <button mat-raised-button
                         fxFlex
                         *ngIf="(mode$ | async) === Mode.SELECT"
                         color="accent"
@@ -44,14 +44,14 @@
                 title="2. Select Resources"
                 subtitle="Select different source results"
             ></wave-dialog-section-heading>
-            <md-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></md-progress-spinner>
+            <mat-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></mat-progress-spinner>
             <div fxLayout="column" *ngIf="!(loading$ | async)" formGroupName="select">
-                <md-checkbox *ngIf="gbifCount > 0" formControlName="gbif" fxFlex>
+                <mat-checkbox *ngIf="gbifCount > 0" formControlName="gbif" fxFlex>
                     GBIF ({{gbifCount}})
-                </md-checkbox>
-                <md-checkbox *ngIf="iucnCount > 0" formControlName="iucn" fxFlex>
+                </mat-checkbox>
+                <mat-checkbox *ngIf="iucnCount > 0" formControlName="iucn" fxFlex>
                     IUCN ({{iucnCount}})
-                </md-checkbox>
+                </mat-checkbox>
                 <p *ngIf="gbifCount <= 0 && iucnCount <= 0" fxFlex>No Lookup Results</p>
             </div>
         </div>
@@ -62,7 +62,7 @@
         <div fxLayout="row">
             <button
                 type="submit"
-                md-raised-button
+                mat-raised-button
                 fxFlex
                 color="primary"
                 [disabled]="(form.statusChanges | async) !== 'VALID'"

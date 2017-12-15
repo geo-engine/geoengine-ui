@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Rx';
 
 type MappingUrlType = string;
@@ -228,22 +228,22 @@ export class Config {
         return this._TIME;
     }
 
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
     }
 
     /**
      * Initialize the config on app start.
      */
     load(): Promise<void> {
-        return this.http.get(Config.CONFIG_FILE)
-            .map(response => response.json())
+        return this.http
+            .get<ConfigInterface>(Config.CONFIG_FILE)
             .do(
                 appConfig => {
                     const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
 
                     this.handleConfig(config);
                 },
-                error => {
+                () => { // error
                     this.handleConfig(ConfigDefault.toJS());
                 })
             .catch(() => Observable.of(undefined))

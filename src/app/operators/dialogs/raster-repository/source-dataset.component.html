@@ -1,42 +1,42 @@
-<md-card>
-    <md-card-header>
-        <md-card-title>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>
             <span class="dataset-name" bind-innerHtml="dataset.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
-        </md-card-title>
-    </md-card-header>
+        </mat-card-title>
+    </mat-card-header>
 
-    <img *ngIf="_showPreview && !!dataset.imgUrl" md-card-image src="{{dataset?.imgUrl}}" alt="no preview image available">
+    <img *ngIf="_showPreview && !!dataset.imgUrl" mat-card-image src="{{dataset?.imgUrl}}" alt="no preview image available">
 
-    <md-card-content *ngIf="true || _showDescription">
+    <mat-card-content *ngIf="true || _showDescription">
         <p *ngIf="_showDescription && dataset?.descriptionText">{{dataset?.descriptionText}}</p>
-    </md-card-content>
+    </mat-card-content>
 
-    <md-list>
-        <md-list-item>
-            <md-icon mdListIcon>open_in_new</md-icon>
+    <mat-list>
+        <mat-list-item>
+            <mat-icon matListIcon>open_in_new</mat-icon>
             <p class="dataset-uri"><a [href]="dataset?.uri" target="_blank">{{dataset?.uri}}</a></p>
-        </md-list-item>
-    </md-list>
+        </mat-list-item>
+    </mat-list>
 
     <ng-template [ngIf]="true || !isSingleLayerDataset()">
-        <md-table #table [dataSource]="channelDataSource">
+        <mat-table #table [dataSource]="channelDataSource">
 
-            <ng-container mdColumnDef="name">
-                <md-header-cell *mdHeaderCellDef>Channel</md-header-cell>
-                <md-cell *mdCellDef="let channel">
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Channel</mat-header-cell>
+                <mat-cell *matCellDef="let channel">
                     {{channel.name}}
-                </md-cell>
+                </mat-cell>
             </ng-container>
 
-            <ng-container mdColumnDef="measurement">
-                <md-header-cell *mdHeaderCellDef>Measurement</md-header-cell>
-                <md-cell *mdCellDef="let channel">
+            <ng-container matColumnDef="measurement">
+                <mat-header-cell *matHeaderCellDef>Measurement</mat-header-cell>
+                <mat-cell *matCellDef="let channel">
                     {{valid_unit(channel)}}
-                </md-cell>
+                </mat-cell>
             </ng-container>
 
-            <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-            <md-row *mdRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></md-row>
-        </md-table>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></mat-row>
+        </mat-table>
     </ng-template>
-</md-card>
+</mat-card>

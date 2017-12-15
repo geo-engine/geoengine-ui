@@ -195,7 +195,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
         this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
-        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
+        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von mat-dialog-content.
     }
 
     /**Resets table size and delays then.

@@ -14,31 +14,31 @@
             title="Configuration" subtitle="Specify the operator"
         ></wave-dialog-section-heading>
         <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
-            <md-input-container
+            <mat-input-container
                 *ngFor="let control of form.controls.valueNames.controls; let i = index"
                 [dividerColor]="form.controls.valueNames.controls[i].errors? 'warn' : 'default'"
             >
                 <input
                     [formControl]="control"
-                    mdInput type="text"
+                    matInput type="text"
                     placeholder="Value Name for Raster {{LetterNumberConverter.toLetters(i+1)}}"
                 >
-                <md-hint *ngIf="form.controls.valueNames.controls[i].errors?.duplicateName" class="error">
+                <mat-hint *ngIf="form.controls.valueNames.controls[i].errors?.duplicateName" class="error">
                     Duplicate Value
-                </md-hint>
-            </md-input-container>
+                </mat-hint>
+            </mat-input-container>
         </div>
         <wave-operator-output-name formControlName="name">
-            <md-hint
+            <mat-hint
                 align="end" class="error"
                 *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
             >
                 The name must be non-empty.
-            </md-hint>
+            </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button md-raised-button color="primary" type="submit" [disabled]="form.invalid">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
             Create
         </button>
     </div>

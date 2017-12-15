@@ -1,13 +1,13 @@
-<md-select
+<mat-select
     *ngIf="projections.length > 0"
     [ngModel]="selectedProjection"
     (ngModelChange)="selectProjection($event)"
     (blur)="onBlur()"
     placeholder="Output Projection"
 >
-    <md-option
+    <mat-option
         *ngFor="let projection of projections"
         [value]="projection"
-    >{{projection}}</md-option>
-</md-select>
+    >{{projection}}</mat-option>
+</mat-select>
 <p *ngIf="projections.length <= 0">No Projection Available</p>

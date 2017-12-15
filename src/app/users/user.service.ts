@@ -1,35 +1,34 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs/Rx';
 
-import {User, Guest} from './user.model';
+import {Guest, User} from './user.model';
 
-import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
+import {MappingRequestParameters, ParametersType, RequestParameters} from '../queries/request-parameters.model';
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
 import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource,
     MappingSourceChannel,
-    MappingTransform,
     MappingSourceDict,
-    MappingSourceResponse
+    MappingSourceResponse,
+    MappingTransform
 } from '../operators/dialogs/raster-repository/mapping-source.model';
-import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
+import {CsvColumn, CsvFile} from '../operators/dialogs/baskets/csv.model';
 
-import {Unit, UnitMappingDict} from '../operators/unit.model';
+import {Unit} from '../operators/unit.model';
 import {Config} from '../config.service';
 import {Operator} from '../operators/operator.model';
 import {
-    FeatureDBServiceListParameters,
     FeatureDBList,
-    FeatureDBServiceUploadParameters,
     FeatureDBListEntry,
-    featureDBListEntryToOperator
+    featureDBListEntryToOperator,
+    FeatureDBServiceListParameters,
+    FeatureDBServiceUploadParameters
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
-import {IMappingRasterColorizer} from "../layers/symbology/symbology.model";
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -108,7 +107,7 @@ export class UserService {
     private reloadRasterSources$ = new BehaviorSubject<void>(undefined);
 
     constructor(private config: Config,
-                private http: Http,
+                private http: HttpClient,
                 private notificationService: NotificationService) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
@@ -197,9 +196,8 @@ export class UserService {
             username: credentials.user,
             password: credentials.password,
         });
-        return this.request(parameters)
-            .map(response => {
-                const result = response.json() as { result: string | boolean, session: string };
+        return this.request<{ result: string | boolean, session: string }>(parameters)
+            .map(result => {
                 const success = typeof result.result === 'boolean' && result.result === true;
 
                 return [result.session, success];
@@ -235,12 +233,9 @@ export class UserService {
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters)
-            .map(response => {
-                const result = response.json() as { result: string | boolean };
-                const valid = typeof result.result === 'boolean' && result.result;
-
-                return valid;
+        return this.request<{ result: string | boolean }>(parameters)
+            .map(result => {
+                return typeof result.result === 'boolean' && result.result;
             });
     }
 
@@ -259,28 +254,28 @@ export class UserService {
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters).map(response => {
-            const result = response.json() as { result: string | boolean };
-            const valid = typeof result.result === 'boolean' && result.result;
+        return this.request<{ result: string | boolean }>(parameters)
+            .map(result => {
+                const valid = typeof result.result === 'boolean' && result.result;
 
-            if (valid) {
-                const userResult = result as {
-                    result: string | boolean,
-                    username: string,
-                    realname: string,
-                    email: string,
-                    externalid?: string;
-                };
-                return new User({
-                    name: userResult.username,
-                    realName: userResult.realname,
-                    email: userResult.email,
-                    externalid: userResult.externalid,
-                });
-            } else {
-                return undefined;
-            }
-        });
+                if (valid) {
+                    const userResult = result as {
+                        result: string | boolean,
+                        username: string,
+                        realname: string,
+                        email: string,
+                        externalid?: string;
+                    };
+                    return new User({
+                        name: userResult.username,
+                        realName: userResult.realname,
+                        email: userResult.email,
+                        externalid: userResult.externalid,
+                    });
+                } else {
+                    return undefined;
+                }
+            });
     }
 
     /**
@@ -297,6 +292,271 @@ export class UserService {
         this.user$.next(user);
     }
 
+    /**
+     * Get as stream of raster sources depending on the logged in user.
+     */
+    getRasterSourcesStream(): Observable<Array<MappingSource>> {
+        return this.rasterSources$;
+    }
+
+    /**
+     * Reload the raster sources
+     */
+    reloadRasterSources() {
+        this.reloadRasterSources$.next(undefined);
+    }
+
+    getRasterSourcesErrorStream(): Observable<boolean> {
+        return this.rasterSourceError$;
+    }
+
+    /**
+     * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
+     */
+    getCsvStream(): Observable<Array<CsvFile>> {
+        const csvSourcesUrl = './assets/csv-data-sources.json';
+
+        return this.http.get<Array<CsvFile>>(csvSourcesUrl);
+    }
+
+    /**
+     * Get the schema of a source operator. TODO: this should be replaced by a generic service call, which resolves the shema of a source.
+     */
+    getSourceSchemaAbcd(): Observable<Array<CsvColumn>> {
+        const jsonUrl = './assets/abcd-mandatory-fields.json';
+
+        return this.http.get<Array<CsvColumn>>(jsonUrl);
+    }
+
+    /**
+     * Get as stream of Abcd sources depending on the logged in user.
+     */
+    getAbcdArchivesStream(): Observable<Array<AbcdArchive>> {
+        interface AbcdResponse {
+            archives: Array<AbcdArchive>;
+            result: boolean;
+        }
+
+        return this.getSessionStream().switchMap(session => {
+            const parameters = new GfbioServiceRequestParameters({
+                request: 'abcd',
+                sessionToken: session.sessionToken,
+            });
+            return this.request<AbcdResponse>(parameters).map(abcdResponse => abcdResponse.archives);
+        });
+    }
+
+    /**
+     * Get as stream of GFBio baskets sources depending on the logged in user.
+     */
+    getGfbioBasketStream(): Observable<Array<Basket>> {
+        interface GfbioBasketResponse {
+            baskets: Array<Basket>;
+            result: boolean;
+        }
+
+        return this.getSessionStream().switchMap(session => {
+            const parameters = new GfbioServiceRequestParameters({
+                request: 'baskets',
+                sessionToken: session.sessionToken,
+            });
+            return this.request<GfbioBasketResponse>(parameters).map(gfbioBasketResponse => gfbioBasketResponse.baskets);
+        });
+    }
+
+    /**
+     * Get the GFBio login token from the portal.
+     */
+    getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
+        const parameters = new GFBioPortalLoginRequestParameters(credentials);
+
+        return this.http.get<string | { exception: string, message: string }>(
+            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
+            {headers: parameters.getHeaders()}
+        ).flatMap(response => {
+            if (typeof response === 'string') {
+                return Observable.of(response); // token
+            } else {
+                const result: { exception: string, message: string } = response;
+                return Observable.throw(result.message);
+            }
+        });
+    }
+
+    /**
+     * Login using gfbio credentials. If it was successful, set a new user.
+     * @param credentials.user The user name.
+     * @param credentials.password The user's password.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    gfbioLogin(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
+        if (!credentials.staySignedIn) {
+            credentials.staySignedIn = true;
+        }
+
+        const token$ = this.getGFBioToken({
+            username: credentials.user,
+            password: credentials.password,
+        });
+        return token$.flatMap(token => {
+                const parameters = new MappingRequestParameters({
+                    service: 'gfbio',
+                    sessionToken: undefined,
+                    request: 'login',
+                    parameters: {token: token},
+                });
+                return this.request<{ result: string | boolean, session: string }>(parameters)
+                    .map(response => {
+                        const success = typeof response.result === 'boolean' && response.result === true;
+
+                        if (success) {
+                            this.session$.next({
+                                user: credentials.user,
+                                sessionToken: response.session,
+                                staySignedIn: credentials.staySignedIn,
+                                isExternallyConnected: true,
+                            });
+                        }
+
+                        return success;
+                    });
+            }
+        );
+    }
+
+    /**
+     * Login using the gfbio token. If it was successful, set a new user.
+     * @param token The user's token.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    gfbioTokenLogin(token: string): Observable<boolean> {
+        const parameters = new MappingRequestParameters({
+            service: 'gfbio',
+            sessionToken: undefined,
+            request: 'login',
+            parameters: {token: token},
+        });
+
+        const subject = new Subject<boolean>();
+
+        this.request<{ result: string | boolean, session: string }>(parameters)
+            .flatMap(response => {
+                const success = typeof response.result === 'boolean' && response.result === true;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: response.session})
+                        .do(user => {
+                            this.session$.next({
+                                user: user.name,
+                                sessionToken: response.session,
+                                staySignedIn: false,
+                                isExternallyConnected: true,
+                            });
+                        })
+                        .map(user => true);
+                } else {
+                    return Observable.of(false);
+                }
+            })
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+
+        return subject;
+    }
+
+    setIntroductoryPopup(show: boolean) {
+        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
+    }
+
+    shouldShowIntroductoryPopup(): boolean {
+        const show = localStorage.getItem('showIntroductoryPopup');
+        return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
+    }
+
+    getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
+        if (this.isGuestUser()) {
+            return Observable.of([]);
+        }
+
+        return this.request<FeatureDBList>(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken}))
+            .map(list => list.data_sets.map(featureDBListEntryToOperator));
+    }
+
+    addFeatureToDB(name: string, operator: Operator): Observable<{ name: string, operator: Operator }> {
+        if (this.isGuestUser()) {
+            return Observable.empty();
+        }
+
+        const subject = new Subject<{ name: string, operator: Operator }>();
+
+        this
+            .request<FeatureDBListEntry>(
+                new FeatureDBServiceUploadParameters({
+                    sessionToken: this.session$.getValue().sessionToken,
+                    name: name,
+                    crs: operator.projection,
+                    query: operator.toQueryJSON(),
+                    type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
+                }),
+                true,
+            )
+            .map(featureDBListEntryToOperator)
+            .subscribe(
+                data => {
+                    subject.next(data);
+                    subject.complete();
+                },
+                error => subject.error(error)
+            );
+
+        return subject;
+    }
+
+    /**
+     * Get the session data.
+     * @returns the session data
+     */
+    protected loadSessionData(): Session {
+        // look first into the localStorage, then sessionStorage and if there is no data
+        // return an empty guest session
+
+        const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
+        if (sessionData === null) { // tslint:disable-line:no-null-keyword
+            const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
+            if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
+                return {
+                    user: this.config.USER.GUEST.NAME,
+                    sessionToken: '',
+                };
+            } else {
+                return sessionData2;
+            }
+        } else {
+            return sessionData;
+        }
+    }
+
+    protected saveSessionData(sessionData: Session) {
+        if (sessionData.staySignedIn) {
+            localStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            sessionStorage.removeItem(PATH_PREFIX + 'session');
+        } else {
+            sessionStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
+            localStorage.removeItem(PATH_PREFIX + 'session');
+        }
+    }
+
+    protected request<ResponseType>(requestParameters: MappingRequestParameters, encode = false): Observable<ResponseType> {
+        return this.http.post<ResponseType>(
+            this.config.MAPPING_URL,
+            requestParameters.toMessageBody(encode),
+            {headers: requestParameters.getHeaders()}
+        );
+    }
+
     private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
         return Observable
             .combineLatest(session$, reload$, (session, reload) => session)
@@ -305,9 +565,8 @@ export class UserService {
                     request: 'sourcelist',
                     sessionToken: session.sessionToken,
                 });
-                return this.request(parameters)
-                    .map(response => response.json())
-                    .map((json: MappingSourceResponse) => {
+                return this.request<MappingSourceResponse>(parameters)
+                    .map(json => {
                         const sources: Array<MappingSource> = [];
 
                         for (const sourceId in json.sourcelist) {
@@ -355,288 +614,6 @@ export class UserService {
                         return [];
                     });
             });
-    }
-
-    /**
-     * Get as stream of raster sources depending on the logged in user.
-     */
-    getRasterSourcesStream(): Observable<Array<MappingSource>> {
-        return this.rasterSources$;
-    }
-
-    /**
-     * Reload the raster sources
-     */
-    reloadRasterSources() {
-        this.reloadRasterSources$.next(undefined);
-    }
-
-    getRasterSourcesErrorStream(): Observable<boolean> {
-        return this.rasterSourceError$;
-    }
-
-    /**
-     * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
-     */
-    getCsvStream(): Observable<Array<CsvFile>> {
-        type CsvResponse = Array<CsvFile>;
-
-        const csvSourcesUrl = './assets/csv-data-sources.json';
-
-        return this.http.get(csvSourcesUrl).map(
-            response => response.json()
-        ).map((csvs: CsvResponse) => csvs);
-    }
-
-    /**
-     * Get the schema of a source operator. TODO: this should be replaced by a generic service call, which resolves the shema of a source.
-     */
-    getSourceSchemaAbcd(): Observable<Array<CsvColumn>> {
-        type CsvResponse = Array<CsvColumn>;
-
-        const jsonUrl = './assets/abcd-mandatory-fields.json';
-
-        return this.http.get(jsonUrl).map(
-            response => response.json()
-        ).map((csvs: CsvResponse) => csvs);
-    }
-
-    /**
-     * Get as stream of Abcd sources depending on the logged in user.
-     */
-    getAbcdArchivesStream(): Observable<Array<AbcdArchive>> {
-        interface AbcdResponse {
-            archives: Array<AbcdArchive>;
-            result: boolean;
-        }
-
-        return this.getSessionStream().switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'abcd',
-                sessionToken: session.sessionToken,
-            });
-            return this.request(parameters)
-                .map(response => response.json())
-                .map((abcdResponse: AbcdResponse) => abcdResponse.archives);
-
-        });
-    }
-
-    /**
-     * Get as stream of GFBio baskets sources depending on the logged in user.
-     */
-    getGfbioBasketStream(): Observable<Array<Basket>> {
-        interface GfbioBasketResponse {
-            baskets: Array<Basket>;
-            result: boolean;
-        }
-
-        return this.getSessionStream().switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'baskets',
-                sessionToken: session.sessionToken,
-            });
-            return this.request(parameters)
-                .map(response => response.json())
-                .map((gfbioBasketResponse: GfbioBasketResponse) => gfbioBasketResponse.baskets);
-
-        });
-    }
-
-    /**
-     * Get the GFBio login token from the portal.
-     */
-    getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
-        const parameters = new GFBioPortalLoginRequestParameters(credentials);
-
-        return this.http.get(
-            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
-            {headers: parameters.getHeaders()}
-        ).flatMap(response => {
-            const json = response.json();
-            if (typeof json === 'string') {
-                return Observable.of(json); // token
-            } else {
-                const result: { exception: string, message: string } = json;
-                return Observable.throw(result.message);
-            }
-        });
-    }
-
-    /**
-     * Login using gfbio credentials. If it was successful, set a new user.
-     * @param credentials.user The user name.
-     * @param credentials.password The user's password.
-     * @returns `true` if the login was succesful, `false` otherwise.
-     */
-    gfbioLogin(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
-        if (!credentials.staySignedIn) {
-            credentials.staySignedIn = true;
-        }
-
-        const token$ = this.getGFBioToken({
-            username: credentials.user,
-            password: credentials.password,
-        });
-        return token$.flatMap(token => {
-                const parameters = new MappingRequestParameters({
-                    service: 'gfbio',
-                    sessionToken: undefined,
-                    request: 'login',
-                    parameters: {token: token},
-                });
-                return this.request(parameters).map(response => {
-                    const result = response.json() as { result: string | boolean, session: string };
-                    const success = typeof result.result === 'boolean' && result.result === true;
-
-                    if (success) {
-                        this.session$.next({
-                            user: credentials.user,
-                            sessionToken: result.session,
-                            staySignedIn: credentials.staySignedIn,
-                            isExternallyConnected: true,
-                        });
-                    }
-
-                    return success;
-                });
-            }
-        );
-    }
-
-    /**
-     * Login using the gfbio token. If it was successful, set a new user.
-     * @param token The user's token.
-     * @returns `true` if the login was succesful, `false` otherwise.
-     */
-    gfbioTokenLogin(token: string): Observable<boolean> {
-        const parameters = new MappingRequestParameters({
-            service: 'gfbio',
-            sessionToken: undefined,
-            request: 'login',
-            parameters: {token: token},
-        });
-
-        const subject = new Subject<boolean>();
-
-        this.request(parameters)
-            .flatMap(response => {
-                const result = response.json() as { result: string | boolean, session: string };
-                const success = typeof result.result === 'boolean' && result.result === true;
-
-                if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: result.session})
-                        .do(user => {
-                            this.session$.next({
-                                user: user.name,
-                                sessionToken: result.session,
-                                staySignedIn: false,
-                                isExternallyConnected: true,
-                            });
-                        })
-                        .map(user => true);
-                } else {
-                    return Observable.of(false);
-                }
-            })
-            .subscribe(
-                success => subject.next(success),
-                () => subject.next(false),
-                () => subject.complete()
-            );
-
-        return subject;
-    }
-
-    setIntroductoryPopup(show: boolean) {
-        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
-    }
-
-    shouldShowIntroductoryPopup(): boolean {
-        const show = localStorage.getItem('showIntroductoryPopup');
-        return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
-    }
-
-    getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
-        if (this.isGuestUser()) {
-            return Observable.of([]);
-        }
-
-        return this.request(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken}))
-            .map(response => response.json() as FeatureDBList)
-            .map(list => list.data_sets.map(featureDBListEntryToOperator));
-    }
-
-    addFeatureToDB(name: string, operator: Operator): Observable<{ name: string, operator: Operator }> {
-        if (this.isGuestUser()) {
-            return Observable.empty();
-        }
-
-        const subject = new Subject<{ name: string, operator: Operator }>();
-
-        this.request(
-            new FeatureDBServiceUploadParameters({
-                sessionToken: this.session$.getValue().sessionToken,
-                name: name,
-                crs: operator.projection,
-                query: operator.toQueryJSON(),
-                type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
-            }),
-            true,
-        )
-            .map(response => response.json() as FeatureDBListEntry)
-            .map(featureDBListEntryToOperator)
-            .subscribe(
-                data => {
-                    subject.next(data);
-                    subject.complete();
-                },
-                error => subject.error(error)
-            );
-
-        return subject;
-    }
-
-    /**
-     * Get the session data.
-     * @returns the session data
-     */
-    protected loadSessionData(): Session {
-        // look first into the localStorage, then sessionStorage and if there is no data
-        // return an empty guest session
-
-        const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
-        if (sessionData === null) { // tslint:disable-line:no-null-keyword
-            const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
-            if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
-                return {
-                    user: this.config.USER.GUEST.NAME,
-                    sessionToken: '',
-                };
-            } else {
-                return sessionData2;
-            }
-        } else {
-            return sessionData;
-        }
-    }
-
-    protected saveSessionData(sessionData: Session) {
-        if (sessionData.staySignedIn) {
-            localStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
-            sessionStorage.removeItem(PATH_PREFIX + 'session');
-        } else {
-            sessionStorage.setItem(PATH_PREFIX + 'session', JSON.stringify(sessionData));
-            localStorage.removeItem(PATH_PREFIX + 'session');
-        }
-    }
-
-    protected request(requestParameters: MappingRequestParameters, encode = false): Observable<Response> {
-        return this.http.post(
-            this.config.MAPPING_URL,
-            requestParameters.toMessageBody(encode),
-            {headers: requestParameters.getHeaders()}
-        );
     }
 
 }

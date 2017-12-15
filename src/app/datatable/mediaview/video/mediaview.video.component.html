@@ -2,15 +2,15 @@
 
 <div fxFlex class="videoContainer">
 
-    <md-card>
+    <mat-card>
         <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
-    </md-card>
+    </mat-card>
 
     <div class="info">
-        <h3 mdTooltip="{{videoURLs[currentVideo] | fileName}}"> {{videoURLs[currentVideo] | fileName}} </h3>
+        <h3 matTooltip="{{videoURLs[currentVideo] | fileName}}"> {{videoURLs[currentVideo] | fileName}} </h3>
 
-        <a md-mini-fab color="primary" [href]="videoURLs[currentVideo]" target="_blank" class="externalLink" [title]="'open in new tab'">
-            <md-icon class="md-24">open_in_new</md-icon>
+        <a mat-mini-fab color="primary" [href]="videoURLs[currentVideo]" target="_blank" class="externalLink" [title]="'open in new tab'">
+            <mat-icon class="mat-24">open_in_new</mat-icon>
         </a>
     </div>
 

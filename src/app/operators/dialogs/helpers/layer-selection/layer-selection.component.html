@@ -1,12 +1,12 @@
 <wave-dialog-section-heading [title]="title" subtitle="Select Input {{title}}"></wave-dialog-section-heading>
-<md-select
+<mat-select
     *ngIf="(filteredLayers | async).length > 0; else noInputAvailable"
     placeholder="Input"
     [ngModel]="selectedLayer | async" (ngModelChange)="setSelectedLayer($event)"
     (onBlur)="onBlur()"
 >
-    <md-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{layer.name}}</md-option>
-</md-select>
+    <mat-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{layer.name}}</mat-option>
+</mat-select>
 <ng-template #noInputAvailable>
     <p>No Input Available</p>
 </ng-template>

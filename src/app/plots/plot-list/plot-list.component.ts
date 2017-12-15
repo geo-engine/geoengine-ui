@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy
 import {ProjectService} from '../../project/project.service';
 import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {RScriptType} from '../../operators/types/r-script-type.model';
 import {BoxPlotType} from '../../operators/types/boxplot-type.model';
@@ -40,7 +40,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(public projectService: ProjectService,
                 private layoutService: LayoutService,
-                public dialog: MdDialog,
+                public dialog: MatDialog,
                 private elementRef: ElementRef) {
     }
 
@@ -54,7 +54,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
                 .first()
                 .subscribe(() => {
                     setTimeout(() => {
-                        const cardContent = this.elementRef.nativeElement.querySelector('md-card');
+                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
                         const width = parseInt(getComputedStyle(cardContent).width, 10);
                         this.cardWidth$.next(width);
                     });

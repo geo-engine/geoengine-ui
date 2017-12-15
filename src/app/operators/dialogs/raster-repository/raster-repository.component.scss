@@ -14,12 +14,12 @@
 }
 
 .highlight,
-md-list-item /deep/ .highlight {
+mat-list-item /deep/ .highlight {
     color: mat-color($wave-app-accent);
     text-decoration: underline;
 }
 
-md-list-item /deep/ .mat-list-item-content {
+mat-list-item /deep/ .mat-list-item-content {
     height: auto !important;
 }
 

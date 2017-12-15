@@ -6,7 +6,7 @@ import {ResultTypes} from '../../result-type.model';
 import {SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
 import {Projection, Projections} from '../../projection.model';
 import {CSVParameters, CsvSourceType} from '../../types/csv-source-type.model';
@@ -96,7 +96,7 @@ Sean Gilles did some clean up and made some enhancements.`,
                 private projectService: ProjectService,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
-                public dialog: MdDialog) {
+                public dialog: MatDialog) {
     }
 
     ngOnInit() {

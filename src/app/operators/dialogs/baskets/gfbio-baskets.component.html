@@ -1,42 +1,42 @@
 <wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
 
-<button md-mini-fab color="warn" *ngIf="(isError$ | async)" (click)="reload()" class="error-button">
-    <md-icon>sync</md-icon>
+<button mat-mini-fab color="warn" *ngIf="(isError$ | async)" (click)="reload()" class="error-button">
+    <mat-icon>sync</mat-icon>
 </button>
 
-<md-expansion-panel [expanded]="historyExpanded$ | async" (opened)="historyExpanded$.next(true)">
-    <md-expansion-panel-header>
-        <md-panel-title>Basket History</md-panel-title>
-        <md-panel-description>Select other search results</md-panel-description>
-    </md-expansion-panel-header>
+<mat-expansion-panel [expanded]="historyExpanded$ | async" (opened)="historyExpanded$.next(true)">
+    <mat-expansion-panel-header>
+        <mat-panel-title>Basket History</mat-panel-title>
+        <mat-panel-description>Select other search results</mat-panel-description>
+    </mat-expansion-panel-header>
 
     <div *ngIf="(isOverviewLoading$ | async); else basketOverviews" class="loading">
-        <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     </div>
 
     <ng-template #basketOverviews>
-        <md-list>
-            <md-list-item
+        <mat-list>
+            <mat-list-item
                 *ngFor="let basketOverview of (basketsOverview$ | async)?.baskets"
                 (click)="loadBasket(basketOverview.basketId)"
                 class="clickable"
             >
-                <h4 md-line *ngIf="basketOverview.query.length">{{basketOverview.query}}</h4>
-                <h4 md-line *ngIf="!basketOverview.query.length" class="no-search-term">no search term</h4>
-                <p md-line class="small">{{basketOverview.timestamp | date}}</p>
-            </md-list-item>
-        </md-list>
-        <md-paginator [length]="(basketsOverview$ | async)?.totalNumberOfBaskets"
+                <h4 mat-line *ngIf="basketOverview.query.length">{{basketOverview.query}}</h4>
+                <h4 mat-line *ngIf="!basketOverview.query.length" class="no-search-term">no search term</h4>
+                <p mat-line class="small">{{basketOverview.timestamp | date}}</p>
+            </mat-list-item>
+        </mat-list>
+        <mat-paginator [length]="(basketsOverview$ | async)?.totalNumberOfBaskets"
                       [pageSize]="(limit$ | async)"
                       [pageSizeOptions]="[5, 10, 25, 50]"
                       [pageIndex]="page$ | async"
                       (page)="page$.next($event.pageIndex);limit$.next($event.pageSize)">
-        </md-paginator>
+        </mat-paginator>
     </ng-template>
-</md-expansion-panel>
+</mat-expansion-panel>
 
 <div *ngIf="(isDetailsLoading$ | async); else basketResults" class="loading">
-    <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>
 
 <ng-template #basketResults>

@@ -1,31 +1,31 @@
 <wave-sidenav-header>Raster Repository</wave-sidenav-header>
 <wave-sidenav-search (searchString)="searchTerm = $event">
-    <button md-icon-button [mdMenuTriggerFor]="optionsMenu" waveSidenavSearchRight>
-        <md-icon>more_vert</md-icon>
+    <button mat-icon-button [matMenuTriggerFor]="optionsMenu" waveSidenavSearchRight>
+        <mat-icon>more_vert</mat-icon>
     </button>
-    <md-menu #optionsMenu="mdMenu">
-        <button md-menu-item (click)="toggleImages()" disabled>
+    <mat-menu #optionsMenu="matMenu">
+        <button mat-menu-item (click)="toggleImages()" disabled>
             Show images
         </button>
-        <button md-menu-item (click)="toggleDescriptions()" disabled>
+        <button mat-menu-item (click)="toggleDescriptions()" disabled>
             Show descriptions
         </button>
-        <button md-menu-item (click)="toggleTransformData()" disabled>
+        <button mat-menu-item (click)="toggleTransformData()" disabled>
             Raw, unscaled data
         </button>
-    </md-menu>
+    </mat-menu>
 </wave-sidenav-search>
 
-<md-list *ngIf="(sources | async).length > 0; else noSources">
+<mat-list *ngIf="(sources | async).length > 0; else noSources">
     <ng-template ngFor let-source [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm">
         <wave-source-dataset [dataset]="source"></wave-source-dataset>
     </ng-template>
-</md-list>
+</mat-list>
 <ng-template #noSources>
     <div *ngIf="userService.getRasterSourcesErrorStream() | async; else noError" class="error">
         <p>There are no sources available.</p>
-        <button md-icon-button class="mat-warn error-button" aria-label="Reload" (click)="reload()">
-            <md-icon>replay</md-icon>
+        <button mat-icon-button class="mat-warn error-button" aria-label="Reload" (click)="reload()">
+            <mat-icon>replay</mat-icon>
         </button>
     </div>
     <ng-template #noError>

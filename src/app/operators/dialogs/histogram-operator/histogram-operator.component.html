@@ -6,62 +6,62 @@
             formControlName="layer"
         ></wave-layer-selection>
         <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
-        <md-select placeholder="Attribute" formControlName="attribute" *ngIf="isVectorLayer$ | async">
-            <md-option
+        <mat-select placeholder="Attribute" formControlName="attribute" *ngIf="isVectorLayer$ | async">
+            <mat-option
                 *ngFor="let attribute of (attributes$ | async)"
                 [value]="attribute"
             >{{attribute}}
-            </md-option>
-        </md-select>
-        <md-select placeholder="Range Type" formControlName="rangeType">
-            <md-option [value]="'custom'">Custom</md-option>
-            <md-option [value]="'unit'">Unit</md-option>
-            <md-option [value]="'data'">Data</md-option>
-        </md-select>
+            </mat-option>
+        </mat-select>
+        <mat-select placeholder="Range Type" formControlName="rangeType">
+            <mat-option [value]="'custom'">Custom</mat-option>
+            <mat-option [value]="'unit'">Unit</mat-option>
+            <mat-option [value]="'data'">Data</mat-option>
+        </mat-select>
         <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
-            <md-input-container fxFlex>
-                <input mdInput type="number" placeholder="Min" formControlName="min">
-                <md-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+            <mat-input-container fxFlex>
+                <input matInput type="number" placeholder="Min" formControlName="min">
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
                     Please specify the value.
-                </md-hint>
-            </md-input-container>
+                </mat-hint>
+            </mat-input-container>
             <div fxFlex="1rem"></div>
-            <md-input-container fxFlex>
-                <input mdInput type="number" placeholder="Max" formControlName="max">
-                <md-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
+            <mat-input-container fxFlex>
+                <input matInput type="number" placeholder="Max" formControlName="max">
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
-                </md-hint>
-                <md-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+                </mat-hint>
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
                     Please specify the value.
-                </md-hint>
-            </md-input-container>
+                </mat-hint>
+            </mat-input-container>
         </div>
-        <md-checkbox type="checkbox" formControlName="autoBuckets">
+        <mat-checkbox type="checkbox" formControlName="autoBuckets">
             Choose number of buckets automatically
-        </md-checkbox>
+        </mat-checkbox>
         <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
-            <md-input-container fxFlex>
-                <input mdInput
+            <mat-input-container fxFlex>
+                <input matInput
                        type="number"
                        placeholder="Number of Buckets"
                        formControlName="numberOfBuckets"
                 >
-            </md-input-container>
+            </mat-input-container>
         </div>
         <wave-operator-output-name
             formControlName="name"
             [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
         >
-            <md-hint
+            <mat-hint
                 align="end" class="error"
                 *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
             >
                 The name must be non-empty.
-            </md-hint>
+            </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
             Create
         </button>
     </div>

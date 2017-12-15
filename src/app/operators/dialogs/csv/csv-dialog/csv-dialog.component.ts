@@ -9,7 +9,7 @@ import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology}
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
 import {ProjectionType} from '../../../types/projection-type.model';
@@ -37,7 +37,7 @@ export class CsvDialogComponent implements OnInit {
                 private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
                 private projectService: ProjectService,
-                private dialogRef: MdDialogRef<CsvDialogComponent>) {
+                private dialogRef: MatDialogRef<CsvDialogComponent>) {
     }
 
     ngOnInit() {

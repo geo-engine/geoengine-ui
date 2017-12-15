@@ -11,7 +11,6 @@ import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
-import {Response} from '@angular/http';
 import {Layer, RasterLayer, VectorLayer, LayerData, RasterData, VectorData} from '../layers/layer.model';
 import {
     Symbology, MappingColorizer, RasterSymbology,

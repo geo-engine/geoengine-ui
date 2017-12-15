@@ -8,17 +8,17 @@
     display: block;
 }
 
-md-list {
+mat-list {
     padding: 0;
 }
 
-md-list-item {
+mat-list-item {
     margin: 0;
     font-size: 0.87rem;
     background-color: white;
 }
 
-md-list-item /deep/ .mat-list-item-content {
+mat-list-item /deep/ .mat-list-item-content {
     height: auto !important;
 }
 

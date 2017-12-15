@@ -1,9 +1,9 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
 import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {HttpClientModule} from '@angular/common/http';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
@@ -119,14 +119,13 @@ import {MediaviewAudioComponent} from './datatable/mediaview/audio/mediaview.aud
 import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
-import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
 import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {MdIconRegistry} from '@angular/material';
+import {MatIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
@@ -255,7 +254,7 @@ export function configInitializer(config: Config) {
     imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         BrowserAnimationsModule,
         MaterialModule,
@@ -311,7 +310,7 @@ export function configInitializer(config: Config) {
     ],
     providers: [
         DragulaService,
-        MdIconRegistry,
+        MatIconRegistry,
         FormBuilder,
         ProjectService,
         MappingQueryService,
@@ -324,7 +323,6 @@ export function configInitializer(config: Config) {
         UserService,
         SidenavRef,
         Config,
-        TableService,
         {
             provide: APP_INITIALIZER,
             useFactory: configInitializer,

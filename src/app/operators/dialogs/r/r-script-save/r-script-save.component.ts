@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, Inject} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MdDialogRef, MdDialogConfig, MD_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {BehaviorSubject} from 'rxjs/Rx';
 import {NotificationService} from '../../../../notification.service';
@@ -26,8 +26,8 @@ export class RScriptSaveComponent implements OnInit, AfterViewInit {
 
     constructor(private storageService: StorageService,
                 private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<RScriptSaveComponent>,
-                @Inject(MD_DIALOG_DATA) private config: RScriptSaveComponentConfig,
+                private dialogRef: MatDialogRef<RScriptSaveComponent>,
+                @Inject(MAT_DIALOG_DATA) private config: RScriptSaveComponentConfig,
                 private notificationService: NotificationService) {
     }
 

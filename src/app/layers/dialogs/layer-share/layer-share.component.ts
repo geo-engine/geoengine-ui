@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject, ViewChild, ElementRef} from '@angular/core';
 import {Layer} from '../../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 
 interface LayerShareComponentConfig {
     layer: Layer<Symbology>;
@@ -21,7 +21,7 @@ export class LayerShareComponent implements OnInit {
     @ViewChild('linkInput')
     private linkInput: ElementRef;
 
-    constructor(@Inject(MD_DIALOG_DATA) private config: LayerShareComponentConfig) {
+    constructor(@Inject(MAT_DIALOG_DATA) private config: LayerShareComponentConfig) {
     }
 
     ngOnInit() {

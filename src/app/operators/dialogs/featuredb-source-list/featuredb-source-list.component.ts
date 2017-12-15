@@ -11,7 +11,7 @@ import {
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
 
 function nameComparator(a: string, b: string): number {
@@ -35,7 +35,7 @@ export class FeaturedbSourceListComponent implements OnInit {
     constructor(private userService: UserService,
                 private projectService: ProjectService,
                 private randomColorService: RandomColorService,
-                public dialog: MdDialog) {
+                public dialog: MatDialog) {
     }
 
     ngOnInit() {

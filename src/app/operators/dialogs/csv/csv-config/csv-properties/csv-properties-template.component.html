@@ -1,7 +1,7 @@
-<md-horizontal-stepper #stepper (selectionChange)="next($event)" linear>
-    <md-step [stepControl]="dataProperties">
+<mat-horizontal-stepper #stepper (selectionChange)="next($event)" linear>
+    <mat-step [stepControl]="dataProperties">
         <!-- Label goes here -->
-        <ng-template mdStepLabel>
+        <ng-template matStepLabel>
             Data
         </ng-template>
         <wave-dialog-section-heading [title]="'CSV Settings'" [subtitle]="'Please specify the properties of your CSV file, e.g. the delimiter.'" style="text-align: left"></wave-dialog-section-heading>
@@ -10,32 +10,32 @@
               style="margin-bottom: 1rem;">
 
             <div fxLayout="column" fxLayoutGap="1rem">
-                <md-select placeholder="Delimiter" formControlName="delimiter">
-                    <md-option *ngFor="let delimiter of delimiters" [value]="delimiter.value">
+                <mat-select placeholder="Delimiter" formControlName="delimiter">
+                    <mat-option *ngFor="let delimiter of delimiters" [value]="delimiter.value">
                         {{delimiter.def}}
-                    </md-option>
-                </md-select>
+                    </mat-option>
+                </mat-select>
                 <table cellspacing="0" cellpadding="0" style="border-spacing: 0;">
                     <tr>
                         <td>
-                            <md-slide-toggle formControlName="isTextQualifier"></md-slide-toggle>
+                            <mat-slide-toggle formControlName="isTextQualifier"></mat-slide-toggle>
                         </td>
                         <td style="padding: 0;">
-                            <md-select placeholder="Text qualifier" formControlName="textQualifier">
-                                <md-option *ngFor="let textQualifier of textQualifiers" [value]="textQualifier">
+                            <mat-select placeholder="Text qualifier" formControlName="textQualifier">
+                                <mat-option *ngFor="let textQualifier of textQualifiers" [value]="textQualifier">
                                     {{textQualifier}}
-                                </md-option>
-                            </md-select>
+                                </mat-option>
+                            </mat-select>
                         </td>
                     </tr>
                 </table>
             </div>
             <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1rem">
-                <md-select placeholder="Decimal separator" formControlName="decimalSeparator">
-                    <md-option *ngFor="let decimalSeparator of decimalSeparators" [value]="decimalSeparator">
+                <mat-select placeholder="Decimal separator" formControlName="decimalSeparator">
+                    <mat-option *ngFor="let decimalSeparator of decimalSeparators" [value]="decimalSeparator">
                         {{decimalSeparator}}
-                    </md-option>
-                </md-select>
+                    </mat-option>
+                </mat-select>
                 <table cellspacing="0" cellpadding="0">
                     <tbody>
                     <tr>
@@ -52,7 +52,7 @@
                     </tr>
                     <tr style="max-height: 40px;">
                         <td>
-                            <md-slide-toggle style="margin:0;" formControlName="isHeaderRow"></md-slide-toggle>
+                            <mat-slide-toggle style="margin:0;" formControlName="isHeaderRow"></mat-slide-toggle>
                         </td>
                         <td style="padding: 0;">
                             <input type="number" min="0" formControlName="headerRow">
@@ -62,9 +62,9 @@
                 </table>
             </div>
         </form>
-    </md-step>
-    <md-step [stepControl]="spatialProperties">
-        <ng-template mdStepLabel>
+    </mat-step>
+    <mat-step [stepControl]="spatialProperties">
+        <ng-template matStepLabel>
             Spatial
         </ng-template>
         <wave-dialog-section-heading [title]="'Spatial Properties'" [subtitle]="'In this step you can specify the spatial columns of your CSV file.'" style="text-align: left"></wave-dialog-section-heading>
@@ -72,67 +72,67 @@
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="spatialProperties">
             <div fxLayout="column" fxLayoutGap="1rem">
                 <div class="longitudeSelector">
-                    <md-select fxFlex="100"
+                    <mat-select fxFlex="100"
                                placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
                                formControlName="xColumn">
-                        <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
-                            <md-option [value]="i">
-                                <template [ngIf]="h.value !== ''">
+                        <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <mat-option [value]="i">
+                                <ng-template [ngIf]="h.value !== ''">
                                     {{h.value}}
-                                </template>
-                                <template [ngIf]="h.value === ''">
+                                </ng-template>
+                                <ng-template [ngIf]="h.value === ''">
                                     {{'unnamed'}}
-                                </template>
-                            </md-option>
-                        </template>
-                    </md-select>
+                                </ng-template>
+                            </mat-option>
+                        </ng-template>
+                    </mat-select>
                 </div>
                 <div>
-                    <md-select style="width:100%;" placeholder="Spatial Reference System"
+                    <mat-select style="width:100%;" placeholder="Spatial Reference System"
                                formControlName="spatialReferenceSystem">
-                        <md-option *ngFor="let projection of [Projections.WGS_84]"
+                        <mat-option *ngFor="let projection of [Projections.WGS_84]"
                                    [value]="projection">
                             {{projection}}
-                        </md-option>
-                    </md-select>
+                        </mat-option>
+                    </mat-select>
                 </div>
             </div>
             <div fxLayout="column" fxLayoutGap="1rem">
                 <div class="latitudeSelector">
-                    <md-select fxFlex="100"
+                    <mat-select fxFlex="100"
                                placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
                                formControlName="yColumn">
-                        <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
-                            <md-option [value]="i">
-                                <template [ngIf]="h.value !== ''">
+                        <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <mat-option [value]="i">
+                                <ng-template [ngIf]="h.value !== ''">
                                     {{h.value}}
-                                </template>
-                                <template [ngIf]="h.value === ''">
+                                </ng-template>
+                                <ng-template [ngIf]="h.value === ''">
                                     {{'unnamed'}}
-                                </template>
-                            </md-option>
-                        </template>
-                    </md-select>
+                                </ng-template>
+                            </mat-option>
+                        </ng-template>
+                    </mat-select>
                 </div>
                 <div>
-                    <md-select style="width:100%;" placeholder="Coordinate format"
+                    <mat-select style="width:100%;" placeholder="Coordinate format"
                                style="align: right;" formControlName="coordinateFormat"
                     >
-                        <md-option *ngFor="let c of coordinateFormats"
+                        <mat-option *ngFor="let c of coordinateFormats"
                                    [value]="c">
                             {{c}}
-                        </md-option>
-                    </md-select>
+                        </mat-option>
+                    </mat-select>
                 </div>
             </div>
         </form>
-    </md-step>
-    <md-step [stepControl]="temporalProperties">
-        <ng-template mdStepLabel>
+    </mat-step>
+    <mat-step [stepControl]="temporalProperties">
+        <ng-template matStepLabel>
             <div fxLayout="row" fxLayoutAlign="left center">
                 <form [formGroup]="temporalProperties" style="margin-top: 6px">
-                    <md-slide-toggle formControlName="isTime">
-                    </md-slide-toggle>
+                    <mat-slide-toggle formControlName="isTime">
+                    </mat-slide-toggle>
                 </form>
                 Temporal
             </div>
@@ -141,108 +141,108 @@
         <form fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
             <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
-                <md-select fxFlex="80"
+                <mat-select fxFlex="80"
                            placeholder="Interval type"
                            formControlName="intervalType"
                 >
-                    <md-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value" [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
+                    <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value" [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
                         {{intervalType.display}}
-                    </md-option>
-                </md-select>
+                    </mat-option>
+                </mat-select>
             </div>
             <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
                 <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
-                    <md-select placeholder="Start column"
+                    <mat-select placeholder="Start column"
                                name="startCol"
                                formControlName="startColumn"
                     >
-                        <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
-                            <md-option
+                        <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <mat-option
                                 [value]="i"
                                 [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
-                                <template [ngIf]="h.value !== ''">
+                                <ng-template [ngIf]="h.value !== ''">
                                     {{h.value}}
-                                </template>
-                                <template [ngIf]="h.value === ''">
+                                </ng-template>
+                                <ng-template [ngIf]="h.value === ''">
                                     {{'unnamed'}}
-                                </template>
-                            </md-option>
-                        </template>
-                    </md-select>
+                                </ng-template>
+                            </mat-option>
+                        </ng-template>
+                    </mat-select>
                 </div>
                 <div [ngClass]="{endSelector: !(!temporalProperties.controls['isTime'].value
                                            || !(temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd
                                            || temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur))}"
                 >
-                    <md-select *ngIf="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst"
+                    <mat-select *ngIf="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst"
                                [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
                                name="endCol" formControlName="endColumn">
-                        <template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
-                            <md-option
+                        <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <mat-option
                                 [value]="i"
                                 [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
-                                <template [ngIf]="h.value !== ''">
+                                <ng-template [ngIf]="h.value !== ''">
                                     {{h.value}}
-                                </template>
-                                <template [ngIf]="h.value === ''">
+                                </ng-template>
+                                <ng-template [ngIf]="h.value === ''">
                                     {{'unnamed'}}
-                                </template>
-                            </md-option>
-                        </template>
-                    </md-select>
-                    <md-input-container *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
-                        <input mdInput formControlName="constantDuration" placeholder="Constant duration"
+                                </ng-template>
+                            </mat-option>
+                        </ng-template>
+                    </mat-select>
+                    <mat-input-container *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
+                        <input matInput formControlName="constantDuration" placeholder="Constant duration"
                                type="input">
-                        <span md-suffix>{{temporalProperties.controls['endFormat'].value}}</span>
-                    </md-input-container>
+                        <span mat-suffix>{{temporalProperties.controls['endFormat'].value}}</span>
+                    </mat-input-container>
                 </div>
             </div>
             <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center" class="temporal_fxElement">
                 <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
-                    <md-select placeholder="Start format"
+                    <mat-select placeholder="Start format"
                                formControlName="startFormat">
-                        <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
+                        <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
                             {{timeFormat.display}}
-                        </md-option>
-                    </md-select>
+                        </mat-option>
+                    </mat-select>
                 </div>
                 <div [ngClass]="{endSelector: !(!temporalProperties.controls['isTime'].value
                                                     || !(temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd
                                                     || temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur))}"
                 >
-                    <md-select
+                    <mat-select
                         [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration format' : 'End format'"
                         formControlName="endFormat"
                     >
-                        <template [ngIf]="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartDur
+                        <ng-template [ngIf]="temporalProperties.controls['intervalType'].value !== IntervalFormat.StartDur
                     && temporalProperties.controls['intervalType'].value !== IntervalFormat.StartConst">
-                            <md-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
+                            <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat.value">
                                 {{timeFormat.display}}
-                            </md-option>
-                        </template>
-                        <template
+                            </mat-option>
+                        </ng-template>
+                        <ng-template
                             [ngIf]="temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
-                            <md-option *ngFor="let durationFormat of durationFormats"
+                            <mat-option *ngFor="let durationFormat of durationFormats"
                                        [value]="durationFormat.value">
                                 {{durationFormat.display}}
-                            </md-option>
-                        </template>
-                    </md-select>
+                            </mat-option>
+                        </ng-template>
+                    </mat-select>
                 </div>
             </div>
         </form>
-    </md-step>
-    <md-step [stepControl]="typingProperties">
-        <ng-template mdStepLabel>
+    </mat-step>
+    <mat-step [stepControl]="typingProperties">
+        <ng-template matStepLabel>
             Layer
         </ng-template>
         <wave-dialog-section-heading [title]="'Layer Properties'" [subtitle]="'You can specify the data types of the remaining columns and the layer name here.'" style="text-align: left"></wave-dialog-section-heading>
         <form [formGroup]="typingProperties" style="width: 100%">
-            <md-input-container style="width: 100%;">
-                <input mdInput formControlName="layerName" placeholder="Layer Name"
+            <mat-input-container style="width: 100%;">
+                <input matInput formControlName="layerName" placeholder="Layer Name"
                        type="input" #layerNameComponent>
-                <md-hint class="error" *ngIf="layerNameComponent?.errors?.layerNameNoDuplicate">Name is already in use.</md-hint>
-            </md-input-container>
+                <mat-hint class="error" *ngIf="layerNameComponent?.errors?.layerNameNoDuplicate">Name is already in use.</mat-hint>
+            </mat-input-container>
         </form>
-    </md-step>
-</md-horizontal-stepper>
+    </mat-step>
+</mat-horizontal-stepper>

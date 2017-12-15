@@ -21,11 +21,11 @@ export class LegendaryComponent<S extends Symbology> {
     selector: 'wave-legendary-points',
     template: `
         <div fxLayout="row" fxLayoutAlign="start center">
-            <md-icon md-list-icon svgIcon="symbology:point"
+            <mat-icon mat-list-icon svgIcon="symbology:point"
                 [style.stroke-width.px]='symbology.strokeWidth'
                 [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
-            ></md-icon>
+            ></mat-icon>
             <span fxFlex>Points</span>
         </div>
         `,
@@ -44,11 +44,11 @@ export class LegendaryPointComponent<S extends SimplePointSymbology> extends Leg
     selector: 'wave-legendary-clustered-points',
     template: `
         <div fxLayout="row" fxLayoutAlign="start center">
-            <md-icon md-list-icon svgIcon="symbology:point"
+            <mat-icon mat-list-icon svgIcon="symbology:point"
                 [style.stroke-width.px]='symbology.strokeWidth'
                 [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
                 [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
-            ></md-icon>
+            ></mat-icon>
             <span>Clustered Points</span>
         </div>
         `,
@@ -67,11 +67,11 @@ export class LegendaryClusteredPointComponent<S extends ClusteredPointSymbology>
     selector: 'wave-legendary-vector',
     template: `
         <div fxLayout="row" fxLayoutAlign="start center">
-            <md-icon md-list-icon svgIcon="symbology:polygon"
+            <mat-icon mat-list-icon svgIcon="symbology:polygon"
                 [style.stroke-width.px]='symbology?.strokeWidth'
                 [style.stroke]='symbology?.strokeRGBA | rgbaToCssStringPipe'
                 [style.fill]='symbology?.fillRGBA | rgbaToCssStringPipe'
-            ></md-icon>
+            ></mat-icon>
             <span>Vectors</span>
         </div>
         `,

@@ -25,7 +25,7 @@ $accent: map-get($wave-app-theme, accent);
         flex: 1;
     }
 
-    md-icon {
+    mat-icon {
         vertical-align: sub;
     }
 
@@ -56,7 +56,7 @@ $accent: map-get($wave-app-theme, accent);
         flex: 1;
     }
 
-    md-icon {
+    mat-icon {
         vertical-align: baseline;
         height: 1rem;
         width: 80px;
@@ -97,23 +97,23 @@ $accent: map-get($wave-app-theme, accent);
     padding: 0 !important;
 }
 
-md-toolbar div:first-child, button {
+mat-toolbar div:first-child, button {
     width: 40px;
 }
 
-md-toolbar /deep/ md-toolbar-row:first-child {
+mat-toolbar /deep/ mat-toolbar-row:first-child {
     display: none !important;
 }
 
-md-list {
+mat-list {
     padding-top: 0;
 }
 
-md-list-item /deep/ .mat-list-item {
+mat-list-item /deep/ .mat-list-item {
 
 }
 
-md-list-item /deep/ .mat-list-item-content {
+mat-list-item /deep/ .mat-list-item-content {
     padding: 0 !important;
 }
 
@@ -123,7 +123,7 @@ md-list-item /deep/ .mat-list-item-content {
     padding-top: 3px !important;
 }
 
-md-list-item /deep/ .mat-list-item-text {
+mat-list-item /deep/ .mat-list-item-text {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -146,7 +146,7 @@ mat-progress-bar {
     padding: 0 !important;
 }
 
-md-progress-bar {
+mat-progress-bar {
     height: 2px;
 }
 

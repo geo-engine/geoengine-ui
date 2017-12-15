@@ -13,7 +13,7 @@
     color: mat-color($wave-app-warn);
 }
 
-md-card-header /deep/ .mat-card-header-text {
+mat-card-header /deep/ .mat-card-header-text {
     margin: 0;
 }
 
@@ -21,6 +21,6 @@ md-card-header /deep/ .mat-card-header-text {
     margin-left: 1rem;
 }
 
-md-card {
+mat-card {
     margin-bottom: 1rem;
 }

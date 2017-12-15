@@ -3,31 +3,31 @@
 </wave-sidenav-search>
 
 <ng-template #table>
-    <md-table [dataSource]="tableEntries">
+    <mat-table [dataSource]="tableEntries">
 
         <!-- Name Column -->
-        <ng-container mdColumnDef="name">
-            <md-header-cell *mdHeaderCellDef>Country Name</md-header-cell>
-            <md-cell
-                *mdCellDef="let entry"
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Country Name</mat-header-cell>
+            <mat-cell
+                *matCellDef="let entry"
                 bind-innerHtml="entry[sourceIdColumn] | waveHighlightPipe:(searchString$ | async) | waveSafeHtml"
-            ></md-cell>
+            ></mat-cell>
         </ng-container>
 
         <!-- Area Column -->
-        <ng-container mdColumnDef="area">
-            <md-header-cell *mdHeaderCellDef>Area</md-header-cell>
-            <md-cell *mdCellDef="let entry">{{entry[sourceAreaColumn] * 10}} km²</md-cell>
+        <ng-container matColumnDef="area">
+            <mat-header-cell *matHeaderCellDef>Area</mat-header-cell>
+            <mat-cell *matCellDef="let entry">{{entry[sourceAreaColumn] * 10}} km²</mat-cell>
         </ng-container>
 
-        <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-        <md-row
-            *mdRowDef="let entry; columns: displayedColumns;"
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row
+            *matRowDef="let entry; columns: displayedColumns;"
             (click)="addLayer(entry[sourceIdColumn], createFilterOperator(entry[sourceIdColumn]))"
-        ></md-row>
-    </md-table>
+        ></mat-row>
+    </mat-table>
 </ng-template>
 
 <div *ngIf="(isLoading$ | async); else table" class="loading">
-    <md-progress-spinner mode="indeterminate"></md-progress-spinner>
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>

@@ -7,14 +7,14 @@
         </wave-layer-selection>
         <wave-dialog-section-heading title="Filter" subtitle="Select the value range."></wave-dialog-section-heading>
         <div class="downward-margin">
-            <md-select placeholder="Attribute" formControlName="attribute">
-                <md-option
+            <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-option
                     *ngFor="let attribute of (attributes$ | async)"
                     [value]="attribute"
-                >{{attribute}}</md-option>
-            </md-select>
+                >{{attribute}}</mat-option>
+            </mat-select>
         </div>
-        <md-progress-spinner mode="indeterminate" *ngIf="dataLoading$ | async"></md-progress-spinner>
+        <mat-progress-spinner mode="indeterminate" *ngIf="dataLoading$ | async"></mat-progress-spinner>
         <wave-histogram [height]="histogramHeight" [width]="histogramWidth"
                         [selectable]="true" [interactable]="false"
                         *ngIf="data$ | async" [data]="data$ | async"
@@ -30,37 +30,37 @@
             fxLayout.xs="column"  fxLayoutAlign.xs="start"
             *ngIf="!!form.controls.attribute.value"
         >
-            <md-input-container class="flex-item" fxFlex>
-                <input mdInput type="number" step="any" placeholder="Min" formControlName="min">
-                <span mdSuffix>{{attributeUnit$ | async}}</span>
-                <md-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
+            <mat-input-container class="flex-item" fxFlex>
+                <input matInput type="number" step="any" placeholder="Min" formControlName="min">
+                <span matSuffix>{{attributeUnit$ | async}}</span>
+                <mat-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
                     Specify at least minimum or maximum.
-                </md-hint>
-            </md-input-container>
-            <md-input-container class="flex-item" fxFlex>
-                <input mdInput type="number" step="any" placeholder="Max" formControlName="max">
-                <span mdSuffix>{{attributeUnit$ | async}}</span>
-                <md-hint class="error"  *ngIf="form.controls.bounds.errors?.minOverMax">
+                </mat-hint>
+            </mat-input-container>
+            <mat-input-container class="flex-item" fxFlex>
+                <input matInput type="number" step="any" placeholder="Max" formControlName="max">
+                <span matSuffix>{{attributeUnit$ | async}}</span>
+                <mat-hint class="error"  *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
-                </md-hint>
-            </md-input-container>
+                </mat-hint>
+            </mat-input-container>
         </div>
-        <md-checkbox formControlName="noData">Keep NoData values?</md-checkbox>
+        <mat-checkbox formControlName="noData">Keep NoData values?</mat-checkbox>
 
         <wave-operator-output-name
             formControlName="name"
             [suggestion]="'Filtered ' + (form.controls.pointLayer.valueChanges | async)?.name"
         >
-            <md-hint
+            <mat-hint
                 align="end" class="error"
                 *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
             >
                 The name must be non-empty.
-            </md-hint>
+            </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" md-raised-button color="primary" [disabled]="form.invalid">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
             Create
         </button>
     </div>

@@ -3,7 +3,7 @@ $mat-icon-button-size: 40px !default; // TODO: import when this is possible agai
 
 .videoContainer {
 
-    md-card{
+    mat-card{
         width: calc(100% - 2rem);
         margin: 1rem;
         padding: 0;

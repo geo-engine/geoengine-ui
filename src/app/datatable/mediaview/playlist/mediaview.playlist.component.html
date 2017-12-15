@@ -1,20 +1,20 @@
-<md-nav-list>
+<mat-nav-list>
 
-    <h3 md-subheader>Files</h3>
+    <h3 mat-subheader>Files</h3>
 
-    <md-list-item *ngFor="let u of tracks; let i = index" (click)="goToTrack(i)">
+    <mat-list-item *ngFor="let u of tracks; let i = index" (click)="goToTrack(i)">
         <!-- #links [class.playing] = "currentTrack == i" -->
-        <!--<md-icon *ngIf="currentAudio == i" class="md-24">play_circle_outline</md-icon>-->
-        <md-icon md-list-icon *ngIf="currentTrack == i">radio_button_checked</md-icon>
-        <md-icon md-list-icon *ngIf="currentTrack != i">radio_button_unchecked</md-icon>
+        <!--<mat-icon *ngIf="currentAudio == i" class="mat-24">play_circle_outline</mat-icon>-->
+        <mat-icon mat-list-icon *ngIf="currentTrack == i">radio_button_checked</mat-icon>
+        <mat-icon mat-list-icon *ngIf="currentTrack != i">radio_button_unchecked</mat-icon>
 
-        <p md-line [class.playing]="currentTrack == i">
+        <p mat-line [class.playing]="currentTrack == i">
             {{u | fileName}}
         </p>
 
-        <a md-icon-button href="{{u}}" target="_blank" title="open in new tab" (click)="$event.stopPropagation()">
-            <md-icon>open_in_new</md-icon>
+        <a mat-icon-button href="{{u}}" target="_blank" title="open in new tab" (click)="$event.stopPropagation()">
+            <mat-icon>open_in_new</mat-icon>
         </a>
-    </md-list-item>
+    </mat-list-item>
 
-</md-nav-list>
+</mat-nav-list>

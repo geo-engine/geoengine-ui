@@ -5,37 +5,37 @@
         <div *ngIf="form.controls['vLayer'].valueChanges | async">
             <wave-dialog-section-heading title="Attributes" [subtitle]="'Select two attributes of layer ' + form.controls['vLayer'].value.name">
             </wave-dialog-section-heading>
-            <md-select placeholder="First attribute" formControlName="attribute1">
-                <md-option
+            <mat-select placeholder="First attribute" formControlName="attribute1">
+                <mat-option
                     *ngFor="let attribute of form.controls['vLayer'].value.operator.attributes | NumericPipe:form.controls['vLayer'].value.operator:attribute"
                     [value]="attribute"
                 >{{attribute}}
-                </md-option>
-            </md-select>
-            <md-select placeholder="Second attribute" formControlName="attribute2">
-                <md-option
+                </mat-option>
+            </mat-select>
+            <mat-select placeholder="Second attribute" formControlName="attribute2">
+                <mat-option
                     *ngFor="let attribute of form.controls['vLayer'].value.operator.attributes | NumericPipe:form.controls['vLayer'].value.operator:attribute"
                     [value]="attribute"
                 >{{attribute}}
-                </md-option>
-            </md-select>
+                </mat-option>
+            </mat-select>
             <wave-dialog-section-heading title="Regression line" [subtitle]="'Should a regression line be drawn?'">
             </wave-dialog-section-heading>
-            <md-checkbox formControlName="isRegression">Regression line</md-checkbox>
+            <mat-checkbox formControlName="isRegression">Regression line</mat-checkbox>
         </div>
         <wave-operator-output-name
             formControlName="name"
             [suggestion]="'Scatter plot of ' + (form.controls['vLayer'].valueChanges | async)?.name"
         >
-            <md-hint
+            <mat-hint
                 align="end" class="error"
                 *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
             >
                 The name must be non-empty.
-            </md-hint>
+            </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
     </div>
 </form>

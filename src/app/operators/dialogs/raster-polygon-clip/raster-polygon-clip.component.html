@@ -10,15 +10,15 @@
             formControlName="polygonLayer"
         ></wave-layer-selection>
         <wave-operator-output-name formControlName="name">
-            <md-hint
+            <mat-hint
                 align="end" class="error"
                 *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
             >
                 The name must be non-empty.
-            </md-hint>
+            </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" md-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Apply</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Apply</button>
     </div>
 </form>

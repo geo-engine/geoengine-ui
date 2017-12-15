@@ -7,22 +7,22 @@ $endColor: darkviolet;
 $backgroundColor: mat-color(map-get($wave-app-theme, primary));
 $titleColor: white; /*Inherit from theme here.*/
 
-div.latitudeSelector md-select /deep/ span.mat-select-placeholder {
+div.latitudeSelector mat-select /deep/ span.mat-select-placeholder {
     color: $latitudeColor;
 }
-div.longitudeSelector md-select /deep/ span.mat-select-placeholder {
+div.longitudeSelector mat-select /deep/ span.mat-select-placeholder {
     color: $longitudeColor;
 }
-div.startSelector md-select /deep/ span.mat-select-placeholder {
+div.startSelector mat-select /deep/ span.mat-select-placeholder {
     color: $startColor;
 }
-div.endSelector md-select /deep/ span.mat-select-placeholder {
+div.endSelector mat-select /deep/ span.mat-select-placeholder {
     color: $endColor;
 }
-div.constantSelector md-input-container /deep/ span.mat-input-placeholder {
+div.constantSelector mat-input-container /deep/ span.mat-input-placeholder {
     color: $endColor;
 }
-.custom md-input-container /deep/ label.mat-input-placeholder {
+.custom mat-input-container /deep/ label.mat-input-placeholder {
     color: $titleColor;
     opacity: 0.75;
 }

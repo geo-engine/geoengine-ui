@@ -1,5 +1,5 @@
 <wave-dialog-header>CSV Upload</wave-dialog-header>
-<md-dialog-content>
+<mat-dialog-content>
     <wave-csv-upload
         *ngIf="!data"
         [file_size_limit]="100000000"
@@ -24,21 +24,21 @@
         [cellSpacing]="10"
         [linesToParse]="15"
         (finish)="submit($event)"-->
-    <md-spinner *ngIf="uploading$ | async"></md-spinner>
-</md-dialog-content>
+    <mat-spinner *ngIf="uploading$ | async"></mat-spinner>
+</mat-dialog-content>
 
-<md-dialog-actions align="end" *ngIf="!(uploading$ | async)">
+<mat-dialog-actions align="end" *ngIf="!(uploading$ | async)">
     <div class="buttons" *ngIf="!!csvProperties">
-        <button md-raised-button color="primary" (click)="csvProperties.stepper.previous()"
+        <button mat-raised-button color="primary" (click)="csvProperties.stepper.previous()"
                 *ngIf="!(csvProperties.isDataProperties$ | async)">Prev</button>
-        <button md-raised-button color="primary" (click)="csvProperties.stepper.next()"
+        <button mat-raised-button color="primary" (click)="csvProperties.stepper.next()"
                 *ngIf="!(csvProperties.isTypingProperties$ | async)"
                 [disabled]="!(csvProperties.actualPage$ | async).valid">Next</button>
-        <button md-raised-button color="primary" (click)="submit()"
+        <button mat-raised-button color="primary" (click)="submit()"
                 *ngIf="csvProperties.isTypingProperties$ | async"
                 [disabled]="!(csvProperties.actualPage$ | async).valid"
         >
             Submit
         </button>
     </div>
-</md-dialog-actions>
+</mat-dialog-actions>

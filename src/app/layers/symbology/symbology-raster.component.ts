@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {RasterSymbology} from './symbology.model';
-import {MdSliderChange} from "@angular/material";
+import {MatSliderChange} from "@angular/material";
 
 @Component({
     selector: 'wave-symbology-raster',
@@ -10,9 +10,9 @@ import {MdSliderChange} from "@angular/material";
         <tr>
             <td><span>Opacity</span></td>
             <td>
-                    <md-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
+                    <mat-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
                         (change)="updateOpacity($event)">
-                    </md-slider>
+                    </mat-slider>
             </td>
             <td>{{slo.displayValue}} %</td>
         </tr>
@@ -20,14 +20,14 @@ import {MdSliderChange} from "@angular/material";
         <tr>
             <td><span>Hue</span></td>
             <td>
-                <md-slider #slh thumbLabel min="0" max="100" step="1" value="100" [disabled]="true"></md-slider>
+                <mat-slider #slh thumbLabel min="0" max="100" step="1" value="100" [disabled]="true"></mat-slider>
                 <span>{{slh.displayValue}} %</span>
             </td>
         </tr>
         <tr>
             <td><span>Saturation</span></td>
             <td>
-                <md-slider #sls thumbLabel min="0" max="10" step="1" value="100" [disabled]="true"></md-slider>
+                <mat-slider #sls thumbLabel min="0" max="10" step="1" value="100" [disabled]="true"></mat-slider>
                 <span>{{sls.displayValue}} %</span>
             </td>
         </tr>
@@ -57,7 +57,7 @@ import {MdSliderChange} from "@angular/material";
             white-space: nowrap;
         }
         
-        md-slider {
+        mat-slider {
             min-width: unset;
             width: 100%;
         }
@@ -68,7 +68,7 @@ export class SymbologyRasterComponent  {
     @Output('symbologyChanged') symbologyChanged: EventEmitter<RasterSymbology> =
         new EventEmitter<RasterSymbology>();
 
-    updateOpacity(event: MdSliderChange){
+    updateOpacity(event: MatSliderChange){
         this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }

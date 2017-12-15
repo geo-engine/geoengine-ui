@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject, Observable} from 'rxjs/Rx';
-import {MdSnackBarRef, MdSnackBar} from '@angular/material';
+import {MatSnackBarRef, MatSnackBar} from '@angular/material';
 
 export enum NotificationType {
     Info, Error,
@@ -16,7 +16,7 @@ export class NotificationService {
     private notification$ = new Subject<Notification>();
 
     constructor(
-        private snackBar: MdSnackBar
+        private snackBar: MatSnackBar
     ) {}
 
     getNotificationStream(): Observable<Notification> {

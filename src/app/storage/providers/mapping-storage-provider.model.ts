@@ -1,4 +1,4 @@
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 
 import {RScript, RScriptDict, StorageProvider, Workspace, WorkspaceDict} from '../storage-provider.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
@@ -45,18 +45,24 @@ interface ArtifactDefinition {
     user: string;
 }
 
+interface MappingResponse {
+    result: boolean | string;
+    artifacts?: Array<ArtifactDefinition>;
+    value?: string;
+}
+
 /**
  * StorageProvider implementation that uses the mapping's artifact service.
  */
 export class MappingStorageProvider extends StorageProvider {
 
-    private http: Http;
+    private http: HttpClient;
     private session: Session;
     private createDefaultProject: () => Project;
 
     private projectName$: ReplaySubject<string> = new ReplaySubject<string>(1);
 
-    private static mappingHasResult(response: {result: boolean | string}): boolean {
+    private static mappingHasResult(response: { result: boolean | string }): boolean {
         return response.result && typeof response.result === 'boolean';
     }
 
@@ -64,7 +70,7 @@ export class MappingStorageProvider extends StorageProvider {
         config: Config,
         projectService: ProjectService,
         notificationService: NotificationService,
-        http: Http,
+        http: HttpClient,
         session: Session,
         createDefaultProject: () => Project,
         projectName?: string,
@@ -101,11 +107,10 @@ export class MappingStorageProvider extends StorageProvider {
                     },
                 });
                 return this.http
-                    .get(
+                    .get<MappingResponse>(
                         this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                         {headers: request.getHeaders()}
                     )
-                    .map(response => response.json())
                     .map(response => {
                         if (MappingStorageProvider.mappingHasResult(response)) {
                             const workspace: WorkspaceDict = JSON.parse(response.value);
@@ -165,31 +170,6 @@ export class MappingStorageProvider extends StorageProvider {
         return subject;
     }
 
-    private saveWorkspaceHelper(workspace: Workspace, request: ('update' | 'create') = 'update'): Observable<boolean> {
-        const projectName = workspace.project.name;
-
-        const updateRequest = new ArtifactServiceRequestParameters({
-            request: request,
-            sessionToken: this.session.sessionToken,
-            parameters: {
-                type: TYPES.PROJECTS,
-                name: projectName,
-                value: JSON.stringify({
-                    project: workspace.project.toDict(),
-                }),
-            },
-        });
-
-        return this.http
-            .post(
-                this.config.MAPPING_URL,
-                updateRequest.toMessageBody(true),
-                {headers: updateRequest.getHeaders()}
-            )
-            .map(response => response.json())
-            .map(MappingStorageProvider.mappingHasResult);
-    }
-
     // SAVE AND LOAD LAYOUT LOCALLY
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(KEYS.LAYOUT_SETTINGS);
@@ -216,11 +196,10 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
             )
-            .map(response => response.json())
             .map(MappingStorageProvider.mappingHasResult);
     }
 
@@ -233,11 +212,10 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
             )
-            .map(response => response.json())
             .map(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
                     const artifacts: Array<ArtifactDefinition> = response.artifacts;
@@ -270,12 +248,11 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http
-            .post(
+            .post<MappingResponse>(
                 this.config.MAPPING_URL,
                 updateRequest.toMessageBody(true),
                 {headers: updateRequest.getHeaders()}
             )
-            .map(response => response.json())
             .flatMap(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
                     return Observable.of(undefined);
@@ -293,12 +270,11 @@ export class MappingStorageProvider extends StorageProvider {
                     });
 
                     return this.http
-                        .post(
+                        .post<MappingResponse>(
                             this.config.MAPPING_URL,
                             createRequest.toMessageBody(),
                             {headers: createRequest.getHeaders()}
                         )
-                        .map(response2 => response2.json())
                         .map(response2 => {
                             if (MappingStorageProvider.mappingHasResult(response2)) {
                                 return Observable.of(undefined);
@@ -320,12 +296,11 @@ export class MappingStorageProvider extends StorageProvider {
                 name: name,
             },
         });
-        return this.http.get(
+        return this.http.get<MappingResponse>(
             this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).map(response => {
-            const mappingResponse = response.json();
-            const rScriptDict: RScriptDict = JSON.parse(mappingResponse.value);
+            const rScriptDict: RScriptDict = JSON.parse(response.value);
 
             return {
                 resultType: ResultTypes.fromCode(rScriptDict.resultType),
@@ -342,13 +317,12 @@ export class MappingStorageProvider extends StorageProvider {
                 type: TYPES.R_SCRIPTS,
             },
         });
-        return this.http.get(
+        return this.http.get<MappingResponse>(
             this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
         ).map(response => {
-            const mappingResponse = response.json();
-            if (MappingStorageProvider.mappingHasResult(mappingResponse)) {
-                const artifacts: Array<ArtifactDefinition> = mappingResponse.artifacts;
+            if (MappingStorageProvider.mappingHasResult(response)) {
+                const artifacts: Array<ArtifactDefinition> = response.artifacts;
                 return artifacts.filter(
                     artifact => artifact.user === this.session.user // TODO: refactor for sharing
                 ).map(
@@ -360,6 +334,30 @@ export class MappingStorageProvider extends StorageProvider {
             }
         });
     };
+
+    private saveWorkspaceHelper(workspace: Workspace, request: ('update' | 'create') = 'update'): Observable<boolean> {
+        const projectName = workspace.project.name;
+
+        const updateRequest = new ArtifactServiceRequestParameters({
+            request: request,
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                type: TYPES.PROJECTS,
+                name: projectName,
+                value: JSON.stringify({
+                    project: workspace.project.toDict(),
+                }),
+            },
+        });
+
+        return this.http
+            .post<MappingResponse>(
+                this.config.MAPPING_URL,
+                updateRequest.toMessageBody(true),
+                {headers: updateRequest.getHeaders()}
+            )
+            .map(MappingStorageProvider.mappingHasResult);
+    }
 
     private setCurrentProjectName(name: string, request: ('update' | 'create') = 'update'): Observable<{}> {
         const subject = new Subject();
@@ -375,12 +373,11 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         this.http
-            .post(
+            .post<MappingResponse>(
                 this.config.MAPPING_URL,
                 updateRequest.toMessageBody(),
                 {headers: updateRequest.getHeaders()}
             )
-            .map(response => response.json())
             .flatMap(response => {
                 if (typeof response.result !== 'boolean') {
                     // `create` on error
@@ -416,11 +413,10 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
             )
-            .map(response => response.json())
             .map(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
                     return response.value;

@@ -9,7 +9,7 @@ import {CsvTableComponent} from '../csv-table/csv-table.component';
 import {Projections} from '../../../../projection.model';
 import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
-import {MdStepper} from '@angular/material';
+import {MatStepper} from '@angular/material';
 
 export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
 
@@ -100,7 +100,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     @Input('csvTable') csvTable: CsvTableComponent;
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
-    @ViewChild('stepper') public stepper: MdStepper;
+    @ViewChild('stepper') public stepper: MatStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
