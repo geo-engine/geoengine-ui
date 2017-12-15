@@ -117,6 +117,10 @@ mat-list-item /deep/ .mat-list-item-content {
     padding: 0 !important;
 }
 
+.list-item-extended {
+    height: auto !important;
+}
+
 .list-item-extended /deep/ .mat-list-item-content {
     height: auto !important;
     min-height: 48px !important;
