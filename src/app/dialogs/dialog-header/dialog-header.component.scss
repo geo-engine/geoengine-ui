@@ -1,12 +1,8 @@
 $mat-dialog-padding: 24px !default; // TODO: import when this is possible again
 
-mat-toolbar[mat-dialog-title] {
+mat-toolbar.mat-dialog-title {
     margin: #{-$mat-dialog-padding} #{-$mat-dialog-padding} 0 #{-$mat-dialog-padding};
     width: calc(100% + #{2 * $mat-dialog-padding});
-}
-
-mat-toolbar[mat-dialog-title] span {
-    flex-grow: 1;
 }
 
 mat-toolbar button {

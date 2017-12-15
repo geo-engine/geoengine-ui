@@ -1,5 +1,7 @@
-<mat-toolbar mat-dialog-title color="primary">
-    <span><ng-content></ng-content></span>
+<mat-toolbar mat-dialog-title color="primary" fxLayout="row">
+    <span fxFlex>
+        <ng-content></ng-content>
+    </span>
     <button mat-button mat-dialog-close>
         <mat-icon>clear</mat-icon>
     </button>
