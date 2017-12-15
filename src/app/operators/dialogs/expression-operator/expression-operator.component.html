@@ -13,11 +13,13 @@
         <mat-input-container>
             <input matInput type="text" formControlName="expression" placeholder="Expression">
         </mat-input-container>
-        <mat-select formControlName="dataType" placeholder="Output Data Type">
-            <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType">
-                {{dataType[0]}} {{dataType[1]}}
-            </mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select formControlName="dataType" placeholder="Output Data Type">
+                <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType">
+                    {{dataType[0]}} {{dataType[1]}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
         <div fxLayout="row">
             <mat-input-container fxFlex>
                 <input matInput type="number" formControlName="minValue" placeholder="Minimum Value">
@@ -27,20 +29,19 @@
                 <input matInput type="number" formControlName="maxValue" placeholder="Maximum Value">
             </mat-input-container>
         </div>
-        <mat-select formControlName="unit" placeholder="Output Unit">
-            <mat-option *ngFor="let unit of outputUnits$ | async" [value]="unit">
-                {{unit}}
-            </mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select formControlName="unit" placeholder="Output Unit">
+                <mat-option *ngFor="let unit of outputUnits$ | async" [value]="unit">
+                    {{unit}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
         <wave-reprojection-selection
             [layers]="form.controls.rasterLayers.valueChanges | async"
             formControlName="projection"
         ></wave-reprojection-selection>
         <wave-operator-output-name formControlName="name">
-            <mat-hint
-                align="end" class="error"
-                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-            >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>

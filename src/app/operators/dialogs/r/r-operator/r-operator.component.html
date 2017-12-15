@@ -30,7 +30,8 @@
             <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourcePoints">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourcePoints">No Input Available</p>
-            <wave-dialog-section-heading title="Polygons" subtitle="Select input Polygons"></wave-dialog-section-heading>
+            <wave-dialog-section-heading title="Polygons"
+                                         subtitle="Select input Polygons"></wave-dialog-section-heading>
             <p *ngFor="let operator of editableSourcePolygons">{{operator.operatorType}}</p>
             <p *ngIf="!editableSourcePolygons">No Input Available</p>
             <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
@@ -38,7 +39,8 @@
             <p *ngIf="!editableSourceRasters">No Input Available</p>
         </ng-template>
 
-        <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
+        <wave-dialog-section-heading title="Configuration"
+                                     subtitle="Specify the operator"></wave-dialog-section-heading>
 
         <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -52,7 +54,8 @@
                 <p>
                     The <em>R operator</em> allows executing arbitrary <em>R</em> code on <em>VAT</em> data.
                     The result can either be a new raster or vector layer, a plot or plain text.
-                    For accessing the input data there exists a <code>mapping</code> object that offers the following functionality:</p>
+                    For accessing the input data there exists a <code>mapping</code> object that offers the following
+                    functionality:</p>
                 <table>
                     <tr>
                         <th>Functionality</th>
@@ -138,11 +141,13 @@
             <button mat-raised-button type="button" fxFlex (click)="save()">Save Script</button>
         </div>
 
-        <mat-select formControlName="resultType" placeholder="Result Type">
-            <mat-option *ngFor="let resultType of outputTypes" [value]="resultType">
-                {{resultType}}
-            </mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select formControlName="resultType" placeholder="Result Type">
+                <mat-option *ngFor="let resultType of outputTypes" [value]="resultType">
+                    {{resultType}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
 
         <wave-operator-output-name formControlName="name">
             <mat-hint

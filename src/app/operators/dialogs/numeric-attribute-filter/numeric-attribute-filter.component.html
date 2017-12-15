@@ -7,12 +7,15 @@
         </wave-layer-selection>
         <wave-dialog-section-heading title="Filter" subtitle="Select the value range."></wave-dialog-section-heading>
         <div class="downward-margin">
-            <mat-select placeholder="Attribute" formControlName="attribute">
-                <mat-option
-                    *ngFor="let attribute of (attributes$ | async)"
-                    [value]="attribute"
-                >{{attribute}}</mat-option>
-            </mat-select>
+            <mat-form-field>
+                <mat-select placeholder="Attribute" formControlName="attribute">
+                    <mat-option
+                        *ngFor="let attribute of (attributes$ | async)"
+                        [value]="attribute"
+                    >{{attribute}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
         <mat-progress-spinner mode="indeterminate" *ngIf="dataLoading$ | async"></mat-progress-spinner>
         <wave-histogram [height]="histogramHeight" [width]="histogramWidth"
@@ -27,7 +30,7 @@
             formGroupName="bounds"
             class="flex-container"
             fxLayout="row" fxLayoutAlign="space-between center"
-            fxLayout.xs="column"  fxLayoutAlign.xs="start"
+            fxLayout.xs="column" fxLayoutAlign.xs="start"
             *ngIf="!!form.controls.attribute.value"
         >
             <mat-input-container class="flex-item" fxFlex>
@@ -40,7 +43,7 @@
             <mat-input-container class="flex-item" fxFlex>
                 <input matInput type="number" step="any" placeholder="Max" formControlName="max">
                 <span matSuffix>{{attributeUnit$ | async}}</span>
-                <mat-hint class="error"  *ngIf="form.controls.bounds.errors?.minOverMax">
+                <mat-hint class="error" *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
                 </mat-hint>
             </mat-input-container>

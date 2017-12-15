@@ -5,24 +5,28 @@
                 <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;"
                         [ngStyle]="{'min-width.px': cellSizes[2*i]}">
-                        <mat-select placeholder="Type" style="margin-top: 1rem;"
-                                   name="isNumber_{{i}}" *ngIf="[csvProperty.spatialProperties.controls['xColumn'].value,
-                                        csvProperty.spatialProperties.controls['yColumn'].value,
-                                        (csvProperty.temporalProperties.controls['isTime'].value)?csvProperty.temporalProperties.controls['startColumn'].value:null,
-                                        (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0"
-                                   [(ngModel)]="isNumberArray[i]"
-                                   [ngStyle]="{'min-width.px': cellSizes[2*i]}">
-                            <mat-option [value]="0">
-                                Text
-                            </mat-option>
-                            <mat-option [value]="1">
-                                Number
-                            </mat-option>
-                        </mat-select>
-                        <p *ngIf="i === csvProperty.spatialProperties.controls['xColumn'].value" class="coordinate_orange">
+                        <mat-form-field *ngIf="[csvProperty.spatialProperties.controls['xColumn'].value,
+                            csvProperty.spatialProperties.controls['yColumn'].value,
+                            (csvProperty.temporalProperties.controls['isTime'].value)?csvProperty.temporalProperties.controls['startColumn'].value:null,
+                            (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0">
+                            <mat-select placeholder="Type" style="margin-top: 1rem;"
+                                        name="isNumber_{{i}}"
+                                        [(ngModel)]="isNumberArray[i]"
+                                        [ngStyle]="{'min-width.px': cellSizes[2*i]}">
+                                <mat-option [value]="0">
+                                    Text
+                                </mat-option>
+                                <mat-option [value]="1">
+                                    Number
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <p *ngIf="i === csvProperty.spatialProperties.controls['xColumn'].value"
+                           class="coordinate_orange">
                             Coordinate
                         </p>
-                        <p *ngIf="i === csvProperty.spatialProperties.controls['yColumn'].value" class="coordinate_blue">
+                        <p *ngIf="i === csvProperty.spatialProperties.controls['yColumn'].value"
+                           class="coordinate_blue">
                             Coordinate
                         </p>
                         <p *ngIf="(i === csvProperty.temporalProperties.controls['startColumn'].value) && csvProperty.temporalProperties.controls['isTime'].value"
@@ -58,11 +62,13 @@
                             'violetHead': csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ | async) &&
                             (i === (csvProperty.yColumn$ | async)) && (csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur ||
                             csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd)}">
-                            <div (click)="csvProperty.setProperty(0, i, $event);" (contextmenu)="csvProperty.setProperty(1, i, $event);">
+                            <div (click)="csvProperty.setProperty(0, i, $event);"
+                                 (contextmenu)="csvProperty.setProperty(1, i, $event);">
                                 {{h.value}}
                             </div>
                         </td>
-                        <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
+                        <td *ngIf="i !== header.length-1" name="spacer"
+                            [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
                     </ng-template>
                 </ng-template>
                 <ng-template [ngIf]="!csvProperty.dataProperties.controls['isHeaderRow'].value">
@@ -79,7 +85,8 @@
                                        [(ngModel)]="h.value" name="header_{{i}}">
                             </mat-input-container>
                         </td>
-                        <td *ngIf="i !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
+                        <td *ngIf="i !== header.length-1" name="spacer"
+                            [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>
                     </ng-template>
                 </ng-template>
             </tr>
@@ -98,7 +105,8 @@
                         green: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ |async) && (k === (csvProperty.xColumn$ | async)),
                         violet: csvProperty.temporalProperties.controls['isTime'].value && (csvProperty.isTemporalProperties$ | async) && (k === (csvProperty.yColumn$ | async)) &&
                         (csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur || csvProperty.temporalProperties.controls['intervalType'].value === IntervalFormat.StartEnd)}">
-                        <div (click)="csvProperty.setProperty(0, k, $event);" (contextmenu)="csvProperty.setProperty(1, k, $event);">
+                        <div (click)="csvProperty.setProperty(0, k, $event);"
+                             (contextmenu)="csvProperty.setProperty(1, k, $event);">
                             {{e}}
                         </div>
                     </td>

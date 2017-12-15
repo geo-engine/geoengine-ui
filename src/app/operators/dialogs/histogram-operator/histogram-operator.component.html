@@ -6,18 +6,18 @@
             formControlName="layer"
         ></wave-layer-selection>
         <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
-        <mat-select placeholder="Attribute" formControlName="attribute" *ngIf="isVectorLayer$ | async">
-            <mat-option
-                *ngFor="let attribute of (attributes$ | async)"
-                [value]="attribute"
-            >{{attribute}}
-            </mat-option>
-        </mat-select>
-        <mat-select placeholder="Range Type" formControlName="rangeType">
-            <mat-option [value]="'custom'">Custom</mat-option>
-            <mat-option [value]="'unit'">Unit</mat-option>
-            <mat-option [value]="'data'">Data</mat-option>
-        </mat-select>
+        <mat-form-field *ngIf="isVectorLayer$ | async">
+            <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select placeholder="Range Type" formControlName="rangeType">
+                <mat-option [value]="'custom'">Custom</mat-option>
+                <mat-option [value]="'unit'">Unit</mat-option>
+                <mat-option [value]="'data'">Data</mat-option>
+            </mat-select>
+        </mat-form-field>
         <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
             <mat-input-container fxFlex>
                 <input matInput type="number" placeholder="Min" formControlName="min">

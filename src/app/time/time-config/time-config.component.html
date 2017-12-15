@@ -39,13 +39,15 @@
         <mat-card-subtitle>Use this to specify a time step for the time component on top of the map.</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-select placeholder="Time step"
-               [ngModel]="timeStepDuration$ | async" (ngModelChange)="updateTimeStepDuration($event)"
-               [compareWith]="timeStepComparator"
-    >
-        <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
-            {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
-        </mat-option>
-    </mat-select>
+    <mat-form-field>
+        <mat-select placeholder="Time step"
+                    [ngModel]="timeStepDuration$ | async" (ngModelChange)="updateTimeStepDuration($event)"
+                    [compareWith]="timeStepComparator"
+        >
+            <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
+                {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 
 </mat-card>

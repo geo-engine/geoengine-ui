@@ -1,22 +1,29 @@
 <wave-sidenav-header>New Project</wave-sidenav-header>
 <ng-template [ngIf]="!(created$ | async)">
-<p>
-    Create a new, blank project.
-</p>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
-    <div fxLayout="row">
-        <mat-input-container fxFlex>
-            <input matInput type="text" placeholder="Project Name" formControlName="name">
-            <mat-hint class="error" *ngIf="form.controls.name.errors?.nameInUsage">The name is already in usage.</mat-hint>
-        </mat-input-container>
-    </div>
-    <div fxLayout="row">
-        <mat-select placeholder="Projection" formControlName="projection" fxFlex>
-            <mat-option *ngFor="let projection of Projections.ALL_PROJECTIONS" [value]="projection">{{projection}}</mat-option>
-        </mat-select>
-    </div>
-    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
-</form>
+    <p>
+        Create a new, blank project.
+    </p>
+    <form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
+        <div fxLayout="row">
+            <mat-input-container fxFlex>
+                <input matInput type="text" placeholder="Project Name" formControlName="name">
+                <mat-hint class="error" *ngIf="form.controls.name.errors?.nameInUsage">The name is already in usage.
+                </mat-hint>
+            </mat-input-container>
+        </div>
+        <div fxLayout="row">
+            <mat-form-field fxFlex>
+                <mat-select placeholder="Projection" formControlName="projection">
+                    <mat-option *ngFor="let projection of Projections.ALL_PROJECTIONS" [value]="projection">
+                        {{projection}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Create
+        </button>
+    </form>
 </ng-template>
 <ng-template [ngIf]="created$ | async">
     <p class="finished">

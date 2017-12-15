@@ -3,14 +3,19 @@
     <div fxFlex class="container">
         <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="vectorLayer"></wave-layer-selection>
         <wave-dialog-section-heading title="Filter" subtitle="Select the attribute."></wave-dialog-section-heading>
-        <mat-select placeholder="Attribute" formControlName="attribute">
-            <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}</mat-option>
-        </mat-select>
-        <mat-select placeholder="Match Type" formControlName="engine">
-            <mat-option [value]="TextualAttributeFilterEngineType.EXACT">is exactly</mat-option>
-            <mat-option [value]="TextualAttributeFilterEngineType.CONTAINS">contains</mat-option>
-            <mat-option [value]="TextualAttributeFilterEngineType.STARTSWITH">starts with</mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select placeholder="Match Type" formControlName="engine">
+                <mat-option [value]="TextualAttributeFilterEngineType.EXACT">is exactly</mat-option>
+                <mat-option [value]="TextualAttributeFilterEngineType.CONTAINS">contains</mat-option>
+                <mat-option [value]="TextualAttributeFilterEngineType.STARTSWITH">starts with</mat-option>
+            </mat-select>
+        </mat-form-field>
         <mat-form-field>
             <input matInput formControlName="searchString" placeholder="Search String">
             <mat-hint

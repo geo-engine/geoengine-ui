@@ -26,17 +26,25 @@
         </mat-input-container>
     </div>
     <div fxLayout="row">
-        <mat-select formControlName="dataOutputFormat" *ngIf="isVector" placeholder="Data Output Type" fxFlex>
-            <mat-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
-        </mat-select>
-        <mat-select formControlName="dataOutputFormat" *ngIf="isRaster" placeholder="Data Output Type" fxFlex>
-            <mat-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select formControlName="dataOutputFormat" *ngIf="isVector" placeholder="Data Output Type" fxFlex>
+                <mat-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select formControlName="dataOutputFormat" *ngIf="isRaster" placeholder="Data Output Type" fxFlex>
+                <mat-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
     <div fxLayout="row">
-        <mat-select placeholder="Citation Type" formControlName="citationFormat" fxFlex>
-            <mat-option [value]="'json'">JSON</mat-option>
-        </mat-select>
+        <mat-form-field>
+            <mat-select placeholder="Citation Type" formControlName="citationFormat" fxFlex>
+                <mat-option [value]="'json'">JSON</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
-    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Export</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">
+        Export
+    </button>
 </form>
