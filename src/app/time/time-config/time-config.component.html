@@ -6,7 +6,7 @@
         <mat-card-subtitle>Use this to specify a time selection for the current data.</mat-card-subtitle>
     </mat-card-header>
 
-    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime()" fxLayout="column">
+    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime()">
         <h4 *ngIf="config.TIME.ALLOW_RANGES">Start</h4>
 
         <wave-time-input formControlName="start"></wave-time-input>
