@@ -81,7 +81,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         let dialogContainer = undefined;
         let parent = this.elementRef.nativeElement.parentElement;
         while (!dialogContainer) {
-            dialogContainer = parent.querySelector('mat-dialog-container');
+            dialogContainer = parent.querySelector('.cdk-overlay-pane');
             parent = parent.parentElement;
         }
 
