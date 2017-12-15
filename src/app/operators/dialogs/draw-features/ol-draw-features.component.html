@@ -1,13 +1,17 @@
 <wave-sidenav-header>Draw Features</wave-sidenav-header>
 
-<mat-select placeholder="Feature type" [(value)]="selectedFeatureType">
-    <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">
-        {{ featureType }}
-    </mat-option>
-</mat-select>
+<mat-form-field>
+    <mat-select placeholder="Feature type" [(value)]="selectedFeatureType">
+        <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">
+            {{ featureType }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
 
-<button mat-raised-button [disabled]="isDrawingActive || !selectedFeatureType" (click)="startDrawing()">Start</button>
+<div fxLayout="row" fxLayoutGap="1rem">
+    <button mat-raised-button fxFlex [disabled]="isDrawingActive || !selectedFeatureType" (click)="startDrawing()">Start</button>
 
-<button mat-raised-button color="accent" [disabled]="!isDrawingActive" (click)="endDrawing()">End</button>
+    <button mat-raised-button fxFlex color="accent" [disabled]="!isDrawingActive" (click)="endDrawing()">End</button>
 
-<button mat-raised-button color="warn" [disabled]="!isDrawingActive" (click)="cancelDrawing()">Cancel</button>
+    <button mat-raised-button fxFlex color="warn" [disabled]="!isDrawingActive" (click)="cancelDrawing()">Cancel</button>
+</div>
