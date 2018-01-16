@@ -40,6 +40,7 @@ interface DefaultsInterface {
     PROJECT: {
         NAME: string,
         TIME: string,
+        TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year',
         PROJECTION: 'EPSG:3857' | 'EPSG:4326',
     };
 }
@@ -116,6 +117,7 @@ const ConfigDefault = Immutable.fromJS({
         PROJECT: {
             NAME: 'Default',
             TIME: '2000-06-06T12:00:00.000Z',
+            TIMESTEP: '1 month',
             PROJECTION: 'EPSG:3857',
         },
     },
