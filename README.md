@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/umr-dbs/wave.svg?branch=master)](https://travis-ci.org/umr-dbs/wave)
+
 # WAVE - Workflow, Analysis and Visualization Editor
 *WAVE* is the official frontend of *VAT*.
 It is a web application that is built via nodejs.
