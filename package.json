@@ -46,7 +46,7 @@
     "zone.js": "0.8.18"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.1",
+    "@angular/cli": "1.6.5",
     "@angular/compiler-cli": "5.1.1",
     "@types/codemirror": "0.0.53",
     "@types/d3": "3.5.38",
