@@ -3,7 +3,7 @@ import {MappingSource, MappingSourceChannel, MappingTransform} from './mapping-s
 import {Unit} from '../../unit.model';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {ResultTypes} from '../../result-type.model';
-import {Projections} from '../../projection.model';
+import {Projection, Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {
@@ -167,7 +167,14 @@ export class SourceDatasetComponent implements OnInit {
     createGdalSourceOperator(channel: MappingSourceChannel,  doTransform: boolean): Operator {
         const sourceDataType = channel.datatype;
         const sourceUnit: Unit = channel.unit;
-        const sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        let sourceProjection: Projection;
+        if (this.dataset.coords.crs) {
+            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
+        } else if (this.dataset.coords.epsg) {
+            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        } else {
+            throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
+        }
 
         const operatorType = new GdalSourceType({
             channel: channel.id,

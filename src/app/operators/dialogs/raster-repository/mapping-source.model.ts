@@ -31,7 +31,8 @@ export interface MappingSource {
     channels: MappingSourceChannel[];
     colorizer?: IMappingRasterColorizer;
     coords: {
-        epsg: number,
+        crs: string,
+        epsg?: number,
         origin: number[],
         scale: number[],
         size: number[],
@@ -48,10 +49,11 @@ export interface MappingSourceDict {
     citation: string;
     };
     coords: {
-        epsg: number,
-            origin: number[],
-            scale: number[],
-            size: number[],
+        crs: string,
+        epsg?: number,
+        origin: number[],
+        scale: number[],
+        size: number[],
     };
     channels: [{
         datatype: string,
