@@ -16,6 +16,7 @@ import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
 import {ExpressionType} from '../../types/expression-type.model';
+import {log} from 'util';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -226,6 +227,15 @@ export class SourceDatasetComponent implements OnInit {
             dataType = channel.transform.datatype;
         }
 
+        let sourceProjection: Projection;
+        if (this.dataset.coords.crs) {
+            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
+        } else if (this.dataset.coords.epsg) {
+            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        } else {
+            throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
+        }
+
         const operatorType = new RasterSourceType({
             channel: channel.id,
             sourcename: this.dataset.source,
@@ -235,7 +245,7 @@ export class SourceDatasetComponent implements OnInit {
         const operator = new Operator({
             operatorType: operatorType,
             resultType: ResultTypes.RASTER,
-            projection: Projections.fromCode('EPSG:' + this.dataset.coords.epsg),
+            projection: sourceProjection,
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', DataTypes.fromCode(dataType)),
             units: new Map<string, Unit>().set('value', unit),

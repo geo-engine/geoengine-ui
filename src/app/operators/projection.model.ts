@@ -113,8 +113,7 @@ export class GEOS extends Projection {
 
     getCode(): string {
         // TODO: rename?
-        // return 'SR-ORG:81';
-        return 'EPSG:40453';
+        return 'SR-ORG:81'; // return 'EPSG:40453';
     }
 
     getName(): string {
