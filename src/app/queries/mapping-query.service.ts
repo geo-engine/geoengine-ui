@@ -18,7 +18,7 @@ import {Provenance} from '../provenance/provenance.model';
 import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
-import * as ol from 'openlayers';
+import ol from 'ol';
 import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 import {
     Basket,

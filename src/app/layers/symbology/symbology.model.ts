@@ -1,5 +1,11 @@
-import * as ol from 'openlayers';
-import {Observable} from 'rxjs/Rx';
+import ol from 'ol';
+import OlStyleStyle from 'ol/style/style';
+import OlStyleFill from 'ol/style/fill'
+import OlStyleStroke from 'ol/style/stroke'
+import OlStyleCircle from 'ol/style/circle'
+import OlStyleText from 'ol/style/text'
+
+
 import {Unit, UnitDict, Interpolation} from '../../operators/unit.model';
 
 export enum SymbologyType {
@@ -103,7 +109,7 @@ export abstract class AbstractVectorSymbology extends Symbology implements IVect
     getOlStyleAsFunction(): ol.StyleFunction {
         const style = this.getOlStyle();
 
-        if (style instanceof ol.style.Style) {
+        if (style instanceof OlStyleStyle) {
             return (feature: ol.Feature, resolution: number) => style;
         } else {
             return style as ol.StyleFunction;
@@ -141,9 +147,9 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
     }
 
     getOlStyle(): ol.style.Style {
-        return new ol.style.Style({
-            fill: new ol.style.Fill({ color: this.fillRGBA }),
-            stroke: new ol.style.Stroke({ color: this.strokeRGBA, width: this.strokeWidth }),
+        return new OlStyleStyle({
+            fill: new OlStyleFill({ color: this.fillRGBA }),
+            stroke: new OlStyleStroke({ color: this.strokeRGBA, width: this.strokeWidth }),
         });
     }
 
@@ -193,11 +199,11 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
   }
 
   getOlStyle(): ol.style.Style {
-      return new ol.style.Style({
-          image: new ol.style.Circle({
+      return new OlStyleStyle({
+          image: new OlStyleCircle({
               radius: this.radius,
-              fill: new ol.style.Fill({ color: this.fillRGBA }),
-              stroke: new ol.style.Stroke({ color: this.strokeRGBA, width: this.strokeWidth }),
+              fill: new OlStyleFill({ color: this.fillRGBA }),
+              stroke: new OlStyleStroke({ color: this.strokeRGBA, width: this.strokeWidth }),
           }),
       });
   }
@@ -265,23 +271,23 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
             const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
             const radius = parseFloat(feature.get('___radius'));
 
-            return new ol.style.Style({
-                image: new ol.style.Circle({
+            return new OlStyleStyle({
+                image: new OlStyleCircle({
                     radius: radius,
-                    fill: new ol.style.Fill({
+                    fill: new OlStyleFill({
                         color: this.fillRGBA,
                     }),
-                    stroke: new ol.style.Stroke({
+                    stroke: new OlStyleStroke({
                         color: this.strokeRGBA,
                         width: this.strokeWidth,
                     }),
                 }),
-                text: new ol.style.Text({
+                text: new OlStyleText({
                     text: numberOfPointsString,
-                    fill: new ol.style.Fill({
+                    fill: new OlStyleFill({
                         color: this.textRGBA,
                     }),
-                    stroke: new ol.style.Stroke({
+                    stroke: new OlStyleStroke({
                         color: this.strokeRGBA,
                         width: this.textStrokeWidth,
                     }),
@@ -473,7 +479,8 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     constructor(config: IColorizerRasterSymbology) {
         super(config);
         // console.log("MappingColorizerRasterSymbology.constructor", config);
-        const colorizerConfig = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit); // TODO don't create grayscale
+        const colorizerConfig = (config.colorizer) ?
+            config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit); // TODO don't create grayscale
         this.colorizer = new MappingRasterColorizer(colorizerConfig);
     }
 
