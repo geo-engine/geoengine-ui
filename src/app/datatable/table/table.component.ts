@@ -14,7 +14,7 @@ import {VectorData, VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {FeatureID} from '../../queries/geojson.model';
 import {MapService} from '../../map/map.service';
-import * as ol from 'openlayers';
+import ol from 'ol';
 import {ProjectService} from '../../project/project.service';
 import {Unit} from '../../operators/unit.model';
 

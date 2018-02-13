@@ -6,7 +6,7 @@ import {
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
-import * as ol from 'openlayers';
+import OlFormatGeoJSON from 'ol/format/geojson';
 import {Time, TimePoint} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
@@ -39,9 +39,9 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
     static olParse(time: Time,
                    projection: Projection,
                    extent: [number, number, number, number],
-                   source: (Document | Node | GlobalObject | string),
+                   source: (Document | Node | any | string),
                    opt_options?: olx.format.ReadOptions): VectorData {
-        return new VectorData(time, projection, new ol.format.GeoJSON().readFeatures(source, opt_options), extent);
+        return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 
     constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]) {

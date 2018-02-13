@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {MapService} from '../../../map/map.service';
-import * as ol from 'openlayers';
+import OlFormatWKT from 'ol/format/wkt';
+
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
 import {
@@ -28,7 +29,7 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
     featureTypes = ['Polygon', 'Point'];
     selectedFeatureType: ol.geom.GeometryType;
     isDrawingActive = false;
-    olFeatureWriter = new ol.format.WKT();
+    olFeatureWriter = new OlFormatWKT();
     featureLayerName = 'new feature layer';
     mapProjection: Projection;
     mapProjectionSubscription: Subscription;
