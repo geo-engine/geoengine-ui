@@ -1,6 +1,6 @@
 import {
     Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef, ViewChild,
-    ElementRef
+    ElementRef, Renderer2
 } from '@angular/core';
 import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, Form} from '@angular/forms';
 import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs/Rx';
@@ -101,12 +101,14 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     @Input('csvTable') csvTable: CsvTableComponent;
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
     @ViewChild('stepper') public stepper: MatStepper;
+    @ViewChild('xColumnSelect') public xColumnSelect: ElementRef;
+    @ViewChild('yColumnSelect') public yColumnSelect: ElementRef;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private userService: UserService, public _changeDetectorRef: ChangeDetectorRef) {
+    constructor(private userService: UserService, public _changeDetectorRef: ChangeDetectorRef, public renderer: Renderer2) {
         setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
         this.xColumn$ = this.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.xyColumn$.map(xy => xy.y);
@@ -128,6 +130,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 WaveValidators.notOnlyWhitespace,
                 layerNameNoDuplicateValidator(this.reservedNames$),
             ]),
+            onError: new FormControl('skip'),
         });
     }
 
@@ -311,6 +314,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     next(event) {
+        let lastStatus = this.formStatus$.getValue();
         let group: FormGroup;
         let status: FormStatus;
         switch (event.selectedIndex) {
@@ -330,7 +334,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         this.actualPage$.next(group);
         this.formStatus$.next(status);
-        this._changeDetectorRef.detectChanges();
         if (this.actualPage$.getValue() === this.temporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                 y: this.temporalProperties.controls['endColumn'].value});
@@ -339,9 +342,13 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                 y: this.spatialProperties.controls['yColumn'].value});
         }
-        if (this.actualPage$.getValue() === this.typingProperties) {
+        if(status === this.FormStatus.TemporalProperties || lastStatus === this.FormStatus.TemporalProperties) {
             this.csvTable.resize();
         }
+        setTimeout(() => {
+            this._changeDetectorRef.markForCheck();
+            this._changeDetectorRef.detectChanges();
+        }, 100)
     }
 
     update(timeOut: number) {
