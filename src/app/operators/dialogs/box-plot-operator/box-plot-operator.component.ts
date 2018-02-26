@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators, ControlValueAccessor} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {Symbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
@@ -10,6 +10,7 @@ import {DataType, DataTypes} from '../../datatype.model';
 import {NumericPipe} from '../scatter-plot-operator/scatter-plot-operator.pipe';
 import {WaveValidators} from '../../../util/form.validators';
 import {BoxPlotType} from '../../types/boxplot-type.model';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'wave-box-plot-operator',
@@ -17,26 +18,30 @@ import {BoxPlotType} from '../../types/boxplot-type.model';
     styleUrls: ['./box-plot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoxPlotComponent implements OnInit, AfterViewInit {
+export class BoxPlotComponent implements ControlValueAccessor, OnInit, AfterViewInit {
 
     form: FormGroup;
 
     pointLayers: Array<Layer<Symbology>>;
 
     ResultTypes = ResultTypes;
-    NumericPipe = NumericPipe;
     DataTypes = DataTypes;
+
+    onTouched: () => void;
+    onChange: (_: Array<{attr: string}>) => void = undefined;
+
+    selectedLayers = new BehaviorSubject<Array<{attr: string}>>([]);
 
     max = 5;
 
     constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService) {
+                private projectService: ProjectService,
+                private _changeDetectorRef: ChangeDetectorRef) {
     }
 
     ngOnInit() {
         this.form = this.formBuilder.group({
             vLayer: [undefined, Validators.required],
-            attributes: [[], [Validators.required, Validators.minLength(1)]],
             notch: [false, Validators.required],
             mean: [false, Validators.required],
             range: [1.5, [Validators.required, this.nonNegative]],
@@ -53,28 +58,56 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
         // TODO: propose unused attribute
 
         if (numericAttribute) {
-            this.form.controls['attributes'].value.push(numericAttribute);
-            this.form.controls['attributes'].updateValueAndValidity();
+            this.selectedLayers.first().subscribe(selectedLayers => {
+                const newSelectedLayers = [...selectedLayers];
+                newSelectedLayers[selectedLayers.length] = {attr: numericAttribute};
+                this.selectedLayers.next(newSelectedLayers);
+            });
         } else {
             this.form.controls['vLayer'].setErrors({'noNumericalAttributes': true});
         }
     }
 
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
+
+    registerOnChange(fn: (_: Array<{attr: string}>) => void): void {
+        this.onChange = fn;
+
+        this.onChange(this.selectedLayers.getValue());
+    }
+
+    writeValue(layers: Array<{attr: string}>): void {
+        if (layers) {
+            this.selectedLayers.next(layers);
+        } else if (this.onChange) {
+            this.onChange(this.selectedLayers.getValue());
+        }
+    }
+
+    onBlur() {
+        if (this.onTouched) {
+            this.onTouched();
+        }
+    }
+
     decrease() {
-        this.form.controls['attributes'].value.pop();
-        this.form.controls['attributes'].updateValueAndValidity();
-        // console.log(this.attributes, this.attributes.getValue());
+        this.selectedLayers.next(this.selectedLayers.getValue().slice(0,this.selectedLayers.getValue().length));
     }
 
     add() {
         const sourceOperator = this.form.controls['vLayer'].value.operator;
-
+        const selectedLayers = new Array<string>();
+        for(let item of this.selectedLayers.getValue()) {
+            selectedLayers.push(item.attr);
+        }
         const operator: Operator = new Operator({
             operatorType: new BoxPlotType({
                 notch: this.form.controls['notch'].value,
                 mean: this.form.controls['mean'].value,
                 range: this.form.controls['range'].value,
-                attributes: this.form.controls['attributes'].value,
+                attributes: selectedLayers,
                 inputType: sourceOperator.resultType,
             }),
             resultType: ResultTypes.PLOT,
@@ -104,14 +137,11 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
     }
 
     updateAttribute(i: number, attribute: string) {
-        // console.log(i, attribute);
-        const attributes = this.form.controls['attributes'].value;
-        const newAttributes = [];
-        for (let j = 0; j < attributes.length; j++) {
-            newAttributes[j] = attributes[j];
-        }
-        newAttributes[i] = attribute;
-        this.form.controls['attributes'].setValue(newAttributes);
+        this.selectedLayers.first().subscribe(selectedLayers => {
+            const newSelectedLayers = [...selectedLayers];
+            newSelectedLayers[i] = {attr: attribute};
+            this.selectedLayers.next(newSelectedLayers);
+        });
     }
 
     nonNegative(val: number): ValidatorFn {
