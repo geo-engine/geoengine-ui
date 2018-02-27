@@ -1,0 +1,35 @@
+<wave-sidenav-header>Natur 4.0 Sensors</wave-sidenav-header>
+
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)">
+    <div>
+        <wave-dialog-section-heading
+            title="Sensors"
+            subtitle="Select Seonsor Types"
+        ></wave-dialog-section-heading>
+
+        <ng-container formArrayName="sensors">
+            <div *ngFor="let sensor of sensors; let i = index" >
+                <mat-checkbox class="example-margin" [formControlName]="i">
+                    {{sensor.name}}
+                </mat-checkbox>
+            </div>
+        </ng-container>
+
+
+    </div>
+    <wave-operator-output-name
+        formControlName="name"
+    ></wave-operator-output-name>
+    <div fxLayout="row">
+        <button
+            type="submit"
+            mat-raised-button
+            fxFlex
+            color="primary"
+        >
+            Add
+        </button>
+    </div>
+</form>
+
+<p>form value: {{ form.value | json}}</p>
