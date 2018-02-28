@@ -9,7 +9,7 @@
                 There must be at least one numerical attribute in this layer.
             </mat-hint>
         </wave-layer-selection>
-        <div *ngIf="form.controls['vLayer'].valueChanges | async" fxLayout="column" style="display: block;padding-bottom: 1em;">
+        <div *ngIf="form.controls['vLayer'].valueChanges | async" fxLayout="column" style="padding-bottom: 1em;">
             <div style="display: block;padding-bottom: 1em;">
                 <div fxLayout="row">
                     <wave-dialog-section-heading title="Attributes">
@@ -30,7 +30,6 @@
                         <mat-select
                             placeholder="Attribute {{i+1}}"
                             [ngModel]="value.attr" (ngModelChange)="updateAttribute(i, $event)"
-                            (onBlur)="onBlur()"
                             [ngModelOptions]="{standalone: true}"
                         >
                             <mat-option

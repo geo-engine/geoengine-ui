@@ -10,7 +10,7 @@ import {DataType, DataTypes} from '../../datatype.model';
 import {NumericPipe} from '../scatter-plot-operator/scatter-plot-operator.pipe';
 import {WaveValidators} from '../../../util/form.validators';
 import {BoxPlotType} from '../../types/boxplot-type.model';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 
 @Component({
     selector: 'wave-box-plot-operator',
@@ -18,25 +18,23 @@ import {BehaviorSubject} from 'rxjs';
     styleUrls: ['./box-plot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoxPlotComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+export class BoxPlotComponent implements OnInit, AfterViewInit {
 
     form: FormGroup;
 
-    pointLayers: Array<Layer<Symbology>>;
+    layers: Array<Layer<Symbology>>;
 
     ResultTypes = ResultTypes;
     DataTypes = DataTypes;
 
-    onTouched: () => void;
-    onChange: (_: Array<{attr: string}>) => void = undefined;
+    private subscriptions: Array<Subscription> = [];
 
     selectedLayers = new BehaviorSubject<Array<{attr: string}>>([]);
 
     max = 5;
 
     constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService,
-                private _changeDetectorRef: ChangeDetectorRef) {
+                private projectService: ProjectService) {
     }
 
     ngOnInit() {
@@ -47,6 +45,12 @@ export class BoxPlotComponent implements ControlValueAccessor, OnInit, AfterView
             range: [1.5, [Validators.required, this.nonNegative]],
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
+        this.subscriptions.push(
+            this.form.controls['vLayer'].valueChanges.subscribe(change => {
+                this.selectedLayers.next(new Array());
+            }),
+        );
+
     }
 
     increase() {
@@ -58,42 +62,16 @@ export class BoxPlotComponent implements ControlValueAccessor, OnInit, AfterView
         // TODO: propose unused attribute
 
         if (numericAttribute) {
-            this.selectedLayers.first().subscribe(selectedLayers => {
-                const newSelectedLayers = [...selectedLayers];
-                newSelectedLayers[selectedLayers.length] = {attr: numericAttribute};
-                this.selectedLayers.next(newSelectedLayers);
-            });
+            const newSelectedLayers = [...this.selectedLayers.getValue()];
+            newSelectedLayers[this.selectedLayers.getValue().length] = {attr: numericAttribute};
+            this.selectedLayers.next(newSelectedLayers);
         } else {
             this.form.controls['vLayer'].setErrors({'noNumericalAttributes': true});
         }
     }
 
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
-
-    registerOnChange(fn: (_: Array<{attr: string}>) => void): void {
-        this.onChange = fn;
-
-        this.onChange(this.selectedLayers.getValue());
-    }
-
-    writeValue(layers: Array<{attr: string}>): void {
-        if (layers) {
-            this.selectedLayers.next(layers);
-        } else if (this.onChange) {
-            this.onChange(this.selectedLayers.getValue());
-        }
-    }
-
-    onBlur() {
-        if (this.onTouched) {
-            this.onTouched();
-        }
-    }
-
     decrease() {
-        this.selectedLayers.next(this.selectedLayers.getValue().slice(0,this.selectedLayers.getValue().length));
+        this.selectedLayers.next(this.selectedLayers.getValue().slice(0,this.selectedLayers.getValue().length - 1));
     }
 
     add() {
@@ -137,16 +115,18 @@ export class BoxPlotComponent implements ControlValueAccessor, OnInit, AfterView
     }
 
     updateAttribute(i: number, attribute: string) {
-        this.selectedLayers.first().subscribe(selectedLayers => {
-            const newSelectedLayers = [...selectedLayers];
-            newSelectedLayers[i] = {attr: attribute};
-            this.selectedLayers.next(newSelectedLayers);
-        });
+        const newSelectedLayers  = [...this.selectedLayers.getValue()];
+        newSelectedLayers[i] = {attr: attribute};
+        this.selectedLayers.next(newSelectedLayers);
     }
 
     nonNegative(val: number): ValidatorFn {
         return (control: AbstractControl): { [key: string]: any } => {
             return val < 0 ? {'negativeNumber': {value: control.value}} : null;
         };
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 }
