@@ -35,6 +35,13 @@ const SENSORS = [
             include: true,
         },
         {
+            name: 'node',
+            fields: [
+                {name: 'node', dataType: 'Alphanumeric'}
+            ],
+            include: true,
+        },
+        {
             name: 'temperature',
             fields: [
                 {name: 'temperature', dataType: 'Float64'}
