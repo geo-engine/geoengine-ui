@@ -1,6 +1,6 @@
 {
     "/cgi-bin/*": {
-        "target": "https://sng107.sng.uni-frankfurt.de/dev/",
+        "target": "https://sng107.sng.uni-frankfurt.de/natur40/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"

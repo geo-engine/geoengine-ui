@@ -36,6 +36,7 @@ import {ScatterPlotType, ScatterPlotTypeDict} from './scatterplot-type.model';
 import {BoxPlotType, BoxPlotTypeDict} from './boxplot-type.model';
 import {PieChartType, PieChartTypeDict} from './piechart-type.model';
 import {RasterizePolygonType, RasterizePolygonTypeDict} from './rasterize-polygon-type.model';
+import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -102,6 +103,8 @@ export abstract class OperatorTypeFactory {
                 return PieChartType.fromDict(dict as PieChartTypeDict);
             case RasterizePolygonType.TYPE:
                 return RasterizePolygonType.fromDict(dict as RasterizePolygonTypeDict);
+            case SensorSourceType.TYPE:
+                return SensorSourceType.fromDict(dict as SensorSourceTypeDict);
             default:
                 throw Error('There is not factory method defined for this operator.');
         }
