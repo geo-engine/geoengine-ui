@@ -65,6 +65,6 @@
         </div>
     </div>
     <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID' || (selectedLayers | async).length === 0">Create</button>
     </div>
 </form>

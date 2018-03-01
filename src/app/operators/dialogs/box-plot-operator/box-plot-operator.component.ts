@@ -61,6 +61,7 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
         }) as [string, DataType];
         // TODO: propose unused attribute
 
+
         if (numericAttribute) {
             const newSelectedLayers = [...this.selectedLayers.getValue()];
             newSelectedLayers[this.selectedLayers.getValue().length] = {attr: numericAttribute};
