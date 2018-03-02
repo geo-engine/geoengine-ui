@@ -35,13 +35,6 @@ const SENSORS = [
             include: true,
         },
         {
-            name: 'node',
-            fields: [
-                {name: 'node', dataType: 'Alphanumeric'}
-            ],
-            include: true,
-        },
-        {
             name: 'temperature',
             fields: [
                 {name: 'temperature', dataType: 'Float64'}
@@ -68,6 +61,13 @@ const SENSORS = [
         {
             name: 'tvoc',
             fields: [{name: 'tvoc', dataType: 'Float64'}]
+        }
+    ];
+
+const _ALWAYS_INCLUDE_FIELDS = [
+        {
+            name: 'node',
+            fields: [{name: 'node', dataType: 'Alphanumeric'}]
         }
     ];
 
@@ -120,27 +120,32 @@ export class SensorSourceOperatorComponent {
             sensorTypes: filteredSensors.map(s => s.name)
         });
 
+        /*
         const attributes: Array<string> = SensorSourceOperatorComponent.flatten(filteredSensors.map(
             s => {
                 s.fields.map(f => f.name)
             })
         );
+        */
+        const attributes = new Array<string>();
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
 
-        filteredSensors.forEach( s => {
+        filteredSensors.concat(_ALWAYS_INCLUDE_FIELDS).forEach( s => {
                 s.fields.forEach(c => {
+                    attributes.push(c.name);
                     dataTypes.set(c.name, DataTypes.fromCode(c.dataType));
                     units.set(c.name, Unit.defaultUnit)
                 });
         });
 
-
         return new Operator({
             operatorType: sensorSourceType,
             resultType: ResultTypes.POINTS,
             projection: Projections.WGS_84,
-            attributes: attributes
+            attributes: attributes,
+            dataTypes: dataTypes,
+            units: units
         });
     }
 
