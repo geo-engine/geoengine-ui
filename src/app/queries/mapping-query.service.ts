@@ -327,11 +327,6 @@ export class MappingQueryService {
             //    return Observable.of({interpolation: 'unknown', breakpoints: []});
             // })
             .map(c => {
-
-                if (c['result'] && c['result'] === 'No raster for the given time available.') {
-                    console.log('No raster for the given time available.');
-                }
-
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }
