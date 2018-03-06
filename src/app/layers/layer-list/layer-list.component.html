@@ -151,7 +151,7 @@
                                 <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
                                     || layer.symbology.getSymbologyType() === ST.RASTER">
                                     <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
-                                        <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME">timer_off</ng-template>
+                                        <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME"><span class="lineThrough">access_time</span></ng-template>
                                         <ng-template ngSwitchDefault>
                                             <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
                                                               [yCells]="6">
