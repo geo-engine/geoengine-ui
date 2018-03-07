@@ -21,19 +21,18 @@ import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
-import {SymbologyPointsComponent, SymbologyVectorComponent} from './layers/symbology/symbology-points.component';
-import {SymbologyRasterComponent} from './layers/symbology/symbology-raster.component';
+import {SymbologyPointsComponent} from './layers/symbology/symbology-vectors/symbology-points.component';
+import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
+import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
-import {
-    LegendaryClusteredPointComponent,
-    LegendaryComponent,
-    LegendaryMappingColorizerRasterComponent,
-    LegendaryPointComponent,
-    LegendaryRasterComponent,
-    LegendaryVectorComponent
-} from './layers/symbology/legendary.component';
+import {LegendComponent} from './layers/legend/legend.component';
+import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
+import {LegendaryClusteredPointComponent} from './layers/legend/legend-point/legend-point-cluster.component';
+import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
+import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
+import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
@@ -43,7 +42,7 @@ import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
-import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
+import {MappingColorizerToGradientPipe} from './util/pipes/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from './layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -161,7 +160,7 @@ export function configInitializer(config: Config) {
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,
         CodeEditorComponent,
-        LegendaryComponent,
+        LegendComponent,
         LegendaryPointComponent,
         LegendaryRasterComponent,
         LegendaryVectorComponent,

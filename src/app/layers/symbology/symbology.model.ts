@@ -412,7 +412,6 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
     type: ColorizerType;
 
     static grayScaleMappingColorizer(unit: Unit): MappingRasterColorizer {
-        console.log("grayScaleMappingColorizer", unit);
 
         const min_br: MappingRasterColorizerBreakpoint = {
             value: (unit.min !== undefined) ? unit.min : -1000,
@@ -441,11 +440,6 @@ export class MappingRasterColorizer implements IMappingRasterColorizer {
             name: 'max'
         };
 
-
-        console.log("MappingRasterColorizer", {
-            breakpoints: [min_br, mid_br, max_br],
-            type: 'gradient'
-        });
         return new MappingRasterColorizer({
             breakpoints: [min_br, mid_br, max_br],
             type: 'gradient'
