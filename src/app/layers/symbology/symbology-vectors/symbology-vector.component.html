@@ -8,6 +8,7 @@
             (colorPickerChange)='updateFillRgba($event)'
             [cpSaveClickOutside]="false"
             [cpOKButton]="true"
+            [cpPosition]="'bottom'"
             [cpOutputFormat]="'rgba'">
             {{symbology.fillRGBA}}
         </td>
@@ -21,6 +22,7 @@
             (colorPickerChange)='updateStrokeRgba($event)'
             [cpSaveClickOutside]="false"
             [cpOKButton]="true"
+            [cpPosition]="'bottom'"
             [cpOutputFormat]="'rgba'">
             {{symbology.strokeRGBA}}
         </td>

@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog, MatIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {Observable, Subscription} from 'rxjs/Rx';
@@ -12,6 +12,7 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
+import {SymbologyEditorComponent} from '../../layers/symbology/symbology-editor/symbology-editor.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';
@@ -24,7 +25,7 @@ import {Config} from '../../config.service';
     styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerListComponent implements OnInit, OnDestroy {
+export class LayerListComponent implements OnDestroy {
 
     LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
@@ -40,6 +41,7 @@ export class LayerListComponent implements OnInit, OnDestroy {
     LayerExportComponent = LayerExportComponent;
     LayerShareComponent = LayerShareComponent;
     SourceOperatorListComponent = SourceOperatorListComponent;
+    SymbologyEditorComponent = SymbologyEditorComponent;
     // tslint:enable
 
     dragOptions = {
@@ -82,9 +84,6 @@ export class LayerListComponent implements OnInit, OnDestroy {
         this.handleDragAndDrop();
     }
 
-    ngOnInit() {
-    }
-
     ngOnDestroy() {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
@@ -118,9 +117,4 @@ export class LayerListComponent implements OnInit, OnDestroy {
     toggleLayer(layer: Layer<Symbology>) {
         this.projectService.toggleSymbology(layer);
     }
-
-    update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
-        this.projectService.changeLayer(layer, {symbology: symbology});
-    }
-
 }

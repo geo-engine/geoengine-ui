@@ -100,7 +100,7 @@
                             <mat-icon>mode_edit</mat-icon>
                             <span>Rename</span>
                         </button>
-                        <button mat-menu-item (click)="projectService.toggleEditSymbology(layer)">
+                        <button mat-menu-item (click)="layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer: layer}})">
                             <mat-icon>color_lens</mat-icon>
                             <span>Edit Symbology</span>
                         </button>
@@ -223,50 +223,6 @@
                                 <mat-icon>expand_less</mat-icon>
                             </button>
 
-                        </div>
-
-                        <div *ngIf="layer.editSymbology" [ngSwitch]="layer.symbology.getSymbologyType()"
-                             fxLayoutAlign="space-between stretch"
-                             fxLayout="row"
-                             class="symbology no-drag">
-
-                            <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-                                <wave-symbology-points fxFlex="grow" [symbology]="layer.symbology"
-                                                       (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-points>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-                                <wave-symbology-points fxFlex="grow"
-                                                       class="no-drag" [symbology]="layer.symbology"
-                                                       [editRadius]="false"
-                                                       [editStrokeWidth]="false"
-                                                       (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-points>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
-                                <wave-symbology-vector fxFlex="grow" [symbology]="layer.symbology"
-                                                       (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-vector>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.RASTER">
-                                <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
-                                                       (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-raster>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-                                <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
-                                                       (symbologyChanged)="update_symbology(layer, $event)">
-                                    >
-                                </wave-symbology-raster>
-                            </ng-template>
-
-                            <button mat-icon-button (click)="projectService.toggleEditSymbology(layer)">
-                                <mat-icon>expand_less</mat-icon>
-                            </button>
                         </div>
 
                         <mat-progress-bar
