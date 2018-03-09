@@ -130,7 +130,10 @@
                                     matTooltip="{{layer.expanded ? 'Hide' : 'Show'}} Legend" matTooltipPosition="after"
                                     [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                             >
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
+                                <ng-template [ngIf]="!layer.visible">
+                                    <mat-icon mat-list-icon>visibility_off</mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
                                     || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
                                     <mat-icon mat-list-icon svgIcon="symbology:point"
                                               [style.stroke-width.px]='2'
@@ -141,14 +144,14 @@
                                 <ng-template [ngIf]="false">
                                     <mat-icon mat-list-icon svgIcon="symbology:line"></mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
                                     <mat-icon mat-list-icon svgIcon="symbology:polygon"
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
                                               [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
                                     ></mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
                                     || layer.symbology.getSymbologyType() === ST.RASTER">
                                     <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
                                         <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME"><span class="lineThrough">access_time</span></ng-template>
