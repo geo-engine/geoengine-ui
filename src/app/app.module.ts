@@ -134,6 +134,8 @@ import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw
 import {CountryPolygonSelectionComponent} from './operators/dialogs/country-polygon-selection/country-polygon-selection.component';
 import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
+import {ColorizerEditorComponent} from './layers/symbology/symbology-raster/colorizer-editor.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -156,6 +158,7 @@ export function configInitializer(config: Config) {
         BreakpointToCssStringPipe,
         SymbologyPointsComponent,
         SymbologyRasterComponent,
+        SymbologyRasterMappingColorizerComponent,
         SymbologyVectorComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
@@ -252,7 +255,8 @@ export function configInitializer(config: Config) {
         OlDrawFeaturesComponent,
         CountryPolygonSelectionComponent,
         ZoomHandlesComponent,
-        SymbologyEditorComponent
+        SymbologyEditorComponent,
+        ColorizerEditorComponent,
     ],
     imports: [
         BrowserModule,
@@ -311,6 +315,7 @@ export function configInitializer(config: Config) {
         OlDrawFeaturesComponent,
         CountryPolygonSelectionComponent,
         SymbologyEditorComponent,
+        ColorizerEditorComponent,
     ],
     providers: [
         DragulaService,

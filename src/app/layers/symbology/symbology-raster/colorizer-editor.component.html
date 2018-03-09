@@ -1,0 +1,106 @@
+<div>Colorizer</div>
+
+
+<form [formGroup]="colorizerForm" (ngSubmit)="$event.preventDefault(); updateColorizer($event)">
+
+    <div formArrayName="colorizerEntries" fxLayout="column" class="colorizerEntries">
+
+        <ng-template ngFor let-i="index" let-itemrow [ngForOf]="colorizerForm.get('colorizerEntries').controls">
+
+            <div [formGroupName]="i" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
+
+                <mat-form-field fxFlex="25">
+                    <input
+                        class="color_cell" 
+                        matInput
+                        formControlName="color"
+                        placeholder="color"
+                        [colorPicker] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                        (colorPickerChange) = "colorizerForm.get('colorizerEntries').at(i).get('color').setValue($event)"
+                        [style.background] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                        [cpOutputFormat]="'rgba'"
+                    >
+                </mat-form-field>
+
+                <mat-form-field class="numberEntry" fxFlex="25">
+                    <input matInput formControlName="value" type="number" placeholder="raster value">
+                </mat-form-field>
+
+                <mat-form-field class="nameEntry" fxFlex>
+                    <input matInput formControlName="name" placeholder="name/hint">
+                </mat-form-field>
+
+                <div fxLayout="row">
+                    <button mat-icon-button (click)="addRow(i)">
+                        <mat-icon aria-label="Delete row">add_circle_outline</mat-icon>
+                    </button>
+                    <button mat-icon-button [disabled]="colorizerForm.get('colorizerEntries').controls.length == 1" (click)="deleteRow(i)">
+                        <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
+                    </button>
+                </div>
+
+            </div>
+        </ng-template>
+    </div>
+
+    <!--
+    <table>
+        <thead>
+        <tr>
+            <th>
+                color
+            </th>
+            <th>
+                value
+            </th>
+            <th>
+                name
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody formArrayName="colorizerEntries">
+        <ng-template ngFor let-i="index" let-itemrow [ngForOf]="colorizerForm.get('colorizerEntries').controls">
+            <tr [formGroupName]="i">
+                <td class="color_cell">
+                    <input
+                        formControlName="color"
+                        [colorPicker] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                        (colorPickerChange) = "colorizerForm.get('colorizerEntries').at(i).get('color').setValue($event)"
+                        [style.background] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                        [cpOutputFormat]="'rgba'"
+                    />
+                </td>
+                <td class="value_cell">
+                    <mat-form-field class="example-full-width">
+                        <input matInput formControlName="value" type="number">
+                    </mat-form-field>
+                </td>
+                <td class="name_cell">
+                    <mat-form-field class="example-full-width">
+                        <input matInput formControlName="name">
+                    </mat-form-field>
+                </td>
+                <td class="interactions_cell">
+                    <button mat-icon-button (click)="addRow(i)">
+                        <mat-icon aria-label="Delete row">add_circle</mat-icon>
+                    </button>
+                    <button mat-icon-button [disabled]="colorizerForm.get('colorizerEntries').controls.length == 1" (click)="deleteRow(i)">
+                        <mat-icon aria-label="Delete row">remove_circle</mat-icon>
+                    </button>
+                </td>
+            </tr>
+        </ng-template>
+        </tbody>
+    </table>
+    -->
+
+    <div class="actions">
+        <button
+            type="submit"
+            mat-raised-button
+            color="primary"
+            [disabled]="colorizerForm.invalid"
+        >Apply</button>
+    </div>
+</form>

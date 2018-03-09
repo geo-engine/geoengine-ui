@@ -1,7 +1,7 @@
 <wave-sidenav-header>Symbology Editor</wave-sidenav-header>
 
 <mat-form-field>
-    <mat-select [(value)]="layer">
+    <mat-select [(value)]="layer" placeholder="layer">
         <mat-option *ngFor="let l of projectService.getLayerStream() | async" [value]="l">{{l.name}}</mat-option>
     </mat-select>
 </mat-form-field>
@@ -39,9 +39,9 @@
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-        <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
+        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [symbology]="layer.symbology"
                                (symbologyChanged)="update_symbology(layer, $event)">
             >
-        </wave-symbology-raster>
+        </wave-symbology-raster-mapping-colorizer>
     </ng-template>
 </div>
