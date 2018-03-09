@@ -6,6 +6,8 @@
     </mat-select>
 </mat-form-field>
 
+<mat-divider></mat-divider>
+
 <div *ngIf="validLayer" [ngSwitch]="layer?.symbology?.getSymbologyType()"
      fxLayoutAlign="space-between stretch"
      fxLayout="row"
