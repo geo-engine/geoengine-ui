@@ -3,52 +3,67 @@
 
 <form [formGroup]="colorizerForm" (ngSubmit)="$event.preventDefault(); updateColorizer($event)">
 
-    <div formArrayName="colorizerEntries" fxLayout="column" class="colorizerEntries">
+    <div fxLayout="column" class="colorizerEntries">
 
-        <ng-template ngFor let-i="index" let-itemrow [ngForOf]="colorizerForm.get('colorizerEntries').controls">
+        <div>
+            <mat-form-field fxFlex>
+                <mat-select [formControl]="colorizerForm.get('colorizerType')" required placeholder="colorizer type">
+                    <mat-option value="gradient">gradient</mat-option>
+                    <mat-option value="palette">palette</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
 
-            <div [formGroupName]="i" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
+        <div formArrayName="colorizerEntries">
 
-                <mat-form-field fxFlex="25">
-                    <input
-                        class="color_cell"
-                        matInput
-                        formControlName="color"
-                        placeholder="color"
-                        [colorPicker] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
-                        (colorPickerChange) = "colorizerForm.get('colorizerEntries').at(i).get('color').setValue($event)"
-                        [style.background] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
-                        [cpOutputFormat]="'rgba'"
-                    >
-                </mat-form-field>
+            <ng-template ngFor let-i="index" let-itemrow [ngForOf]="colorizerForm.get('colorizerEntries').controls">
 
-                <mat-form-field class="numberEntry" fxFlex="25">
-                    <input matInput formControlName="value" type="number" placeholder="raster value">
-                </mat-form-field>
+                <div [formGroupName]="i" fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
 
-                <mat-form-field class="nameEntry" fxFlex>
-                    <input matInput formControlName="name" placeholder="name/hint">
-                </mat-form-field>
+                    <mat-form-field fxFlex="25">
+                        <input
+                            class="color_cell"
+                            matInput
+                            formControlName="color"
+                            placeholder="color"
+                            [colorPicker] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                            (colorPickerChange) = "colorizerForm.get('colorizerEntries').at(i).get('color').setValue($event)"
+                            [style.background] = "colorizerForm.get('colorizerEntries').at(i).get('color').value"
+                            [cpOutputFormat]="'rgba'"
+                        >
+                    </mat-form-field>
 
-                <div fxLayout="row">
-                    <button mat-icon-button (click)="addRow(i)">
-                        <mat-icon aria-label="Delete row">add_circle_outline</mat-icon>
-                    </button>
-                    <button mat-icon-button [disabled]="colorizerForm.get('colorizerEntries').controls.length == 1" (click)="deleteRow(i)">
-                        <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
-                    </button>
+                    <mat-form-field class="numberEntry" fxFlex="25">
+                        <input matInput formControlName="value" type="number" placeholder="raster value">
+                    </mat-form-field>
+
+                    <mat-form-field class="nameEntry" fxFlex>
+                        <input matInput formControlName="name" placeholder="name/hint">
+                    </mat-form-field>
+
+                    <div fxLayout="row">
+                        <button mat-icon-button (click)="addRow(i)">
+                            <mat-icon aria-label="Delete row">add_circle_outline</mat-icon>
+                        </button>
+                        <button mat-icon-button [disabled]="colorizerForm.get('colorizerEntries').controls.length == 1" (click)="deleteRow(i)">
+                            <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
+                        </button>
+                    </div>
+
                 </div>
+            </ng-template>
+        </div>
 
-            </div>
-        </ng-template>
+        <div class="actions">
+            <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="colorizerForm.invalid"
+            >Apply</button>
+        </div>
+
     </div>
 
-    <div class="actions">
-        <button
-            type="submit"
-            mat-raised-button
-            color="primary"
-            [disabled]="colorizerForm.invalid"
-        >Apply</button>
-    </div>
+
 </form>

@@ -69,7 +69,7 @@ export class ColorizerEditorComponent implements OnInit, OnChanges {
             colorizerEntries: this.formBuilder.array(
                 this.colorizer.breakpoints.map(brk => this.createColorizerEntry(brk))
             ),
-            // TODO: colorizerType:
+            colorizerType: [this.colorizer.type , Validators.required],
         });
         /*
         this.colorizerForm.valueChanges.subscribe(stat => {
@@ -99,7 +99,12 @@ export class ColorizerEditorComponent implements OnInit, OnChanges {
                 name: ctrl.name
             };
         });
-        return new MappingRasterColorizer({breakpoints: brks});
+
+        const type = this.colorizerForm.controls['colorizerType'].value;
+        return new MappingRasterColorizer({
+            breakpoints: brks,
+            type: type,
+        });
     }
 
 
