@@ -134,6 +134,7 @@ import {IfGeoBonDirective} from './util/directives/if-geobon.directive';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from './operators/dialogs/country-polygon-selection/country-polygon-selection.component';
 import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
+import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -251,7 +252,8 @@ export function configInitializer(config: Config) {
         FeedbackComponent,
         OlDrawFeaturesComponent,
         CountryPolygonSelectionComponent,
-        ZoomHandlesComponent
+        ZoomHandlesComponent,
+        HeatmapOperatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -309,6 +311,7 @@ export function configInitializer(config: Config) {
         RasterPolygonClipOperatorComponent,
         OlDrawFeaturesComponent,
         CountryPolygonSelectionComponent,
+        HeatmapOperatorComponent,
     ],
     providers: [
         DragulaService,
