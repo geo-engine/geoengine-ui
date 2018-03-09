@@ -328,6 +328,9 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 this._mapLayer.setOpacity(this.symbology.opacity);
                 // this._mapLayer.setHue(rasterSymbology.hue);
                 // this._mapLayer.setSaturation(rasterSymbology.saturation);
+                this.source.updateParams({
+                    colors: this.symbology.colorizer.asMappingRequestString()
+                })
             }
         }
     }

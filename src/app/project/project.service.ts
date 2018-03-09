@@ -756,7 +756,7 @@ export class ProjectService {
         // change mutably
         layer._changeUnderlyingData(changes);
 
-        if (layer instanceof RasterLayer) {
+        if (layer instanceof RasterLayer && layer.symbology instanceof RasterSymbology) {
             const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(
                 layer as RasterLayer<RasterSymbology>,
                 this.layerSymbologyData$.get(layer),
