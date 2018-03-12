@@ -1,0 +1,30 @@
+.legend {
+    margin-top: 2px;
+    margin-bottom: 5px;
+    display: table;
+    font-size: 13px;
+}
+tr {
+    min-height: 20px;
+}
+
+td {
+    padding: 2px;
+}
+
+.gradient {
+    min-width: 20px;
+    border: #000 solid 1px;
+}
+
+.classes {
+    vertical-align:top;
+}
+
+.icon {
+    margin-bottom: 1px !important;
+    margin-top: 1px !important;
+    min-height: 20px !important;
+    min-width: 20px !important;
+    border: #000 solid 1px;
+}

@@ -13,7 +13,10 @@ import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Layer, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {
-    AbstractVectorSymbology, MappingColorizer, RasterSymbology, Symbology,
+    AbstractVectorSymbology,
+    MappingColorizer,
+    RasterSymbology,
+    Symbology,
     SymbologyType
 } from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -21,6 +24,7 @@ import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
 import {ResultTypes} from '../operators/result-type.model';
 import {LayerService} from '../layers/layer.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class ProjectService {
@@ -752,7 +756,7 @@ export class ProjectService {
         // change mutably
         layer._changeUnderlyingData(changes);
 
-        if (layer instanceof RasterLayer) {
+        if (layer instanceof RasterLayer && layer.symbology instanceof RasterSymbology) {
             const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(
                 layer as RasterLayer<RasterSymbology>,
                 this.layerSymbologyData$.get(layer),
@@ -914,16 +918,19 @@ export class ProjectService {
             this.layerProvenanceDataState$.get(layer))
             .map(([sym, data, prov]) => {
                 // console.log("combinedLayerState", sym, data, prov);
-                if (sym === LoadingState.LOADING
-                    || data === LoadingState.LOADING
-                /*|| prov === LoadingState.LOADING*/) {
+
+                if (sym === LoadingState.LOADING || data === LoadingState.LOADING /*|| prov === LoadingState.LOADING*/) {
                     return LoadingState.LOADING;
                 }
-                if (sym === LoadingState.ERROR
-                    || data === LoadingState.ERROR
-                /*|| prov === LoadingState.ERROR*/) {
+
+                if (sym === LoadingState.ERROR || data === LoadingState.ERROR /*|| prov === LoadingState.ERROR*/) {
                     return LoadingState.ERROR;
                 }
+
+                if (sym === LoadingState.NODATAFORGIVENTIME || data == LoadingState.NODATAFORGIVENTIME) {
+                    return LoadingState.NODATAFORGIVENTIME;
+                }
+
                 return LoadingState.OK;
             }).catch(err => {
                 return Observable.of(LoadingState.ERROR);
@@ -957,9 +964,14 @@ export class ProjectService {
             })
             .do(
                 () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
-                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-                    loadingState$.next(LoadingState.ERROR);
+                (reason: HttpErrorResponse) => {
+                    if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                        this.notificationService.error(`${layer.name}: No Raster for the given Time`);
+                        loadingState$.next(LoadingState.NODATAFORGIVENTIME);
+                    } else {
+                        this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                        loadingState$.next(LoadingState.ERROR);
+                    }
                 }
             )
             .subscribe(
@@ -1031,9 +1043,14 @@ export class ProjectService {
             })
             .do(
                 () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
-                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-                    loadingState$.next(LoadingState.ERROR);
+                (reason: HttpErrorResponse) => {
+                    if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                        this.notificationService.error(`${layer.name}: No Raster for the given Time`);
+                        loadingState$.next(LoadingState.NODATAFORGIVENTIME);
+                    } else {
+                        this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                        loadingState$.next(LoadingState.ERROR);
+                    }
                 }
             )
             .subscribe(
@@ -1058,18 +1075,18 @@ export class ProjectService {
         )
             .do(() => loadingState$.next(LoadingState.LOADING))
             .switchMap(([time, projection]) => {
-                const colorizer = this.mappingQueryService.getColorizer(
-                    layer.operator,
-                    time,
-                    projection
-                )
+                return this.mappingQueryService.getColorizer(layer.operator, time, projection)
                     .do(() => loadingState$.next(LoadingState.OK))
-                    .catch((reason: Response) => {
-                        this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-                        loadingState$.next(LoadingState.ERROR);
+                    .catch((reason: HttpErrorResponse) => {
+                        if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                            this.notificationService.error(`${layer.name}: No Raster for the given Time`);
+                            loadingState$.next(LoadingState.NODATAFORGIVENTIME);
+                        } else {
+                            this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                            loadingState$.next(LoadingState.ERROR);
+                        }
                         return Observable.of({interpolation: 'unknown', breakpoints: []});
                     });
-                return colorizer;
             })
             .subscribe(
                 data => data$.next(data),
