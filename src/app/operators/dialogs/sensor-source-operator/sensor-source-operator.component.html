@@ -10,7 +10,7 @@
         <ng-container formArrayName="sensors">
             <div *ngFor="let sensor of sensors; let i = index" >
                 <mat-checkbox class="example-margin" [formControlName]="i">
-                    {{sensor.name}}
+                    {{(sensor.displayName) ? sensor.displayName : sensor.name}}
                 </mat-checkbox>
             </div>
         </ng-container>
@@ -27,9 +27,7 @@
             fxFlex
             color="primary"
         >
-            Add
+            Create layer
         </button>
     </div>
 </form>
-
-<p>form value: {{ form.value | json}}</p>

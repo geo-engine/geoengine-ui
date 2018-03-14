@@ -14,12 +14,14 @@ import {Unit} from '../../unit.model';
 
 interface Sensor {
     name: string;
+    displayName?: string,
     fields: Array<SensorField>;
     include?: boolean;
 }
 
 interface SensorField {
     name: string,
+    displayName?: string,
     dataType?: string,
     unit?: string
 }
@@ -35,18 +37,6 @@ const SENSORS = [
             include: true,
         },
         {
-            name: 'temperature',
-            fields: [
-                {name: 'temperature', dataType: 'Float64'}
-            ],
-            include: true,
-        },
-        {
-            name: 'image',
-            fields: [{name: 'image', dataType: 'Alphanumeric'}],
-            include: false
-        },
-        {
             name: 'light',
             fields: [{name: 'light', dataType: 'Float64'}]
         },
@@ -55,12 +45,49 @@ const SENSORS = [
             fields: [{name: 'pressure', dataType: 'Float64'}]
         },
         {
+            name: 'temperature',
+            fields: [
+                {name: 'temperature', dataType: 'Float64'}
+            ],
+            include: true,
+        },
+        {
             name: 'co2',
+            displayName: 'CO2',
             fields: [{name: 'co2', dataType: 'Float64'}]
         },
         {
             name: 'tvoc',
             fields: [{name: 'tvoc', dataType: 'Float64'}]
+        },
+        {
+            name: 'image',
+            fields: [{name: 'image', dataType: 'Alphanumeric'}],
+        },
+        {
+            name: 'UV_irradiance',
+            displayName: 'UV irradiance',
+            fields: [{name: 'UV_irradiance', dataType: 'Float64'}]
+        },
+        {
+            name: 'solar_irradiance',
+            displayName: 'solar irradiance',
+            fields: [{name: 'solar_irradiance', dataType: 'Float64'}]
+        },
+        {
+            name: 'IR_surface_temperature',
+            displayName: 'IR surface temperature',
+            fields: [{name: 'IR_surface_temp', dataType: 'Float64'}]
+        },
+        {
+            name: 'rh_sht',
+            displayName: 'rH SHT',
+            fields: [{name: 'rh_sht', dataType: 'Float64'}]
+        },
+        {
+            name: 't_sht',
+            displayName: 'T SHT',
+            fields: [{name: 't_sht', dataType: 'Float64'}]
         }
     ];
 
