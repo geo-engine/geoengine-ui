@@ -2,15 +2,15 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {Operator} from '../../operator.model';
-import {SimplePointSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexPointSymbology} from '../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../layers/layer.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ProjectService} from '../../../project/project.service';
 import {ResultTypes} from '../../result-type.model';
-import {SensorSourceType} from '../../types/sensor-source-type.model';
 import {Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
+import {SensorSourceType} from '../../types/sensor-source-type.model';
 
 interface Sensor {
     name: string;
@@ -177,8 +177,19 @@ export class SensorSourceOperatorComponent {
     }
 
     addLayer(layerName: string, operator: Operator) {
-        let symbology = new SimplePointSymbology({
+        let symbology = new ComplexPointSymbology({
             fillRGBA: this.randomColorService.getRandomColor(),
+            colorAttribute: 'node',
+            colorMapping: [
+                {value: 'rover0', r: 255, g: 128, b: 0, a: 1.0},
+                {value: 'bb00', r: 0, g: 128, b: 255, a: 1.0},
+                {value: 'bb01', r: 0, g: 64, b: 255, a: 1.0},
+                {value: 'bb02', r: 0, g: 32, b: 255, a: 1.0},
+                {value: 'bb23', r: 0, g: 0, b: 255, a: 1.0},
+                {value: 'sb00', r: 0, g: 255, b: 128, a: 1.0},
+                {value: 'sb02', r: 0, g: 255, b: 64, a: 1.0}
+
+            ],
         });
 
         const layer = new VectorLayer({
