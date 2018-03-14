@@ -17,7 +17,7 @@
                     <div fxFlex fxLayout="row" fxLayoutAlign="end">
                         <button mat-button color="primary"
                                 (click)="$event.preventDefault();increase()"
-                                [disabled]="(selectedLayers | async)?.length >= max"
+                                [disabled]="(selectedLayers | async)?.length >= max || !(hasNumerics | async)"
                         ><mat-icon>add_circle_outline</mat-icon></button>
                         <button mat-button color="primary"
                                 (click)="$event.preventDefault();decrease()"

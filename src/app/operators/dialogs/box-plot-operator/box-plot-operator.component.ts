@@ -11,6 +11,8 @@ import {NumericPipe} from '../scatter-plot-operator/scatter-plot-operator.pipe';
 import {WaveValidators} from '../../../util/form.validators';
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {BehaviorSubject, Subscription} from 'rxjs';
+import {toObservable} from "@angular/forms/src/validators";
+import {map} from "rxjs/operators";
 
 @Component({
     selector: 'wave-box-plot-operator',
@@ -30,6 +32,7 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
     private subscriptions: Array<Subscription> = [];
 
     selectedLayers = new BehaviorSubject<Array<{attr: string}>>([]);
+    hasNumerics = new BehaviorSubject<Boolean>(false);
 
     max = 5;
 
@@ -48,6 +51,18 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
         this.subscriptions.push(
             this.form.controls['vLayer'].valueChanges.subscribe(change => {
                 this.selectedLayers.next(new Array());
+                let numerics = false;
+                const inputOperator = change.operator as Operator;
+                let it = inputOperator.dataTypes.entries();
+                let curr: {done: boolean, value: any};
+                while (!(curr = it.next()).done) {
+                    let k = this.DataTypes.ALL_NUMERICS.indexOf(curr.value[1]);
+                    if (k >= 0) {
+                        numerics = true;
+                        break;
+                    }
+                }
+                this.hasNumerics.next(numerics);
             }),
         );
 
@@ -56,9 +71,22 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
     increase() {
         const inputOperator = this.form.controls['vLayer'].value.operator as Operator;
 
-        const [numericAttribute] = inputOperator.dataTypes.findEntry((value) => {
-            return this.DataTypes.ALL_NUMERICS.indexOf(value) >= 0;
-        }) as [string, DataType];
+        let it = inputOperator.dataTypes.entries();
+        let curr: {done: boolean, value: any};
+        let numericAttribute: string;
+        while (!(curr = it.next()).done) {
+            let k = this.DataTypes.ALL_NUMERICS.indexOf(curr.value[1]);
+            if (k >= 0) {
+                numericAttribute = curr.value[0];
+                if (this.attrIndexOf(numericAttribute) < 0) {
+                    break;
+                }
+            }
+        }
+
+        // const [numericAttribute] = inputOperator.dataTypes.findEntry((value) => {
+        //     return this.DataTypes.ALL_NUMERICS.indexOf(value) >= 0;
+        // }) as [string, DataType];
         // TODO: propose unused attribute
 
 
@@ -72,13 +100,13 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
     }
 
     decrease() {
-        this.selectedLayers.next(this.selectedLayers.getValue().slice(0,this.selectedLayers.getValue().length - 1));
+        this.selectedLayers.next(this.selectedLayers.getValue().slice(0, this.selectedLayers.getValue().length - 1));
     }
 
     add() {
         const sourceOperator = this.form.controls['vLayer'].value.operator;
         const selectedLayers = new Array<string>();
-        for(let item of this.selectedLayers.getValue()) {
+        for (let item of this.selectedLayers.getValue()) {
             selectedLayers.push(item.attr);
         }
         const operator: Operator = new Operator({
@@ -129,5 +157,15 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
 
     ngOnDestroy() {
         this.subscriptions.forEach(sub => sub.unsubscribe());
+    }
+
+    private attrIndexOf(obj: string) {
+        let arr = this.selectedLayers.getValue();
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].attr === obj) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
