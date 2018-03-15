@@ -99,6 +99,40 @@ export class WGS84 extends Projection {
     }
 }
 
+export class UTM32N extends Projection {
+    private static isProjectionRegistered = false;
+
+    getCode(): string {
+        return 'EPSG:32632';
+    }
+
+    getName(): string {
+        return 'UTM 32 N';
+    }
+
+    getExtent(): [number, number, number, number] {
+        return [166021.4431, 0.0000, 833978.5569, 9329005.1825];
+    }
+
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/32632';
+    }
+
+    private registerProjection() {
+
+        if (!UTM32N.isProjectionRegistered) {
+            olProj.addProjection(new OlProjection({
+                code: this.getCode(),
+                extent: this.getExtent(),
+                units: 'm'
+            }));
+
+            UTM32N.isProjectionRegistered = true;
+        }
+
+    }
+}
+
 export class GEOS extends Projection {
     private static isProjectionRegistered = false;
 
@@ -132,7 +166,7 @@ export class GEOS extends Projection {
     }
 
     getCrsURI(): string {
-        return 'http://www.opengis.net/def/crs/EPSG/0/40453';
+        return 'http://spatialreference.org/ref/sr-org/81/gml/';
     }
 
     private registerProjection() {
@@ -154,6 +188,7 @@ class ProjectionCollection {
     WGS_84: Projection = new WGS84();
     WEB_MERCATOR: Projection = new WebMercator();
     GEOS: Projection = new GEOS();
+    UTM32N: Projection = new UTM32N();
 
     // required to support already stored layers
     OLD_GEOS_CODE = 'EPSG:40453';
@@ -174,6 +209,8 @@ class ProjectionCollection {
                 return this.GEOS;
             case this.OLD_GEOS_CODE:
                 return this.GEOS;
+            case this.UTM32N.getCode():
+                return this.UTM32N;
             default:
                 throw new Error('Invalid Projection String');
         }
