@@ -111,12 +111,14 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
         }
 
         if (changes['symbology']) {
-            const style = this.symbology.getOlStyle();
+            /*const style = this.symbology.getOlStyle();
             if (style instanceof OlStyleStyle) {
                 this.mapLayer.setStyle(style as ol.style.Style);
             } else {
                 this.mapLayer.setStyle(style as ol.StyleFunction);
             }
+            */
+            this.mapLayer.setStyle(this.symbology.getOlStyleAsFunction());
         }
 
         /*
