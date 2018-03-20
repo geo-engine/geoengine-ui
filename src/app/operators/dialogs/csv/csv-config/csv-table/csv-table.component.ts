@@ -80,14 +80,16 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.csvProperty.dataProperties.get('textQualifier').value : null;
             let prev: number = this.csvProperty.dataProperties.get('isHeaderRow').value ?
                 this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1 : this.linesToParse;
-            this.parsedData = Papa.parse(this.data.content as string, {
+            let parsed = Papa.parse(this.data.content as string, {
                 delimiter: this.csvProperty.dataProperties.get('delimiter').value,
                 newline: '',
                 quoteChar: textQualifier,
                 header: false,
                 skipEmptyLines: true,
                 preview: prev,
-            } as any).data;
+            } as any);
+            this.parsedData = parsed.data;
+            // this.csvProperty.dataProperties.controls['delimiter'].setValue(parsed.meta.delimiter, {emitEvent: false});
             if (this.csvProperty.dataProperties.get('isHeaderRow').value) {
                 this.header = new Array(this.parsedData[this.csvProperty.dataProperties.get('headerRow').value].length);
                 for (let i = 0; i < this.header.length; i++) {
@@ -128,7 +130,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     resetTableSize() {
         this.cellSizes = [];
-        for (let i = 0; i < Math.max(this.header.length, this.elements.length); i++) {
+        for (let i = 0; i < 2 * Math.max(this.header.length, this.elements.length); i++) {
             this.cellSizes.push(0);
         }
     }
@@ -202,7 +204,6 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
      * After delay(so view can reload on resetted table column sizes) resizes table to maximum of every table.
      */
     resize() {
-        this._changeDetectorRef.detectChanges();
         this.resetTableSize();
         this.update(10);
         setTimeout(() => this.resizeTable(), 100);
@@ -235,7 +236,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
             }
         } else {
-            this.csvProperty.temporalProperties.controls['isTime'].enable();
+            this.csvProperty.temporalProperties.controls['isTime'].enable({emitEvent: false});
         }
     }
 

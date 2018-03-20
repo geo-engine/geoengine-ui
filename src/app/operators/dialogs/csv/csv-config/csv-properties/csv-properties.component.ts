@@ -11,7 +11,7 @@ import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
 import {MatStepper} from '@angular/material';
 
-export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, Loading }
+export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, LayerProperties, Loading }
 
 @Component({
     selector: 'wave-csv-properties',
@@ -60,7 +60,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     dataProperties: FormGroup = new FormGroup({
         delimiter: new FormControl(this.delimiters[1].value, Validators.required),
         decimalSeparator: new FormControl(this.decimalSeparators[1], Validators.required),
-        isTextQualifier: new FormControl(false),
+        isTextQualifier: new FormControl(true),
         textQualifier: new FormControl({value: this.textQualifiers[0], disabled: true}, Validators.required),
         isHeaderRow: new FormControl(true),
         headerRow: new FormControl({value: 0, disabled: true}, Validators.required),
@@ -81,6 +81,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         constantDuration: new FormControl(0),
     });
     typingProperties: FormGroup = new FormGroup({});
+    layerProperties: FormGroup = new FormGroup({});
 
     dialogTitle: string;
     subtitleDescription: string;
@@ -90,6 +91,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     isSpatialProperties$: Observable<boolean>;
     isTemporalProperties$: Observable<boolean>;
     isTypingProperties$: Observable<boolean>;
+    isLayerProperties$: Observable<boolean>;
 
     xyColumn$: BehaviorSubject<{x: number, y: number}> = new BehaviorSubject<{x: number, y: number}>({x: 0, y: 0});
     xColumn$: Observable<number>;
@@ -112,19 +114,18 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
         this.xColumn$ = this.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.xyColumn$.map(xy => xy.y);
-        this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
-            y: this.spatialProperties.controls['yColumn'].value}
-        );
+        this.xyColumn$.next({x: -1, y: -1});
         this.isDataProperties$ = this.formStatus$.map(status => status === this.FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === this.FormStatus.SpatialProperties);
         this.isTemporalProperties$ = this.formStatus$.map(status => status === this.FormStatus.TemporalProperties);
         this.isTypingProperties$ = this.formStatus$.map(status => status === this.FormStatus.TypingProperties);
+        this.isLayerProperties$ = this.formStatus$.map(status => status === this.FormStatus.LayerProperties);
 
         this.userService.getFeatureDBList()
             .map(entries => entries.map(entry => entry.name))
             .subscribe(names => this.reservedNames$.next(names));
 
-        this.typingProperties = new FormGroup({
+        this.layerProperties = new FormGroup({
             layerName: new FormControl('', [
                 Validators.required,
                 WaveValidators.notOnlyWhitespace,
@@ -136,7 +137,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     ngOnInit() {
         this.storageName$.next(this.data.file.name);
-        this.typingProperties.patchValue({layerName: this.data.file.name});
+        this.layerProperties.patchValue({layerName: this.data.file.name});
         this.subscriptions.push(
             this.formStatus$.subscribe(status => {
                 switch (status) {
@@ -155,6 +156,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     case this.FormStatus.TypingProperties:
                         this.dialogTitle = 'Typing Properties';
                         this.subtitleDescription = 'You can specify the data types of the remaining columns here.';
+                        break;
+                    case this.FormStatus.LayerProperties:
+                        this.dialogTitle = 'Layer Properties';
+                        this.subtitleDescription = 'Choose on error behavior and layer name.';
                         break;
                     case this.FormStatus.Loading:
                     /* falls through */
@@ -240,21 +245,24 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.temporalProperties.controls['startColumn'].disable();
                     this.temporalProperties.controls['startFormat'].disable();
                     this.temporalProperties.controls['endColumn'].disable();
+                    this.temporalProperties.controls['constantDuration'].disable();
                     this.temporalProperties.controls['endFormat'].disable();
                     this.temporalProperties.controls['intervalType'].disable();
                 } else {
                     this.temporalProperties.controls['startColumn'].enable();
                     this.temporalProperties.controls['startFormat'].enable();
-                    if ([IntervalFormat.StartDur, IntervalFormat.StartConst]
-                            .indexOf(this.temporalProperties.controls['intervalType'].value) < 0) {
+                    if (this.temporalProperties.controls['intervalType'].value !== this.IntervalFormat.StartInf) {
                         this.temporalProperties.controls['endColumn'].enable();
+                        this.temporalProperties.controls['constantDuration'].enable();
                         this.temporalProperties.controls['endFormat'].enable();
                     }
                     this.temporalProperties.controls['intervalType'].enable();
                 }
                 this.correctColumns();
-                this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
-                    y: this.temporalProperties.controls['endColumn'].value});
+                if(this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
+                    this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
+                        y: this.temporalProperties.controls['endColumn'].value});
+                }
             }),
             this.temporalProperties.controls['intervalType'].valueChanges.subscribe(value => {
                 if ([IntervalFormat.StartInf].indexOf(value) >= 0 || !this.temporalProperties.controls['isTime'].value) {
@@ -329,26 +337,29 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 break;
             case 3: group = this.typingProperties;
                 status = this.FormStatus.TypingProperties;
+                break;
+            case 4: group = this.layerProperties;
+                status = this.FormStatus.LayerProperties;
                 group.controls['layerName'].updateValueAndValidity();
                 break;
         }
         this.actualPage$.next(group);
         this.formStatus$.next(status);
-        if (this.actualPage$.getValue() === this.temporalProperties) {
+        if (status === this.FormStatus.TemporalProperties) {
             this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                 y: this.temporalProperties.controls['endColumn'].value});
         }
-        if (this.actualPage$.getValue() === this.spatialProperties) {
+        if (status === this.FormStatus.SpatialProperties) {
             this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                 y: this.spatialProperties.controls['yColumn'].value});
         }
-        if(status === this.FormStatus.TemporalProperties || lastStatus === this.FormStatus.TemporalProperties) {
+        if(status === this.FormStatus.TypingProperties || lastStatus === this.FormStatus.TypingProperties) {
             this.csvTable.resize();
         }
         setTimeout(() => {
             this._changeDetectorRef.markForCheck();
             this._changeDetectorRef.detectChanges();
-        }, 100)
+        }, 100);
     }
 
     update(timeOut: number) {

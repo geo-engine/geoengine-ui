@@ -32,10 +32,10 @@
         <button mat-raised-button color="primary" (click)="csvProperties.stepper.previous()"
                 *ngIf="!(csvProperties.isDataProperties$ | async)">Prev</button>
         <button mat-raised-button color="primary" (click)="csvProperties.stepper.next()"
-                *ngIf="!(csvProperties.isTypingProperties$ | async)"
+                *ngIf="!(csvProperties.isLayerProperties$ | async)"
                 [disabled]="!(csvProperties.actualPage$ | async).valid">Next</button>
         <button mat-raised-button color="primary" (click)="submit()"
-                *ngIf="csvProperties.isTypingProperties$ | async"
+                *ngIf="csvProperties.isLayerProperties$ | async"
                 [disabled]="!(csvProperties.actualPage$ | async).valid"
         >
             Submit

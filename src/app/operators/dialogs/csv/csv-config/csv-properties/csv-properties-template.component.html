@@ -149,25 +149,18 @@
                                      style="text-align: left"></wave-dialog-section-heading>
         <form fxLayout="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
-            <table flex>
-                <td>
-                    <mat-slide-toggle formControlName="isTime" flex></mat-slide-toggle>
-                </td>
-                <td>
-                    <mat-form-field>
-                        <mat-select fxFlex
-                                    placeholder="Interval type"
-                                    formControlName="intervalType"
-                        >
-                            <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
-                                        [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
-                                {{intervalType.display}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </td>
-            </table>
-
+            <mat-slide-toggle formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
+            <mat-form-field>
+                <mat-select fxFlex
+                            placeholder="Interval type"
+                            formControlName="intervalType"
+                >
+                    <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
+                                [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
+                        {{intervalType.display}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
             <div fxLayout="row" fxLayout.sm="column" fxLayoutGap="1rem" fxLayoutAlign="center"
                  class="temporal_fxElement">
                 <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
@@ -263,16 +256,24 @@
     </mat-step>
     <mat-step [stepControl]="typingProperties">
         <ng-template matStepLabel>
+            Typing
+        </ng-template>
+        <wave-dialog-section-heading [title]="'Typing Properties'"
+                                     [subtitle]="'You can specify the data types of the remaining columns here.'"
+                                     style="text-align: left"></wave-dialog-section-heading>
+    </mat-step>
+    <mat-step [stepControl]="layerProperties">
+        <ng-template matStepLabel>
             Layer
         </ng-template>
         <wave-dialog-section-heading [title]="'Layer Properties'"
-                                     [subtitle]="'You can specify the data types of the remaining columns and the layer name here.'"
+                                     [subtitle]="'Choose on error behavior and layer name.'"
                                      style="text-align: left"></wave-dialog-section-heading>
-        <form [formGroup]="typingProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
+        <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
             <mat-input-container style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
                        type="input" #layerNameComponent>
-                <mat-hint class="error" *ngIf="!typingProperties.valid">Name is already in
+                <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>
             </mat-input-container>

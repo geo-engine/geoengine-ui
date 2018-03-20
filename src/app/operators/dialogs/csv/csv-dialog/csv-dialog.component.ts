@@ -77,7 +77,7 @@ export class CsvDialogComponent implements OnInit {
         const textualColumns = header.filter((name, index) => {
             return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
         });
-        const onError = this.csvProperties.typingProperties.controls['onError'].value;
+        const onError = this.csvProperties.layerProperties.controls['onError'].value;
 
         let parameters: CSVParameters = {
             fieldSeparator: fieldSeparator,
@@ -154,7 +154,7 @@ export class CsvDialogComponent implements OnInit {
         this.uploading$.next(true);
 
         // console.log("SAVE", config, csvSourceType);
-        this.userService.addFeatureToDB(this.csvProperties.typingProperties.controls['layerName'].value, operator)
+        this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator)
             .subscribe(data => { // Regular query processing
                     this.addLayer(data);
 
