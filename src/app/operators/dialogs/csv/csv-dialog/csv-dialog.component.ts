@@ -51,7 +51,8 @@ export class CsvDialogComponent implements OnInit {
             this.csvProperties.spatialProperties.controls['yColumn'].value];
         if (this.csvProperties.temporalProperties.controls['isTime'].value) {
             untypedCols.push(this.csvProperties.temporalProperties.controls['startColumn'].value);
-            if (this.csvProperties.temporalProperties.controls['intervalType'].value !== this.IntervalFormat.StartInf) {
+            if ([this.IntervalFormat.StartInf, this.IntervalFormat.StartConst]
+                    .indexOf(this.csvProperties.temporalProperties.controls['intervalType'].value) < 0) {
                 untypedCols.push(this.csvProperties.temporalProperties.controls['endColumn'].value);
             }
         }
@@ -78,11 +79,12 @@ export class CsvDialogComponent implements OnInit {
             return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
         });
         const onError = this.csvProperties.layerProperties.controls['onError'].value;
-
         let parameters: CSVParameters = {
             fieldSeparator: fieldSeparator,
             geometry: geometry,
-            time: time as ('none' | 'start+inf' | 'start+end' | 'start+duration'),
+            time: (time.indexOf('constant') < 0) ?
+                time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start', duration: number}) :
+                {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
             header: header,
             columns: {
                 x: columnX,
@@ -92,7 +94,6 @@ export class CsvDialogComponent implements OnInit {
             },
             onError: onError,
         };
-
         // filter out geo columns
         function removeIfExists(array: Array<string>, name: string) {
             const index = array.indexOf(name);
@@ -153,7 +154,6 @@ export class CsvDialogComponent implements OnInit {
 
         this.uploading$.next(true);
 
-        // console.log("SAVE", config, csvSourceType);
         this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator)
             .subscribe(data => { // Regular query processing
                     this.addLayer(data);
@@ -204,7 +204,7 @@ export class CsvDialogComponent implements OnInit {
             data: { error: error },
         });
         errorDialogRef.afterClosed().subscribe(result => {
-            if(result) {
+            if (result) {
                 this.dialogRef.close();
             }
             this.uploading$.next(false);

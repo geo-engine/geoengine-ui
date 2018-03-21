@@ -259,7 +259,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.temporalProperties.controls['intervalType'].enable();
                 }
                 this.correctColumns();
-                if(this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
+                if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
                     this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                         y: this.temporalProperties.controls['endColumn'].value});
                 }
@@ -268,9 +268,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 if ([IntervalFormat.StartInf].indexOf(value) >= 0 || !this.temporalProperties.controls['isTime'].value) {
                     this.temporalProperties.controls['endFormat'].disable();
                     this.temporalProperties.controls['endColumn'].disable();
+                    this.temporalProperties.controls['constantDuration'].disable();
                 } else {
                     this.temporalProperties.controls['endFormat'].enable();
                     this.temporalProperties.controls['endColumn'].enable();
+                    this.temporalProperties.controls['constantDuration'].enable();
                     if ([IntervalFormat.StartDur, IntervalFormat.StartConst].indexOf(value) >= 0) {
                         this.temporalProperties.controls['endFormat'].setValue(this.durationFormats[0].value);
                     }else {

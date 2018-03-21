@@ -8,7 +8,7 @@
                         <mat-form-field *ngIf="[csvProperty.spatialProperties.controls['xColumn'].value,
                             csvProperty.spatialProperties.controls['yColumn'].value,
                             (csvProperty.temporalProperties.controls['isTime'].value)?csvProperty.temporalProperties.controls['startColumn'].value:null,
-                            (!csvProperty.temporalProperties.controls['endColumn'].disabled)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0">
+                            ([csvProperty.IntervalFormat.StartEnd, csvProperty.IntervalFormat.StartDur].indexOf(csvProperty.temporalProperties.controls['intervalType'].value) >= 0)?csvProperty.temporalProperties.controls['endColumn'].value:null].indexOf(i) < 0">
                             <mat-select placeholder="Type" style="margin-top: 1rem;"
                                         name="isNumber_{{i}}"
                                         [(ngModel)]="isNumberArray[i]"

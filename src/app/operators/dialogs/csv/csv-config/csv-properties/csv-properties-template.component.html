@@ -209,7 +209,7 @@
                     <mat-input-container
                         *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
                         <input matInput formControlName="constantDuration" placeholder="Constant duration"
-                               type="input">
+                               type="number">
                         <span matSuffix>{{temporalProperties.controls['endFormat'].value}}</span>
                     </mat-input-container>
                 </div>
