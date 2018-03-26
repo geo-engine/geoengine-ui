@@ -25,6 +25,7 @@ import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.mode
 import {ResultTypes} from '../operators/result-type.model';
 import {LayerService} from '../layers/layer.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import {LayoutService} from '../layout.service';
 
 @Injectable()
 export class ProjectService {
@@ -52,7 +53,8 @@ export class ProjectService {
                 private notificationService: NotificationService,
                 private mappingQueryService: MappingQueryService,
                 private mapService: MapService,
-                private layerService: LayerService) {
+                private layerService: LayerService,
+                private layoutService: LayoutService) {
         this.plotData$ = new Map();
         this.plotDataState$ = new Map();
         this.plotSubscriptions = new Map();
@@ -825,12 +827,41 @@ export class ProjectService {
      * @returns {Subscription}
      */
     private createPlotSubscription(plot: Plot, data$: Observer<PlotData>, loadingState$: Observer<LoadingState>): Subscription {
-        return this.getTimeStream()
+        const operatorType = plot.operator.operatorType;
+        const operatorTypeMappingDict = operatorType.toMappingDict();
+        const isRScriptPlot = operatorType.getMappingName() === 'r_script' && operatorTypeMappingDict['result'] === 'plot';
+
+        let observables: Array<Observable<any>> = [
+            this.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.getProjectionStream(),
+        ];
+        if (isRScriptPlot) {
+            observables.push();
+            observables.push(this.layoutService.getSidenavWidthStream());
+        }
+
+        return Observable
+            .combineLatest(observables)
+            .debounceTime(this.config.DELAYS.DEBOUNCE)
             .do(() => loadingState$.next(LoadingState.LOADING))
-            .switchMap(time => {
+            .switchMap(([time, viewport, projection, sidenavWidth]) => {
+                let plotWidth = undefined;
+                let plotHeight = undefined;
+
+                if (isRScriptPlot) {
+                    const margin = 2 * LayoutService.remInPx();
+                    plotWidth = sidenavWidth - margin;
+                    plotHeight = sidenavWidth - margin;
+                }
+
                 return this.mappingQueryService.getPlotData({
                     operator: plot.operator,
                     time: time,
+                    extent: viewport.extent,
+                    projection: projection,
+                    plotWidth: plotWidth,
+                    plotHeight: plotHeight,
                 });
             })
             .do(
@@ -927,7 +958,7 @@ export class ProjectService {
                     return LoadingState.ERROR;
                 }
 
-                if (sym === LoadingState.NODATAFORGIVENTIME || data == LoadingState.NODATAFORGIVENTIME) {
+                if (sym === LoadingState.NODATAFORGIVENTIME || data === LoadingState.NODATAFORGIVENTIME) {
                     return LoadingState.NODATAFORGIVENTIME;
                 }
 
