@@ -359,7 +359,7 @@ export class LayoutService {
     }
 
     /**
-     * Initialize and update the sidenav width stream
+     * Initialize and update the sidenav INNER width stream
      */
     private setupSidenavWidthStream() {
         function getWidth(): number {
@@ -368,7 +368,7 @@ export class LayoutService {
             const widthString = sidenavStyle.width;
 
             if (widthString.indexOf('px') === (widthString.length - 2)) {
-                return parseFloat(widthString.substr(0, widthString.length - 2));
+                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx();
             } else {
                 throw new Error('sidenav width must be a `px` value');
             }

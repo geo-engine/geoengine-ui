@@ -37,7 +37,7 @@
         </ng-template>
     </mat-card-content>
     <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
-        <button mat-button (click)="dialog.open(PlotDetailViewComponent, {data: plot})"><mat-icon>fullscreen</mat-icon></button>
+        <button mat-button (click)="showFullscreen(plot)"><mat-icon>fullscreen</mat-icon></button>
         <span fxFlex></span>
         <button
             *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE && editExceptions.indexOf(plot.operator.operatorType.toString()) < 0"

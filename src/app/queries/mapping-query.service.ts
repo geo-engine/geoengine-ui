@@ -131,7 +131,7 @@ export class MappingQueryService {
 
             // TODO: find more elegant way
             operatorQueryDict.params['plot_width'] = config.plotWidth;
-            operatorQueryDict.params['plot_width'] = config.plotWidth;
+            operatorQueryDict.params['plot_height'] = config.plotHeight;
 
             request.setParameter('query', encodeURIComponent(JSON.stringify(operatorQueryDict)));
         } else {
