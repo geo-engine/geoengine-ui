@@ -113,6 +113,12 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.header.length <= 2) {
                 this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
                 this.csvProperty.temporalProperties.controls['isTime'].disable();
+            } else if (this.header.length <= 3) {
+                if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
+                        .indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
+                        this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
+                }
+                this.csvProperty.temporalProperties.controls['isTime'].enable();
             } else {
                 this.csvProperty.temporalProperties.controls['isTime'].enable();
             }
@@ -227,17 +233,17 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
             this._changeDetectorRef.reattach();
             this._changeDetectorRef.detectChanges();
         }, timeOut);
-        if (this.header.length < 2) {
-            this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
-            this.csvProperty.temporalProperties.controls['isTime'].disable();
-        } else if (this.header.length <= 3) {
-            if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
-                    .indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
-                this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
-            }
-        } else {
-            this.csvProperty.temporalProperties.controls['isTime'].enable({emitEvent: false});
-        }
+        // if (this.header.length < 2) {
+        //     this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
+        //     this.csvProperty.temporalProperties.controls['isTime'].disable();
+        // } else if (this.header.length <= 3) {
+        //     if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
+        //             .indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
+        //         this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
+        //     }
+        // } else {
+        //     this.csvProperty.temporalProperties.controls['isTime'].enable({emitEvent: false});
+        // }
     }
 
     get notOnlyWhiteSpace(): boolean {
