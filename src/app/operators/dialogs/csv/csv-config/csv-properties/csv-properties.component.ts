@@ -6,10 +6,37 @@ import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, Form} 
 import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs/Rx';
 import {IntervalFormat} from '../../interval.enum';
 import {CsvTableComponent} from '../csv-table/csv-table.component';
-import {Projections} from '../../../../projection.model';
+import {Projection, Projections} from '../../../../projection.model';
 import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
 import {MatStepper} from '@angular/material';
+import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
+
+export interface DataPropertiesDict {
+    delimiter: string,
+    decimalSeparator: string,
+    isTextQualifier: boolean,
+    textQualifier: string,
+    isHeaderRow: boolean,
+    headerRow: number,
+}
+
+export interface SpatialPropertiesDict {
+    xColumn: number,
+    yColumn: number,
+    spatialReferenceSystem: Projection,
+    coordinateFormat: string,
+}
+
+export interface TemporalPropertiesDict {
+    intervalType: IntervalFormat,
+    isTime: boolean,
+    startColumn: number,
+    startFormat: string,
+    endColumn: number,
+    endFormat: string,
+    constantDuration: number,
+}
 
 export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, LayerProperties, Loading }
 
@@ -93,14 +120,9 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     isTypingProperties$: Observable<boolean>;
     isLayerProperties$: Observable<boolean>;
 
-    xyColumn$: BehaviorSubject<{x: number, y: number}> = new BehaviorSubject<{x: number, y: number}>({x: 0, y: 0});
-    xColumn$: Observable<number>;
-    yColumn$: Observable<number>;
-
     storageName$ = new ReplaySubject<string>(1);
     private reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
-    @Input('csvTable') csvTable: CsvTableComponent;
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
     @ViewChild('stepper') public stepper: MatStepper;
     @ViewChild('xColumnSelect') public xColumnSelect: ElementRef;
@@ -109,12 +131,12 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
     private subscriptions: Array<Subscription> = [];
+    private header: {value: string}[] = [];
 
-    constructor(private userService: UserService, public _changeDetectorRef: ChangeDetectorRef, public renderer: Renderer2) {
+    constructor(private userService: UserService,
+                private _changeDetectorRef: ChangeDetectorRef,
+                public propertiesService: CsvPropertiesService) {
         setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
-        this.xColumn$ = this.xyColumn$.map(xy => xy.x);
-        this.yColumn$ = this.xyColumn$.map(xy => xy.y);
-        this.xyColumn$.next({x: -1, y: -1});
         this.isDataProperties$ = this.formStatus$.map(status => status === this.FormStatus.DataProperties);
         this.isSpatialProperties$ = this.formStatus$.map(status => status === this.FormStatus.SpatialProperties);
         this.isTemporalProperties$ = this.formStatus$.map(status => status === this.FormStatus.TemporalProperties);
@@ -136,6 +158,9 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     ngOnInit() {
+        this.propertiesService.changeDataProperties(this.getDataPropertiesDict());
+        this.propertiesService.changeSpatialProperties(this.getSpatialPropertiesDict());
+        this.propertiesService.changeTemporalProperties(this.getTemporalPropertiesDict());
         this.storageName$.next(this.data.file.name);
         this.layerProperties.patchValue({layerName: this.data.file.name});
         this.subscriptions.push(
@@ -169,76 +194,82 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.update(10);
                 setTimeout(() => this.update(10), 10);
             }),
-            this.dataProperties.valueChanges.subscribe(data => {
-                this.csvTable.parse();
-                setTimeout(() => this.csvTable.resize(), 50);
-            }),
-            this.dataProperties.controls['isHeaderRow'].valueChanges.subscribe(data => {
-                if (data === true) {
-                    this.csvTable.customHeader = new Array(this.csvTable.elements[0].length);
-                    for (let i = 0; i < this.csvTable.header.length; i++) {
-                        this.csvTable.customHeader[i] = this.csvTable.header[i];
+            this.propertiesService.header$.subscribe(h => {
+                this.header = h;
+                if (this.header.length <= 2) {
+                    this.temporalProperties.controls['isTime'].setValue(false);
+                    this.temporalProperties.controls['isTime'].disable();
+                } else if (this.header.length <= 3) {
+                    if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
+                            .indexOf(this.temporalProperties.controls['intervalType'].value) >= 0) {
+                        this.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
                     }
+                    this.temporalProperties.controls['isTime'].enable();
                 } else {
-                    if (this.csvTable.customHeader.length === this.csvTable.elements[0].length) {
-                        for (let i = 0; i < this.csvTable.customHeader.length; i++) {
-                            this.csvTable.header[i] = this.csvTable.customHeader[i];
-                        }
-                    } else {
-                        this.csvTable.customHeader = new Array(this.csvTable.elements[0].length);
-                        this.csvTable.header = new Array(this.csvTable.elements[0].length);
-                        for (let i = 0; i < this.csvTable.customHeader.length; i++) {
-                            this.csvTable.header[i] = {value: ''};
-                            this.csvTable.customHeader[i] = {value: ''};
-                        }
-                    }
+                    this.temporalProperties.controls['isTime'].enable();
                 }
+                this._changeDetectorRef.detectChanges();
+            }),
+            this.dataProperties.valueChanges.subscribe(data => {
+                this.propertiesService.changeDataProperties(this.getDataPropertiesDict());
+            }),
+            this.spatialProperties.valueChanges.subscribe(spatial => {
+                this.propertiesService.changeSpatialProperties(this.getSpatialPropertiesDict());
             }),
             this.spatialProperties.controls['xColumn'].valueChanges.subscribe(x => {
                 if (x === this.spatialProperties.controls['yColumn'].value) {
-                    if (x === this.csvTable.header.length - 1) {
+                    if (x === this.header.length - 1) {
                         this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value - 1);
                     } else {
                         this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value + 1);
                     }
                 }
-                if (this.temporalProperties.controls['isTime'].value) {
-                    this.correctColumns();
-                }
-                this.xyColumn$.next({x: x, y: this.spatialProperties.controls['yColumn'].value});
+                this.correctColumns();
+                this.propertiesService.xyColumn$.next({x: x, y: this.spatialProperties.controls['yColumn'].value});
             }),
             this.spatialProperties.controls['yColumn'].valueChanges.subscribe(y => {
                 if (y === this.spatialProperties.controls['xColumn'].value) {
-                    if (y === this.csvTable.header.length - 1) {
+                    if (y === this.header.length - 1) {
                         this.spatialProperties.controls['xColumn'].setValue(this.spatialProperties.controls['xColumn'].value - 1);
                     } else {
                         this.spatialProperties.controls['xColumn'].setValue(this.spatialProperties.controls['xColumn'].value + 1);
                     }
                 }
-                if (this.temporalProperties.controls['isTime'].value) {
-                    this.correctColumns();
-                }
-                this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value, y: y});
+                this.correctColumns();
+                this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value, y: y});
+            }),
+            this.temporalProperties.valueChanges.subscribe(temporal => {
+                this.propertiesService.changeTemporalProperties(this.getTemporalPropertiesDict());
             }),
             this.temporalProperties.controls['startColumn'].valueChanges.subscribe(start => {
                 if (start === this.temporalProperties.controls['endColumn'].value) {
-                    if (start === this.csvTable.header.length - 1) {
+                    if (start === this.header.length - 1) {
                         this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value - 1);
                     } else {
                         this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + 1);
                     }
                 }
-                this.xyColumn$.next({x: start, y: this.temporalProperties.controls['endColumn'].value});
+                if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
+                    this.propertiesService.xyColumn$.next({
+                        x: start,
+                        y: this.temporalProperties.controls['endColumn'].value
+                    });
+                }
             }),
             this.temporalProperties.controls['endColumn'].valueChanges.subscribe(end => {
                 if (end === this.temporalProperties.controls['startColumn'].value) {
-                    if (end === this.csvTable.header.length - 1) {
+                    if (end === this.header.length - 1) {
                         this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value - 1);
                     } else {
                         this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + 1);
                     }
                 }
-                this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value, y: end});
+                if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
+                    this.propertiesService.xyColumn$.next({
+                        x: this.temporalProperties.controls['startColumn'].value,
+                        y: end
+                    });
+                }
             }),
             this.temporalProperties.controls['isTime'].valueChanges.subscribe(value => {
                 if (value === false) {
@@ -258,9 +289,9 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     }
                     this.temporalProperties.controls['intervalType'].enable();
                 }
-                this.correctColumns();
+                // this.correctColumns();
                 if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
-                    this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
+                    this.propertiesService.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                         y: this.temporalProperties.controls['endColumn'].value});
                 }
             }),
@@ -275,7 +306,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.temporalProperties.controls['constantDuration'].enable();
                     if ([IntervalFormat.StartDur, IntervalFormat.StartConst].indexOf(value) >= 0) {
                         this.temporalProperties.controls['endFormat'].setValue(this.durationFormats[0].value);
-                    }else {
+                    } else {
                         this.temporalProperties.controls['endFormat'].setValue(this.timeFormats[0].value);
                     }
                 }
@@ -284,6 +315,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         );
         this.formStatus$.next(this.FormStatus.DataProperties);
         this.actualPage$.next(this.dataProperties);
+        this.propertiesService.changeFormStatus(this.FormStatus.DataProperties);
     }
 
     ngAfterViewInit() {
@@ -301,30 +333,29 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
      * @param type 0 left-click, 1 right-click
      * @param value the column index
      */
-    setProperty(type: number, value: number, event: Event) {
-        if (this.formStatus$.getValue() === this.FormStatus.SpatialProperties) {
-            if (type === 0) {
-                this.spatialProperties.controls['xColumn'].setValue(value);
-            }else if (type === 1) {
-                this.spatialProperties.controls['yColumn'].setValue(value);
-            }
-        }else if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
-            if ([this.spatialProperties.controls['xColumn'].value, this.spatialProperties.controls['yColumn'].value].indexOf(value) >= 0) {
-                event.preventDefault();
-                return;
-            }
-            if (type === 0 && this.temporalProperties.controls['startColumn'].enabled) {
-                this.temporalProperties.controls['startColumn'].setValue(value);
-            }else if (type === 1 && this.temporalProperties.controls['endColumn'].enabled) {
-                this.temporalProperties.controls['endColumn'].setValue(value);
-            }
-        }
-        this.correctColumns();
-        event.preventDefault();
-    }
+    // setProperty(type: number, value: number, event: Event) {
+    //     if (this.formStatus$.getValue() === this.FormStatus.SpatialProperties) {
+    //         if (type === 0) {
+    //             this.spatialProperties.controls['xColumn'].setValue(value);
+    //         } else if (type === 1) {
+    //             this.spatialProperties.controls['yColumn'].setValue(value);
+    //         }
+    //     } else if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
+    //         if ([this.spatialProperties.controls['xColumn'].value, this.spatialProperties.controls['yColumn'].value].indexOf(value) >= 0) {
+    //             event.preventDefault();
+    //             return;
+    //         }
+    //         if (type === 0 && this.temporalProperties.controls['startColumn'].enabled) {
+    //             this.temporalProperties.controls['startColumn'].setValue(value);
+    //         } else if (type === 1 && this.temporalProperties.controls['endColumn'].enabled) {
+    //             this.temporalProperties.controls['endColumn'].setValue(value);
+    //         }
+    //     }
+    //     this.correctColumns();
+    //     event.preventDefault();
+    // }
 
     next(event) {
-        let lastStatus = this.formStatus$.getValue();
         let group: FormGroup;
         let status: FormStatus;
         switch (event.selectedIndex) {
@@ -345,18 +376,16 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 group.controls['layerName'].updateValueAndValidity();
                 break;
         }
+        this.propertiesService.changeFormStatus(status);
         this.actualPage$.next(group);
         this.formStatus$.next(status);
         if (status === this.FormStatus.TemporalProperties) {
-            this.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
+            this.propertiesService.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                 y: this.temporalProperties.controls['endColumn'].value});
         }
         if (status === this.FormStatus.SpatialProperties) {
-            this.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
+            this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                 y: this.spatialProperties.controls['yColumn'].value});
-        }
-        if(status === this.FormStatus.TypingProperties || lastStatus === this.FormStatus.TypingProperties) {
-            this.csvTable.resize();
         }
         setTimeout(() => {
             this._changeDetectorRef.markForCheck();
@@ -381,11 +410,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         while (arr.indexOf(this.temporalProperties.controls['startColumn'].value) >= 0) {
             if (this.temporalProperties.controls['startColumn'].value === 0) {
                 direction = 1;
-            } else if (this.temporalProperties.controls['startColumn'].value === this.csvTable.header.length - 1) {
+            } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
                 direction = -1;
             }
-            this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + direction,
-                {onlySelf: true, emitEvent: false});
+            this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + direction);
         }
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             direction = 1;
@@ -395,12 +423,43 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             while (arr.indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
                 if (this.temporalProperties.controls['startColumn'].value === 0) {
                     direction = 1;
-                } else if (this.temporalProperties.controls['startColumn'].value === this.csvTable.header.length - 1) {
+                } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
                     direction = -1;
                 }
-                this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction,
-                    {onlySelf: true, emitEvent: false});
+                this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction);
             }
+        }
+    }
+
+    getDataPropertiesDict(): DataPropertiesDict {
+        return {
+            delimiter: this.dataProperties.controls['delimiter'].value,
+            decimalSeparator: this.dataProperties.controls['decimalSeparator'].value,
+            isTextQualifier: this.dataProperties.controls['isTextQualifier'].value,
+            textQualifier: this.dataProperties.controls['textQualifier'].value,
+            isHeaderRow: this.dataProperties.controls['isHeaderRow'].value,
+            headerRow: this.dataProperties.controls['headerRow'].value,
+        };
+    }
+
+    getSpatialPropertiesDict(): SpatialPropertiesDict {
+        return {
+            xColumn: this.spatialProperties.controls['xColumn'].value,
+            yColumn: this.spatialProperties.controls['yColumn'].value,
+            spatialReferenceSystem: this.spatialProperties.controls['spatialReferenceSystem'].value,
+            coordinateFormat: this.spatialProperties.controls['coordinateFormat'].value,
+        };
+    }
+
+    getTemporalPropertiesDict(): TemporalPropertiesDict {
+        return {
+            intervalType: this.temporalProperties.controls['intervalType'].value,
+            isTime: this.temporalProperties.controls['isTime'].value,
+            startColumn: this.temporalProperties.controls['startColumn'].value,
+            startFormat: this.temporalProperties.controls['startFormat'].value,
+            endColumn: this.temporalProperties.controls['endColumn'].value,
+            endFormat: this.temporalProperties.controls['endFormat'].value,
+            constantDuration: this.temporalProperties.controls['constantDuration'].value,
         }
     }
 }

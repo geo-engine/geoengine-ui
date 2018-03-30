@@ -79,7 +79,7 @@
                         <mat-select fxFlex="100"
                                     placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
                                     formControlName="xColumn" #xColumnSelect>
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
@@ -110,7 +110,7 @@
                         <mat-select fxFlex="100"
                                     placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
                                     formControlName="yColumn" #yColumnSelect>
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
@@ -156,7 +156,7 @@
                             formControlName="intervalType"
                 >
                     <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
-                                [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
+                                [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && header.length <= 3">
                         {{intervalType.display}}
                     </mat-option>
                 </mat-select>
@@ -169,7 +169,7 @@
                                     name="startCol"
                                     formControlName="startColumn"
                         >
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
                                     [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
@@ -192,7 +192,7 @@
                         <mat-select
                             [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
                             name="endCol" formControlName="endColumn">
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
                                     [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
