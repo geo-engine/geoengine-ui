@@ -7,6 +7,7 @@ import OlStyleText from 'ol/style/text'
 
 
 import {Unit, UnitDict, Interpolation} from '../../operators/unit.model';
+import {setStyles} from '@angular/animations/browser/src/util';
 
 export enum SymbologyType {
     RASTER,
@@ -15,6 +16,14 @@ export enum SymbologyType {
     SIMPLE_VECTOR,
     MAPPING_COLORIZER_RASTER,
     ICON_POINT,
+    COMPLEX_POINT,
+}
+
+export interface RGBA {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
 }
 
 /**
@@ -39,6 +48,8 @@ export abstract class Symbology implements ISymbology {
                 return new SimplePointSymbology(dict as SimplePointSymbologyDict);
             case SymbologyType[SymbologyType.CLUSTERED_POINT]:
                 return new ClusteredPointSymbology(dict as VectorSymbologyDict);
+            case SymbologyType[SymbologyType.COMPLEX_POINT]:
+                return new ComplexPointSymbology(dict as ComplexPointSymbologyDict);
             case SymbologyType[SymbologyType.SIMPLE_VECTOR]:
                 return new SimpleVectorSymbology(dict as VectorSymbologyDict);
             case SymbologyType[SymbologyType.RASTER]:
@@ -321,6 +332,101 @@ export class ClusteredPointSymbology extends AbstractVectorSymbology {
     }
 }
 
+export interface IComplexPointSymbology extends ISimplePointSymbology {
+    colorMapping?: Array<RgbaBreakpoint>;
+    colorAttribute?: string;
+    textAttribute?: string;
+}
+
+interface ComplexPointSymbologyDict extends SimplePointSymbologyDict {
+    colorMapping: Array<RgbaBreakpoint>;
+    colorAttribute: string;
+    textAttribute: string;
+}
+
+interface RgbaBreakpoint extends RGBA {
+    value: string | number;
+}
+
+export class ComplexPointSymbology extends SimplePointSymbology implements IComplexPointSymbology {
+    colorMapping: Array<RgbaBreakpoint>;
+    colorAttribute = '';
+    // colorMappingMap: Map<string | number, RgbaBreakpoint>;
+    textAttribute: string = undefined;
+    showTextAttribute = false;
+
+    private styleCache: {[key: string]: OlStyleStyle} = {};
+
+    constructor(config: IComplexPointSymbology) {
+        super(config);
+        console.log('ComplexPointSymbology', config);
+        if (config.colorAttribute) {
+            this.colorAttribute = config.colorAttribute;
+            this.colorMapping = config.colorMapping;
+        }
+        if (config.textAttribute) {
+            this.textAttribute = config.textAttribute;
+            this.showTextAttribute = true;
+        }
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.COMPLEX_POINT;
+    }
+
+    clone(): ComplexPointSymbology {
+        return new ComplexPointSymbology(this);
+    }
+
+    toConfig(): IComplexPointSymbology {
+        return this.clone();
+    }
+
+    getOlStyle(): ol.style.Style {
+        return super.getOlStyle();
+    }
+
+    getOlStyleAsFunction(): ol.StyleFunction {
+        return (feature: ol.Feature, resolution: number) => {
+
+            const featureColorAttribute = feature.get(this.colorAttribute);
+            if (!this.styleCache[featureColorAttribute]) {
+                const fc = this.colorMapping.find(x => x.value === featureColorAttribute);
+                const style = new OlStyleStyle({
+                    image: new OlStyleCircle({
+                        radius: this.radius,
+                        fill: new OlStyleFill({ color: (!!fc) ? [fc.r, fc.g, fc.b, fc.a] : this.fillRGBA }),
+                        stroke: new OlStyleStroke({ color: this.strokeRGBA, width: this.strokeWidth }),
+                    }),
+                });
+                this.styleCache[featureColorAttribute] = style;
+            };
+
+            return this.styleCache[featureColorAttribute];
+        };
+    }
+
+    describesArea(): boolean {
+        return true;
+    }
+    describesRadius(): boolean {
+        return true;
+    }
+
+    toDict(): ComplexPointSymbologyDict {
+        return {
+            symbologyType: SymbologyType[SymbologyType.COMPLEX_POINT],
+            fillRGBA: this.fillRGBA,
+            strokeRGBA: this.strokeRGBA,
+            strokeWidth: this.strokeWidth,
+            colorAttribute: this.colorAttribute,
+            colorMapping: this.colorMapping,
+            radius: this.radius,
+            textAttribute: this.textAttribute
+        };
+    }
+}
+
 export interface IRasterSymbology extends ISymbology {
     opacity?: number;
     hue?: number;
@@ -398,12 +504,8 @@ export interface IMappingRasterColorizer {
     type?: ColorizerType;
 }
 
-export interface MappingRasterColorizerBreakpoint {
+export interface MappingRasterColorizerBreakpoint extends RGBA {
     value: number;
-    r: number;
-    g: number;
-    b: number;
-    a?: number;
     name?: string;
 }
 
