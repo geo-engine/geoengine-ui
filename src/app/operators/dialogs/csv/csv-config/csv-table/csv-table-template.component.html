@@ -5,9 +5,7 @@
                 <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;"
                         [ngStyle]="{'min-width.px': cellSizes[2*i]}">
-                        <mat-form-field *ngIf="[(propertiesService.spatialProperties$ | async).xColumn, (propertiesService.spatialProperties$ | async).yColumn,
-                            ((propertiesService.temporalProperties$ | async).isTime)?(propertiesService.temporalProperties$ | async).startColumn:null,
-                            ([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf((propertiesService.temporalProperties$ | async).intervalFormat) >= 0)?(propertiesService.temporalProperties$ | async).endColumn:null].indexOf(i) < 0">
+                        <mat-form-field *ngIf="(untypedColumns | async).indexOf(i) < 0">
                             <mat-select placeholder="Type" style="margin-top: 1rem;"
                                         name="isNumber_{{i}}"
                                         [(ngModel)]="isNumberArray[i]"
@@ -53,12 +51,7 @@
                         <td style="margin-left:0; margin-right:0; padding-bottom: 3px; white-space: nowrap;"
                             [ngStyle]="{'min-width.px': cellSizes[2*i]}"
                             title="{{h.value}}"
-                            [ngClass]="{'orangeHead': (isSpatialProperties$ | async) && (i === (xColumn$ | async)),
-                            'blueHead': (isSpatialProperties$ | async) && (i === (yColumn$ | async)),
-                            'greenHead': (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ |async) &&
-                            (i === (xColumn$ | async)),
-                            'violetHead': (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ | async) &&
-                            (i === (yColumn$ | async)) && [IntervalFormat.StartDur, IntervalFormat.StartEnd].indexOf((propertiesService.temporalProperties$ | async).intervalType) >= 0}">
+                            [ngClass]="styleDict(i, (isSpatialProperties$ | async), (isTemporalProperties$ | async), true)">
                             {{h.value}}
                         </td>
                         <td *ngIf="i !== header.length-1" name="spacer"
@@ -69,11 +62,7 @@
                     <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                         <td class="custom" style="margin-left:0; margin-right:0;"
                             [ngStyle]="{'min-width.px': cellSizes[2*i]}"
-                            [ngClass]="{orangeHead: (isSpatialProperties$ | async) && (i === (xColumn$ | async)),
-                            blueHead: (isSpatialProperties$ | async) && (i === (yColumn$ | async)),
-                            greenHead: (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ |async) && (i === (xColumn$ | async)),
-                            violetHead: (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ | async) && (i === (yColumn$ | async)) &&
-                            [IntervalFormat.StartDur, IntervalFormat.StartEnd].indexOf((propertiesService.temporalProperties$ | async).intervalType) >= 0}">
+                            [ngClass]="styleDict(i, (isSpatialProperties$ | async), (isTemporalProperties$ | async), true)">
                             <mat-input-container>
                                 <input matInput type="text" placeholder="{{i+1}}{{ending(i+1)}} Column"
                                        [(ngModel)]="h.value" name="header_{{i}}" (change)="propertiesService.changeHeader(header)">
@@ -94,11 +83,7 @@
                 <ng-template ngFor let-e [ngForOf]="el" let-k="index">
                     <td style="margin-left:0; margin-right:0;"
                         [ngStyle]="{'min-width.px': cellSizes[2*k]}"
-                        [ngClass]="{orange: (isSpatialProperties$ | async) && (k === (xColumn$ | async)),
-                        blue: (isSpatialProperties$ | async) && (k === (yColumn$ | async)),
-                        green: (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ |async) && (k === (xColumn$ | async)),
-                        violet: (propertiesService.temporalProperties$ | async).isTime && (isTemporalProperties$ | async) && (k === (yColumn$ | async)) &&
-                        [IntervalFormat.StartDur, IntervalFormat.StartEnd].indexOf((propertiesService.temporalProperties$ | async).intervalType) >= 0}">
+                        [ngClass]="styleDict(k, (isSpatialProperties$ | async), (isTemporalProperties$ | async), false)">
                         {{e}}
                     </td>
                     <td *ngIf="k !== header.length-1" name="spacer" [ngStyle]="{'min-width.px': cellSizes[k*2+1]}"></td>

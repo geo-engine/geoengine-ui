@@ -289,7 +289,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     }
                     this.temporalProperties.controls['intervalType'].enable();
                 }
-                // this.correctColumns();
                 if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
                     this.propertiesService.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
                         y: this.temporalProperties.controls['endColumn'].value});
@@ -310,6 +309,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                         this.temporalProperties.controls['endFormat'].setValue(this.timeFormats[0].value);
                     }
                 }
+                this.correctColumns();
                 this.update(10);
             }),
         );
@@ -328,32 +328,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     ngOnDestroy() {
         this.subscriptions.forEach(sub => sub.unsubscribe());
     }
-
-    /**
-     * @param type 0 left-click, 1 right-click
-     * @param value the column index
-     */
-    // setProperty(type: number, value: number, event: Event) {
-    //     if (this.formStatus$.getValue() === this.FormStatus.SpatialProperties) {
-    //         if (type === 0) {
-    //             this.spatialProperties.controls['xColumn'].setValue(value);
-    //         } else if (type === 1) {
-    //             this.spatialProperties.controls['yColumn'].setValue(value);
-    //         }
-    //     } else if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
-    //         if ([this.spatialProperties.controls['xColumn'].value, this.spatialProperties.controls['yColumn'].value].indexOf(value) >= 0) {
-    //             event.preventDefault();
-    //             return;
-    //         }
-    //         if (type === 0 && this.temporalProperties.controls['startColumn'].enabled) {
-    //             this.temporalProperties.controls['startColumn'].setValue(value);
-    //         } else if (type === 1 && this.temporalProperties.controls['endColumn'].enabled) {
-    //             this.temporalProperties.controls['endColumn'].setValue(value);
-    //         }
-    //     }
-    //     this.correctColumns();
-    //     event.preventDefault();
-    // }
 
     next(event) {
         let group: FormGroup;
@@ -387,16 +361,12 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                 y: this.spatialProperties.controls['yColumn'].value});
         }
-        setTimeout(() => {
-            this._changeDetectorRef.markForCheck();
-            this._changeDetectorRef.detectChanges();
-        }, 100);
+        this.update(100);
     }
 
     update(timeOut: number) {
         setTimeout(() => {
             this._changeDetectorRef.reattach();
-            this._changeDetectorRef.detectChanges();
         }, timeOut);
     }
 
