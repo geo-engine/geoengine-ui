@@ -1,0 +1,8 @@
+<div fxLayout="row" fxLayoutAlign="start center">
+    <mat-icon mat-list-icon svgIcon="symbology:polygon"
+              [style.stroke-width.px]='symbology?.strokeWidth'
+              [style.stroke]='symbology?.strokeRGBA | rgbaToCssStringPipe'
+              [style.fill]='symbology?.fillRGBA | rgbaToCssStringPipe'
+    ></mat-icon>
+    <span>Vectors</span>
+</div>

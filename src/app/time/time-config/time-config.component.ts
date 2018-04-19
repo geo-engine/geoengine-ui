@@ -36,6 +36,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
+        {durationAmount: 1, durationUnit: 'minute'},
         {durationAmount: 15, durationUnit: 'minutes'},
         {durationAmount: 1, durationUnit: 'hour'},
         {durationAmount: 1, durationUnit: 'day'},

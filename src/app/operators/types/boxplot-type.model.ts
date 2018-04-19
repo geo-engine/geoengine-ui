@@ -77,7 +77,7 @@ export class BoxPlotType extends OperatorType {
 
                 p <- (
                     ggplot(plot.data, aes(x=group, y=value, fill=group))
-                    + geom_boxplot(notch = ${this.notch.toString().toUpperCase()})
+                    + geom_boxplot(notch = ${this.notch.toString().toUpperCase()}, coef = ${this.range})
                     ${this.mean ? '+ stat_summary(fun.y=mean, colour="darkred", geom="point", show_guide = FALSE, shape=18, size=3)' : ''}
                     ${this.mean ? '+ stat_summary(fun.y=mean, colour="black",   geom="text",  show_guide = FALSE, vjust=-0.7, aes(label=round(..y.., digits=1)))' : ''}
                 );
