@@ -1,0 +1,40 @@
+<table>
+    <tr *ngIf="symbology.describesArea()">
+        <td>
+            <span>Fill</span>
+        </td>
+        <td class="color_cell" [style.background-color]='symbology.fillRGBA | rgbaToCssStringPipe'
+            [colorPicker]='symbology.fillRGBA | rgbaToCssStringPipe'
+            (colorPickerChange)='updateFillRgba($event)'
+            [cpSaveClickOutside]="false"
+            [cpOKButton]="true"
+            [cpPosition]="'bottom'"
+            [cpOutputFormat]="'rgba'">
+            {{symbology.fillRGBA}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span>Stroke</span>
+        </td>
+        <td class="color_cell" [style.background-color]='symbology.strokeRGBA | rgbaToCssStringPipe'
+            [colorPicker]='symbology.strokeRGBA | rgbaToCssStringPipe'
+            (colorPickerChange)='updateStrokeRgba($event)'
+            [cpSaveClickOutside]="false"
+            [cpOKButton]="true"
+            [cpPosition]="'bottom'"
+            [cpOutputFormat]="'rgba'">
+            {{symbology.strokeRGBA}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                        (change)="updateStrokeWidth($event)">
+            </mat-slider>
+            <span>{{sls.displayValue}} px</span>
+        </td>
+    </tr>
+</table>

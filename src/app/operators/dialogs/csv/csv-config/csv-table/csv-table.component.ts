@@ -12,6 +12,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {UploadData} from '../../csv-upload/csv-upload.component';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'wave-csv-table',
@@ -27,6 +28,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     IntervalFormat = IntervalFormat;
     isNumberArray: number[];
+    untypedColumns: BehaviorSubject<number[]>;
 
     @ViewChild('headerdiv') headerDiv: ElementRef;
     @ViewChild('bodydiv') bodyDiv: ElementRef;
@@ -63,9 +65,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLayerProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.LayerProperties);
         this.xColumn$ = this.propertiesService.xyColumn$.map(xy => xy.x);
         this.yColumn$ = this.propertiesService.xyColumn$.map(xy => xy.y);
-        setTimeout( () => {
-            this._changeDetectorRef.markForCheck();
-        }, 10);
+        setTimeout(this._changeDetectorRef.markForCheck());
+        this.untypedColumns = new BehaviorSubject([this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]);
     }
 
     ngOnInit() {
@@ -97,7 +98,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.dataProperties = data;
                 this.parse();
                 if (this.header.length > 0) {
-                    setTimeout(() => this.resize(), 50);
+                    setTimeout(this.resize());
                 }
             }),
             this.propertiesService.formStatus$.subscribe(formStatus => {
@@ -106,6 +107,25 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.bodyScroll();
                 }
                 this.formStatus = formStatus;
+            }),
+            this.propertiesService.spatialProperties$.subscribe(data => {
+                let untypedColumns = [data.xColumn, data.yColumn];
+                for(let i = 2; i < this.untypedColumns.getValue().length; i++) {
+                    untypedColumns.push(this.untypedColumns.getValue()[i]);
+                }
+                this.untypedColumns.next(untypedColumns);
+                this.update(10);
+            }),
+            this.propertiesService.temporalProperties$.subscribe(data => {
+                let untypedColumns = [this.untypedColumns.getValue()[0], this.untypedColumns.getValue()[1]];
+                if(data.isTime) {
+                    untypedColumns.push(data.startColumn);
+                    if([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(data.intervalType) >= 0) {
+                        untypedColumns.push(data.endColumn);
+                    }
+                }
+                this.update(10);
+                this.untypedColumns.next(untypedColumns);
             }),
             // this.resizeEvent$.subscribe(data => this.resizeTableFrame())
         );
@@ -280,9 +300,27 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     update(timeOut: number) {
         setTimeout(() => {
-            this._changeDetectorRef.reattach();
-            this._changeDetectorRef.detectChanges();
+            this._changeDetectorRef.markForCheck();
         }, timeOut);
+    }
+
+    styleDict(i: number, isSpatial: boolean, isTemporal: boolean, head: boolean) {
+        let j = this.untypedColumns.getValue().indexOf(i);
+        if(isSpatial) {
+            if(head) {
+                return {orangeHead: j === 0, blueHead: j === 1};
+            }else {
+                return {orange: j === 0, blue: j === 1};
+            }
+        }
+        if(isTemporal) {
+            if(head) {
+                return {greenHead: j === 2, violetHead: j === 3};
+            }else {
+                return {green: j === 2, violet: j === 3};
+            }
+        }
+        return {};
     }
 
     get notOnlyWhiteSpace(): boolean {

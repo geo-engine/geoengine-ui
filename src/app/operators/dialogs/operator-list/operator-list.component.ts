@@ -27,6 +27,8 @@ import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
 import {OperatorType} from '../../operator-type.model';
+import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
+import {HeatmapType} from '../../types/heatmap-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -91,6 +93,11 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         component: NumericAttributeFilterOperatorComponent,
         type: NumericAttributeFilterType,
         description: 'Filter data via numeric range',
+    },
+    {
+        component: HeatmapOperatorComponent,
+        type: HeatmapType,
+        description: 'Create a heatmap for points',
     },
     {
         component: PointInPolygonFilterOperatorComponent,

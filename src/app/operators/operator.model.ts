@@ -408,7 +408,7 @@ export class Operator {
     /**
      * Dictionary reprensentation of the operator as query parameter.
      */
-    private toQueryDict(): QueryDict {
+    toQueryDict(): QueryDict {
         const dict: QueryDict = {
             type: this._operatorType.getMappingName(),
             params: this._operatorType.toMappingDict(),

@@ -26,13 +26,13 @@
         </mat-input-container>
     </div>
     <div fxLayout="row">
-        <mat-form-field>
-            <mat-select formControlName="dataOutputFormat" *ngIf="isVector" placeholder="Data Output Type" fxFlex>
+        <mat-form-field *ngIf="isVector">
+            <mat-select formControlName="dataOutputFormat" placeholder="Data Output Type" fxFlex>
                 <mat-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field>
-            <mat-select formControlName="dataOutputFormat" *ngIf="isRaster" placeholder="Data Output Type" fxFlex>
+        <mat-form-field *ngIf="isRaster">
+            <mat-select formControlName="dataOutputFormat" placeholder="Data Output Type" fxFlex>
                 <mat-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
             </mat-select>
         </mat-form-field>

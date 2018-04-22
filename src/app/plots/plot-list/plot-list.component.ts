@@ -27,15 +27,10 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     PieChartType = PieChartType;
     BoxPlotType = BoxPlotType;
     //
-
-    LoadingState = LoadingState;
-    PlotDetailViewComponent = PlotDetailViewComponent;
-
-    cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
-
     // to distinguish some r-script operators out of the editable ones.
     editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME];
-
+    LoadingState = LoadingState;
+    cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
     private subsriptions: Array<Subscription> = [];
 
     constructor(public projectService: ProjectService,
@@ -82,4 +77,14 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    showFullscreen(plot: Plot) {
+        this.dialog.open(
+            PlotDetailViewComponent,
+            {
+                data: plot,
+                maxHeight: '100vh',
+                maxWidth: '100vw',
+            },
+        );
+    }
 }

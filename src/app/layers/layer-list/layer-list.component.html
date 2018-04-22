@@ -39,48 +39,53 @@
 
             <button mat-icon-button
                     [matMenuTriggerFor]="layerListMenu"
-                    matTooltip="Actions for all layers" matTooltipPosition="after" [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                    matTooltip="Actions for all layers" matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
             >
                 <mat-icon>more_vert</mat-icon>
             </button>
         </span>
     </mat-toolbar>
 
-    <div class="layer-list" [style.max-height.px] = "height-LayoutService.getToolbarHeightPx()">
+    <div class="layer-list" [style.max-height.px]="height-LayoutService.getToolbarHeightPx()">
         <mat-list [dragula]="layer-bag" [dragulaOptions]="dragOptions"
-                 *ngIf="layoutService.getLayerListVisibilityStream() | async">
+                  *ngIf="layoutService.getLayerListVisibilityStream() | async">
 
             <mat-list-item *ngIf="(projectService.getLayerStream() | async)?.length === 0">
                 <button mat-button class="no-layer"
                         (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
-                        matTooltip="Add New Data" matTooltipPosition="after" [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                        matTooltip="Add New Data" matTooltipPosition="after"
+                        [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                 >
-                    <mat-icon>add</mat-icon> add a first layer
+                    <mat-icon>add</mat-icon>
+                    add a first layer
                 </button>
             </mat-list-item>
 
             <ng-template ngFor let-layer [ngForOf]="projectService.getLayerStream() | async">
                 <mat-list-item
-                              [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
-                              [class.list-item-extended]="layer.expanded || layer.editSymbology"
+                    [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
+                    [class.list-item-extended]="layer.expanded || layer.editSymbology"
                 >
                     <mat-menu #layerMenu="matMenu">
 
-                        <button mat-menu-item *ngIf="layer.visible" (click)="projectService.changeLayer(layer, {visible: false})">
-                            <mat-icon >visibility_off</mat-icon>
+                        <button mat-menu-item *ngIf="layer.visible"
+                                (click)="projectService.changeLayer(layer, {visible: false})">
+                            <mat-icon>visibility_off</mat-icon>
                             <span>Hide Layer</span>
                         </button>
-                        <button mat-menu-item *ngIf="!layer.visible" (click)="projectService.changeLayer(layer, {visible: true})">
-                            <mat-icon >visibility</mat-icon>
+                        <button mat-menu-item *ngIf="!layer.visible"
+                                (click)="projectService.changeLayer(layer, {visible: true})">
+                            <mat-icon>visibility</mat-icon>
                             <span>Show Layer</span>
                         </button>
 
                         <button mat-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
-                            <mat-icon >expand_more</mat-icon>
+                            <mat-icon>expand_more</mat-icon>
                             <span>Show Legend</span>
                         </button>
                         <button mat-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">
-                            <mat-icon >expand_less</mat-icon>
+                            <mat-icon>expand_less</mat-icon>
                             <span>Hide Legend</span>
                         </button>
                         <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: { layer: layer }})">
@@ -95,7 +100,7 @@
                             <mat-icon>mode_edit</mat-icon>
                             <span>Rename</span>
                         </button>
-                        <button mat-menu-item (click)="projectService.toggleEditSymbology(layer)">
+                        <button mat-menu-item (click)="layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer: layer}})">
                             <mat-icon>color_lens</mat-icon>
                             <span>Edit Symbology</span>
                         </button>
@@ -110,7 +115,7 @@
                     </mat-menu>
 
                     <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
-                        <div fxLayout="row" fxLayoutAlign="space-between center" >
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
 
                             <button mat-icon-button class="mat-warn error-button" aria-label="Reload"
                                     *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) === LoadingState.ERROR"
@@ -125,29 +130,36 @@
                                     matTooltip="{{layer.expanded ? 'Hide' : 'Show'}} Legend" matTooltipPosition="after"
                                     [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                             >
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
+                                <ng-template [ngIf]="!layer.visible">
+                                    <mat-icon mat-list-icon>visibility_off</mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
                                     || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
                                     <mat-icon mat-list-icon svgIcon="symbology:point"
-                                             [style.stroke-width.px]='2'
-                                             [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
-                                             [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
                                     ></mat-icon>
                                 </ng-template>
                                 <ng-template [ngIf]="false">
                                     <mat-icon mat-list-icon svgIcon="symbology:line"></mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
                                     <mat-icon mat-list-icon svgIcon="symbology:polygon"
-                                             [style.stroke-width.px]='2'
-                                             [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
-                                             [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
+                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
                                     ></mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
                                     || layer.symbology.getSymbologyType() === ST.RASTER">
-                                    <mat-icon mat-list-icon>
-                                        <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6" [yCells]="6">
-                                        </wave-raster-icon>
+                                    <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
+                                        <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME"><span class="lineThrough">access_time</span></ng-template>
+                                        <ng-template ngSwitchDefault>
+                                            <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
+                                                              [yCells]="6">
+                                            </wave-raster-icon>
+                                        </ng-template>
                                     </mat-icon>
                                 </ng-template>
                             </button>
@@ -157,7 +169,8 @@
                                  class="mat-list-item-text grabbable"
                                  fxFlex="grow"
                                  (click)="layerService.setSelectedLayer(layer)"
-                                 [matTooltip]="layer.name" matTooltipPosition="after" [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                                 [matTooltip]="layer.name" matTooltipPosition="after"
+                                 [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                             >
                                 {{layer.name}}
                             </div>
@@ -165,7 +178,8 @@
                             <button #menuTrigger
                                     mat-icon-button class="secondary_action"
                                     [matMenuTriggerFor]="layerMenu"
-                                    matTooltip="Layer Actions" matTooltipPosition="after" [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                                    matTooltip="Layer Actions" matTooltipPosition="after"
+                                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                             >
                                 <mat-icon>more_vert</mat-icon>
                             </button>
@@ -176,7 +190,7 @@
                              fxLayout="row"
                              class="legendary no-drag">
 
-                            <ng-template [ngSwitchCase]="ST.SIMPLE_POINT" >
+                            <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
                                 <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
                                 </wave-legendary-points>
                             </ng-template>
@@ -212,48 +226,6 @@
                                 <mat-icon>expand_less</mat-icon>
                             </button>
 
-                        </div>
-
-                        <div *ngIf="layer.editSymbology" [ngSwitch]="layer.symbology.getSymbologyType()"
-                             fxLayoutAlign="space-between stretch"
-                             fxLayout="row"
-                             class="symbology no-drag">
-
-                            <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-                                <wave-symbology-points fxFlex="grow" [symbology]="layer.symbology"
-                                    (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-points>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-                                <wave-symbology-points fxFlex="grow"
-                                    class="no-drag" [symbology]="layer.symbology" [editRadius]="false"
-                                                       [editStrokeWidth]="false"
-                                    (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-points>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
-                                <wave-symbology-vector fxFlex="grow" [symbology]="layer.symbology"
-                                    (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-vector>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.RASTER">
-                                <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
-                                    (symbologyChanged)="update_symbology(layer, $event)">
-                                </wave-symbology-raster>
-                            </ng-template>
-
-                            <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-                                <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
-                                    (symbologyChanged)="update_symbology(layer, $event)">
-                                ></wave-symbology-raster>
-                            </ng-template>
-
-                            <button mat-icon-button (click)="projectService.toggleEditSymbology(layer)">
-                                <mat-icon>expand_less</mat-icon>
-                            </button>
                         </div>
 
                         <mat-progress-bar
