@@ -27,6 +27,8 @@ import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
 import {OperatorType} from '../../operator-type.model';
+import {TimePlotType} from "../../types/timeplot-type.model";
+import {TimePlotComponent} from "../time-plot-operator/time-plot-operator.component";
 
 interface OperatorListType {
     component: Type<any>;
@@ -75,6 +77,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: BoxPlotComponent,
         type: BoxPlotType,
         description: 'Box plot your data'
+    },
+    {
+        component: TimePlotComponent,
+        type: TimePlotType,
+        description: 'Plot time data'
     }
 ];
 
