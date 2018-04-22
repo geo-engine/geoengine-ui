@@ -429,6 +429,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction);
             }
         }
+        this.temporalProperties.updateValueAndValidity();
     }
 
     getDataPropertiesDict(): DataPropertiesDict {

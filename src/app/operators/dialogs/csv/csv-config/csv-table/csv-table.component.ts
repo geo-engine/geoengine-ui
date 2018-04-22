@@ -29,6 +29,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     IntervalFormat = IntervalFormat;
     isNumberArray: number[];
     untypedColumns: BehaviorSubject<number[]>;
+    isWkt: BehaviorSubject<boolean>;
 
     @ViewChild('headerdiv') headerDiv: ElementRef;
     @ViewChild('bodydiv') bodyDiv: ElementRef;
@@ -67,6 +68,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.yColumn$ = this.propertiesService.xyColumn$.map(xy => xy.y);
         setTimeout(this._changeDetectorRef.markForCheck());
         this.untypedColumns = new BehaviorSubject([this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]);
+        this.isWkt = new BehaviorSubject(false);
     }
 
     ngOnInit() {
@@ -109,23 +111,31 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.formStatus = formStatus;
             }),
             this.propertiesService.spatialProperties$.subscribe(data => {
-                let untypedColumns = [data.xColumn, data.yColumn];
-                for(let i = 2; i < this.untypedColumns.getValue().length; i++) {
+                let untypedColumns = [data.xColumn];
+                if (!data.isWkt) {
+                    untypedColumns.push(data.yColumn);
+                }
+                let c = this.isWkt.getValue() ? 1 : 0;
+                for (let i = 2 - c; i < this.untypedColumns.getValue().length; i++) {
                     untypedColumns.push(this.untypedColumns.getValue()[i]);
                 }
                 this.untypedColumns.next(untypedColumns);
+                this.isWkt.next(data.isWkt);
                 this.update(10);
             }),
             this.propertiesService.temporalProperties$.subscribe(data => {
-                let untypedColumns = [this.untypedColumns.getValue()[0], this.untypedColumns.getValue()[1]];
-                if(data.isTime) {
+                let untypedColumns = [this.untypedColumns.getValue()[0]];
+                if (!this.isWkt.getValue()) {
+                    untypedColumns.push(this.untypedColumns.getValue()[1]);
+                }
+                if (data.isTime) {
                     untypedColumns.push(data.startColumn);
-                    if([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(data.intervalType) >= 0) {
+                    if ([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(data.intervalType) >= 0) {
                         untypedColumns.push(data.endColumn);
                     }
                 }
-                this.update(10);
                 this.untypedColumns.next(untypedColumns);
+                this.update(10);
             }),
             // this.resizeEvent$.subscribe(data => this.resizeTableFrame())
         );
@@ -306,18 +316,19 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     styleDict(i: number, isSpatial: boolean, isTemporal: boolean, head: boolean) {
         let j = this.untypedColumns.getValue().indexOf(i);
-        if(isSpatial) {
-            if(head) {
-                return {orangeHead: j === 0, blueHead: j === 1};
-            }else {
-                return {orange: j === 0, blue: j === 1};
+        if (isSpatial) {
+            if (head) {
+                return {orangeHead: j === 0, blueHead: j === 1 && !this.isWkt.getValue()};
+            } else {
+                return {orange: j === 0, blue: j === 1 && !this.isWkt.getValue()};
             }
         }
-        if(isTemporal) {
-            if(head) {
-                return {greenHead: j === 2, violetHead: j === 3};
-            }else {
-                return {green: j === 2, violet: j === 3};
+        if (isTemporal) {
+            let c = this.isWkt.getValue() ? 1 : 0;
+            if (head) {
+                return {greenHead: j === 2 - c, violetHead: j === 3 - c};
+            } else {
+                return {green: j === 2 - c, violet: j === 3 - c};
             }
         }
         return {};
