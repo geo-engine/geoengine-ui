@@ -77,7 +77,7 @@
                 <div class="longitudeSelector">
                     <mat-form-field>
                         <mat-select fxFlex="100"
-                                    placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
+                                    placeholder="{{xColumnName}}Coordinate column"
                                     formControlName="xColumn" #xColumnSelect>
                             <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
@@ -136,6 +136,16 @@
                     </mat-form-field>
                 </div>
             </div>
+            <div fxLayout="column" fxLayoutGap="1rem">
+                <mat-slide-toggle formControlName="isWkt">WKT</mat-slide-toggle>
+                <mat-form-field>
+                    <mat-select style="width:100%" placeholder="Result type" formControlName="wktResultType">
+                        <mat-option *ngFor="let rt of vectorTypes" [value]="rt">
+                            {{rt.toString()}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </form>
     </mat-step>
     <mat-step [stepControl]="temporalProperties">
@@ -172,7 +182,9 @@
                             <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
-                                    [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                                    [disabled]="[spatialProperties.controls['xColumn'].value,
+                                        (spatialProperties.controls['isWkt'].value ? null : spatialProperties.controls['yColumn'].value)
+                                        ].indexOf(i) >= 0">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
                                     </ng-template>
@@ -195,7 +207,9 @@
                             <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
-                                    [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                                    [disabled]="[spatialProperties.controls['xColumn'].value,
+                                        (spatialProperties.controls['isWkt'].value ? null : spatialProperties.controls['yColumn'].value)
+                                        ].indexOf(i) >= 0">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
                                     </ng-template>

@@ -49,8 +49,10 @@ export class CsvDialogComponent implements OnInit {
 
     submit() {
         this.uploading$.next(true);
-        const untypedCols = [this.csvProperties.spatialProperties.controls['xColumn'].value,
-            this.csvProperties.spatialProperties.controls['yColumn'].value];
+        const untypedCols = [this.csvProperties.spatialProperties.controls['xColumn'].value];
+        if (this.csvProperties.spatialProperties.controls['isWkt'].value) {
+            untypedCols.push(this.csvProperties.spatialProperties.controls['yColumn'].value);
+        }
         if (this.csvProperties.temporalProperties.controls['isTime'].value) {
             untypedCols.push(this.csvProperties.temporalProperties.controls['startColumn'].value);
             if ([this.IntervalFormat.StartInf, this.IntervalFormat.StartConst]
@@ -60,7 +62,7 @@ export class CsvDialogComponent implements OnInit {
         }
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
-        const geometry = 'xy';
+        const geometry = this.csvProperties.spatialProperties.controls['isWkt'].value ? 'wkt' : 'xy';
         const time = this.intervalString;
         const time1Format = this.csvProperties.temporalProperties.controls['startFormat'].value;
         const time2Format = this.csvProperties.temporalProperties.controls['endFormat'].value;
@@ -69,7 +71,8 @@ export class CsvDialogComponent implements OnInit {
             header[i] = this.csvTable.header[i].value;
         }
         const columnX = header[this.csvProperties.spatialProperties.controls['xColumn'].value];
-        const columnY = header[this.csvProperties.spatialProperties.controls['yColumn'].value];
+        const columnY = this.csvProperties.spatialProperties.controls['isWkt'].value ?
+            '' : header[this.csvProperties.spatialProperties.controls['yColumn'].value];
         const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ?
             header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
         const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ?
@@ -106,9 +109,10 @@ export class CsvDialogComponent implements OnInit {
 
         removeIfExists(parameters.columns.textual, columnX);
         removeIfExists(parameters.columns.numeric, columnX);
-        removeIfExists(parameters.columns.textual, columnY);
-        removeIfExists(parameters.columns.numeric, columnY);
-
+        if (this.csvProperties.spatialProperties.controls['isWkt'].value) {
+            removeIfExists(parameters.columns.textual, columnY);
+            removeIfExists(parameters.columns.numeric, columnY);
+        }
         if (time !== 'none') {
             parameters.timeFormat = {
                 time1: {

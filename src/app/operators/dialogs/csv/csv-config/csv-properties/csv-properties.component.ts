@@ -11,6 +11,7 @@ import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
 import {MatStepper} from '@angular/material';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
+import {ResultType, ResultTypes} from '../../../../result-type.model';
 
 export interface DataPropertiesDict {
     delimiter: string,
@@ -26,6 +27,8 @@ export interface SpatialPropertiesDict {
     yColumn: number,
     spatialReferenceSystem: Projection,
     coordinateFormat: string,
+    isWkt: boolean,
+    wktResultType: ResultType,
 }
 
 export interface TemporalPropertiesDict {
@@ -83,6 +86,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     decimalSeparators: string[] = [',', '.'];
     textQualifiers: string[] = ['"', '\''];
     coordinateFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
+    vectorTypes = ResultTypes.VECTOR_TYPES;
 
     dataProperties: FormGroup = new FormGroup({
         delimiter: new FormControl(this.delimiters[1].value, Validators.required),
@@ -97,6 +101,8 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         yColumn: new FormControl(1, Validators.required),
         spatialReferenceSystem: new FormControl(Projections.WGS_84),
         coordinateFormat: new FormControl({value: this.coordinateFormats[2], disabled: true}, Validators.required),
+        isWkt: new FormControl({value: false}, Validators.required),
+        wktResultType: new FormControl({value: this.vectorTypes[0], disabled: true}, Validators.required),
     });
     temporalProperties: FormGroup = new FormGroup({
         intervalType: new FormControl(IntervalFormat.StartInf),
@@ -216,16 +222,34 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             this.spatialProperties.valueChanges.subscribe(spatial => {
                 this.propertiesService.changeSpatialProperties(this.getSpatialPropertiesDict());
             }),
+            this.spatialProperties.controls['isWkt'].valueChanges.subscribe(wkt => {
+                if (wkt) {
+                    this.spatialProperties.controls['yColumn'].disable();
+                    this.spatialProperties.controls['wktResultType'].enable();
+                    this.propertiesService.xyColumn$.next({x: this.propertiesService.xyColumn$.getValue().x});
+                } else {
+                    this.spatialProperties.controls['yColumn'].enable();
+                    this.spatialProperties.controls['wktResultType'].disable();
+                    this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
+                        y: this.spatialProperties.controls['yColumn'].value});
+                }
+            }),
             this.spatialProperties.controls['xColumn'].valueChanges.subscribe(x => {
-                if (x === this.spatialProperties.controls['yColumn'].value) {
-                    if (x === this.header.length - 1) {
-                        this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value - 1);
-                    } else {
-                        this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value + 1);
+                if (!this.spatialProperties.controls['isWkt'].value) {
+                    if (x === this.spatialProperties.controls['yColumn'].value) {
+                        if (x === this.header.length - 1) {
+                            this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value - 1);
+                        } else {
+                            this.spatialProperties.controls['yColumn'].setValue(this.spatialProperties.controls['yColumn'].value + 1);
+                        }
                     }
                 }
                 this.correctColumns();
-                this.propertiesService.xyColumn$.next({x: x, y: this.spatialProperties.controls['yColumn'].value});
+                if (!this.spatialProperties.controls['isWkt'].value) {
+                    this.propertiesService.xyColumn$.next({x: x, y: this.spatialProperties.controls['yColumn'].value});
+                } else {
+                    this.propertiesService.xyColumn$.next({x: x});
+                }
             }),
             this.spatialProperties.controls['yColumn'].valueChanges.subscribe(y => {
                 if (y === this.spatialProperties.controls['xColumn'].value) {
@@ -236,7 +260,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     }
                 }
                 this.correctColumns();
-                this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value, y: y});
+                if (this.spatialProperties.controls['isWkt'].value) {
+                    this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value, y: y});
+                } else {
+                    this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value});
+                }
             }),
             this.temporalProperties.valueChanges.subscribe(temporal => {
                 this.propertiesService.changeTemporalProperties(this.getTemporalPropertiesDict());
@@ -402,8 +430,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     correctColumns() {
         let direction = 1;
-        let arr = [this.spatialProperties.controls['xColumn'].value,
-            this.spatialProperties.controls['yColumn'].value];
+        let arr = [this.spatialProperties.controls['xColumn'].value];
+        if (!this.spatialProperties.controls['isWkt'].value) {
+            arr.push(this.spatialProperties.controls['yColumn'].value);
+        }
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             arr.push(this.temporalProperties.controls['endColumn'].value);
         }
@@ -448,6 +478,8 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             yColumn: this.spatialProperties.controls['yColumn'].value,
             spatialReferenceSystem: this.spatialProperties.controls['spatialReferenceSystem'].value,
             coordinateFormat: this.spatialProperties.controls['coordinateFormat'].value,
+            isWkt: this.spatialProperties.controls['isWkt'].value,
+            wktResultType: this.spatialProperties.controls['wktResultType'].value,
         };
     }
 
@@ -460,6 +492,14 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             endColumn: this.temporalProperties.controls['endColumn'].value,
             endFormat: this.temporalProperties.controls['endFormat'].value,
             constantDuration: this.temporalProperties.controls['constantDuration'].value,
+        }
+    }
+
+    get xColumnName(): string {
+        if (this.spatialProperties.controls['isWkt'].value) {
+            return '';
+        } else {
+            return this.spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName + '-';
         }
     }
 }

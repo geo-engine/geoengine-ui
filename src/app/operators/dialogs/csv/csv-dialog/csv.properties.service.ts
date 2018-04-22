@@ -23,6 +23,8 @@ export class CsvPropertiesService {
         yColumn: -1,
         spatialReferenceSystem: null,
         coordinateFormat: '',
+        isWkt: false,
+        wktResultType: null,
     });
     private temporalProperties = new BehaviorSubject<TemporalPropertiesDict>({
         intervalType: null,
@@ -36,7 +38,7 @@ export class CsvPropertiesService {
     private header = new BehaviorSubject<{value: string}[]>([]);
     private formStatus = new BehaviorSubject<FormStatus>(null);
 
-    xyColumn$: BehaviorSubject<{x: number, y: number}> = new BehaviorSubject<{x: number, y: number}>({x: 0, y: 0});
+    xyColumn$: BehaviorSubject<{x: number, y?: number}> = new BehaviorSubject<{x: number, y?: number}>({x: 0, y: 0});
 
     dataProperties$ = this.dataProperties.asObservable();
     spatialProperties$ = this.spatialProperties.asObservable();
