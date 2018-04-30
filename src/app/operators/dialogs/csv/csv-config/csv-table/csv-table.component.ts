@@ -46,6 +46,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     cellSizes: number[] = [];
     dataProperties: DataPropertiesDict;
     formStatus: FormStatus;
+    maxColumnWidth = 500;
 
     isDataProperties$: Observable<boolean>;
     isSpatialProperties$: Observable<boolean>;

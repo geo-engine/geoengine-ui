@@ -49,17 +49,7 @@ export class CsvDialogComponent implements OnInit {
 
     submit() {
         this.uploading$.next(true);
-        const untypedCols = [this.csvProperties.spatialProperties.controls['xColumn'].value];
-        if (this.csvProperties.spatialProperties.controls['isWkt'].value) {
-            untypedCols.push(this.csvProperties.spatialProperties.controls['yColumn'].value);
-        }
-        if (this.csvProperties.temporalProperties.controls['isTime'].value) {
-            untypedCols.push(this.csvProperties.temporalProperties.controls['startColumn'].value);
-            if ([this.IntervalFormat.StartInf, this.IntervalFormat.StartConst]
-                    .indexOf(this.csvProperties.temporalProperties.controls['intervalType'].value) < 0) {
-                untypedCols.push(this.csvProperties.temporalProperties.controls['endColumn'].value);
-            }
-        }
+        const untypedCols = this.csvTable.untypedColumns.getValue();
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
         const geometry = this.csvProperties.spatialProperties.controls['isWkt'].value ? 'wkt' : 'xy';
@@ -84,6 +74,16 @@ export class CsvDialogComponent implements OnInit {
             return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
         });
         const onError = this.csvProperties.layerProperties.controls['onError'].value;
+        const columns = this.csvProperties.spatialProperties.controls['isWkt'].value ? {
+                x: columnX,
+                numeric: numericColumns,
+                textual: textualColumns,
+            } : {
+                x: columnX,
+                y: columnY,
+                numeric: numericColumns,
+                textual: textualColumns,
+            };
         let parameters: CSVParameters = {
             fieldSeparator: fieldSeparator,
             geometry: geometry,
@@ -91,12 +91,7 @@ export class CsvDialogComponent implements OnInit {
                 time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start', duration: number}) :
                 {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
             header: header,
-            columns: {
-                x: columnX,
-                y: columnY,
-                numeric: numericColumns,
-                textual: textualColumns,
-            },
+            columns: columns,
             onError: onError,
         };
         // filter out geo columns
@@ -154,7 +149,7 @@ export class CsvDialogComponent implements OnInit {
 
         const operator = new Operator({
             operatorType: csvSourceType,
-            resultType: ResultTypes.POINTS,
+            resultType: this.csvProperties.spatialProperties.controls['wktResultType'].value,
             projection: this.csvProperties.spatialProperties.controls['spatialReferenceSystem'].value,
         }).getProjectedOperator(Projections.WGS_84);
 

@@ -101,7 +101,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         yColumn: new FormControl(1, Validators.required),
         spatialReferenceSystem: new FormControl(Projections.WGS_84),
         coordinateFormat: new FormControl({value: this.coordinateFormats[2], disabled: true}, Validators.required),
-        isWkt: new FormControl({value: false}, Validators.required),
+        isWkt: new FormControl(false, Validators.required),
         wktResultType: new FormControl({value: this.vectorTypes[0], disabled: true}, Validators.required),
     });
     temporalProperties: FormGroup = new FormGroup({
@@ -202,6 +202,12 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             }),
             this.propertiesService.header$.subscribe(h => {
                 this.header = h;
+                if (this.header.length < 2) {
+                    this.spatialProperties.controls['isWkt'].setValue(true);
+                    this.spatialProperties.controls['isWkt'].disable();
+                } else {
+                    this.spatialProperties.controls['isWkt'].enable();
+                }
                 if (this.header.length <= 2) {
                     this.temporalProperties.controls['isTime'].setValue(false);
                     this.temporalProperties.controls['isTime'].disable();
