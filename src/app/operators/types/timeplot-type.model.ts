@@ -64,48 +64,22 @@ export class TimePlotType extends OperatorType {
 
         const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
         const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`' : '';
-        const df = this.isGrouping ? 'data.frame(start, start_posix, attribute, grouping)' :
-            'data.frame(start, start_posix, attribute)';
-        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start_posix,y=attribute, group=grouping, color=grouping))' :
-            'ggplot(df, aes(x=start_posix,y=attribute))';
+        const df = this.isGrouping ? 'data.frame(start, attribute, grouping)' :
+            'data.frame(start, attribute)';
+        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start,y=attribute, group=grouping, color=grouping))' :
+            'ggplot(df, aes(x=start,y=attribute))';
         this.code = `
-            features <- mapping.load${camelInputType}(0, mapping.qrect);
+            data <- mapping.load${camelInputType}(0, mapping.qrect);
 
-            if (length(features) > 0) {
-
-                data = mapping.loadPoints(0, mapping.qrect)
-                attr = attributes(data@data)$names[1]
-                query_start = mapping.qrect$t1
-                query_end = mapping.qrect$t2
-                query_lim_posix = c(as.POSIXct(query_start, origin="1970-01-01", tz = "GMT"), as.POSIXct(query_end, origin="1970-01-01", tz = "GMT"))
-
-
-                start = data$\`${config.time}\`
+                start = data$time_start
                 attribute = data$\`${config.attribute}\`
                 ${grouping}
-                start_posix = as.POSIXct(start, origin="1970-01-01", tz = "GMT")
 
                 df = ${df}
 
-                times = seq(mapping.qrect$t1, mapping.qrect$t2, (mapping.qrect$t2 - mapping.qrect$t1)/10)
-
-                p = (
-                  ${ggplot}
-                  + geom_line()
-                  + geom_point()
-                  + scale_x_datetime(limits=query_lim_posix)
-                  + xlab("Time") + ylab("${config.attribute}")
-                  + theme(text = element_text(size=20))
-                )
-                print(p)
+                p = ${ggplot} + geom_line() + geom_point() + xlab("Time") + ylab("${config.attribute}")
                 
-            } else {
-
-                plot.new();
-
-                mtext("Empty Dataset");
-
-            }
+                print(p)
         `;
         console.log(this.code);
     }
