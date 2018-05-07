@@ -28,9 +28,18 @@ import {
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
+import {Extent} from 'openlayers';
 
 @Injectable()
 export class MappingQueryService {
+    /**
+     * Inject the HttpClient-Provider for asynchronous requests.
+     */
+    constructor(private config: Config,
+                private http: HttpClient,
+                private userService: UserService) {
+    }
+
     /**
      * A service that encapsulates MAPPING queries.
      */
@@ -46,37 +55,90 @@ export class MappingQueryService {
     }
 
     /**
-     * Inject the HttpClient-Provider for asynchronous requests.
-     */
-    constructor(private config: Config,
-                private http: HttpClient,
-                private userService: UserService) {
-    }
-
-    /**
      * Get a MAPPING url for the plot operator and time.
-     * @param config
+     * @param config.operator plot operator
+     * @param config.time time interval for the plot
+     * @param config.extent the map extent
+     * @param config.projection [IMAGE ONLY] current projection
+     * @param config.plotWidth [IMAGE ONLY] width for image plot request
+     * @param config.plotHeight [IMAGE ONLY] height for image plot request
      * @returns the query url
      */
-    getPlotQueryUrl(config: { operator: Operator, time: Time }): string {
-        const parameters = new MappingRequestParameters({
+    getPlotQueryUrl(config: {
+        operator: Operator,
+        time: Time,
+        extent: Extent,
+        projection: Projection,
+        plotWidth?: number,
+        plotHeight?: number,
+    }): string {
+        // plot request with temporal information
+        const request = new MappingRequestParameters({
             service: 'plot',
             request: '',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                query: encodeURIComponent(config.operator.toQueryJSON()),
                 time: config.time.asRequestString(),
-                crs: config.operator.projection.getCode(),
-            },
+            }
         });
 
+        // raster sizes
         if (config.operator.getSources(ResultTypes.RASTER).size > 0) {
             // TODO: magic numbers
-            parameters.setParameter('height', 1024);
-            parameters.setParameter('width', 1024);
+            request.setParameter('width', 1024);
+            request.setParameter('height', 1024);
         }
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        // projection and extent
+        request.setParameter('crs', config.projection.getCode());
+        if (config.projection.getCode() === 'EPSG:4326') {
+            request.setParameter('bbox', config.extent[1] + ',' + config.extent[0] + ',' + config.extent[3] + ',' + config.extent[2]);
+        } else {
+            request.setParameter('bbox', config.extent.join(','));
+        }
+
+        // re-create operator with projected sources
+        // TODO: gerenalize this behavior or rework plotting
+        const operator = new Operator({
+            operatorType: config.operator.operatorType,
+            resultType: config.operator.resultType,
+            projection: config.projection,
+            attributes: config.operator.attributes,
+            dataTypes: config.operator.dataTypes,
+            units: config.operator.units,
+            rasterSources: config.operator.getSources(ResultTypes.RASTER)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            pointSources: config.operator.getSources(ResultTypes.POINTS)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            lineSources: config.operator.getSources(ResultTypes.LINES)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            polygonSources: config.operator.getSources(ResultTypes.POLYGONS)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+        });
+
+        const isRScriptPlot = config.operator.operatorType.getMappingName() === 'r_script'
+            && config.operator.operatorType.toMappingDict()['result'] === 'plot';
+        if (isRScriptPlot) {
+            if (!config.plotWidth || !config.plotHeight) {
+                throw new Error('There must be `width`, `height` and `projection` set for an `r_script` plot request.')
+            }
+
+            const operatorQueryDict = operator.toQueryDict();
+
+            // TODO: find more elegant way
+            operatorQueryDict.params['plot_width'] = config.plotWidth;
+            operatorQueryDict.params['plot_height'] = config.plotHeight;
+
+            request.setParameter('query', encodeURIComponent(JSON.stringify(operatorQueryDict)));
+        } else {
+            request.setParameter('query', encodeURIComponent(operator.toQueryJSON()));
+        }
+
+        return this.config.MAPPING_URL + '?' + request.toMessageBody();
     }
 
     /**
@@ -84,7 +146,14 @@ export class MappingQueryService {
      * @param config
      * @returns a Promise of PlotData
      */
-    getPlotData(config: { operator: Operator, time: Time }): Observable<PlotData> {
+    getPlotData(config: {
+        operator: Operator,
+        time: Time,
+        extent: Extent,
+        projection: Projection,
+        plotWidth?: number,
+        plotHeight?: number,
+    }): Observable<PlotData> {
         return this.http.get<PlotData>(this.getPlotQueryUrl(config));
     }
 
@@ -322,16 +391,11 @@ export class MappingQueryService {
         });
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get<MappingColorizer>(this.config.MAPPING_URL + '?' + request.toMessageBody())
-            // .catch((error, {}) => {
-            //    this.notificationService.error(`Could not load colorizer: »${error}«`);
-            //    return Observable.of({interpolation: 'unknown', breakpoints: []});
-            // })
+        // .catch((error, {}) => {
+        //    this.notificationService.error(`Could not load colorizer: »${error}«`);
+        //    return Observable.of({interpolation: 'unknown', breakpoints: []});
+        // })
             .map(c => {
-
-                if (c['result'] && c['result'] === 'No raster for the given time available.') {
-                    console.log('No raster for the given time available.');
-                }
-
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }

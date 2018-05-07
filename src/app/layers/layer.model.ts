@@ -2,7 +2,12 @@ import {Observable, Observer} from 'rxjs/Rx';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
-    Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, ClusteredPointSymbology, MappingColorizerRasterSymbology
+    AbstractVectorSymbology,
+    ClusteredPointSymbology,
+    MappingColorizerRasterSymbology,
+    RasterSymbology,
+    Symbology,
+    SymbologyDict,
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
@@ -40,7 +45,7 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
                    projection: Projection,
                    extent: [number, number, number, number],
                    source: (Document | Node | any | string),
-                   opt_options?: olx.format.ReadOptions): VectorData {
+                   opt_options?: { dataProjection: ol.ProjectionLike, featureProjection: ol.ProjectionLike }): VectorData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 

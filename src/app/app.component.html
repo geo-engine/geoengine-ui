@@ -3,13 +3,15 @@
         <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
     </mat-sidenav>
     <div class="time-container" fxLayoutAlign="space-around center">
+        <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></wave-zoom-handles>
         <wave-small-time-interaction class="mat-elevation-z4"></wave-small-time-interaction>
+        <div></div> <!-- moves Time Interaction to center (cf. space-around @ flex) -->
     </div>
     <wave-navigation></wave-navigation>
     <wave-layer-list class="mat-elevation-z4" [height]="middleContainerHeight$ | async"></wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
-        <wave-ol-map>
+        <wave-ol-map #map>
             <ng-template ngFor let-layer [ngForOf]='layersReverse$ | async'>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer

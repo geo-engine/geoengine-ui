@@ -4,7 +4,8 @@
         <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
     </ng-template>
     <ng-template ngSwitchCase="png">
-        <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" [alt]="plot.name">
+        <img [src]="imagePlotData$ | async" [alt]="plot.name">
+        <mat-progress-bar mode="indeterminate" *ngIf="imagePlotLoading$ | async"></mat-progress-bar>
     </ng-template>
     <ng-template ngSwitchCase="histogram">
         <wave-histogram

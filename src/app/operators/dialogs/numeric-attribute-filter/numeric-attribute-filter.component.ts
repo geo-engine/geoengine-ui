@@ -1,6 +1,4 @@
-import {
-    Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit, ElementRef,
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy} from '@angular/core';
 
 import {HistogramData} from '../../../plots/histogram.component';
 
@@ -9,12 +7,14 @@ import {MappingQueryService} from '../../../queries/mapping-query.service';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {DataTypes, DataType} from '../../datatype.model';
+import {DataType, DataTypes} from '../../datatype.model';
 import {
-    AbstractVectorSymbology, ClusteredPointSymbology, SimplePointSymbology
+    AbstractVectorSymbology,
+    ClusteredPointSymbology,
+    SimplePointSymbology
 } from '../../../layers/symbology/symbology.model';
-import {FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
-import {Subscription, BehaviorSubject, Observable} from 'rxjs/Rx';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../../types/histogram-type.model';
@@ -22,6 +22,7 @@ import {Unit} from '../../unit.model';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
 import {WaveValidators} from '../../../util/form.validators';
+import {MapService} from '../../../map/map.service';
 
 function minMax(control: AbstractControl): { [key: string]: boolean } {
     const min = control.get('min').value;
@@ -57,22 +58,18 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     ResultTypes = ResultTypes;
 
     form: FormGroup;
-
-    private subscriptions: Array<Subscription> = [];
-
     attributes$: Observable<Array<string>>;
-
     data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
     dataLoading$ = new BehaviorSubject(false);
-
     attributeUnit$ = new BehaviorSubject('');
-
     histogramWidth: number;
     histogramHeight: number;
+    private subscriptions: Array<Subscription> = [];
 
     constructor(private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private projectService: ProjectService,
+                private mapService: MapService,
                 private formBuilder: FormBuilder,
                 private elementRef: ElementRef) {
         this.form = formBuilder.group({
@@ -110,15 +107,19 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             });
 
             this.dataLoading$.next(true);
-            this.projectService.getTimeStream().first().subscribe(projectTime => {
-                this.mappingQueryService.getPlotData({
-                    operator: operator,
-                    time: projectTime,
-                }).subscribe(data => {
-                    this.data$.next(data as HistogramData);
-                    this.dataLoading$.next(false);
+            Observable
+                .combineLatest(this.projectService.getTimeStream().first(), this.projectService.getProjectionStream().first())
+                .subscribe(([projectTime, projection]) => {
+                    this.mappingQueryService.getPlotData({
+                        operator: operator,
+                        time: projectTime,
+                        extent: this.mapService.getViewportSize().extent,
+                        projection: projection,
+                    }).subscribe(data => {
+                        this.data$.next(data as HistogramData);
+                        this.dataLoading$.next(false);
+                    });
                 });
-            });
         }));
 
         this.attributes$ = this.form.controls['pointLayer'].valueChanges.map(layer => {

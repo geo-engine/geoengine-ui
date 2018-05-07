@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {IMappingRasterColorizer, MappingColorizer} from './symbology.model';
+import {IMappingRasterColorizer, MappingColorizer} from '../../layers/symbology/symbology.model';
 
 @Pipe({name: 'waveWappingColorizerToGradient'})
 export class MappingColorizerToGradientPipe implements PipeTransform {
@@ -13,7 +13,7 @@ export class MappingColorizerToGradientPipe implements PipeTransform {
             colorStr += ', ' + breaks[i][1] + ' ' + (i * elementSize + halfElementSize) + '%';
         }
 
-        let cssStr = 'linear-gradient(to bottom' + colorStr + ')';
+        const cssStr = 'linear-gradient(to bottom' + colorStr + ')';
         return cssStr;
     }
 
@@ -29,18 +29,16 @@ export class MappingColorizerToGradientPipe implements PipeTransform {
         let colorStr = '';
         for (let i = 0; i < breaks.length; i++) {
             const br = breaks[i];
-            // console.log("MappingColorizerToGradientPipe.colorsRgbaAsCssGradient", br, MappingColorizerToGradientPipe.rgbaString(br.r, br.g, br.b, br.a));
-            colorStr += ', ' + MappingColorizerToGradientPipe.rgbaString(br.r, br.g, br.b, br.a) + ' ' + (i * elementSize + halfElementSize) + '%';
+            colorStr += ', ';
+            colorStr += MappingColorizerToGradientPipe.rgbaString(br.r, br.g, br.b, br.a) + ' ' + (i * elementSize + halfElementSize) + '%';
         }
 
         const cssStr = 'linear-gradient(to bottom' + colorStr + ')';
-        // console.log("MappingColorizerToGradientPipe.colorsRgbaAsCssGradient", cssStr);
         return cssStr;
     }
 
     transform(colorizer: IMappingRasterColorizer): string {
         const gradient = MappingColorizerToGradientPipe.colorsRgbaAsCssGradient(colorizer);
-        // console.log('MappingColorizerToGradient.Pipe', gradient);
         return gradient;
     }
 }
