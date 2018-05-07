@@ -66,19 +66,20 @@ export class TimePlotType extends OperatorType {
         const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`' : '';
         const df = this.isGrouping ? 'data.frame(start, attribute, grouping)' :
             'data.frame(start, attribute)';
-        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start,y=attribute, group=grouping, color=grouping))' :
-            'ggplot(df, aes(x=start,y=attribute))';
+        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start_posix,y=attribute, group=grouping, color=grouping))' :
+            'ggplot(df, aes(x=start_posix,y=attribute))';
         this.code = `
             data <- mapping.load${camelInputType}(0, mapping.qrect);
 
                 start = data$time_start
+                start_posix = as.POSIXct(start, origin="1970-01-01", tz="GMT")
                 attribute = data$\`${config.attribute}\`
                 ${grouping}
 
                 df = ${df}
 
                 p = ${ggplot} + geom_line() + geom_point() + xlab("Time") + ylab("${config.attribute}")
-                
+
                 print(p)
         `;
         console.log(this.code);
