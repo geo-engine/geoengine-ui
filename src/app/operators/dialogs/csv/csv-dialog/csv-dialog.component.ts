@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild, Inject, Injectabl
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {ResultTypes} from '../../../result-type.model';
+import {ResultType, ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
 import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../layers/symbology/symbology.model';
@@ -50,6 +50,7 @@ export class CsvDialogComponent implements OnInit {
     submit() {
         this.uploading$.next(true);
         const untypedCols = this.csvTable.untypedColumns.getValue();
+        console.log(untypedCols);
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
         const geometry = this.csvProperties.spatialProperties.controls['isWkt'].value ? 'wkt' : 'xy';
@@ -90,7 +91,7 @@ export class CsvDialogComponent implements OnInit {
             time: (time.indexOf('constant') < 0) ?
                 time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start', duration: number}) :
                 {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
-            header: header,
+            header: (this.csvProperties.dataProperties.controls['isHeaderRow'].value ? null : header),
             columns: columns,
             onError: onError,
         };
@@ -149,10 +150,10 @@ export class CsvDialogComponent implements OnInit {
 
         const operator = new Operator({
             operatorType: csvSourceType,
-            resultType: this.csvProperties.spatialProperties.controls['wktResultType'].value,
+            resultType: this.csvProperties.spatialProperties.controls['isWkt'].value ?
+                this.csvProperties.spatialProperties.controls['wktResultType'].value : ResultTypes.POINTS,
             projection: this.csvProperties.spatialProperties.controls['spatialReferenceSystem'].value,
         }).getProjectedOperator(Projections.WGS_84);
-
         this.uploading$.next(true);
 
         this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator)
