@@ -63,25 +63,31 @@ export class TimePlotType extends OperatorType {
         this.resultType = ResultTypes.PLOT;
 
         const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
-        const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`' : '';
-        const df = this.isGrouping ? 'data.frame(start, attribute, grouping)' :
-            'data.frame(start, attribute)';
-        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start_posix,y=attribute, group=grouping, color=grouping))' :
-            'ggplot(df, aes(x=start_posix,y=attribute))';
+        const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`;' : '';
+        const df = this.isGrouping ? 'data.frame(start, attribute, grouping);' :
+            'data.frame(start, attribute);';
+        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start,y=attribute, group=grouping, color=grouping))' :
+            'ggplot(df, aes(x=start,y=attribute))';
         this.code = `
-            data <- mapping.load${camelInputType}(0, mapping.qrect);
+library(ggplot2);
+data <- mapping.load${camelInputType}(0, mapping.qrect);
 
-                start = data$time_start
-                start_posix = as.POSIXct(start, origin="1970-01-01", tz="GMT")
-                attribute = data$\`${config.attribute}\`
-                ${grouping}
+attr = attributes(data@data)$names[1];
+query_start = mapping.qrect$t1;
+query_end = mapping.qrect$t2;
+query_lim_posix = c(as.POSIXct(query_start, origin="1970-01-01", tz = "GMT"), as.POSIXct(query_end, origin="1970-01-01", tz = "GMT"));
 
-                df = ${df}
+start = as.POSIXct(data$time_start, origin="1970-01-01", tz="GMT");
+attribute = data$\`${config.attribute}\`;
 
-                p = ${ggplot} + geom_line() + geom_point() + xlab("Time") + ylab("${config.attribute}")
+df = data.frame(start, attribute)
 
-                print(p)
-        `;
+p <- (
+    ggplot(df, aes(x=start, y=attribute))
+);
+
+print(p)
+`;
         console.log(this.code);
     }
 
