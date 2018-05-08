@@ -106,7 +106,7 @@
             </div>
             <div fxLayout="column" fxLayoutGap="1rem">
                 <div class="latitudeSelector">
-                    <mat-form-field>
+                    <mat-form-field *ngIf="!spatialProperties.controls['isWkt'].value">
                         <mat-select fxFlex="100"
                                     placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
                                     formControlName="yColumn" #yColumnSelect>

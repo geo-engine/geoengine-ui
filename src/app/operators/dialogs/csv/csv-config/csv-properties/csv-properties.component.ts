@@ -55,6 +55,8 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     FormStatus = FormStatus;
     IntervalFormat = IntervalFormat;
 
+    isSpatialVisited = false;
+
     delimiters: {def: string, value: string}[] = [
         {def: 'TAB', value: '\t'},
         {def: 'COMMA', value: ','},
@@ -202,9 +204,33 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             }),
             this.propertiesService.header$.subscribe(h => {
                 this.header = h;
-                if (this.header.length < 2) {
-                    this.spatialProperties.controls['isWkt'].setValue(true);
+                // Reorder columns if needed. There might be some columns that are out of range after refactoring delimiters
+                let arr = [this.spatialProperties.controls['xColumn'].value];
+                if (this.spatialProperties.controls['isWkt'].value) {
+                    arr.push(this.spatialProperties.controls['yColumn'].value);
+                }
+                if (this.temporalProperties.controls['isTime'].value) {
+                    arr.push(this.temporalProperties.controls['startColumn'].value);
+                    if ([this.IntervalFormat.StartEnd, this.IntervalFormat.StartDur]
+                        .indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
+                        arr.push(this.temporalProperties.controls['endColumn'].value);
+                    }
+                }
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i] >= this.header.length) {
+                        this.spatialProperties.controls['xColumn'].setValue(0);
+                        this.spatialProperties.controls['yColumn'].setValue(1);
+                        this.temporalProperties.controls['startColumn'].setValue(2);
+                        this.temporalProperties.controls['endColumn'].setValue(3);
+                        break;
+                    }
+                }
+
+                // Refactor user options(disable options that are not possible anymore).
+                if (this.header.length < 2 && this.isSpatialVisited) {
+                    console.log('ping');
                     this.spatialProperties.controls['isWkt'].disable();
+                    this.spatialProperties.controls['isWkt'].setValue(true);
                 } else {
                     this.spatialProperties.controls['isWkt'].enable();
                 }
@@ -370,7 +396,15 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             case 0: group = this.dataProperties;
                 status = this.FormStatus.DataProperties;
                 break;
-            case 1: group = this.spatialProperties;
+            case 1:
+                if (!this.isSpatialVisited) {
+                    this.isSpatialVisited = true;
+                    if (this.header.length < 2) {
+                        this.spatialProperties.controls['isWkt'].disable();
+                        this.spatialProperties.controls['isWkt'].setValue(true);
+                    }
+                }
+                group = this.spatialProperties;
                 status = this.FormStatus.SpatialProperties;
                 break;
             case 2: group = this.temporalProperties;
