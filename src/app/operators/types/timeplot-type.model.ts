@@ -23,9 +23,6 @@ interface TimePlotTypeConfig {
     inputType: ResultType;
 }
 
-/**
- * The R type.
- */
 export class TimePlotType extends OperatorType {
     private static _TYPE = 'timeplot';
     private static _ICON_URL = OperatorType.createIconDataUrl(TimePlotType._TYPE);
@@ -66,7 +63,7 @@ export class TimePlotType extends OperatorType {
         const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`;' : '';
         const df = this.isGrouping ? 'data.frame(start, attribute, grouping);' :
             'data.frame(start, attribute);';
-        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start,y=attribute, group=grouping, color=grouping))' :
+        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start, y=attribute, group=grouping, color=grouping))' :
             'ggplot(df, aes(x=start,y=attribute))';
         this.code = `
 library(ggplot2);
@@ -78,14 +75,20 @@ query_end = mapping.qrect$t2;
 query_lim_posix = c(as.POSIXct(query_start, origin="1970-01-01", tz = "GMT"), as.POSIXct(query_end, origin="1970-01-01", tz = "GMT"));
 
 start = as.POSIXct(data$time_start, origin="1970-01-01", tz="GMT");
-attribute = data$\`${config.attribute}\`;
+attribute = data$\`${this.attribute}\`;
+${grouping}
 
-df = data.frame(start, attribute)
+df = ${df}
 
-p <- (
-    ggplot(df, aes(x=start, y=attribute))
-);
+times = seq(mapping.qrect$t1, mapping.qrect$t2, (mapping.qrect$t2 - mapping.qrect$t1)/10)
 
+p = (
+  ${ggplot}
+  + geom_line()
+  + geom_point()
+  + scale_x_datetime(limits=query_lim_posix)
+  + xlab("Time") + ylab(\"${this.attribute}\")
+)
 print(p)
 `;
         console.log(this.code);

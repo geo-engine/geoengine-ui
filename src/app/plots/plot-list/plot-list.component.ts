@@ -8,6 +8,7 @@ import {RScriptType} from '../../operators/types/r-script-type.model';
 import {BoxPlotType} from '../../operators/types/boxplot-type.model';
 import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
 import {PieChartType} from '../../operators/types/piechart-type.model';
+import {TimePlotType} from '../../operators/types/timeplot-type.model';
 import {LayoutService} from '../../layout.service';
 import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
 import {Plot} from '../plot.model';
@@ -26,9 +27,10 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     ScatterPlotType = ScatterPlotType;
     PieChartType = PieChartType;
     BoxPlotType = BoxPlotType;
+    TimePlotType = TimePlotType;
     //
     // to distinguish some r-script operators out of the editable ones.
-    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME];
+    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME, this.TimePlotType.NAME];
     LoadingState = LoadingState;
     cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
     private subsriptions: Array<Subscription> = [];
