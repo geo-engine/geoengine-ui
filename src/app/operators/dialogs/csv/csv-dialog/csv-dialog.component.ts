@@ -50,7 +50,6 @@ export class CsvDialogComponent implements OnInit {
     submit() {
         this.uploading$.next(true);
         const untypedCols = this.csvTable.untypedColumns.getValue();
-        console.log(untypedCols);
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
         const geometry = this.csvProperties.spatialProperties.controls['isWkt'].value ? 'wkt' : 'xy';
@@ -200,7 +199,7 @@ export class CsvDialogComponent implements OnInit {
         this.projectService.addLayer(layer);
     }
 
-    openErrorDialog(error: any): void {
+    openErrorDialog(error: HttpErrorResponse): void {
         let errorDialogRef = this.errorDialog.open(CsvErrorDialog, {
             width: '400px',
             data: { error: error },
@@ -250,6 +249,6 @@ export class CsvErrorDialog {
 
     constructor(
         public dialogRef: MatDialogRef<CsvErrorDialog>,
-        @Inject(MAT_DIALOG_DATA) public data: any) {}
+        @Inject(MAT_DIALOG_DATA) public data: {error: HttpErrorResponse}) {}
 
 }

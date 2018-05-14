@@ -136,7 +136,6 @@ import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-pol
 import {IfGeoBonDirective} from './util/directives/if-geobon.directive';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from './operators/dialogs/country-polygon-selection/country-polygon-selection.component';
-import {HttpModule} from '@angular/http';
 import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
@@ -277,7 +276,6 @@ export function configInitializer(config: Config) {
         DragulaModule,
         ReactiveFormsModule,
         ColorPickerModule,
-        HttpModule,
     ],
     entryComponents: [
         RenameLayerComponent,

@@ -228,7 +228,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
                 // Refactor user options(disable options that are not possible anymore).
                 if (this.header.length < 2 && this.isSpatialVisited) {
-                    console.log('ping');
                     this.spatialProperties.controls['isWkt'].disable();
                     this.spatialProperties.controls['isWkt'].setValue(true);
                 } else {
