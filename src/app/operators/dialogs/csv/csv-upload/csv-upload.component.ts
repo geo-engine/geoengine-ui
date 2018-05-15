@@ -90,16 +90,6 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
             this.data.progress = 100;
             this.status$.next(FormStatus.Finished);
         });
-        reader.onerror = ((e) => {
-            console.log('Error encountered file upload');
-        });
-        reader.onprogress = ((e) => {
-            this.data.progress = e.loaded / e.total * 100;
-            console.log('progressed: ' + e.loaded / e.total * 100 + '% on file');
-        });
-        reader.onloadstart = ((e) => {
-            console.log('Reader started reading ' + this.data.file.name);
-        });
 
         reader.readAsText(this.data.file);
     }

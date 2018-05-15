@@ -73,6 +73,13 @@ div.constantSelector mat-input-container /deep/ span.mat-input-placeholder {
     color: $titleColor;
 }
 
+td {
+    max-width: 500px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .bodydiv {
     max-width: 100%;
     font-size: 15px;

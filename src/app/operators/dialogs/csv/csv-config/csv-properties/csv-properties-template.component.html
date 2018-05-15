@@ -8,67 +8,60 @@
                                      [subtitle]="'Please specify the properties of your CSV file, e.g. the delimiter.'"
                                      style="text-align: left"></wave-dialog-section-heading>
         <form [formGroup]="dataProperties"
-              fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+              fxLayout="row" fxLayout.sm="column" fxLayoutGap="2rem" fxLayoutAlign="center none" fxLayoutAlign.sm="center center"
               style="margin-bottom: 1rem;">
-
-            <div fxLayout="column" fxLayoutGap="1rem">
-                <mat-form-field>
-                    <mat-select placeholder="Delimiter" formControlName="delimiter">
-                        <mat-option *ngFor="let delimiter of delimiters" [value]="delimiter.value">
-                            {{delimiter.def}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <table cellspacing="0" cellpadding="0" style="border-spacing: 0;">
-                    <tr>
-                        <td>
-                            <mat-slide-toggle formControlName="isTextQualifier"></mat-slide-toggle>
-                        </td>
-                        <td style="padding: 0;">
-                            <mat-form-field>
-                                <mat-select placeholder="Text qualifier" formControlName="textQualifier">
-                                    <mat-option *ngFor="let textQualifier of textQualifiers" [value]="textQualifier">
-                                        {{textQualifier}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="1rem">
-                <mat-form-field>
-                    <mat-select placeholder="Decimal separator" formControlName="decimalSeparator">
-                        <mat-option *ngFor="let decimalSeparator of decimalSeparators" [value]="decimalSeparator">
-                            {{decimalSeparator}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <table cellspacing="0" cellpadding="0">
-                    <tbody>
-                    <tr>
-                        <td>
-                        </td>
-                        <td style="display: table-cell;" class="ng-pristine mat-select-disabled mat-select ng-touched">
-                            <div style="cursor: default; display: flex; color: rgba(0, 0, 0, 0.38)">
-                        <span style="cursor: default; transform: scale(.75); text-align: left; left: -2px;"
-                              class="mat-select-placeholder">
-                            Header Row
-                        </span>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr style="max-height: 40px;">
-                        <td>
-                            <mat-slide-toggle style="margin:0;" formControlName="isHeaderRow"></mat-slide-toggle>
-                        </td>
-                        <td style="padding: 0;">
-                            <input type="number" min="0" formControlName="headerRow">
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table flex>
+                <tr>
+                    <td></td>
+                    <td>
+                        <mat-form-field>
+                            <mat-select placeholder="Delimiter" formControlName="delimiter">
+                                <mat-option *ngFor="let delimiter of delimiters" [value]="delimiter.value">
+                                    {{delimiter.def}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-slide-toggle formControlName="isTextQualifier"></mat-slide-toggle>
+                    </td>
+                    <td>
+                        <mat-form-field>
+                            <mat-select placeholder="Text qualifier" formControlName="textQualifier">
+                                <mat-option *ngFor="let textQualifier of textQualifiers" [value]="textQualifier">
+                                    {{textQualifier}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+            <table flex>
+                <tr>
+                    <td></td>
+                    <td>
+                        <mat-form-field>
+                            <mat-select placeholder="Decimal separator" formControlName="decimalSeparator">
+                                <mat-option *ngFor="let decimalSeparator of decimalSeparators" [value]="decimalSeparator">
+                                    {{decimalSeparator}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <mat-slide-toggle style="margin:0;" formControlName="isHeaderRow"></mat-slide-toggle>
+                    </td>
+                    <td>
+                        <mat-input-container>
+                            <input placeholder="Header Row" matInput type="number" formControlName="headerRow" min="0">
+                        </mat-input-container>
+                    </td>
+                </tr>
+            </table>
         </form>
     </mat-step>
     <mat-step [stepControl]="spatialProperties">
@@ -78,15 +71,15 @@
         <wave-dialog-section-heading [title]="'Spatial Properties'"
                                      [subtitle]="'In this step you can specify the spatial columns of your CSV file.'"
                                      style="text-align: left"></wave-dialog-section-heading>
-        <form fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+        <form fxLayout="row" fxLayout.sm="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="spatialProperties">
             <div fxLayout="column" fxLayoutGap="1rem">
                 <div class="longitudeSelector">
                     <mat-form-field>
                         <mat-select fxFlex="100"
-                                    placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.xCoordinateName}}-Coordinate column"
-                                    formControlName="xColumn">
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                                    placeholder="{{xColumnName}}Coordinate column"
+                                    formControlName="xColumn" #xColumnSelect>
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
@@ -113,11 +106,11 @@
             </div>
             <div fxLayout="column" fxLayoutGap="1rem">
                 <div class="latitudeSelector">
-                    <mat-form-field>
+                    <mat-form-field *ngIf="!spatialProperties.controls['isWkt'].value">
                         <mat-select fxFlex="100"
                                     placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
-                                    formControlName="yColumn">
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                                    formControlName="yColumn" #yColumnSelect>
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
@@ -143,37 +136,42 @@
                     </mat-form-field>
                 </div>
             </div>
+            <div fxLayout="column" fxLayoutGap="1rem">
+                <mat-slide-toggle formControlName="isWkt">WKT</mat-slide-toggle>
+                <mat-form-field>
+                    <mat-select style="width:100%" placeholder="Result type" formControlName="wktResultType">
+                        <mat-option *ngFor="let rt of vectorTypes" [value]="rt">
+                            {{rt.toString()}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </form>
     </mat-step>
     <mat-step [stepControl]="temporalProperties">
         <ng-template matStepLabel>
             <div fxLayout="row" fxLayoutAlign="left center">
-                <form [formGroup]="temporalProperties" style="margin-top: 6px">
-                    <mat-slide-toggle formControlName="isTime">
-                    </mat-slide-toggle>
-                </form>
                 Temporal
             </div>
         </ng-template>
         <wave-dialog-section-heading [title]="'Temporal Properties'"
                                      [subtitle]="'This step allows you to specify temporal columns of your CSV file.'"
                                      style="text-align: left"></wave-dialog-section-heading>
-        <form fxLayout="row" fxLayout.xs="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
+        <form fxLayout="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
-            <div fxLayout="column" fxLayout.sm="row" fxLayoutGap="1rem" class="temporal_fxElement">
-                <mat-form-field>
-                    <mat-select fxFlex="80"
-                                placeholder="Interval type"
-                                formControlName="intervalType"
-                    >
-                        <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
-                                    [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && csvTable.header.length <= 3">
-                            {{intervalType.display}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center"
+            <mat-slide-toggle formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
+            <mat-form-field>
+                <mat-select fxFlex
+                            placeholder="Interval type"
+                            formControlName="intervalType"
+                >
+                    <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
+                                [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && header.length <= 3">
+                        {{intervalType.display}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div fxLayout="row" fxLayout.sm="column" fxLayoutGap="1rem" fxLayoutAlign="center"
                  class="temporal_fxElement">
                 <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
                     <mat-form-field>
@@ -181,10 +179,12 @@
                                     name="startCol"
                                     formControlName="startColumn"
                         >
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
-                                    [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                                    [disabled]="[spatialProperties.controls['xColumn'].value,
+                                        (spatialProperties.controls['isWkt'].value ? null : spatialProperties.controls['yColumn'].value)
+                                        ].indexOf(i) >= 0">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
                                     </ng-template>
@@ -204,10 +204,12 @@
                         <mat-select
                             [placeholder]="(temporalProperties.controls['intervalType'].value === IntervalFormat.StartDur) ? 'Duration column' : 'End Column'"
                             name="endCol" formControlName="endColumn">
-                            <ng-template ngFor let-h [ngForOf]="csvTable.header" let-i="index">
+                            <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option
                                     [value]="i"
-                                    [disabled]="[spatialProperties.controls['xColumn'].value, spatialProperties.controls['yColumn'].value].indexOf(i) >= 0">
+                                    [disabled]="[spatialProperties.controls['xColumn'].value,
+                                        (spatialProperties.controls['isWkt'].value ? null : spatialProperties.controls['yColumn'].value)
+                                        ].indexOf(i) >= 0">
                                     <ng-template [ngIf]="h.value !== ''">
                                         {{h.value}}
                                     </ng-template>
@@ -221,12 +223,12 @@
                     <mat-input-container
                         *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
                         <input matInput formControlName="constantDuration" placeholder="Constant duration"
-                               type="input">
-                        <span mat-suffix>{{temporalProperties.controls['endFormat'].value}}</span>
+                               type="number">
+                        <span matSuffix>{{temporalProperties.controls['endFormat'].value}}</span>
                     </mat-input-container>
                 </div>
             </div>
-            <div fxLayout="column" fxLayout.xs="row" fxLayoutGap="1rem" fxLayoutAlign="center"
+            <div fxLayout="row" fxLayout.sm="column" fxLayoutGap="1rem" fxLayoutAlign="center"
                  class="temporal_fxElement">
                 <div [ngClass]="{startSelector: temporalProperties.controls['isTime'].value}">
                     <mat-form-field>
@@ -268,19 +270,45 @@
     </mat-step>
     <mat-step [stepControl]="typingProperties">
         <ng-template matStepLabel>
+            Typing
+        </ng-template>
+        <wave-dialog-section-heading [title]="'Typing Properties'"
+                                     [subtitle]="'You can specify the data types of the remaining columns here.'"
+                                     style="text-align: left"></wave-dialog-section-heading>
+    </mat-step>
+    <mat-step [stepControl]="layerProperties">
+        <ng-template matStepLabel>
             Layer
         </ng-template>
         <wave-dialog-section-heading [title]="'Layer Properties'"
-                                     [subtitle]="'You can specify the data types of the remaining columns and the layer name here.'"
+                                     [subtitle]="'Choose on error behavior and layer name.'"
                                      style="text-align: left"></wave-dialog-section-heading>
-        <form [formGroup]="typingProperties" style="width: 100%">
+        <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
             <mat-input-container style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
                        type="input" #layerNameComponent>
-                <mat-hint class="error" *ngIf="layerNameComponent?.errors?.layerNameNoDuplicate">Name is already in
+                <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>
             </mat-input-container>
+            <wave-dialog-section-heading [subtitle]="'On error behavior'" flex></wave-dialog-section-heading>
+            <mat-radio-group formControlName="onError" fxLayout="row" fxLayoutAlign="space-around center">
+                <mat-radio-button value="skip"  flex>
+                    <span matTooltip="Skip row where error occurs">
+                        Skip
+                    </span>
+                </mat-radio-button>
+                <mat-radio-button value="abort" flex>
+                    <span matTooltip="Abort upload on error">
+                        Abort
+                    </span>
+                </mat-radio-button>
+                <mat-radio-button value="keep" flex>
+                    <span matTooltip="Keep errors">
+                        Keep
+                    </span>
+                </mat-radio-button>
+            </mat-radio-group>
         </form>
     </mat-step>
 </mat-horizontal-stepper>

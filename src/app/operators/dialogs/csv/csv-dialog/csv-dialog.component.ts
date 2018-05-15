@@ -1,28 +1,31 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, Inject, Injectable} from '@angular/core';
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {ResultTypes} from '../../../result-type.model';
+import {ResultType, ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
 import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
-import {MatDialogRef} from '@angular/material';
-import {BehaviorSubject} from 'rxjs/Rx';
+import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {Projections} from '../../../projection.model';
 import {ProjectionType} from '../../../types/projection-type.model';
+import {CsvPropertiesService} from './csv.properties.service';
 import {ProjectService} from '../../../../project/project.service';
 import {IntervalFormat} from '../interval.enum';
-import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
+import {CsvPropertiesComponent, DataPropertiesDict} from '../csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
     selector: 'wave-csv-dialog',
     templateUrl: './csv-dialog.component.html',
     styleUrls: ['./csv-dialog.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [CsvPropertiesService],
 })
 export class CsvDialogComponent implements OnInit {
 
@@ -37,33 +40,29 @@ export class CsvDialogComponent implements OnInit {
                 private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
                 private projectService: ProjectService,
-                private dialogRef: MatDialogRef<CsvDialogComponent>) {
+                private dialogRef: MatDialogRef<CsvDialogComponent>,
+                private errorDialog: MatDialog) {
     }
 
     ngOnInit() {
     }
 
     submit() {
-        const untypedCols = [this.csvProperties.spatialProperties.controls['xColumn'].value,
-            this.csvProperties.spatialProperties.controls['yColumn'].value];
-        if (this.csvProperties.temporalProperties.controls['isTime'].value) {
-            untypedCols.push(this.csvProperties.temporalProperties.controls['startColumn'].value);
-            if (this.csvProperties.temporalProperties.controls['intervalType'].value !== this.IntervalFormat.StartInf) {
-                untypedCols.push(this.csvProperties.temporalProperties.controls['endColumn'].value);
-            }
-        }
+        this.uploading$.next(true);
+        const untypedCols = this.csvTable.untypedColumns.getValue();
         // TODO: refactor most of this
         const fieldSeparator = this.csvProperties.dataProperties.controls['delimiter'].value;
-        const geometry = 'xy';
+        const geometry = this.csvProperties.spatialProperties.controls['isWkt'].value ? 'wkt' : 'xy';
         const time = this.intervalString;
         const time1Format = this.csvProperties.temporalProperties.controls['startFormat'].value;
         const time2Format = this.csvProperties.temporalProperties.controls['endFormat'].value;
-        const header = new Array(this.csvProperties.csvTable.header.length);
-        for (let i = 0; i < this.csvProperties.csvTable.header.length; i++) {
-            header[i] = this.csvProperties.csvTable.header[i].value;
+        const header = new Array(this.csvTable.header.length);
+        for (let i = 0; i < this.csvTable.header.length; i++) {
+            header[i] = this.csvTable.header[i].value;
         }
         const columnX = header[this.csvProperties.spatialProperties.controls['xColumn'].value];
-        const columnY = header[this.csvProperties.spatialProperties.controls['yColumn'].value];
+        const columnY = this.csvProperties.spatialProperties.controls['isWkt'].value ?
+            '' : header[this.csvProperties.spatialProperties.controls['yColumn'].value];
         const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ?
             header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
         const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ?
@@ -74,22 +73,27 @@ export class CsvDialogComponent implements OnInit {
         const textualColumns = header.filter((name, index) => {
             return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
         });
-        const onError = 'skip';
-
-        let parameters: CSVParameters = {
-            fieldSeparator: fieldSeparator,
-            geometry: geometry,
-            time: time as ('none' | 'start+inf' | 'start+end' | 'start+duration'),
-            header: header,
-            columns: {
+        const onError = this.csvProperties.layerProperties.controls['onError'].value;
+        const columns = this.csvProperties.spatialProperties.controls['isWkt'].value ? {
+                x: columnX,
+                numeric: numericColumns,
+                textual: textualColumns,
+            } : {
                 x: columnX,
                 y: columnY,
                 numeric: numericColumns,
                 textual: textualColumns,
-            },
+            };
+        let parameters: CSVParameters = {
+            fieldSeparator: fieldSeparator,
+            geometry: geometry,
+            time: (time.indexOf('constant') < 0) ?
+                time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start', duration: number}) :
+                {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
+            header: (this.csvProperties.dataProperties.controls['isHeaderRow'].value ? null : header),
+            columns: columns,
             onError: onError,
         };
-
         // filter out geo columns
         function removeIfExists(array: Array<string>, name: string) {
             const index = array.indexOf(name);
@@ -100,9 +104,10 @@ export class CsvDialogComponent implements OnInit {
 
         removeIfExists(parameters.columns.textual, columnX);
         removeIfExists(parameters.columns.numeric, columnX);
-        removeIfExists(parameters.columns.textual, columnY);
-        removeIfExists(parameters.columns.numeric, columnY);
-
+        if (this.csvProperties.spatialProperties.controls['isWkt'].value) {
+            removeIfExists(parameters.columns.textual, columnY);
+            removeIfExists(parameters.columns.numeric, columnY);
+        }
         if (time !== 'none') {
             parameters.timeFormat = {
                 time1: {
@@ -144,25 +149,22 @@ export class CsvDialogComponent implements OnInit {
 
         const operator = new Operator({
             operatorType: csvSourceType,
-            resultType: ResultTypes.POINTS,
+            resultType: this.csvProperties.spatialProperties.controls['isWkt'].value ?
+                this.csvProperties.spatialProperties.controls['wktResultType'].value : ResultTypes.POINTS,
             projection: this.csvProperties.spatialProperties.controls['spatialReferenceSystem'].value,
         }).getProjectedOperator(Projections.WGS_84);
-
         this.uploading$.next(true);
 
-        // console.log("SAVE", config, csvSourceType);
-        try {
-            this.userService.addFeatureToDB(this.csvProperties.typingProperties.controls['layerName'].value, operator)
-                .subscribe(data => {
-                    this.uploading$.next(false);
-
+        this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator)
+            .subscribe(data => { // Regular query processing
                     this.addLayer(data);
 
                     this.dialogRef.close();
+                },
+                error => { // Error code - open dialog
+                    this.uploading$.next(false);
+                    this.openErrorDialog(error);
                 });
-        }catch (e) {
-            console.log('Error: ' + e);
-        }
     }
 
     private addLayer(entry: {name: string, operator: Operator}) {
@@ -197,6 +199,19 @@ export class CsvDialogComponent implements OnInit {
         this.projectService.addLayer(layer);
     }
 
+    openErrorDialog(error: HttpErrorResponse): void {
+        let errorDialogRef = this.errorDialog.open(CsvErrorDialog, {
+            width: '400px',
+            data: { error: error },
+        });
+        errorDialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.dialogRef.close();
+            }
+            this.uploading$.next(false);
+        });
+    }
+
     get intervalString(): string {
         if (!this.csvProperties.temporalProperties.controls['isTime'].value) {
             return 'none';
@@ -214,4 +229,26 @@ export class CsvDialogComponent implements OnInit {
                 return 'none';
         }
     }
+}
+
+@Component({
+    selector: 'wave-csv-dialog-error-dialog',
+    template: `
+            <wave-dialog-header>{{data.error.name}}</wave-dialog-header>
+            <div style="margin-top: 20px; margin-bottom: 20px">
+                {{data.error.url}}:<br>
+                {{data.error.status}} - {{data.error.statusText}}
+            </div>
+            <mat-dialog-actions align="end">
+                <button mat-raised-button (click)="dialogRef.close(true)">Abort</button>
+                <button mat-raised-button (click)="dialogRef.close(false)">Continue</button>
+            </mat-dialog-actions>
+                `,
+})
+export class CsvErrorDialog {
+
+    constructor(
+        public dialogRef: MatDialogRef<CsvErrorDialog>,
+        @Inject(MAT_DIALOG_DATA) public data: {error: HttpErrorResponse}) {}
+
 }
