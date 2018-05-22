@@ -3,6 +3,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({name: 'cssStringToRgbaPipe'})
 export class CssStringToRgbaPipe implements PipeTransform {
 
+    // TODO: change to colorutils!
   transform(rgbaCssString: string): [number, number, number, number] {
       if (rgbaCssString === undefined || rgbaCssString === '') {
           return;
@@ -24,7 +25,7 @@ export class CssStringToRgbaPipe implements PipeTransform {
       let threeDigit = rgbaCssString.match(/^#([0-9a-f]{3})$/i)[1];
       if (threeDigit) {
           // in three-character format, each value is multiplied by 0x11 to give an
-          // even scale from 0x00 to 0xff
+          // even scale fromRgbaLike 0x00 to 0xff
           return [
               parseInt(threeDigit.charAt(0), 16) * 0x11,
               parseInt(threeDigit.charAt(1), 16) * 0x11,

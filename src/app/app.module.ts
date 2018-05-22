@@ -29,7 +29,6 @@ import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
 import {LegendComponent} from './layers/legend/legend.component';
 import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
-import {LegendaryClusteredPointComponent} from './layers/legend/legend-point/legend-point-cluster.component';
 import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
 import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
 import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
@@ -135,9 +134,10 @@ import {CountryPolygonSelectionComponent} from './operators/dialogs/country-poly
 import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
-import {ColorizerEditorComponent} from './layers/symbology/symbology-raster/colorizer-editor.component';
+import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -171,7 +171,6 @@ export function configInitializer(config: Config) {
         LegendaryRasterComponent,
         LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent,
-        LegendaryClusteredPointComponent,
         VatLogoComponent,
         GFBioLogoComponent,
         IdessaLogoComponent,
@@ -261,7 +260,8 @@ export function configInitializer(config: Config) {
         ZoomHandlesComponent,
         HeatmapOperatorComponent,
         CountryPolygonSelectionComponent,
-        SensorSourceOperatorComponent
+        SensorSourceOperatorComponent,
+        ColorBreakpointInputComponent
     ],
     imports: [
         BrowserModule,

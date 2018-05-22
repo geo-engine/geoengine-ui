@@ -32,6 +32,7 @@ export class SymbologyEditorComponent {
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
+        console.log('update_symbology', symbology);
         this.projectService.changeLayer(layer, {symbology: symbology});
     }
 

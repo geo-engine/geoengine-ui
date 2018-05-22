@@ -7,8 +7,7 @@ import {Subscription} from 'rxjs/Rx';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
-    SimplePointSymbology,
+    ComplexPointSymbology,
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
@@ -180,11 +179,11 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 clustered = this.form.controls['vectorLayer'].value.clustered;
 
                 symbology = clustered ?
-                    new ClusteredPointSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                    ComplexPointSymbology.createClusterSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     }) :
-                    new SimplePointSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                    new ComplexPointSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
 
                 for (let i = 0; i < rasterOperators.length; i++) {
@@ -196,7 +195,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 break;
             case ResultTypes.POLYGONS:
                 symbology = new SimpleVectorSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
 
                 for (let i = 0; i < rasterOperators.length; i++) {

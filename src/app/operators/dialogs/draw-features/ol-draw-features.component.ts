@@ -5,7 +5,7 @@ import OlFormatWKT from 'ol/format/wkt';
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
 import {
-    AbstractVectorSymbology, ClusteredPointSymbology,
+    AbstractVectorSymbology, ComplexPointSymbology,
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
@@ -76,14 +76,14 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
         switch (this.selectedFeatureType) {
             case 'Point':
                 resultType = ResultTypes.POINTS;
-                resultSymbology = new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                resultSymbology = ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case 'Polygon':
                 resultType = ResultTypes.POLYGONS;
                 resultSymbology = new SimpleVectorSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             default:

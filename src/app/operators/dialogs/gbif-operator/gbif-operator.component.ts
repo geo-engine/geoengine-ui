@@ -10,7 +10,7 @@ import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
+    ComplexPointSymbology,
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -245,13 +245,13 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             let symbology: AbstractVectorSymbology;
             switch (source.resultType) {
                 case ResultTypes.POINTS:
-                    symbology = new ClusteredPointSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                    symbology = ComplexPointSymbology.createClusterSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
                     break;
                 case ResultTypes.POLYGONS:
                     symbology = new SimpleVectorSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
                     break;
                 default:

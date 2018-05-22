@@ -11,6 +11,7 @@ import {Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 import {SensorSourceType} from '../../types/sensor-source-type.model';
+import {Color} from '../../../colors/color';
 
 interface Sensor {
     name: string;
@@ -147,13 +148,6 @@ export class SensorSourceOperatorComponent {
             sensorTypes: filteredSensors.map(s => s.name)
         });
 
-        /*
-        const attributes: Array<string> = SensorSourceOperatorComponent.flatten(filteredSensors.map(
-            s => {
-                s.fields.map(f => f.name)
-            })
-        );
-        */
         const attributes = new Array<string>();
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
@@ -178,18 +172,20 @@ export class SensorSourceOperatorComponent {
 
     addLayer(layerName: string, operator: Operator) {
         let symbology = new ComplexPointSymbology({
-            fillRGBA: this.randomColorService.getRandomColor(),
+            fillRGBA: this.randomColorService.getRandomColorRgba(),
             colorAttribute: 'node',
-            colorMapping: [
-                {value: 'rover0', r: 255, g: 128, b: 0, a: 1.0},
-                {value: 'bb00', r: 0, g: 128, b: 255, a: 1.0},
-                {value: 'bb01', r: 0, g: 64, b: 255, a: 1.0},
-                {value: 'bb02', r: 0, g: 32, b: 255, a: 1.0},
-                {value: 'bb23', r: 0, g: 0, b: 255, a: 1.0},
-                {value: 'sb00', r: 0, g: 255, b: 128, a: 1.0},
-                {value: 'sb02', r: 0, g: 255, b: 64, a: 1.0}
-
-            ],
+            colorizer: {
+                breakpoints: [
+                    {value: 'rover0', rgba: {r: 255, g: 128, b: 0, a: 1.0}},
+                    {value: 'bb00', rgba: {r: 0, g: 128, b: 255, a: 1.0}},
+                    {value: 'bb01', rgba: {r: 0, g: 64, b: 255, a: 1.0}},
+                    {value: 'bb02', rgba: {r: 0, g: 32, b: 255, a: 1.0}},
+                    {value: 'bb23', rgba: {r: 0, g: 0, b: 255, a: 1.0}},
+                    {value: 'sb00', rgba: {r: 0, g: 255, b: 128, a: 1.0}},
+                    {value: 'sb02', rgba: {r: 0, g: 255, b: 64, a: 1.0}}
+                ],
+                type: 'palette',
+            }
         });
 
         const layer = new VectorLayer({

@@ -133,12 +133,12 @@
                                 <ng-template [ngIf]="!layer.visible">
                                     <mat-icon mat-list-icon>visibility_off</mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.CLUSTERED_POINT
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_POINT
                                     || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
                                     <mat-icon mat-list-icon svgIcon="symbology:point"
                                               [style.stroke-width.px]='2'
-                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
-                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
                                     ></mat-icon>
                                 </ng-template>
                                 <ng-template [ngIf]="false">
@@ -147,8 +147,8 @@
                                 <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
                                     <mat-icon mat-list-icon svgIcon="symbology:polygon"
                                               [style.stroke-width.px]='2'
-                                              [style.stroke]='layer.symbology.strokeRGBA | rgbaToCssStringPipe'
-                                              [style.fill]='layer.symbology.fillRGBA | rgbaToCssStringPipe'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
                                     ></mat-icon>
                                 </ng-template>
                                 <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
@@ -196,8 +196,13 @@
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-                                <wave-legendary-clustered-points fxFlex="grow" [symbology]="layer.symbology">
-                                </wave-legendary-clustered-points>
+                                <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-points>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
+                                <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-points>
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">

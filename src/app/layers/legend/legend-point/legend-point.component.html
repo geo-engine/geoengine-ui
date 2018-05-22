@@ -1,8 +1,8 @@
 <div fxLayout="row" fxLayoutAlign="start center">
     <mat-icon mat-list-icon svgIcon="symbology:point"
               [style.stroke-width.px]='symbology.strokeWidth'
-              [style.stroke]='symbology.strokeRGBA | rgbaToCssStringPipe'
-              [style.fill]='symbology.fillRGBA | rgbaToCssStringPipe'
+              [style.stroke]='symbology.strokeRGBA.rgbaCssString()'
+              [style.fill]='symbology.fillRGBA.rgbaCssString()'
     ></mat-icon>
     <span fxFlex>Points</span>
 </div>

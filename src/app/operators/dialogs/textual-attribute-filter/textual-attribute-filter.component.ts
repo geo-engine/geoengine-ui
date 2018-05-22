@@ -112,7 +112,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
         const operator = new Operator(dict);
 
         const symbology = vectorLayer.symbology.clone() as any as AbstractVectorSymbology;
-        symbology.fillRGBA = this.randomColorService.getRandomColor();
+        symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
         const layer = new VectorLayer({
             name: name,
             operator: operator,

@@ -1,8 +1,12 @@
 import {Injectable} from '@angular/core';
+// import * as chroma from 'chroma-js';
+import {Color} from '../../colors/color';
 
 @Injectable()
 export class RandomColorService {
-    private static colorWheel: Array<[number, number, number]> = [
+    static colorWheel: Array<[number, number, number]>
+//        = chroma.cubehelix().lightness([0.3, 0.7]).scale().correctLightness().colors<'rgba'>(10, 'rgba');
+  = [
         [255, 0, 0], // '#FF0000', // red
         [0, 255, 0], // '#00FF00', // green
         [0, 0, 255], // '#0000FF', // blue
@@ -16,19 +20,16 @@ export class RandomColorService {
         [0, 128, 255], // '#0080FF', // light blue
         [128, 0, 255], // '#8000FF', // purple
     ];
-    private colorIndex: number = 0;
 
-    constructor() {}
+    private colorIndex = 0;
 
-    getRandomColor(): [number, number, number, number] {
-        let color = RandomColorService.colorWheel[this.colorIndex];
-        this.colorIndex = (this.colorIndex + 1) % RandomColorService.colorWheel.length;
-        return [color[0], color[1], color[2], 0.8];
+    constructor() {
+        console.log('RandomColorService', RandomColorService.colorWheel);
     }
 
-    getRandomColorWithAlpha(alpha: number): [number, number, number, number] {
-        let color = this.getRandomColor();
-        color[3] = alpha;
-        return color;
+    getRandomColorRgba(alpha: number = 0.8): Color {
+        let color = RandomColorService.colorWheel[this.colorIndex];
+        this.colorIndex = (this.colorIndex + 1) % RandomColorService.colorWheel.length;
+        return Color.fromRgbaLike([color[0], color[1], color[2], alpha]);
     }
 }

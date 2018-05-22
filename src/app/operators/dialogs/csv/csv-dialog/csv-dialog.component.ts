@@ -5,7 +5,11 @@ import {Operator} from '../../../operator.model';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
-import {AbstractVectorSymbology, ClusteredPointSymbology, SimpleVectorSymbology} from '../../../../layers/symbology/symbology.model';
+import {
+    AbstractVectorSymbology,
+    ComplexPointSymbology,
+    SimpleVectorSymbology
+} from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
@@ -166,12 +170,12 @@ export class CsvDialogComponent implements OnInit {
     }
 
     private addLayer(entry: {name: string, operator: Operator}) {
-        const color = this.randomColorService.getRandomColor();
+        const color = this.randomColorService.getRandomColorRgba();
         let symbology: AbstractVectorSymbology;
         let clustered: boolean;
 
         if (entry.operator.resultType === ResultTypes.POINTS) {
-            symbology = new ClusteredPointSymbology({
+            symbology = ComplexPointSymbology.createClusterSymbology({
                 fillRGBA: color,
             });
             clustered = true;

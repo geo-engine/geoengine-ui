@@ -213,7 +213,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
 
                     this.source.updateParams({
                         time: rasterData.time.asRequestString(),
-                        colors: this.symbology.colorizer.asMappingRequestString()
+                        colors: this.symbology.mappingColorizerRequestString()
                     });
                     time = rasterData.time.asRequestString();
                 }
@@ -225,7 +225,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                         url: rasterData.data,
                         params: {
                             time: rasterData.time.asRequestString(),
-                            colors: this.symbology.colorizer.asMappingRequestString()
+                            colors: this.symbology.mappingColorizerRequestString()
                         },
                         projection: rasterData.projection.getCode(),
                         wrapX: false,
@@ -250,7 +250,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     url: rasterData.data,
                     params: {
                         time: rasterData.time.asRequestString(),
-                        colors: this.symbology.colorizer.asMappingRequestString()
+                        colors: this.symbology.mappingColorizerRequestString()
                     },
                     projection: rasterData.projection.getCode(),
                     wrapX: false,
@@ -331,7 +331,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 // this._mapLayer.setHue(rasterSymbology.hue);
                 // this._mapLayer.setSaturation(rasterSymbology.saturation);
                 this.source.updateParams({
-                    colors: this.symbology.colorizer.asMappingRequestString()
+                    colors: this.symbology.mappingColorizerRequestString()
                 })
             }
         }

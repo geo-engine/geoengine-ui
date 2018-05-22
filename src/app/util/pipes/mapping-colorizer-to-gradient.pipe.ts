@@ -1,28 +1,16 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {IMappingRasterColorizer, MappingColorizer} from '../../layers/symbology/symbology.model';
+import {IColorizerData} from '../../colors/colorizer-data.model';
+import {Color} from '../../colors/color';
 
 @Pipe({name: 'waveWappingColorizerToGradient'})
 export class MappingColorizerToGradientPipe implements PipeTransform {
-
-    static colorsHexAsCssGradient(colorizer: MappingColorizer): string {
-        const elementSize = 100.0 / colorizer.breakpoints.length;
-        const halfElementSize = elementSize / 2.0;
-        const breaks = colorizer.breakpoints;
-        let colorStr = '';
-        for (let i = 0; i < breaks.length; i++) {
-            colorStr += ', ' + breaks[i][1] + ' ' + (i * elementSize + halfElementSize) + '%';
-        }
-
-        const cssStr = 'linear-gradient(to bottom' + colorStr + ')';
-        return cssStr;
-    }
 
     static rgbaString(r: number, g: number, b: number, a?: number): string {
         const alpha = (!!a) ? (a / 255.0) : 1.0;
         return 'rgba(' + r.toString() + ',' + g.toString() + ',' + b.toString() + ',' + alpha.toString() + ')'
     }
 
-    static colorsRgbaAsCssGradient(colorizer: IMappingRasterColorizer): string {
+    static colorsRgbaAsCssGradient(colorizer: IColorizerData): string {
         const elementSize = 100.0 / colorizer.breakpoints.length;
         const halfElementSize = elementSize / 2.0;
         const breaks = colorizer.breakpoints;
@@ -30,14 +18,14 @@ export class MappingColorizerToGradientPipe implements PipeTransform {
         for (let i = 0; i < breaks.length; i++) {
             const br = breaks[i];
             colorStr += ', ';
-            colorStr += MappingColorizerToGradientPipe.rgbaString(br.r, br.g, br.b, br.a) + ' ' + (i * elementSize + halfElementSize) + '%';
+            colorStr += Color.rgbaToCssString(br.rgba) + ' ' + (i * elementSize + halfElementSize) + '%';
         }
 
         const cssStr = 'linear-gradient(to bottom' + colorStr + ')';
         return cssStr;
     }
 
-    transform(colorizer: IMappingRasterColorizer): string {
+    transform(colorizer: IColorizerData): string {
         const gradient = MappingColorizerToGradientPipe.colorsRgbaAsCssGradient(colorizer);
         return gradient;
     }

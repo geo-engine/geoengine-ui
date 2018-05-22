@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
-import {IMappingRasterColorizer} from '../layers/symbology/symbology.model';
+import {IColorizerData} from '../colors/colorizer-data.model';
+import {Color} from '../colors/color';
 
 @Component({
     selector: 'wave-raster-icon',
@@ -11,7 +12,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
 
     @Input() xCells: number;
     @Input() yCells: number;
-    @Input() colorizer: IMappingRasterColorizer;
+    @Input() colorizer: IColorizerData;
 
     xCellStarts: Array<number> = [];
     yCellStarts: Array<number> = [];
@@ -46,7 +47,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
 
         const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
         if (validSymbology) {
-            colors = this.colorizer.breakpoints.map(br => `rgba(${br.r.toString()}, ${br.g.toString()}, ${br.b.toString()}, 1)`);
+            colors = this.colorizer.breakpoints.map(br => Color.rgbaToCssString(br.rgba));
             gradient = this.colorizer.type === 'gradient';
         }
 

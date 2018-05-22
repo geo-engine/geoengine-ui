@@ -11,7 +11,7 @@ import {ViewportSize} from '../map/map.service';
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
-import {MappingColorizer} from '../layers/symbology/symbology.model';
+import {DeprecatedMappingColorizerDoNotUse} from '../colors/colorizer-data.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -371,7 +371,7 @@ export class MappingQueryService {
 
     getColorizer(operator: Operator,
                  time: Time,
-                 projection: Projection): Observable<MappingColorizer> {
+                 projection: Projection): Observable<DeprecatedMappingColorizerDoNotUse> {
 
 
         // TODO
@@ -390,7 +390,7 @@ export class MappingQueryService {
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get<MappingColorizer>(this.config.MAPPING_URL + '?' + request.toMessageBody())
+        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody())
         // .catch((error, {}) => {
         //    this.notificationService.error(`Could not load colorizer: »${error}«`);
         //    return Observable.of({interpolation: 'unknown', breakpoints: []});

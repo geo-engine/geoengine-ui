@@ -173,7 +173,7 @@ Sean Gilles did some clean up and made some enhancements.`,
 
     addLayer(layerName: string, operator: Operator) {
         let symbology = new SimpleVectorSymbology({
-            fillRGBA: this.randomColorService.getRandomColor(),
+            fillRGBA: this.randomColorService.getRandomColorRgba(),
         });
 
         const layer = new VectorLayer({

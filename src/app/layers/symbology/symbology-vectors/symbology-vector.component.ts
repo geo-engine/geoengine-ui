@@ -3,6 +3,7 @@ import {SymbologyPointsComponent} from './symbology-points.component';
 import {CssStringToRgbaPipe} from '../../../util/pipes/css-string-to-rgba.pipe';
 import {MatSliderChange} from '@angular/material';
 import {SimpleVectorSymbology} from '../symbology.model';
+import {Color, stringToRgbaStruct} from '../../../colors/color';
 
 @Component({
     selector: 'wave-symbology-vector',
@@ -18,8 +19,6 @@ export class SymbologyVectorComponent {
 
     @Input() symbology: SimpleVectorSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<SimpleVectorSymbology>();
-
-    private _cssStringToRgbaTransformer = new CssStringToRgbaPipe();
 
     update() {
         // console.log('wave-symbology-vectors', 'update', this.symbology);
@@ -38,16 +37,16 @@ export class SymbologyVectorComponent {
         this.update();
     }
 
-    updateFillRgba(rgba: string) {
-        if (rgba) {
-            this.symbology.fillRGBA = this._cssStringToRgbaTransformer.transform(rgba);
+    updateFillRgba(rgbaString: string) {
+        if (rgbaString) {
+            this.symbology.fillRGBA = Color.fromRgbaLike(stringToRgbaStruct(rgbaString));
             this.update();
         }
     }
 
-    updateStrokeRgba(rgba: string) {
-        if (rgba) {
-            this.symbology.strokeRGBA = this._cssStringToRgbaTransformer.transform(rgba);
+    updateStrokeRgba(rgbaString: string) {
+        if (rgbaString) {
+            this.symbology.strokeRGBA = Color.fromRgbaLike(stringToRgbaStruct(rgbaString));
             this.update();
         }
     }

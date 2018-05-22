@@ -7,16 +7,15 @@ import {Projection, Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {
-    IMappingRasterColorizer, MappingColorizer, MappingColorizerRasterSymbology, MappingRasterColorizer,
-    MappingRasterColorizerBreakpoint
-} from '../../../layers/symbology/symbology.model';
+    MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
 import {ExpressionType} from '../../types/expression-type.model';
-import {log} from 'util';
+import {ColorBreakpointDict} from '../../../colors/color-breakpoint.model';
+import {ColorizerData, IColorizerData} from '../../../colors/colorizer-data.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -37,22 +36,18 @@ export class SourceDatasetComponent implements OnInit {
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
-     * @param {IMappingRasterColorizer} colorizerConfig
+     * @param {IColorizerData} colorizerConfig
      * @param {MappingTransform} transform
-     * @returns {IMappingRasterColorizer}
+     * @returns {IColorizerData}
      */
-    static createAndTransformColorizer(colorizerConfig: IMappingRasterColorizer, transform: MappingTransform): IMappingRasterColorizer {
+    static createAndTransformColorizer(colorizerConfig: IColorizerData, transform: MappingTransform): IColorizerData {
         if ( transform ) {
-            const transformedColorizerConfig: IMappingRasterColorizer = {
+            const transformedColorizerConfig: IColorizerData = {
                 type: colorizerConfig.type,
-                breakpoints: colorizerConfig.breakpoints.map( (bp: MappingRasterColorizerBreakpoint) => {
+                breakpoints: colorizerConfig.breakpoints.map( (bp: ColorBreakpointDict) => {
                     return  {
-                        value: (bp.value - transform.offset) * transform.scale,
-                        r: bp.r,
-                        g: bp.g,
-                        b: bp.b,
-                        a: bp.a,
-                        name: bp.name
+                        value: (bp.value as number - transform.offset) * transform.scale,
+                        rgba: bp.rgba
                     };
                 })
             };
@@ -72,13 +67,13 @@ export class SourceDatasetComponent implements OnInit {
         this._channelSource = new ChannelDataSource(this.dataset.channels);
     }
 
-    valid_colorizer(channel: MappingSourceChannel): IMappingRasterColorizer {
+    valid_colorizer(channel: MappingSourceChannel): IColorizerData {
         if (channel.colorizer) {
             return channel.colorizer;
         } else if (this.dataset.colorizer) {
             return this.dataset.colorizer;
         } else {
-            return MappingRasterColorizer.grayScaleMappingColorizer(this.valid_unit(channel));
+            return ColorizerData.grayScaleColorizer(this.valid_unit(channel));
         }
     }
 

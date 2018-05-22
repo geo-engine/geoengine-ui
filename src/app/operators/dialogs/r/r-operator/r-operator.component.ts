@@ -229,7 +229,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                         name: outputName,
                         operator: operator,
                         symbology: new SimplePointSymbology({
-                            fillRGBA: this.randomColorService.getRandomColor(),
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
                         }),
                         // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                         //     operator,

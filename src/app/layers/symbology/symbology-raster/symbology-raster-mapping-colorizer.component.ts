@@ -1,9 +1,9 @@
-import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
 
-import {MappingColorizerRasterSymbology, MappingRasterColorizer} from '../symbology.model';
+import {MappingColorizerRasterSymbology} from '../symbology.model';
 import {MatSliderChange} from '@angular/material';
-import {FormBuilder, FormGroup} from '@angular/forms';
-
+import {ColorizerData} from '../../../colors/colorizer-data.model';
+import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',
@@ -18,14 +18,24 @@ export class SymbologyRasterMappingColorizerComponent {
     @Output('symbologyChanged') symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> =
         new EventEmitter<MappingColorizerRasterSymbology>();
 
-    constructor(private formBuilder: FormBuilder) {}
+    constructor() {}
 
     updateOpacity(event: MatSliderChange) {
         this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
-    updateColorizer(event: MappingRasterColorizer) {
+    updateOverflowColor(event: ColorBreakpoint) {
+        this.symbology.overflowColor = event;
+        this.update();
+    }
+
+    updateNoDataColor(event: ColorBreakpoint) {
+        this.symbology.noDataColor = event;
+        this.update();
+    }
+
+    updateColorizer(event: ColorizerData) {
         this.symbology.colorizer = event;
         this.update();
     }
