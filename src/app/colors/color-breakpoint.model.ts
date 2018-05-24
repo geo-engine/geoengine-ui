@@ -20,7 +20,10 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     }
 
     clone(): ColorBreakpoint {
-        return new ColorBreakpoint(this);
+        return new ColorBreakpoint({
+            value: this.value,
+            rgba: this.rgba.clone()
+        });
     }
 
     cloneWithColor(color: RgbaLike): ColorBreakpoint {
@@ -50,8 +53,12 @@ export class ColorBreakpoint implements ColorBreakpointDict {
         this.value = value;
     }
 
+    valueIsNumber(): boolean {
+        return typeof this.value === 'number';
+    }
+
     equals(other: ColorBreakpoint): boolean {
-        return other && this.rgba === other.rgba && this.value === other.value;
+        return other && this.rgba.equals(other.rgba) && this.value === other.value;
     }
 
     asMappingRasterColorizerBreakpoint(): IMappingRasterColorizerBreakpoint {

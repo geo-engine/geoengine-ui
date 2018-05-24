@@ -82,6 +82,8 @@ export abstract class Symbology implements ISymbology {
 
     abstract clone(): Symbology;
 
+    // abstract equals(other: Symbology): boolean; TODO: equals for symbologys?
+
     abstract toConfig(): ISymbology;
 
     abstract toDict(): SymbologyDict;
@@ -353,9 +355,17 @@ export class ComplexPointSymbology extends SimplePointSymbology implements Compl
         return new ComplexPointSymbology(config);
     }
 
-    setColorAttribute(name: string) {
-        this.colorizer = ColorizerData.empty()
+    setColorAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
+        this.colorizer = clr;
         this.colorAttribute = name;
+    }
+
+    setOrUpdateColorizer(clr: ColorizerData): boolean {
+        if (clr && (!this.colorizer || !clr.equals(this.colorizer))) {
+            this.colorizer = clr;
+            return true;
+        }
+        return false;
     }
 
     unSetColorAttribute() {
@@ -382,28 +392,28 @@ export class ComplexPointSymbology extends SimplePointSymbology implements Compl
     getOlStyleAsFunction(): ol.StyleFunction {
         return (feature: ol.Feature, resolution: number) => {
 
-            //console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
+            // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
 
             const featureColorValue = (this.colorAttribute) ? feature.get(this.colorAttribute) : undefined;
             const featureTextValue = (this.textAttribute) ? feature.get(this.textAttribute) : undefined;
             const featureRadiusValue = (this.radiusAttribute) ?  feature.get(this.radiusAttribute) : undefined;
 
-            //console.log(featureColorValue, featureTextValue, featureRadiusValue);
+            // console.log(featureColorValue, featureTextValue, featureRadiusValue);
 
             let styleKey = '';
-            styleKey += featureColorValue ? featureColorValue.toString() : '::';
-            styleKey += featureRadiusValue ? featureRadiusValue.toString() : '::';
-            styleKey += featureTextValue ? featureTextValue.toString() : '::';
+            styleKey += (featureColorValue ? featureColorValue.toString() : '|||');
+            styleKey += (':::' + (featureRadiusValue ? featureRadiusValue.toString() : '|||'));
+            styleKey += (':::' + (featureTextValue ? featureTextValue.toString() : '|||'));
 
-            //console.log("ComplexPointSymbology.getOlStyleAsFunction", "styleKey", styleKey);
+            // console.log("ComplexPointSymbology.getOlStyleAsFunction", "styleKey", styleKey);
 
             if (!this.styleCache[styleKey]) {
 
-                const colorLookup = featureColorValue ? this.colorizer.breakpoints.find(x => x.value === featureColorValue) : undefined;
-                const color = colorLookup ? colorLookup.rgba.rgbaTuple() : this.fillRGBA.rgbaTuple();
+                const colorLookup = this.colorizer.getColorForValue(featureColorValue);
+                const color = colorLookup ? colorLookup.rgbaTuple() : this.fillRGBA.rgbaTuple();
                 const radius = featureRadiusValue ? featureRadiusValue as number : this.radius;
 
-                // console.log(colorLookup, color, radius);
+                // console.log("ComplexPointSymbology.getOlStyleAsFunction", colorLookup, color, radius);
 
                 const imageStyle = new OlStyleCircle({
                         radius: radius,

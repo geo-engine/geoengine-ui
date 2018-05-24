@@ -58,7 +58,7 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
     }
 
     setColorizerAttribute() {
-        if (this.colorizeByAttribute && this.attribute !== undefined) {
+        if (this.colorizeByAttribute && this.attribute) {
             this.symbology.setColorAttribute(this.attribute.name);
             this.symbology.colorizer.clear();
             this.symbology.colorizer.addBreakpoint({
@@ -122,7 +122,7 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
     }
 
     updateFill(fill: ColorBreakpoint) {
-        console.log('updateFill', fill);
+        console.log('SymbologyPointsComponent', 'updateFill', fill);
         if (fill && fill !== this.symbology.fillColorBreakpoint) {
             this.symbology.setFillColorBreakpoint(fill);
             this.update();
@@ -130,7 +130,7 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
     }
 
     updateStroke(stroke: ColorBreakpoint) {
-        console.log('updateStroke', stroke);
+        console.log('SymbologyPointsComponent', 'updateStroke', stroke);
         if (stroke && stroke !== this.symbology.strokeColorBreakpoint) {
             this.symbology.setStrokeColorBreakpoint(stroke);
             this.update();
@@ -138,6 +138,10 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
     }
 
     updateColorizer(event: ColorizerData) {
-        console.log('updateColorizer', event);
+        if (event && this.symbology) {
+            console.log('SymbologyPointsComponent', 'updateColorizer', event);
+            this.symbology.setOrUpdateColorizer(event);
+            this.update();
+        }
     }
 }

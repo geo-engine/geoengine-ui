@@ -39,27 +39,33 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     // set accessor including call the onchange callback
     set colorBreakpoint(brk: ColorBreakpoint) {
         if (brk && (!this._colorBreakpoint || !brk.equals(this._colorBreakpoint))) {
-            this._colorBreakpoint = brk;
+            this._colorBreakpoint = brk.clone();
+            this.propagateChange();
+            // this.changeDetectorRef.markForCheck(); // TODO: when is this needed?
+        }
+    }
+
+    updateValue(value: number | string) { // TODO: should this really clone?
+        if (value && value !== this.colorBreakpoint.value) {
+            if (this.inputType === 'number' && typeof value === 'string') {
+                // this.colorBreakpoint = this.colorBreakpoint.cloneWithValue(parseFloat(value as string));
+                this.colorBreakpoint.setValue(parseFloat(value as string));
+            } else {
+                // this.colorBreakpoint = this.colorBreakpoint.cloneWithValue(value);
+                this.colorBreakpoint.setValue(value);
+            }
             this.propagateChange();
         }
     }
 
-    updateValue(value: number | string) {
-        if (value && value !== this.colorBreakpoint.value) {
-            if (this.inputType === 'number' && typeof value === 'string') {
-                this.colorBreakpoint = this.colorBreakpoint.cloneWithValue(parseFloat(value as string));
-            } else {
-                this.colorBreakpoint = this.colorBreakpoint.cloneWithValue(value);
-            }
-        }
-    }
-
-    updateColor(color: string) {
+    updateColor(color: string) { // TODO: should this really clone?
         if (color) {
             const clr = Color.fromRgbaLike(stringToRgbaStruct(color));
-            if (clr !== this.colorBreakpoint.rgba) {
-                this.colorBreakpoint = this.colorBreakpoint.cloneWithColor(clr);
+            if (!clr.equals(this._colorBreakpoint.rgba)) {
+                // this.colorBreakpoint = this.colorBreakpoint.cloneWithColor(clr);
+                this.colorBreakpoint.setColor(clr);
             }
+            this.propagateChange();
         }
     }
 
@@ -68,8 +74,8 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log('ColorBreakpointInputComponent', changes);
-        this.changeDetectorRef.markForCheck();
+        console.log('ColorBreakpointInputComponent', "ngOnChanges", changes);
+        // this.changeDetectorRef.markForCheck(); // TODO: only markForCheck if there is a change!
     }
 
     // Set touched on blur
@@ -78,7 +84,7 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     writeValue(brk: ColorBreakpoint): void {
-        console.log('writeValue', brk);
+        console.log("ColorBreakpointInputComponent", 'writeValue', brk);
         this.colorBreakpoint = brk;
     }
 
@@ -92,10 +98,8 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     private propagateChange() {
-        this.changeDetectorRef.markForCheck();
-
-        if (this.onChange) {
-            this.onChange(this.colorBreakpoint);
+        if (this.onChange && this.colorBreakpoint) {
+            this.onChange(this.colorBreakpoint.clone());
         }
     }
 

@@ -290,7 +290,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-
+        console.log("RasterMapLayer", "ngOnChanges", changes);
         /*
          const params = this.mappingQueryService.getWMSQueryParameters({
          operator: this.layer.operator,

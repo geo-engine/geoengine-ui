@@ -21,23 +21,33 @@ export class SymbologyRasterMappingColorizerComponent {
     constructor() {}
 
     updateOpacity(event: MatSliderChange) {
+        console.log("updateOpacity");
         this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
     updateOverflowColor(event: ColorBreakpoint) {
-        this.symbology.overflowColor = event;
-        this.update();
+        if (event && !event.equals(this.symbology.overflowColor)) {
+            console.log("updateOverflowColor");
+            this.symbology.overflowColor = event;
+            this.update();
+        }
     }
 
     updateNoDataColor(event: ColorBreakpoint) {
-        this.symbology.noDataColor = event;
-        this.update();
+        if (event && !event.equals(this.symbology.noDataColor)) {
+            console.log("updateNoDataColor");
+            this.symbology.noDataColor = event;
+            this.update();
+        }
     }
 
     updateColorizer(event: ColorizerData) {
-        this.symbology.colorizer = event;
-        this.update();
+        console.log("updateColorizer", event, this.symbology.colorizer, !event.equals(this.symbology.colorizer));
+        if (event && !event.equals(this.symbology.colorizer)) {
+            this.symbology.colorizer = event;
+            this.update();
+        }
     }
 
     update() {

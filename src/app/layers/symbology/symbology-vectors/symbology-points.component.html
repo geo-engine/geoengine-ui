@@ -63,6 +63,6 @@
     </mat-form-field>
 </div>
 
-<div *ngIf="!!symbology.colorAttribute">
-    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)" [attributePlaceholder]="attribute?.name"></wave-colorizer-editor>
+<div *ngIf="colorizeByAttribute && !!symbology.colorAttribute">
+    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)" [attributePlaceholder]="attribute?.name" [inputType] = "attribute?.type"></wave-colorizer-editor>
 </div>

@@ -65,6 +65,11 @@ export class Color implements IRgba, RgbaStruct {
         });
     }
 
+    equals(other: RgbaLike) {
+        const o = Color.fromRgbaLike(other);
+        return this.r === o.r && this.g === o.g && this.b === o.b && this.a === o.a;
+    }
+
     static rgbaToCssString(rgba: RgbaLike): string {
         const temp = Color.fromRgbaLike(rgba, false).rgbaStruct();
         return `rgba(${temp.r.toString()}, ${temp.g.toString()}, ${temp.b.toString()}, ${temp.a.toString()})`;

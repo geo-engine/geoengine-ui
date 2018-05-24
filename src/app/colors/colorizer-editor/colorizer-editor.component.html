@@ -2,7 +2,7 @@
 
     <div *ngIf="colorizer && showTypeSelect">
         <mat-form-field fxFlex>
-            <mat-select [ngModel]="colorizer?.colorizerType" (ngModelChange)="updateType($event)" required placeholder="colorizer type">
+            <mat-select [ngModel]="colorizer?.type" (ngModelChange)="updateType($event)" required placeholder="colorizer type">
                 <mat-option value="gradient">gradient</mat-option>
                 <mat-option value="palette">palette</mat-option>
             </mat-select>

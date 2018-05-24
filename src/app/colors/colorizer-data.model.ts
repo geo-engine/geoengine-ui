@@ -1,4 +1,4 @@
-import {ColorBreakpoint, IMappingRasterColorizerBreakpoint, ColorBreakpointDict} from './color-breakpoint.model';
+import {ColorBreakpoint, IMappingRasterColorizerBreakpoint, ColorBreakpointDict, BreakPointValue} from './color-breakpoint.model';
 import {Color} from './color';
 
 /**
@@ -100,15 +100,46 @@ export class ColorizerData implements IColorizerData {
     }
 
     updateBreakpointAt(i: number, brk: ColorBreakpoint): boolean {
-        const diff = this.getBreakpointAt(i).equals(brk);
-        if (diff) {
+        const equal = this.getBreakpointAt(i).equals(brk);
+        if (brk && !equal) {
             this.breakpoints[i] = brk;
+            return true;
         }
-        return diff;
+        return false;
     }
 
     getBreakpointAt(i: number): ColorBreakpoint {
         return this.breakpoints[i];
+    }
+
+    /**
+     * Get the color for a breakpoint value.
+     * TODO: this is prob. not very fast.
+     * @param {BreakPointValue} value
+     * @param {boolean} interpolate
+     * @returns {Color | undefined}
+     */
+    getColorForValue(value: BreakPointValue, interpolate: boolean = false): Color | undefined {
+
+        if (!value || !this.breakpoints || this.breakpoints.length === 0) {
+            return undefined;
+        }
+
+        const isNumber = typeof value === 'number';
+        const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber();
+
+        const brk = this.breakpoints.find(x => {
+            let lookUpValue = value;
+
+            if (firstBrkIsNumber && ! isNumber) {
+                lookUpValue = parseFloat(value as string);
+            }
+
+            // console.log('colorLookup', x, value, lookUpValue, lookUpValue === value);
+            return lookUpValue === x.value;
+        });
+
+        return brk ? brk.rgba : undefined;
     }
 
     updateType(type: ColorizerType): boolean {
