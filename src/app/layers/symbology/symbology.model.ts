@@ -6,7 +6,7 @@ import OlStyleCircle from 'ol/style/circle'
 import OlStyleText from 'ol/style/text'
 
 import {Interpolation, Unit, UnitDict} from '../../operators/unit.model';
-import {BLACK, Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
+import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
 import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
 
@@ -86,6 +86,8 @@ export abstract class Symbology implements ISymbology {
 
     abstract toConfig(): ISymbology;
 
+    abstract equals(other: Symbology): boolean;
+
     abstract toDict(): SymbologyDict;
 }
 
@@ -104,7 +106,6 @@ interface VectorSymbologyDict extends SymbologyDict {
 export abstract class AbstractVectorSymbology extends Symbology {
     _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
     _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'});
-
 
     // fillRGBA: Color = DEFAULT_VECTOR_FILL_COLOR;
     // strokeRGBA: Color = DEFAULT_VECTOR_STROKE_COLOR;
@@ -167,7 +168,15 @@ export abstract class AbstractVectorSymbology extends Symbology {
         }
     }
 
-
+    equals(other: AbstractVectorSymbology) {
+        console.log('AbstractVectorSymbology', 'equals', this, other);
+        return other
+            && this.fillColorBreakpoint.equals(other.fillColorBreakpoint)
+            && this.strokeColorBreakpoint.equals(other.strokeColorBreakpoint)
+            && this.strokeWidth === other.strokeWidth
+            && this.describesArea() === other.describesArea()
+            && this.describesRadius() === other.describesRadius();
+    }
 
 
     setFillColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
@@ -278,6 +287,14 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements Sim
       return true;
   }
 
+  equals(other: AbstractVectorSymbology) {
+      console.log('SimplePointSymbology', 'equals', this, other);
+      if (other instanceof SimplePointSymbology) {
+          return super.equals(other as AbstractVectorSymbology) && this.radius === other.radius;
+      }
+      return false;
+  }
+
   toDict(): SimplePointSymbologyDict {
       return {
           symbologyType: SymbologyType[SymbologyType.SIMPLE_POINT],
@@ -323,7 +340,7 @@ export class ComplexPointSymbology extends SimplePointSymbology implements Compl
 
     constructor(config: ComplexPointSymbologyConfig) {
         super(config);
-        //console.log('ComplexPointSymbology', config);
+        // console.log('ComplexPointSymbology', config);
         if (config.colorAttribute) {
             this.colorAttribute = config.colorAttribute;
         }
@@ -379,6 +396,20 @@ export class ComplexPointSymbology extends SimplePointSymbology implements Compl
 
     clone(): ComplexPointSymbology {
         return new ComplexPointSymbology(this);
+    }
+
+    equals(other: AbstractVectorSymbology) {
+        console.log('ComplexPointSymbology', 'equals', this, other);
+        if (other instanceof ComplexPointSymbology) {
+            return super.equals(other as SimplePointSymbology)
+                && this.colorizer && this.colorizer.equals(other.colorizer)
+                && this.colorAttribute && other.colorAttribute && this.colorAttribute === other.colorAttribute
+                && this.textColor && this.textColor.equals(other.textColor)
+                && this.radiusAttribute && other.radiusAttribute && this.radiusAttribute === other.radiusAttribute
+                && this.textStrokeWidth && other.textStrokeWidth && this.textStrokeWidth === other.textStrokeWidth
+                && this.textAttribute && other.textAttribute && this.textAttribute === other.textAttribute;
+        }
+        return false;
     }
 
     toConfig(): ComplexPointSymbologyConfig {
@@ -523,6 +554,14 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
         return new RasterSymbology(this);
     }
 
+    equals(other: RasterSymbology) {
+        console.log('RasterSymbology', 'equals', this, other);
+        return this.saturation === other.saturation
+            && this.opacity === other.opacity
+            && this.hue === other.hue
+            && this.unit === other.unit;
+    }
+
     toDict(): RasterSymbologyDict {
         return {
             symbologyType: SymbologyType[SymbologyType.RASTER],
@@ -571,6 +610,17 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
 
     clone(): MappingColorizerRasterSymbology {
         return new MappingColorizerRasterSymbology(this);
+    }
+
+    equals(other: RasterSymbology) {
+        console.log('MappingColorizerRasterSymbology', 'equals', this, other);
+        if (other instanceof MappingColorizerRasterSymbology) {
+            return super.equals(other as RasterSymbology)
+                && this.colorizer && this.colorizer.equals(other.colorizer)
+                && this.noDataColor && this.noDataColor.equals(other.noDataColor)
+                && this.overflowColor && this.overflowColor.equals(other.overflowColor);
+        }
+        return false;
     }
 
     toDict(): RasterSymbologyDict {

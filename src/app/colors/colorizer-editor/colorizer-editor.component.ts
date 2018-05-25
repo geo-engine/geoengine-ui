@@ -32,8 +32,8 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     set colorizer(clr: ColorizerData) {
-        if (clr && (!this._colorizer || !clr.equals(this._colorizer))) {
-            console.log("clr", clr, this._colorizer);
+        if (clr && (!clr.equals(this._colorizer))) {
+            console.log("ColorizerEditorComponent", 'set colorizer', clr, this._colorizer, clr.equals(this._colorizer));
             this._colorizer = clr.clone();
             this.notify();
             // this.changeDetectorRef.markForCheck();
@@ -54,8 +54,16 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     ngOnChanges(changes: SimpleChanges) {
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
+                case 'inputType':
+                case 'attributePlaceholder':
+                case 'colorPlaceholder':
+                {
+                    this.changeDetectorRef.markForCheck();
+                }
+
                 default: // DO NOTHING
                     console.log('ColorizerEditorComponent', 'ngOnChanges', 'default: ', propName)
+
             }
         }
 
@@ -76,9 +84,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         // TODO: check if this is valid
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
             const diff = this._colorizer.updateBreakpointAt(i, brk);
-            if (diff) {
+            // if (diff) {
                 this.notify();
-            }
+            // }
         }
     }
 
@@ -109,7 +117,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.changeDetectorRef.markForCheck(), 10);
+        // setTimeout(() => this.changeDetectorRef.markForCheck(), 10);
     }
 
     registerOnChange(fn: (_: ColorizerData) => void): void {

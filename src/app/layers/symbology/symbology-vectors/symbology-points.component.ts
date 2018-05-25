@@ -1,16 +1,15 @@
 import {Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 
-import {ComplexPointSymbology, Symbology} from '../symbology.model';
+import {ComplexPointSymbology} from '../symbology.model';
 import {MatSliderChange, MatSlideToggleChange} from '@angular/material';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {Layer, VectorLayer} from '../../layer.model';
+import {VectorLayer} from '../../layer.model';
 import {DataTypes} from '../../../operators/datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
-import {Observable} from 'rxjs/Observable';
 
 interface Attribute {
     name: string,
-    type: 'numeric' | 'textual',
+    type: 'number' | 'text',
 }
 
 @Component({
@@ -21,7 +20,7 @@ interface Attribute {
         './symbology-points.component.scss'
     ],
 })
-export class SymbologyPointsComponent implements OnChanges, OnInit{
+export class SymbologyPointsComponent implements OnChanges, OnInit {
 
     static minStrokeWidth = 0;
     static minRadius = 1;
@@ -29,8 +28,22 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
     @Input() editRadius = true;
     @Input() editStrokeWidth = true;
     @Input() layer: VectorLayer<ComplexPointSymbology>;
-    symbology: ComplexPointSymbology;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<ComplexPointSymbology>();
+
+    _symbology: ComplexPointSymbology;
+
+    @Input()
+    set symbology(symbology: ComplexPointSymbology) {
+        console.log('SymbologyPointsComponent', 'set symbology');
+        if (symbology && !symbology.equals(this._symbology)) {
+            this._symbology = symbology; // TODO: figure out if this should clone;
+            console.log('SymbologyPointsComponent', 'set symbology', 'replaced');
+        }
+    }
+
+    get symbology(): ComplexPointSymbology {
+        return this._symbology;
+    }
 
     colorizeByAttribute = false;
     attribute: Attribute;
@@ -63,7 +76,7 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
             this.symbology.colorizer.clear();
             this.symbology.colorizer.addBreakpoint({
                 rgba: this.symbology.fillRGBA,
-                value: (this.attribute.type === 'numeric') ? 0 : '',
+                value: (this.attribute.type === 'number') ? 0 : '',
             });
         } else {
             this.symbology.unSetColorAttribute();
@@ -77,7 +90,9 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
 
     updateSymbologyFromLayer() {
         this.symbology = this.layer.symbology;
+        this.colorizeByAttribute = !!this.symbology.colorAttribute;
         this.geatherAttributes();
+        this.attribute = this.attributes.find(x => x.name === this.symbology.colorAttribute);
     }
 
     geatherAttributes() {
@@ -86,12 +101,12 @@ export class SymbologyPointsComponent implements OnChanges, OnInit{
             if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                 attributes.push({
                     name: attribute,
-                    type: 'numeric',
+                    type: 'number',
                 });
             } else {
                 attributes.push({
                     name: attribute,
-                    type: 'textual',
+                    type: 'text',
                 });
             }
         });

@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges} from '@angular/core';
 
 import {MappingColorizerRasterSymbology} from '../symbology.model';
 import {MatSliderChange} from '@angular/material';
@@ -11,9 +11,22 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
     styleUrls: ['symbology-raster-mapping-colorizer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyRasterMappingColorizerComponent {
+export class SymbologyRasterMappingColorizerComponent implements OnChanges {
 
-    @Input() symbology: MappingColorizerRasterSymbology;
+    _symbology: MappingColorizerRasterSymbology;
+
+    @Input()
+    set symbology(symbology: MappingColorizerRasterSymbology) {
+        console.log('SymbologyRasterMappingColorizerComponent', 'set symbology');
+        if (symbology && !symbology.equals(this._symbology)) {
+            this._symbology = symbology; // TODO: figure out if this should clone;
+            console.log('SymbologyRasterMappingColorizerComponent', 'set symbology', 'replaced');
+        }
+    }
+
+    get symbology(): MappingColorizerRasterSymbology {
+        return this._symbology;
+    }
 
     @Output('symbologyChanged') symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> =
         new EventEmitter<MappingColorizerRasterSymbology>();
@@ -52,5 +65,17 @@ export class SymbologyRasterMappingColorizerComponent {
 
     update() {
         this.symbologyChanged.emit(this.symbology.clone());
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // this.changeDetectorRef.markForCheck(); // TODO: only markForCheck if there is a change!
+        for (let propName in changes) { // tslint:disable-line:forin
+            switch (propName) {
+
+                default: // DO NOTHING
+                    console.log('SymbologyRasterMappingColorizerComponent', 'ngOnChanges', 'default: ', propName)
+
+            }
+        }
     }
 }

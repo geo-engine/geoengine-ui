@@ -38,9 +38,10 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
 
     // set accessor including call the onchange callback
     set colorBreakpoint(brk: ColorBreakpoint) {
-        if (brk && (!this._colorBreakpoint || !brk.equals(this._colorBreakpoint))) {
-            this._colorBreakpoint = brk.clone();
-            this.propagateChange();
+        console.log('ColorBreakpointInputComponent', 'set colorBreakpoint');
+        if (brk && (!brk.equals(this._colorBreakpoint))) {
+            console.log('ColorBreakpointInputComponent', 'set colorBreakpoint', 'changed', brk.equals(this._colorBreakpoint));
+            this._colorBreakpoint = brk;
             // this.changeDetectorRef.markForCheck(); // TODO: when is this needed?
         }
     }
@@ -70,12 +71,25 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
+        // setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log('ColorBreakpointInputComponent', "ngOnChanges", changes);
         // this.changeDetectorRef.markForCheck(); // TODO: only markForCheck if there is a change!
+        for (let propName in changes) { // tslint:disable-line:forin
+            switch (propName) {
+                case 'inputType':
+                case 'attributePlaceholder':
+                case 'colorPlaceholder':
+                {
+                    this.changeDetectorRef.markForCheck();
+                }
+
+                default: // DO NOTHING
+                    console.log('ColorBreakpointInputComponent', 'ngOnChanges', 'default: ', propName)
+
+            }
+        }
     }
 
     // Set touched on blur
