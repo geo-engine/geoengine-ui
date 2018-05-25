@@ -82,8 +82,12 @@ import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
-import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.properties.service';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
+import {
+    CsvDialogComponent,
+    CsvErrorDialog
+} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {RasterIconComponent} from './raster-icon/raster-icon.component';
@@ -216,6 +220,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         PlotDetailViewComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
@@ -293,6 +298,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         SplashDialogComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         PlotListComponent,
         PlotDetailViewComponent,
         FeaturedbSourceListComponent,
@@ -345,6 +351,7 @@ export function configInitializer(config: Config) {
             deps: [Config],
             multi: true,
         },
+        CsvPropertiesService,
     ],
     bootstrap: [AppComponent]
 })

@@ -157,7 +157,7 @@ export class CsvSourceType extends OperatorType {
         if (this.parameters.time === 'start+inf') {
             dict.time = 'start';
             dict.duration = 'inf';
-        } else if (typeof this.parameters.time === 'object') {
+        } else if (typeof this.parameters.time !== 'string') {
             const startPlusDuration = this.parameters.time as {use: string, duration: number};
             dict.time = 'start';
             dict.duration = startPlusDuration.duration;
