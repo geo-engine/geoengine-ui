@@ -111,12 +111,14 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
         }
 
         if (changes['symbology']) {
-            const style = this.symbology.getOlStyle();
+            /*const style = this.symbology.getOlStyle();
             if (style instanceof OlStyleStyle) {
                 this.mapLayer.setStyle(style as ol.style.Style);
             } else {
                 this.mapLayer.setStyle(style as ol.StyleFunction);
             }
+            */
+            this.mapLayer.setStyle(this.symbology.getOlStyleAsFunction());
         }
 
         /*
@@ -211,7 +213,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
 
                     this.source.updateParams({
                         time: rasterData.time.asRequestString(),
-                        colors: this.symbology.colorizer.asMappingRequestString()
+                        colors: this.symbology.mappingColorizerRequestString()
                     });
                     time = rasterData.time.asRequestString();
                 }
@@ -223,7 +225,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                         url: rasterData.data,
                         params: {
                             time: rasterData.time.asRequestString(),
-                            colors: this.symbology.colorizer.asMappingRequestString()
+                            colors: this.symbology.mappingColorizerRequestString()
                         },
                         projection: rasterData.projection.getCode(),
                         wrapX: false,
@@ -248,7 +250,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     url: rasterData.data,
                     params: {
                         time: rasterData.time.asRequestString(),
-                        colors: this.symbology.colorizer.asMappingRequestString()
+                        colors: this.symbology.mappingColorizerRequestString()
                     },
                     projection: rasterData.projection.getCode(),
                     wrapX: false,
@@ -288,7 +290,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-
+        console.log("RasterMapLayer", "ngOnChanges", changes);
         /*
          const params = this.mappingQueryService.getWMSQueryParameters({
          operator: this.layer.operator,
@@ -329,7 +331,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                 // this._mapLayer.setHue(rasterSymbology.hue);
                 // this._mapLayer.setSaturation(rasterSymbology.saturation);
                 this.source.updateParams({
-                    colors: this.symbology.colorizer.asMappingRequestString()
+                    colors: this.symbology.mappingColorizerRequestString()
                 })
             }
         }

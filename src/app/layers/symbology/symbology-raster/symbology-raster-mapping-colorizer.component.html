@@ -30,7 +30,14 @@
 </div>
 <mat-divider></mat-divider>
 <div>
-    <wave-colorizer-editor [colorizer]="symbology.colorizer" (colorizerChanged)="updateColorizer($event)"></wave-colorizer-editor>
+    <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true" (ngModelChange)="updateNoDataColor($event)">
+    </wave-color-breakpoint>
+    <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true" (ngModelChange)="updateOverflowColor($event)">
+    </wave-color-breakpoint>
+</div>
+
+<div>
+    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
 </div>
 
 

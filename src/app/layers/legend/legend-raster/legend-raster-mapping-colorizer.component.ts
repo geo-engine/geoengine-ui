@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MappingColorizer, MappingColorizerRasterSymbology} from '../../symbology/symbology.model';
+import {MappingColorizerRasterSymbology} from '../../symbology/symbology.model';
 import {LegendaryRasterComponent} from './legend-raster.component';
 
 @Component({
@@ -10,7 +10,4 @@ import {LegendaryRasterComponent} from './legend-raster.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LegendaryMappingColorizerRasterComponent<S extends MappingColorizerRasterSymbology>
-    extends LegendaryRasterComponent<S> {
-
-    symbologyData: MappingColorizer;
-}
+    extends LegendaryRasterComponent<S> {}

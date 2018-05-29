@@ -29,7 +29,6 @@ import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
 import {LegendComponent} from './layers/legend/legend.component';
 import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
-import {LegendaryClusteredPointComponent} from './layers/legend/legend-point/legend-point-cluster.component';
 import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
 import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
 import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
@@ -83,8 +82,12 @@ import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
-import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.properties.service';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
+import {
+    CsvDialogComponent,
+    CsvErrorDialog
+} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {RasterIconComponent} from './raster-icon/raster-icon.component';
@@ -135,8 +138,10 @@ import {CountryPolygonSelectionComponent} from './operators/dialogs/country-poly
 import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
-import {ColorizerEditorComponent} from './layers/symbology/symbology-raster/colorizer-editor.component';
+import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
+import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 import {TimePlotComponent} from "./operators/dialogs/time-plot-operator/time-plot-operator.component";
 
 export function configInitializer(config: Config) {
@@ -171,7 +176,6 @@ export function configInitializer(config: Config) {
         LegendaryRasterComponent,
         LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent,
-        LegendaryClusteredPointComponent,
         VatLogoComponent,
         GFBioLogoComponent,
         IdessaLogoComponent,
@@ -217,6 +221,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         PlotDetailViewComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
@@ -261,6 +266,9 @@ export function configInitializer(config: Config) {
         ColorizerEditorComponent,
         ZoomHandlesComponent,
         HeatmapOperatorComponent,
+        CountryPolygonSelectionComponent,
+        SensorSourceOperatorComponent,
+        ColorBreakpointInputComponent
     ],
     imports: [
         BrowserModule,
@@ -292,6 +300,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         SplashDialogComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         PlotListComponent,
         PlotDetailViewComponent,
         FeaturedbSourceListComponent,
@@ -322,6 +331,7 @@ export function configInitializer(config: Config) {
         SymbologyEditorComponent,
         ColorizerEditorComponent,
         HeatmapOperatorComponent,
+        SensorSourceOperatorComponent
     ],
     providers: [
         DragulaService,
@@ -344,6 +354,7 @@ export function configInitializer(config: Config) {
             deps: [Config],
             multi: true,
         },
+        CsvPropertiesService,
     ],
     bootstrap: [AppComponent]
 })

@@ -29,6 +29,7 @@ import {
     FeatureDBServiceUploadParameters
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
+import {ColorizerData} from '../colors/colorizer-data.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -97,10 +98,10 @@ class GFBioPortalLoginRequestParameters extends RequestParameters {
  */
 @Injectable()
 export class UserService {
-    private user$: BehaviorSubject<User>;
-    private session$: BehaviorSubject<Session>;
+    private readonly user$: BehaviorSubject<User>;
+    private readonly session$: BehaviorSubject<Session>;
 
-    private isGuestUser$: Observable<boolean>;
+    private readonly isGuestUser$: Observable<boolean>;
 
     private rasterSources$ = new BehaviorSubject<Array<MappingSource>>([]);
     private rasterSourceError$ = new BehaviorSubject<boolean>(false);
@@ -366,6 +367,7 @@ export class UserService {
 
     /**
      * Get the GFBio login token from the portal.
+     * Get the GFBio login token from the portal.
      */
     getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
         const parameters = new GFBioPortalLoginRequestParameters(credentials);
@@ -572,6 +574,33 @@ export class UserService {
                         for (const sourceId in json.sourcelist) {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
+
+                                const sourceChannels = (!source.channels) ? [] : source.channels.map((channel, index) => {
+                                    const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
+                                    const channelColorizer = channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) :
+                                        source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) :
+                                            ColorizerData.grayScaleColorizer(channelUnit);
+                                    return {
+                                        id: index,
+                                        name: channel.name || 'Channel #' + index,
+                                        datatype: channel.datatype,
+                                        nodata: channel.nodata,
+                                        unit: channelUnit,
+                                        colorizer: channelColorizer,
+                                        hasTransform: !!channel.transform,
+                                        isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+                                        transform: channel.transform === undefined ?
+                                            undefined : {
+                                                unit: channel.transform.unit ?
+                                                    Unit.fromMappingDict(channel.transform.unit)
+                                                    : Unit.defaultUnit,
+                                                datatype: channel.transform.datatype,
+                                                offset: channel.transform.offset,
+                                                scale: channel.transform.scale,
+                                            } as MappingTransform,
+                                    } as MappingSourceChannel;
+                                });
+
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source',
                                     source: sourceId,
@@ -579,30 +608,8 @@ export class UserService {
                                     uri: (source.provenance) ? source.provenance.uri : '',
                                     citation: source.provenance ? source.provenance.citation : '',
                                     license: source.provenance ? source.provenance.license : '',
-                                    colorizer: source.colorizer,
                                     coords: source.coords,
-                                    channels: source.channels.map((channel, index) => {
-                                        return {
-                                            id: index,
-                                            name: channel.name || 'Channel #' + index,
-                                            datatype: channel.datatype,
-                                            nodata: channel.nodata,
-                                            unit: channel.unit ?
-                                                Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
-                                            colorizer: channel.colorizer,
-                                            hasTransform: !!channel.transform,
-                                            isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-                                            transform: channel.transform === undefined ?
-                                                undefined : {
-                                                    unit: channel.transform.unit ?
-                                                        Unit.fromMappingDict(channel.transform.unit)
-                                                        : Unit.defaultUnit,
-                                                    datatype: channel.transform.datatype,
-                                                    offset: channel.transform.offset,
-                                                    scale: channel.transform.scale,
-                                                } as MappingTransform,
-                                        } as MappingSourceChannel;
-                                    }),
+                                    channels: sourceChannels,
                                 });
                             }
                         }

@@ -14,7 +14,6 @@ import {NotificationService} from '../notification.service';
 import {Layer, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {
     AbstractVectorSymbology,
-    MappingColorizer,
     RasterSymbology,
     Symbology,
     SymbologyType
@@ -26,6 +25,7 @@ import {ResultTypes} from '../operators/result-type.model';
 import {LayerService} from '../layers/layer.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
+import {DeprecatedMappingColorizerDoNotUse} from '../colors/colorizer-data.model';
 
 @Injectable()
 export class ProjectService {
@@ -34,7 +34,7 @@ export class ProjectService {
     private layerData$: Map<Layer<Symbology>, ReplaySubject<LayerData<any>>>;
     private layerDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
     private layerDataSubscriptions: Map<Layer<Symbology>, Subscription>;
-    private layerSymbologyData$: Map<Layer<Symbology>, ReplaySubject<MappingColorizer>>;
+    private layerSymbologyData$: Map<Layer<Symbology>, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
     private layerSymbologyDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
     private layerSymbologyDataSubscriptions: Map<Layer<Symbology>, Subscription>;
     private layerProvenanceData$: Map<Layer<Symbology>, ReplaySubject<Array<Provenance>>>;
@@ -411,7 +411,7 @@ export class ProjectService {
         }
 
         this.project$.first().subscribe(project => {
-            // const layers = Array.from(this.getProject().layers);
+            // const layers = Array.fromRgbaLike(this.getProject().layers);
             const layers = [...project.layers];
             const layerIndex = layers.indexOf(layer);
             // console.log("REMOVE LAYER", layer, layers, layerIndex);
@@ -528,7 +528,7 @@ export class ProjectService {
                 this.layerSymbologyDataSubscriptions.set(layer,
                     this.createRasterLayerSymbologyDataSubscription(
                         layer as RasterLayer<RasterSymbology>,
-                        this.layerSymbologyData$.get(layer) as Observer<MappingColorizer>,
+                        this.layerSymbologyData$.get(layer) as Observer<DeprecatedMappingColorizerDoNotUse>,
                         this.layerSymbologyDataState$.get(layer)));
                 break;
             }
@@ -598,7 +598,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LayerData<any>>}
      */
-    getLayerSymbologyDataStream(layer: Layer<Symbology>): Observable<MappingColorizer> {
+    getLayerSymbologyDataStream(layer: Layer<Symbology>): Observable<DeprecatedMappingColorizerDoNotUse> {
         return this.layerSymbologyData$.get(layer);
     }
 
@@ -921,7 +921,7 @@ export class ProjectService {
         this.layerData$.set(layer, layerData$);
 
         const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-        const symbologyData$ = new ReplaySubject<MappingColorizer>(1);
+        const symbologyData$ = new ReplaySubject<DeprecatedMappingColorizerDoNotUse>(1);
         this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
         this.layerSymbologyData$.set(layer, symbologyData$);
 
@@ -1035,7 +1035,7 @@ export class ProjectService {
                     operator: layer.operator,
                     time: time,
                     projection: projection,
-                    clustered: layer.symbology.getSymbologyType() === SymbologyType.CLUSTERED_POINT,
+                    clustered: layer.clustered, // TODO: is clustering a property of a layer or the symbology?
                     outputFormat: WFSOutputFormats.JSON,
                     viewportSize: viewportSize
                 }).map(x => VectorData.olParse(time, projection, requestExtent, x));
@@ -1098,7 +1098,7 @@ export class ProjectService {
      * @returns {Subscription}
      */
     private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<RasterSymbology>,
-                                                       data$: Observer<MappingColorizer>,
+                                                       data$: Observer<DeprecatedMappingColorizerDoNotUse>,
                                                        loadingState$: Observer<LoadingState>): Subscription {
         return Observable.combineLatest(
             this.getTimeStream(),

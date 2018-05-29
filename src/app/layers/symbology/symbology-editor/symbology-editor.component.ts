@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {Symbology, SymbologyType} from '../symbology.model';
 import {Layer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
@@ -10,7 +10,7 @@ import {ProjectService} from '../../../project/project.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class SymbologyEditorComponent {
+export class SymbologyEditorComponent implements OnChanges {
 
     // make visible in template
     // tslint:disable:variable-name
@@ -27,11 +27,17 @@ export class SymbologyEditorComponent {
         private projectService: ProjectService
     ) {}
 
+
+    ngOnChanges(changes: SimpleChanges): void {
+        console.log('SymbologyEditorComponent', 'ngOnChanges', changes);
+    }
+
     get validLayer(): boolean {
         return !!this.layer
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
+        console.log('update_symbology', symbology);
         this.projectService.changeLayer(layer, {symbology: symbology});
     }
 

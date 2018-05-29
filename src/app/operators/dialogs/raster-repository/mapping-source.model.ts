@@ -1,5 +1,6 @@
 import {Unit, UnitMappingDict} from '../../unit.model';
-import { IMappingRasterColorizer, MappingRasterColorizerBreakpoint } from '../../../layers/symbology/symbology.model';
+import {MappingRasterColorizerDict} from '../../../colors/colorizer-data.model';
+import {IColorizerData} from '../../../colors/colorizer-data.model';
 
 export interface MappingTransform {
   datatype: string;
@@ -14,7 +15,7 @@ export interface MappingSourceChannel {
   datatype: string;
   nodata: number;
   unit: Unit;
-  colorizer?: IMappingRasterColorizer;
+  colorizer?: IColorizerData;
   transform?: MappingTransform;
   hasTransform: boolean;
   isSwitchable: boolean;
@@ -28,8 +29,8 @@ export interface MappingSource {
     uri: string;
     license: string;
     citation: string;
-    channels: MappingSourceChannel[];
-    colorizer?: IMappingRasterColorizer;
+    channels?: MappingSourceChannel[];
+    colorizer?: IColorizerData;
     coords: {
         crs: string,
         epsg?: number,
@@ -42,7 +43,7 @@ export interface MappingSource {
 export interface MappingSourceDict {
     operator?: string,
     name: string;
-    colorizer?: IMappingRasterColorizer;
+    colorizer?: MappingRasterColorizerDict;
     provenance?: {
         uri: string;
     license: string;
@@ -60,7 +61,7 @@ export interface MappingSourceDict {
         nodata: number,
         name?: string,
         unit?: UnitMappingDict,
-        colorizer?: IMappingRasterColorizer,
+        colorizer?: MappingRasterColorizerDict,
         transform?: {
             unit?: UnitMappingDict,
             datatype: string,

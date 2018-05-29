@@ -5,7 +5,7 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
+    ComplexPointSymbology,
     SimpleVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -65,12 +65,12 @@ export class FeaturedbSourceListComponent implements OnInit {
     }
 
     add(entry: {name: string, operator: Operator}) {
-        const color = this.randomColorService.getRandomColor();
+        const color = this.randomColorService.getRandomColorRgba();
         let symbology: AbstractVectorSymbology;
         let clustered: boolean;
 
         if (entry.operator.resultType === ResultTypes.POINTS) {
-            symbology = new ClusteredPointSymbology({
+            symbology = ComplexPointSymbology.createClusterSymbology({
                 fillRGBA: color,
             });
             clustered = true;

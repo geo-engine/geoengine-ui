@@ -3,7 +3,6 @@ import {Observable, Observer} from 'rxjs/Rx';
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
     MappingColorizerRasterSymbology,
     RasterSymbology,
     Symbology,
@@ -279,7 +278,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
         const clustered = (typeOptions && typeOptions.clustered)
             && typeOptions.clustered
-            || dict.symbology instanceof ClusteredPointSymbology
+            // || dict.symbology instanceof ClusteredPointSymbology //FIXME: where is this needed?
             || false;
         // console.log('VectorLayer', 'fromDict', clustered, dict);
 
@@ -297,6 +296,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this.clustered = !!config.clustered;
+        console.log("VectorLayer", config);
     }
 
     getLayerType(): LayerType {

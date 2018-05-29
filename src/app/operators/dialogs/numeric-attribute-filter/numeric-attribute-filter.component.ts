@@ -10,8 +10,7 @@ import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
-    SimplePointSymbology
+    ComplexPointSymbology,
 } from '../../../layers/symbology/symbology.model';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
@@ -228,11 +227,11 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             name: name,
             operator: operator,
             symbology: clustered ?
-                new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }) :
-                new SimplePointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                new ComplexPointSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }),
             // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
             //     operator, clustered,

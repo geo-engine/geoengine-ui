@@ -13,7 +13,7 @@ import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
-import {ClusteredPointSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexPointSymbology} from '../../../layers/symbology/symbology.model';
 import {ProjectService} from '../../../project/project.service';
 
 type Grouped<T> = Iterable<Group<T>>;
@@ -109,11 +109,11 @@ export class AbcdRepositoryComponent {
             });
 
             const clustered = true;
-            const layer = new VectorLayer<ClusteredPointSymbology>({
+            const layer = new VectorLayer<ComplexPointSymbology>({
                 name: archive.dataset,
                 operator: operator,
-                symbology: new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                symbology: ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }),
                 // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
                 //    operator,
