@@ -1,7 +1,6 @@
 import {Input} from '@angular/core';
 import {IBasketResult} from './gfbio-basket.model';
 import {Operator} from '../../operator.model';
-import {ABCDSourceType, ABCDSourceTypeConfig} from '../../..//operators/types/abcd-source-type.model';
 import {ResultTypes} from '../../result-type.model';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ComplexPointSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';

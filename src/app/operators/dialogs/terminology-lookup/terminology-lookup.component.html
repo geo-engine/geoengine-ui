@@ -1,0 +1,53 @@
+<wave-sidenav-header>GFBio Terminology Lookup</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="vectorLayer"></wave-layer-selection>
+        <wave-dialog-section-heading title="Lookup settings" subtitle="Select the attribute to lookup."></wave-dialog-section-heading>
+        <mat-form-field>
+            <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select placeholder="Terminology" formControlName="terminology">
+                <mat-option *ngFor="let terminology of TERMINOLOGIES" [value]="terminology.acronym">[{{terminology.acronym}}] {{terminology.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput formControlName="terminology_key" placeholder="Terminology Key">
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.terminology_key.errors?.required || form.controls.terminology_key.errors?.onlyWhitespace"
+            >
+                The terminology_key must be non-empty.
+            </mat-hint>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-select placeholder="Unresolvable cells..." formControlName="on_not_resolvable">
+                <mat-option [value]="TerminologyLookupOnNotResolvable.OLD_NAME">old value</mat-option>
+                <mat-option [value]="TerminologyLookupOnNotResolvable.EMPTY">empty</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Filtered ' + (form.controls.vectorLayer.valueChanges | async)?.name"
+        >
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>

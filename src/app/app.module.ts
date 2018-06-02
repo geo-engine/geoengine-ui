@@ -21,7 +21,6 @@ import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
-import {SymbologyPointsComponent} from './layers/symbology/symbology-vectors/symbology-points.component';
 import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
@@ -162,7 +161,6 @@ export function configInitializer(config: Config) {
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
         BreakpointToCssStringPipe,
-        SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyRasterMappingColorizerComponent,
         SymbologyVectorComponent,

@@ -17,10 +17,10 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
 
     @Input()
     set symbology(symbology: MappingColorizerRasterSymbology) {
-        console.log('SymbologyRasterMappingColorizerComponent', 'set symbology');
+        // console.log('SymbologyRasterMappingColorizerComponent', 'set symbology');
         if (symbology && !symbology.equals(this._symbology)) {
             this._symbology = symbology; // TODO: figure out if this should clone;
-            console.log('SymbologyRasterMappingColorizerComponent', 'set symbology', 'replaced');
+            // console.log('SymbologyRasterMappingColorizerComponent', 'set symbology', 'replaced');
         }
     }
 
@@ -34,14 +34,14 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
     constructor() {}
 
     updateOpacity(event: MatSliderChange) {
-        console.log("updateOpacity");
+        // console.log("updateOpacity");
         this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
     updateOverflowColor(event: ColorBreakpoint) {
         if (event && !event.equals(this.symbology.overflowColor)) {
-            console.log("updateOverflowColor");
+            // console.log("updateOverflowColor");
             this.symbology.overflowColor = event;
             this.update();
         }
@@ -49,14 +49,14 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
 
     updateNoDataColor(event: ColorBreakpoint) {
         if (event && !event.equals(this.symbology.noDataColor)) {
-            console.log("updateNoDataColor");
+            // console.log("updateNoDataColor");
             this.symbology.noDataColor = event;
             this.update();
         }
     }
 
     updateColorizer(event: ColorizerData) {
-        console.log("updateColorizer", event, this.symbology.colorizer, !event.equals(this.symbology.colorizer));
+        // console.log("updateColorizer", event, this.symbology.colorizer, !event.equals(this.symbology.colorizer));
         if (event && !event.equals(this.symbology.colorizer)) {
             this.symbology.colorizer = event;
             this.update();
@@ -73,7 +73,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
             switch (propName) {
 
                 default: // DO NOTHING
-                    console.log('SymbologyRasterMappingColorizerComponent', 'ngOnChanges', 'default: ', propName)
+                    // console.log('SymbologyRasterMappingColorizerComponent', 'ngOnChanges', 'default: ', propName)
 
             }
         }

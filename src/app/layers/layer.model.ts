@@ -19,7 +19,7 @@ export abstract class LayerData<D> {
     _time: Time;
     _projection: Projection;
 
-    constructor(type: LayerType, time: Time, projection: Projection) {
+    protected constructor(type: LayerType, time: Time, projection: Projection) {
         this.type = type;
         this._projection = projection;
         this._time = time;
@@ -175,7 +175,7 @@ export abstract class Layer<S extends Symbology> {
         }
     }
 
-    constructor(config: LayerConfig<S>) {
+    protected constructor(config: LayerConfig<S>) {
         this._name = config.name;
         this._operator = config.operator;
         this._symbology = config.symbology;
@@ -296,7 +296,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this.clustered = !!config.clustered;
-        console.log("VectorLayer", config);
+        // console.log('VectorLayer', config);
     }
 
     getLayerType(): LayerType {

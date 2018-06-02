@@ -1,4 +1,4 @@
-import {OutputFormat} from '../../queries/output-format.model';
+import {OutputFormat} from '../output-format.model';
 
 /**
  * Base class for WCS Output Formats

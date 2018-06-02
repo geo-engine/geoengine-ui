@@ -3,7 +3,7 @@ import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {SimpleVectorSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MatDialog} from '@angular/material';
@@ -19,6 +19,7 @@ import {
 import {DataSource} from '@angular/cdk/table';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 import {Subscription} from 'rxjs/Subscription';
+import { DataType, DataTypes } from '../../datatype.model';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -106,9 +107,9 @@ Sean Gilles did some clean up and made some enhancements.`,
             .combineLatest(
                 this.getOperatorDataStream().map(
                     vectorData => {
-                        console.log('vectorData', vectorData);
+                        // console.log('vectorData', vectorData);
                         const data = vectorData.data.map(olFeature => olFeature.getProperties() as { [k: string]: any });
-                        console.log('mapped', data);
+                        // console.log('mapped', data);
                         return data;
                     }
                 ),
@@ -133,11 +134,28 @@ Sean Gilles did some clean up and made some enhancements.`,
             parameters: this.sourceParameters,
         });
 
-        return new Operator({
+        const dataTypes = new Map<string, DataType>();
+        const attributes = new Array<string>();
+
+        for (let an of this.sourceParameters.columns.numeric) {
+            attributes.push(an);
+            dataTypes.set(an, DataTypes.Float64); // TODO: get more accurate type
+        }
+
+        for (let an of this.sourceParameters.columns.textual) {
+            attributes.push(an);
+            dataTypes.set(an, DataTypes.Alphanumeric); // TODO: get more accurate type
+        }
+
+        const op = new Operator({
             operatorType: csvSourceType,
             resultType: ResultTypes.POLYGONS,
             projection: this.sourceProjection,
+            attributes: attributes,
+            dataTypes: dataTypes
         });
+
+        return op;
     }
 
     getOperatorDataStream(): Observable<VectorData> {
@@ -163,16 +181,20 @@ Sean Gilles did some clean up and made some enhancements.`,
             searchString: key,
         });
 
+        const sourceOp = this.createCsvSourceOperator();
+
         return new Operator({
             operatorType: filterOperatorType,
             resultType: this.sourceOperator.resultType,
             projection: this.sourceOperator.projection,
-            polygonSources: [this.createCsvSourceOperator()]
+            polygonSources: [sourceOp],
+            attributes: sourceOp.attributes,
+            dataTypes: sourceOp.dataTypes
         });
     }
 
     addLayer(layerName: string, operator: Operator) {
-        let symbology = new SimpleVectorSymbology({
+        let symbology = ComplexVectorSymbology.createSimpleSymbology({
             fillRGBA: this.randomColorService.getRandomColorRgba(),
         });
 

@@ -11,7 +11,8 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology
+    SimpleVectorSymbology,
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
@@ -250,7 +251,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                     break;
                 case ResultTypes.POLYGONS:
-                    symbology = new SimpleVectorSymbology({
+                    symbology = ComplexVectorSymbology.createSimpleSymbology({
                         fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
                     break;

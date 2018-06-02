@@ -152,8 +152,6 @@ export const TRANSPARENT = Color.fromRgbaLike([0, 0, 0, 0]);
  * @returns {RgbaStruct}
  */
 export function stringToRgbaStruct(rgbaCssString: string): RgbaStruct {
-    console.log("stringToRgbaStruct", rgbaCssString);
-
     if (rgbaCssString === undefined || rgbaCssString === '') {
         throw new Error('cant parse empty string into a color');
     }

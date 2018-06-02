@@ -170,7 +170,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     toDict(): IColorizerData {
-        console.log('toDict()', this);
+        // console.log('toDict()', this);
         return {
             breakpoints: this.breakpoints.map(br => br.toDict()),
             type: this.type
@@ -178,7 +178,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
-        console.log('ColorizerData.fromMappingColorizerData', mcd);
+        // console.log('ColorizerData.fromMappingColorizerData', mcd);
 
         return new ColorizerData({
             type: (!mcd || !mcd.type) ? 'gradient' : mcd.type,

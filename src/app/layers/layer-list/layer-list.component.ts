@@ -12,7 +12,7 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
-import {SymbologyEditorComponent} from '../../layers/symbology/symbology-editor/symbology-editor.component';
+import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';

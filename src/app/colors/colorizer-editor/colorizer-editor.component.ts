@@ -33,7 +33,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
 
     set colorizer(clr: ColorizerData) {
         if (clr && (!clr.equals(this._colorizer))) {
-            console.log("ColorizerEditorComponent", 'set colorizer', clr, this._colorizer, clr.equals(this._colorizer));
+            // console.log("ColorizerEditorComponent", 'set colorizer', clr, this._colorizer, clr.equals(this._colorizer));
             this._colorizer = clr.clone();
             this.notify();
             // this.changeDetectorRef.markForCheck();
@@ -59,10 +59,12 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
                 case 'colorPlaceholder':
                 {
                     this.changeDetectorRef.markForCheck();
+                    break;
                 }
 
-                default: // DO NOTHING
-                    console.log('ColorizerEditorComponent', 'ngOnChanges', 'default: ', propName)
+                default: {// DO NOTHING
+                    // console.log('ColorizerEditorComponent', 'ngOnChanges', 'default: ', propName)
+                }
 
             }
         }
@@ -71,7 +73,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     updateType(type: ColorizerType) {
-        console.log('updateType', type);
+        // console.log('updateType', type);
         if (type && this._colorizer) {
             const diff = this._colorizer.updateType(type);
             if (diff) {
@@ -93,12 +95,12 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     addBreakpointAt(i: number) {
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
             this._colorizer.addBreakpointAt(i,
-                this._colorizer.getBreakpointAt(
-                    Math.max(0, i - 1)
-                ).clone()
+                this._colorizer.getBreakpointAt(i).clone()
             );
-            this.notify();
+        } else {
+            this._colorizer.addBreakpoint(this._colorizer.getBreakpointAt(i));
         }
+        this.notify();
     }
 
     removeBreakpointAt(i: number) {
@@ -109,7 +111,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     notify() {
-        console.log('ColorizerEditorComponent', 'notify', this);
+        // console.log('ColorizerEditorComponent', 'notify', this);
 
         if (this.onChange && this._colorizer) {
             this.onChange(this._colorizer.clone());
