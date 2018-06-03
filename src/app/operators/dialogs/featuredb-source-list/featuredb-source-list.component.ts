@@ -6,7 +6,7 @@ import {ResultTypes} from '../../result-type.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
@@ -75,7 +75,7 @@ export class FeaturedbSourceListComponent implements OnInit {
             });
             clustered = true;
         } else {
-            symbology = new SimpleVectorSymbology({
+            symbology = ComplexVectorSymbology.createSimpleSymbology({
                 fillRGBA: color,
             });
             clustered = false;

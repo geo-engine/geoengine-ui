@@ -3,7 +3,7 @@ import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {SimpleVectorSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MatDialog} from '@angular/material';

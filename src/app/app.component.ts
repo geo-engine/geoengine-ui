@@ -14,7 +14,7 @@ import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology,
+    ComplexVectorSymbology,
     Symbology
 } from './layers/symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
@@ -284,7 +284,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     clustered = true;
                     break;
                 case ResultTypes.POLYGONS:
-                    symbology = new SimpleVectorSymbology({
+                    symbology = ComplexVectorSymbology.createSimpleSymbology({
                         fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
                     break;

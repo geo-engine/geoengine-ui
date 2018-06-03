@@ -11,7 +11,6 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology,
     ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';

@@ -15,7 +15,7 @@ import {
     RasterSymbology,
     AbstractVectorSymbology,
     Symbology,
-    SimplePointSymbology
+    ComplexPointSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {MatDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
@@ -228,7 +228,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                     layer = new VectorLayer({
                         name: outputName,
                         operator: operator,
-                        symbology: new SimplePointSymbology({
+                        symbology: ComplexPointSymbology.createSimpleSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         }),
                         // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({

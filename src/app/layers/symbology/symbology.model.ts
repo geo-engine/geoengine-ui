@@ -49,7 +49,7 @@ export abstract class Symbology implements ISymbology {
             case SymbologyType[SymbologyType.SIMPLE_VECTOR]:
                 return ComplexVectorSymbology.createSimpleSymbology(dict as VectorSymbologyDict);
             case SymbologyType[SymbologyType.COMPLEX_VECTOR]:
-                return new ComplexVectorSymbology(dict as ComplexVectorSymbologyDict);
+                return ComplexVectorSymbology.createSimpleSymbology(dict as ComplexVectorSymbologyDict);
             case SymbologyType[SymbologyType.RASTER]:
                 const rasterSymbologyDict = dict as RasterSymbologyDict;
                 return new RasterSymbology({
@@ -179,7 +179,7 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
         return new SimpleVectorSymbology(config);
     }
 
-    constructor(config: VectorSymbologyConfig) {
+    protected constructor(config: VectorSymbologyConfig) {
         super(config);
     }
 
@@ -224,7 +224,7 @@ interface SimplePointSymbologyDict extends VectorSymbologyDict {
 export class SimplePointSymbology extends AbstractVectorSymbology implements SimplePointSymbologyConfig {
   radius = DEFAULT_POINT_RADIUS;
 
-  constructor(config: SimplePointSymbologyConfig) {
+  protected constructor(config: SimplePointSymbologyConfig) {
       super(config);
       if (config.radius) {this.radius = config.radius; }
   }
@@ -301,7 +301,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
     textColor: Color = undefined;
     textStrokeWidth: number = undefined;
 
-    constructor(config: ComplexVectorSymbologyConfig) {
+    protected constructor(config: ComplexVectorSymbologyConfig) {
         super(config);
         if (config.colorAttribute) {
             this.colorAttribute = config.colorAttribute;
@@ -364,7 +364,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
 
 export class ComplexVectorSymbology extends AbstractComplexVectorSymbology implements ComplexVectorSymbologyConfig {
 
-    constructor(config: ComplexVectorSymbologyConfig) {
+    protected constructor(config: ComplexVectorSymbologyConfig) {
         super(config);
     }
 

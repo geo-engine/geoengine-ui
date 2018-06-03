@@ -8,7 +8,7 @@ import {LayerService} from '../../../../layers/layer.service';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology
+    ComplexVectorSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
@@ -182,7 +182,7 @@ export class CsvDialogComponent implements OnInit {
             });
             clustered = true;
         } else {
-            symbology = new SimpleVectorSymbology({
+            symbology = ComplexVectorSymbology.createSimpleSymbology({
                 fillRGBA: color,
             });
             clustered = false;
