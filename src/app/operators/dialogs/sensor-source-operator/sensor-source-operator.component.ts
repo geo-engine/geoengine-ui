@@ -129,11 +129,11 @@ export class SensorSourceOperatorComponent {
     }
 
     add(_: Event) {
-        console.log('add', this.sensors);
+        // console.log('add', this.sensors);
         const name = this.form.controls['name'].value;
         const mask = this.form.controls['sensors'].value;
 
-        console.log('name', name, 'mask', mask);
+        // console.log('name', name, 'mask', mask);
         const op = this.createSourceOperator(mask);
         this.addLayer(name, op);
     }
@@ -141,7 +141,7 @@ export class SensorSourceOperatorComponent {
     createSourceOperator(mask: Array<boolean>): Operator {
 
         const filteredSensors = this.sensors.filter((x, i) => (mask[i]));
-        console.log('filteredSensors', filteredSensors);
+        // console.log('filteredSensors', filteredSensors);
 
 
         const sensorSourceType = new SensorSourceType({

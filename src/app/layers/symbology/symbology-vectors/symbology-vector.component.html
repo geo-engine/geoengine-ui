@@ -1,6 +1,7 @@
 <table>
     <tr *ngIf="editStrokeWidth">
         <td>
+            <span>Stroke width</span>
         </td>
         <td>
             <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"

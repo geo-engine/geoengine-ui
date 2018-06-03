@@ -24,7 +24,7 @@ export class RandomColorService {
     private colorIndex = 0;
 
     constructor() {
-        console.log('RandomColorService', RandomColorService.colorWheel);
+        // console.log('RandomColorService', RandomColorService.colorWheel);
     }
 
     getRandomColorRgba(alpha: number = 0.8): Color {

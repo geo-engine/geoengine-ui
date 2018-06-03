@@ -95,10 +95,10 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     gatherAttributes() {
-        console.log('gatherAttributes', this.layer.operator.dataTypes);
+        // console.log('gatherAttributes', this.layer.operator.dataTypes);
         let attributes: Array<Attribute> = [];
         this.layer.operator.dataTypes.forEach((datatype, attribute) => {
-            console.log('gatherAttributes', attribute, datatype);
+            // console.log('gatherAttributes', attribute, datatype);
 
             if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                 attributes.push({

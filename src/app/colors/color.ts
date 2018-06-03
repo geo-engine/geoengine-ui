@@ -125,9 +125,36 @@ export class Color implements IRgba, RgbaStruct {
             return new Color(stringToRgbaStruct(rgba as string))
         }
 */
-        console.log('ERROR Color.fromRgbaLike', rgba);
+        console.error('ERROR Color.fromRgbaLike', rgba);
 
         throw new Error('invalid RgbaLike ' + rgba.toString());
+    }
+
+    /**
+     * Interpolates between two colors
+     * @param a: first Color -> 0
+     * @param b: second Color -> 1
+     * @param value: value between 0 and 1
+     */
+    static interpolate(a: RgbaLike, b: RgbaLike, fraction: number): Color {
+        const ra = Color.fromRgbaLike(a, false);
+        const rb = Color.fromRgbaLike(b, false);
+        if (fraction === 0) {
+            return ra;
+        }
+        if (fraction === 1) {
+            return rb;
+        }
+        if (ra.equals(rb)) {
+            return ra;
+        }
+        const clr = {
+            r: ra.r * (1 - fraction) + rb.r * fraction,
+            g: ra.g * (1 - fraction) + rb.g * fraction,
+            b: ra.b * (1 - fraction) + rb.b * fraction,
+            a: ra.a * (1 - fraction) + rb.a * fraction
+        }
+        return Color.fromRgbaLike(clr, false);
     }
 
     static colorDifference(a: RgbaLike, b: RgbaLike): number {
@@ -144,7 +171,6 @@ export class Color implements IRgba, RgbaStruct {
 export const BLACK = Color.fromRgbaLike([0, 0, 0, 1]);
 export const WHITE = Color.fromRgbaLike([255, 255, 255, 1]);
 export const TRANSPARENT = Color.fromRgbaLike([0, 0, 0, 0]);
-
 
 /**
  * Should a string also be RgbaLike?

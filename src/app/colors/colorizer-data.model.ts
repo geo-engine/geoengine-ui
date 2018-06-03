@@ -113,33 +113,63 @@ export class ColorizerData implements IColorizerData {
     }
 
     /**
-     * Get the color for a breakpoint value.
-     * TODO: this is prob. not very fast.
+     * Get a (new) breakpoint for a value.
+     * TODO: this is prob. not very correct...
      * @param {BreakPointValue} value
      * @param {boolean} interpolate
-     * @returns {Color | undefined}
+     * @returns {ColorBreakpoint | undefined}
      */
-    getColorForValue(value: BreakPointValue, interpolate: boolean = false): Color | undefined {
+    getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
+        // console.log('ColorizerData', 'getBreakpointForValue', '#1', value, interpolate);
 
-        if (!value || !this.breakpoints || this.breakpoints.length === 0) {
+        if (!value || !this.breakpoints || this.breakpoints.length === 0 ) {
             return undefined;
         }
 
+        const isGradient = this.type === 'gradient';
         const isNumber = typeof value === 'number';
-        const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber();
+        const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber(); // TODO: this is prob. not always the correct type.
+        const lookUpValue = (firstBrkIsNumber && ! isNumber) ? parseFloat(value as string) : value;
+        // console.log('ColorizerData', 'getBreakpointForValue', '#2', isGradient, isNumber, firstBrkIsNumber, lookUpValue);
 
-        const brk = this.breakpoints.find(x => {
-            let lookUpValue = value;
 
-            if (firstBrkIsNumber && ! isNumber) {
-                lookUpValue = parseFloat(value as string);
+        let brk_index = -1;
+        for (let index = 0; index < this.breakpoints.length; index++) {
+            const brk_i = this.breakpoints[index];
+            if (isNumber && brk_i.value <= lookUpValue) {
+                brk_index = index;
+            } else if (brk_i.value === lookUpValue) {
+                brk_index = index;
             }
+        }
+        const brk = this.breakpoints[brk_index];
+        const validBrk = brk_index >= 0 && ( this.breakpoints.length > 1 ||  brk.value === lookUpValue);
+        const isLastBrk = brk_index >= this.breakpoints.length - 1;
+        // console.log('ColorizerData', 'getBreakpointForValue', '#3', brk_index, validBrk, isLastBrk);
 
-            // console.log('colorLookup', x, value, lookUpValue, lookUpValue === value);
-            return lookUpValue === x.value;
-        });
+        if ( !validBrk ) {
+            return undefined;
+        }
 
-        return brk ? brk.rgba : undefined;
+        if ( !interpolate || isLastBrk || brk.value === lookUpValue || !isGradient ) {
+            return brk;
+        }
+
+        // handling gradients for numbers...
+        const brk_next = this.breakpoints[brk_index + 1];
+        if ( typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brk_next.value === 'number' ) {
+            const diff = lookUpValue - brk.value;
+            const frac_diff = diff / (brk_next.value - brk.value);
+            const color = Color.interpolate(brk.rgba, brk_next.rgba, frac_diff);
+            // console.log('ColorizerData', 'getBreakpointForValue', '#4', brk.value, brk_next.value, diff, frac_diff, color);
+
+            return new ColorBreakpoint({
+                rgba: color,
+                value: brk.value + diff
+            })
+        }
+
+        return undefined;
     }
 
     updateType(type: ColorizerType): boolean {

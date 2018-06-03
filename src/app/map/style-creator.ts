@@ -19,7 +19,7 @@ import {
 export class StyleCreator {
 
     public static fromVectorSymbology(sym: AbstractVectorSymbology): ol.StyleFunction | ol.style.Style {
-        console.log('StyleCreator', 'fromVectorSymbology', sym);
+        // console.log('StyleCreator', 'fromVectorSymbology', sym);
         switch (sym.getSymbologyType()) {
             case SymbologyType.SIMPLE_VECTOR:
                 return StyleCreator.fromSimpleVectorSymbology(sym);
@@ -87,8 +87,9 @@ export class StyleCreator {
 
           if (!styleCache[styleKey]) {
 
-              const colorLookup = sym.colorizer.getColorForValue(featureColorValue);
-              const color = colorLookup ? colorLookup.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+              const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
+              // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
+              const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
 
               // console.log("ComplexVectorSymbology.getOlStyleAsFunction", colorLookup, color, radius);
 
@@ -142,8 +143,9 @@ export class StyleCreator {
 
             if (!styleCache[styleKey]) {
 
-                const colorLookup = sym.colorizer.getColorForValue(featureColorValue);
-                const color = colorLookup ? colorLookup.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+                const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
+                // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
+                const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
                 const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
 
                 // console.log("ComplexPointSymbology.getOlStyleAsFunction", colorLookup, color, radius);
