@@ -122,7 +122,7 @@ export class ColorizerData implements IColorizerData {
     getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
         // console.log('ColorizerData', 'getBreakpointForValue', '#1', value, interpolate);
 
-        if (!value || !this.breakpoints || this.breakpoints.length === 0 ) {
+        if (!value || !this.breakpoints || this.breakpoints.length <= 0 ) {
             return undefined;
         }
 
@@ -130,13 +130,14 @@ export class ColorizerData implements IColorizerData {
         const isNumber = typeof value === 'number';
         const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber(); // TODO: this is prob. not always the correct type.
         const lookUpValue = (firstBrkIsNumber && ! isNumber) ? parseFloat(value as string) : value;
-        // console.log('ColorizerData', 'getBreakpointForValue', '#2', isGradient, isNumber, firstBrkIsNumber, lookUpValue);
+        const isLookupNumber = typeof lookUpValue === 'number';
+        // console.log('ColorizerData', 'getBreakpointForValue', '#2', isGradient, isNumber, isLookupNumber, firstBrkIsNumber, lookUpValue);
 
 
         let brk_index = -1;
         for (let index = 0; index < this.breakpoints.length; index++) {
             const brk_i = this.breakpoints[index];
-            if (isNumber && brk_i.value <= lookUpValue) {
+            if (isLookupNumber && brk_i.value <= lookUpValue) {
                 brk_index = index;
             } else if (brk_i.value === lookUpValue) {
                 brk_index = index;

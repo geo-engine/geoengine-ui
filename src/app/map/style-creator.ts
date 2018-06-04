@@ -131,24 +131,21 @@ export class StyleCreator {
             const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ?  feature.get(sym.radiusAttribute) : undefined;
-
             // console.log(featureColorValue, featureTextValue, featureRadiusValue);
 
             let styleKey = '';
             styleKey += (featureColorValue ? featureColorValue.toString() : '|||');
             styleKey += (':::' + (featureTextValue ? featureTextValue.toString() : '|||'));
             styleKey += (':::' + (featureRadiusValue ? featureRadiusValue.toString() : '|||'));
-
-            // console.log("ComplexPointSymbology.getOlStyleAsFunction", "styleKey", styleKey);
+            // console.log('fromComplexPointSymbology', 'styleKey', styleKey);
 
             if (!styleCache[styleKey]) {
 
                 const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-                // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
+                // console.log('StyleCreator', 'fromComplexPointSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
                 const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
                 const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
-
-                // console.log("ComplexPointSymbology.getOlStyleAsFunction", colorLookup, color, radius);
+                // console.log('fromComplexPointSymbology', colorBreakpointLookup, color, radius);
 
                 const imageStyle = new OlStyleCircle({
                         radius: radius,
