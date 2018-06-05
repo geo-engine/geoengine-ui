@@ -43,6 +43,8 @@ COPY --from=builder /app/server.crt /usr/local/apache2/conf/server.crt
 # Copy Apache Configuration Files
 COPY docker-files/httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY docker-files/httpd-ssl.conf /usr/local/apache2/conf/extra/httpd-ssl.conf
+RUN ln -sfT /dev/stderr /usr/local/apache2/logs/error_log && \
+    ln -sfT /dev/stdout /usr/local/apache2/logs/access_log
 
 # Update System, Clean up Scripts and APT when done.
 RUN apk --no-cache upgrade --available && \
@@ -63,10 +65,6 @@ ENV MAPCACHE_URL "http://sng107.sng.uni-frankfurt.de/mapcache/"
 
 # Config File
 #VOLUME /usr/local/apache2/htdocs/assets/config.json
-
-# Log Files
-#VOLUME /usr/local/apache2/error_log
-#VOLUME /usr/local/apache2/access_log
 
 # Certificates
 #VOLUME /usr/local/apache2/conf/server.key
