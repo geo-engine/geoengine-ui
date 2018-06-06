@@ -63,10 +63,10 @@
                         <td class="custom" style="margin-left:0; margin-right:0;"
                             [ngStyle]="{'min-width.px': cellSizes[2*i]}"
                             [ngClass]="styleDict(i, (isSpatialProperties$ | async), (isTemporalProperties$ | async), true)">
-                            <mat-input-container>
+                            <mat-form-field>
                                 <input matInput type="text" placeholder="{{i+1}}{{ending(i+1)}} Column"
                                        [(ngModel)]="h.value" name="header_{{i}}" (change)="propertiesService.changeHeader(header)">
-                            </mat-input-container>
+                            </mat-form-field>
                         </td>
                         <td *ngIf="i !== header.length-1" name="spacer"
                             [ngStyle]="{'min-width.px': cellSizes[2*i+1]}"></td>

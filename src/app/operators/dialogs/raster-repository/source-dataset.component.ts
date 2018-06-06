@@ -11,7 +11,7 @@ import {
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {ColorBreakpointDict} from '../../../colors/color-breakpoint.model';

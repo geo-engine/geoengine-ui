@@ -12,9 +12,9 @@ import {ProjectService} from '../../project/project.service';
     <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
         <mat-dialog-content>
-            <mat-input-container>
+            <mat-form-field>
                 <input matInput type="text" placeholder="Name" formControlName="layerName">
-            </mat-input-container>
+            </mat-form-field>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
             <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
@@ -25,7 +25,7 @@ import {ProjectService} from '../../project/project.service';
     form {
         padding-top: 16px;
     }
-    mat-input-container {
+    mat-form-field {
         width: 100%;
     }
     `],

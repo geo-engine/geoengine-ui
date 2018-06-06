@@ -19,14 +19,14 @@
             </mat-select>
         </mat-form-field>
         <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="number" placeholder="Min" formControlName="min">
                 <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
                     Please specify the value.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
             <div fxFlex="1rem"></div>
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="number" placeholder="Max" formControlName="max">
                 <mat-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
@@ -34,19 +34,19 @@
                 <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
                     Please specify the value.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <mat-checkbox type="checkbox" formControlName="autoBuckets">
             Choose number of buckets automatically
         </mat-checkbox>
         <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput
                        type="number"
                        placeholder="Number of Buckets"
                        formControlName="numberOfBuckets"
                 >
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <wave-operator-output-name
             formControlName="name"

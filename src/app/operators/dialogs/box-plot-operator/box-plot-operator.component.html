@@ -46,10 +46,10 @@
                 </wave-dialog-section-heading>
                 <mat-checkbox formControlName="notch">Notch</mat-checkbox><br>
                 <mat-checkbox formControlName="mean">Mean value</mat-checkbox><br>
-                <mat-input-container>
+                <mat-form-field>
                     <label>Range</label>
                     <input matInput required type="number" step="0.5" formControlName="range" min="0"/>
-                </mat-input-container>
+                </mat-form-field>
                 <wave-operator-output-name
                     formControlName="name"
                     [suggestion]="'Box plot of ' + (form.controls['vLayer'].valueChanges | async)?.name"

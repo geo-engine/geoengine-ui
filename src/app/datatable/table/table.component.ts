@@ -4,9 +4,7 @@ import {
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, BehaviorSubject, Subscription} from 'rxjs';
 import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';

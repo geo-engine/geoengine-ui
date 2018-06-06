@@ -17,8 +17,7 @@ import {
     TextualAttributeFilterType
 } from '../../types/textual-attribute-filter-type.model';
 import {DataSource} from '@angular/cdk/table';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subscription} from 'rxjs/Subscription';
+import {ReplaySubject, Subscription} from 'rxjs';
 import { DataType, DataTypes } from '../../datatype.model';
 
 function nameComparator(a: string, b: string): number {

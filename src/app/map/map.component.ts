@@ -31,8 +31,7 @@ import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MapService} from './map.service';
 import {Config} from '../config.service';
-import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, Subscription} from 'rxjs';
 import { StyleCreator } from './style-creator';
 
 type MapLayer = OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>;

@@ -6,13 +6,13 @@
                 subtitle="Lookup a Scientific Name"
             ></wave-dialog-section-heading>
             <div fxLayout="row">
-                <mat-input-container fxFlex>
+                <mat-form-field fxFlex>
                     <input matInput
                            placeholder="Scientific Name"
                            [matAutocomplete]="auto"
                            formControlName="searchString"
                     >
-                </mat-input-container>
+                </mat-form-field>
                 <mat-autocomplete #auto="matAutocomplete">
                     <mat-option *ngFor="let result of autoCompleteResults$ | async" [value]="result">
                         {{result}}

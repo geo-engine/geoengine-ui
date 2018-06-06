@@ -33,20 +33,20 @@
             fxLayout.xs="column" fxLayoutAlign.xs="start"
             *ngIf="!!form.controls.attribute.value"
         >
-            <mat-input-container class="flex-item" fxFlex>
+            <mat-form-field class="flex-item" fxFlex>
                 <input matInput type="number" step="any" placeholder="Min" formControlName="min">
                 <span matSuffix>{{attributeUnit$ | async}}</span>
                 <mat-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
                     Specify at least minimum or maximum.
                 </mat-hint>
-            </mat-input-container>
-            <mat-input-container class="flex-item" fxFlex>
+            </mat-form-field>
+            <mat-form-field class="flex-item" fxFlex>
                 <input matInput type="number" step="any" placeholder="Max" formControlName="max">
                 <span matSuffix>{{attributeUnit$ | async}}</span>
                 <mat-hint class="error" *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <mat-checkbox formControlName="noData">Keep NoData values?</mat-checkbox>
 

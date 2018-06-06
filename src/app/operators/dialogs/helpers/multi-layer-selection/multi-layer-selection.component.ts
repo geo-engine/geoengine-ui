@@ -4,11 +4,7 @@ import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
-import {Observable} from 'rxjs/Observable';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, ReplaySubject, Subject, BehaviorSubject, Subscription} from 'rxjs';
 import {LayerService} from '../../../../layers/layer.service';
 
 /**

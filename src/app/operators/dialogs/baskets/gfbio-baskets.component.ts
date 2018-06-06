@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import {Basket, BasketsOverview, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {NotificationService} from '../../../notification.service';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
+import {ReplaySubject} from 'rxjs';
 
 @Component({
     selector: 'wave-gfbio-baskets',

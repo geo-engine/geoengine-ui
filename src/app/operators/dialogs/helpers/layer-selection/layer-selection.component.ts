@@ -5,11 +5,7 @@ import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {LayerService} from '../../../../layers/layer.service';
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, BehaviorSubject, ReplaySubject, Subject, Subscription} from 'rxjs';
 
 /**
  * This component allows selecting one layer.
