@@ -1,17 +1,38 @@
 language: typescript
+dist: trusty
+sudo: required
+
+services:
+  - docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
 script:
-  - export TAG=`if [[ $TRAVIS_PULL_REQUEST == "false" ]] && [[ $TRAVIS_BRANCH == "master" ]]; then echo "dev"; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
-  - export REPO=umrdbs/wave
+  - export TAG=`
+      if [[ $TRAVIS_PULL_REQUEST == "false" ]] && [[ $TRAVIS_BRANCH == "master" ]]; then
+        echo "dev";
+      elif [[ $TRAVIS_PULL_REQUEST == "true" ]]; then
+        echo $TRAVIS_PULL_REQUEST_BRANCH;
+      else
+        echo $TRAVIS_BRANCH;
+      fi`
   - docker build --tag $REPO:$TAG --file Dockerfile .
+
 after_success:
-  - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+  - echo "$DOCKER_PASS" | docker login --username "$DOCKER_USER" --password-stdin
   - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
       docker push $REPO:$TAG;
     fi
+
 notifications:
   slack:
     secure: D6TPNkiNF6UI+R66M4ngAbVK7pf5rR/aKG4N23QoZpALgTFrz4Lo7L3Z+uC5DelbjUunDfvQxASgDfa3nmSYsSmxbBrlm5uhd1Q3RRwv0rZC50MPI6G/tsEpa5sNIUIQiII4Foj1EpnnDIFVU8BuLhUDsvjJVPEnE6Qtl/50zyDnBOP8okGXQL1jPEqeTInEkcDWZlw2j+YPWYgQgCWi9LfekHCX78TJjQiZdTvBSbplOuk2Vm48Dt/xPPAt7EzG9oXmttxk7n5HcpgvicbS+eR97b3Z4EVmJ7VNkukN4c6FDdne1YiAi2KtfFBcyK2NUCPngZWLryAEH5zD1TkLD7Ry1U3xTGKB1/hhKMMamTmt2qjxBCENodwC8DwsUv/929CTeoJBs7rpkNjKyOXeNzild9LpCCCZVlPACGxKa+Cb46AEWrPD2lJV/u/l+2tuCVicNh83Vk2QqKjF7MwKSuISdbPCcQdbiWuYOUph31essXG4i1Uhlx8xWIqidrRnNAw8gH9/8XZth17Ww76MMU9HmC/BoJootGMYj9dVzVO7N8uH4iPyjZGrVaFvM6lJ0Y+kY1k8uPoLdC3ynnwEqIXzUgzlagzTJfFX4bugjSUy5a2CztCs1pcsw4SHNhhBWbU+xAFCD4zZMZ0yZ5Gaa/XGvlIMt+PVwGilft++cCY=
+
 env:
   global:
+  - REPO="umrdbs/wave"
   - secure: aB9tmsVsqvOT0ixhy7qpAUfqq98M60zapPFwdg7TnxDXzNkkafBrxdGT7d80b7Y8Musr77GK8PMxZpBzfbmSnKLEmrfMNLuDG9DI+u/4fCq2BAd+wK0bY97FFsivIT0BFik47hMaqTxtQvpgpwLNyBM4vRNjQtk/L7d9SYS/tnOkPnMeevsGYGaHEf85TuvTXWfHXGwQssXERrE+q3Tzak8aTiS3k0UDSA7ecyFcPWwk9zr6OtMUaInsq4MSPpVmeyN5j/1a4F9ErwxE3HL5M6zKu3QQOMCWiy91WASMbcPyRoeVu7M67xfSZiOELMa9Z3xA2SjPFQZKP1xQ3U8XrV6YW4KoAZyZxC7ka7HbMjst6c8HeS60l+u3OmHaO6dw5d1av4EA3kMnyGVXqUWFoqDxxTtpnDaEhoZZuSU3NZIXu59g0kIUXfejZA2ljyBEEVUehae/DQ47dyKnJoDrpcDt+N/T9pDh59p973toJyWozCuVoaV2xo+qsXxuBw9KCXqr45ZEycMY9W19+/MOzncNLW5f1ERDUncjcBzLeA16glDnlVvtofy822RqB1m46f/DV2hrXosuQe3WRhta3buWBGwBRv6viAu3ZuCSGoGq8VvPGp1ivGdNitYF/QSXlLs4EoiABayw7Gv8MzA4SSubc0nI3KJrDeAjN7KbU2Q=
   - secure: lr8kZ798bwTphhXVnNrG5Rz9m+mzzR36bwFxTDbm5XZsxURQumfO3yqZeHMn7j7cC5Xzyu416gx+pthdAkfPSb3Gheg+31u/2clLT8o2yVPVq/7RxhQI0jzux/S/ATnNVZNMChtGIXSNEUhm9wN5gW9UvM6SI6/toRtu7jG3WnlcrgrW1PqkH/0P+efYhMkZmRaGMEJOr1V84Rgev85znbQLFFGWS9JtXuMQLd8qs9ZmeN+zY51qS1SSjblWcKQdqEOY5YX7LjOApYnLo4vhQNLJAWWrFH/798lLX9lYx05c2JtqguKh/p2DAANWa3ws3ZaePPyZGcMx5dxZjMB6L1Dz+DTQqvyEY3tPAb5g1EVi9wtATn1qT+iv2gP1lS8+8+rPDTjRdUIg3YNWhrCKW70qDLEsilqUvpVro14xKozIVWg/IktpDEpZMNeHdkgss++PcDh2nVnfzN5ect3RIAnAEk6w01MGx9RWe34i9XwsiIaZqDS6N0yZO6FZ+CmhTMPnA5FAPwkDy1su/kDZBIUcV1H+x/x92b8+ddMKMe+Bt/ryINHEio8xbFCZZzcBE7uHkmoGj2GTwtQ/8ggAwMS6wzAV53463ZSM0DPVLVgX7cKOW1t/c720rf43IF5SYWV9QRKMsNh0sjja3MywxYjKJ9q47GlBvONOME/swv8=
