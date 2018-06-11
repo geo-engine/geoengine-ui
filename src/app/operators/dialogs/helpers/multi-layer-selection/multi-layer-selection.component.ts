@@ -187,7 +187,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         });
     }
 
-    add() {
+    add(event: any) {
         Observable
             .combineLatest(
                 this.filteredLayers,

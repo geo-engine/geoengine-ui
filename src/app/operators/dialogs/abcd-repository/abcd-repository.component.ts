@@ -30,8 +30,8 @@ interface Group<T> {
 })
 export class AbcdRepositoryComponent {
 
-    private searchString$ = new BehaviorSubject<string>('');
-    private groups: Observable<Grouped<AbcdArchive>>;
+    searchString$ = new BehaviorSubject<string>('');
+    groups: Observable<Grouped<AbcdArchive>>;
 
     constructor(
         // private mappingQueryService: MappingQueryService,

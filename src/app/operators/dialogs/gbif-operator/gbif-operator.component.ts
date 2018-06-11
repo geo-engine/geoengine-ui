@@ -202,7 +202,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    add() {
+    add(event: any) {
         const layerName = this.form.controls['name'].value as string;
         const searchString = this.form.controls['searchString'].value as string;
 

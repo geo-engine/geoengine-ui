@@ -62,10 +62,10 @@ export class LayerListComponent implements OnDestroy {
     }
 
     constructor(public dialog: MatDialog,
-                private layoutService: LayoutService,
+                public layoutService: LayoutService,
                 private dragulaService: DragulaService,
-                private projectService: ProjectService,
-                private layerService: LayerService,
+                public projectService: ProjectService,
+                public layerService: LayerService,
                 private mapService: MapService,
                 private iconRegistry: MatIconRegistry,
                 private sanitizer: DomSanitizer,

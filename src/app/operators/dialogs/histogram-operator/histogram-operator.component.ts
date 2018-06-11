@@ -97,7 +97,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const inputOperator = (this.form.controls['layer'].value as Layer<Symbology>).operator;
 
         const attributeName = this.form.controls['attribute'].value as string;

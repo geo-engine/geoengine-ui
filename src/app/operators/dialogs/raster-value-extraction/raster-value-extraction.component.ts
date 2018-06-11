@@ -148,7 +148,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const vectorOperator: Operator = this.form.controls['vectorLayer'].value.operator;
         const projection = vectorOperator.projection;
         const resultType = vectorOperator.resultType;

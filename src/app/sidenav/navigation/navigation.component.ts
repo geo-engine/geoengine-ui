@@ -70,7 +70,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    buttonColor(sidenavConfig: SidenavConfig, component: Type<Component>): 'default' | 'primary' | 'accent' {
+    buttonColor(sidenavConfig: SidenavConfig, component: Type<any>): 'default' | 'primary' | 'accent' {
         if (!sidenavConfig) {
             return 'default';
         }

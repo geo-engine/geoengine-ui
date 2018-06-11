@@ -41,7 +41,7 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    add() {
+    add(event: any) {
         const sourceOperator: Operator = this.form.controls['vLayer'].value.operator;
 
         const operator: Operator = new Operator({

@@ -1,3 +1,4 @@
+///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -141,6 +142,7 @@ import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-edit
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -264,7 +266,8 @@ export function configInitializer(config: Config) {
         HeatmapOperatorComponent,
         CountryPolygonSelectionComponent,
         SensorSourceOperatorComponent,
-        ColorBreakpointInputComponent
+        ColorBreakpointInputComponent,
+        TerminologyLookupOperatorComponent
     ],
     imports: [
         BrowserModule,

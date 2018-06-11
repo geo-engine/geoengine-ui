@@ -31,8 +31,8 @@ export class ProvenanceListComponent {
     private provenance$: Observable<Iterable<Provenance>>;
 
     constructor(
-        private layerService: LayerService,
-        private projectService: ProjectService,
+        public layerService: LayerService,
+        public projectService: ProjectService,
     ) {
         this.provenance$ = layerService.getSelectedLayerStream().map(l => {
             if (l) {

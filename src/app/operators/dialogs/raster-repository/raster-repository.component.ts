@@ -15,7 +15,7 @@ import {UserService} from '../../../users/user.service';
 export class RasterRepositoryComponent {
 
     searchTerm: String = '';
-    private sources: Observable<Array<MappingSource>>;
+    sources: Observable<Array<MappingSource>>;
 
     constructor(
         private userService: UserService

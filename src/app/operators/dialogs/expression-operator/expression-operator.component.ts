@@ -130,7 +130,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         }), 0);
     }
 
-    add() {
+    add(event: any) {
         const name: string = this.form.controls['name'].value;
         const dataType: DataType = this.form.controls['dataType'].value[0];
         const expression: string = this.form.controls['expression'].value;

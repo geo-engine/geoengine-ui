@@ -69,7 +69,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
         setTimeout(() => this.form.controls['vectorLayer'].enable({emitEvent: true}));
     }
 
-    add() {
+    add(event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['vectorLayer'].value;
         const sourceOperator: Operator = vectorLayer.operator;
 

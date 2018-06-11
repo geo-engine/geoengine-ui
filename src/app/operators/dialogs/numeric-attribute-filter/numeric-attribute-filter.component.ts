@@ -174,7 +174,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 

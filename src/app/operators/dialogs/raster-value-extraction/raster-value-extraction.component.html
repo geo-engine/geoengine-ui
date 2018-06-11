@@ -15,7 +15,7 @@
         ></wave-dialog-section-heading>
         <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
             <mat-form-field
-                *ngFor="let control of form.controls.valueNames.controls; let i = index"
+                *ngFor="let control of form['controls']['valueNames']['controls']; let i = index"
             >
                 <input
                     [formControl]="control"

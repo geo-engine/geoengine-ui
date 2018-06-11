@@ -159,7 +159,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         );
     }
 
-    add() {
+    add(event: any) {
         const rasterLayers: Array<RasterLayer<RasterSymbology>> = this.form.controls['rasterLayers'].value;
         const pointLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['pointLayers'].value;
         const lineLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['lineLayers'].value;

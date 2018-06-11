@@ -28,11 +28,12 @@ export class SourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
 
-    private _useRawData = false;
-    private _showPreview = false;
-    private _showDescription = false;
-    private _channelSource;
-    private _displayedColumns  = ['name', 'measurement'];
+    searchTerm: string; // TODO: this was needed to get prod build working...
+    _useRawData = false;
+    _showPreview = false;
+    _showDescription = false;
+    _channelSource: ChannelDataSource;
+    _displayedColumns  = ['name', 'measurement'];
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.

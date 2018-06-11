@@ -55,7 +55,7 @@ export class RenameLayerComponent implements OnInit {
     /**
      * Save the layer name and close the dialog.
      */
-    save() {
+    save(event: any) {
         const layerName = this.form.controls['layerName'].value;
         if (layerName !== this.layer.name) {
             this.projectService.changeLayer(this.layer, {name: layerName});

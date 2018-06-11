@@ -31,6 +31,7 @@ export interface MappingSource {
     citation: string;
     channels?: MappingSourceChannel[];
     colorizer?: IColorizerData;
+    imgUrl?: string;
     coords: {
         crs: string,
         epsg?: number,
