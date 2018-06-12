@@ -1,8 +1,10 @@
+
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {StorageService} from '../../storage/storage.service';
 import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn} from '@angular/forms';
-import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
 import {NotificationService} from '../../notification.service';
 
 function notCurrentProject(currentProjectName: () => string): ValidatorFn {
@@ -42,7 +44,7 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.currentProjectName = '';
-        this.projectService.getProjectStream().first().subscribe(project => {
+        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
             this.currentProjectName = project.name;
         });
 

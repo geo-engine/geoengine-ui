@@ -1,6 +1,6 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
-import {Observable, Subscription} from 'rxjs/Rx';
+import {Observable, Subscription} from 'rxjs';
 import {Time, TimeInterval, TimePoint, TimeStepDuration} from '../time.model';
 import {Moment} from 'moment';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';

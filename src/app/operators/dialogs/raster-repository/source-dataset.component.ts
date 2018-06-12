@@ -1,3 +1,5 @@
+
+import {of as observableOf, Observable} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MappingSource, MappingSourceChannel, MappingTransform} from './mapping-source.model';
 import {Unit} from '../../unit.model';
@@ -11,7 +13,6 @@ import {
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
-import {Observable} from 'rxjs';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {ColorBreakpointDict} from '../../../colors/color-breakpoint.model';
@@ -261,7 +262,7 @@ class ChannelDataSource extends DataSource<MappingSourceChannel> {
     }
 
     connect(): Observable<Array<MappingSourceChannel>> {
-        return Observable.of(this.channels);
+        return observableOf(this.channels);
     }
 
     disconnect() {

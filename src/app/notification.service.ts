@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Subject, Observable} from 'rxjs/Rx';
-import {MatSnackBarRef, MatSnackBar} from '@angular/material';
+import {Subject, Observable} from 'rxjs';
+import {MatSnackBar} from '@angular/material';
 
 export enum NotificationType {
     Info, Error,

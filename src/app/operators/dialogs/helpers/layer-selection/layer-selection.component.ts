@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators';
+import {Observable, BehaviorSubject, ReplaySubject, Subject, Subscription} from 'rxjs';
+
 import {Component, ChangeDetectionStrategy, forwardRef, Input, OnChanges, SimpleChange, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
@@ -5,7 +9,6 @@ import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {LayerService} from '../../../../layers/layer.service';
-import {Observable, BehaviorSubject, ReplaySubject, Subject, Subscription} from 'rxjs';
 
 /**
  * This component allows selecting one layer.
@@ -49,7 +52,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         this.subscriptions.push(
             this.filteredLayers.subscribe(filteredLayers => {
                 if (filteredLayers.length > 0) {
-                    this.selectedLayer.first().subscribe(selectedLayer => {
+                    this.selectedLayer.pipe(first()).subscribe(selectedLayer => {
                         const selectedLayerIndex = filteredLayers.indexOf(
                             selectedLayer ? selectedLayer : this.layerService.getSelectedLayer()
                         );
@@ -87,7 +90,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                 case 'layers':
                 case 'types':
                     if (this.layers instanceof Observable) {
-                        this.layers.first().subscribe(layers => {
+                        this.layers.pipe(first()).subscribe(layers => {
                             this.filteredLayers.next(
                                 layers.filter((layer: Layer<Symbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;

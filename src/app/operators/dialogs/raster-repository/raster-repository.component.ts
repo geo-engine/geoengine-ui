@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs';
 
 import {MappingSource} from './mapping-source.model';
 import {UserService} from '../../../users/user.service';

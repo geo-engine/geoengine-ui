@@ -1,4 +1,4 @@
-import {Observable, Observer} from 'rxjs/Rx';
+import {Observable, Observer} from 'rxjs';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {

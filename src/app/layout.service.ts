@@ -1,5 +1,10 @@
+
+import {
+    fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
+} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+
 import {Injectable, Type} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs/Rx';
 import {Config} from './config.service';
 
 /**
@@ -149,7 +154,7 @@ export class LayoutService {
      * Which component to show in the sidenav?
      */
     getSidenavContentComponentStream(): Observable<SidenavConfig> {
-        return this.sidenavContentComponent$.distinctUntilChanged();
+        return this.sidenavContentComponent$.pipe(distinctUntilChanged());
     }
 
     /**
@@ -273,7 +278,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getLayerDetailViewStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$,
@@ -301,7 +306,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$,
@@ -324,7 +329,7 @@ export class LayoutService {
     }
 
     getLayoutDictStream(): Observable<LayoutDict> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerListVisible$,
             this.layerDetailViewVisible$,
             this.layerDetailViewTabIndex$,
@@ -376,9 +381,8 @@ export class LayoutService {
 
         // this timeout prevents calling the `getWidth` function before the DOM is initialized
         setTimeout(() => {
-            Observable
-                .fromEvent(window, 'resize')
-                .debounceTime(this.config.DELAYS.DEBOUNCE)
+            observableFromEvent(window, 'resize').pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE))
                 .subscribe(() => {
                     this.sidenavContentMaxWidth$.next(getWidth());
                 });

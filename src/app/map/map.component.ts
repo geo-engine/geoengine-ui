@@ -1,3 +1,7 @@
+
+import {combineLatest as observableCombineLatest, Observable, Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
+
 import {
     Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, OnChanges,
     ContentChildren, QueryList, ChangeDetectionStrategy, AfterContentInit, OnDestroy,
@@ -31,7 +35,6 @@ import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MapService} from './map.service';
 import {Config} from '../config.service';
-import {Observable, Subscription} from 'rxjs';
 import { StyleCreator } from './style-creator';
 
 type MapLayer = OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>;
@@ -152,7 +155,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         );
 
         this.subscriptions.push(
-            Observable.combineLatest(
+            observableCombineLatest(
                 this.contentChildren.changes,
                 this.projection$,
                 (changes, projection) => projection,
@@ -239,7 +242,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         this.map.on('moveend', event => {
             // console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
-            this.projection$.first().subscribe(projection => {
+            this.projection$.pipe(first()).subscribe(projection => {
                 this.mapService.setViewportSize({
                     extent: this.map.getView().calculateExtent(this.map.getSize()),
                     resolution: this.map.getView().getResolution(),

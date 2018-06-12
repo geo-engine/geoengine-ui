@@ -1,15 +1,17 @@
+
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+
 import {Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {LayerService} from '../../../layers/layer.service';
 import {DataTypes, DataType} from '../../datatype.model';
 import {Unit} from '../../unit.model';
-import {Observable} from 'rxjs/Rx';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {RasterSymbology, MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -55,7 +57,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             name: ['Expression', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
-        this.outputUnits$ = this.form.controls['rasterLayers'].valueChanges.map(rasterLayers => {
+        this.outputUnits$ = this.form.controls['rasterLayers'].valueChanges.pipe(map(rasterLayers => {
             const outputUnits: Array<Unit> = [];
             for (const layer of rasterLayers) {
                 const unit = layer.operator.getUnit('value');
@@ -78,9 +80,9 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             }
 
             return outputUnits;
-        });
+        }));
 
-        this.outputDataTypes$ = this.form.controls['rasterLayers'].valueChanges.map(rasterLayers => {
+        this.outputDataTypes$ = this.form.controls['rasterLayers'].valueChanges.pipe(map(rasterLayers => {
             let outputDataTypes = DataTypes.ALL_NUMERICS.map(
                 (datatype: DataType) => [datatype, '']
             ) as Array<[DataType, string]>;
@@ -119,7 +121,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             }
 
             return outputDataTypes;
-        });
+        }));
 
     }
 
@@ -163,7 +165,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             units: new Map<string, Unit>()
                 .set('value', unit),
             rasterSources: rasterLayers.map(
-                layer => layer.operator.getProjectedOperator(projection)
+                lay => lay.operator.getProjectedOperator(projection)
             ),
         });
 

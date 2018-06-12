@@ -1,11 +1,13 @@
+
+import {Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-// import {DataTypes} fromRgbaLike '../../datatype.model';
 import {AbstractVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs/Rx';
+
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -197,8 +199,8 @@ export class TerminologyLookupOperatorComponent implements AfterViewInit {
             on_not_resolvable: [TerminologyLookupOnNotResolvable.EMPTY, Validators.required]
         });
 
-        this.attributes$ = this.form.controls['vectorLayer'].valueChanges
-            .do(layer => {
+        this.attributes$ = this.form.controls['vectorLayer'].valueChanges.pipe(
+            tap(layer => {
                 // side effects!!!
                 this.form.controls['attribute'].setValue(undefined);
                 if (layer) {
@@ -206,14 +208,14 @@ export class TerminologyLookupOperatorComponent implements AfterViewInit {
                 } else {
                     this.form.controls['attribute'].disable({onlySelf: true});
                 }
-            })
-            .map(layer => {
+            }),
+            map(layer => {
                 if (layer) {
                     return layer.operator.attributes.toArray().sort();
                 } else {
                     return [];
                 }
-            });
+            }), );
     }
 
     ngAfterViewInit() {

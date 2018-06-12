@@ -3,7 +3,7 @@ import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,

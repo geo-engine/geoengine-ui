@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
 import {MatDialogRef} from '@angular/material';

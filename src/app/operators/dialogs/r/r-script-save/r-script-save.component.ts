@@ -1,9 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, Inject} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MatDialogRef, MatDialogConfig, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {RScript} from '../../../../storage/storage-provider.model';
-import {BehaviorSubject} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs';
 import {NotificationService} from '../../../../notification.service';
 import {WaveValidators} from '../../../../util/form.validators';
 

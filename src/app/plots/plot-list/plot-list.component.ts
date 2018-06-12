@@ -1,6 +1,8 @@
+
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {first, filter} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
-import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
 import {MatDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
@@ -44,9 +46,9 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         this.subsriptions.push(
-            this.projectService.getPlotStream()
-                .filter(plots => plots.length > 0)
-                .first()
+            this.projectService.getPlotStream().pipe(
+                filter(plots => plots.length > 0),
+                first(), )
                 .subscribe(() => {
                     setTimeout(() => {
                         const cardContent = this.elementRef.nativeElement.querySelector('mat-card');

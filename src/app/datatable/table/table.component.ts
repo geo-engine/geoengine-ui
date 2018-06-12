@@ -1,20 +1,24 @@
+
+import {combineLatest as observableCombineLatest, of as observableOf, Observable, BehaviorSubject, Subscription} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+
 import {
     Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit,
     ChangeDetectionStrategy, OnInit, OnDestroy, OnChanges, SimpleChanges
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
-import {Observable, BehaviorSubject, Subscription} from 'rxjs';
 import {LayerService} from '../../layers/layer.service';
 import {LoadingState} from '../../project/loading-state.model';
 import {ResultTypes} from '../../operators/result-type.model';
-import {VectorData, VectorLayer} from '../../layers/layer.model';
+import {Layer, VectorData, VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {FeatureID} from '../../queries/geojson.model';
 import {MapService} from '../../map/map.service';
 import ol from 'ol';
 import {ProjectService} from '../../project/project.service';
 import {Unit} from '../../operators/unit.model';
+import {Feature} from 'openlayers';
 
 
 /**
@@ -218,51 +222,66 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     private initDataStream(): void {
-        const dataStream = this.layerService.getSelectedLayerStream().map(layer => {
-            if (layer === undefined) {
-                return {
-                    data$: Observable.of([]),
-                    state$: Observable.of(LoadingState.OK),
-                    selectable: false,
-                };
-            }
-            switch (layer.operator.resultType) {
-                case ResultTypes.POINTS:
-                case ResultTypes.LINES:
-                case ResultTypes.POLYGONS:
-                    let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
-                    let vectorLayerData = this.projectService.getLayerDataStream(vectorLayer) as Observable<VectorData>;
+        const dataStream: Observable<{
+            data$: Observable<Feature[]>, state$: Observable<LoadingState>, selectable: boolean
+        }> = this.layerService.getSelectedLayerStream().pipe(
+            map(layer => {
+                    if (layer instanceof Layer) {
 
-                    const data = Observable.combineLatest(
-                        vectorLayerData, this.mapService.getViewportSizeStream()).map(([d, v]) => {
-                        return d.data.filter(x => {
-                            const xe = x.getGeometry().getExtent();
-                            const ve = v.extent;
-                            const int = (x.getGeometry() as ol.geom.Point ).intersectsExtent(ve); // todo not only point
-                            // console.log(ve, x.getGeometry(), int);
-                            return int;
-                        });
-                        // return d;
-                    });
-                    return {
-                        data$: data,
-                        dataExtent$: vectorLayerData.map(x => x.extent),
-                        state$: this.projectService.getLayerDataStatusStream(vectorLayer),
-                        // reload$: this.projectService.,
-                        selectable: true,
-                    };
-                default:
-                    return {
-                        data$: Observable.of([]),
-                        state$: Observable.of(LoadingState.OK),
-                        selectable: false,
-                    };
-            }
-        });
+                        switch (layer.operator.resultType) {
+                            case ResultTypes.POINTS:
+                            case ResultTypes.LINES:
+                            case ResultTypes.POLYGONS:
+                                let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
+                                let vectorLayerData = this.projectService.getLayerDataStream(vectorLayer) as Observable<VectorData>;
 
-        this.data$ = dataStream.switchMap(stream => stream.data$);
-        this.state$ = dataStream.switchMap(stream => stream.state$);
-        this.selectable$ = dataStream.map(stream => stream.selectable);
+                                const data = observableCombineLatest(
+                                    vectorLayerData, this.mapService.getViewportSizeStream()).pipe(map(([d, v]) => {
+                                    return d.data.filter(x => {
+                                        const xe = x.getGeometry().getExtent();
+                                        const ve = v.extent;
+                                        const int = (x.getGeometry() as ol.geom.Point).intersectsExtent(ve); // todo not only point
+                                        // console.log(ve, x.getGeometry(), int);
+                                        return int;
+                                    });
+                                    // return d;
+                                }));
+                                return {
+                                    data$: data,
+                                    dataExtent$: vectorLayerData.pipe(map(x => x.extent)),
+                                    state$: this.projectService.getLayerDataStatusStream(vectorLayer),
+                                    // reload$: this.projectService.,
+                                    selectable: true,
+                                };
+                            default:
+                                return {
+                                    data$: observableOf([]),
+                                    state$: observableOf(LoadingState.OK),
+                                    selectable: false,
+                                };
+                        }
+                    } else {
+                        return {
+                            data$: observableOf([]),
+                            state$: observableOf(LoadingState.OK),
+                            selectable: false,
+                        };
+
+                    }
+                }
+            )
+        );
+
+        // FIXME: use the correct datatype?
+        this.data$ = dataStream.pipe(
+            switchMap(stream => stream.data$)
+        );
+        this.state$ = dataStream.pipe(
+            switchMap(stream => stream.state$)
+        );
+        this.selectable$ = dataStream.pipe(
+            map(stream => stream.selectable)
+        );
     }
 
 

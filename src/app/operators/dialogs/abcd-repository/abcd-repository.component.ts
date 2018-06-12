@@ -1,6 +1,8 @@
+
+import {first, map} from 'rxjs/operators';
+import {Observable, BehaviorSubject} from 'rxjs';
+
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {Observable, BehaviorSubject} from 'rxjs/Rx';
-import {LayerService} from '../../../layers/layer.service';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
@@ -9,7 +11,6 @@ import {AbcdArchive} from './abcd.model';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../../types/abcd-source-type.model';
 import {Projections} from '../../projection.model';
 import {Unit} from '../../unit.model';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
@@ -40,7 +41,7 @@ export class AbcdRepositoryComponent {
         private randomColorService: RandomColorService,
         private projectService: ProjectService,
     ) {
-        this.groups = this.userService.getAbcdArchivesStream().map(archives => {
+        this.groups = this.userService.getAbcdArchivesStream().pipe(map(archives => {
             let groups: {[groupname: string]: Group<AbcdArchive>} = {};
 
             for (let a of archives) {
@@ -62,7 +63,7 @@ export class AbcdRepositoryComponent {
             }
 
             return iterableGroups;
-        });
+        }));
     }
 
     add(archive: AbcdArchive) {
@@ -76,7 +77,7 @@ export class AbcdRepositoryComponent {
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
 
-        this.userService.getSourceSchemaAbcd().first().subscribe(sourceSchema => {
+        this.userService.getSourceSchemaAbcd().pipe(first()).subscribe(sourceSchema => {
 
             for (let attribute of sourceSchema) {
 
