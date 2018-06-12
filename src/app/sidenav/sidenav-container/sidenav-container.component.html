@@ -12,7 +12,7 @@
     </button>
 </mat-toolbar>
 <mat-toolbar *ngIf="sidenavRef.hasSearchComponentStream() | async">
-    <mat-form-field fxFlex floatPlaceholder="never">
+    <mat-form-field fxFlex floatLabel="never">
         <mat-icon matPrefix>search</mat-icon>
         <input matInput placeholder="Search" type="text" [(ngModel)]="searchTerm" (ngModelChange)="sidenavRef.searchTerm($event)">
     </mat-form-field>
