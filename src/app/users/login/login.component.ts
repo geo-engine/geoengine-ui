@@ -1,5 +1,7 @@
+
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
 import {Config} from '../../config.service';
 import {WaveValidators} from '../../util/form.validators';
@@ -45,9 +47,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
             staySignedIn: [true, Validators.required],
         });
 
-        this.isLoggedIn$ = this.formStatus$.map(status => status === FormStatus.LoggedIn);
-        this.isLoggedOut$ = this.formStatus$.map(status => status === FormStatus.LoggedOut);
-        this.isLoading$ = this.formStatus$.map(status => status === FormStatus.Loading);
+        this.isLoggedIn$ = this.formStatus$.pipe(map(status => status === FormStatus.LoggedIn));
+        this.isLoggedOut$ = this.formStatus$.pipe(map(status => status === FormStatus.LoggedOut));
+        this.isLoading$ = this.formStatus$.pipe(map(status => status === FormStatus.Loading));
     }
 
     ngOnInit() {

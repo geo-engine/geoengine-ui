@@ -1,6 +1,11 @@
+
+import {
+    Observable, Subscription, fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Subject
+} from 'rxjs';
+import {skip, first, filter, tap, debounceTime} from 'rxjs/operators';
+
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, Subscription} from 'rxjs/Rx';
 
 import {RScript, StorageProvider} from './storage-provider.model';
 import {BrowserStorageProvider} from './providers/browser-storage-provider.model';
@@ -12,8 +17,6 @@ import {UserService} from '../users/user.service';
 import {Config} from '../config.service';
 import {Project} from '../project/project.model';
 import {NotificationService} from '../notification.service';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subject} from 'rxjs/Subject';
 
 export enum StorageStatus {
     PENDING,
@@ -134,9 +137,8 @@ export class StorageService {
 
         const workspaceLoading$ = new Subject<void>();
         const layoutLoading$ = new Subject<void>();
-        Observable
-            .combineLatest(workspaceLoading$, layoutLoading$)
-            .first()
+        observableCombineLatest(workspaceLoading$, layoutLoading$).pipe(
+            first())
             .subscribe(() => this.storageStatus$.next(StorageStatus.OK));
 
         // load workspace
@@ -146,27 +148,26 @@ export class StorageService {
             this.projectService.setProject(newProject);
 
             // setup storage
-            this.projectSubscription = this.projectService.getProjectStream()
-                .filter(project => project !== newProject) // skip saving the previously loaded project
-                .do(project => {
+            this.projectSubscription = this.projectService.getProjectStream().pipe(
+                filter(project => project !== newProject), // skip saving the previously loaded project
+                tap(project => {
                     // save pending change
                     this.pendingWorkspace = {
                         project: project
                     };
-                })
-                .debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE)
-                .do(() => {
+                }),
+                debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE),
+                tap(() => {
                     // store pending change
                     this.pendingWorkspace = undefined;
-                })
+                }), )
                 .subscribe(project => {
                     this.storageProvider.saveWorkspace({
                         project: project,
                     });
                 });
 
-            this.pendingWorkspaceSubscription = Observable
-                .fromEvent(window, 'beforeunload')
+            this.pendingWorkspaceSubscription = observableFromEvent(window, 'beforeunload')
                 .subscribe(() => {
                     if (this.pendingWorkspace) {
                         this.storageProvider.saveWorkspace(this.pendingWorkspace)
@@ -196,8 +197,8 @@ export class StorageService {
             }
 
             // setup storage
-            this.layoutSubscription = this.layoutService.getLayoutDictStream()
-                .skip(1) // don't save the loaded stuff directly again
+            this.layoutSubscription = this.layoutService.getLayoutDictStream().pipe(
+                skip(1)) // don't save the loaded stuff directly again
                 .subscribe(layout => {
                     this.storageProvider.saveLayoutSettings(layout).subscribe();
                 });

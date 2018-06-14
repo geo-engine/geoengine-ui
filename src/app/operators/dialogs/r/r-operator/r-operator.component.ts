@@ -1,3 +1,5 @@
+
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
 import {ResultTypes, ResultType} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
@@ -135,8 +137,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     load() {
         this.dialog.open(RScriptLoadComponent)
-            .afterClosed()
-            .first()
+            .afterClosed().pipe(
+            first())
             .subscribe((result: RScriptLoadResult) => {
                 if (result) {
                     this.form.controls['code'].setValue(result.script.code);
@@ -159,7 +161,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         );
     }
 
-    add() {
+    add(event: any) {
         const rasterLayers: Array<RasterLayer<RasterSymbology>> = this.form.controls['rasterLayers'].value;
         const pointLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['pointLayers'].value;
         const lineLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['lineLayers'].value;

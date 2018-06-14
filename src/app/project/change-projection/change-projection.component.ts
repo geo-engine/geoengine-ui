@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {Projections, Projection} from '../../operators/projection.model';
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs';
 
 @Component({
     selector: 'wave-change-projection',

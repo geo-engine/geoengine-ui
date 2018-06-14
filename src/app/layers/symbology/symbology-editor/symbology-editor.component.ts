@@ -24,7 +24,7 @@ export class SymbologyEditorComponent implements OnChanges {
     layer = undefined;
 
     constructor(
-        private projectService: ProjectService
+        public projectService: ProjectService
     ) {}
 
 

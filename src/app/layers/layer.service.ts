@@ -1,5 +1,8 @@
+
+import {map} from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
+
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 import {Set as ImmutableSet} from 'immutable';
 
@@ -27,7 +30,7 @@ export class LayerService {
     private isAnyLayerSelected$: Observable<boolean>;
 
     constructor() {
-        this.isAnyLayerSelected$ = this.getSelectedLayerStream().map(layer => layer !== undefined);
+        this.isAnyLayerSelected$ = this.getSelectedLayerStream().pipe(map(layer => layer !== undefined));
     }
 
 
@@ -48,14 +51,14 @@ export class LayerService {
     /**
      * @returns The currently selected layer as stream.
      */
-    getSelectedLayerStream() {
+    getSelectedLayerStream(): Observable<Layer<Symbology>> {
         return this.selectedLayer$.asObservable();
     }
 
     /**
      * @returns The currently selected layer.
      */
-    getSelectedLayer() {
+    getSelectedLayer(): Layer<Symbology> {
         return this.selectedLayer$.getValue();
     }
 

@@ -1,10 +1,11 @@
+
+import {Subscription, combineLatest as observableCombineLatest} from 'rxjs';
 import {
     Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef,
     ComponentRef, ComponentFactoryResolver, OnDestroy, ElementRef, Renderer, ViewChildren, QueryList, AfterViewInit
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
-import {Subscription, Observable} from 'rxjs/Rx';
 
 @Component({
     selector: 'wave-sidenav-container',
@@ -40,8 +41,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     ngAfterViewInit() {
         this.subscriptions.push(
-            Observable
-                .combineLatest(
+            observableCombineLatest(
                     this.sidenavRef.getSearchComponentStream(),
                     this.searchElements.changes,
                     (elements, searchElementsQuery) => [elements, searchElementsQuery.first]

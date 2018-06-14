@@ -15,7 +15,7 @@ import {ProjectService} from '../../../project/project.service';
 import {WKTSourceType} from '../../types/wkt-source-type.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {NotificationService} from '../../../notification.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'wave-ol-draw-features',

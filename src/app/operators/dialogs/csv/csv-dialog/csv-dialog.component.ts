@@ -1,8 +1,8 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, Inject, Injectable} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, Inject} from '@angular/core';
 import {UploadData} from '../csv-upload/csv-upload.component';
 import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model';
 import {Operator} from '../../../operator.model';
-import {ResultType, ResultTypes} from '../../../result-type.model';
+import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
 import {LayerService} from '../../../../layers/layer.service';
 import {
@@ -14,13 +14,12 @@ import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {BehaviorSubject} from 'rxjs';
 import {Projections} from '../../../projection.model';
-import {ProjectionType} from '../../../types/projection-type.model';
 import {CsvPropertiesService} from './csv.properties.service';
 import {ProjectService} from '../../../../project/project.service';
 import {IntervalFormat} from '../interval.enum';
-import {CsvPropertiesComponent, DataPropertiesDict} from '../csv-config/csv-properties/csv-properties.component';
+import {CsvPropertiesComponent} from '../csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {HttpErrorResponse} from '@angular/common/http';
 

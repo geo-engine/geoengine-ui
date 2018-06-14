@@ -5,11 +5,11 @@
     </p>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
         <div fxLayout="row">
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="text" placeholder="Project Name" formControlName="name">
                 <mat-hint class="error" *ngIf="form.controls.name.errors?.nameInUsage">The name is already in usage.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <div fxLayout="row">
             <mat-form-field fxFlex>

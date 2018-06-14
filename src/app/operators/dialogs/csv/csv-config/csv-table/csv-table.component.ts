@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Julian on 09/05/2017.
  */
@@ -8,11 +10,9 @@ import {
 } from '@angular/core';
 import {DataPropertiesDict, FormStatus} from '../csv-properties/csv-properties.component';
 import * as Papa from 'papaparse';
-import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, Subscription, BehaviorSubject} from 'rxjs';
 import {UploadData} from '../../csv-upload/csv-upload.component';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
-import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'wave-csv-table',
@@ -60,15 +60,17 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(public _changeDetectorRef: ChangeDetectorRef, public propertiesService: CsvPropertiesService) {
-        this.isDataProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.DataProperties);
-        this.isSpatialProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.SpatialProperties);
-        this.isTemporalProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.TemporalProperties);
-        this.isTypingProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.TypingProperties);
-        this.isLayerProperties$ = this.propertiesService.formStatus$.map(status => status === FormStatus.LayerProperties);
-        this.xColumn$ = this.propertiesService.xyColumn$.map(xy => xy.x);
-        this.yColumn$ = this.propertiesService.xyColumn$.map(xy => xy.y);
+        this.isDataProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.DataProperties));
+        this.isSpatialProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.SpatialProperties));
+        this.isTemporalProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TemporalProperties));
+        this.isTypingProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TypingProperties));
+        this.isLayerProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.LayerProperties));
+        this.xColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.x));
+        this.yColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.y));
         setTimeout(this._changeDetectorRef.markForCheck());
-        this.untypedColumns = new BehaviorSubject([this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]);
+        this.untypedColumns = new BehaviorSubject(
+            [this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]
+        );
         this.isWkt = new BehaviorSubject(false);
     }
 

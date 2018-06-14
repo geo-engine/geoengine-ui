@@ -1,6 +1,8 @@
+
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs/Rx';
 
 import {WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
@@ -390,17 +392,17 @@ export class MappingQueryService {
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody())
+        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody()).pipe(
         // .catch((error, {}) => {
         //    this.notificationService.error(`Could not load colorizer: »${error}«`);
         //    return Observable.of({interpolation: 'unknown', breakpoints: []});
         // })
-            .map(c => {
+            map(c => {
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }
                 return c;
-            })
+            }))
     }
 
     getProvenance(config: {
@@ -514,8 +516,8 @@ export class MappingQueryService {
         }
 
         return this.http
-            .get<BasketsOverviewRaw>(queryUrl)
-            .map((basketsOverview: BasketsOverviewRaw) => {
+            .get<BasketsOverviewRaw>(queryUrl).pipe(
+            map((basketsOverview: BasketsOverviewRaw) => {
                 return {
                     baskets: basketsOverview.baskets.map(basket => {
                         return {
@@ -526,7 +528,7 @@ export class MappingQueryService {
                     }),
                     totalNumberOfBaskets: basketsOverview.totalNumberOfBaskets,
                 };
-            });
+            }));
     }
 
     getGFBioBasket(id: number): Observable<Basket> {
@@ -542,8 +544,8 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         return this.http
-            .get<Basket>(queryUrl)
-            .map((basket: Basket) => {
+            .get<Basket>(queryUrl).pipe(
+            map((basket: Basket) => {
                 const regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
 
                 const basketResults: Array<BasketResult> = [];
@@ -592,7 +594,7 @@ export class MappingQueryService {
                     results: basketResults,
                     timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
                 }
-            });
+            }));
     }
 
 }

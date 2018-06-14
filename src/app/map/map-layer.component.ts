@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 
 import ol from 'ol';
-import OlStyleStyle from 'ol/style/style';
 import OlLayerTile from 'ol/layer/tile';
 import OlSourceTileWMS from 'ol/source/tilewms';
 import OlLayerVector from 'ol/layer/vector';

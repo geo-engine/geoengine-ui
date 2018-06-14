@@ -1,5 +1,8 @@
+
+import {distinctUntilChanged} from 'rxjs/operators';
+import {Observable, BehaviorSubject, Subject} from 'rxjs';
+
 import {Injectable} from '@angular/core';
-import {Observable, BehaviorSubject, Subject} from 'rxjs/Rx';
 import ol from 'ol';
 import olExtent from 'ol/extent'
 import {Symbology} from '../layers/symbology/symbology.model';
@@ -104,7 +107,7 @@ export class MapService {
     }
 
     getViewportSizeStream(): Observable<ViewportSize> {
-        return this.viewportSize$.distinctUntilChanged();
+        return this.viewportSize$.pipe(distinctUntilChanged());
     }
 
     private resolutionChanged(vps1: ViewportSize, vps2: ViewportSize): boolean {

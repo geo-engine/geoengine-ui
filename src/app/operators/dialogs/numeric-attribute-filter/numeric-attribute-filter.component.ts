@@ -1,3 +1,7 @@
+
+import {BehaviorSubject, Observable, Subscription, combineLatest as observableCombineLatest} from 'rxjs';
+import {first, map} from 'rxjs/operators';
+
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy} from '@angular/core';
 
 import {HistogramData} from '../../../plots/histogram.component';
@@ -13,7 +17,6 @@ import {
     ComplexPointSymbology,
 } from '../../../layers/symbology/symbology.model';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../../types/histogram-type.model';
@@ -106,8 +109,12 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             });
 
             this.dataLoading$.next(true);
-            Observable
-                .combineLatest(this.projectService.getTimeStream().first(), this.projectService.getProjectionStream().first())
+            observableCombineLatest(this.projectService.getTimeStream().pipe(
+                first()),
+                this.projectService.getProjectionStream().pipe(
+                    first()
+                )
+            )
                 .subscribe(([projectTime, projection]) => {
                     this.mappingQueryService.getPlotData({
                         operator: operator,
@@ -121,7 +128,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 });
         }));
 
-        this.attributes$ = this.form.controls['pointLayer'].valueChanges.map(layer => {
+        this.attributes$ = this.form.controls['pointLayer'].valueChanges.pipe(map(layer => {
             // side effect!!!
             this.form.controls['attribute'].setValue(undefined);
 
@@ -134,12 +141,12 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 this.form.controls['attribute'].disable({onlySelf: true});
                 return [];
             }
-        });
+        }));
 
         this.subscriptions.push(
             this.form.controls['attribute']
-                .valueChanges
-                .map((attribute: string) => {
+                .valueChanges.pipe(
+                map((attribute: string) => {
                     if (!attribute) {
                         return '';
                     }
@@ -152,7 +159,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                     } else {
                         return unit.unit;
                     }
-                })
+                }))
                 .subscribe(unit => this.attributeUnit$.next(unit))
         );
     }
@@ -174,7 +181,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 

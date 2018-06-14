@@ -38,7 +38,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    add() {
+    add(event: any) {
         const sourceOperator: Operator = this.form.controls['layer'].value.operator;
 
         const operator: Operator = new Operator({

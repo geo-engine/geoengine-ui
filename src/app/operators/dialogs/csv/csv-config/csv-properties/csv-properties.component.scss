@@ -19,10 +19,10 @@ div.startSelector mat-select /deep/ span.mat-select-placeholder {
 div.endSelector mat-select /deep/ span.mat-select-placeholder {
     color: $endColor;
 }
-div.constantSelector mat-input-container /deep/ span.mat-input-placeholder {
+div.constantSelector mat-form-field /deep/ span.mat-input-placeholder {
     color: $endColor;
 }
-.custom mat-input-container /deep/ label.mat-input-placeholder {
+.custom mat-form-field /deep/ label.mat-input-placeholder {
     color: $titleColor;
     opacity: 0.75;
 }

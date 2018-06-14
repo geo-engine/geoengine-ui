@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs';
 
 import {MappingSource} from './mapping-source.model';
 import {UserService} from '../../../users/user.service';
@@ -15,7 +15,7 @@ import {UserService} from '../../../users/user.service';
 export class RasterRepositoryComponent {
 
     searchTerm: String = '';
-    private sources: Observable<Array<MappingSource>>;
+    sources: Observable<Array<MappingSource>>;
 
     constructor(
         private userService: UserService

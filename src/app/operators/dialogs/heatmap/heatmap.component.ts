@@ -9,8 +9,7 @@ import {AbstractVectorSymbology, MappingColorizerRasterSymbology} from '../../..
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subscription} from 'rxjs/Subscription';
+import {ReplaySubject, Subscription} from 'rxjs';
 import {DataType, DataTypes} from '../../datatype.model';
 import {HeatmapType} from '../../types/heatmap-type.model';
 import {Unit} from '../../unit.model';

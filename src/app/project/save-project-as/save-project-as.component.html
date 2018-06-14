@@ -5,7 +5,7 @@
     </p>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
         <div fxLayout="row">
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="text" placeholder="Project Name" formControlName="name">
                 <mat-hint
                     align="end" class="error"
@@ -19,7 +19,7 @@
                 >
                     The name must be non-empty.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
     </form>

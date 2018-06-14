@@ -3,7 +3,7 @@ import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,
@@ -148,7 +148,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const vectorOperator: Operator = this.form.controls['vectorLayer'].value.operator;
         const projection = vectorOperator.projection;
         const resultType = vectorOperator.resultType;

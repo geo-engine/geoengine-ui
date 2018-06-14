@@ -2,9 +2,8 @@ import {
     DataPropertiesDict, FormStatus,
     SpatialPropertiesDict, TemporalPropertiesDict
 } from '../csv-config/csv-properties/csv-properties.component';
-import {Subject} from 'rxjs/Subject';
+import {Subject, BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {IntervalFormat} from '../interval.enum';
 import {Projections} from '../../../projection.model';
 

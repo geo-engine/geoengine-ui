@@ -1,7 +1,10 @@
+
+import {of as observableOf} from 'rxjs';
+
+import {catchError, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs/Rx';
 
 type MappingUrlType = string;
 interface WmsInterface {
@@ -238,8 +241,8 @@ export class Config {
      */
     load(): Promise<void> {
         return this.http
-            .get<ConfigInterface>(Config.CONFIG_FILE)
-            .do(
+            .get<ConfigInterface>(Config.CONFIG_FILE).pipe(
+            tap(
                 appConfig => {
                     const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
 
@@ -247,8 +250,8 @@ export class Config {
                 },
                 () => { // error
                     this.handleConfig(ConfigDefault.toJS());
-                })
-            .catch(() => Observable.of(undefined))
+                }),
+            catchError(() => observableOf(undefined)), )
             .toPromise();
     }
 
