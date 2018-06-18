@@ -1,4 +1,5 @@
-import * as ol from 'openlayers';
+import OlProjection from 'ol/proj/projection';
+import olProj from 'ol/proj'
 
 /**
  * A wrapper class around a projection string.
@@ -39,8 +40,8 @@ export abstract class Projection {
     /**
      * @return The `ol.proj.Projection` for openlayers.
      */
-    getOpenlayersProjection(): ol.proj.Projection {
-        return ol.proj.get(this.getCode());
+    getOpenlayersProjection(): OlProjection {
+        return olProj.get(this.getCode());
     }
 
     /**
@@ -98,6 +99,40 @@ export class WGS84 extends Projection {
     }
 }
 
+export class UTM32N extends Projection {
+    private static isProjectionRegistered = false;
+
+    getCode(): string {
+        return 'EPSG:32632';
+    }
+
+    getName(): string {
+        return 'UTM 32 N';
+    }
+
+    getExtent(): [number, number, number, number] {
+        return [166021.4431, 0.0000, 833978.5569, 9329005.1825];
+    }
+
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/32632';
+    }
+
+    private registerProjection() {
+
+        if (!UTM32N.isProjectionRegistered) {
+            olProj.addProjection(new OlProjection({
+                code: this.getCode(),
+                extent: this.getExtent(),
+                units: 'm'
+            }));
+
+            UTM32N.isProjectionRegistered = true;
+        }
+
+    }
+}
+
 export class GEOS extends Projection {
     private static isProjectionRegistered = false;
 
@@ -113,8 +148,7 @@ export class GEOS extends Projection {
 
     getCode(): string {
         // TODO: rename?
-        // return 'SR-ORG:81';
-        return 'EPSG:40453';
+        return 'SR-ORG:81'; // return 'EPSG:40453';
     }
 
     getName(): string {
@@ -122,7 +156,7 @@ export class GEOS extends Projection {
     }
 
     getOpenlayersProjection() {
-        let projection = ol.proj.get(this.getCode());
+        let projection = olProj.get(this.getCode());
         projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
     }
@@ -132,12 +166,13 @@ export class GEOS extends Projection {
     }
 
     getCrsURI(): string {
-        return 'http://www.opengis.net/def/crs/EPSG/0/40453';
+        return 'http://spatialreference.org/ref/sr-org/81/gml/';
     }
 
     private registerProjection() {
+
         if (!GEOS.isProjectionRegistered) {
-            ol.proj.addProjection(new ol.proj.Projection({
+            olProj.addProjection(new OlProjection({
                 code: this.getCode(),
                 extent: this.getExtent(),
                 units: 'm'
@@ -145,6 +180,7 @@ export class GEOS extends Projection {
 
             GEOS.isProjectionRegistered = true;
         }
+
     }
 }
 
@@ -152,11 +188,15 @@ class ProjectionCollection {
     WGS_84: Projection = new WGS84();
     WEB_MERCATOR: Projection = new WebMercator();
     GEOS: Projection = new GEOS();
+    UTM32N: Projection = new UTM32N();
+
+    // required to support already stored layers
+    OLD_GEOS_CODE = 'EPSG:40453';
 
     ALL_PROJECTIONS: Array<Projection>;
 
     constructor() {
-        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR/*, this.GEOS*/];
+        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS];
     }
 
     fromCode(json: string) {
@@ -167,6 +207,10 @@ class ProjectionCollection {
                 return this.WGS_84;
             case this.GEOS.getCode():
                 return this.GEOS;
+            case this.OLD_GEOS_CODE:
+                return this.GEOS;
+            case this.UTM32N.getCode():
+                return this.UTM32N;
             default:
                 throw new Error('Invalid Projection String');
         }

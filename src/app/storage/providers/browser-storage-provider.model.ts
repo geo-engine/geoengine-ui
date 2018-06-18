@@ -1,10 +1,13 @@
+
+import {Observable, of as observableOf, concat as observableConcat} from 'rxjs';
+
+import {mapTo, map} from 'rxjs/operators';
 import {StorageProvider, Workspace, RScript, RScriptDict} from '../storage-provider.model';
 
 import {LayoutDict} from '../../layout.service';
 import {Project} from '../../project/project.model';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
-import {Observable} from 'rxjs/Rx';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -16,26 +19,25 @@ export class BrowserStorageProvider extends StorageProvider {
     loadWorkspace(): Observable<Workspace> {
         const operatorMap = new Map<number, Operator>();
 
-        return this.loadProject(operatorMap).map(project => {
+        return this.loadProject(operatorMap).pipe(map(project => {
                 return {
                     project: project,
                 };
             },
-        );
+        ));
     };
 
     saveWorkspace(workspace: Workspace): Observable<{}> {
-        return Observable
-            .concat(
+        return observableConcat(
                 this.saveProject(workspace.project),
-            )
-            .mapTo({});
+            ).pipe(
+            mapTo({}));
     }
 
     loadProject(operatorMap: Map<number, Operator>): Observable<Project> {
         const projectJSON = localStorage.getItem(PATH_PREFIX + 'project');
         if (projectJSON === null) { // tslint:disable-line:no-null-keyword
-            return Observable.of(undefined);
+            return observableOf(undefined);
         } else {
             const project = Project.fromJSON({
                 json: projectJSON,
@@ -43,35 +45,35 @@ export class BrowserStorageProvider extends StorageProvider {
                 notificationService: this.notificationService,
                 operatorMap: operatorMap
             });
-            return Observable.of(project);
+            return observableOf(project);
         }
     }
 
     saveProject(project: Project): Observable<void> {
         localStorage.setItem(PATH_PREFIX + 'project', project.toJSON());
-        return Observable.of(undefined);
+        return observableOf(undefined);
     }
 
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(PATH_PREFIX + 'layoutSettings');
         if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
-            return Observable.of(undefined);
+            return observableOf(undefined);
         } else {
-            return Observable.of(JSON.parse(layoutSettings));
+            return observableOf(JSON.parse(layoutSettings));
         }
     };
 
     saveLayoutSettings(dict: LayoutDict): Observable<{}> {
         localStorage.setItem(PATH_PREFIX + 'layoutSettings', JSON.stringify(dict));
-        return Observable.of({});
+        return observableOf({});
     };
 
     projectExists(name: string): Observable<boolean> {
-        return Observable.of(false);
+        return observableOf(false);
     }
 
     getProjects(): Observable<Array<string>> {
-        return Observable.of([]);
+        return observableOf([]);
     }
 
     saveRScript(name: string, script: RScript): Observable<void> {
@@ -87,14 +89,14 @@ export class BrowserStorageProvider extends StorageProvider {
         scripts[name] = scriptDict;
         localStorage.setItem(itemName, JSON.stringify(scripts));
 
-        return Observable.of(undefined);
+        return observableOf(undefined);
     }
 
     loadRScript(name: string): Observable<RScript> {
         const scripts: {
             [index: string]: RScriptDict
         } = JSON.parse(localStorage.getItem(PATH_PREFIX + 'r_scripts'));
-        return Observable.of({
+        return observableOf({
             code: scripts[name].code,
             resultType: ResultTypes.fromCode(scripts[name].resultType),
         });
@@ -104,7 +106,7 @@ export class BrowserStorageProvider extends StorageProvider {
         const scripts: {
             [index: string]: RScriptDict
         } = JSON.parse(localStorage.getItem(PATH_PREFIX + 'r_scripts'));
-        return Observable.of(Object.keys(scripts));
+        return observableOf(Object.keys(scripts));
     };
 
 }

@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {MapService} from '../../../map/map.service';
-import * as ol from 'openlayers';
+import OlFormatWKT from 'ol/format/wkt';
+
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
 import {
-    AbstractVectorSymbology, ClusteredPointSymbology,
-    SimpleVectorSymbology
+    AbstractVectorSymbology, ComplexPointSymbology,
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
@@ -14,7 +15,7 @@ import {ProjectService} from '../../../project/project.service';
 import {WKTSourceType} from '../../types/wkt-source-type.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {NotificationService} from '../../../notification.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'wave-ol-draw-features',
@@ -28,7 +29,7 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
     featureTypes = ['Polygon', 'Point'];
     selectedFeatureType: ol.geom.GeometryType;
     isDrawingActive = false;
-    olFeatureWriter = new ol.format.WKT();
+    olFeatureWriter = new OlFormatWKT();
     featureLayerName = 'new feature layer';
     mapProjection: Projection;
     mapProjectionSubscription: Subscription;
@@ -75,14 +76,14 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
         switch (this.selectedFeatureType) {
             case 'Point':
                 resultType = ResultTypes.POINTS;
-                resultSymbology = new ClusteredPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                resultSymbology = ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case 'Polygon':
                 resultType = ResultTypes.POLYGONS;
-                resultSymbology = new SimpleVectorSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                resultSymbology = ComplexVectorSymbology.createSimpleSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             default:

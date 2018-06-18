@@ -1,13 +1,16 @@
+
+import {first} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, Inject} from '@angular/core';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
 import {Symbology} from '../../symbology/symbology.model';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {Subscription} from 'rxjs/Rx';
 import {ProjectService} from '../../../project/project.service';
 
 interface LayerExportComponentConfig {
@@ -39,7 +42,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(private formBuilder: FormBuilder,
                 private mappingQueryService: MappingQueryService,
                 private projectService: ProjectService,
-                @Inject(MD_DIALOG_DATA) private config: LayerExportComponentConfig) {
+                @Inject(MAT_DIALOG_DATA) private config: LayerExportComponentConfig) {
     }
 
     ngOnInit() {
@@ -79,7 +82,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     download() {
-        this.projectService.getProjectStream().first().subscribe(project => {
+        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
             if (this.isVector) {
                 location.href = this.mappingQueryService.getWFSQueryUrl({
                     operator: this.layer.operator,

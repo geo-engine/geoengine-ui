@@ -8,7 +8,8 @@ h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
     font-size: 1.5rem;
 }
 
@@ -18,8 +19,9 @@ button {
     padding: 0;
 }
 
-div, md-toolbar {
+div, mat-toolbar {
     width: 33vw;
+    height: 64px !important;
 }
 
 div {

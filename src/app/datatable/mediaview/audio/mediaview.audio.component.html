@@ -2,15 +2,15 @@
 
 <div class="audioContainer">
 
-    <md-card>
+    <mat-card>
         <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></audio>
-    </md-card>
+    </mat-card>
 
     <div class="info">
-        <h3 mdTooltip="{{audioURLs[currentAudio] | fileName}}"> {{audioURLs[currentAudio] | fileName}} </h3>
+        <h3 matTooltip="{{audioURLs[currentAudio] | fileName}}"> {{audioURLs[currentAudio] | fileName}} </h3>
 
-        <a md-mini-fab color="primary" [href]="audioURLs[currentAudio]" target="_blank" class="externalLink" [title]="'open in new tab'">
-            <md-icon class="md-24">open_in_new</md-icon>
+        <a mat-mini-fab color="primary" [href]="audioURLs[currentAudio]" target="_blank" class="externalLink" [title]="'open in new tab'">
+            <mat-icon class="mat-24">open_in_new</mat-icon>
         </a>
     </div>
 

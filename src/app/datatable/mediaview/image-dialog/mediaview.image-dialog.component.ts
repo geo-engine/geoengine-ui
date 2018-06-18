@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 
 @Component({
     selector: 'wave-mediaview-image-dialog',
@@ -35,7 +35,7 @@ export class MediaviewImageDialogComponent {
      * Sets up all variables
      * @param dialogRef reference to this Dialog-Type
      */
-    constructor(public dialogRef: MdDialogRef<MediaviewImageDialogComponent>) {     // , @Inject(ElementRef) elementRef: ElementRef
+    constructor(public dialogRef: MatDialogRef<MediaviewImageDialogComponent>) {     // , @Inject(ElementRef) elementRef: ElementRef
         this.loading = true;
 
         // this.domNode = elementRef.nativeElement;

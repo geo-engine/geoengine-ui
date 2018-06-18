@@ -1,10 +1,10 @@
 <wave-sidenav-header>Load Project</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();load()" fxLayout="column">
-    <md-radio-group formControlName="projectName" *ngIf="!(loading$ | async)" fxFlex>
-        <md-radio-button *ngFor="let name of projects$ | async" [value]="name">
+    <mat-radio-group formControlName="projectName" *ngIf="!(loading$ | async)" fxFlex>
+        <mat-radio-button *ngFor="let name of projects$ | async" [value]="name">
             {{name}}{{name===currentProjectName?' (current)':''}}
-        </md-radio-button>
-    </md-radio-group>
-    <button md-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Load</button>
+        </mat-radio-button>
+    </mat-radio-group>
+    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Load</button>
 </form>
-<md-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></md-progress-spinner>
+<mat-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></mat-progress-spinner>

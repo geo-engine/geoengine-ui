@@ -1,6 +1,8 @@
+
+import {BehaviorSubject} from 'rxjs';
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {BehaviorSubject} from 'rxjs/Rx';
 import {StorageService} from '../../storage/storage.service';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
@@ -34,7 +36,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
             ],
             projection: [Projections.WEB_MERCATOR, Validators.required],
         });
-        this.projectService.getProjectionStream().first().subscribe(projection => {
+        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
             this.form.controls['projection'].setValue(projection);
         });
     }

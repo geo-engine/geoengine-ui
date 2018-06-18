@@ -1,0 +1,43 @@
+<div>Layer Properties</div>
+<div>
+    <table>
+        <tr>
+            <td><span>Opacity</span></td>
+            <td>
+                <mat-slider #slo thumbLabel min="1" max="100" step="1" [value]="symbology?.opacity*100"
+                            (change)="updateOpacity($event)">
+                </mat-slider>
+            </td>
+            <td>{{slo.displayValue}} %</td>
+        </tr>
+        <!--
+        <tr>
+            <td><span>Hue</span></td>
+            <td>
+                <mat-slider #slh thumbLabel min="0" max="100" step="1" value="100" [disabled]="true"></mat-slider>
+                <span>{{slh.displayValue}} %</span>
+            </td>
+        </tr>
+        <tr>
+            <td><span>Saturation</span></td>
+            <td>
+                <mat-slider #sls thumbLabel min="0" max="10" step="1" value="100" [disabled]="true"></mat-slider>
+                <span>{{sls.displayValue}} %</span>
+            </td>
+        </tr>
+        -->
+    </table>
+</div>
+<mat-divider></mat-divider>
+<div>
+    <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true" (ngModelChange)="updateNoDataColor($event)">
+    </wave-color-breakpoint>
+    <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true" (ngModelChange)="updateOverflowColor($event)">
+    </wave-color-breakpoint>
+</div>
+
+<div>
+    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+</div>
+
+

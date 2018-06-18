@@ -66,3 +66,7 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  * Needed for: All but Chrome, Firefox, Edge, IE11 and Safari 10
  */
 // import 'intl';  // Run `npm install --save intl`.
+
+// Add global to window, assigning the value of window itself.
+// FIXME: THIS IS NEEDED FOR ng2-dragular!
+(window as any).global = window;

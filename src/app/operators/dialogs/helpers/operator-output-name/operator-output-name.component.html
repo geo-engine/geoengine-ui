@@ -1,13 +1,13 @@
 <wave-dialog-section-heading
     title="Output Name" subtitle="Specify the name of the operator result"
 ></wave-dialog-section-heading>
-<md-input-container>
-    <input mdInput
+<mat-form-field>
+    <input matInput
            type="text"
            placeholder="Output {{type}} Name"
            [(ngModel)]="name"
            minLength="1"
            (blur)="onBlur()"
     >
-    <ng-content select="md-hint"></ng-content>
-</md-input-container>
+    <ng-content select="mat-hint"></ng-content>
+</mat-form-field>

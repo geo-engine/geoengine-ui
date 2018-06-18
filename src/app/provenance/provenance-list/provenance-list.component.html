@@ -1,7 +1,7 @@
 <div class='container' [style.height.px]='height'>
     <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
-        <md-list dense>
-            <md-list-item *ngFor="let p of provenance$ | async; let last = last">
+        <mat-list dense>
+            <mat-list-item *ngFor="let p of provenance$ | async; let last = last">
                 <dl>
                     <dt>Citation</dt>
                     <dd [innerHtml]="p.citation | waveNbsp"></dd>
@@ -10,9 +10,9 @@
                     <dt>URI</dt>
                     <dd><a [href]="p.uri" target='_blank' [innerHtml]="p.uri | waveNbsp"></a></dd>
                 </dl>
-                <md-divider *ngIf="!last"></md-divider>
-            </md-list-item>
-        </md-list>
+                <mat-divider *ngIf="!last"></mat-divider>
+            </mat-list-item>
+        </mat-list>
     </ng-template>
     <ng-template [ngIf]="!(layerService.getIsAnyLayerSelectedStream() | async)">
         <div class="no-layer">

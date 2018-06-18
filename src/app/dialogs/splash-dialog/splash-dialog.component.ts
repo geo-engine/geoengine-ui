@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {UserService} from '../../users/user.service';
-import {MdCheckboxChange} from '@angular/material';
+import {MatCheckboxChange} from '@angular/material';
 
 @Component({
   selector: 'wave-splash-dialog',
@@ -14,7 +14,7 @@ export class SplashDialogComponent {
         private userService: UserService
     ) {}
 
-    changeTick(event: MdCheckboxChange) {
+    changeTick(event: MatCheckboxChange) {
         this.userService.setIntroductoryPopup(!event.checked);
     }
 

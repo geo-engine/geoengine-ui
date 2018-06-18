@@ -1,6 +1,8 @@
+
+import {Subscription, ReplaySubject, Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Subscription, ReplaySubject, Observable} from 'rxjs/Rx';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {Layer} from '../../../layers/layer.model';
@@ -64,9 +66,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         ;
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges
-                .do(() => this.form.controls['attribute'].setValue(undefined))
-                .map(layer => {
+            this.form.controls['layer'].valueChanges.pipe(
+                tap(() => this.form.controls['attribute'].setValue(undefined)),
+                map(layer => {
                     if (layer) {
                         return layer.operator.attributes.filter((attribute: string) => {
                             return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
@@ -74,7 +76,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     } else {
                         return [];
                     }
-                })
+                }), )
                 .subscribe(this.attributes$)
         );
 
@@ -83,7 +85,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                 .subscribe(() => this.form.controls['range'].updateValueAndValidity())
         );
 
-        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.map(layer => isVectorLayer(layer));
+        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map(layer => isVectorLayer(layer)));
     }
 
     ngAfterViewInit() {
@@ -97,7 +99,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const inputOperator = (this.form.controls['layer'].value as Layer<Symbology>).operator;
 
         const attributeName = this.form.controls['attribute'].value as string;

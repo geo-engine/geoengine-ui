@@ -22,7 +22,7 @@ table {
     overflow: auto;
 }
 
-md-card-content {
+mat-card-content {
     text-align: justify;
 }
 
@@ -30,7 +30,7 @@ md-card-content {
     margin-bottom: 1rem;
 }
 
-md-select {
+mat-form-field {
     width: 100%;
     margin: 1rem 0;
 }
@@ -41,4 +41,13 @@ wave-code-editor {
 
 .error {
     color: mat-color($wave-app-warn);
+}
+
+mat-panel-title,
+mat-panel-description {
+    line-height: 1.5rem;
+}
+
+mat-panel-title mat-icon {
+    margin-right: 0.25rem;
 }

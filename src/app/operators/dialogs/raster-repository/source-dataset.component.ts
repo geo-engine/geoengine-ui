@@ -1,21 +1,22 @@
+
+import {of as observableOf, Observable} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MappingSource, MappingSourceChannel, MappingTransform} from './mapping-source.model';
 import {Unit} from '../../unit.model';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {ResultTypes} from '../../result-type.model';
-import {Projections} from '../../projection.model';
+import {Projection, Projections} from '../../projection.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {
-    IMappingRasterColorizer, MappingColorizer, MappingColorizerRasterSymbology, MappingRasterColorizer,
-    MappingRasterColorizerBreakpoint
-} from '../../../layers/symbology/symbology.model';
+    MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
-import {Observable} from 'rxjs/Observable';
 import {GdalSourceType} from '../../types/gdal-source-type.model';
 import {ExpressionType} from '../../types/expression-type.model';
+import {ColorBreakpointDict} from '../../../colors/color-breakpoint.model';
+import {ColorizerData, IColorizerData} from '../../../colors/colorizer-data.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -28,30 +29,27 @@ export class SourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
 
-    private _useRawData = false;
-    private _showPreview = false;
-    private _showDescription = false;
-    private _channelSource;
-    private _displayedColumns  = ['name', 'measurement'];
+    searchTerm: string; // TODO: this was needed to get prod build working...
+    _useRawData = false;
+    _showPreview = false;
+    _showDescription = false;
+    _channelSource: ChannelDataSource;
+    _displayedColumns  = ['name', 'measurement'];
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
-     * @param {IMappingRasterColorizer} colorizerConfig
+     * @param {IColorizerData} colorizerConfig
      * @param {MappingTransform} transform
-     * @returns {IMappingRasterColorizer}
+     * @returns {IColorizerData}
      */
-    static createAndTransformColorizer(colorizerConfig: IMappingRasterColorizer, transform: MappingTransform): IMappingRasterColorizer {
+    static createAndTransformColorizer(colorizerConfig: IColorizerData, transform: MappingTransform): IColorizerData {
         if ( transform ) {
-            const transformedColorizerConfig: IMappingRasterColorizer = {
+            const transformedColorizerConfig: IColorizerData = {
                 type: colorizerConfig.type,
-                breakpoints: colorizerConfig.breakpoints.map( (bp: MappingRasterColorizerBreakpoint) => {
+                breakpoints: colorizerConfig.breakpoints.map( (bp: ColorBreakpointDict) => {
                     return  {
-                        value: (bp.value - transform.offset) * transform.scale,
-                        r: bp.r,
-                        g: bp.g,
-                        b: bp.b,
-                        a: bp.a,
-                        name: bp.name
+                        value: (bp.value as number - transform.offset) * transform.scale,
+                        rgba: bp.rgba
                     };
                 })
             };
@@ -71,13 +69,13 @@ export class SourceDatasetComponent implements OnInit {
         this._channelSource = new ChannelDataSource(this.dataset.channels);
     }
 
-    valid_colorizer(channel: MappingSourceChannel): IMappingRasterColorizer {
+    valid_colorizer(channel: MappingSourceChannel): IColorizerData {
         if (channel.colorizer) {
             return channel.colorizer;
         } else if (this.dataset.colorizer) {
             return this.dataset.colorizer;
         } else {
-            return MappingRasterColorizer.grayScaleMappingColorizer(this.valid_unit(channel));
+            return ColorizerData.grayScaleColorizer(this.valid_unit(channel));
         }
     }
 
@@ -167,7 +165,14 @@ export class SourceDatasetComponent implements OnInit {
     createGdalSourceOperator(channel: MappingSourceChannel,  doTransform: boolean): Operator {
         const sourceDataType = channel.datatype;
         const sourceUnit: Unit = channel.unit;
-        const sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        let sourceProjection: Projection;
+        if (this.dataset.coords.crs) {
+            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
+        } else if (this.dataset.coords.epsg) {
+            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        } else {
+            throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
+        }
 
         const operatorType = new GdalSourceType({
             channel: channel.id,
@@ -219,6 +224,15 @@ export class SourceDatasetComponent implements OnInit {
             dataType = channel.transform.datatype;
         }
 
+        let sourceProjection: Projection;
+        if (this.dataset.coords.crs) {
+            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
+        } else if (this.dataset.coords.epsg) {
+            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        } else {
+            throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
+        }
+
         const operatorType = new RasterSourceType({
             channel: channel.id,
             sourcename: this.dataset.source,
@@ -228,7 +242,7 @@ export class SourceDatasetComponent implements OnInit {
         const operator = new Operator({
             operatorType: operatorType,
             resultType: ResultTypes.RASTER,
-            projection: Projections.fromCode('EPSG:' + this.dataset.coords.epsg),
+            projection: sourceProjection,
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', DataTypes.fromCode(dataType)),
             units: new Map<string, Unit>().set('value', unit),
@@ -248,7 +262,7 @@ class ChannelDataSource extends DataSource<MappingSourceChannel> {
     }
 
     connect(): Observable<Array<MappingSourceChannel>> {
-        return Observable.of(this.channels);
+        return observableOf(this.channels);
     }
 
     disconnect() {

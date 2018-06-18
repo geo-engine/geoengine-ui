@@ -1,28 +1,27 @@
-<form class="feedback-container">
+<form class="feedback-container" [formGroup]="form" (ngSubmit)="$event.preventDefault();send()">
 
-    <md-select placeholder="Request type">
-        <md-option value="option">Feedback</md-option>
-        <md-option value="option">Help</md-option>
-        <md-option value="option">Contact</md-option>
-    </md-select>
+    <mat-select placeholder="Request type" formControlName="requestType">
+        <mat-option value="Feedback">Feedback</mat-option>
+        <mat-option value="Help">Help</mat-option>
+        <mat-option value="Contact">Contact</mat-option>
+    </mat-select>
 
-    <md-form-field>
-        <input placeholder="Your name" mdInput>
-    </md-form-field>
+    <mat-form-field>
+        <input placeholder="Your name" matInput formControlName="name">
+    </mat-form-field>
 
-    <md-form-field>
-        <input placeholder="Email" mdInput>
-    </md-form-field>
+    <mat-form-field>
+        <input placeholder="Email" matInput formControlName="email">
+    </mat-form-field>
 
-    <md-form-field>
-        <input placeholder="Topic" mdInput>
-    </md-form-field>
+    <mat-form-field>
+        <input placeholder="Topic" matInput formControlName="topic">
+    </mat-form-field>
 
-    <md-form-field>
-        <textarea placeholder="Feedback text" mdInput mdTextareaAutosize mdAutosizeMinRows="2"></textarea>
-    </md-form-field>
+    <mat-form-field>
+        <textarea placeholder="Feedback text" matInput matTextareaAutosize matAutosizeMinRows="2" formControlName="text"></textarea>
+    </mat-form-field>
 
-    <button md-button>send</button>
-
+    <button mat-button type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">send</button>
 
 </form>

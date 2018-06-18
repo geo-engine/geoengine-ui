@@ -1,5 +1,7 @@
+
+import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Injectable, Component, Type, EventEmitter, ElementRef, QueryList} from '@angular/core';
-import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs/Rx';
 
 
 @Injectable()
@@ -61,7 +63,7 @@ export class SidenavRef {
     }
 
     hasSearchComponentStream(): Observable<boolean> {
-        return this.searchElements$.map(elements => elements !== undefined);
+        return this.searchElements$.pipe(map(elements => elements !== undefined));
     }
 
     searchTerm(term: string) {

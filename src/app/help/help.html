@@ -1,9 +1,9 @@
 <wave-sidenav-header>Help</wave-sidenav-header>
-<md-card>
-    <md-card-header>
-        <md-card-title>Content</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Content</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <ul>
             <li><a href="#about">About</a></li>
             <li><a href="#general">General Information</a></li>
@@ -17,14 +17,14 @@
             <li><a href="#export">Data Export</a></li>
             <li><a href="#gfbio-search">GFBio Search Results</a></li>
         </ul>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="about">
-    <md-card-header>
-        <md-card-title>About</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="about">
+    <mat-card-header>
+        <mat-card-title>About</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>
             <span class="vat">Vat</span> is developed by the Database Research Group of the University of Marburg.
             Head of the group is Prof. Dr. Bernhard Seeger.
@@ -32,14 +32,14 @@
             or visit <a href="http://dbs.mathematik.uni-marburg.de" target="_blank">dbs.mathematik.uni-marburg.de</a> for further
             information.
         </p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="general">
-    <md-card-header>
-        <md-card-title>General Information</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="general">
+    <mat-card-header>
+        <mat-card-title>General Information</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>The <span class="vat">Vat</span> system allows users to explore biodiversity data by selecting one of several data sources and
             processing them with
             our built-in operators.</p>
@@ -49,32 +49,33 @@
             <li>Uploading custom data</li>
             <li>Soon: Sharing results with other users</li>
         </ul>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="feedback">
-    <md-card-header>
-        <md-card-title>Contact Us / Feedback</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="feedback">
+    <mat-card-header>
+        <mat-card-title>Contact Us / Feedback</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <wave-feedback></wave-feedback>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="demo">
-    <md-card-header>
-        <md-card-title>Quick Demo</md-card-title>
-    </md-card-header>
-    <md-card-content>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/i2GwQtOZphE" frameborder="0" allowfullscreen></iframe>
-    </md-card-content>
-</md-card>
+<mat-card id="demo">
+    <mat-card-header>
+        <mat-card-title>Quick Demo</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/i2GwQtOZphE" frameborder="0" allowfullscreen>
+        </iframe>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="account">
-    <md-card-header>
-        <md-card-title>Account/Login</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="account">
+    <mat-card-header>
+        <mat-card-title>Account/Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>There are two options for obtaining a <span class="vat">Vat</span> account:</p>
         <ul>
             <li>Registering at the GFBio portal at <a href="http://www.gfbio.org" target="_blank">gfbio.org</a>
@@ -91,14 +92,14 @@
             </li>
         </ul>
         <p>To log in click the button in the top-right, and select the type of account</p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="overview">
-    <md-card-header>
-        <md-card-title>Overview of the User Interface</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="overview">
+    <mat-card-header>
+        <mat-card-title>Overview of the User Interface</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <a href="assets/images/overview.png" target="_blank"><img src="assets/images/overview.png" style="width:100%;"><br>Click to
             enhance</a>
         <p>The user interface consists of the following main parts:</p>
@@ -153,14 +154,14 @@
                 </ul>
             </li>
         </ul>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="add-data">
-    <md-card-header>
-        <md-card-title>Add Data</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="add-data">
+    <mat-card-header>
+        <mat-card-title>Add Data</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>The <span class="vat">Vat</span> system supports two very different types of data: raster and vector data. Rasters consist of
             many pixels, and each
             pixel contains a value for the particular location, e.g. the mean temperature. Vector data are collections of features with
@@ -168,14 +169,14 @@
         <p>Under <i>Add Data</i> you can select one of several environmental layers (rasters), occurrence data from <a
             href="http://www.gbif.org" target="_blank">GBIF</a>, data from GFBio archives in ABCD format and your own custom data</p>
         <p>Each data set is added to the map as a layer which you can further process with <i>operators</i>.</p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="operators">
-    <md-card-header>
-        <md-card-title>Operators</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="operators">
+    <mat-card-header>
+        <mat-card-title>Operators</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>Operators allow you to process the layers that were previously added to the map. Our current operators are:</p>
         <ul>
             <li>Mixed
@@ -220,39 +221,39 @@
                 </ul>
             </li>
         </ul>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="lineage">
-    <md-card-header>
-        <md-card-title>Lineage Tracking</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="lineage">
+    <mat-card-header>
+        <mat-card-title>Lineage Tracking</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <img src="assets/images/lineage.png" style="max-width:100%;">
         <p>The <span class="vat">Vat</span> system's goal is to support interactive data exploration by tracking the data processing
             automatically in the
             background. You can view the complete processing workflow for individual layers by selecting <i>Lineage</i> in the layer
             context menu and the lineage for all layers by clicking on the context menu of the layer list in the top left.</p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="export">
-    <md-card-header>
-        <md-card-title>Data Export</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="export">
+    <mat-card-header>
+        <mat-card-title>Data Export</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>The result of computations can be exported by clicking the <i>Export</i> button in a layer's context menu. After selecting
             the output format, a ZIP file is generated that bundles the actual data with all citations and the workflow itself</p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
 
-<md-card id="gfbio-search">
-    <md-card-header>
-        <md-card-title>GFBio Search Results</md-card-title>
-    </md-card-header>
-    <md-card-content>
+<mat-card id="gfbio-search">
+    <mat-card-header>
+        <mat-card-title>GFBio Search Results</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
         <p>When logged in as a GFBio user, the <i>Add Data</i> function offers a <i>GFBio baskets</i> option. There, you have access to
             all previous searches you performed on gfbio.org while being logged in. You have the option to go the data sets landing page
             or add a new layer containing the data.</p>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>

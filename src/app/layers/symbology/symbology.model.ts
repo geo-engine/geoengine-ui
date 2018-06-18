@@ -1,6 +1,7 @@
-import * as ol from 'openlayers';
-import {Observable} from 'rxjs/Rx';
-import {Unit, UnitDict, Interpolation} from '../../operators/unit.model';
+import {Interpolation, Unit, UnitDict} from '../../operators/unit.model';
+import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
+import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
+import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
 
 export enum SymbologyType {
     RASTER,
@@ -8,9 +9,17 @@ export enum SymbologyType {
     CLUSTERED_POINT,
     SIMPLE_VECTOR,
     MAPPING_COLORIZER_RASTER,
-    ICON_POINT,
+    ICON_POINT, // RESERVED
+    COMPLEX_POINT,
+    COMPLEX_VECTOR,
 }
 
+export const DEFAULT_VECTOR_STROKE_COLOR: Color = Color.fromRgbaLike([0, 0, 0, 1]);
+export const DEFAULT_VECTOR_FILL_COLOR: Color = Color.fromRgbaLike([255, 0, 0, 1]);
+export const DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
+export const DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR: Color = Color.fromRgbaLike([0, 153, 255, 1]);
+export const DEFAULT_VECTOR_HIGHLIGHT_TEXT_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
+export const DEFAULT_POINT_RADIUS = 5;
 /**
  * Serialization interface
  */
@@ -21,20 +30,26 @@ export interface SymbologyDict {
 // tslint:disable-next-line: no-empty-interface
 export interface ISymbology {}
 
+
+// TODO: Clean up...
 export abstract class Symbology implements ISymbology {
 
-    show = false;
+    show = false; // TODO: remove
 
     static fromDict(
         dict: SymbologyDict, deprecated?: any
     ): Symbology {
         switch (dict.symbologyType) {
             case SymbologyType[SymbologyType.SIMPLE_POINT]:
-                return new SimplePointSymbology(dict as SimplePointSymbologyDict);
+                return ComplexPointSymbology.createSimpleSymbology(dict as SimplePointSymbologyDict);
             case SymbologyType[SymbologyType.CLUSTERED_POINT]:
-                return new ClusteredPointSymbology(dict as VectorSymbologyDict);
+                return ComplexPointSymbology.createClusterSymbology(dict as VectorSymbologyDict);
+            case SymbologyType[SymbologyType.COMPLEX_POINT]:
+                return new ComplexPointSymbology(dict as ComplexPointSymbologyDict);
             case SymbologyType[SymbologyType.SIMPLE_VECTOR]:
-                return new SimpleVectorSymbology(dict as VectorSymbologyDict);
+                return ComplexVectorSymbology.createSimpleSymbology(dict as VectorSymbologyDict);
+            case SymbologyType[SymbologyType.COMPLEX_VECTOR]:
+                return ComplexVectorSymbology.createSimpleSymbology(dict as ComplexVectorSymbologyDict);
             case SymbologyType[SymbologyType.RASTER]:
                 const rasterSymbologyDict = dict as RasterSymbologyDict;
                 return new RasterSymbology({
@@ -50,7 +65,7 @@ export abstract class Symbology implements ISymbology {
                         opacity: mappingColorizerRasterSymbologyDict.opacity,
                         saturation: mappingColorizerRasterSymbologyDict.saturation,
                         unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
-                        colorizer: new MappingRasterColorizer(mappingColorizerRasterSymbologyDict.colorizer)
+                        colorizer: ColorizerData.fromDict(mappingColorizerRasterSymbologyDict.colorizer)
                     });
             default:
                 throw new Error('Unsupported Symbology');
@@ -65,66 +80,106 @@ export abstract class Symbology implements ISymbology {
 
     abstract clone(): Symbology;
 
+    // abstract equals(other: Symbology): boolean; TODO: equals for symbologys?
+
     abstract toConfig(): ISymbology;
+
+    abstract equals(other: Symbology): boolean;
 
     abstract toDict(): SymbologyDict;
 }
 
-export interface IVectorSymbology extends ISymbology {
-    fillRGBA: [number, number, number, number];
-    strokeRGBA?: [number, number, number, number];
+export interface VectorSymbologyConfig extends ISymbology {
+    fillRGBA: RgbaLike;
+    strokeRGBA?: RgbaLike;
     strokeWidth?: number;
 }
 
 interface VectorSymbologyDict extends SymbologyDict {
-    fillRGBA: [number, number, number, number];
-    strokeRGBA?: [number, number, number, number];
-    strokeWidth?: number;
+    fillRGBA: RgbaTuple;
+    strokeRGBA: RgbaTuple;
+    strokeWidth: number;
 }
 
-export abstract class AbstractVectorSymbology extends Symbology implements IVectorSymbology {
-    fillRGBA: [number, number, number, number];
-    strokeRGBA: [number, number, number, number] = [0, 0, 0, 1];
+export abstract class AbstractVectorSymbology extends Symbology {
+    _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
+    _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'});
+
+    // fillRGBA: Color = DEFAULT_VECTOR_FILL_COLOR;
+    // strokeRGBA: Color = DEFAULT_VECTOR_STROKE_COLOR;
     strokeWidth = 1;
 
-    abstract getOlStyle(): ol.style.Style | ol.StyleFunction;
     abstract describesArea(): boolean;
     abstract describesRadius(): boolean;
 
-    getHighlightSymbology(): AbstractVectorSymbology {
-        const highlightSymbology: AbstractVectorSymbology = this.clone() as AbstractVectorSymbology;
-
-        highlightSymbology.fillRGBA = [0, 153, 255, 1];
-        highlightSymbology.strokeRGBA = [255, 255, 255, 1];
-
-        return highlightSymbology;
+    // Wrap colors in ColorBreakpoint for easy form usage
+    set fillColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
+        this._fillColorBreakpoint = colorBreakpoint;
     }
 
-    getOlStyleAsFunction(): ol.StyleFunction {
-        const style = this.getOlStyle();
-
-        if (style instanceof ol.style.Style) {
-            return (feature: ol.Feature, resolution: number) => style;
-        } else {
-            return style as ol.StyleFunction;
-        }
+    get fillColorBreakpoint(): ColorBreakpoint {
+        return this._fillColorBreakpoint;
     }
 
-    constructor(config: IVectorSymbology) {
+    set strokeColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
+        this._strokeColorBreakpoint = colorBreakpoint;
+    }
+
+    get strokeColorBreakpoint(): ColorBreakpoint {
+        return this._strokeColorBreakpoint;
+    }
+
+    // Wrap colors in ColorBreakpoint for easy form usage
+    set fillRGBA(color: Color) {
+        this._fillColorBreakpoint.setColor(color);
+    }
+
+    get fillRGBA(): Color {
+        return this._fillColorBreakpoint.rgba;
+    }
+
+    set strokeRGBA(color: Color) {
+        this._strokeColorBreakpoint.setColor(color);
+    }
+
+    get strokeRGBA(): Color {
+        return this._strokeColorBreakpoint.rgba;
+    }
+
+    equals(other: AbstractVectorSymbology) {
+        // console.log('AbstractVectorSymbology', 'equals', this, other);
+        return other
+            && this.fillColorBreakpoint.equals(other.fillColorBreakpoint)
+            && this.strokeColorBreakpoint.equals(other.strokeColorBreakpoint)
+            && this.strokeWidth === other.strokeWidth
+            && this.describesArea() === other.describesArea()
+            && this.describesRadius() === other.describesRadius();
+    }
+
+
+    setFillColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
+            this.fillColorBreakpoint = colorBreakpoint;
+    }
+
+    setStrokeColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
+            this.strokeColorBreakpoint = colorBreakpoint;
+    }
+
+    protected constructor(config: VectorSymbologyConfig) {
         super();
-        this.fillRGBA = config.fillRGBA;
-        if (config.strokeRGBA) { this.strokeRGBA = config.strokeRGBA; }
+        this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
+        if (config.strokeRGBA) { this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA); }
         if (config.strokeWidth) { this.strokeWidth = config.strokeWidth; }
     }
 }
 
 export class SimpleVectorSymbology extends AbstractVectorSymbology {
 
-    static fromConfig(config: IVectorSymbology) {
+    static fromConfig(config: VectorSymbologyConfig) {
         return new SimpleVectorSymbology(config);
     }
 
-    constructor(config: IVectorSymbology) {
+    protected constructor(config: VectorSymbologyConfig) {
         super(config);
     }
 
@@ -136,20 +191,14 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
         return new SimpleVectorSymbology(this);
     }
 
-    toConfig(): IVectorSymbology {
+    toConfig(): VectorSymbologyConfig {
         return this.clone();
-    }
-
-    getOlStyle(): ol.style.Style {
-        return new ol.style.Style({
-            fill: new ol.style.Fill({ color: this.fillRGBA }),
-            stroke: new ol.style.Stroke({ color: this.strokeRGBA, width: this.strokeWidth }),
-        });
     }
 
     describesArea(): boolean {
         return true;
     }
+
     describesRadius(): boolean {
         return false;
     }
@@ -157,14 +206,14 @@ export class SimpleVectorSymbology extends AbstractVectorSymbology {
     toDict(): VectorSymbologyDict {
         return {
             symbologyType: SymbologyType[SymbologyType.SIMPLE_VECTOR],
-            fillRGBA: this.fillRGBA,
-            strokeRGBA: this.strokeRGBA,
+            fillRGBA: this.fillRGBA.rgbaTuple(),
+            strokeRGBA: this.strokeRGBA.rgbaTuple(),
             strokeWidth: this.strokeWidth,
         };
     }
 }
 
-export interface ISimplePointSymbology extends IVectorSymbology {
+export interface SimplePointSymbologyConfig extends VectorSymbologyConfig {
     radius?: number;
 }
 
@@ -172,10 +221,10 @@ interface SimplePointSymbologyDict extends VectorSymbologyDict {
     radius: number;
 }
 
-export class SimplePointSymbology extends AbstractVectorSymbology implements ISimplePointSymbology {
-  radius = 5;
+export class SimplePointSymbology extends AbstractVectorSymbology implements SimplePointSymbologyConfig {
+  radius = DEFAULT_POINT_RADIUS;
 
-  constructor(config: ISimplePointSymbology) {
+  protected constructor(config: SimplePointSymbologyConfig) {
       super(config);
       if (config.radius) {this.radius = config.radius; }
   }
@@ -188,18 +237,8 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
       return new SimplePointSymbology(this);
   }
 
-  toConfig(): ISimplePointSymbology {
+  toConfig(): SimplePointSymbologyConfig {
       return this.clone();
-  }
-
-  getOlStyle(): ol.style.Style {
-      return new ol.style.Style({
-          image: new ol.style.Circle({
-              radius: this.radius,
-              fill: new ol.style.Fill({ color: this.fillRGBA }),
-              stroke: new ol.style.Stroke({ color: this.strokeRGBA, width: this.strokeWidth }),
-          }),
-      });
   }
 
   describesArea(): boolean {
@@ -209,109 +248,222 @@ export class SimplePointSymbology extends AbstractVectorSymbology implements ISi
       return true;
   }
 
+  equals(other: AbstractVectorSymbology) {
+      // console.log('SimplePointSymbology', 'equals', this, other);
+      if (other instanceof SimplePointSymbology) {
+          return super.equals(other as AbstractVectorSymbology) && this.radius === other.radius;
+      }
+      return false;
+  }
+
   toDict(): SimplePointSymbologyDict {
       return {
           symbologyType: SymbologyType[SymbologyType.SIMPLE_POINT],
-          fillRGBA: this.fillRGBA,
-          strokeRGBA: this.strokeRGBA,
+          fillRGBA: this.fillRGBA.rgbaTuple(),
+          strokeRGBA: this.strokeRGBA.rgbaTuple(),
           strokeWidth: this.strokeWidth,
           radius: this.radius,
       };
   }
 }
 
-export class ClusteredPointSymbology extends AbstractVectorSymbology {
+export interface ComplexVectorSymbologyConfig extends VectorSymbologyConfig {
+    colorizer?: IColorizerData;
+    colorAttribute?: string;
 
-    private textRGBA: [number, number, number, number];
-    private textStrokeWidth: number;
+    textAttribute?: string
+    textColor?: RgbaLike;
+    textStrokeWidth?: number;
+}
 
-    constructor(config: IVectorSymbology) {
+export interface ComplexVectorSymbologyDict extends VectorSymbologyDict {
+    colorizer: IColorizerData;
+    colorAttribute: string;
+
+    textAttribute: string
+    textColor: RgbaLike;
+    textStrokeWidth: number;
+}
+
+export interface ComplexPointSymbologyConfig extends SimplePointSymbologyConfig, ComplexVectorSymbologyConfig {
+    radiusAttribute?: string;
+}
+
+interface ComplexPointSymbologyDict extends SimplePointSymbologyDict, ComplexVectorSymbologyDict {
+    radiusAttribute: string;
+}
+
+export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbology {
+    colorizer: ColorizerData;
+    colorAttribute: string = undefined;
+
+    textAttribute: string = undefined;
+    textColor: Color = undefined;
+    textStrokeWidth: number = undefined;
+
+    protected constructor(config: ComplexVectorSymbologyConfig) {
         super(config);
-
-        const white = 255;
-        const black = 0;
-        const maxOpacity = 1;
-
-        const colorDifference = (colorElement: number, color: Array<number>) => {
-            return Array(3).fill(colorElement).map(
-                (baseColor, i) => Math.pow(baseColor - color[i], 2)
-            ).reduce((acc, value) => acc + value);
-        };
-
-        if (colorDifference(white, config.fillRGBA) > colorDifference(black, config.fillRGBA)) {
-            this.textRGBA = [white, white, white, maxOpacity];
-        } else {
-            this.textRGBA = [black, black, black, maxOpacity];
+        if (config.colorAttribute) {
+            this.colorAttribute = config.colorAttribute;
         }
+        this.colorizer = (config.colorizer) ? ColorizerData.fromDict(config.colorizer) : ColorizerData.empty();
 
-        this.textStrokeWidth = Math.ceil(config.strokeWidth * 0.1);
+        if (config.textAttribute) {
+            this.textAttribute = config.textAttribute;
+        }
+        this.textColor = config.textColor ? Color.fromRgbaLike(config.textColor) : WHITE;
+        this.textStrokeWidth = config.textStrokeWidth ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
     }
 
-    getSymbologyType(): SymbologyType {
-        return SymbologyType.CLUSTERED_POINT;
+    setColorAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
+        this.colorizer = clr;
+        this.colorAttribute = name;
     }
 
-    clone(): ClusteredPointSymbology {
-        return new ClusteredPointSymbology(this);
+    setOrUpdateColorizer(clr: ColorizerData): boolean {
+        if (clr && (!this.colorizer || !clr.equals(this.colorizer))) {
+            this.colorizer = clr;
+            return true;
+        }
+        return false;
     }
 
-    toConfig(): IVectorSymbology {
-        return this.clone();
+    unSetColorAttribute() {
+        this.colorAttribute = undefined;
+        this.colorizer = ColorizerData.empty()
     }
 
-    getOlStyle(): ol.StyleFunction {
-        return (feature, resolution) => {
-            const numberOfPoints = feature.get('___numberOfPoints') as number;
-            const numberOfPointsString = numberOfPoints > 1 ? numberOfPoints.toString() : '';
-            const radius = parseFloat(feature.get('___radius'));
+    equals(other: AbstractVectorSymbology) {
+        // console.log('ComplexPointSymbology', 'equals', this, other);
+        if (other instanceof AbstractComplexVectorSymbology) {
+            return super.equals(other as AbstractComplexVectorSymbology)
+                && this.colorizer && this.colorizer.equals(other.colorizer)
+                && this.colorAttribute && other.colorAttribute && this.colorAttribute === other.colorAttribute
+                && this.textColor && this.textColor.equals(other.textColor)
+                && this.textStrokeWidth && other.textStrokeWidth && this.textStrokeWidth === other.textStrokeWidth
+                && this.textAttribute && other.textAttribute && this.textAttribute === other.textAttribute;
+        }
+        return false;
+    }
 
-            return new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: radius,
-                    fill: new ol.style.Fill({
-                        color: this.fillRGBA,
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: this.strokeRGBA,
-                        width: this.strokeWidth,
-                    }),
-                }),
-                text: new ol.style.Text({
-                    text: numberOfPointsString,
-                    fill: new ol.style.Fill({
-                        color: this.textRGBA,
-                    }),
-                    stroke: new ol.style.Stroke({
-                        color: this.strokeRGBA,
-                        width: this.textStrokeWidth,
-                    }),
-                }),
-            });
-        };
+    toDict(): ComplexVectorSymbologyDict {
+        return {
+            symbologyType: SymbologyType[SymbologyType.COMPLEX_VECTOR],
+            fillRGBA: this.fillRGBA.rgbaTuple(),
+            strokeRGBA: this.strokeRGBA.rgbaTuple(),
+            strokeWidth: this.strokeWidth,
+            colorAttribute: this.colorAttribute,
+            colorizer: this.colorizer ? this.colorizer.toDict() : undefined,
+            textAttribute: this.textAttribute,
+            textColor: this.textColor.rgbaTuple(),
+            textStrokeWidth: this.textStrokeWidth,
+        }
+    }
+
+}
+
+export class ComplexVectorSymbology extends AbstractComplexVectorSymbology implements ComplexVectorSymbologyConfig {
+
+    protected constructor(config: ComplexVectorSymbologyConfig) {
+        super(config);
+    }
+
+    static createSimpleSymbology(config: ComplexVectorSymbologyConfig): ComplexVectorSymbology {
+        return new ComplexVectorSymbology(config);
     }
 
     describesArea(): boolean {
         return true;
     }
     describesRadius(): boolean {
+       return false;
+    }
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.COMPLEX_VECTOR;
+    }
+    clone(): ComplexVectorSymbology {
+        return new ComplexVectorSymbology(this);
+    }
+    toConfig(): ComplexVectorSymbologyConfig {
+        return this.clone();
+    }
+}
+
+export class ComplexPointSymbology extends AbstractComplexVectorSymbology implements ComplexPointSymbologyConfig {
+
+    radiusAttribute: string = undefined;
+    radius: number = DEFAULT_POINT_RADIUS;
+
+    constructor(config: ComplexPointSymbologyConfig) {
+        super(config);
+        // console.log('ComplexPointSymbology', config);
+        if (config.radius) {
+            this.radius = config.radius;
+        }
+
+        if (config.radiusAttribute) {
+            this.radiusAttribute = config.radiusAttribute;
+        }
+    }
+
+    /**
+     * Creates a ComplexPointSymbology where radiusAttribute and textAttribute are set to the strings returned by Mappings cluster operator
+     * @param {ComplexPointSymbologyConfig} config
+     * @returns {ComplexPointSymbology}
+     */
+    static createClusterSymbology(config: ComplexPointSymbologyConfig): ComplexPointSymbology {
+        config['radiusAttribute'] = '___radius';
+        config['textAttribute'] = '___numberOfPoints';
+
+        return new ComplexPointSymbology(config);
+    }
+
+    static createSimpleSymbology(config: ComplexPointSymbologyConfig): ComplexPointSymbology {
+        return new ComplexPointSymbology(config);
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.COMPLEX_POINT;
+    }
+
+    clone(): ComplexPointSymbology {
+        return new ComplexPointSymbology(this);
+    }
+
+    equals(other: AbstractVectorSymbology) {
+        // console.log('ComplexPointSymbology', 'equals', this, other);
+        if (other instanceof ComplexPointSymbology) {
+            return super.equals(other as SimplePointSymbology)
+            && this.radiusAttribute && other.radiusAttribute && this.radiusAttribute === other.radiusAttribute;
+        }
         return false;
     }
 
-    getHighlightSymbology(): AbstractVectorSymbology {
-        const highlightSymbology: ClusteredPointSymbology = super.getHighlightSymbology() as ClusteredPointSymbology;
-
-        highlightSymbology.textRGBA = [255, 255, 255, 1];
-
-        return highlightSymbology;
+    toConfig(): ComplexPointSymbologyConfig {
+        return this.clone();
     }
 
-    toDict(): VectorSymbologyDict {
+    describesArea(): boolean {
+        return true;
+    }
+    describesRadius(): boolean {
+        return true;
+    }
+
+    toDict(): ComplexPointSymbologyDict {
         return {
-            symbologyType: SymbologyType[SymbologyType.CLUSTERED_POINT],
-            fillRGBA: this.fillRGBA,
-            strokeRGBA: this.strokeRGBA,
+            symbologyType: SymbologyType[SymbologyType.COMPLEX_POINT],
+            fillRGBA: this.fillRGBA.rgbaTuple(),
+            strokeRGBA: this.strokeRGBA.rgbaTuple(),
             strokeWidth: this.strokeWidth,
-        };
+            colorAttribute: this.colorAttribute,
+            colorizer: this.colorizer ? this.colorizer.toDict() : undefined,
+            radiusAttribute: this.radiusAttribute,
+            radius: this.radius,
+            textAttribute: this.textAttribute,
+            textColor: this.textColor.rgbaTuple(),
+            textStrokeWidth: this.textStrokeWidth,
+        }
     }
 }
 
@@ -327,7 +479,9 @@ export interface RasterSymbologyDict extends SymbologyDict {
     hue: number;
     saturation: number;
     unit: UnitDict;
-    colorizer?: MappingRasterColorizer;
+    colorizer?: IColorizerData;
+    noDataColor?: ColorBreakpointDict;
+    overflowColor?: ColorBreakpointDict;
 }
 
 export class RasterSymbology extends Symbology implements IRasterSymbology {
@@ -368,6 +522,14 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
         return new RasterSymbology(this);
     }
 
+    equals(other: RasterSymbology) {
+        // console.log('RasterSymbology', 'equals', this, other);
+        return this.saturation === other.saturation
+            && this.opacity === other.opacity
+            && this.hue === other.hue
+            && this.unit === other.unit;
+    }
+
     toDict(): RasterSymbologyDict {
         return {
             symbologyType: SymbologyType[SymbologyType.RASTER],
@@ -379,102 +541,27 @@ export class RasterSymbology extends Symbology implements IRasterSymbology {
     }
 }
 
-export interface MappingColorizer {
-    interpolation: string;
-    breakpoints: Array<[number, string, string]>;
-    result?: string | number;
-}
-
-export type ColorizerType = 'gradient' | 'palette';
-
-export interface IMappingRasterColorizer {
-    breakpoints: Array<MappingRasterColorizerBreakpoint>;
-    type?: ColorizerType;
-}
-
-export interface MappingRasterColorizerBreakpoint {
-    value: number;
-    r: number;
-    g: number;
-    b: number;
-    a?: number;
-    name?: string;
-}
-
-export class MappingRasterColorizer implements IMappingRasterColorizer {
-    breakpoints: Array<MappingRasterColorizerBreakpoint>;
-    type: ColorizerType;
-
-    static grayScaleMappingColorizer(unit: Unit): MappingRasterColorizer {
-        console.log("grayScaleMappingColorizer", unit);
-
-        const min_br: MappingRasterColorizerBreakpoint = {
-            value: (unit.min !== undefined) ? unit.min : -1000,
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 255,
-            name: 'min'
-        };
-
-        const mid_br: MappingRasterColorizerBreakpoint = {
-            value: (unit.min !== undefined && unit.max !== undefined) ? (unit.max + unit.min) / 2.0 : 0,
-            r: 128,
-            g: 128,
-            b: 128,
-            a: 255,
-            name: 'mid'
-        };
-
-        const max_br: MappingRasterColorizerBreakpoint = {
-            value: (unit.max  !== undefined) ? unit.max : 1000,
-            r: 255,
-            g: 255,
-            b: 255,
-            a: 255,
-            name: 'max'
-        };
-
-
-        console.log("MappingRasterColorizer", {
-            breakpoints: [min_br, mid_br, max_br],
-            type: 'gradient'
-        });
-        return new MappingRasterColorizer({
-            breakpoints: [min_br, mid_br, max_br],
-            type: 'gradient'
-        });
-    }
-
-    constructor(config: IMappingRasterColorizer) {
-        this.breakpoints = config.breakpoints;
-        this.type = (config.type) ? config.type : 'gradient';
-    }
-
-    clone(): MappingRasterColorizer {
-        return new MappingRasterColorizer(this);
-    }
-
-    asMappingRequestString(): string {
-       return JSON.stringify ( this as IMappingRasterColorizer );
-    }
-}
-
-
 export interface IColorizerRasterSymbology extends IRasterSymbology {
-    colorizer?: IMappingRasterColorizer;
+    colorizer?: IColorizerData;
+    noDataColor?: ColorBreakpointDict;
+    overflowColor?: ColorBreakpointDict;
 }
 
 export class MappingColorizerRasterSymbology extends RasterSymbology
     implements IColorizerRasterSymbology {
 
-    colorizer: MappingRasterColorizer;
+    colorizer: ColorizerData;
+    noDataColor: ColorBreakpoint;
+    overflowColor: ColorBreakpoint;
 
     constructor(config: IColorizerRasterSymbology) {
         super(config);
-        // console.log("MappingColorizerRasterSymbology.constructor", config);
-        const colorizerConfig = (config.colorizer) ? config.colorizer : MappingRasterColorizer.grayScaleMappingColorizer(config.unit); // TODO don't create grayscale
-        this.colorizer = new MappingRasterColorizer(colorizerConfig);
+        // TODO don't create grayscale
+        this.colorizer = (config.colorizer) ? new ColorizerData(config.colorizer) : ColorizerData.grayScaleColorizer(config.unit);
+        this.noDataColor = (config.noDataColor) ? new ColorBreakpoint(config.noDataColor)
+            : new ColorBreakpoint({rgba: TRANSPARENT, value: 'NoData'});
+        this.overflowColor = (config.overflowColor) ? new ColorBreakpoint(config.overflowColor)
+            : new ColorBreakpoint({rgba: TRANSPARENT, value: 'Overflow'});
     }
 
     getSymbologyType(): SymbologyType {
@@ -493,6 +580,17 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
         return new MappingColorizerRasterSymbology(this);
     }
 
+    equals(other: RasterSymbology) {
+        // console.log('MappingColorizerRasterSymbology', 'equals', this, other);
+        if (other instanceof MappingColorizerRasterSymbology) {
+            return super.equals(other as RasterSymbology)
+                && this.colorizer && this.colorizer.equals(other.colorizer)
+                && this.noDataColor && this.noDataColor.equals(other.noDataColor)
+                && this.overflowColor && this.overflowColor.equals(other.overflowColor);
+        }
+        return false;
+    }
+
     toDict(): RasterSymbologyDict {
         return {
             symbologyType: SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER],
@@ -500,7 +598,19 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
             hue: this.hue,
             saturation: this.saturation,
             unit: this.unit.toDict(),
-            colorizer: this.colorizer,
+            colorizer: this.colorizer.toDict(),
+            noDataColor: this.noDataColor.toDict(),
+            overflowColor: this.overflowColor.toDict()
         };
+    }
+
+    mappingColorizerRequestString(): string {
+        const mcbs: MappingRasterColorizerDict = {
+            type: this.colorizer.type,
+            nodata: this.noDataColor.asMappingRasterColorizerBreakpoint(),
+            overflow: this.overflowColor.asMappingRasterColorizerBreakpoint(),
+            breakpoints: this.colorizer.breakpoints.map(br => br.asMappingRasterColorizerBreakpoint())
+        };
+        return JSON.stringify(mcbs);
     }
 }

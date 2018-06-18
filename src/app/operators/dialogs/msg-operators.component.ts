@@ -32,15 +32,15 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="rasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title>Description</md-card-title>
-//                         <md-card-subtitle> This operator transforms raw SEVIRI data into radiances. </md-card-subtitle>
-//                 </md-card-header>
-//                 <md-card-content>
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title>Description</mat-card-title>
+//                         <mat-card-subtitle> This operator transforms raw SEVIRI data into radiances. </mat-card-subtitle>
+//                 </mat-card-header>
+//                 <mat-card-content>
 //
-//                 </md-card-content>
-//             </md-card>
+//                 </mat-card-content>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //         </form>
 //     `,
@@ -113,25 +113,25 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="rasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title class="md-title">Configuration</md-card-title>
-//                         <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
-//                 </md-card-header>
-//                 <md-card-content>
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title class="mat-title">Configuration</mat-card-title>
+//                         <mat-card-subtitle class="mat-subheader">Specify the operator</mat-card-subtitle>
+//                 </mat-card-header>
+//                 <mat-card-content>
 //                     <div>
-//                       <md-checkbox aria-label="isHrv checkbox" [(checked)]="isHrv">
+//                       <mat-checkbox aria-label="isHrv checkbox" [(checked)]="isHrv">
 //                         channel is HRV
-//                       </md-checkbox>
+//                       </mat-checkbox>
 //                   </div>
 //                   <div>
-//                       <md-checkbox aria-label="solarCorrection checkbox"
+//                       <mat-checkbox aria-label="solarCorrection checkbox"
 //                                    [(checked)]="solarCorrection">
 //                         apply solar correction
-//                     </md-checkbox>
+//                     </mat-checkbox>
 //                 </div>
-//                 </md-card-content>
-//             </md-card>
+//                 </mat-card-content>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //
 //         </form>
@@ -215,20 +215,20 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="rasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title class="md-title">Configuration</md-card-title>
-//                         <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
-//                 </md-card-header>
-//                 <md-card-content>
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title class="mat-title">Configuration</mat-card-title>
+//                         <mat-card-subtitle class="mat-subheader">Specify the operator</mat-card-subtitle>
+//                 </mat-card-header>
+//                 <mat-card-content>
 //                       <label>Solarangle</label>
 //                       <select ngControl="solarangleName">
 //                         <option *ngFor="let name of solarangleNames" [ngValue]="name">
 //                           {{name}}
 //                         </option>
 //                       </select>
-//                 </md-card-content>
-//             </md-card>
+//                 </mat-card-content>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //         </form>
 //     `,
@@ -308,14 +308,14 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="rasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title class="md-title">Description</md-card-title>
-//                         <md-card-subtitle class="md-subheader">
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title class="mat-title">Description</mat-card-title>
+//                         <mat-card-subtitle class="mat-subheader">
 //                             This operator transforms raw MSG SEVIRI data into blackbody temperatures
-//                         </md-card-subtitle>
-//                 </md-card-header>
-//             </md-card>
+//                         </mat-card-subtitle>
+//                 </mat-card-header>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //         </form>
 //     `,
@@ -385,15 +385,15 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="selectedRasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title class="md-title">Configuration</md-card-title>
-//                         <md-card-subtitle class="md-subheader">Specify the operator</md-card-subtitle>
-//                 </md-card-header>
-//                 <md-card-content>
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title class="mat-title">Configuration</mat-card-title>
+//                         <mat-card-subtitle class="mat-subheader">Specify the operator</mat-card-subtitle>
+//                 </mat-card-header>
+//                 <mat-card-content>
 //
-//                 </md-card-content>
-//             </md-card>
+//                 </mat-card-content>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //         </form>
 //     `,
@@ -464,14 +464,14 @@
 //                                         [types]="[ResultTypes.RASTER]"
 //                                         (selectedLayers)="selectedRasterSources = $event">
 //             </wave-multi-layer-selection>
-//             <md-card>
-//                 <md-card-header>
-//                         <md-card-title class="md-title">Description</md-card-title>
-//                 </md-card-header>
-//                 <md-card-content>
+//             <mat-card>
+//                 <mat-card-header>
+//                         <mat-card-title class="mat-title">Description</mat-card-title>
+//                 </mat-card-header>
+//                 <mat-card-content>
 //
-//                 </md-card-content>
-//             </md-card>
+//                 </mat-card-content>
+//             </mat-card>
 //             <wave-operator-output-name ngControl="name"></wave-operator-output-name>
 //         </form>
 //     `,

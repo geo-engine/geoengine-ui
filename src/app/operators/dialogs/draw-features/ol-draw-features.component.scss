@@ -1,4 +1,8 @@
-
-.mat-select {
+:host {
     display: block;
+    padding: 1rem;
+}
+
+mat-form-field {
+    width: 100%;
 }

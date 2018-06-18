@@ -1,4 +1,8 @@
-import {Http} from '@angular/http';
+
+import {Observable, ReplaySubject, Subject, EMPTY, of as observableOf} from 'rxjs';
+
+import {tap, map, first, mergeMap} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
 
 import {RScript, RScriptDict, StorageProvider, Workspace, WorkspaceDict} from '../storage-provider.model';
 import {MappingRequestParameters, ParametersType} from '../../queries/request-parameters.model';
@@ -10,7 +14,6 @@ import {Project} from '../../project/project.model';
 import {Session} from '../../users/user.service';
 import {Config} from '../../config.service';
 import {ProjectService} from '../../project/project.service';
-import {Observable, ReplaySubject, Subject} from 'rxjs/Rx';
 import {NotificationService} from '../../notification.service';
 
 const TYPES = {
@@ -45,18 +48,24 @@ interface ArtifactDefinition {
     user: string;
 }
 
+interface MappingResponse {
+    result: boolean | string;
+    artifacts?: Array<ArtifactDefinition>;
+    value?: string;
+}
+
 /**
  * StorageProvider implementation that uses the mapping's artifact service.
  */
 export class MappingStorageProvider extends StorageProvider {
 
-    private http: Http;
+    private http: HttpClient;
     private session: Session;
     private createDefaultProject: () => Project;
 
     private projectName$: ReplaySubject<string> = new ReplaySubject<string>(1);
 
-    private static mappingHasResult(response: {result: boolean | string}): boolean {
+    private static mappingHasResult(response: { result: boolean | string }): boolean {
         return response.result && typeof response.result === 'boolean';
     }
 
@@ -64,7 +73,7 @@ export class MappingStorageProvider extends StorageProvider {
         config: Config,
         projectService: ProjectService,
         notificationService: NotificationService,
-        http: Http,
+        http: HttpClient,
         session: Session,
         createDefaultProject: () => Project,
         projectName?: string,
@@ -84,9 +93,9 @@ export class MappingStorageProvider extends StorageProvider {
     }
 
     loadWorkspace(): Observable<Workspace> {
-        return this.projectName$.first().flatMap(projectName => {
+        return this.projectName$.pipe(first(), mergeMap(projectName => {
             if (!projectName) {
-                return Observable.of({
+                return observableOf({
                     project: this.createDefaultProject(),
                     layers: [],
                 });
@@ -101,12 +110,11 @@ export class MappingStorageProvider extends StorageProvider {
                     },
                 });
                 return this.http
-                    .get(
+                    .get<MappingResponse>(
                         this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                         {headers: request.getHeaders()}
-                    )
-                    .map(response => response.json())
-                    .map(response => {
+                    ).pipe(
+                    map(response => {
                         if (MappingStorageProvider.mappingHasResult(response)) {
                             const workspace: WorkspaceDict = JSON.parse(response.value);
 
@@ -126,35 +134,35 @@ export class MappingStorageProvider extends StorageProvider {
                                 project: this.createDefaultProject(),
                             };
                         }
-                    });
+                    }));
             }
-        });
+        }), );
     }
 
     saveWorkspace(workspace: Workspace): Observable<{}> {
         const subject = new Subject();
 
-        this.projectName$
-            .first()
-            .flatMap(projectName => {
+        this.projectName$.pipe(
+            first(),
+            mergeMap(projectName => {
 
                 let currentNameRequest: Observable<{}>;
                 if (projectName === workspace.project.name) {
-                    currentNameRequest = Observable.of({});
+                    currentNameRequest = observableOf({});
                 } else {
                     currentNameRequest = this.setCurrentProjectName(workspace.project.name);
                 }
 
-                return currentNameRequest
-                    .flatMap(() => this.saveWorkspaceHelper(workspace));
-            })
-            .flatMap(updateSuccessful => {
+                return currentNameRequest.pipe(
+                    mergeMap(() => this.saveWorkspaceHelper(workspace)));
+            }),
+            mergeMap(updateSuccessful => {
                 if (updateSuccessful) {
-                    return Observable.of({});
+                    return observableOf({});
                 } else {
                     return this.saveWorkspaceHelper(workspace, 'create');
                 }
-            })
+            }), )
             .subscribe(
                 () => subject.next(),
                 () => {
@@ -165,44 +173,19 @@ export class MappingStorageProvider extends StorageProvider {
         return subject;
     }
 
-    private saveWorkspaceHelper(workspace: Workspace, request: ('update' | 'create') = 'update'): Observable<boolean> {
-        const projectName = workspace.project.name;
-
-        const updateRequest = new ArtifactServiceRequestParameters({
-            request: request,
-            sessionToken: this.session.sessionToken,
-            parameters: {
-                type: TYPES.PROJECTS,
-                name: projectName,
-                value: JSON.stringify({
-                    project: workspace.project.toDict(),
-                }),
-            },
-        });
-
-        return this.http
-            .post(
-                this.config.MAPPING_URL,
-                updateRequest.toMessageBody(true),
-                {headers: updateRequest.getHeaders()}
-            )
-            .map(response => response.json())
-            .map(MappingStorageProvider.mappingHasResult);
-    }
-
     // SAVE AND LOAD LAYOUT LOCALLY
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(KEYS.LAYOUT_SETTINGS);
         if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
-            return Observable.of(undefined);
+            return observableOf(undefined);
         } else {
-            return Observable.of(JSON.parse(layoutSettings));
+            return observableOf(JSON.parse(layoutSettings));
         }
     };
 
     saveLayoutSettings(dict: LayoutDict): Observable<{}> {
         localStorage.setItem(KEYS.LAYOUT_SETTINGS, JSON.stringify(dict));
-        return Observable.of({});
+        return observableOf({});
     };
 
     projectExists(name: string): Observable<boolean> {
@@ -216,12 +199,11 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
-            )
-            .map(response => response.json())
-            .map(MappingStorageProvider.mappingHasResult);
+            ).pipe(
+            map(MappingStorageProvider.mappingHasResult));
     }
 
     getProjects(): Observable<Array<string>> {
@@ -233,12 +215,11 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
-            )
-            .map(response => response.json())
-            .map(response => {
+            ).pipe(
+            map(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
                     const artifacts: Array<ArtifactDefinition> = response.artifacts;
                     return artifacts.filter(
@@ -250,7 +231,7 @@ export class MappingStorageProvider extends StorageProvider {
                     // TODO: handle error
                     return [];
                 }
-            });
+            }));
     };
 
     saveRScript(name: string, script: RScript): Observable<void> {
@@ -270,15 +251,14 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http
-            .post(
+            .post<MappingResponse>(
                 this.config.MAPPING_URL,
                 updateRequest.toMessageBody(true),
                 {headers: updateRequest.getHeaders()}
-            )
-            .map(response => response.json())
-            .flatMap(response => {
+            ).pipe(
+            mergeMap(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
-                    return Observable.of(undefined);
+                    return observableOf(undefined);
                 } else {
                     // TODO: refactor inner request
                     // `create` on error
@@ -293,21 +273,20 @@ export class MappingStorageProvider extends StorageProvider {
                     });
 
                     return this.http
-                        .post(
+                        .post<MappingResponse>(
                             this.config.MAPPING_URL,
                             createRequest.toMessageBody(),
                             {headers: createRequest.getHeaders()}
-                        )
-                        .map(response2 => response2.json())
-                        .map(response2 => {
+                        ).pipe(
+                        map(response2 => {
                             if (MappingStorageProvider.mappingHasResult(response2)) {
-                                return Observable.of(undefined);
+                                return observableOf(undefined);
                             } else {
                                 // TODO: error handling
                             }
-                        });
+                        }));
                 }
-            });
+            }));
     }
 
     loadRScript(name: string): Observable<RScript> {
@@ -320,18 +299,17 @@ export class MappingStorageProvider extends StorageProvider {
                 name: name,
             },
         });
-        return this.http.get(
+        return this.http.get<MappingResponse>(
             this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
-        ).map(response => {
-            const mappingResponse = response.json();
-            const rScriptDict: RScriptDict = JSON.parse(mappingResponse.value);
+        ).pipe(map(response => {
+            const rScriptDict: RScriptDict = JSON.parse(response.value);
 
             return {
                 resultType: ResultTypes.fromCode(rScriptDict.resultType),
                 code: rScriptDict.code,
             };
-        });
+        }));
     };
 
     getRScripts(): Observable<Array<string>> {
@@ -342,13 +320,12 @@ export class MappingStorageProvider extends StorageProvider {
                 type: TYPES.R_SCRIPTS,
             },
         });
-        return this.http.get(
+        return this.http.get<MappingResponse>(
             this.config.MAPPING_URL + '?' + request.toMessageBody(true),
             {headers: request.getHeaders()}
-        ).map(response => {
-            const mappingResponse = response.json();
-            if (MappingStorageProvider.mappingHasResult(mappingResponse)) {
-                const artifacts: Array<ArtifactDefinition> = mappingResponse.artifacts;
+        ).pipe(map(response => {
+            if (MappingStorageProvider.mappingHasResult(response)) {
+                const artifacts: Array<ArtifactDefinition> = response.artifacts;
                 return artifacts.filter(
                     artifact => artifact.user === this.session.user // TODO: refactor for sharing
                 ).map(
@@ -358,8 +335,32 @@ export class MappingStorageProvider extends StorageProvider {
                 // TODO: handle error
                 return [];
             }
-        });
+        }));
     };
+
+    private saveWorkspaceHelper(workspace: Workspace, request: ('update' | 'create') = 'update'): Observable<boolean> {
+        const projectName = workspace.project.name;
+
+        const updateRequest = new ArtifactServiceRequestParameters({
+            request: request,
+            sessionToken: this.session.sessionToken,
+            parameters: {
+                type: TYPES.PROJECTS,
+                name: projectName,
+                value: JSON.stringify({
+                    project: workspace.project.toDict(),
+                }),
+            },
+        });
+
+        return this.http
+            .post<MappingResponse>(
+                this.config.MAPPING_URL,
+                updateRequest.toMessageBody(true),
+                {headers: updateRequest.getHeaders()}
+            ).pipe(
+            map(MappingStorageProvider.mappingHasResult));
+    }
 
     private setCurrentProjectName(name: string, request: ('update' | 'create') = 'update'): Observable<{}> {
         const subject = new Subject();
@@ -375,26 +376,25 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         this.http
-            .post(
+            .post<MappingResponse>(
                 this.config.MAPPING_URL,
                 updateRequest.toMessageBody(),
                 {headers: updateRequest.getHeaders()}
-            )
-            .map(response => response.json())
-            .flatMap(response => {
+            ).pipe(
+            mergeMap(response => {
                 if (typeof response.result !== 'boolean') {
                     // `create` on error
                     if (request === 'update') {
                         return this.setCurrentProjectName(name, 'create');
                     } else {
                         // TODO: handle error if mapping is erroneous or internet is down
-                        return Observable.empty();
+                        return EMPTY;
                     }
                 } else {
-                    return Observable.of({})
-                        .do(() => this.projectName$.next(name));
+                    return observableOf({}).pipe(
+                        tap(() => this.projectName$.next(name)));
                 }
-            })
+            }))
             .subscribe(
                 () => subject.next(),
                 () => {
@@ -416,18 +416,17 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get(
+            .get<MappingResponse>(
                 this.config.MAPPING_URL + '?' + request.toMessageBody(true),
                 {headers: request.getHeaders()}
-            )
-            .map(response => response.json())
-            .map(response => {
+            ).pipe(
+            map(response => {
                 if (MappingStorageProvider.mappingHasResult(response)) {
                     return response.value;
                 } else {
                     return undefined;
                 }
-            });
+            }));
     }
 
 }

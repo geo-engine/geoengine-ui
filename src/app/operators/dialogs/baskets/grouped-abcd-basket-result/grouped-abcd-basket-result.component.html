@@ -1,9 +1,9 @@
-<md-card>
-    <md-card-header>
-        <md-card-title>{{result.title | waveTrimPipe}}</md-card-title>
-    </md-card-header>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{result.title | waveTrimPipe}}</mat-card-title>
+    </mat-card-header>
 
-    <md-card-content>
+    <mat-card-content>
         <table class='main'>
             <tr>
                 <td>Authors</td>
@@ -21,31 +21,31 @@
 
         <ng-template [ngIf]='hasUnits'>
             <p class="no-bottom-margin">Units from multiple search results based on this dataset:</p>
-            <md-table #table [dataSource]="unitDataSource">
-                <ng-container mdColumnDef="prefix">
-                    <md-header-cell *mdHeaderCellDef>Unit</md-header-cell>
-                    <md-cell *mdCellDef="let unit">{{unit.prefix}}</md-cell>
+            <mat-table #table [dataSource]="unitDataSource">
+                <ng-container matColumnDef="prefix">
+                    <mat-header-cell *matHeaderCellDef>Unit</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">{{unit.prefix}}</mat-cell>
                 </ng-container>
-                <ng-container mdColumnDef="type">
-                    <md-header-cell *mdHeaderCellDef>Type</md-header-cell>
-                    <md-cell *mdCellDef="let unit">{{unit.type}}</md-cell>
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">{{unit.type}}</mat-cell>
                 </ng-container>
-                <ng-container mdColumnDef="unitId">
-                    <md-header-cell *mdHeaderCellDef>Unit Id</md-header-cell>
-                    <md-cell *mdCellDef="let unit">
+                <ng-container matColumnDef="unitId">
+                    <mat-header-cell *matHeaderCellDef>Unit Id</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">
                         <a href='{{unit.metadataLink}}' target="_blank">{{unit.unitId}}</a>
-                    </md-cell>
+                    </mat-cell>
                 </ng-container>
-                <md-header-row *mdHeaderRowDef="displayedUnitColumns"></md-header-row>
-                <md-row *mdRowDef="let row; columns: displayedUnitColumns;"></md-row>
-            </md-table>
+                <mat-header-row *matHeaderRowDef="displayedUnitColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedUnitColumns;"></mat-row>
+            </mat-table>
         </ng-template>
-    </md-card-content>
+    </mat-card-content>
 
-    <md-card-actions>
+    <mat-card-actions>
         <div *ngIf="result.available; else noResult">
-            <button md-button color='primary' (click)='add(true)' *ngIf="hasUnits"><span>Add</span> <u>units</u> as <span>layer</span></button>
-            <button md-button color='primary' (click)='add(false)'><span>Add</span> <u>dataset</u> <span>as layer</span></button>
+            <button mat-button color='primary' (click)='add(true)' *ngIf="hasUnits"><span>Add</span> <u>units</u> as <span>layer</span></button>
+            <button mat-button color='primary' (click)='add(false)'><span>Add</span> <u>dataset</u> <span>as layer</span></button>
         </div>
 
         <ng-template #noResult>
@@ -54,7 +54,7 @@
                 <li *ngIf='!result.isGeoReferenced'> no georeference detected</li>
             </ul>
         </ng-template>
-    </md-card-actions>
-</md-card>
+    </mat-card-actions>
+</mat-card>
 
-<md-divider></md-divider>
+<mat-divider></mat-divider>

@@ -1,5 +1,5 @@
 <div *ngIf="isSelecting$ | async">
-    <button md-raised-button class="file-upload" (click)="upload.click()">
+    <button mat-raised-button class="file-upload" (click)="upload.click()">
         <input type="file" #upload (change)="changeListener($event)" multiple="false" accept=".csv" class="file-input">
         Choose File
     </button>
@@ -9,7 +9,7 @@
         File too large!<br>
         We only accept files to a maximum size of 100MB.
     </p>
-    <button md-button (click)="unerror()" style="float: right">
+    <button mat-button (click)="unerror()" style="float: right">
         Ok
     </button>
 </div>
@@ -17,7 +17,7 @@
     <p style="text-align: center">
         {{this.data.file.name}}
     </p>
-    <md-progress-spinner md-mode="indeterminate">
+    <mat-progress-spinner mat-mode="indeterminate">
         {{data.progress}}%
-    </md-progress-spinner>
+    </mat-progress-spinner>
 </div>

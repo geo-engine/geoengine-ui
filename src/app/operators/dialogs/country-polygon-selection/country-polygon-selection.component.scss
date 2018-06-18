@@ -1,17 +1,27 @@
 @import '../../../../wave-app-theme';
 
-md-toolbar /deep/ md-toolbar-row:first-child {
+mat-toolbar /deep/ mat-toolbar-row:first-child {
     display: none;
 }
 
-md-list-item {
+p {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}
+
+mat-row {
     cursor: pointer;
 }
 
-//p {
-//    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
-//}
+mat-row:hover {
+    background-color: mat-color(map-get($wave-app-theme, background), hover);
+}
 
-md-list-item /deep/ .highlight {
+mat-cell /deep/ .highlight {
     color: mat-color($wave-app-accent);
+}
+
+mat-progress-spinner {
+    width: 25%;
+    height: auto;
+    margin: 2rem auto;
 }

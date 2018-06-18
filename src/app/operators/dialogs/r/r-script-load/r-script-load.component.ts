@@ -1,8 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MdDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {NotificationService} from '../../../../notification.service';
 
@@ -25,7 +25,7 @@ export class RScriptLoadComponent implements OnInit, AfterViewInit {
 
     constructor(private storageService: StorageService,
                 private formBuilder: FormBuilder,
-                private dialogRef: MdDialogRef<RScriptLoadComponent>,
+                private dialogRef: MatDialogRef<RScriptLoadComponent>,
                 private notificationService: NotificationService) {
     }
 

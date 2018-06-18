@@ -2,35 +2,35 @@
 
 <div class="imageContainer">
 
-    <md-card>
+    <mat-card>
         <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
-    </md-card>
+    </mat-card>
 
     <div *ngIf="loading" class="loading">
         <div class="spinner">
-            <md-spinner color="primary"></md-spinner>
+            <mat-spinner color="primary"></mat-spinner>
         </div>
     </div>
 
     <div class="info">
-        <h3 mdTooltip="{{imageURLs[currentImage] | fileName}}"> {{imageURLs[currentImage] | fileName}} </h3>
+        <h3 matTooltip="{{imageURLs[currentImage] | fileName}}"> {{imageURLs[currentImage] | fileName}} </h3>
 
-        <a md-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
-            <md-icon class="md-24">open_in_new</md-icon>
+        <a mat-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
+            <mat-icon class="mat-24">open_in_new</mat-icon>
         </a>
     </div>
 
     <div class="buttons">
-        <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="previousImage()" class="previous" [title]="'previous image'">
-            <md-icon class="md-24">chevron_left</md-icon>
+        <button *ngIf="imageURLs.length > 1" mat-fab color="primary" (click)="previousImage()" class="previous" [title]="'previous image'">
+            <mat-icon class="mat-24">chevron_left</mat-icon>
         </button>
 
-        <button md-mini-fab color="primary" (click)="openImageFullSize()" class="imageSize" [title]="'show in full size'">
-            <md-icon class="md-24">fullscreen</md-icon>
+        <button mat-mini-fab color="primary" (click)="openImageFullSize()" class="imageSize" [title]="'show in full size'">
+            <mat-icon class="mat-24">fullscreen</mat-icon>
         </button>
 
-        <button *ngIf="imageURLs.length > 1" md-fab color="primary" (click)="nextImage()" class="next" [title]="'next image'">
-            <md-icon class="md-24">chevron_right</md-icon>
+        <button *ngIf="imageURLs.length > 1" mat-fab color="primary" (click)="nextImage()" class="next" [title]="'next image'">
+            <mat-icon class="mat-24">chevron_right</mat-icon>
         </button>
     </div>
 

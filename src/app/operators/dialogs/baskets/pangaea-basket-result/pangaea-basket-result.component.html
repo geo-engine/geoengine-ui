@@ -1,9 +1,9 @@
-<md-card>
-    <md-card-header>
-        <md-card-title>{{result.title | waveTrimPipe}}</md-card-title>
-    </md-card-header>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{result.title | waveTrimPipe}}</mat-card-title>
+    </mat-card-header>
 
-    <md-card-content>
+    <mat-card-content>
         <table class='main'>
             <tr>
                 <td>Authors</td>
@@ -18,11 +18,11 @@
                 <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
             </tr>
         </table>
-    </md-card-content>
+    </mat-card-content>
 
-    <md-card-actions>
+    <mat-card-actions>
         <div *ngIf="result.available; else noResult">
-            <button md-button color='primary' (click)='addDataset()'>
+            <button mat-button color='primary' (click)='addDataset()'>
                 <span>Add</span> <u>dataset</u> <span>as layer</span>
             </button>
         </div>
@@ -34,7 +34,7 @@
                 <li *ngIf='!result.isGeoReferenced'> no georeference detected</li>
             </ul>
         </ng-template>
-    </md-card-actions>
-</md-card>
+    </mat-card-actions>
+</mat-card>
 
-<md-divider></md-divider>
+<mat-divider></mat-divider>

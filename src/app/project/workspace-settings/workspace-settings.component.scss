@@ -2,7 +2,7 @@
 
 $secondary-color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
 
-md-list-item {
+mat-list-item {
     cursor: pointer;
 }
 
@@ -25,7 +25,7 @@ p {
     img {
         filter: grayscale(100%);
     }
-    md-icon {
+    mat-icon {
         color: $secondary-color;
     }
 }

@@ -4,53 +4,53 @@
     <div class="spinnerContainer" *ngIf="(state$ | async) === LoadingState.LOADING" [style.left.px]="scrollContainer.scrollLeft"
          [style.top.px]="scrollContainer.scrollTop">
         <div class="spinner">
-            <md-spinner color="primary"></md-spinner>
+            <mat-spinner color="primary"></mat-spinner>
         </div>
     </div>
 
 
     <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
         <!-- Data-Table -->
-        <md-table [dataSource]="tableData">
+        <mat-table [dataSource]="tableData">
 
-            <ng-container mdColumnDef="selection">
-                <md-header-cell *mdHeaderCellDef [style.left.px]="scrollContainer.scrollLeft" class="tableFixed tableFixedVertical">
-                    <md-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
-                                 (change)="toggleAll()"></md-checkbox>
-                </md-header-cell>
+            <ng-container matColumnDef="selection">
+                <mat-header-cell *matHeaderCellDef [style.left.px]="scrollContainer.scrollLeft" class="tableFixed tableFixedVertical">
+                    <mat-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
+                                 (change)="toggleAll()"></mat-checkbox>
+                </mat-header-cell>
 
-                <md-cell *mdCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.left.px]="scrollContainer.scrollLeft"
+                <mat-cell *matCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.left.px]="scrollContainer.scrollLeft"
                          class="tableFixed tableFixedVertical">
-                    <md-checkbox *ngIf="data != null && !isFirst && !isLast" [checked]="selected[i-1+firstDisplay]"
-                                 (change)="toggle(i-1+firstDisplay)"></md-checkbox>
-                </md-cell>
+                    <mat-checkbox *ngIf="data != null && !isFirst && !isLast" [checked]="selected[i-1+firstDisplay]"
+                                 (change)="toggle(i-1+firstDisplay)"></mat-checkbox>
+                </mat-cell>
             </ng-container>
 
-            <ng-container *ngFor="let t of dataHead; let j=index;" [mdColumnDef]="t">
-                <md-header-cell *mdHeaderCellDef [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
+            <ng-container *ngFor="let t of dataHead; let j=index;" [matColumnDef]="t">
+                <mat-header-cell *matHeaderCellDef [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
                     {{dataHeadUnits[j]}}
-                </md-header-cell>
+                </mat-header-cell>
 
-                <md-cell *mdCellDef="let element; let isFirst=first; let isLast=last" [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
-                    <template [ngIf]="!isFirst && !isLast">
+                <mat-cell *matCellDef="let element; let isFirst=first; let isLast=last" [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
+                    <ng-template [ngIf]="!isFirst && !isLast">
                         <wave-datatable-mediaview *ngIf="colTypes[j] == 'media'" [url]="element.properties[t]" [type]="colTypes[j]"></wave-datatable-mediaview>
                         <span *ngIf="colTypes[j] != 'media'" [title]="element.properties[t]"> {{element.properties[t]}} </span>
-                    </template>
-                </md-cell>
+                    </ng-template>
+                </mat-cell>
             </ng-container>
 
 
-            <md-header-row *mdHeaderRowDef="tableDataHead" [style.top.px]="scrollContainer.scrollTop"
-                           class="tableFixed tableFixedHorizontal"></md-header-row>
+            <mat-header-row *matHeaderRowDef="tableDataHead" [style.top.px]="scrollContainer.scrollTop"
+                           class="tableFixed tableFixedHorizontal"></mat-header-row>
 
             <!--<div #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop"> </div>-->
-            <md-row *mdRowDef="let row; columns: tableDataHead; let i = index; let isFirst=first; let isLast=last;"
+            <mat-row *matRowDef="let row; columns: tableDataHead; let i = index; let isFirst=first; let isLast=last;"
                     [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
                     [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
-                    [class.rowSelected]="selected[i-1+firstDisplay]"></md-row>
+                    [class.rowSelected]="selected[i-1+firstDisplay]"></mat-row>
             <!--<div #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom"> </div >-->
 
-        </md-table>
+        </mat-table>
     </ng-template>
 
     <div *ngIf="!(layerService.getIsAnyLayerSelectedStream() | async)" class="no-layer">

@@ -1,6 +1,5 @@
-import {Headers} from '@angular/http';
-
 import {Map} from 'immutable';
+import {HttpHeaders} from '@angular/common/http';
 
 export type ParameterType = string | number | boolean;
 export interface ParametersType {
@@ -10,10 +9,10 @@ export interface ParametersType {
 export class RequestParameters {
     protected immutable = false;
     protected parameters: Map<string, ParameterType>;
-    protected headers = new Headers();
+    protected headers = new HttpHeaders();
 
     constructor(parameters?: ParametersType) {
-        this.headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        this.headers = this.headers.append('Content-Type', 'application/x-www-form-urlencoded');
         if (parameters) {
             this.parameters = Map<string, ParameterType>(parameters).asMutable();
         } else {
@@ -56,10 +55,10 @@ export class RequestParameters {
     }
 
     addAuthentication(username: string, password: string) {
-        this.headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
+        this.headers = this.headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
     }
 
-    getHeaders(): Headers {
+    getHeaders(): HttpHeaders {
         return this.headers;
     }
 }

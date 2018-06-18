@@ -1,14 +1,19 @@
 <wave-sidenav-header>Plots</wave-sidenav-header>
-<md-card *ngFor="let plot of (projectService.getPlotStream() | async)">
-    <md-card-header>
-        <img md-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()">
-        <md-card-title>{{plot.name}}</md-card-title>
-        <md-card-subtitle>{{plot.operator.operatorType.toString()}}</md-card-subtitle>
-    </md-card-header>
-    <md-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.LOADING">
-        <md-spinner></md-spinner>
-    </md-card-content>
-    <md-card-content
+<p *ngIf="(projectService.getPlotStream() | async)?.length == 0" class="no-plots">
+    no plots available
+    <br>
+    <button mat-button (click)="goToOperatorsTab()">⇢ go to operators tab to create a plot ⇢</button>
+</p>
+<mat-card *ngFor="let plot of (projectService.getPlotStream() | async)">
+    <mat-card-header>
+        <img mat-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()">
+        <mat-card-title>{{plot.name}}</mat-card-title>
+        <mat-card-subtitle>{{plot.operator.operatorType.toString()}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.LOADING">
+        <mat-spinner></mat-spinner>
+    </mat-card-content>
+    <mat-card-content
         *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
         [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type"
     >
@@ -30,27 +35,27 @@
         <ng-template ngSwitchDefault>
             <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
         </ng-template>
-    </md-card-content>
-    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
-        <button md-button (click)="dialog.open(PlotDetailViewComponent, {data: plot})"><md-icon>fullscreen</md-icon></button>
+    </mat-card-content>
+    <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
+        <button mat-button (click)="showFullscreen(plot)"><mat-icon>fullscreen</mat-icon></button>
         <span fxFlex></span>
         <button
             *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE && editExceptions.indexOf(plot.operator.operatorType.toString()) < 0"
-            md-button (click)="editRPlot(plot)"
+            mat-button (click)="editRPlot(plot)"
         >
-            <md-icon>mode_edit</md-icon>
+            <mat-icon>mode_edit</mat-icon>
         </button>
-        <button md-button (click)="projectService.removePlot(plot)"><md-icon>delete</md-icon></button>
-    </md-card-actions>
-    <md-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" fxLayout="row">
-        <button md-button (click)="projectService.reloadPlot(plot)" class="error"><md-icon>replay</md-icon></button>
+        <button mat-button (click)="projectService.removePlot(plot)"><mat-icon>delete</mat-icon></button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" fxLayout="row">
+        <button mat-button (click)="projectService.reloadPlot(plot)" class="error"><mat-icon>replay</mat-icon></button>
         <span fxFlex></span>
         <button
             *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
-            md-button (click)="editRPlot(plot)"
+            mat-button (click)="editRPlot(plot)"
         >
-            <md-icon>mode_edit</md-icon>
+            <mat-icon>mode_edit</mat-icon>
         </button>
-        <button md-button (click)="projectService.removePlot(plot)"><md-icon>delete</md-icon></button>
-    </md-card-actions>
-</md-card>
+        <button mat-button (click)="projectService.removePlot(plot)"><mat-icon>delete</mat-icon></button>
+    </mat-card-actions>
+</mat-card>

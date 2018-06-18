@@ -5,23 +5,23 @@
     </p>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
         <div fxLayout="row">
-            <md-input-container fxFlex>
-                <input mdInput type="text" placeholder="Project Name" formControlName="name">
-                <md-hint
+            <mat-form-field fxFlex>
+                <input matInput type="text" placeholder="Project Name" formControlName="name">
+                <mat-hint
                     align="end" class="error"
                     *ngIf="form.controls.name.errors?.nameInUsage"
                 >
                     The name is already in usage.
-                </md-hint>
-                <md-hint
+                </mat-hint>
+                <mat-hint
                     align="end" class="error"
                     *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
                 >
                     The name must be non-empty.
-                </md-hint>
-            </md-input-container>
+                </mat-hint>
+            </mat-form-field>
         </div>
-        <button md-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
     </form>
 </ng-template>
 <ng-template [ngIf]="created$ | async">

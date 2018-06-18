@@ -1,0 +1,255 @@
+<div class="container">
+    <mat-menu #layerListMenu="matMenu">
+        <button mat-menu-item aria-label="Toggle Layer List Visibility"
+                (click)="layoutService.toggleLayerListVisibility()"
+                [ngSwitch]="layerListVisibility$ | async">
+            <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
+            <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
+            <span>Show/Hide Layerlist</span>
+        </button>
+        <button mat-menu-item (click)="dialog.open(LineageGraphComponent)">
+            <mat-icon>merge_type</mat-icon>
+            <span>Lineage</span>
+        </button>
+        <!--
+        <button mat-menu-item [disabled]="true">
+            <mat-icon>fullscreen</mat-icon>
+            <span>Zoom to All</span>
+        </button>
+        -->
+        <button mat-menu-item (click)="projectService.clearLayers()">
+            <mat-icon>delete_sweep</mat-icon>
+            <span>Remove All Layers</span>
+        </button>
+    </mat-menu>
+
+    <mat-toolbar color="primary">
+        <span fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <div class="only-large"></div>
+
+            <div class="logo" *waveIfGfbio>
+                <mat-icon mat-list-icon svgIcon="vat:logo" alt="VAT"></mat-icon>
+                <span class="title">VAT</span>
+            </div>
+
+            <div class="geobon-logo" *waveIfGeoBon>
+                <span class="title">VAT <span class="up">@</span></span>
+                <mat-icon mat-list-icon svgIcon="geobon:logo" alt="GeoBon"></mat-icon>
+            </div>
+
+            <button mat-icon-button
+                    [matMenuTriggerFor]="layerListMenu"
+                    matTooltip="Actions for all layers" matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+            >
+                <mat-icon>more_vert</mat-icon>
+            </button>
+        </span>
+    </mat-toolbar>
+
+    <div class="layer-list" [style.max-height.px]="height-LayoutService.getToolbarHeightPx()">
+        <mat-list [dragula]="layer-bag" [dragulaOptions]="dragOptions"
+                  *ngIf="layoutService.getLayerListVisibilityStream() | async">
+
+            <mat-list-item *ngIf="(projectService.getLayerStream() | async)?.length === 0">
+                <button mat-button class="no-layer"
+                        (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
+                        matTooltip="Add New Data" matTooltipPosition="after"
+                        [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                >
+                    <mat-icon>add</mat-icon>
+                    add a first layer
+                </button>
+            </mat-list-item>
+
+            <ng-template ngFor let-layer [ngForOf]="projectService.getLayerStream() | async">
+                <mat-list-item
+                    [class.active-layer]="layer === (layerService.getSelectedLayerStream() | async)"
+                    [class.list-item-extended]="layer.expanded || layer.editSymbology"
+                >
+                    <mat-menu #layerMenu="matMenu">
+
+                        <button mat-menu-item *ngIf="layer.visible"
+                                (click)="projectService.changeLayer(layer, {visible: false})">
+                            <mat-icon>visibility_off</mat-icon>
+                            <span>Hide Layer</span>
+                        </button>
+                        <button mat-menu-item *ngIf="!layer.visible"
+                                (click)="projectService.changeLayer(layer, {visible: true})">
+                            <mat-icon>visibility</mat-icon>
+                            <span>Show Layer</span>
+                        </button>
+
+                        <button mat-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">
+                            <mat-icon>expand_more</mat-icon>
+                            <span>Show Legend</span>
+                        </button>
+                        <button mat-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">
+                            <mat-icon>expand_less</mat-icon>
+                            <span>Hide Legend</span>
+                        </button>
+                        <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: { layer: layer }})">
+                            <mat-icon>merge_type</mat-icon>
+                            <span>Lineage</span>
+                        </button>
+                        <button mat-menu-item (click)="projectService.removeLayer(layer)">
+                            <mat-icon>delete</mat-icon>
+                            <span>Remove</span>
+                        </button>
+                        <button mat-menu-item (click)="dialog.open(RenameLayerComponent, {data: {layer: layer}})">
+                            <mat-icon>mode_edit</mat-icon>
+                            <span>Rename</span>
+                        </button>
+                        <button mat-menu-item (click)="layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer: layer}})">
+                            <mat-icon>color_lens</mat-icon>
+                            <span>Edit Symbology</span>
+                        </button>
+                        <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">
+                            <mat-icon>file_download</mat-icon>
+                            <span>Export</span>
+                        </button>
+                        <button mat-menu-item (click)="dialog.open(LayerShareComponent, {data: {layer: layer}})">
+                            <mat-icon>cloud</mat-icon>
+                            <span>Share</span>
+                        </button>
+                    </mat-menu>
+
+                    <div class="list-element-inner-container" fxLayout="column" fxLayoutAlign="space-between none">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+
+                            <button mat-icon-button class="mat-warn error-button" aria-label="Reload"
+                                    *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) === LoadingState.ERROR"
+                                    (click)="projectService.reloadLayer(layer)"
+                            >
+                                <mat-icon>replay</mat-icon>
+                            </button>
+
+                            <button mat-icon-button
+                                    *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) !== LoadingState.ERROR"
+                                    (click)="toggleLayer(layer)"
+                                    matTooltip="{{layer.expanded ? 'Hide' : 'Show'}} Legend" matTooltipPosition="after"
+                                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
+                                <ng-template [ngIf]="!layer.visible">
+                                    <mat-icon mat-list-icon>visibility_off</mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_POINT
+                                    || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
+                                    <mat-icon mat-list-icon svgIcon="symbology:point"
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                    ></mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="false">
+                                    <mat-icon mat-list-icon svgIcon="symbology:line"></mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_VECTOR
+                                    || layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
+                                    <mat-icon mat-list-icon svgIcon="symbology:polygon"
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                    ></mat-icon>
+                                </ng-template>
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
+                                    || layer.symbology.getSymbologyType() === ST.RASTER">
+                                    <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
+                                        <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME"><span class="lineThrough">access_time</span></ng-template>
+                                        <ng-template ngSwitchDefault>
+                                            <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
+                                                              [yCells]="6">
+                                            </wave-raster-icon>
+                                        </ng-template>
+                                    </mat-icon>
+                                </ng-template>
+                            </button>
+
+
+                            <div #layerName
+                                 class="mat-list-item-text grabbable"
+                                 fxFlex="grow"
+                                 (click)="layerService.setSelectedLayer(layer)"
+                                 [matTooltip]="layer.name" matTooltipPosition="after"
+                                 [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
+                                {{layer.name}}
+                            </div>
+
+                            <button #menuTrigger
+                                    mat-icon-button class="secondary_action"
+                                    [matMenuTriggerFor]="layerMenu"
+                                    matTooltip="Layer Actions" matTooltipPosition="after"
+                                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                            >
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                        </div>
+
+                        <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()"
+                             fxLayoutAlign="space-between stretch"
+                             fxLayout="row"
+                             class="legendary no-drag">
+
+                            <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
+                                <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-points>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
+                                <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-points>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
+                                <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-points>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
+                                <wave-legendary-vector fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-vector>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+                                <wave-legendary-vector fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-vector>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.RASTER">
+                                <wave-legendary-raster fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-raster>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
+                                <wave-legendary-mapping-colorizer-raster
+                                    fxFlex="grow"
+                                    *ngIf="projectService.getLayerSymbologyDataStream(layer) | async"
+                                    [symbology]="layer.symbology"
+                                    [symbologyData]="projectService.getLayerSymbologyDataStream(layer) | async">
+                                </wave-legendary-mapping-colorizer-raster>
+                            </ng-template>
+
+                            <wave-legendary *ngSwitchDefault fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-legendary>
+
+                            <button mat-icon-button (click)="toggleLayer(layer)">
+                                <mat-icon>expand_less</mat-icon>
+                            </button>
+
+                        </div>
+
+                        <mat-progress-bar
+                            [mode]="(projectService.getLayerCombinedStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
+                            [value]="100"
+                            [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : ''"
+                        ></mat-progress-bar>
+
+                    </div>
+                </mat-list-item>
+
+            </ng-template>
+        </mat-list>
+    </div>
+
+</div>

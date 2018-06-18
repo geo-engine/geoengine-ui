@@ -1,31 +1,28 @@
-
-<div fxLayout="column">
-    <div fxLayout="row">
-        <md-input-container>
-            <input mdInput placeholder="Year" type="number" maxLength="4" [ngModel]="time?.year()"
-                   (ngModelChange)="update('year', $event)" [disabled]="disabled">
-        </md-input-container>
-        <md-input-container>
-            <input mdInput placeholder="Month" type="number" maxLength="2" [ngModel]="time?.month()+1"
-                   (ngModelChange)="update('month', ($event-1))" [disabled]="disabled">
-        </md-input-container>
-        <md-input-container>
-            <input mdInput placeholder="Day" type="number" maxLength="2" [ngModel]="time?.date()"
-                   (ngModelChange)="update('date', $event)" [disabled]="disabled">
-        </md-input-container>
-    </div>
-    <div fxLayout="row">
-        <md-input-container>
-            <input mdInput placeholder="Hour" type="number" maxLength="2" [ngModel]="time?.hour()"
-                   (ngModelChange)="update('hour', $event)" [disabled]="disabled">
-        </md-input-container>
-        <md-input-container>
-            <input mdInput placeholder="Minute" type="number" maxLength="2" [ngModel]="time?.minute()"
-                   (ngModelChange)="update('minute', $event)" [disabled]="disabled">
-        </md-input-container>
-        <md-input-container>
-            <input mdInput placeholder="Second" type="number" maxLength="2" [ngModel]="time?.second()"
-                   (ngModelChange)="update('second', $event)" [disabled]="disabled">
-        </md-input-container>
-    </div>
+<div fxLayout="row" fxLayoutGap="1rem">
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Year" type="number" maxLength="4" [ngModel]="time?.year()"
+               (ngModelChange)="update('year', $event)" [disabled]="disabled">
+    </mat-form-field>
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Month" type="number" maxLength="2" [ngModel]="time?.month()+1"
+               (ngModelChange)="update('month', ($event-1))" [disabled]="disabled">
+    </mat-form-field>
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Day" type="number" maxLength="2" [ngModel]="time?.date()"
+               (ngModelChange)="update('day', $event)" [disabled]="disabled">
+    </mat-form-field>
+</div>
+<div fxLayout="row" fxLayoutGap="1rem">
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Hour" type="number" maxLength="2" [ngModel]="time?.hour()"
+               (ngModelChange)="update('hour', $event)" [disabled]="disabled">
+    </mat-form-field>
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Minute" type="number" maxLength="2" [ngModel]="time?.minute()"
+               (ngModelChange)="update('minute', $event)" [disabled]="disabled">
+    </mat-form-field>
+    <mat-form-field fxFlex>
+        <input matInput placeholder="Second" type="number" maxLength="2" [ngModel]="time?.second()"
+               (ngModelChange)="update('second', $event)" [disabled]="disabled">
+    </mat-form-field>
 </div>

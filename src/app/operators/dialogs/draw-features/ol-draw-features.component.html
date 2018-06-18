@@ -1,19 +1,17 @@
 <wave-sidenav-header>Draw Features</wave-sidenav-header>
 
-<p class="mat-subheader">Draw in the map the area you want to analyze to</p>
+<mat-form-field>
+    <mat-select placeholder="Feature type" [(value)]="selectedFeatureType">
+        <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">
+            {{ featureType }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
 
-<md-select class="mat-subheader" placeholder="Feature type" [(value)]="selectedFeatureType">
-    <md-option *ngFor="let featureType of featureTypes" [value]="featureType">
-        {{ featureType }}
-    </md-option>
-</md-select>
+<div fxLayout="row" fxLayoutGap="1rem">
+    <button mat-raised-button fxFlex [disabled]="isDrawingActive || !selectedFeatureType" (click)="startDrawing()">Start</button>
 
-<div class="mat-subheader">
+    <button mat-raised-button fxFlex color="accent" [disabled]="!isDrawingActive" (click)="endDrawing()">End</button>
 
-<button md-raised-button [disabled]="isDrawingActive || !selectedFeatureType" (click)="startDrawing()">Start</button>
-
-<button md-raised-button color="accent" [disabled]="!isDrawingActive" (click)="endDrawing()">Finish</button>
-
-<button md-raised-button color="warn" [disabled]="!isDrawingActive" (click)="cancelDrawing()">Cancel</button>
-
+    <button mat-raised-button fxFlex color="warn" [disabled]="!isDrawingActive" (click)="cancelDrawing()">Cancel</button>
 </div>

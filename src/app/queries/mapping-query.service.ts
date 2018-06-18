@@ -1,25 +1,26 @@
+
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
-import {Observable} from 'rxjs/Rx';
+import {HttpClient} from '@angular/common/http';
 
 import {WFSOutputFormat} from './output-formats/wfs-output-format.model';
 import {WCSOutputFormat} from './output-formats/wcs-output-format.model';
 import {MappingRequestParameters} from './request-parameters.model';
 import {UserService} from '../users/user.service';
 import {ViewportSize} from '../map/map.service';
-import {NotificationService} from '../notification.service';
 
 import {Operator} from '../operators/operator.model';
 import {Projection} from '../operators/projection.model';
 import {ResultTypes} from '../operators/result-type.model';
-import {MappingColorizer} from '../layers/symbology/symbology.model';
+import {DeprecatedMappingColorizerDoNotUse} from '../colors/colorizer-data.model';
 
 import {PlotData} from '../plots/plot.model';
 import {Provenance} from '../provenance/provenance.model';
 import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 
-import * as ol from 'openlayers';
+import ol from 'ol';
 import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 import {
     Basket,
@@ -29,46 +30,117 @@ import {
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
+import {Extent} from 'openlayers';
 
-/**
- * A service that encapsulates MAPPING queries.
- */
 @Injectable()
 export class MappingQueryService {
-
     /**
-     * Inject the Http-Provider for asynchronous requests.
+     * Inject the HttpClient-Provider for asynchronous requests.
      */
     constructor(private config: Config,
-                private http: Http,
-                private userService: UserService,
-                private notificationService: NotificationService) {
+                private http: HttpClient,
+                private userService: UserService) {
+    }
+
+    /**
+     * A service that encapsulates MAPPING queries.
+     */
+
+    private static stripEndingTime(time: Time) {
+        let timeStart;
+        if (time.getEnd().isAfter(time.getStart())) {
+            timeStart = new TimePoint(time.getStart());
+        } else {
+            timeStart = time;
+        }
+        return timeStart;
     }
 
     /**
      * Get a MAPPING url for the plot operator and time.
-     * @param config
+     * @param config.operator plot operator
+     * @param config.time time interval for the plot
+     * @param config.extent the map extent
+     * @param config.projection [IMAGE ONLY] current projection
+     * @param config.plotWidth [IMAGE ONLY] width for image plot request
+     * @param config.plotHeight [IMAGE ONLY] height for image plot request
      * @returns the query url
      */
-    getPlotQueryUrl(config: { operator: Operator, time: Time }): string {
-        const parameters = new MappingRequestParameters({
+    getPlotQueryUrl(config: {
+        operator: Operator,
+        time: Time,
+        extent: Extent,
+        projection: Projection,
+        plotWidth?: number,
+        plotHeight?: number,
+    }): string {
+        // plot request with temporal information
+        const request = new MappingRequestParameters({
             service: 'plot',
             request: '',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                query: encodeURIComponent(config.operator.toQueryJSON()),
                 time: config.time.asRequestString(),
-                crs: config.operator.projection.getCode(),
-            },
+            }
         });
 
+        // raster sizes
         if (config.operator.getSources(ResultTypes.RASTER).size > 0) {
             // TODO: magic numbers
-            parameters.setParameter('height', 1024);
-            parameters.setParameter('width', 1024);
+            request.setParameter('width', 1024);
+            request.setParameter('height', 1024);
         }
 
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        // projection and extent
+        request.setParameter('crs', config.projection.getCode());
+        if (config.projection.getCode() === 'EPSG:4326') {
+            request.setParameter('bbox', config.extent[1] + ',' + config.extent[0] + ',' + config.extent[3] + ',' + config.extent[2]);
+        } else {
+            request.setParameter('bbox', config.extent.join(','));
+        }
+
+        // re-create operator with projected sources
+        // TODO: gerenalize this behavior or rework plotting
+        const operator = new Operator({
+            operatorType: config.operator.operatorType,
+            resultType: config.operator.resultType,
+            projection: config.projection,
+            attributes: config.operator.attributes,
+            dataTypes: config.operator.dataTypes,
+            units: config.operator.units,
+            rasterSources: config.operator.getSources(ResultTypes.RASTER)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            pointSources: config.operator.getSources(ResultTypes.POINTS)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            lineSources: config.operator.getSources(ResultTypes.LINES)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+            polygonSources: config.operator.getSources(ResultTypes.POLYGONS)
+                .map(rasterSource => rasterSource.getProjectedOperator(config.projection))
+                .toArray(),
+        });
+
+        const isRScriptPlot = config.operator.operatorType.getMappingName() === 'r_script'
+            && config.operator.operatorType.toMappingDict()['result'] === 'plot';
+        if (isRScriptPlot) {
+            if (!config.plotWidth || !config.plotHeight) {
+                throw new Error('There must be `width`, `height` and `projection` set for an `r_script` plot request.')
+            }
+
+            const operatorQueryDict = operator.toQueryDict();
+
+            // TODO: find more elegant way
+            operatorQueryDict.params['plot_width'] = config.plotWidth;
+            operatorQueryDict.params['plot_height'] = config.plotHeight;
+
+            request.setParameter('query', encodeURIComponent(JSON.stringify(operatorQueryDict)));
+        } else {
+            request.setParameter('query', encodeURIComponent(operator.toQueryJSON()));
+        }
+
+        return this.config.MAPPING_URL + '?' + request.toMessageBody();
     }
 
     /**
@@ -76,9 +148,15 @@ export class MappingQueryService {
      * @param config
      * @returns a Promise of PlotData
      */
-    getPlotData(config: { operator: Operator, time: Time }): Observable<PlotData> {
-        return this.http.get(this.getPlotQueryUrl(config))
-            .map(response => response.json());
+    getPlotData(config: {
+        operator: Operator,
+        time: Time,
+        extent: Extent,
+        projection: Projection,
+        plotWidth?: number,
+        plotHeight?: number,
+    }): Observable<PlotData> {
+        return this.http.get<PlotData>(this.getPlotQueryUrl(config));
     }
 
     /**
@@ -179,11 +257,11 @@ export class MappingQueryService {
         clustered: boolean
     }): Observable<string> {
         const requestParameters = this.getWFSQueryParameters(config);
-        return this.http.post(
+        return this.http.post<string>(
             this.config.MAPPING_URL,
             requestParameters.toMessageBody(false),
             {headers: requestParameters.getHeaders()}
-        ).map(response => response.text());
+        );
     }
 
     /**
@@ -295,11 +373,11 @@ export class MappingQueryService {
 
     getColorizer(operator: Operator,
                  time: Time,
-                 projection: Projection): Observable<MappingColorizer> {
+                 projection: Projection): Observable<DeprecatedMappingColorizerDoNotUse> {
 
 
         // TODO
-        let timeStart = this.stripEndingTime(time);
+        let timeStart = MappingQueryService.stripEndingTime(time);
 
         const request = new MappingRequestParameters({
             service: 'WMS',
@@ -314,23 +392,17 @@ export class MappingQueryService {
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get(this.config.MAPPING_URL + '?' + request.toMessageBody())
-            .map((res: Response) => res.json() as MappingColorizer)
-            // .catch((error, {}) => {
-            //    this.notificationService.error(`Could not load colorizer: »${error}«`);
-            //    return Observable.of({interpolation: 'unknown', breakpoints: []});
-            // })
-            .map(c => {
-
-                if (c['result'] && c['result'] === 'No raster for the given time available.') {
-                    console.log('No raster for the given time available.');
-                }
-
+        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody()).pipe(
+        // .catch((error, {}) => {
+        //    this.notificationService.error(`Could not load colorizer: »${error}«`);
+        //    return Observable.of({interpolation: 'unknown', breakpoints: []});
+        // })
+            map(c => {
                 if (c.breakpoints.length > 1 && c.breakpoints[0][0] < c.breakpoints[c.breakpoints.length - 1][0]) {
                     c.breakpoints = c.breakpoints.reverse();
                 }
                 return c;
-            })
+            }))
     }
 
     getProvenance(config: {
@@ -341,7 +413,7 @@ export class MappingQueryService {
     }): Promise<Array<Provenance>> {
 
         // TODO
-        let timeStart = this.stripEndingTime(config.time);
+        let timeStart = MappingQueryService.stripEndingTime(config.time);
 
         const request = new MappingRequestParameters({
             service: 'provenance',
@@ -375,13 +447,12 @@ export class MappingQueryService {
         //     json => json as [Provenance]
         // ).toPromise();
 
-        return this.http.post(
-            this.config.MAPPING_URL,
-            request.toMessageBody(false),
-            {headers: request.getHeaders()}
-        ).map((res: Response) => res.json())
-            .map(json => json as [Provenance])
-            .toPromise();
+        return this.http
+            .post<Array<Provenance>>(
+                this.config.MAPPING_URL,
+                request.toMessageBody(false),
+                {headers: request.getHeaders()}
+            ).toPromise();
     }
 
     getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
@@ -397,9 +468,7 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
-        return this.http.get(queryUrl).toPromise().then(
-            response => response.json()['speciesNames']
-        );
+        return this.http.get<{ speciesNames: Array<string> }>(queryUrl).toPromise().then(response => response.speciesNames);
     }
 
     getGBIFDataSourceCounts(scientificName: string): Promise<Array<{ name: string, count: number }>> {
@@ -415,9 +484,10 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         // TODO: react on failures of this weired protocol
-        return this.http.get(queryUrl).toPromise().then(
-            response => response.json()['dataSources']
-        );
+        return this.http
+            .get<{ dataSources: Array<{ name: string, count: number }> }>(queryUrl)
+            .toPromise()
+            .then(response => response.dataSources);
     }
 
     getGFBioBaskets(config: {
@@ -446,9 +516,8 @@ export class MappingQueryService {
         }
 
         return this.http
-            .get(queryUrl)
-            .map(jsonResponse => jsonResponse.json())
-            .map((basketsOverview: BasketsOverviewRaw) => {
+            .get<BasketsOverviewRaw>(queryUrl).pipe(
+            map((basketsOverview: BasketsOverviewRaw) => {
                 return {
                     baskets: basketsOverview.baskets.map(basket => {
                         return {
@@ -459,7 +528,7 @@ export class MappingQueryService {
                     }),
                     totalNumberOfBaskets: basketsOverview.totalNumberOfBaskets,
                 };
-            });
+            }));
     }
 
     getGFBioBasket(id: number): Observable<Basket> {
@@ -475,9 +544,8 @@ export class MappingQueryService {
         const queryUrl = this.config.MAPPING_URL + '?' + parameters.toMessageBody();
 
         return this.http
-            .get(queryUrl)
-            .map(jsonResponse => jsonResponse.json())
-            .map((basket: Basket) => {
+            .get<Basket>(queryUrl).pipe(
+            map((basket: Basket) => {
                 const regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
 
                 const basketResults: Array<BasketResult> = [];
@@ -526,17 +594,7 @@ export class MappingQueryService {
                     results: basketResults,
                     timestamp: moment(basket.timestamp, 'MM-DD-YYYY HH:mm:ss.SSS'),
                 }
-            });
-    }
-
-    private stripEndingTime(time: Time) {
-        let timeStart;
-        if (time.getEnd().isAfter(time.getStart())) {
-            timeStart = new TimePoint(time.getStart());
-        } else {
-            timeStart = time;
-        }
-        return timeStart;
+            }));
     }
 
 }

@@ -1,5 +1,5 @@
 import {Component, Input, ViewContainerRef} from '@angular/core';
-import {MdDialog, MdDialogConfig, MdDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {MediaviewImageDialogComponent} from '../image-dialog/mediaview.image-dialog.component';
 import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-header.component';
 
@@ -17,7 +17,7 @@ import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-
  */
 export class MediaviewImageComponent {
 
-    private dialogRef: MdDialogRef<any>;
+    private dialogRef: MatDialogRef<any>;
 
     /**
      * Input: An array of image-urls to display in the dialog
@@ -40,7 +40,7 @@ export class MediaviewImageComponent {
      * @param viewContainerRef reference to ViewContainer
      */
     constructor(
-        private dialog: MdDialog,
+        private dialog: MatDialog,
         private viewContainerRef: ViewContainerRef
     ) { }
 
@@ -72,7 +72,7 @@ export class MediaviewImageComponent {
      * Opens a dialog-popup, showing the images in full size
      */
     public openImageFullSize() {
-        let config = new MdDialogConfig();
+        let config = new MatDialogConfig();
         config.viewContainerRef = this.viewContainerRef;
 
         this.dialogRef = this.dialog.open(MediaviewImageDialogComponent, config);

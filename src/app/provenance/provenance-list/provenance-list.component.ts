@@ -1,8 +1,11 @@
-import {Component, OnInit, ChangeDetectionStrategy, Pipe, PipeTransform, Input} from '@angular/core';
-import {Observable} from 'rxjs';
+
+import {of as observableOf, Observable} from 'rxjs';
+import {switchAll, map} from 'rxjs/operators';
+
+import {Component, ChangeDetectionStrategy, Pipe, PipeTransform, Input} from '@angular/core';
 import {Provenance} from '../provenance.model';
 import {LayerService} from '../../layers/layer.service';
-import {ProjectService} from "../../project/project.service";
+import {ProjectService} from '../../project/project.service';
 
 /**
  * Return either the value or a non-breaking space point if it is empty.
@@ -31,16 +34,16 @@ export class ProvenanceListComponent {
     private provenance$: Observable<Iterable<Provenance>>;
 
     constructor(
-        private layerService: LayerService,
-        private projectService: ProjectService,
+        public layerService: LayerService,
+        public projectService: ProjectService,
     ) {
-        this.provenance$ = layerService.getSelectedLayerStream().map(l => {
+        this.provenance$ = layerService.getSelectedLayerStream().pipe(map(l => {
             if (l) {
                 return projectService.getLayerProvenanceDataStream(l);
             } else {
-                return Observable.of([]);
+                return observableOf([]);
             }
-        }).switch();
+        }), switchAll(), );
     }
 
 }

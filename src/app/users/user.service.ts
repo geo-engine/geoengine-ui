@@ -1,35 +1,40 @@
+
+import {
+    BehaviorSubject, Observable, Subject, combineLatest as observableCombineLatest, throwError as observableThrowError, EMPTY,
+    of as observableOf
+} from 'rxjs';
+
+import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {Http, Response} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 
-import {BehaviorSubject, Observable, Subject} from 'rxjs/Rx';
+import {Guest, User} from './user.model';
 
-import {User, Guest} from './user.model';
-
-import {RequestParameters, MappingRequestParameters, ParametersType} from '../queries/request-parameters.model';
+import {MappingRequestParameters, ParametersType, RequestParameters} from '../queries/request-parameters.model';
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
 import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource,
     MappingSourceChannel,
-    MappingTransform,
     MappingSourceDict,
-    MappingSourceResponse
+    MappingSourceResponse,
+    MappingTransform
 } from '../operators/dialogs/raster-repository/mapping-source.model';
-import {CsvFile, CsvColumn} from '../operators/dialogs/baskets/csv.model';
+import {CsvColumn, CsvFile} from '../operators/dialogs/baskets/csv.model';
 
-import {Unit, UnitMappingDict} from '../operators/unit.model';
+import {Unit} from '../operators/unit.model';
 import {Config} from '../config.service';
 import {Operator} from '../operators/operator.model';
 import {
-    FeatureDBServiceListParameters,
     FeatureDBList,
-    FeatureDBServiceUploadParameters,
     FeatureDBListEntry,
-    featureDBListEntryToOperator
+    featureDBListEntryToOperator,
+    FeatureDBServiceListParameters,
+    FeatureDBServiceUploadParameters
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
-import {IMappingRasterColorizer} from "../layers/symbology/symbology.model";
+import {ColorizerData} from '../colors/colorizer-data.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -98,24 +103,24 @@ class GFBioPortalLoginRequestParameters extends RequestParameters {
  */
 @Injectable()
 export class UserService {
-    private user$: BehaviorSubject<User>;
-    private session$: BehaviorSubject<Session>;
+    private readonly user$: BehaviorSubject<User>;
+    private readonly session$: BehaviorSubject<Session>;
 
-    private isGuestUser$: Observable<boolean>;
+    private readonly isGuestUser$: Observable<boolean>;
 
     private rasterSources$ = new BehaviorSubject<Array<MappingSource>>([]);
     private rasterSourceError$ = new BehaviorSubject<boolean>(false);
     private reloadRasterSources$ = new BehaviorSubject<void>(undefined);
 
     constructor(private config: Config,
-                private http: Http,
+                private http: HttpClient,
                 private notificationService: NotificationService) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
         );
 
         this.user$ = new BehaviorSubject(new Guest(config));
-        this.isGuestUser$ = this.session$.map(s => s.user === this.config.USER.GUEST.NAME);
+        this.isGuestUser$ = this.session$.pipe(map(s => s.user === this.config.USER.GUEST.NAME));
 
         // storage of the session
         this.session$.subscribe(newSession => {
@@ -197,13 +202,12 @@ export class UserService {
             username: credentials.user,
             password: credentials.password,
         });
-        return this.request(parameters)
-            .map(response => {
-                const result = response.json() as { result: string | boolean, session: string };
+        return this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+            map(result => {
                 const success = typeof result.result === 'boolean' && result.result === true;
 
                 return [result.session, success];
-            }).do(([session, success]: [string, boolean]) => {
+            }), tap(([session, success]: [string, boolean]) => {
                 if (success) {
                     this.session$.next({
                         user: credentials.user,
@@ -212,8 +216,8 @@ export class UserService {
                         isExternallyConnected: false,
                     });
                 }
-            })
-            .map(([session, success]) => success as boolean);
+            }),
+            map(([session, success]) => success as boolean), );
     }
 
     guestLogin(): Observable<boolean> {
@@ -235,13 +239,10 @@ export class UserService {
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters)
-            .map(response => {
-                const result = response.json() as { result: string | boolean };
-                const valid = typeof result.result === 'boolean' && result.result;
-
-                return valid;
-            });
+        return this.request<{ result: string | boolean }>(parameters).pipe(
+            map(result => {
+                return typeof result.result === 'boolean' && result.result;
+            }));
     }
 
     /**
@@ -252,35 +253,35 @@ export class UserService {
      */
     getUserDetails(session: Session): Observable<User> {
         if (session.user === this.config.USER.GUEST.NAME) {
-            return Observable.of(new Guest(this.config));
+            return observableOf(new Guest(this.config));
         }
 
         const parameters = new UserServiceRequestParameters({
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request(parameters).map(response => {
-            const result = response.json() as { result: string | boolean };
-            const valid = typeof result.result === 'boolean' && result.result;
+        return this.request<{ result: string | boolean }>(parameters).pipe(
+            map(result => {
+                const valid = typeof result.result === 'boolean' && result.result;
 
-            if (valid) {
-                const userResult = result as {
-                    result: string | boolean,
-                    username: string,
-                    realname: string,
-                    email: string,
-                    externalid?: string;
-                };
-                return new User({
-                    name: userResult.username,
-                    realName: userResult.realname,
-                    email: userResult.email,
-                    externalid: userResult.externalid,
-                });
-            } else {
-                return undefined;
-            }
-        });
+                if (valid) {
+                    const userResult = result as {
+                        result: string | boolean,
+                        username: string,
+                        realname: string,
+                        email: string,
+                        externalid?: string;
+                    };
+                    return new User({
+                        name: userResult.username,
+                        realName: userResult.realname,
+                        email: userResult.email,
+                        externalid: userResult.externalid,
+                    });
+                } else {
+                    return undefined;
+                }
+            }));
     }
 
     /**
@@ -295,66 +296,6 @@ export class UserService {
         user.email = details.email;
 
         this.user$.next(user);
-    }
-
-    private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
-        return Observable
-            .combineLatest(session$, reload$, (session, reload) => session)
-            .switchMap(session => {
-                const parameters = new UserServiceRequestParameters({
-                    request: 'sourcelist',
-                    sessionToken: session.sessionToken,
-                });
-                return this.request(parameters)
-                    .map(response => response.json())
-                    .map((json: MappingSourceResponse) => {
-                        const sources: Array<MappingSource> = [];
-
-                        for (const sourceId in json.sourcelist) {
-                            if (json.sourcelist.hasOwnProperty(sourceId)) {
-                                const source: MappingSourceDict = json.sourcelist[sourceId];
-                                sources.push({
-                                    operator: (source.operator) ? source.operator : 'rasterdb_source',
-                                    source: sourceId,
-                                    name: (source.name) ? source.name : sourceId,
-                                    uri: (source.provenance) ? source.provenance.uri : '',
-                                    citation: source.provenance ? source.provenance.citation : '',
-                                    license: source.provenance ? source.provenance.license : '',
-                                    colorizer: source.colorizer,
-                                    coords: source.coords,
-                                    channels: source.channels.map((channel, index) => {
-                                        return {
-                                            id: index,
-                                            name: channel.name || 'Channel #' + index,
-                                            datatype: channel.datatype,
-                                            nodata: channel.nodata,
-                                            unit: channel.unit ?
-                                                Unit.fromMappingDict(channel.unit) : Unit.defaultUnit,
-                                            colorizer: channel.colorizer,
-                                            hasTransform: !!channel.transform,
-                                            isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-                                            transform: channel.transform === undefined ?
-                                                undefined : {
-                                                    unit: channel.transform.unit ?
-                                                        Unit.fromMappingDict(channel.transform.unit)
-                                                        : Unit.defaultUnit,
-                                                    datatype: channel.transform.datatype,
-                                                    offset: channel.transform.offset,
-                                                    scale: channel.transform.scale,
-                                                } as MappingTransform,
-                                        } as MappingSourceChannel;
-                                    }),
-                                });
-                            }
-                        }
-                        return sources;
-                    })
-                    .catch(error => {
-                        this.notificationService.error(`Error loading raster sources: »${error}«`);
-                        this.rasterSourceError$.next(true);
-                        return [];
-                    });
-            });
     }
 
     /**
@@ -379,26 +320,18 @@ export class UserService {
      * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
      */
     getCsvStream(): Observable<Array<CsvFile>> {
-        type CsvResponse = Array<CsvFile>;
-
         const csvSourcesUrl = './assets/csv-data-sources.json';
 
-        return this.http.get(csvSourcesUrl).map(
-            response => response.json()
-        ).map((csvs: CsvResponse) => csvs);
+        return this.http.get<Array<CsvFile>>(csvSourcesUrl);
     }
 
     /**
      * Get the schema of a source operator. TODO: this should be replaced by a generic service call, which resolves the shema of a source.
      */
     getSourceSchemaAbcd(): Observable<Array<CsvColumn>> {
-        type CsvResponse = Array<CsvColumn>;
-
         const jsonUrl = './assets/abcd-mandatory-fields.json';
 
-        return this.http.get(jsonUrl).map(
-            response => response.json()
-        ).map((csvs: CsvResponse) => csvs);
+        return this.http.get<Array<CsvColumn>>(jsonUrl);
     }
 
     /**
@@ -410,16 +343,13 @@ export class UserService {
             result: boolean;
         }
 
-        return this.getSessionStream().switchMap(session => {
+        return this.getSessionStream().pipe(switchMap(session => {
             const parameters = new GfbioServiceRequestParameters({
                 request: 'abcd',
                 sessionToken: session.sessionToken,
             });
-            return this.request(parameters)
-                .map(response => response.json())
-                .map((abcdResponse: AbcdResponse) => abcdResponse.archives);
-
-        });
+            return this.request<AbcdResponse>(parameters).pipe(map(abcdResponse => abcdResponse.archives));
+        }));
     }
 
     /**
@@ -431,36 +361,33 @@ export class UserService {
             result: boolean;
         }
 
-        return this.getSessionStream().switchMap(session => {
+        return this.getSessionStream().pipe(switchMap(session => {
             const parameters = new GfbioServiceRequestParameters({
                 request: 'baskets',
                 sessionToken: session.sessionToken,
             });
-            return this.request(parameters)
-                .map(response => response.json())
-                .map((gfbioBasketResponse: GfbioBasketResponse) => gfbioBasketResponse.baskets);
-
-        });
+            return this.request<GfbioBasketResponse>(parameters).pipe(map(gfbioBasketResponse => gfbioBasketResponse.baskets));
+        }));
     }
 
     /**
+     * Get the GFBio login token from the portal.
      * Get the GFBio login token from the portal.
      */
     getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
         const parameters = new GFBioPortalLoginRequestParameters(credentials);
 
-        return this.http.get(
+        return this.http.get<string | { exception: string, message: string }>(
             this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
             {headers: parameters.getHeaders()}
-        ).flatMap(response => {
-            const json = response.json();
-            if (typeof json === 'string') {
-                return Observable.of(json); // token
+        ).pipe(mergeMap(response => {
+            if (typeof response === 'string') {
+                return observableOf(response); // token
             } else {
-                const result: { exception: string, message: string } = json;
-                return Observable.throw(result.message);
+                const result: { exception: string, message: string } = response;
+                return observableThrowError(result.message);
             }
-        });
+        }));
     }
 
     /**
@@ -478,30 +405,30 @@ export class UserService {
             username: credentials.user,
             password: credentials.password,
         });
-        return token$.flatMap(token => {
+        return token$.pipe(mergeMap(token => {
                 const parameters = new MappingRequestParameters({
                     service: 'gfbio',
                     sessionToken: undefined,
                     request: 'login',
                     parameters: {token: token},
                 });
-                return this.request(parameters).map(response => {
-                    const result = response.json() as { result: string | boolean, session: string };
-                    const success = typeof result.result === 'boolean' && result.result === true;
+                return this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+                    map(response => {
+                        const success = typeof response.result === 'boolean' && response.result === true;
 
-                    if (success) {
-                        this.session$.next({
-                            user: credentials.user,
-                            sessionToken: result.session,
-                            staySignedIn: credentials.staySignedIn,
-                            isExternallyConnected: true,
-                        });
-                    }
+                        if (success) {
+                            this.session$.next({
+                                user: credentials.user,
+                                sessionToken: response.session,
+                                staySignedIn: credentials.staySignedIn,
+                                isExternallyConnected: true,
+                            });
+                        }
 
-                    return success;
-                });
+                        return success;
+                    }));
             }
-        );
+        ));
     }
 
     /**
@@ -519,26 +446,25 @@ export class UserService {
 
         const subject = new Subject<boolean>();
 
-        this.request(parameters)
-            .flatMap(response => {
-                const result = response.json() as { result: string | boolean, session: string };
-                const success = typeof result.result === 'boolean' && result.result === true;
+        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+            mergeMap(response => {
+                const success = typeof response.result === 'boolean' && response.result === true;
 
                 if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: result.session})
-                        .do(user => {
+                    return this.getUserDetails({user: undefined, sessionToken: response.session}).pipe(
+                        tap(user => {
                             this.session$.next({
                                 user: user.name,
-                                sessionToken: result.session,
+                                sessionToken: response.session,
                                 staySignedIn: false,
                                 isExternallyConnected: true,
                             });
-                        })
-                        .map(user => true);
+                        }),
+                        map(user => true), );
                 } else {
-                    return Observable.of(false);
+                    return observableOf(false);
                 }
-            })
+            }))
             .subscribe(
                 success => subject.next(success),
                 () => subject.next(false),
@@ -559,33 +485,32 @@ export class UserService {
 
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
         if (this.isGuestUser()) {
-            return Observable.of([]);
+            return observableOf([]);
         }
 
-        return this.request(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken}))
-            .map(response => response.json() as FeatureDBList)
-            .map(list => list.data_sets.map(featureDBListEntryToOperator));
+        return this.request<FeatureDBList>(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken})).pipe(
+            map(list => list.data_sets.map(featureDBListEntryToOperator)));
     }
 
     addFeatureToDB(name: string, operator: Operator): Observable<{ name: string, operator: Operator }> {
         if (this.isGuestUser()) {
-            return Observable.empty();
+            return EMPTY;
         }
 
         const subject = new Subject<{ name: string, operator: Operator }>();
 
-        this.request(
-            new FeatureDBServiceUploadParameters({
-                sessionToken: this.session$.getValue().sessionToken,
-                name: name,
-                crs: operator.projection,
-                query: operator.toQueryJSON(),
-                type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
-            }),
-            true,
-        )
-            .map(response => response.json() as FeatureDBListEntry)
-            .map(featureDBListEntryToOperator)
+        this
+            .request<FeatureDBListEntry>(
+                new FeatureDBServiceUploadParameters({
+                    sessionToken: this.session$.getValue().sessionToken,
+                    name: name,
+                    crs: operator.projection,
+                    query: operator.toQueryJSON(),
+                    type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
+                }),
+                true,
+            ).pipe(
+            map(featureDBListEntryToOperator))
             .subscribe(
                 data => {
                     subject.next(data);
@@ -631,12 +556,75 @@ export class UserService {
         }
     }
 
-    protected request(requestParameters: MappingRequestParameters, encode = false): Observable<Response> {
-        return this.http.post(
+    protected request<ResponseType>(requestParameters: MappingRequestParameters, encode = false): Observable<ResponseType> {
+        return this.http.post<ResponseType>(
             this.config.MAPPING_URL,
             requestParameters.toMessageBody(encode),
             {headers: requestParameters.getHeaders()}
         );
+    }
+
+    private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
+        return observableCombineLatest(session$, reload$, (session, reload) => session).pipe(
+            switchMap(session => {
+                const parameters = new UserServiceRequestParameters({
+                    request: 'sourcelist',
+                    sessionToken: session.sessionToken,
+                });
+                return this.request<MappingSourceResponse>(parameters).pipe(
+                    map(json => {
+                        const sources: Array<MappingSource> = [];
+
+                        for (const sourceId in json.sourcelist) {
+                            if (json.sourcelist.hasOwnProperty(sourceId)) {
+                                const source: MappingSourceDict = json.sourcelist[sourceId];
+
+                                const sourceChannels = (!source.channels) ? [] : source.channels.map((channel, index) => {
+                                    const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
+                                    const channelColorizer = channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) :
+                                        source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) :
+                                            ColorizerData.grayScaleColorizer(channelUnit);
+                                    return {
+                                        id: index,
+                                        name: channel.name || 'Channel #' + index,
+                                        datatype: channel.datatype,
+                                        nodata: channel.nodata,
+                                        unit: channelUnit,
+                                        colorizer: channelColorizer,
+                                        hasTransform: !!channel.transform,
+                                        isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+                                        transform: channel.transform === undefined ?
+                                            undefined : {
+                                                unit: channel.transform.unit ?
+                                                    Unit.fromMappingDict(channel.transform.unit)
+                                                    : Unit.defaultUnit,
+                                                datatype: channel.transform.datatype,
+                                                offset: channel.transform.offset,
+                                                scale: channel.transform.scale,
+                                            } as MappingTransform,
+                                    } as MappingSourceChannel;
+                                });
+
+                                sources.push({
+                                    operator: (source.operator) ? source.operator : 'rasterdb_source',
+                                    source: sourceId,
+                                    name: (source.name) ? source.name : sourceId,
+                                    uri: (source.provenance) ? source.provenance.uri : '',
+                                    citation: source.provenance ? source.provenance.citation : '',
+                                    license: source.provenance ? source.provenance.license : '',
+                                    coords: source.coords,
+                                    channels: sourceChannels,
+                                });
+                            }
+                        }
+                        return sources;
+                    }),
+                    catchError(error => {
+                        this.notificationService.error(`Error loading raster sources: »${error}«`);
+                        this.rasterSourceError$.next(true);
+                        return [];
+                    }), );
+            }));
     }
 
 }

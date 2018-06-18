@@ -1,7 +1,10 @@
+
+import {of as observableOf} from 'rxjs';
+
+import {catchError, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
-import {Http} from '@angular/http';
-import {Observable} from 'rxjs/Rx';
+import {HttpClient} from '@angular/common/http';
 
 type MappingUrlType = string;
 interface WmsInterface {
@@ -30,6 +33,7 @@ interface DelaysInterface {
     LOADING: {
         MIN: number,
     };
+    TOOLTIP: number;
     DEBOUNCE: number;
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
@@ -39,6 +43,7 @@ interface DefaultsInterface {
     PROJECT: {
         NAME: string,
         TIME: string,
+        TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year',
         PROJECTION: 'EPSG:3857' | 'EPSG:4326',
     };
 }
@@ -105,6 +110,7 @@ const ConfigDefault = Immutable.fromJS({
         LOADING: {
             MIN: 500,
         },
+        TOOLTIP: 400,
         DEBOUNCE: 400,
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
@@ -114,6 +120,7 @@ const ConfigDefault = Immutable.fromJS({
         PROJECT: {
             NAME: 'Default',
             TIME: '2000-06-06T12:00:00.000Z',
+            TIMESTEP: '1 month',
             PROJECTION: 'EPSG:3857',
         },
     },
@@ -226,25 +233,25 @@ export class Config {
         return this._TIME;
     }
 
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
     }
 
     /**
      * Initialize the config on app start.
      */
     load(): Promise<void> {
-        return this.http.get(Config.CONFIG_FILE)
-            .map(response => response.json())
-            .do(
+        return this.http
+            .get<ConfigInterface>(Config.CONFIG_FILE).pipe(
+            tap(
                 appConfig => {
                     const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
 
                     this.handleConfig(config);
                 },
-                error => {
+                () => { // error
                     this.handleConfig(ConfigDefault.toJS());
-                })
-            .catch(() => Observable.of(undefined))
+                }),
+            catchError(() => observableOf(undefined)), )
             .toPromise();
     }
 

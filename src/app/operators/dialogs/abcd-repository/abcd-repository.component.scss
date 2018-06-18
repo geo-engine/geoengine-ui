@@ -11,12 +11,12 @@
 .searchInput {
     width: 100%;
 }
-md-list-item {
+mat-list-item {
     cursor: pointer;
 }
 
 .highlight,
-md-list-item /deep/ .highlight {
+mat-list-item /deep/ .highlight {
     color: mat-color($wave-app-accent);
     text-decoration: underline;
 }

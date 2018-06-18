@@ -3,7 +3,7 @@ import {Component, ChangeDetectionStrategy, OnInit, Inject} from '@angular/core'
 import {Layer} from '../layer.model';
 import {Symbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MD_DIALOG_DATA, MdDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
 
 @Component({
@@ -11,21 +11,21 @@ import {ProjectService} from '../../project/project.service';
     template: `
     <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
-        <md-dialog-content>
-            <md-input-container>
-                <input mdInput type="text" placeholder="Name" formControlName="layerName">
-            </md-input-container>
-        </md-dialog-content>
-        <md-dialog-actions align="end">
-            <button md-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
-        </md-dialog-actions>
+        <mat-dialog-content>
+            <mat-form-field>
+                <input matInput type="text" placeholder="Name" formControlName="layerName">
+            </mat-form-field>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
+        </mat-dialog-actions>
     </form>
     `,
     styles: [`
     form {
         padding-top: 16px;
     }
-    md-input-container {
+    mat-form-field {
         width: 100%;
     }
     `],
@@ -40,8 +40,8 @@ export class RenameLayerComponent implements OnInit {
     constructor(
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
-        private dialogRef: MdDialogRef<RenameLayerComponent>,
-        @Inject(MD_DIALOG_DATA) private config: {layer?: Layer<Symbology>}
+        private dialogRef: MatDialogRef<RenameLayerComponent>,
+        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<Symbology>}
     ) {}
 
     ngOnInit(): void {
@@ -55,7 +55,7 @@ export class RenameLayerComponent implements OnInit {
     /**
      * Save the layer name and close the dialog.
      */
-    save() {
+    save(event: any) {
         const layerName = this.form.controls['layerName'].value;
         if (layerName !== this.layer.name) {
             this.projectService.changeLayer(this.layer, {name: layerName});

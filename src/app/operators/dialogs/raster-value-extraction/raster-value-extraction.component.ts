@@ -3,13 +3,12 @@ import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,
-    ClusteredPointSymbology,
-    SimplePointSymbology,
-    SimpleVectorSymbology
+    ComplexPointSymbology,
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
@@ -149,7 +148,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add() {
+    add(event: any) {
         const vectorOperator: Operator = this.form.controls['vectorLayer'].value.operator;
         const projection = vectorOperator.projection;
         const resultType = vectorOperator.resultType;
@@ -180,11 +179,11 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 clustered = this.form.controls['vectorLayer'].value.clustered;
 
                 symbology = clustered ?
-                    new ClusteredPointSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                    ComplexPointSymbology.createClusterSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     }) :
-                    new SimplePointSymbology({
-                        fillRGBA: this.randomColorService.getRandomColor(),
+                    ComplexPointSymbology.createSimpleSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
 
                 for (let i = 0; i < rasterOperators.length; i++) {
@@ -195,8 +194,8 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
                 break;
             case ResultTypes.POLYGONS:
-                symbology = new SimpleVectorSymbology({
-                    fillRGBA: this.randomColorService.getRandomColor(),
+                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
 
                 for (let i = 0; i < rasterOperators.length; i++) {

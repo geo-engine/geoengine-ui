@@ -1,6 +1,8 @@
-<md-toolbar md-dialog-title color="primary">
-    <span><ng-content></ng-content></span>
-    <button md-button md-dialog-close>
-        <md-icon>clear</md-icon>
+<mat-toolbar mat-dialog-title color="primary" fxLayout="row" fxLayoutGap="1rem">
+    <span fxFlex>
+        <ng-content></ng-content>
+    </span>
+    <button mat-button mat-dialog-close>
+        <mat-icon>clear</mat-icon>
     </button>
-</md-toolbar>
+</mat-toolbar>

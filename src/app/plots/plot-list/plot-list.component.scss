@@ -5,7 +5,7 @@
     padding: 1rem;
 }
 
-md-card:not(:last-child) {
+mat-card:not(:last-child) {
     margin-bottom: 1rem;
 }
 
@@ -14,8 +14,8 @@ img {
     height: auto;
 }
 
-img[md-card-avatar] {
-    height: 100%;
+img.mat-card-avatar {
+    height: 40px;
     width: auto;
     border-radius: 50%;
 }
@@ -24,7 +24,7 @@ pre {
     overflow: hidden;
 }
 
-md-spinner {
+mat-spinner {
     width: 25%;
     height: auto;
     margin: 0 auto;
@@ -32,4 +32,10 @@ md-spinner {
 
 .error {
     color: mat-color($wave-app-warn);
+}
+
+.no-plots {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    margin-top: 50%;
+    text-align: center;
 }

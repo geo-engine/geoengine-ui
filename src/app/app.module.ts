@@ -1,9 +1,10 @@
+///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
 import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {HttpClientModule} from '@angular/common/http';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
@@ -21,19 +22,16 @@ import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
-import {SymbologyPointsComponent, SymbologyVectorComponent} from './layers/symbology/symbology-points.component';
-import {SymbologyRasterComponent} from './layers/symbology/symbology-raster.component';
+import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
+import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {DragulaService} from 'ng2-dragula/components/dragula.provider';
 import {DragulaModule} from 'ng2-dragula/ng2-dragula';
-import {
-    LegendaryClusteredPointComponent,
-    LegendaryComponent,
-    LegendaryMappingColorizerRasterComponent,
-    LegendaryPointComponent,
-    LegendaryRasterComponent,
-    LegendaryVectorComponent
-} from './layers/symbology/legendary.component';
+import {LegendComponent} from './layers/legend/legend.component';
+import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
+import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
+import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
+import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
@@ -43,7 +41,7 @@ import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
-import {MappingColorizerToGradientPipe} from './layers/symbology/mapping-colorizer-to-gradient.pipe';
+import {MappingColorizerToGradientPipe} from './util/pipes/mapping-colorizer-to-gradient.pipe';
 import {ProjectService} from './project/project.service';
 import {LayerService} from './layers/layer.service';
 import {LayoutService} from './layout.service';
@@ -64,9 +62,9 @@ import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reprojection-selection/reprojection-selection.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
-import {NextLayerListComponent} from './layers/next-layer-list/next-layer-list.component';
-import {SmallTimeInteractionComponent} from './small-time-interaction/small-time-interaction.component';
-import {TimeConfigComponent} from './time-config/time-config.component';
+import {LayerListComponent} from './layers/layer-list/layer-list.component';
+import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
+import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
@@ -84,8 +82,12 @@ import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
-import {CsvDialogComponent} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.properties.service';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
+import {
+    CsvDialogComponent,
+    CsvErrorDialog
+} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {RasterIconComponent} from './raster-icon/raster-icon.component';
@@ -119,14 +121,13 @@ import {MediaviewAudioComponent} from './datatable/mediaview/audio/mediaview.aud
 import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
-import {TableService} from './datatable/table/table.service';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
 import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {MdIconRegistry} from '@angular/material';
+import {MatIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
@@ -134,6 +135,14 @@ import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-pol
 import {IfGeoBonDirective} from './util/directives/if-geobon.directive';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from './operators/dialogs/country-polygon-selection/country-polygon-selection.component';
+import { ZoomHandlesComponent } from './map/zoom-handles/zoom-handles.component';
+import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
+import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
+import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
+import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -154,19 +163,18 @@ export function configInitializer(config: Config) {
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
         BreakpointToCssStringPipe,
-        SymbologyPointsComponent,
         SymbologyRasterComponent,
+        SymbologyRasterMappingColorizerComponent,
         SymbologyVectorComponent,
         NbspPipe,
         ReprojectionSelectionComponent,
         OperatorOutputNameComponent,
         CodeEditorComponent,
-        LegendaryComponent,
+        LegendComponent,
         LegendaryPointComponent,
         LegendaryRasterComponent,
         LegendaryVectorComponent,
         LegendaryMappingColorizerRasterComponent,
-        LegendaryClusteredPointComponent,
         VatLogoComponent,
         GFBioLogoComponent,
         IdessaLogoComponent,
@@ -193,7 +201,7 @@ export function configInitializer(config: Config) {
         ReprojectionSelectionComponent,
         RasterValueExtractionOperatorComponent,
         SmallTimeInteractionComponent,
-        NextLayerListComponent,
+        LayerListComponent,
         TimeConfigComponent,
         ExpressionOperatorComponent,
         HistogramOperatorComponent,
@@ -212,6 +220,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         PlotDetailViewComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         CsvUploadComponent,
         FeaturedbSourceListComponent,
         WorkspaceSettingsComponent,
@@ -250,12 +259,20 @@ export function configInitializer(config: Config) {
         RasterPolygonClipOperatorComponent,
         FeedbackComponent,
         OlDrawFeaturesComponent,
-        CountryPolygonSelectionComponent
+        CountryPolygonSelectionComponent,
+        SymbologyEditorComponent,
+        ColorizerEditorComponent,
+        ZoomHandlesComponent,
+        HeatmapOperatorComponent,
+        CountryPolygonSelectionComponent,
+        SensorSourceOperatorComponent,
+        ColorBreakpointInputComponent,
+        TerminologyLookupOperatorComponent
     ],
     imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         BrowserAnimationsModule,
         MaterialModule,
@@ -282,6 +299,7 @@ export function configInitializer(config: Config) {
         HelpComponent,
         SplashDialogComponent,
         CsvDialogComponent,
+        CsvErrorDialog,
         PlotListComponent,
         PlotDetailViewComponent,
         FeaturedbSourceListComponent,
@@ -308,10 +326,15 @@ export function configInitializer(config: Config) {
         RasterPolygonClipOperatorComponent,
         OlDrawFeaturesComponent,
         CountryPolygonSelectionComponent,
+        SymbologyEditorComponent,
+        ColorizerEditorComponent,
+        HeatmapOperatorComponent,
+        SensorSourceOperatorComponent,
+        TerminologyLookupOperatorComponent
     ],
     providers: [
         DragulaService,
-        MdIconRegistry,
+        MatIconRegistry,
         FormBuilder,
         ProjectService,
         MappingQueryService,
@@ -324,13 +347,13 @@ export function configInitializer(config: Config) {
         UserService,
         SidenavRef,
         Config,
-        TableService,
         {
             provide: APP_INITIALIZER,
             useFactory: configInitializer,
             deps: [Config],
             multi: true,
         },
+        CsvPropertiesService,
     ],
     bootstrap: [AppComponent]
 })

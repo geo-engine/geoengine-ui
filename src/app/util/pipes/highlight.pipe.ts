@@ -10,12 +10,12 @@ export class HighlightPipe implements PipeTransform {
         if (term) {
             try {
                 rexp = new RegExp('(' + term + ')', 'gi');
+            } catch (e) {
+                // TODO: what to do?
             }
-            catch(e) {
-                //TODO: what to do?
-            }
-            if(rexp)
+            if (rexp) {
                 text = text.replace(rexp, '<span class="highlight">$1</span>');
+            }
         }
         return text;
     }

@@ -1,6 +1,6 @@
 @import "../../../../../wave-app-theme";
 
-md-input-container, input, button {
+mat-form-field, input, button {
     width: 100%;
 }
 
@@ -12,7 +12,7 @@ button {
     color: mat-color($wave-app-warn);
 }
 
-md-progress-spinner {
+mat-progress-spinner {
     width: 50%;
     height: auto;
     margin: 0 auto;

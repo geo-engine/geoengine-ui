@@ -12,7 +12,7 @@
         "curly": true,
         "eofline": true,
         "forin": true,
-        "import-blacklist": [true, "rxjs"],
+        "import-blacklist": [true],
         "import-spacing": true,
         "indent": [
             true,
@@ -27,8 +27,7 @@
         "member-access": false,
         "member-ordering": [
             true,
-            "static-before-instance",
-            "variables-before-functions"
+            "fields-first"
         ],
         "no-arg": true,
         "no-bitwise": true,

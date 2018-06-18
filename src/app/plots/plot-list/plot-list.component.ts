@@ -1,8 +1,10 @@
+
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {first, filter} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
-import {BehaviorSubject, Subscription} from 'rxjs/Rx';
 import {LoadingState} from '../../project/loading-state.model';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {RScriptType} from '../../operators/types/r-script-type.model';
 import {BoxPlotType} from '../../operators/types/boxplot-type.model';
@@ -11,6 +13,7 @@ import {PieChartType} from '../../operators/types/piechart-type.model';
 import {LayoutService} from '../../layout.service';
 import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
 import {Plot} from '../plot.model';
+import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 
 @Component({
     selector: 'wave-plot-list',
@@ -26,20 +29,15 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     PieChartType = PieChartType;
     BoxPlotType = BoxPlotType;
     //
-
-    LoadingState = LoadingState;
-    PlotDetailViewComponent = PlotDetailViewComponent;
-
-    cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
-
     // to distinguish some r-script operators out of the editable ones.
     editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME];
-
+    LoadingState = LoadingState;
+    cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
     private subsriptions: Array<Subscription> = [];
 
     constructor(public projectService: ProjectService,
                 private layoutService: LayoutService,
-                public dialog: MdDialog,
+                public dialog: MatDialog,
                 private elementRef: ElementRef) {
     }
 
@@ -48,12 +46,12 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         this.subsriptions.push(
-            this.projectService.getPlotStream()
-                .filter(plots => plots.length > 0)
-                .first()
+            this.projectService.getPlotStream().pipe(
+                filter(plots => plots.length > 0),
+                first(), )
                 .subscribe(() => {
                     setTimeout(() => {
-                        const cardContent = this.elementRef.nativeElement.querySelector('md-card');
+                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
                         const width = parseInt(getComputedStyle(cardContent).width, 10);
                         this.cardWidth$.next(width);
                     });
@@ -75,4 +73,20 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    goToOperatorsTab() {
+        this.layoutService.setSidenavContentComponent({
+            component: OperatorListComponent,
+        });
+    }
+
+    showFullscreen(plot: Plot) {
+        this.dialog.open(
+            PlotDetailViewComponent,
+            {
+                data: plot,
+                maxHeight: '100vh',
+                maxWidth: '100vw',
+            },
+        );
+    }
 }

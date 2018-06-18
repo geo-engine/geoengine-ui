@@ -1,5 +1,11 @@
+
+import {
+    fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
+} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+
 import {Injectable, Type} from '@angular/core';
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs/Rx';
+import {Config} from './config.service';
 
 /**
  * Layout settings serialization format.
@@ -14,7 +20,7 @@ export interface LayoutDict {
 export interface SidenavConfig {
     component: Type<any>;
     parent?: Type<any>;
-    config?: {[key: string]: any};
+    config?: { [key: string]: any };
 }
 
 /**
@@ -49,6 +55,12 @@ export class LayoutService {
      *  Sidenav content
      */
     private sidenavContentComponent$: Subject<SidenavConfig> = new ReplaySubject(1);
+
+    private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
+
+    constructor(private config: Config) {
+        this.setupSidenavWidthStream();
+    }
 
     static remInPx(): number {
         // TODO: calculate
@@ -134,14 +146,15 @@ export class LayoutService {
         return totalAvailableHeight - layerDetailViewHeight;
     }
 
-    constructor() {
+    getSidenavWidthStream(): Observable<number> {
+        return this.sidenavContentMaxWidth$;
     }
 
     /**
      * Which component to show in the sidenav?
      */
     getSidenavContentComponentStream(): Observable<SidenavConfig> {
-        return this.sidenavContentComponent$.distinctUntilChanged();
+        return this.sidenavContentComponent$.pipe(distinctUntilChanged());
     }
 
     /**
@@ -265,7 +278,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getLayerDetailViewStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$,
@@ -293,7 +306,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$,
@@ -316,7 +329,7 @@ export class LayoutService {
     }
 
     getLayoutDictStream(): Observable<LayoutDict> {
-        return Observable.combineLatest(
+        return observableCombineLatest(
             this.layerListVisible$,
             this.layerDetailViewVisible$,
             this.layerDetailViewTabIndex$,
@@ -348,6 +361,34 @@ export class LayoutService {
         if (dict.layerDetailViewHeightPercentage) {
             this.setLayerDetailViewHeightPercentage(dict.layerDetailViewHeightPercentage);
         }
+    }
+
+    /**
+     * Initialize and update the sidenav INNER width stream
+     */
+    private setupSidenavWidthStream() {
+        function getWidth(): number {
+            const sidenavComponent = document.getElementsByTagName('mat-sidenav')[0];
+            const sidenavStyle = window.getComputedStyle(sidenavComponent);
+            const widthString = sidenavStyle.width;
+
+            if (widthString.indexOf('px') === (widthString.length - 2)) {
+                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx();
+            } else {
+                throw new Error('sidenav width must be a `px` value');
+            }
+        }
+
+        // this timeout prevents calling the `getWidth` function before the DOM is initialized
+        setTimeout(() => {
+            observableFromEvent(window, 'resize').pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE))
+                .subscribe(() => {
+                    this.sidenavContentMaxWidth$.next(getWidth());
+                });
+
+            this.sidenavContentMaxWidth$.next(getWidth());
+        })
     }
 
 }

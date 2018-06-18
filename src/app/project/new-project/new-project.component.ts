@@ -1,6 +1,8 @@
+
+import {BehaviorSubject} from 'rxjs';
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {BehaviorSubject} from 'rxjs/Rx';
 import {StorageService} from '../../storage/storage.service';
 import {ProjectService} from '../project.service';
 import {Project} from '../project.model';
@@ -35,7 +37,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
             name: ['', Validators.required, WaveValidators.uniqueProjectName(this.storageService)],
             projection: [Projections.WEB_MERCATOR, Validators.required],
         });
-        this.projectService.getProjectionStream().first().subscribe(projection => {
+        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
             this.form.controls['projection'].setValue(projection);
         });
     }
@@ -48,7 +50,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
      * Create a new project and switch to it.
      */
     create() {
-        this.projectService.getTimeStream().first().subscribe(time => {
+        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
             const projectName: string = this.form.controls['name'].value;
             this.projectService.setProject(
                 new Project({

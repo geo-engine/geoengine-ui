@@ -1,3 +1,7 @@
+
+import {Observable, BehaviorSubject, of as observableOf, combineLatest as observableCombineLatest} from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, Type} from '@angular/core';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 
@@ -14,7 +18,6 @@ import {HistogramType} from '../../types/histogram-type.model';
 import {RasterValueExtractionOperatorComponent} from '../raster-value-extraction/raster-value-extraction.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {LayoutService} from '../../../layout.service';
-import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 import {RScriptType} from '../../types/r-script-type.model';
 import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
@@ -27,6 +30,8 @@ import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
 import {OperatorType} from '../../operator-type.model';
+import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
+import {HeatmapType} from '../../types/heatmap-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -93,6 +98,11 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         description: 'Filter data via numeric range',
     },
     {
+        component: HeatmapOperatorComponent,
+        type: HeatmapType,
+        description: 'Create a heatmap for points',
+    },
+    {
         component: PointInPolygonFilterOperatorComponent,
         type: PointInPolygonFilterType,
         description: 'Filter points that are enclosed by a polygon',
@@ -126,9 +136,9 @@ export class OperatorListComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.operatorGroups$ = Observable.combineLatest(
-            Observable.of(ALL_OPERATORS),
-            this.searchString$.map(s => s.toLowerCase()),
+        this.operatorGroups$ = observableCombineLatest(
+            observableOf(ALL_OPERATORS),
+            this.searchString$.pipe(map(s => s.toLowerCase())),
             (operatorGroups, searchString) => {
                 const nameComparator = (a: string, b: string): number => {
                     const stripped = (s: string): string => s.replace(' ', '');

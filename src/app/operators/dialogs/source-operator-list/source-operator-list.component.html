@@ -1,63 +1,71 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
-<md-nav-list>
-    <md-list-item
+<mat-nav-list>
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: RasterRepositoryComponent, parent: SourceOperatorListComponent})"
     >
-        <img md-list-icon [src]="RasterSourceType.ICON_URL" [alt]="RasterSourceType.NAME">
-        <h4 md-line>Environmental</h4>
-        <p md-line>Add environmental raster layers</p>
-    </md-list-item>
-    <md-list-item
+        <img mat-list-icon [src]="RasterSourceType.ICON_URL" [alt]="RasterSourceType.NAME">
+        <h4 mat-line>Environmental</h4>
+        <p mat-line>Add environmental raster layers</p>
+    </mat-list-item>
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: AbcdRepositoryComponent, parent: SourceOperatorListComponent})"
         *waveIfGfbio
     >
-        <img md-list-icon [src]="ABCDSourceType.ICON_URL" [alt]="ABCDSourceType.NAME">
-        <h4 md-line>ABCD Archives</h4>
-        <p md-line>Lookup GFBio ABCD archives</p>
-    </md-list-item>
-    <md-list-item *waveIfGuest class="disabled">
-        <img md-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
-        <h4 md-line>Custom Features</h4>
-        <p md-line>Log in to use custom vector data from e.g. CSV files</p>
-    </md-list-item>
-    <md-list-item
+        <img mat-list-icon [src]="ABCDSourceType.ICON_URL" [alt]="ABCDSourceType.NAME">
+        <h4 mat-line>ABCD Archives</h4>
+        <p mat-line>Lookup GFBio ABCD archives</p>
+    </mat-list-item>
+    <mat-list-item *waveIfGuest class="disabled">
+        <img mat-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
+        <h4 mat-line>Custom Features</h4>
+        <p mat-line>Log in to use custom vector data from e.g. CSV files</p>
+    </mat-list-item>
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: FeaturedbSourceListComponent, parent: SourceOperatorListComponent})"
         *waveIfLoggedIn
     >
-        <img md-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
-        <h4 md-line>Custom Features</h4>
-        <p md-line>Add and use custom vector features like CSV</p>
-    </md-list-item>
-    <md-list-item
+        <img mat-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
+        <h4 mat-line>Custom Features</h4>
+        <p mat-line>Add and use custom vector features like CSV</p>
+    </mat-list-item>
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: GfbioBasketsComponent, parent: SourceOperatorListComponent})"
         *waveIfGfbioLoggedIn
     >
-        <md-icon md-list-icon>add_shopping_cart</md-icon>
-        <h4 md-line>GFBio Baskets</h4>
-        <p md-line>Display the GFBio Search Results</p>
-    </md-list-item>
-    <md-list-item
+        <mat-icon mat-list-icon>add_shopping_cart</mat-icon>
+        <h4 mat-line>GFBio Baskets</h4>
+        <p mat-line>Display the GFBio Search Results</p>
+    </mat-list-item>
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: GbifOperatorComponent, parent: SourceOperatorListComponent})"
     >
-        <img md-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
-        <h4 md-line>Species Distribution</h4>
-        <p md-line>Query data from GBIF and IUCN</p>
-    </md-list-item>
+        <img mat-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
+        <h4 mat-line>Species Distribution</h4>
+        <p mat-line>Query data from GBIF and IUCN</p>
+    </mat-list-item>
 
-    <md-list-item
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: DrawFeaturesComponent, parent: SourceOperatorListComponent})"
     >
-        <md-icon md-list-icon >create</md-icon>
-        <h4 md-line>Draw Features</h4>
-        <p md-line>Draw features on the map</p>
-    </md-list-item>
+        <mat-icon mat-list-icon >create</mat-icon>
+        <h4 mat-line>Draw Features</h4>
+        <p mat-line>Draw features on the map</p>
+    </mat-list-item>
 
-    <md-list-item
+    <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: PolygonSelectionComponent, parent: SourceOperatorListComponent})"
     >
-        <md-icon md-list-icon >location_on</md-icon>
-        <h4 md-line>Country Selection</h4>
-        <p md-line>Select by country</p>
-    </md-list-item>
+        <mat-icon mat-list-icon >location_on</mat-icon>
+        <h4 mat-line>Country Selection</h4>
+        <p mat-line>Select Country Borders</p>
+    </mat-list-item>
 
-</md-nav-list>
+    <mat-list-item
+        (click)="layoutService.setSidenavContentComponent({component: SensorSourceOperatorComponent, parent: SourceOperatorListComponent})"
+    >
+        <mat-icon mat-list-icon >location_on</mat-icon>
+        <h4 mat-line>Natur 4.0 Sensors</h4>
+        <p mat-line>Select Sensor Data from Natur 4.0</p>
+    </mat-list-item>
+
+</mat-nav-list>

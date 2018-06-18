@@ -1,12 +1,16 @@
-import {Observable, Observer} from 'rxjs/Rx';
+import {Observable, Observer} from 'rxjs';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
-    Symbology, SymbologyDict, AbstractVectorSymbology, RasterSymbology, ClusteredPointSymbology, MappingColorizerRasterSymbology
+    AbstractVectorSymbology,
+    MappingColorizerRasterSymbology,
+    RasterSymbology,
+    Symbology,
+    SymbologyDict,
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
-import * as ol from 'openlayers';
+import OlFormatGeoJSON from 'ol/format/geojson';
 import {Time, TimePoint} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
@@ -15,7 +19,7 @@ export abstract class LayerData<D> {
     _time: Time;
     _projection: Projection;
 
-    constructor(type: LayerType, time: Time, projection: Projection) {
+    protected constructor(type: LayerType, time: Time, projection: Projection) {
         this.type = type;
         this._projection = projection;
         this._time = time;
@@ -39,9 +43,9 @@ export class VectorData extends LayerData<Array<ol.Feature>> {
     static olParse(time: Time,
                    projection: Projection,
                    extent: [number, number, number, number],
-                   source: (Document | Node | GlobalObject | string),
-                   opt_options?: olx.format.ReadOptions): VectorData {
-        return new VectorData(time, projection, new ol.format.GeoJSON().readFeatures(source, opt_options), extent);
+                   source: (Document | Node | any | string),
+                   opt_options?: { dataProjection: ol.ProjectionLike, featureProjection: ol.ProjectionLike }): VectorData {
+        return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 
     constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]) {
@@ -171,7 +175,7 @@ export abstract class Layer<S extends Symbology> {
         }
     }
 
-    constructor(config: LayerConfig<S>) {
+    protected constructor(config: LayerConfig<S>) {
         this._name = config.name;
         this._operator = config.operator;
         this._symbology = config.symbology;
@@ -274,7 +278,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
         const clustered = (typeOptions && typeOptions.clustered)
             && typeOptions.clustered
-            || dict.symbology instanceof ClusteredPointSymbology
+            // || dict.symbology instanceof ClusteredPointSymbology //FIXME: where is this needed?
             || false;
         // console.log('VectorLayer', 'fromDict', clustered, dict);
 
@@ -292,6 +296,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this.clustered = !!config.clustered;
+        // console.log('VectorLayer', config);
     }
 
     getLayerType(): LayerType {

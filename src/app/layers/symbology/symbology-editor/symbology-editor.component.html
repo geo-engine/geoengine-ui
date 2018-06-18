@@ -1,0 +1,69 @@
+<wave-sidenav-header>Symbology Editor</wave-sidenav-header>
+
+<mat-form-field>
+    <mat-select [(value)]="layer" placeholder="layer">
+        <mat-option *ngFor="let l of projectService.getLayerStream() | async" [value]="l">{{l.name}}</mat-option>
+    </mat-select>
+</mat-form-field>
+
+<mat-divider></mat-divider>
+
+<div *ngIf="validLayer" [ngSwitch]="layer?.symbology?.getSymbologyType()"
+     fxLayoutAlign="space-between stretch"
+     fxLayout="row"
+     class="symbology no-drag">
+
+    <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
+        <wave-symbology-vector fxFlex="grow" [layer]="layer"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
+        <wave-symbology-vector fxFlex="grow"
+                               class="no-drag" [layer]="layer"
+                               [editRadius]="false"
+                               [editStrokeWidth]="false"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
+        <wave-symbology-vector fxFlex="grow"
+                               class="no-drag"
+                               [layer]="layer"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+        <wave-symbology-vector fxFlex="grow" 
+                               [layer]="layer"
+                               class="no-drag"
+                               [editRadius]="false"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
+        <wave-symbology-vector fxFlex="grow" 
+                               [layer]="layer"
+                               class="no-drag"
+                               [editRadius]="false"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.RASTER">
+        <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-raster>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
+        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [symbology]="layer.symbology"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+            >
+        </wave-symbology-raster-mapping-colorizer>
+    </ng-template>
+</div>

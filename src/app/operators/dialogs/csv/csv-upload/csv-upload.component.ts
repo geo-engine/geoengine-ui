@@ -1,5 +1,8 @@
+
+import {map, mapTo, filter} from 'rxjs/operators';
+import {Observable, BehaviorSubject, Subscription} from 'rxjs';
+
 import {Component, Input, Output, EventEmitter, OnDestroy, OnInit} from '@angular/core';
-import {Observable, BehaviorSubject, Subscription} from 'rxjs/Rx';
 
 enum FormStatus {
     Selection,
@@ -41,10 +44,10 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor() {
-        this.isSelecting$ = this.status$.map((status) => status === FormStatus.Selection);
-        this.isLoading$ = this.status$.map((status) => status === FormStatus.Loading);
-        this.isFinished$ = this.status$.filter((status) => status === FormStatus.Finished).mapTo(true);
-        this.isError$ = this.status$.map((status) => status === FormStatus.Error);
+        this.isSelecting$ = this.status$.pipe(map((status) => status === FormStatus.Selection));
+        this.isLoading$ = this.status$.pipe(map((status) => status === FormStatus.Loading));
+        this.isFinished$ = this.status$.pipe(filter((status) => status === FormStatus.Finished), mapTo(true), );
+        this.isError$ = this.status$.pipe(map((status) => status === FormStatus.Error));
     }
 
     ngOnInit() {
@@ -89,16 +92,6 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
             this.data.content = reader.result;
             this.data.progress = 100;
             this.status$.next(FormStatus.Finished);
-        });
-        reader.onerror = ((e) => {
-            console.log('Error encountered file upload');
-        });
-        reader.onprogress = ((e) => {
-            this.data.progress = e.loaded / e.total * 100;
-            console.log('progressed: ' + e.loaded / e.total * 100 + '% on file');
-        });
-        reader.onloadstart = ((e) => {
-            console.log('Reader started reading ' + this.data.file.name);
         });
 
         reader.readAsText(this.data.file);

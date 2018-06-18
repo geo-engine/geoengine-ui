@@ -1,6 +1,6 @@
 import {Directive, TemplateRef, Component, ViewContainerRef, OnDestroy} from '@angular/core';
 import {UserService} from '../../users/user.service';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 
 @Directive({
     selector: '[waveIfGuest]'

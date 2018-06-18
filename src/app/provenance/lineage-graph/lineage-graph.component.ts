@@ -1,12 +1,15 @@
+
+import {BehaviorSubject, Observable, ReplaySubject, of as observableOf} from 'rxjs';
+
+import {first, map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {Symbology} from '../../layers/symbology/symbology.model';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
@@ -55,11 +58,11 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private projectService: ProjectService,
-                @Inject(MD_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
+                @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
     }
 
     ngOnInit() {
-        this.svgWidth$ = this.maxWidth$.map(width => Math.ceil(this.svgRatio * width));
+        this.svgWidth$ = this.maxWidth$.pipe(map(width => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 
         if (this.config) {
@@ -81,7 +84,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         let dialogContainer = undefined;
         let parent = this.elementRef.nativeElement.parentElement;
         while (!dialogContainer) {
-            dialogContainer = parent.querySelector('md-dialog-container');
+            dialogContainer = parent.querySelector('.cdk-overlay-pane');
             parent = parent.parentElement;
         }
 
@@ -93,7 +96,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private drawGraph() {
-        this.projectService.getProjectStream().first().subscribe(project => {
+        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
             let graph = new dagreD3.graphlib.Graph()
                 .setGraph({})
                 .setDefaultEdgeLabel(() => <any> { label: '' });
@@ -316,8 +319,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private setupWidthObservables(graph: dagre.graphlib.Graph): { width: number, height: number } {
         // create observables for the current graph bounds
-        const graphWidth$ = Observable.of(graph.graph().width);
-        const graphHeight$ = Observable.of(graph.graph().height);
+        const graphWidth$ = observableOf(graph.graph().width);
+        const graphHeight$ = observableOf(graph.graph().height);
 
         const widthBound = (maxWidth: number, graphWidth: number) => {
             return Math.min(

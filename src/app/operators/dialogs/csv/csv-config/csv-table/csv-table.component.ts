@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Julian on 09/05/2017.
  */
@@ -6,12 +8,11 @@ import {
     Component, ChangeDetectionStrategy, Input, ViewChild, ElementRef, OnInit, AfterViewInit,
     ChangeDetectorRef, OnDestroy
 } from '@angular/core';
-import {CsvPropertiesComponent, FormStatus} from '../csv-properties/csv-properties.component';
+import {DataPropertiesDict, FormStatus} from '../csv-properties/csv-properties.component';
 import * as Papa from 'papaparse';
-import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
-import {CsvDialogComponent} from '../../csv-dialog/csv-dialog.component';
+import {Observable, Subscription, BehaviorSubject} from 'rxjs';
 import {UploadData} from '../../csv-upload/csv-upload.component';
+import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
 
 @Component({
     selector: 'wave-csv-table',
@@ -21,18 +22,14 @@ import {UploadData} from '../../csv-upload/csv-upload.component';
 })
 export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    resizeEvent$ = Observable.fromEvent(window, 'resize').map(() => {
-        return document.documentElement.clientWidth;
-    });
-
-    @Input() csvProperty: CsvPropertiesComponent;
     @Input() data: UploadData;
     @Input() cellSpacing: number;
     @Input() linesToParse: number;
-    @Input() dialog: CsvDialogComponent;
 
     IntervalFormat = IntervalFormat;
     isNumberArray: number[];
+    untypedColumns: BehaviorSubject<number[]>;
+    isWkt: BehaviorSubject<boolean>;
 
     @ViewChild('headerdiv') headerDiv: ElementRef;
     @ViewChild('bodydiv') bodyDiv: ElementRef;
@@ -47,17 +44,102 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     header: {value: string}[] = [];
     elements: string[][] = [];
     cellSizes: number[] = [];
+    dataProperties: DataPropertiesDict;
+    formStatus: FormStatus;
+    maxColumnWidth = 500;
+
+    isDataProperties$: Observable<boolean>;
+    isSpatialProperties$: Observable<boolean>;
+    isTemporalProperties$: Observable<boolean>;
+    isTypingProperties$: Observable<boolean>;
+    isLayerProperties$: Observable<boolean>;
+
+    xColumn$: Observable<number>;
+    yColumn$: Observable<number>;
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(public _changeDetectorRef: ChangeDetectorRef) {
-        setTimeout( () => {
-            this._changeDetectorRef.markForCheck();
-        }, 10);
+    constructor(public _changeDetectorRef: ChangeDetectorRef, public propertiesService: CsvPropertiesService) {
+        this.isDataProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.DataProperties));
+        this.isSpatialProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.SpatialProperties));
+        this.isTemporalProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TemporalProperties));
+        this.isTypingProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TypingProperties));
+        this.isLayerProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.LayerProperties));
+        this.xColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.x));
+        this.yColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.y));
+        setTimeout(this._changeDetectorRef.markForCheck());
+        this.untypedColumns = new BehaviorSubject(
+            [this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]
+        );
+        this.isWkt = new BehaviorSubject(false);
     }
 
     ngOnInit() {
         this.subscriptions.push(
+            this.propertiesService.dataProperties$.subscribe(data => {
+                if (!!this.dataProperties) {
+                    if (this.dataProperties.isHeaderRow !== data.isHeaderRow) {
+                        if (data.isHeaderRow === true) {
+                            this.customHeader = new Array(this.elements[0].length);
+                            for (let i = 0; i < this.header.length; i++) {
+                                this.customHeader[i] = this.header[i];
+                            }
+                        } else {
+                            if (this.customHeader.length === this.elements[0].length) {
+                                for (let i = 0; i < this.customHeader.length; i++) {
+                                    this.header[i] = this.customHeader[i];
+                                }
+                            } else {
+                                this.customHeader = new Array(this.elements[0].length);
+                                this.header = new Array(this.elements[0].length);
+                                for (let i = 0; i < this.customHeader.length; i++) {
+                                    this.header[i] = {value: ''};
+                                    this.customHeader[i] = {value: ''};
+                                }
+                            }
+                        }
+                    }
+                }
+                this.dataProperties = data;
+                this.parse();
+                if (this.header.length > 0) {
+                    setTimeout(this.resize());
+                }
+            }),
+            this.propertiesService.formStatus$.subscribe(formStatus => {
+                if ([formStatus, this.formStatus].indexOf(FormStatus.TypingProperties) >= 0) {
+                    this.resize();
+                    this.bodyScroll();
+                }
+                this.formStatus = formStatus;
+            }),
+            this.propertiesService.spatialProperties$.subscribe(data => {
+                let untypedColumns = [data.xColumn];
+                if (!data.isWkt) {
+                    untypedColumns.push(data.yColumn);
+                }
+                let c = this.isWkt.getValue() ? 1 : 0;
+                for (let i = 2 - c; i < this.untypedColumns.getValue().length; i++) {
+                    untypedColumns.push(this.untypedColumns.getValue()[i]);
+                }
+                this.untypedColumns.next(untypedColumns);
+                this.isWkt.next(data.isWkt);
+                this.update(10);
+            }),
+            this.propertiesService.temporalProperties$.subscribe(data => {
+                let untypedColumns = [this.untypedColumns.getValue()[0]];
+                if (!this.isWkt.getValue()) {
+                    untypedColumns.push(this.untypedColumns.getValue()[1]);
+                }
+                if (data.isTime) {
+                    untypedColumns.push(data.startColumn);
+                    if ([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(data.intervalType) >= 0) {
+                        untypedColumns.push(data.endColumn);
+                    }
+                }
+                this.untypedColumns.next(untypedColumns);
+                this.update(10);
+            }),
             // this.resizeEvent$.subscribe(data => this.resizeTableFrame())
         );
         this.parse();
@@ -68,6 +150,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
+        this.resize();
     }
 
     ngOnDestroy() {
@@ -75,26 +158,28 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     parse() {
-        if (!!this.csvProperty) {
-            let textQualifier: string = this.csvProperty.dataProperties.get('isTextQualifier').value ?
-                this.csvProperty.dataProperties.get('textQualifier').value : null;
-            let prev: number = this.csvProperty.dataProperties.get('isHeaderRow').value ?
-                this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1 : this.linesToParse;
-            this.parsedData = Papa.parse(this.data.content as string, {
-                delimiter: this.csvProperty.dataProperties.get('delimiter').value,
+        if (!!this.dataProperties) {
+            let textQualifier: string = this.dataProperties.isTextQualifier ?
+                this.dataProperties.textQualifier : null;
+            let prev: number = this.dataProperties.isHeaderRow ?
+                this.dataProperties.headerRow + this.linesToParse + 1 : this.linesToParse;
+            let parsed = Papa.parse(this.data.content as string, {
+                delimiter: this.dataProperties.delimiter,
                 newline: '',
                 quoteChar: textQualifier,
                 header: false,
                 skipEmptyLines: true,
                 preview: prev,
-            } as any).data;
-            if (this.csvProperty.dataProperties.get('isHeaderRow').value) {
-                this.header = new Array(this.parsedData[this.csvProperty.dataProperties.get('headerRow').value].length);
+            } as any);
+            this.parsedData = parsed.data;
+            // this.csvProperty.dataProperties.controls['delimiter'].setValue(parsed.meta.delimiter, {emitEvent: false});
+            if (this.dataProperties.isHeaderRow) {
+                this.header = new Array(this.parsedData[this.dataProperties.headerRow].length);
                 for (let i = 0; i < this.header.length; i++) {
-                    this.header[i] = {value: this.parsedData[this.csvProperty.dataProperties.get('headerRow').value][i]};
+                    this.header[i] = {value: this.parsedData[this.dataProperties.headerRow][i]};
                 }
-                this.elements = this.parsedData.slice(this.csvProperty.dataProperties.get('headerRow').value + 1,
-                    this.csvProperty.dataProperties.get('headerRow').value + this.linesToParse + 1);
+                this.elements = this.parsedData.slice(this.dataProperties.headerRow + 1,
+                    this.dataProperties.headerRow + this.linesToParse + 1);
             } else {
                 this.elements = this.parsedData;
                 if (this.header.length !== this.elements[0].length) {
@@ -108,12 +193,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 console.log('to large data');
             }
             this.resetNumberArr();
-            if (this.header.length <= 2) {
-                this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
-                this.csvProperty.temporalProperties.controls['isTime'].disable();
-            } else {
-                this.csvProperty.temporalProperties.controls['isTime'].enable();
-            }
+            this.propertiesService.changeHeader(this.header);
             // TODO: set Start/End column to a valid value, if it exceeds header length.
         }
     }
@@ -128,7 +208,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     resetTableSize() {
         this.cellSizes = [];
-        for (let i = 0; i < Math.max(this.header.length, this.elements.length); i++) {
+        for (let i = 0; i < 2 * Math.max(this.header.length, this.elements.length); i++) {
             this.cellSizes.push(0);
         }
     }
@@ -142,7 +222,10 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         let tableArr: HTMLTableElement[] = [];
         tableArr.push(this.headerTable.nativeElement);
         tableArr.push(this.bodyTable.nativeElement);
-        if (this.csvProperty.formStatus$.getValue() === FormStatus.TypingProperties) {
+        if (this.headerTable.nativeElement === null) {
+            return;
+        }
+        if (this.formStatus === FormStatus.TypingProperties) {
             tableArr.push(this.typingTable.nativeElement);
         }
         let colNumber = 0;
@@ -158,7 +241,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 let cell: HTMLElement = row.cells.item(j) as HTMLElement;
                 if (cell.getAttribute('name') === 'spacer') {
                     this.cellSizes[j] = this.cellSpacing;
-                }else if (!this.cellSizes[j] || this.cellSizes[j] < cell.getBoundingClientRect().width) {
+                } else if (!this.cellSizes[j] || this.cellSizes[j] < cell.getBoundingClientRect().width) {
                     this.cellSizes[j] = cell.getBoundingClientRect().width;
                 }
             }
@@ -166,7 +249,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.resizeTableFrame();
         // Reset the headerdiv to body divs scroll.
         this.headerDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft = 0;
-        if (this.csvProperty.formStatus$.getValue() === FormStatus.TypingProperties) {
+        if (this.formStatus === FormStatus.TypingProperties) {
             this.typingDiv.nativeElement.scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
         }
     }
@@ -174,7 +257,15 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     bodyScroll() {
         let scrollLeft = this.bodyDiv.nativeElement.scrollLeft;
         this.headerDiv.nativeElement.scrollLeft = scrollLeft;
-        if (this.csvProperty.formStatus$.getValue() === FormStatus.TypingProperties) {
+        if (this.formStatus === FormStatus.TypingProperties) {
+            this.typingDiv.nativeElement.scrollLeft = scrollLeft;
+        }
+    }
+
+    headerScroll() {
+        let scrollLeft = this.headerDiv.nativeElement.scrollLeft;
+        this.bodyDiv.nativeElement.scrollLeft = scrollLeft;
+        if (this.formStatus === FormStatus.TypingProperties) {
             this.typingDiv.nativeElement.scrollLeft = scrollLeft;
         }
     }
@@ -186,7 +277,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         let tableArr: Element[] = [];
         tableArr.push(this.headerTable.nativeElement);
         tableArr.push(this.bodyTable.nativeElement);
-        if (this.csvProperty.formStatus$.getValue() === FormStatus.TypingProperties) {
+        if (this.formStatus === FormStatus.TypingProperties) {
             tableArr.push(this.typingTable.nativeElement);
         }
         let width = 0;
@@ -195,14 +286,13 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.tableFrame.nativeElement.style.maxWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
         this.tableFrame.nativeElement.style.minWidth = Math.min(window.innerWidth * 0.8 - 2 * 24, width) + 'px';
-        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von md-dialog-content.
+        // innerWidth * 0.8 = 80vw(max größe vom dialog) -24 ist padding von mat-dialog-content.
     }
 
     /**Resets table size and delays then.
      * After delay(so view can reload on resetted table column sizes) resizes table to maximum of every table.
      */
     resize() {
-        this._changeDetectorRef.detectChanges();
         this.resetTableSize();
         this.update(10);
         setTimeout(() => this.resizeTable(), 100);
@@ -223,20 +313,28 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     update(timeOut: number) {
         setTimeout(() => {
-            this._changeDetectorRef.reattach();
-            this._changeDetectorRef.detectChanges();
+            this._changeDetectorRef.markForCheck();
         }, timeOut);
-        if (this.header.length < 2) {
-            this.csvProperty.temporalProperties.controls['isTime'].setValue(false);
-            this.csvProperty.temporalProperties.controls['isTime'].disable();
-        } else if (this.header.length <= 3) {
-            if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
-                    .indexOf(this.csvProperty.temporalProperties.controls['intervalType'].value) >= 0) {
-                this.csvProperty.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
+    }
+
+    styleDict(i: number, isSpatial: boolean, isTemporal: boolean, head: boolean) {
+        let j = this.untypedColumns.getValue().indexOf(i);
+        if (isSpatial) {
+            if (head) {
+                return {orangeHead: j === 0, blueHead: j === 1 && !this.isWkt.getValue()};
+            } else {
+                return {orange: j === 0, blue: j === 1 && !this.isWkt.getValue()};
             }
-        } else {
-            this.csvProperty.temporalProperties.controls['isTime'].enable();
         }
+        if (isTemporal) {
+            let c = this.isWkt.getValue() ? 1 : 0;
+            if (head) {
+                return {greenHead: j === 2 - c, violetHead: j === 3 - c};
+            } else {
+                return {green: j === 2 - c, violet: j === 3 - c};
+            }
+        }
+        return {};
     }
 
     get notOnlyWhiteSpace(): boolean {
