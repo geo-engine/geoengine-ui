@@ -91,7 +91,6 @@ p = (
 )
 print(p)
 `;
-        console.log(this.code);
     }
 
     getMappingName(): string {
