@@ -26,12 +26,34 @@
         </mat-form-field>
 
         <mat-form-field>
-            <mat-select placeholder="Unresolvable cells..." formControlName="on_not_resolvable">
-                <mat-option [value]="TerminologyLookupOnNotResolvable.OLD_NAME">old value</mat-option>
-                <mat-option [value]="TerminologyLookupOnNotResolvable.EMPTY">empty</mat-option>
+            <input matInput formControlName="resolved_attribute_name" placeholder="Resolved Attribute Name">
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.resolved_attribute_name.errors?.required || form.controls.resolved_attribute_name.errors?.onlyWhitespace"
+            >
+                The resolved attribute name must be non-empty.
+            </mat-hint>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-select placeholder="Unresolvable" formControlName="on_not_resolvable">
+                <mat-option [value]="TerminologyLookupOnNotResolvable.KEEP">{{TerminologyLookupOnNotResolvable.KEEP}}</mat-option>
+                <mat-option [value]="TerminologyLookupOnNotResolvable.EMPTY">{{TerminologyLookupOnNotResolvable.EMPTY}}</mat-option>
             </mat-select>
         </mat-form-field>
 
+        <mat-form-field>
+            <mat-select placeholder="Match type" formControlName="matchType">
+                <mat-option [value]="TerminologyLookupMatchType.EXACT">{{TerminologyLookupMatchType.EXACT}}</mat-option>
+                <mat-option [value]="TerminologyLookupMatchType.INCLUDED">{{TerminologyLookupMatchType.INCLUDED}}</mat-option>
+                <mat-option [value]="TerminologyLookupMatchType.REGEX">{{TerminologyLookupMatchType.REGEX}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-slide-toggle
+            formControlName="first_hit">
+            Use first hit
+        </mat-slide-toggle>
 
         <wave-operator-output-name
             formControlName="name"

@@ -329,7 +329,8 @@ export function configInitializer(config: Config) {
         SymbologyEditorComponent,
         ColorizerEditorComponent,
         HeatmapOperatorComponent,
-        SensorSourceOperatorComponent
+        SensorSourceOperatorComponent,
+        TerminologyLookupOperatorComponent
     ],
     providers: [
         DragulaService,

@@ -2,42 +2,52 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operat
 
 export enum TerminologyLookupOnNotResolvable {
     EMPTY = 'EMPTY',
-    OLD_NAME = 'OLD_NAME'
+    KEEP = 'KEEP'
+}
+
+export enum TerminologyLookupMatchType {
+    EXACT = 'exact',
+    INCLUDED = 'included',
+    REGEX = 'regex'
 }
 
 interface TerminologyLookupTypeMappingDict extends OperatorTypeMappingDict {
-    column: string;
+    attribute_name: string;
+    resolved_attribute: string;
     terminology: string;
-    key: string;
-    on_not_resolvable: 'EMPTY' | 'OLD_NAME';
-    name_appendix?: 'terminology' | string;
+    key?: string;
+    match_type?: 'exact' | 'included' | 'regex';
+    first_hit?: boolean;
+    on_not_resolvable: 'EMPTY' | 'KEEP';
 }
 
 export interface TerminologyLookupTypeDict extends OperatorTypeDict {
-    attribute: string;
+    attribute_name: string;
+    resolved_attribute: string;
     terminology: string;
-    terminology_key: string;
+    key: string;
+    match_type: TerminologyLookupMatchType;
+    first_hit: boolean;
     on_not_resolvable: TerminologyLookupOnNotResolvable;
-    define_new_column_appendix: boolean;
-    new_column_appendix: string;
 }
 
 interface TerminologyLookupTypeConfig {
-    attribute: string;
+    attribute_name: string;
+    resolved_attribute: string;
     terminology: string;
-    terminology_key: string;
+    key?: string;
+    match_type?: TerminologyLookupMatchType;
+    first_hit?: boolean;
     on_not_resolvable: TerminologyLookupOnNotResolvable;
-    define_new_column_appendix: boolean;
-    new_column_appendix: string;
 }
 
 /**
- * The Terminology lookup type.
+ * The Terminology Resolver type.
  */
 export class TerminologyLookupType extends OperatorType {
-    private static _TYPE = 'terminology_lookup';
+    private static _TYPE = 'terminology_resolver';
     private static _ICON_URL = OperatorType.createIconDataUrl(TerminologyLookupType._TYPE);
-    private static _NAME = 'Terminology Lookup';
+    private static _NAME = 'Terminology Resolver';
 
     static get TYPE(): string {
         return TerminologyLookupType._TYPE;
@@ -51,32 +61,29 @@ export class TerminologyLookupType extends OperatorType {
         return TerminologyLookupType._NAME;
     }
 
-    private attribute: string;
-    private terminology: string;
-    private terminology_key: string;
-    private on_not_resolvable: TerminologyLookupOnNotResolvable;
-    private new_column_appendix: string;
-    private define_new_column_appendix: boolean;
+    attribute_name: string;
+    resolved_attribute_name: string;
+    terminology: string;
+    key: string;
+    match_type: TerminologyLookupMatchType;
+    first_hit: boolean;
+    on_not_resolvable: TerminologyLookupOnNotResolvable;
+    new_column_appendix: string;
+    define_new_column_appendix: boolean;
 
     static fromDict(dict: TerminologyLookupTypeDict): TerminologyLookupType {
-        return new TerminologyLookupType({
-            attribute: dict.attribute,
-            terminology: dict.terminology,
-            terminology_key: dict.terminology_key,
-            on_not_resolvable: dict.on_not_resolvable,
-            define_new_column_appendix: dict.define_new_column_appendix,
-            new_column_appendix: (dict.new_column_appendix) ? dict.new_column_appendix : 'terminology'
-        });
+        return new TerminologyLookupType(dict);
     }
 
     constructor(config: TerminologyLookupTypeConfig) {
         super();
-        this.attribute = config.attribute;
+        this.attribute_name = config.attribute_name;
+        this.resolved_attribute_name = config.resolved_attribute;
         this.terminology = config.terminology;
-        this.terminology_key = config.terminology_key;
-        this.on_not_resolvable = config.on_not_resolvable;
-        this.define_new_column_appendix = config.define_new_column_appendix;
-        this.new_column_appendix = config.new_column_appendix;
+        this.key = config.key;
+        this.match_type = (config.match_type) ? config.match_type : TerminologyLookupMatchType.EXACT;
+        this.first_hit = (!!config.first_hit);
+        this.on_not_resolvable = (config.on_not_resolvable) ? config.on_not_resolvable : TerminologyLookupOnNotResolvable.EMPTY;
     }
 
     getMappingName(): string {
@@ -93,40 +100,47 @@ export class TerminologyLookupType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['attribute', this.attribute.toString()],
+            ['attribute_name', this.attribute_name.toString()],
+            ['resolved_attribute_name', this.resolved_attribute_name.toString()],
             ['terminology', this.terminology.toString()],
-            ['terminology key', this.terminology_key.toString()],
-            ['on not resolvable', this.on_not_resolvable.toString()],
-            ['define new column appendix', this.define_new_column_appendix.toString()],
-            ['new column appendix', this.new_column_appendix.toString()],
+            ['key', this.key.toString()],
+            ['match_type', this.match_type.toString()],
+            ['first_hit', this.first_hit.toString()],
+            ['on_not_resolvable', this.on_not_resolvable.toString()]
         ];
     }
 
     toMappingDict(): TerminologyLookupTypeMappingDict {
         const dict =  {
-            operatorType: TerminologyLookupType.TYPE,
-            column: this.attribute,
+            attribute_name: this.attribute_name,
+            resolved_attribute: this.resolved_attribute_name,
             terminology: this.terminology,
-            key: this.terminology_key,
-            on_not_resolvable: this.on_not_resolvable,
+            on_not_resolvable: this.on_not_resolvable.toString(),
+            first_hit: this.first_hit
         };
 
-        if (this.define_new_column_appendix ) {
-            dict['new_column_appendix'] = this.new_column_appendix;
+        if (this.key ) {
+            dict['key'] = this.key;
         }
-
-        return dict;
+        if (this.match_type) {
+            dict['match_type'] = this.match_type; // TODO: remove cast?
+        }
+        return dict as TerminologyLookupTypeMappingDict;
     }
 
     toDict(): TerminologyLookupTypeDict {
         return {
             operatorType: TerminologyLookupType.TYPE,
-            attribute: this.attribute,
+            attribute_name: this.attribute_name,
+            resolved_attribute: this.resolved_attribute_name,
             terminology: this.terminology,
-            terminology_key: this.terminology_key,
             on_not_resolvable: this.on_not_resolvable,
-            define_new_column_appendix: this.define_new_column_appendix,
-            new_column_appendix: this.new_column_appendix
+            first_hit: this.first_hit,
+            key: this.key,
+            match_type: this.match_type,
+
+            // define_new_column_appendix: this.define_new_column_appendix,
+            // new_column_appendix: this.new_column_appendix
         };
 
     }

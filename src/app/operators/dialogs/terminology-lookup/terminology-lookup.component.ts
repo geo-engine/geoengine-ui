@@ -13,7 +13,8 @@ import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {TerminologyLookupOnNotResolvable, TerminologyLookupType} from '../../types/terminology-lookup-type';
+import {TerminologyLookupMatchType, TerminologyLookupOnNotResolvable, TerminologyLookupType} from '../../types/terminology-lookup-type';
+import {DataTypes} from '../../datatype.model';
 
 // TODO: replace with actual lookup
 const TERMINOLOGIES: Array<{name: string, acronym: string, description: string, uri: string}> = [
@@ -182,6 +183,7 @@ export class TerminologyLookupOperatorComponent implements AfterViewInit {
     // for the template
     ResultTypes = ResultTypes;
     TerminologyLookupOnNotResolvable = TerminologyLookupOnNotResolvable;
+    TerminologyLookupMatchType = TerminologyLookupMatchType;
     TERMINOLOGIES = TERMINOLOGIES;
 
     form: FormGroup;
@@ -196,7 +198,10 @@ export class TerminologyLookupOperatorComponent implements AfterViewInit {
             attribute: [undefined, Validators.required],
             terminology: ['ISOCOUNTRIES', Validators.required],
             terminology_key: ['label', [Validators.required, WaveValidators.notOnlyWhitespace]],
-            on_not_resolvable: [TerminologyLookupOnNotResolvable.EMPTY, Validators.required]
+            resolved_attribute_name: [undefined, [Validators.required, WaveValidators.notOnlyWhitespace]],
+            matchType: [TerminologyLookupMatchType.INCLUDED, []],
+            on_not_resolvable: [TerminologyLookupOnNotResolvable.EMPTY, Validators.required],
+            first_hit: [true, []]
         });
 
         this.attributes$ = this.form.controls['vectorLayer'].valueChanges.pipe(
@@ -232,28 +237,31 @@ export class TerminologyLookupOperatorComponent implements AfterViewInit {
         const terminologyKeyName: string = this.form.controls['terminology_key'].value;
 
         const on_not_resolvable: TerminologyLookupOnNotResolvable = this.form.controls['on_not_resolvable'].value;
-        const define_new_column_appendix = true; // TODO: add ui
-        const new_column_appendix = 'terminology_lookup'; // TODO: add ui
+        const match_type: TerminologyLookupMatchType = this.form.controls['matchType'].value;
+        const first_hit: boolean = this.form.controls['first_hit'].value;
+        const resolved_attribute_name = this.form.controls['resolved_attribute_name'].value;
 
         const name: string = this.form.controls['name'].value;
 
         // TODO: handle new terminology name and add it to the attribute list!
         const operatorAttributes = sourceOperator.attributes.toArray();
-        operatorAttributes.push(new_column_appendix);
+        operatorAttributes.push(resolved_attribute_name);
+        const operatorDataTypes = sourceOperator.dataTypes.set('resolved_attribute_name', DataTypes.Alphanumeric);
 
         const dict = {
             operatorType: new TerminologyLookupType({
-                attribute: attributeName,
+                attribute_name: attributeName,
                 terminology: terminologyName,
-                terminology_key: terminologyKeyName,
+                key: terminologyKeyName,
                 on_not_resolvable: on_not_resolvable,
-                define_new_column_appendix: define_new_column_appendix,
-                new_column_appendix: new_column_appendix,
+                resolved_attribute: resolved_attribute_name,
+                match_type: match_type,
+                first_hit: first_hit,
             }),
             resultType: sourceOperator.resultType,
             projection: sourceOperator.projection,
             attributes: operatorAttributes,
-            dataTypes: sourceOperator.dataTypes,
+            dataTypes: operatorDataTypes,
             units: sourceOperator.units,
             pointSources: [],
             lineSources: [],
