@@ -446,7 +446,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             arr.push(this.temporalProperties.controls['endColumn'].value);
         }
-        console.log('start');
         while (arr.indexOf(this.temporalProperties.controls['startColumn'].value) >= 0) {
             if (this.temporalProperties.controls['startColumn'].value === 0) {
                 direction = 1;
@@ -458,7 +457,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             );
         }
         this.temporalProperties.updateValueAndValidity();
-        console.log('end');
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             direction = 1;
             arr = [this.spatialProperties.controls['xColumn'].value,
