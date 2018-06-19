@@ -61,7 +61,7 @@ ENV ADMIN_EMAIL=vat@example.com
 ENV MAPPING_URL "https://sng107.sng.uni-frankfurt.de/dev/cgi-bin/mapping_cgi"
 
 # Background Map
-ENV MAPCACHE_URL "http://sng107.sng.uni-frankfurt.de/mapcache/"
+ENV BACKGROUND_MAP_URL "http://sng107.sng.uni-frankfurt.de/mapcache/"
 
 # Config File
 #VOLUME /usr/local/apache2/htdocs/assets/config.json
