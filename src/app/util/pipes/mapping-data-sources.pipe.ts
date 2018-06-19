@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform, Injectable} from '@angular/core';
 
-import {MappingSource} from '../../operators/dialogs/raster-repository/mapping-source.model';
+import {MappingSource} from '../../operators/dialogs/data-repository/mapping-source.model';
 
 @Pipe({
     name: 'waveMappingDataSourceFilter',
@@ -17,12 +17,12 @@ export class MappingDataSourceFilter implements PipeTransform {
             if (source.name && source.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
               resultSources.push(source);
             } else {
-              let resultChannels = source.channels.filter(
+              let resultChannels = source.rasterLayer.filter(
                   c => c.name.toLowerCase().indexOf(term.toLowerCase()) >= 0
               );
               if (resultChannels.length > 0) {
                 let s = Object.assign({}, source);
-                s.channels = resultChannels;
+                s.rasterLayer = resultChannels;
                 resultSources.push(s);
               }
             }

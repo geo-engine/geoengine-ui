@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {GbifOperatorComponent} from '../gbif-operator/gbif-operator.component';
 import {GFBioSourceType} from '../../types/gfbio-source-type.model';
 import {LayoutService} from '../../../layout.service';
-import {RasterRepositoryComponent} from '../raster-repository/raster-repository.component';
+import {DataRepositoryComponent} from '../data-repository/data-repository.component';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {AbcdRepositoryComponent} from '../abcd-repository/abcd-repository.component';
 import {ABCDSourceType} from '../../types/abcd-source-type.model';
@@ -23,7 +23,7 @@ export class SourceOperatorListComponent implements OnInit {
     // make available
     SourceOperatorListComponent = SourceOperatorListComponent;
 
-    RasterRepositoryComponent = RasterRepositoryComponent;
+    DataRepositoryComponent = DataRepositoryComponent;
     RasterSourceType = RasterSourceType;
 
     AbcdRepositoryComponent = AbcdRepositoryComponent;

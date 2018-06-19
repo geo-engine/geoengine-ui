@@ -8,7 +8,7 @@ import {HttpClientModule} from '@angular/common/http';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
+import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
 import {MapComponent} from './map/map.component';
 import {
     OlLineLayerComponent,
@@ -128,7 +128,7 @@ import {
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {MatIconRegistry} from '@angular/material';
-import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
+import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
@@ -143,6 +143,7 @@ import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.comp
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
+import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -151,7 +152,7 @@ export function configInitializer(config: Config) {
 @NgModule({
     declarations: [
         AppComponent,
-        RasterRepositoryComponent,
+        DataRepositoryComponent,
         MapComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,
@@ -267,7 +268,8 @@ export function configInitializer(config: Config) {
         CountryPolygonSelectionComponent,
         SensorSourceOperatorComponent,
         ColorBreakpointInputComponent,
-        TerminologyLookupOperatorComponent
+        TerminologyLookupOperatorComponent,
+        VectorSourceDatasetComponent
     ],
     imports: [
         BrowserModule,
@@ -283,7 +285,7 @@ export function configInitializer(config: Config) {
     ],
     entryComponents: [
         RenameLayerComponent,
-        RasterRepositoryComponent,
+        DataRepositoryComponent,
         AbcdRepositoryComponent,
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,

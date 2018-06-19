@@ -1,4 +1,4 @@
-<wave-sidenav-header>Raster Repository</wave-sidenav-header>
+<wave-sidenav-header>Data Repository</wave-sidenav-header>
 <wave-sidenav-search (searchString)="searchTerm = $event">
     <!--
     <button mat-icon-button [matMenuTriggerFor]="optionsMenu" waveSidenavSearchRight>
@@ -21,7 +21,11 @@
 
 <mat-list *ngIf="(sources | async).length > 0; else noSources">
     <ng-template ngFor let-source [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm">
-        <wave-source-dataset [dataset]="source"></wave-source-dataset>
+        <wave-vector-source-dataset *ngIf="source.operator === 'ogr_source'; else rasterDataset" [dataset]="source">
+        </wave-vector-source-dataset>
+        <ng-template #rasterDataset>
+            <wave-source-dataset [dataset]="source"></wave-source-dataset>
+        </ng-template>
     </ng-template>
 </mat-list>
 <ng-template #noSources>
