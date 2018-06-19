@@ -48,7 +48,8 @@ interface DefaultsInterface {
     };
 }
 interface MapInterface {
-    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted';
+    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
+    BACKGROUND_LAYER_URL: string;
     HOSTED_BACKGROUND_SERVICE: string;
     HOSTED_BACKGROUND_LAYER_NAME: string;
     HOSTED_BACKGROUND_SERVICE_VERSION: string;
@@ -126,6 +127,7 @@ const ConfigDefault = Immutable.fromJS({
     },
     MAP: {
         BACKGROUND_LAYER: 'OSM',
+        BACKGROUND_LAYER_URL: '',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
