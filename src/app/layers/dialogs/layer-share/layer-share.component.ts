@@ -33,16 +33,14 @@ export class LayerShareComponent implements OnInit {
     }
 
     copyLink() {
-        // this.linkInput.nativeElement.select();
-        // document.execCommand('copy');
+        const disabled = this.linkInput.nativeElement.disabled;
+        this.linkInput.nativeElement.disabled = false;
 
-        const selection = window.getSelection();
-        const range = document.createRange();
-        range.selectNode(this.linkInput.nativeElement);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        // add to clipboard.
+        this.linkInput.nativeElement.focus();
+        this.linkInput.nativeElement.select();
         document.execCommand('copy');
+
+        this.linkInput.nativeElement.disabled = disabled;
     }
 
 }
