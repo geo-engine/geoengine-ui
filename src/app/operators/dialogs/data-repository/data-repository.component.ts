@@ -6,13 +6,13 @@ import {MappingSource} from './mapping-source.model';
 import {UserService} from '../../../users/user.service';
 
 @Component({
-    selector: 'wave-raster-repository',
-    templateUrl: './raster-repository.component.html',
-    styleUrls: ['./raster-repository.component.scss'],
+    selector: 'wave-data-repository',
+    templateUrl: './data-repository.component.html',
+    styleUrls: ['./data-repository.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class RasterRepositoryComponent {
+export class DataRepositoryComponent {
 
     searchTerm: String = '';
     sources: Observable<Array<MappingSource>>;

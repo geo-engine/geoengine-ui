@@ -103,7 +103,7 @@ class ResultTypeCollection {
     }
 
     fromCode(type: string) {
-        switch (type) {
+        switch (type.toLowerCase()) {
             case this.RASTER.getCode():
                 return this.RASTER;
             case this.POINTS.getCode():
@@ -111,6 +111,8 @@ class ResultTypeCollection {
             case this.LINES.getCode():
                 return this.LINES;
             case this.POLYGONS.getCode():
+            case 'multisurface':
+            case 'multipolygon':
                 return this.POLYGONS;
             case this.PLOT.getCode():
                 return this.PLOT;

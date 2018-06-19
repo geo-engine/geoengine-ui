@@ -414,6 +414,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
     static createClusterSymbology(config: ComplexPointSymbologyConfig): ComplexPointSymbology {
         config['radiusAttribute'] = '___radius';
         config['textAttribute'] = '___numberOfPoints';
+        config['clustered'] = true;
 
         return new ComplexPointSymbology(config);
     }
