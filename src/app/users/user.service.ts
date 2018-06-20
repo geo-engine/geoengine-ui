@@ -622,8 +622,6 @@ export class UserService {
 
                                 // vector data
                                 const sourceVectorLayer = (!source.layer) ? [] : source.layer.map((layer, index) => {
-                                    console.log(layer, index);
-
                                     // TODO: can we  safely assume EPSG: 4326 here?
                                     const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
 
