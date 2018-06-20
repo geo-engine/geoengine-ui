@@ -1,22 +1,22 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface OgrSourceTypeConfig {
-    name: string;
-    layer_name: string;
+    dataset_id: string;
+    layer_id: string | number;
     numeric: string[];
     textual: string[];
 }
 
 interface OgrSourceTypeMappingDict extends OperatorTypeMappingDict {
     name: string;
-    layer_name: string;
+    layer_name: string | number;
     numeric: string[];
     textual: string[];
 }
 
 export interface OgrSourceTypeDict extends OperatorTypeDict  {
-    name: string;
-    layer_name: string;
+    dataset_id: string;
+    layer_id: string | number;
     numeric: string[];
     textual: string[];
 }
@@ -33,8 +33,8 @@ export class OgrSourceType extends OperatorType {
     static get ICON_URL(): string { return OgrSourceType._ICON_URL; }
     static get NAME(): string { return OgrSourceType._NAME; }
 
-    name: string;
-    layer_name: string;
+    dataset_id: string;
+    layer_id: string | number;
     numeric: string[];
     textual: string[];
 
@@ -44,8 +44,8 @@ export class OgrSourceType extends OperatorType {
 
     constructor(config: OgrSourceTypeConfig) {
         super();
-        this.name = config.name;
-        this.layer_name = config.layer_name;
+        this.dataset_id = config.dataset_id;
+        this.layer_id = config.layer_id;
         this.numeric = config.numeric;
         this.textual = config.textual;
     }
@@ -64,8 +64,8 @@ export class OgrSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['name', this.name.toString()],
-            ['layer_name', this.layer_name.toString()],
+            ['dataset_id', this.dataset_id.toString()],
+            ['layer_id', this.layer_id.toString()],
             ['numeric', this.numeric.toString()],
             ['textual', this.textual.toString()],
         ];
@@ -73,8 +73,8 @@ export class OgrSourceType extends OperatorType {
 
     toMappingDict(): OgrSourceTypeMappingDict {
         return {
-            name: this.name,
-            layer_name: this.layer_name,
+            name: this.dataset_id,
+            layer_name: this.layer_id,
             numeric: this.numeric,
             textual: this.textual,
         };
@@ -83,8 +83,8 @@ export class OgrSourceType extends OperatorType {
     toDict(): OgrSourceTypeDict {
         return {
             operatorType: OgrSourceType.TYPE,
-            name: this.name,
-            layer_name: this.layer_name,
+            dataset_id: this.dataset_id,
+            layer_id: this.layer_id,
             numeric: this.numeric,
             textual: this.textual,
         };

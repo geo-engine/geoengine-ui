@@ -107,19 +107,19 @@ class ResultTypeCollection {
             case this.RASTER.getCode():
                 return this.RASTER;
             case this.POINTS.getCode():
+            case 'point':
                 return this.POINTS;
             case this.LINES.getCode():
                 return this.LINES;
             case this.POLYGONS.getCode():
-            case 'multisurface':
-            case 'multipolygon':
+            case 'multi surface':
                 return this.POLYGONS;
             case this.PLOT.getCode():
                 return this.PLOT;
             case this.TEXT.getCode():
                 return this.TEXT;
             default:
-                throw new Error('Invalid Result Type');
+                throw new Error('Invalid Result Type: ' + type);
         }
     }
 }

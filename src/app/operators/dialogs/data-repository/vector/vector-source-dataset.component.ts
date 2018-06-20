@@ -112,8 +112,8 @@ export class VectorSourceDatasetComponent implements OnInit {
         layer.textual.forEach((x) => dataTypes.set(x, DataTypes.Alphanumeric));
 
         const operatorType = new OgrSourceType({
-            name: this.dataset.name,
-            layer_name: layer.name,
+            dataset_id: this.dataset.name,
+            layer_id: layer.id,
             textual: layer.textual,
             numeric: layer.numeric
         });

@@ -37,7 +37,7 @@ export interface MappingSourceRasterLayer {
 
 export interface MappingSourceVectorLayer {
     name: string;
-    id: number;
+    id: number | string;
     title: string;
     geometryType: string; // FIXME: this must be the layer type -> POINT, POLYGON, LINE...
     textual: string[];
@@ -103,7 +103,7 @@ export interface MappingSourceDict {
         }
     }];
     layer?: [{
-        id?: number,
+        id?: number | string,
         name: string,
         title?: string,
         geometry_type: string, // FIXME: this must be the layer type -> POINT, POLYGON, LINE...

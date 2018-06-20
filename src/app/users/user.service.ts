@@ -632,8 +632,8 @@ export class UserService {
                                     } : sourceProvenance;
 
                                     return {
-                                        id: index,
-                                        name: layer.name,
+                                        id: layer.id || layer.name,
+                                        name: layer.title || layer.name || 'Layer #' + index,
                                         title: layer.title || layer.name || 'Layer #' + index,
                                         geometryType: layer.geometry_type || 'POINTS',
                                         textual: layer.textual || [],
