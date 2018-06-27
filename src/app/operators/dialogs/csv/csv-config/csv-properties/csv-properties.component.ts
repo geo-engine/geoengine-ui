@@ -453,20 +453,25 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
                 direction = -1;
             }
-            this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + direction);
+            this.temporalProperties.controls['startColumn'].setValue(
+                this.temporalProperties.controls['startColumn'].value + direction, {emitEvent: false}
+            );
         }
+        this.temporalProperties.updateValueAndValidity();
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             direction = 1;
             arr = [this.spatialProperties.controls['xColumn'].value,
                 this.spatialProperties.controls['yColumn'].value,
                 this.temporalProperties.controls['startColumn'].value];
             while (arr.indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
-                if (this.temporalProperties.controls['startColumn'].value === 0) {
+                if (this.temporalProperties.controls['endColumn'].value === 0) {
                     direction = 1;
-                } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
+                } else if (this.temporalProperties.controls['endColumn'].value === this.header.length - 1) {
                     direction = -1;
                 }
-                this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction);
+                this.temporalProperties.controls['endColumn'].setValue(
+                    this.temporalProperties.controls['endColumn'].value + direction, {emitEvent: false}
+                );
             }
         }
         this.temporalProperties.updateValueAndValidity();
