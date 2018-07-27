@@ -1,9 +1,9 @@
 <wave-dialog-header>Share: {{layer.name}}</wave-dialog-header>
 <p>Copy this link to share the selected layer with others.</p>
-<div fxFlexAlign="column">
-    <mat-input-container fxFlex>
+<div fxLayout="row">
+    <mat-form-field fxFlex>
         <input #linkInput matInput placeholder="Link" disabled [value]="link">
-    </mat-input-container>
+    </mat-form-field>
     <button mat-icon-button (click)="copyLink()" matTooltip="Copy Link">
         <mat-icon>content_copy</mat-icon>
     </button>

@@ -11,8 +11,8 @@ import {NumericPipe} from '../scatter-plot-operator/scatter-plot-operator.pipe';
 import {WaveValidators} from '../../../util/form.validators';
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {BehaviorSubject, Subscription} from 'rxjs';
-import {toObservable} from "@angular/forms/src/validators";
-import {map} from "rxjs/operators";
+import {toObservable} from '@angular/forms/src/validators';
+import {map} from 'rxjs/operators';
 
 @Component({
     selector: 'wave-box-plot-operator',
@@ -103,7 +103,7 @@ export class BoxPlotComponent implements OnInit, AfterViewInit {
         this.selectedLayers.next(this.selectedLayers.getValue().slice(0, this.selectedLayers.getValue().length - 1));
     }
 
-    add() {
+    add(event: any) {
         const sourceOperator = this.form.controls['vLayer'].value.operator;
         const selectedLayers = new Array<string>();
         for (let item of this.selectedLayers.getValue()) {

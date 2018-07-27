@@ -1,13 +1,10 @@
 import {LayoutDict} from '../layout.service';
-import {Layer, LayerDict} from '../layers/layer.model';
 import {Project, ProjectDict} from '../project/project.model';
-import {Symbology} from '../layers/symbology/symbology.model';
 import {ResultType} from '../operators/result-type.model';
 
-import {LayerService} from '../layers/layer.service';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs';
 import {NotificationService} from '../notification.service';
 
 /**

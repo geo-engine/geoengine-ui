@@ -1,3 +1,7 @@
+
+import {combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
+import {first, map} from 'rxjs/operators';
+
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
@@ -6,10 +10,9 @@ import {ResultTypes} from '../../result-type.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
 import {MatDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
@@ -41,8 +44,7 @@ export class FeaturedbSourceListComponent implements OnInit {
     ngOnInit() {
         this.refresh();
 
-        this.filteredEntries$ = Observable
-            .combineLatest(
+        this.filteredEntries$ = observableCombineLatest(
                 this.entries$,
                 this.searchString$,
                 (entries, searchString) => entries
@@ -52,15 +54,15 @@ export class FeaturedbSourceListComponent implements OnInit {
     }
 
     refresh() {
-        this.userService.getFeatureDBList()
-            .map(entries => entries.sort())
+        this.userService.getFeatureDBList().pipe(
+            map(entries => entries.sort()))
             .subscribe(entries => this.entries$.next(entries));
     }
 
     openCSVDialog() {
         this.dialog.open(CsvDialogComponent)
-            .afterClosed()
-            .first()
+            .afterClosed().pipe(
+            first())
             .subscribe(() => this.refresh());
     }
 
@@ -75,7 +77,7 @@ export class FeaturedbSourceListComponent implements OnInit {
             });
             clustered = true;
         } else {
-            symbology = new SimpleVectorSymbology({
+            symbology = ComplexVectorSymbology.createSimpleSymbology({
                 fillRGBA: color,
             });
             clustered = false;

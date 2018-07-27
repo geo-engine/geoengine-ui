@@ -1,11 +1,12 @@
+import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs';
+import {map} from 'rxjs/operators';
+
 import {
     Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef, ViewChild,
-    ElementRef, Renderer2
+    ElementRef
 } from '@angular/core';
-import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, Form} from '@angular/forms';
-import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs/Rx';
+import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl} from '@angular/forms';
 import {IntervalFormat} from '../../interval.enum';
-import {CsvTableComponent} from '../csv-table/csv-table.component';
 import {Projection, Projections} from '../../../../projection.model';
 import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
@@ -145,14 +146,14 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 private _changeDetectorRef: ChangeDetectorRef,
                 public propertiesService: CsvPropertiesService) {
         setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
-        this.isDataProperties$ = this.formStatus$.map(status => status === this.FormStatus.DataProperties);
-        this.isSpatialProperties$ = this.formStatus$.map(status => status === this.FormStatus.SpatialProperties);
-        this.isTemporalProperties$ = this.formStatus$.map(status => status === this.FormStatus.TemporalProperties);
-        this.isTypingProperties$ = this.formStatus$.map(status => status === this.FormStatus.TypingProperties);
-        this.isLayerProperties$ = this.formStatus$.map(status => status === this.FormStatus.LayerProperties);
+        this.isDataProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.DataProperties));
+        this.isSpatialProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.SpatialProperties));
+        this.isTemporalProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.TemporalProperties));
+        this.isTypingProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.TypingProperties));
+        this.isLayerProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.LayerProperties));
 
-        this.userService.getFeatureDBList()
-            .map(entries => entries.map(entry => entry.name))
+        this.userService.getFeatureDBList().pipe(
+            map(entries => entries.map(entry => entry.name)))
             .subscribe(names => this.reservedNames$.next(names));
 
         this.layerProperties = new FormGroup({
@@ -452,20 +453,25 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
                 direction = -1;
             }
-            this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + direction);
+            this.temporalProperties.controls['startColumn'].setValue(
+                this.temporalProperties.controls['startColumn'].value + direction, {emitEvent: false}
+            );
         }
+        this.temporalProperties.updateValueAndValidity();
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             direction = 1;
             arr = [this.spatialProperties.controls['xColumn'].value,
                 this.spatialProperties.controls['yColumn'].value,
                 this.temporalProperties.controls['startColumn'].value];
             while (arr.indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
-                if (this.temporalProperties.controls['startColumn'].value === 0) {
+                if (this.temporalProperties.controls['endColumn'].value === 0) {
                     direction = 1;
-                } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
+                } else if (this.temporalProperties.controls['endColumn'].value === this.header.length - 1) {
                     direction = -1;
                 }
-                this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction);
+                this.temporalProperties.controls['endColumn'].setValue(
+                    this.temporalProperties.controls['endColumn'].value + direction, {emitEvent: false}
+                );
             }
         }
         this.temporalProperties.updateValueAndValidity();

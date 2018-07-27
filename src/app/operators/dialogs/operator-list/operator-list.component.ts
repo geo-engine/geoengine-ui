@@ -1,3 +1,7 @@
+
+import {Observable, BehaviorSubject, of as observableOf, combineLatest as observableCombineLatest} from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, Type} from '@angular/core';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 
@@ -14,7 +18,6 @@ import {HistogramType} from '../../types/histogram-type.model';
 import {RasterValueExtractionOperatorComponent} from '../raster-value-extraction/raster-value-extraction.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {LayoutService} from '../../../layout.service';
-import {Observable, BehaviorSubject} from 'rxjs/Rx';
 import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 import {RScriptType} from '../../types/r-script-type.model';
 import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
@@ -29,6 +32,8 @@ import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-
 import {OperatorType} from '../../operator-type.model';
 import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 import {HeatmapType} from '../../types/heatmap-type.model';
+import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminology-lookup.component';
+import {TerminologyLookupType} from '../../types/terminology-lookup-type';
 import {TimePlotType} from "../../types/timeplot-type.model";
 import {TimePlotComponent} from "../time-plot-operator/time-plot-operator.component";
 
@@ -115,6 +120,11 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         component: TextualAttributeFilterOperatorComponent,
         type: TextualAttributeFilterType,
         description: 'Filter data via text filter',
+    },
+    {
+        component: TerminologyLookupOperatorComponent,
+        type: TerminologyLookupType,
+        description: 'Terminology lookup',
     }
 ];
 
@@ -140,9 +150,9 @@ export class OperatorListComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.operatorGroups$ = Observable.combineLatest(
-            Observable.of(ALL_OPERATORS),
-            this.searchString$.map(s => s.toLowerCase()),
+        this.operatorGroups$ = observableCombineLatest(
+            observableOf(ALL_OPERATORS),
+            this.searchString$.pipe(map(s => s.toLowerCase())),
             (operatorGroups, searchString) => {
                 const nameComparator = (a: string, b: string): number => {
                     const stripped = (s: string): string => s.replace(' ', '');

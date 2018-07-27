@@ -1,3 +1,7 @@
+
+import {Observable, BehaviorSubject, of as observableOf, from as observableFrom} from 'rxjs';
+import {toArray, filter, map, tap, first, mergeMap} from 'rxjs/operators';
+
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -9,12 +13,12 @@ import {
     ViewChild
 } from '@angular/core';
 import {MatDialog, MatIconRegistry, MatSidenav, MatTabGroup} from '@angular/material';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
+
 
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology,
+    ComplexVectorSymbology,
     Symbology
 } from './layers/symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
@@ -110,8 +114,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.storageService.toString(); // just register
 
-        this.layersReverse$ = this.projectService.getLayerStream()
-            .map(layers => layers.slice(0).reverse());
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(
+            map(layers => layers.slice(0).reverse()));
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
@@ -121,8 +125,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.mapService.registerMapComponent(this.mapComponent);
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$)
-            .do(() => this.mapComponent.resize());
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
+            tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
@@ -178,12 +182,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             case 'TOKEN_LOGIN':
                 const tokenMessage = message as { type: string, token: string };
                 this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
-                    this.storageService.getStatus()
-                        .filter(status => status === StorageStatus.OK)
-                        .first()
-                        .subscribe(() => {
-                            this.handleWorkflowParameters();
-                        });
+                    this.storageService.getStatus().pipe(
+                        filter(status => status === StorageStatus.OK),
+                        first()
+                    ).subscribe(() => {
+                        this.handleWorkflowParameters();
+                    });
                 });
                 break;
             default:
@@ -204,7 +208,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     case 'workflow':
                         try {
                             const newLayer = Layer.fromDict(JSON.parse(value));
-                            this.projectService.getProjectStream().first().subscribe(project => {
+                            this.projectService.getProjectStream().pipe(first()).subscribe(project => {
                                 if (project.layers.length > 0) {
                                     // show popup
                                     this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layers: [newLayer]}});
@@ -220,7 +224,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                     case 'gfbioBasketId':
                         try {
                             const gfbioBasketId: number = JSON.parse(value);
-                            this.projectService.getProjectStream().first().subscribe(project => {
+                            this.projectService.getProjectStream().pipe(
+                                first()
+                            ).subscribe(project => {
                                 this.gfbioBasketIdToLayers(gfbioBasketId)
                                     .subscribe((layers: Array<VectorLayer<AbstractVectorSymbology>>) => {
                                             if (project.layers.length > 0) {
@@ -249,56 +255,62 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private gfbioBasketIdToLayers(basketId: number): Observable<Array<VectorLayer<AbstractVectorSymbology>>> {
         return this.mappingQueryService
-            .getGFBioBasket(basketId)
-            .flatMap(basket => Observable
-                .from(basket.results)
-                .flatMap(result => this.gfbioBasketResultToLayer(result))
-                .toArray());
+            .getGFBioBasket(basketId).pipe(
+                mergeMap(basket => observableFrom(basket.results).pipe(
+                    mergeMap(result => this.gfbioBasketResultToLayer(result)),
+                    toArray())
+                )
+            );
     }
 
     private gfbioBasketResultToLayer(result: BasketResult): Observable<VectorLayer<AbstractVectorSymbology>> {
         let operator$: Observable<Operator>;
         if (result.type === 'abcd_grouped') {
             operator$ = this.userService
-                .getSourceSchemaAbcd()
-                .map(sourceSchema => GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
-                    result as IBasketGroupedAbcdResult,
-                    sourceSchema,
-                    true
-                ));
+                .getSourceSchemaAbcd().pipe(
+                    map(
+                        sourceSchema => GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
+                        result as IBasketGroupedAbcdResult,
+                        sourceSchema,
+                        true
+                        )
+                    )
+                );
         } else if (result.type === 'pangaea') {
-            operator$ = Observable.of(
+            operator$ = observableOf(
                 PangaeaBasketResultComponent.createOperatorFromPangaeaData(result as IBasketPangaeaResult)
             );
         }
 
-        return operator$.map(operator => {
-            let clustered = false;
-            let symbology;
+        return operator$.pipe(
+            map(operator => {
+                let clustered = false;
+                let symbology;
 
-            switch (operator.resultType) {
-                case ResultTypes.POINTS:
-                    symbology = ComplexPointSymbology.createClusterSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    });
-                    clustered = true;
-                    break;
-                case ResultTypes.POLYGONS:
-                    symbology = new SimpleVectorSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    });
-                    break;
-                default:
-                    throw new UnexpectedResultType();
-            }
+                switch (operator.resultType) {
+                    case ResultTypes.POINTS:
+                        symbology = ComplexPointSymbology.createClusterSymbology({
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                        });
+                        clustered = true;
+                        break;
+                    case ResultTypes.POLYGONS:
+                        symbology = ComplexVectorSymbology.createSimpleSymbology({
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                        });
+                        break;
+                    default:
+                        throw new UnexpectedResultType();
+                }
 
-            return new VectorLayer({
-                name: result.title,
-                operator: operator,
-                symbology: symbology,
-                clustered: clustered,
-            });
-        });
+                return new VectorLayer({
+                    name: result.title,
+                    operator: operator,
+                    symbology: symbology,
+                    clustered: clustered,
+                });
+            })
+        );
     }
 
     private setTheme(project: 'GFBio' | 'IDESSA' | 'GeoBon') {

@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
-import {Subscription} from 'rxjs/Rx';
+import {Subscription} from 'rxjs';
 
 import ol from 'ol';
-import OlStyleStyle from 'ol/style/style';
 import OlLayerTile from 'ol/layer/tile';
 import OlSourceTileWMS from 'ol/source/tilewms';
 import OlLayerVector from 'ol/layer/vector';
@@ -12,6 +11,7 @@ import OlSourceVector from 'ol/source/vector';
 import {Projection} from '../operators/projection.model';
 import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
 
+import {StyleCreator} from './style-creator';
 import {Layer, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {Time} from '../time/time.model';
@@ -53,7 +53,7 @@ export abstract class OlMapLayerComponent<
 
     protected _mapLayer: OL;
 
-    constructor(protected projectService: ProjectService) {
+    protected constructor(protected projectService: ProjectService) {
     }
 
     get mapLayer(): OL {
@@ -74,7 +74,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
 
     private dataSubscription: Subscription;
 
-    constructor(protected projectService: ProjectService) {
+    protected constructor(protected projectService: ProjectService) {
         super(projectService);
         this.source = new OlSourceVector({wrapX: false});
         this._mapLayer = new OlLayerVector({
@@ -118,7 +118,8 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
                 this.mapLayer.setStyle(style as ol.StyleFunction);
             }
             */
-            this.mapLayer.setStyle(this.symbology.getOlStyleAsFunction());
+            const style = StyleCreator.fromVectorSymbology(this.symbology);
+            this.mapLayer.setStyle(style);
         }
 
         /*
@@ -203,7 +204,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
 
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((rasterData: RasterData) => {
             if (isNullOrUndefined(rasterData)) {
-                console.log("OlRasterLayerComponent constructor", rasterData);
+                // console.log("OlRasterLayerComponent constructor", rasterData);
                 return;
             }
 
@@ -290,7 +291,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
     }
 
     ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        console.log("RasterMapLayer", "ngOnChanges", changes);
+        // console.log("RasterMapLayer", "ngOnChanges", changes);
         /*
          const params = this.mappingQueryService.getWMSQueryParameters({
          operator: this.layer.operator,

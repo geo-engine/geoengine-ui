@@ -1,8 +1,11 @@
+
+import {ReplaySubject, BehaviorSubject, combineLatest as observableCombineLatest} from 'rxjs';
+import {first} from 'rxjs/operators';
+
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs/Rx';
 import {LayoutService} from '../../layout.service';
 import {MappingQueryService} from '../../queries/mapping-query.service';
 import {MapService} from '../../map/map.service';
@@ -29,15 +32,14 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        Observable
-            .combineLatest(
+        observableCombineLatest(
                 this.projectService.getPlotDataStream(this.plot),
                 this.projectService.getTimeStream(),
                 this.projectService.getProjectionStream(),
                 this.mapService.getViewportSizeStream(),
                 this.maxWidth$, this.maxHeight$
-            )
-            .first()
+            ).pipe(
+            first())
             .subscribe(([plotData, time, projection, viewport, width, height]) => {
                 // set data uri for png type and load full screen image
                 if (plotData.type === 'png') {
@@ -51,8 +53,8 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
                             projection: projection,
                             plotWidth: width - LayoutService.remInPx(),
                             plotHeight: height,
-                        })
-                        .first()
+                        }).pipe(
+                        first())
                         .subscribe(newPlotData => {
                             this.imagePlotData$.next(`data:image/png;base64,${newPlotData.data}`);
 

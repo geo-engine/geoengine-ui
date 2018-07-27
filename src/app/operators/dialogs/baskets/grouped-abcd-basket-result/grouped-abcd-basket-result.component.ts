@@ -1,5 +1,6 @@
+
+import {Observable, Subscription, of as observableOf} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {Observable, Subscription} from 'rxjs/Rx';
 import {BasicColumns, CsvColumn} from '../csv.model';
 import {IBasketGroupedAbcdResult, IBasketGroupedAbcdUnits} from '../gfbio-basket.model';
 import {BasketResult} from '../gfbio-basket-result.component';
@@ -25,7 +26,7 @@ class UnitDataSource extends DataSource<IBasketGroupedAbcdUnits> {
     }
 
     connect(): Observable<Array<IBasketGroupedAbcdUnits>> {
-        return Observable.of(this.units);
+        return observableOf(this.units);
     }
 
     disconnect() {

@@ -1,11 +1,11 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 <mat-nav-list>
     <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: RasterRepositoryComponent, parent: SourceOperatorListComponent})"
+        (click)="layoutService.setSidenavContentComponent({component: DataRepositoryComponent, parent: SourceOperatorListComponent})"
     >
-        <img mat-list-icon [src]="RasterSourceType.ICON_URL" [alt]="RasterSourceType.NAME">
-        <h4 mat-line>Environmental</h4>
-        <p mat-line>Add environmental raster layers</p>
+        <img mat-list-icon [src]="RasterSourceType.ICON_URL" alt="Data Repository">
+        <h4 mat-line>Data Repository</h4>
+        <p mat-line>Generic Data Repository</p>
     </mat-list-item>
     <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: AbcdRepositoryComponent, parent: SourceOperatorListComponent})"

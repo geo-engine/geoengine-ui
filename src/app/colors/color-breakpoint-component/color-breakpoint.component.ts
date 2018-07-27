@@ -38,9 +38,9 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
 
     // set accessor including call the onchange callback
     set colorBreakpoint(brk: ColorBreakpoint) {
-        console.log('ColorBreakpointInputComponent', 'set colorBreakpoint');
+        // console.log('ColorBreakpointInputComponent', 'set colorBreakpoint');
         if (brk && (!brk.equals(this._colorBreakpoint))) {
-            console.log('ColorBreakpointInputComponent', 'set colorBreakpoint', 'changed', brk.equals(this._colorBreakpoint));
+            // console.log('ColorBreakpointInputComponent', 'set colorBreakpoint', 'changed', brk.equals(this._colorBreakpoint));
             this._colorBreakpoint = brk;
             // this.changeDetectorRef.markForCheck(); // TODO: when is this needed?
         }
@@ -83,10 +83,11 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
                 case 'colorPlaceholder':
                 {
                     this.changeDetectorRef.markForCheck();
+                    break;
                 }
 
                 default: // DO NOTHING
-                    console.log('ColorBreakpointInputComponent', 'ngOnChanges', 'default: ', propName)
+                    // console.log('ColorBreakpointInputComponent', 'ngOnChanges', 'default: ', propName)
 
             }
         }
@@ -98,7 +99,7 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     writeValue(brk: ColorBreakpoint): void {
-        console.log("ColorBreakpointInputComponent", 'writeValue', brk);
+        // console.log("ColorBreakpointInputComponent", 'writeValue', brk);
         this.colorBreakpoint = brk;
     }
 

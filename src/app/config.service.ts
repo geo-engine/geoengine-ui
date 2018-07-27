@@ -1,7 +1,10 @@
+
+import {of as observableOf} from 'rxjs';
+
+import {catchError, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import * as Immutable from 'immutable';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs/Rx';
 
 type MappingUrlType = string;
 interface WmsInterface {
@@ -45,7 +48,8 @@ interface DefaultsInterface {
     };
 }
 interface MapInterface {
-    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted';
+    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
+    BACKGROUND_LAYER_URL: string;
     HOSTED_BACKGROUND_SERVICE: string;
     HOSTED_BACKGROUND_LAYER_NAME: string;
     HOSTED_BACKGROUND_SERVICE_VERSION: string;
@@ -123,6 +127,7 @@ const ConfigDefault = Immutable.fromJS({
     },
     MAP: {
         BACKGROUND_LAYER: 'OSM',
+        BACKGROUND_LAYER_URL: '',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
@@ -238,8 +243,8 @@ export class Config {
      */
     load(): Promise<void> {
         return this.http
-            .get<ConfigInterface>(Config.CONFIG_FILE)
-            .do(
+            .get<ConfigInterface>(Config.CONFIG_FILE).pipe(
+            tap(
                 appConfig => {
                     const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
 
@@ -247,8 +252,8 @@ export class Config {
                 },
                 () => { // error
                     this.handleConfig(ConfigDefault.toJS());
-                })
-            .catch(() => Observable.of(undefined))
+                }),
+            catchError(() => observableOf(undefined)), )
             .toPromise();
     }
 

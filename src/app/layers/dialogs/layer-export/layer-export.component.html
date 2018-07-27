@@ -1,29 +1,29 @@
 <wave-dialog-header>Export: {{layer.name}}</wave-dialog-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();download()">
     <div fxLayout="row">
-        <mat-input-container fxFlex>
+        <mat-form-field fxFlex>
             <input matInput
                    type="text"
                    placeholder="Export Name"
                    formControlName="outputName"
             >
-        </mat-input-container>
+        </mat-form-field>
     </div>
     <div *ngIf="isRaster" formGroupName="rasterResolution" fxLayout="row">
-        <mat-input-container fxFlex>
+        <mat-form-field fxFlex>
             <input matInput
                    type="number"
                    placeholder="Resolution Width"
                    formControlName="width"
             >
-        </mat-input-container>
-        <mat-input-container fxFlex>
+        </mat-form-field>
+        <mat-form-field fxFlex>
             <input matInput
                    type="number"
                    placeholder="Resolution Height"
                    formControlName="height"
             >
-        </mat-input-container>
+        </mat-form-field>
     </div>
     <div fxLayout="row">
         <mat-form-field *ngIf="isVector">

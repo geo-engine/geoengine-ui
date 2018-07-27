@@ -1,11 +1,14 @@
+
+import {combineLatest as observableCombineLatest, ReplaySubject, Subscription, BehaviorSubject, Observable} from 'rxjs';
+import {tap, mergeMap, map} from 'rxjs/operators';
+
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {MatDialog} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
 import {Projection, Projections} from '../../projection.model';
@@ -17,8 +20,7 @@ import {
     TextualAttributeFilterType
 } from '../../types/textual-attribute-filter-type.model';
 import {DataSource} from '@angular/cdk/table';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subscription} from 'rxjs/Subscription';
+import { DataType, DataTypes } from '../../datatype.model';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -102,22 +104,21 @@ Sean Gilles did some clean up and made some enhancements.`,
     ngOnInit() {
         this.sourceOperator = this.createCsvSourceOperator();
 
-        this.subscription = Observable
-            .combineLatest(
-                this.getOperatorDataStream().map(
+        this.subscription = observableCombineLatest(
+                this.getOperatorDataStream().pipe(map(
                     vectorData => {
-                        console.log('vectorData', vectorData);
+                        // console.log('vectorData', vectorData);
                         const data = vectorData.data.map(olFeature => olFeature.getProperties() as { [k: string]: any });
-                        console.log('mapped', data);
+                        // console.log('mapped', data);
                         return data;
                     }
-                ),
-                this.searchString$.map(searchString => searchString.toLowerCase()),
+                )),
+                this.searchString$.pipe(map(searchString => searchString.toLowerCase())),
                 (entries, searchString) => entries
                     .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
                     .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
-            )
-            .do(() => this.isLoading$.next(false))
+            ).pipe(
+            tap(() => this.isLoading$.next(false)))
             .subscribe(entries => this.filteredEntries$.next(entries));
 
         this.tableEntries = new CountryDataSource(this.filteredEntries$);
@@ -133,15 +134,32 @@ Sean Gilles did some clean up and made some enhancements.`,
             parameters: this.sourceParameters,
         });
 
-        return new Operator({
+        const dataTypes = new Map<string, DataType>();
+        const attributes = new Array<string>();
+
+        for (let an of this.sourceParameters.columns.numeric) {
+            attributes.push(an);
+            dataTypes.set(an, DataTypes.Float64); // TODO: get more accurate type
+        }
+
+        for (let an of this.sourceParameters.columns.textual) {
+            attributes.push(an);
+            dataTypes.set(an, DataTypes.Alphanumeric); // TODO: get more accurate type
+        }
+
+        const op = new Operator({
             operatorType: csvSourceType,
             resultType: ResultTypes.POLYGONS,
             projection: this.sourceProjection,
+            attributes: attributes,
+            dataTypes: dataTypes
         });
+
+        return op;
     }
 
     getOperatorDataStream(): Observable<VectorData> {
-        return this.projectService.getTimeStream().flatMap(t => {
+        return this.projectService.getTimeStream().pipe(mergeMap(t => {
             return this.mappingQueryService.getWFSData({
                 operator: this.sourceOperator,
                 projection: this.sourceProjection,
@@ -152,8 +170,8 @@ Sean Gilles did some clean up and made some enhancements.`,
                     resolution: 1,
                 },
                 time: t
-            }).map(d => VectorData.olParse(t, this.sourceProjection, this.sourceProjection.getExtent(), d));
-        });
+            }).pipe(map(d => VectorData.olParse(t, this.sourceProjection, this.sourceProjection.getExtent(), d)));
+        }));
     }
 
     createFilterOperator(key: string): Operator {
@@ -163,16 +181,20 @@ Sean Gilles did some clean up and made some enhancements.`,
             searchString: key,
         });
 
+        const sourceOp = this.createCsvSourceOperator();
+
         return new Operator({
             operatorType: filterOperatorType,
             resultType: this.sourceOperator.resultType,
             projection: this.sourceOperator.projection,
-            polygonSources: [this.createCsvSourceOperator()]
+            polygonSources: [sourceOp],
+            attributes: sourceOp.attributes,
+            dataTypes: sourceOp.dataTypes
         });
     }
 
     addLayer(layerName: string, operator: Operator) {
-        let symbology = new SimpleVectorSymbology({
+        let symbology = ComplexVectorSymbology.createSimpleSymbology({
             fillRGBA: this.randomColorService.getRandomColorRgba(),
         });
 

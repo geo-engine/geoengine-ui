@@ -1,3 +1,4 @@
+///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -7,7 +8,7 @@ import {HttpClientModule} from '@angular/common/http';
 import 'hammerjs';
 
 import {AppComponent} from './app.component';
-import {RasterRepositoryComponent} from './operators/dialogs/raster-repository/raster-repository.component';
+import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
 import {MapComponent} from './map/map.component';
 import {
     OlLineLayerComponent,
@@ -21,7 +22,6 @@ import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
-import {SymbologyPointsComponent} from './layers/symbology/symbology-vectors/symbology-points.component';
 import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
@@ -128,7 +128,7 @@ import {
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {MatIconRegistry} from '@angular/material';
-import {SourceDatasetComponent} from './operators/dialogs/raster-repository/source-dataset.component';
+import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
@@ -143,6 +143,8 @@ import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.comp
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 import {TimePlotComponent} from "./operators/dialogs/time-plot-operator/time-plot-operator.component";
+import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
+import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -151,7 +153,7 @@ export function configInitializer(config: Config) {
 @NgModule({
     declarations: [
         AppComponent,
-        RasterRepositoryComponent,
+        DataRepositoryComponent,
         MapComponent,
         OlPointLayerComponent,
         OlLineLayerComponent,
@@ -163,7 +165,6 @@ export function configInitializer(config: Config) {
         RgbaToCssStringPipe,
         CssStringToRgbaPipe,
         BreakpointToCssStringPipe,
-        SymbologyPointsComponent,
         SymbologyRasterComponent,
         SymbologyRasterMappingColorizerComponent,
         SymbologyVectorComponent,
@@ -268,7 +269,9 @@ export function configInitializer(config: Config) {
         HeatmapOperatorComponent,
         CountryPolygonSelectionComponent,
         SensorSourceOperatorComponent,
-        ColorBreakpointInputComponent
+        ColorBreakpointInputComponent,
+        TerminologyLookupOperatorComponent,
+        VectorSourceDatasetComponent
     ],
     imports: [
         BrowserModule,
@@ -284,7 +287,7 @@ export function configInitializer(config: Config) {
     ],
     entryComponents: [
         RenameLayerComponent,
-        RasterRepositoryComponent,
+        DataRepositoryComponent,
         AbcdRepositoryComponent,
         GfbioBasketsComponent,
         PointInPolygonFilterOperatorComponent,
@@ -331,7 +334,8 @@ export function configInitializer(config: Config) {
         SymbologyEditorComponent,
         ColorizerEditorComponent,
         HeatmapOperatorComponent,
-        SensorSourceOperatorComponent
+        SensorSourceOperatorComponent,
+        TerminologyLookupOperatorComponent
     ],
     providers: [
         DragulaService,

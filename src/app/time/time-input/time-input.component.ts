@@ -71,7 +71,7 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
         this.onTouched = fn;
     }
 
-    private update(timeUnit: moment.unitOfTime.Base, value: number){
+    update(timeUnit: moment.unitOfTime.Base, value: number){
         if (value) {
             this.time.set(timeUnit, value);
             this.propagateChange();

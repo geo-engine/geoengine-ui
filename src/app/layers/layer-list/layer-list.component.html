@@ -144,7 +144,8 @@
                                 <ng-template [ngIf]="false">
                                     <mat-icon mat-list-icon svgIcon="symbology:line"></mat-icon>
                                 </ng-template>
-                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
+                                <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_VECTOR
+                                    || layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
                                     <mat-icon mat-list-icon svgIcon="symbology:polygon"
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
@@ -203,6 +204,11 @@
                             <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
                                 <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
                                 </wave-legendary-points>
+                            </ng-template>
+
+                            <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
+                                <wave-legendary-vector fxFlex="grow" [symbology]="layer.symbology">
+                                </wave-legendary-vector>
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">

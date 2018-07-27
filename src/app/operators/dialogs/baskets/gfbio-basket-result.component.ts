@@ -1,10 +1,9 @@
 import {Input} from '@angular/core';
 import {IBasketResult} from './gfbio-basket.model';
 import {Operator} from '../../operator.model';
-import {ABCDSourceType, ABCDSourceTypeConfig} from '../../..//operators/types/abcd-source-type.model';
 import {ResultTypes} from '../../result-type.model';
 import {VectorLayer} from '../../../layers/layer.model';
-import {ComplexPointSymbology, SimpleVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -35,7 +34,7 @@ export class BasketResult<T extends IBasketResult> {
                 clustered = true;
                 break;
             case ResultTypes.POLYGONS:
-                symbology = new SimpleVectorSymbology({
+                symbology = ComplexVectorSymbology.createSimpleSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;

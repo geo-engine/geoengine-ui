@@ -1,0 +1,26 @@
+@import "../../../../wave-app-theme";
+
+form {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+.actions {
+    text-align: right;
+    padding: 1rem;
+}
+
+mat-form-field {
+    width: 100% !important;
+    margin: 0 0 1rem 0;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}

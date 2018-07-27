@@ -1,3 +1,6 @@
+
+import {Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 
 import {VectorLayer} from '../../../layers/layer.model';
@@ -5,7 +8,6 @@ import {ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {AbstractVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs/Rx';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -43,8 +45,8 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
             searchString: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
-        this.attributes$ = this.form.controls['vectorLayer'].valueChanges
-            .do(layer => {
+        this.attributes$ = this.form.controls['vectorLayer'].valueChanges.pipe(
+            tap(layer => {
                 // side effects!!!
                 this.form.controls['attribute'].setValue(undefined);
                 if (layer) {
@@ -52,8 +54,8 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
                 } else {
                     this.form.controls['attribute'].disable({onlySelf: true});
                 }
-            })
-            .map(layer => {
+            }),
+            map(layer => {
                 if (layer) {
                     return layer.operator.attributes.filter((attribute: string) => {
                         return DataTypes.Alphanumeric === layer.operator.dataTypes.get(attribute);
@@ -61,7 +63,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
                 } else {
                     return [];
                 }
-            });
+            }), );
     }
 
     ngAfterViewInit() {
@@ -69,7 +71,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
         setTimeout(() => this.form.controls['vectorLayer'].enable({emitEvent: true}));
     }
 
-    add() {
+    add(event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['vectorLayer'].value;
         const sourceOperator: Operator = vectorLayer.operator;
 

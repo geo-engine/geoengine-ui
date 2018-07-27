@@ -1,6 +1,19 @@
+import {combineLatest as observableCombineLatest, Observable, Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
+
 import {
-    Component, ViewChild, ElementRef, Input, AfterViewInit, SimpleChange, OnChanges,
-    ContentChildren, QueryList, ChangeDetectionStrategy, AfterContentInit, OnDestroy,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ContentChildren,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnDestroy,
+    QueryList,
+    SimpleChange,
+    ViewChild,
 } from '@angular/core';
 
 import ol from 'ol'
@@ -20,19 +33,19 @@ import OlLayerImage from 'ol/layer/image';
 import OlStyleStroke from 'ol/style/stroke';
 import OlSourceTileWMS from 'ol/source/tilewms';
 import OlFormatGeoJSON from 'ol/format/geojson';
+import XYZ from 'ol/source/xyz';
 
 
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {Symbology, AbstractVectorSymbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, Symbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
 import {MapService} from './map.service';
 import {Config} from '../config.service';
-import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
+import {StyleCreator} from './style-creator';
 
 type MapLayer = OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>;
 
@@ -152,7 +165,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         );
 
         this.subscriptions.push(
-            Observable.combineLatest(
+            observableCombineLatest(
                 this.contentChildren.changes,
                 this.projection$,
                 (changes, projection) => projection,
@@ -239,7 +252,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         this.map.on('moveend', event => {
             // console.log('ngAfterViewInit', 'moveend', this.map.getView().calculateExtent(this.map.getSize()));
 
-            this.projection$.first().subscribe(projection => {
+            this.projection$.pipe(first()).subscribe(projection => {
                 this.mapService.setViewportSize({
                     extent: this.map.getView().calculateExtent(this.map.getSize()),
                     resolution: this.map.getView().getResolution(),
@@ -247,6 +260,49 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                 });
             });
         });
+    }
+
+    public startDrawInteraction(drawType: ol.geom.GeometryType) {
+        if (this.drawInteraction) {
+            throw new Error('only one draw interaction can be active!');
+        }
+
+        if (this.drawInteractionLayer) {
+            throw new Error('only one draw layer can be active!');
+        }
+
+        const source = new OlSourceVector({wrapX: false});
+
+        this.drawInteractionLayer = new OlLayerVector({
+            source: source,
+        });
+
+        this.drawInteraction = new OlInteractionDraw({
+            source: source,
+            type: drawType
+        });
+
+        this.map.addLayer(this.drawInteractionLayer);
+        this.map.addInteraction(this.drawInteraction);
+    }
+
+    public isDrawInteractionAttached(): boolean {
+        return (!!this.drawInteraction && !!this.drawInteractionLayer);
+    }
+
+    public endDrawInteraction(): ol.source.Vector {
+        if (!this.drawInteraction || !this.drawInteractionLayer) {
+            console.error('no interaction or layer active!');
+            return undefined;
+        }
+
+        const source = this.drawInteractionLayer.getSource();
+        this.map.removeInteraction(this.drawInteraction);
+        this.map.removeLayer(this.drawInteractionLayer);
+        this.drawInteractionLayer = undefined;
+        this.drawInteraction = undefined;
+
+        return source;
     }
 
     private initOpenlayersMap() {
@@ -271,18 +327,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
             const selectedSymbology = this.layerService.getSelectedLayer().symbology;
 
             if (selectedSymbology instanceof AbstractVectorSymbology) {
-                const highlightSymbology = (
+                const highlightSymbology = StyleCreator.createHighlightSymbology(
                     selectedSymbology as AbstractVectorSymbology
-                ).getHighlightSymbology();
-
+                );
+                const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
                 selectEvent.selected.forEach((feature) => {
-                    const highlightStyle = highlightSymbology.getOlStyle();
-                    if (highlightStyle instanceof OlStyleStyle) {
-                        feature.setStyle(highlightStyle);
-                    } else {
-                        const highlightStyleFunction = highlightStyle as ol.StyleFunction;
-                        feature.setStyle(highlightStyleFunction.call(undefined, feature));
-                    }
+                    feature.setStyle(highlightStyle);
                 });
             }
 
@@ -319,11 +369,6 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
 
         this.layerService.getSelectedFeaturesStream().subscribe(selected => {
             const selectedLayer = this.layerService.getSelectedLayer();
-            let highlightStyleFunction = (feature: ol.Feature, resolution: number) => undefined as ol.style.Style | ol.style.Style[];
-            if (selectedLayer !== undefined && selectedLayer.symbology instanceof AbstractVectorSymbology) {
-                highlightStyleFunction =
-                    (selectedLayer.symbology as AbstractVectorSymbology).getHighlightSymbology().getOlStyleAsFunction();
-            }
 
             let newSelect = new OlCollection<ol.Feature>();
             select.getFeatures().forEach(feature => {
@@ -337,16 +382,22 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                 select.getFeatures().remove(feature);
             });
 
+            // TODO: clean this up when selected layer is removed
             if (selectedOlLayers) {
                 selectedOlLayers.forEach(layer => {
-                    if (layer instanceof OlLayerVector) {
+                    if (layer instanceof OlLayerVector && selectedLayer) {
+                        const highlightSymbology = StyleCreator.createHighlightSymbology(
+                            selectedLayer.symbology as AbstractVectorSymbology
+                        );
+                        const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
+
                         const vectorLayer = layer as ol.layer.Vector;
                         vectorLayer.getSource().getFeatures().forEach(feature => {
                             if (selected.add && selected.add.contains(feature.getId())) {
                                 if (select.getFeatures().getArray().indexOf(feature) === -1) {
                                     select.getFeatures().push(feature);
                                     // todo: add resolution as third parameter
-                                    feature.setStyle(highlightStyleFunction.call(undefined, feature, undefined));
+                                    feature.setStyle(highlightStyle);
                                 }
                             }
                         });
@@ -459,51 +510,17 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                     source: hostedSource,
                 });
                 return hostedLayer;
+            case 'XYZ':
+                const xyzSource = new XYZ({
+                    url: this.config.MAP.BACKGROUND_LAYER_URL,
+                    wrapX: false,
+                    projection: projection.getCode(),
+                });
+                return new OlLayerTile({
+                    source: xyzSource,
+                });
             default:
                 throw Error('Unknown Background Layer Name');
         }
-    }
-
-    public startDrawInteraction(drawType: ol.geom.GeometryType) {
-        if (this.drawInteraction) {
-            throw new Error('only one draw interaction can be active!');
-        }
-
-        if (this.drawInteractionLayer) {
-            throw new Error('only one draw layer can be active!');
-        }
-
-        const source = new OlSourceVector({wrapX: false});
-
-        this.drawInteractionLayer = new OlLayerVector({
-            source: source,
-        });
-
-        this.drawInteraction = new OlInteractionDraw({
-            source: source,
-            type: drawType
-        });
-
-        this.map.addLayer(this.drawInteractionLayer);
-        this.map.addInteraction(this.drawInteraction);
-    }
-
-    public isDrawInteractionAttached(): boolean {
-        return (!!this.drawInteraction && !!this.drawInteractionLayer);
-    }
-
-    public endDrawInteraction(): ol.source.Vector {
-        if (!this.drawInteraction || ! this.drawInteractionLayer ) {
-            console.error('no interaction or layer active!');
-            return undefined;
-        }
-
-        const source = this.drawInteractionLayer.getSource();
-        this.map.removeInteraction(this.drawInteraction);
-        this.map.removeLayer(this.drawInteractionLayer);
-        this.drawInteractionLayer = undefined;
-        this.drawInteraction = undefined;
-
-        return source;
     }
 }

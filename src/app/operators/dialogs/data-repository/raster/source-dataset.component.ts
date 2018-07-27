@@ -1,21 +1,22 @@
+
+import {of as observableOf, Observable} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {MappingSource, MappingSourceChannel, MappingTransform} from './mapping-source.model';
-import {Unit} from '../../unit.model';
-import {RasterSourceType} from '../../types/raster-source-type.model';
-import {ResultTypes} from '../../result-type.model';
-import {Projection, Projections} from '../../projection.model';
-import {DataType, DataTypes} from '../../datatype.model';
-import {RasterLayer} from '../../../layers/layer.model';
+import {MappingSource, MappingSourceRasterLayer, MappingTransform} from '../mapping-source.model';
+import {Unit} from '../../../unit.model';
+import {RasterSourceType} from '../../../types/raster-source-type.model';
+import {ResultTypes} from '../../../result-type.model';
+import {Projection, Projections} from '../../../projection.model';
+import {DataType, DataTypes} from '../../../datatype.model';
+import {RasterLayer} from '../../../../layers/layer.model';
 import {
-    MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
-import {Operator} from '../../operator.model';
-import {ProjectService} from '../../../project/project.service';
+    MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
+import {Operator} from '../../../operator.model';
+import {ProjectService} from '../../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
-import {Observable} from 'rxjs/Observable';
-import {GdalSourceType} from '../../types/gdal-source-type.model';
-import {ExpressionType} from '../../types/expression-type.model';
-import {ColorBreakpointDict} from '../../../colors/color-breakpoint.model';
-import {ColorizerData, IColorizerData} from '../../../colors/colorizer-data.model';
+import {GdalSourceType} from '../../../types/gdal-source-type.model';
+import {ExpressionType} from '../../../types/expression-type.model';
+import {ColorBreakpointDict} from '../../../../colors/color-breakpoint.model';
+import {ColorizerData, IColorizerData} from '../../../../colors/colorizer-data.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -28,11 +29,12 @@ export class SourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
 
-    private _useRawData = false;
-    private _showPreview = false;
-    private _showDescription = false;
-    private _channelSource;
-    private _displayedColumns  = ['name', 'measurement'];
+    searchTerm: string; // TODO: this was needed to get prod build working...
+    _useRawData = false;
+    _showPreview = false;
+    _showDescription = false;
+    _channelSource: ChannelDataSource;
+    _displayedColumns  = ['name', 'measurement'];
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
@@ -64,20 +66,18 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this._channelSource = new ChannelDataSource(this.dataset.channels);
+        this._channelSource = new ChannelDataSource(this.dataset.rasterLayer);
     }
 
-    valid_colorizer(channel: MappingSourceChannel): IColorizerData {
+    valid_colorizer(channel: MappingSourceRasterLayer): IColorizerData {
         if (channel.colorizer) {
             return channel.colorizer;
-        } else if (this.dataset.colorizer) {
-            return this.dataset.colorizer;
         } else {
             return ColorizerData.grayScaleColorizer(this.valid_unit(channel));
         }
     }
 
-    valid_unit(channel: MappingSourceChannel): Unit {
+    valid_unit(channel: MappingSourceRasterLayer): Unit {
         if (channel.hasTransform && !this.useRawData) {
             return channel.transform.unit;
         } else {
@@ -85,11 +85,11 @@ export class SourceDatasetComponent implements OnInit {
         }
     }
 
-    simple_add(channel: MappingSourceChannel) {
+    simple_add(channel: MappingSourceRasterLayer) {
         this.add(channel, channel.hasTransform && !this.useRawData )
     }
 
-    add(channel: MappingSourceChannel, doTransform: boolean) {
+    add(channel: MappingSourceRasterLayer, doTransform: boolean) {
         const unit: Unit = channel.unit;
         const mappingTransformation = channel.transform;
 
@@ -101,7 +101,7 @@ export class SourceDatasetComponent implements OnInit {
             operator = this.createMappingRasterDbSourceOperator(channel, doTransform);
         }
 
-        let colorizerConfig = (channel.colorizer) ? channel.colorizer : this.dataset.colorizer;
+        let colorizerConfig = channel.colorizer;
         if (doTransform) {
             colorizerConfig = SourceDatasetComponent.createAndTransformColorizer(colorizerConfig, mappingTransformation);
         }
@@ -126,8 +126,8 @@ export class SourceDatasetComponent implements OnInit {
         return this._useRawData;
     }
 
-    get channels(): Array<MappingSourceChannel> {
-        return this.dataset.channels
+    get channels(): Array<MappingSourceRasterLayer> {
+        return this.dataset.rasterLayer
     }
 
     get channelDataSource(): ChannelDataSource {
@@ -139,7 +139,7 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     isSingleLayerDataset(): boolean {
-        return this.dataset.channels.length <= 1;
+        return this.dataset.rasterLayer.length <= 1;
     }
 
     toggleImages() {
@@ -156,18 +156,16 @@ export class SourceDatasetComponent implements OnInit {
 
     /**
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
-     * @param {MappingSourceChannel} channel
+     * @param {MappingSourceRasterLayer} channel
      * @param {boolean} doTransform
      * @returns {Operator}
      */
-    createGdalSourceOperator(channel: MappingSourceChannel,  doTransform: boolean): Operator {
+    createGdalSourceOperator(channel: MappingSourceRasterLayer, doTransform: boolean): Operator {
         const sourceDataType = channel.datatype;
         const sourceUnit: Unit = channel.unit;
         let sourceProjection: Projection;
-        if (this.dataset.coords.crs) {
-            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
-        } else if (this.dataset.coords.epsg) {
-            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        if (channel.coords.crs) {
+            sourceProjection = Projections.fromCode(channel.coords.crs);
         } else {
             throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
         }
@@ -213,7 +211,7 @@ export class SourceDatasetComponent implements OnInit {
         return sourceOperator;
     }
 
-    createMappingRasterDbSourceOperator(channel: MappingSourceChannel, doTransform: boolean) {
+    createMappingRasterDbSourceOperator(channel: MappingSourceRasterLayer, doTransform: boolean) {
         let dataType = channel.datatype;
         let unit: Unit = channel.unit;
 
@@ -223,10 +221,8 @@ export class SourceDatasetComponent implements OnInit {
         }
 
         let sourceProjection: Projection;
-        if (this.dataset.coords.crs) {
-            sourceProjection = Projections.fromCode(this.dataset.coords.crs);
-        } else if (this.dataset.coords.epsg) {
-            sourceProjection = Projections.fromCode('EPSG:' + this.dataset.coords.epsg);
+        if (channel.coords.crs) {
+            sourceProjection = Projections.fromCode(channel.coords.crs);
         } else {
             throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + channel.id);
         }
@@ -251,16 +247,16 @@ export class SourceDatasetComponent implements OnInit {
 
 }
 
-class ChannelDataSource extends DataSource<MappingSourceChannel> {
-    private channels: Array<MappingSourceChannel>;
+class ChannelDataSource extends DataSource<MappingSourceRasterLayer> {
+    private channels: Array<MappingSourceRasterLayer>;
 
-    constructor(channels: Array<MappingSourceChannel>) {
+    constructor(channels: Array<MappingSourceRasterLayer>) {
         super();
         this.channels = channels;
     }
 
-    connect(): Observable<Array<MappingSourceChannel>> {
-        return Observable.of(this.channels);
+    connect(): Observable<Array<MappingSourceRasterLayer>> {
+        return observableOf(this.channels);
     }
 
     disconnect() {

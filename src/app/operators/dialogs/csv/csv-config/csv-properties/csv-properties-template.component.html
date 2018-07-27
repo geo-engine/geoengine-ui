@@ -56,9 +56,9 @@
                         <mat-slide-toggle style="margin:0;" formControlName="isHeaderRow"></mat-slide-toggle>
                     </td>
                     <td>
-                        <mat-input-container>
+                        <mat-form-field>
                             <input placeholder="Header Row" matInput type="number" formControlName="headerRow" min="0">
-                        </mat-input-container>
+                        </mat-form-field>
                     </td>
                 </tr>
             </table>
@@ -220,12 +220,12 @@
                             </ng-template>
                         </mat-select>
                     </mat-form-field>
-                    <mat-input-container
+                    <mat-form-field
                         *ngIf="temporalProperties.controls['intervalType'].value === IntervalFormat.StartConst">
                         <input matInput formControlName="constantDuration" placeholder="Constant duration"
                                type="number">
                         <span matSuffix>{{temporalProperties.controls['endFormat'].value}}</span>
-                    </mat-input-container>
+                    </mat-form-field>
                 </div>
             </div>
             <div fxLayout="row" fxLayout.sm="column" fxLayoutGap="1rem" fxLayoutAlign="center"
@@ -284,13 +284,13 @@
                                      [subtitle]="'Choose on error behavior and layer name.'"
                                      style="text-align: left"></wave-dialog-section-heading>
         <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
-            <mat-input-container style="width: 100%;">
+            <mat-form-field style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
                        type="input" #layerNameComponent>
                 <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>
-            </mat-input-container>
+            </mat-form-field>
             <wave-dialog-section-heading [subtitle]="'On error behavior'" flex></wave-dialog-section-heading>
             <mat-radio-group formControlName="onError" fxLayout="row" fxLayoutAlign="space-around center">
                 <mat-radio-button value="skip"  flex>

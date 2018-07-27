@@ -12,9 +12,9 @@ import {ProjectService} from '../../project/project.service';
     <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
         <mat-dialog-content>
-            <mat-input-container>
+            <mat-form-field>
                 <input matInput type="text" placeholder="Name" formControlName="layerName">
-            </mat-input-container>
+            </mat-form-field>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
             <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
@@ -25,7 +25,7 @@ import {ProjectService} from '../../project/project.service';
     form {
         padding-top: 16px;
     }
-    mat-input-container {
+    mat-form-field {
         width: 100%;
     }
     `],
@@ -55,7 +55,7 @@ export class RenameLayerComponent implements OnInit {
     /**
      * Save the layer name and close the dialog.
      */
-    save() {
+    save(event: any) {
         const layerName = this.form.controls['layerName'].value;
         if (layerName !== this.layer.name) {
             this.projectService.changeLayer(this.layer, {name: layerName});

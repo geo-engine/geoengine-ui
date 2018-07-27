@@ -1,7 +1,10 @@
+
+import {first} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
+
 import {Component, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
 import {MatDialog, MatIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
-import {Observable, Subscription} from 'rxjs/Rx';
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
@@ -12,7 +15,7 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
-import {SymbologyEditorComponent} from '../../layers/symbology/symbology-editor/symbology-editor.component';
+import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';
@@ -62,10 +65,10 @@ export class LayerListComponent implements OnDestroy {
     }
 
     constructor(public dialog: MatDialog,
-                private layoutService: LayoutService,
+                public layoutService: LayoutService,
                 private dragulaService: DragulaService,
-                private projectService: ProjectService,
-                private layerService: LayerService,
+                public projectService: ProjectService,
+                public layerService: LayerService,
                 private mapService: MapService,
                 private iconRegistry: MatIconRegistry,
                 private sanitizer: DomSanitizer,
@@ -105,7 +108,7 @@ export class LayerListComponent implements OnDestroy {
                 dropIndex = LayerListComponent.domIndexOf(listItem, list);
                 // console.log('drop', dropIndex);
 
-                this.projectService.getLayerStream().first().subscribe(layers => {
+                this.projectService.getLayerStream().pipe(first()).subscribe(layers => {
                     let shiftedLayers: Array<Layer<Symbology>> = [...layers];
                     shiftedLayers.splice(dropIndex, 0, shiftedLayers.splice(dragIndex, 1)[0]);
                     this.projectService.setLayers(shiftedLayers)

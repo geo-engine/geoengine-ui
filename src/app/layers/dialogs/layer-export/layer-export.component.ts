@@ -1,3 +1,7 @@
+
+import {first} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, Inject} from '@angular/core';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
 import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
@@ -7,7 +11,6 @@ import {Symbology} from '../../symbology/symbology.model';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {Subscription} from 'rxjs/Rx';
 import {ProjectService} from '../../../project/project.service';
 
 interface LayerExportComponentConfig {
@@ -79,7 +82,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     download() {
-        this.projectService.getProjectStream().first().subscribe(project => {
+        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
             if (this.isVector) {
                 location.href = this.mappingQueryService.getWFSQueryUrl({
                     operator: this.layer.operator,

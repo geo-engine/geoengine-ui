@@ -1,6 +1,9 @@
+
+import {BehaviorSubject, Observable, Subscription, of as observableOf} from 'rxjs';
+import {mergeMap, distinctUntilChanged, throttleTime, startWith} from 'rxjs/operators';
+
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import {Config} from '../../../config.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
@@ -11,7 +14,7 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    SimpleVectorSymbology
+    ComplexVectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
@@ -114,21 +117,21 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             })
         );
 
-        this.autoCompleteResults$ = this.form.controls['searchString'].valueChanges
-            .startWith(null)
-            .throttleTime(this.config.DELAYS.DEBOUNCE)
-            .distinctUntilChanged()
-            .mergeMap(
+        this.autoCompleteResults$ = this.form.controls['searchString'].valueChanges.pipe(
+            startWith(null),
+            throttleTime(this.config.DELAYS.DEBOUNCE),
+            distinctUntilChanged(),
+            mergeMap(
                 (autocompleteString: string) => {
                     if (autocompleteString && autocompleteString.length >= this.minSearchLength) {
                         return this.mappingQueryService.getGBIFAutoCompleteResults(
                             autocompleteString
                         );
                     } else {
-                        return Observable.of([]);
+                        return observableOf([]);
                     }
                 }
-            );
+            ), );
 
         // TODO: think about very unlikely race condition
         this.http
@@ -202,7 +205,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    add() {
+    add(event: any) {
         const layerName = this.form.controls['name'].value as string;
         const searchString = this.form.controls['searchString'].value as string;
 
@@ -250,7 +253,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                     break;
                 case ResultTypes.POLYGONS:
-                    symbology = new SimpleVectorSymbology({
+                    symbology = ComplexVectorSymbology.createSimpleSymbology({
                         fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
                     break;

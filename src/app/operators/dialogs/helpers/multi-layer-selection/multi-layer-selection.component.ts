@@ -1,14 +1,13 @@
+
+import {combineLatest as observableCombineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription} from 'rxjs';
+
+import {first} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {Symbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
-import {Observable} from 'rxjs/Observable';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Subject} from 'rxjs/Subject';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Subscription} from 'rxjs/Subscription';
 import {LayerService} from '../../../../layers/layer.service';
 
 /**
@@ -124,7 +123,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 case 'layers':
                 case 'types':
                     if (this.layers instanceof Observable) {
-                        this.layers.first().subscribe(layers => {
+                        this.layers.pipe(first()).subscribe(layers => {
                             this.filteredLayers.next(
                                 layers.filter((layer: Layer<Symbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;
@@ -150,9 +149,8 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
 
         if (minMaxInitialChanged) {
-            Observable
-                .combineLatest(this.filteredLayers, this.selectedLayers)
-                .first()
+            observableCombineLatest(this.filteredLayers, this.selectedLayers).pipe(
+                first())
                 .subscribe(([filteredLayers, selectedLayers]) => {
                     const amountOfLayers = selectedLayers.length;
 
@@ -184,20 +182,19 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     updateLayer(index: number, layer: Layer<Symbology>) {
-        this.selectedLayers.first().subscribe(selectedLayers => {
+        this.selectedLayers.pipe(first()).subscribe(selectedLayers => {
             const newSelectedLayers = [...selectedLayers];
             newSelectedLayers[index] = layer;
             this.selectedLayers.next(newSelectedLayers);
         });
     }
 
-    add() {
-        Observable
-            .combineLatest(
+    add(event: any) {
+        observableCombineLatest(
                 this.filteredLayers,
                 this.selectedLayers,
-            )
-            .first()
+            ).pipe(
+            first())
             .subscribe(([filteredLayers, selectedLayers]) => {
                 this.selectedLayers.next(selectedLayers.concat(
                     this.layersForInitialSelection(filteredLayers, selectedLayers, 1)
@@ -208,7 +205,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     remove() {
-        this.selectedLayers.first().subscribe(selectedLayers => {
+        this.selectedLayers.pipe(first()).subscribe(selectedLayers => {
             this.selectedLayers.next(selectedLayers.slice(0, selectedLayers.length - 1));
 
             this.onBlur();

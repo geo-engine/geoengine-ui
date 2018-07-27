@@ -1,15 +1,15 @@
 import {
     Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChange, ViewChild, AfterViewInit,
-    ElementRef, OnDestroy, Provider,
+    ElementRef, OnDestroy,
 } from '@angular/core';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
-import {BehaviorSubject, Subscription} from 'rxjs/Rx';
+import {BehaviorSubject, Subscription} from 'rxjs';
 
 import * as CodeMirror from 'codemirror';
 
 // import all possible modes
 import 'codemirror/mode/r/r';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from "@angular/forms";
 
 const LANGUAGES = ['r'];
 
@@ -30,7 +30,7 @@ const LANGUAGES = ['r'];
         width: 100%;
     }
     `],
-    providers: [ {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true,},
+    providers: [ {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true, },
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -63,7 +63,7 @@ export class CodeEditorComponent
 
     ngAfterViewInit() {
         if (LANGUAGES.indexOf(this.language)) {
-            throw `Language ${this.language} is not (yet) supported.`;
+            throw new Error(`Language ${this.language} is not (yet) supported.`);
         }
 
         this.editor = CodeMirror.fromTextArea(this.editorRef.nativeElement, {

@@ -10,9 +10,9 @@
             title="Configuration" subtitle="Specify the operator"
         ></wave-dialog-section-heading>
         <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
-        <mat-input-container>
+        <mat-form-field>
             <input matInput type="text" formControlName="expression" placeholder="Expression">
-        </mat-input-container>
+        </mat-form-field>
         <mat-form-field>
             <mat-select formControlName="dataType" placeholder="Output Data Type">
                 <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType">
@@ -21,13 +21,13 @@
             </mat-select>
         </mat-form-field>
         <div fxLayout="row">
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="number" formControlName="minValue" placeholder="Minimum Value">
-            </mat-input-container>
+            </mat-form-field>
             <div fxFlex="1rem"></div>
-            <mat-input-container fxFlex>
+            <mat-form-field fxFlex>
                 <input matInput type="number" formControlName="maxValue" placeholder="Maximum Value">
-            </mat-input-container>
+            </mat-form-field>
         </div>
         <mat-form-field>
             <mat-select formControlName="unit" placeholder="Output Unit">

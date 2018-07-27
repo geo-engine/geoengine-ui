@@ -29,11 +29,11 @@ mat-form-field {
     margin: 1rem 0;
 }
 
-mat-input-container {
+mat-form-field {
     margin-bottom: 1rem;
 }
 
-mat-input-container:not(:last-child) {
+mat-form-field:not(:last-child) {
     margin-right: 1rem;
 }
 

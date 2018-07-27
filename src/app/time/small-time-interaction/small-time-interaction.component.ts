@@ -1,9 +1,11 @@
+
+import {Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
 import {Time, TimeStepDuration} from '../time.model';
-import {Subscription} from 'rxjs/Rx';
 
 @Component({
     selector: 'wave-small-time-interaction',
@@ -54,14 +56,14 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
 
 
     timeForward() {
-        this.projectService.getTimeStream().first().subscribe(time => {
+        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
             let nt = time.clone().add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(nt);
         });
     }
 
     timeBackwards() {
-        this.projectService.getTimeStream().first().subscribe(time => {
+        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
             this.projectService.setTime(time.clone().subtract(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit));
         });
     }

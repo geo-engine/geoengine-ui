@@ -1,5 +1,5 @@
 <mat-sidenav-container fullscreen>
-    <mat-sidenav #sidenavRight align="end" mode="side" (close)="mapComponent.resize()" (open)="mapComponent.resize()">
+    <mat-sidenav #sidenavRight position="end" mode="side" (openedChange)="mapComponent.resize()">
         <wave-sidenav-container #sidenavContainer></wave-sidenav-container>
     </mat-sidenav>
     <div class="time-container" fxLayoutAlign="space-around center">

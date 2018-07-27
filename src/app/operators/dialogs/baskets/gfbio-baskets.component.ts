@@ -1,12 +1,16 @@
+
+import {
+    of as observableOf, combineLatest as observableCombineLatest, ReplaySubject, BehaviorSubject, Subscription
+} from 'rxjs';
+import {tap, mergeMap, catchError} from 'rxjs/operators';
+
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 
-import {BehaviorSubject, Observable, Subscription} from 'rxjs/Rx';
 import * as moment from 'moment';
 
 import {Basket, BasketsOverview, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {NotificationService} from '../../../notification.service';
-import {ReplaySubject} from 'rxjs/ReplaySubject';
 
 @Component({
     selector: 'wave-gfbio-baskets',
@@ -40,47 +44,45 @@ export class GfbioBasketsComponent implements OnDestroy {
         let initialBasketLoaded = false;
 
         this.subscriptions.push(
-            Observable
-                .combineLatest(this.page$, this.limit$, this.reload$)
-                .do(() => this.isOverviewLoading$.next(true))
-                .flatMap(([page, limit]) => this.mappingQueryService
-                    .getGFBioBaskets({offset: page * limit, limit: limit})
-                    .do(() => this.isError$.next(false))
-                    .catch(error => {
+            observableCombineLatest(this.page$, this.limit$, this.reload$).pipe(
+                tap(() => this.isOverviewLoading$.next(true)),
+                mergeMap(([page, limit]) => this.mappingQueryService
+                    .getGFBioBaskets({offset: page * limit, limit: limit}).pipe(
+                    tap(() => this.isError$.next(false)),
+                    catchError(error => {
                         this.isError$.next(true);
                         this.notificationService.error(error);
-                        return Observable.of({
+                        return observableOf({
                             baskets: [],
                             totalNumberOfBaskets: NaN,
                         } as BasketsOverview);
-                    }))
-                .do(() => this.isOverviewLoading$.next(false))
-                .do(basketsOverviews => {
+                    }), )),
+                tap(() => this.isOverviewLoading$.next(false)),
+                tap(basketsOverviews => {
                     if (!initialBasketLoaded && basketsOverviews.baskets.length > 0) {
                         this.loadBasket(basketsOverviews.baskets[0].basketId);
                         initialBasketLoaded = true;
                     }
-                })
+                }), )
                 .subscribe(basketsOverview => this.basketsOverview$.next(basketsOverview))
         );
 
         this.subscriptions.push(
-            Observable
-                .combineLatest(this.selectedBasketId$, this.reload$)
-                .do(() => this.isDetailsLoading$.next(true))
-                .flatMap(([id]) => this.mappingQueryService
-                    .getGFBioBasket(id)
-                    .do(() => this.isError$.next(false))
-                    .catch(error => {
+            observableCombineLatest(this.selectedBasketId$, this.reload$).pipe(
+                tap(() => this.isDetailsLoading$.next(true)),
+                mergeMap(([id]) => this.mappingQueryService
+                    .getGFBioBasket(id).pipe(
+                    tap(() => this.isError$.next(false)),
+                    catchError(error => {
                         this.isError$.next(true);
                         this.notificationService.error(error);
-                        return Observable.of({
+                        return observableOf({
                             query: '',
                             results: [],
                             timestamp: moment.invalid(),
                         } as Basket);
-                    }))
-                .do(() => this.isDetailsLoading$.next(false))
+                    }), )),
+                tap(() => this.isDetailsLoading$.next(false)), )
                 .subscribe(basket => this.selectedBasket$.next(basket))
         );
     }

@@ -14,29 +14,42 @@
      class="symbology no-drag">
 
     <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-        <wave-symbology-points fxFlex="grow" [layer]="layer"
+        <wave-symbology-vector fxFlex="grow" [layer]="layer"
                                (symbologyChanged)="update_symbology(layer, $event)">
-        </wave-symbology-points>
+        </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-        <wave-symbology-points fxFlex="grow"
+        <wave-symbology-vector fxFlex="grow"
                                class="no-drag" [layer]="layer"
                                [editRadius]="false"
                                [editStrokeWidth]="false"
                                (symbologyChanged)="update_symbology(layer, $event)">
-        </wave-symbology-points>
+        </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
-        <wave-symbology-points fxFlex="grow"
-                               class="no-drag" [layer]="layer"
+        <wave-symbology-vector fxFlex="grow"
+                               class="no-drag"
+                               [layer]="layer"
                                (symbologyChanged)="update_symbology(layer, $event)">
-        </wave-symbology-points>
+        </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
-        <wave-symbology-vector fxFlex="grow" [symbology]="layer.symbology"
+        <wave-symbology-vector fxFlex="grow" 
+                               [layer]="layer"
+                               class="no-drag"
+                               [editRadius]="false"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
+        <wave-symbology-vector fxFlex="grow" 
+                               [layer]="layer"
+                               class="no-drag"
+                               [editRadius]="false"
                                (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>

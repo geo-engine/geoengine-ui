@@ -1,6 +1,8 @@
+
+import {Observable, Observer} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
 import {StorageService} from '../storage/storage.service';
-import {Observable, Observer} from 'rxjs/Rx';
 
 /**
  * A validator that validates a form group that contains min/max number fields.
@@ -87,8 +89,8 @@ function uniqueProjectNameValidator(storageService: StorageService): AsyncValida
     return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
 
         return Observable.create((observer: Observer<{[key: string]: boolean}>) => {
-            storageService.projectExists(control.value as string)
-                .map(projectExists => {
+            storageService.projectExists(control.value as string).pipe(
+                map(projectExists => {
                     const errors: {
                         nameInUsage?: boolean,
                     } = {};
@@ -98,7 +100,7 @@ function uniqueProjectNameValidator(storageService: StorageService): AsyncValida
                     }
 
                     return Object.keys(errors).length > 0 ? errors : null;
-                })
+                }))
                 .subscribe(errors => {
                     observer.next(errors);
                     observer.complete();
@@ -112,6 +114,9 @@ function uniqueProjectNameValidator(storageService: StorageService): AsyncValida
 
 function notOnlyWhitespace(control: AbstractControl) {
     const text = control.value as string;
+    if (!text) {
+        return null;
+    }
     return text.trim().length <= 0 ? {'onlyWhitespace': true} : null;
 }
 

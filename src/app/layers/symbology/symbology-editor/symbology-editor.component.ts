@@ -24,12 +24,12 @@ export class SymbologyEditorComponent implements OnChanges {
     layer = undefined;
 
     constructor(
-        private projectService: ProjectService
+        public projectService: ProjectService
     ) {}
 
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('SymbologyEditorComponent', 'ngOnChanges', changes);
+        // console.log('SymbologyEditorComponent', 'ngOnChanges', changes);
     }
 
     get validLayer(): boolean {
@@ -37,7 +37,7 @@ export class SymbologyEditorComponent implements OnChanges {
     }
 
     update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
-        console.log('update_symbology', symbology);
+        // console.log('update_symbology', symbology);
         this.projectService.changeLayer(layer, {symbology: symbology});
     }
 

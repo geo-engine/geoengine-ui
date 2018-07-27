@@ -1,3 +1,5 @@
+
+import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
 import {ResultTypes, ResultType} from '../../../result-type.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
@@ -15,7 +17,7 @@ import {
     RasterSymbology,
     AbstractVectorSymbology,
     Symbology,
-    SimplePointSymbology
+    ComplexPointSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {MatDialog} from '@angular/material';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
@@ -135,8 +137,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     load() {
         this.dialog.open(RScriptLoadComponent)
-            .afterClosed()
-            .first()
+            .afterClosed().pipe(
+            first())
             .subscribe((result: RScriptLoadResult) => {
                 if (result) {
                     this.form.controls['code'].setValue(result.script.code);
@@ -159,7 +161,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         );
     }
 
-    add() {
+    add(event: any) {
         const rasterLayers: Array<RasterLayer<RasterSymbology>> = this.form.controls['rasterLayers'].value;
         const pointLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['pointLayers'].value;
         const lineLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['lineLayers'].value;
@@ -228,7 +230,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                     layer = new VectorLayer({
                         name: outputName,
                         operator: operator,
-                        symbology: new SimplePointSymbology({
+                        symbology: ComplexPointSymbology.createSimpleSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         }),
                         // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
