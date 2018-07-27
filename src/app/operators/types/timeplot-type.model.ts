@@ -69,19 +69,19 @@ export class TimePlotType extends OperatorType {
 library(ggplot2);
 data <- mapping.load${camelInputType}(0, mapping.qrect);
 
+if (all(names(data) != 'time_start')) {
+plot.new();
+mtext("Dataset has no temporal information");
+} else {
 attr = attributes(data@data)$names[1];
 query_start = mapping.qrect$t1;
 query_end = mapping.qrect$t2;
 query_lim_posix = c(as.POSIXct(query_start, origin="1970-01-01", tz = "GMT"), as.POSIXct(query_end, origin="1970-01-01", tz = "GMT"));
-
 start = as.POSIXct(data$time_start, origin="1970-01-01", tz="GMT");
 attribute = data$\`${this.attribute}\`;
 ${grouping}
-
 df = ${df}
-
 times = seq(mapping.qrect$t1, mapping.qrect$t2, (mapping.qrect$t2 - mapping.qrect$t1)/10)
-
 p = (
   ${ggplot}
   + geom_line()
@@ -90,7 +90,7 @@ p = (
   + xlab("Time") + ylab(\"${this.attribute}\")
 )
 print(p)
-`;
+}`;
     }
 
     getMappingName(): string {
