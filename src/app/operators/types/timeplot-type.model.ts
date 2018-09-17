@@ -67,8 +67,16 @@ export class TimePlotType extends OperatorType {
             'ggplot(df, aes(x=start,y=attribute))';
         this.code = `
 library(ggplot2);
-data <- mapping.load${camelInputType}(0, mapping.qrect);
 
+data <- tryCatch(mapping.load${camelInputType}(0, mapping.qrect), error = function(e) NA)
+if (is.na(data)) {
+plot.new();
+mtext("Dataset has no data in the specified time chunk");
+} else {
+if (mapping.qrect$t1 == mapping.qrect$t2) {
+plot.new();
+mtext("Your specified time span has to be a proper interval");
+} else {
 if (all(names(data) != 'time_start')) {
 plot.new();
 mtext("Dataset has no temporal information");
@@ -81,7 +89,7 @@ start = as.POSIXct(data$time_start, origin="1970-01-01", tz="GMT");
 attribute = data$\`${this.attribute}\`;
 ${grouping}
 df = ${df}
-times = seq(mapping.qrect$t1, mapping.qrect$t2, (mapping.qrect$t2 - mapping.qrect$t1)/10)
+times = seq(mapping.qrect$t1, mapping.qrect$t2, (mapping.qrect$t2 - mapping.qrect$t1))
 p = (
   ${ggplot}
   + geom_line()
@@ -90,6 +98,8 @@ p = (
   + xlab("Time") + ylab(\"${this.attribute}\")
 )
 print(p)
+}
+}
 }`;
     }
 
