@@ -333,7 +333,7 @@ export class MappingQueryService {
         }
 
         // console.log(config.time, parameters.toMessageBody());
-        return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
+        return this.config.MAPPING_URL + '?' + parameters.toMessageBody(true);
     }
 
     getWCSQueryUrl(config: {
@@ -392,7 +392,7 @@ export class MappingQueryService {
             },
         });
         // console.log('colorizerRequest', colorizerRequest);
-        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody()).pipe(
+        return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true)).pipe(
         // .catch((error, {}) => {
         //    this.notificationService.error(`Could not load colorizer: »${error}«`);
         //    return Observable.of({interpolation: 'unknown', breakpoints: []});
