@@ -3,8 +3,11 @@ import {distinctUntilChanged} from 'rxjs/operators';
 import {Observable, BehaviorSubject, Subject} from 'rxjs';
 
 import {Injectable} from '@angular/core';
-import ol from 'ol';
-import olExtent from 'ol/extent'
+import {Extent as OlExtent} from 'ol'
+import {getHeight as olExtentGetHeight, getWidth as olExtentGetWidth, getIntersection as olExtentGetIntersection, containsExtent as olExtentContainsExtent} from 'ol/extent';
+import {GeometryType as OlGeometryType} from 'ol/geom';
+import {Vector as OlSourceVector} from 'ol/source';
+
 import {Symbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {MapComponent} from './map.component';
@@ -15,7 +18,7 @@ export interface ViewportSize {
     maxExtent?: [number, number, number, number];
 }
 
-type Extent = [number, number, number, number]  | ol.Extent;
+type Extent = [number, number, number, number]  | OlExtent;
 
 @Injectable()
 export class MapService {
@@ -58,7 +61,7 @@ export class MapService {
         this.mapComponent = mapComponent;
     }
 
-    public startDrawInteraction(drawType: ol.geom.GeometryType) {
+    public startDrawInteraction(drawType: OlGeometryType) {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -69,7 +72,7 @@ export class MapService {
         return this.mapComponent.isDrawInteractionAttached();
     }
 
-    public endDrawInteraction(): ol.source.Vector {
+    public endDrawInteraction(): OlSourceVector {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -88,12 +91,12 @@ export class MapService {
             || !this.extentContains(oldViewportSize, newViewportSize)
         ) {
 
-            const w = olExtent.getWidth(newViewportSize.extent);
-            const h = olExtent.getHeight(newViewportSize.extent);
+            const w = olExtentGetWidth(newViewportSize.extent);
+            const h = olExtentGetHeight(newViewportSize.extent);
             let newExtent = newViewportSize.extent; // ol.extent.buffer(newViewportSize.extent, Math.max(w, h) * 0.5);
 
             if (newViewportSize.maxExtent) {
-                newExtent = olExtent.getIntersection(newExtent, newViewportSize.maxExtent);
+                newExtent = olExtentGetIntersection(newExtent, newViewportSize.maxExtent);
             }
 
             newViewportSize.extent = newExtent;
@@ -115,9 +118,9 @@ export class MapService {
     }
 
     private extentContains(vps1: ViewportSize, vps2: ViewportSize): boolean {
-        const e1 = (vps1.maxExtent) ? olExtent.getIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
-        const e2 = (vps2.maxExtent) ? olExtent.getIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
-        const contains = olExtent.containsExtent(e1, e2);
+        const e1 = (vps1.maxExtent) ? olExtentGetIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
+        const e2 = (vps2.maxExtent) ? olExtentGetIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
+        const contains = olExtentContainsExtent(e1, e2);
         return contains;
     }
 }

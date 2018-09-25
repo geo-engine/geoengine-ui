@@ -10,7 +10,9 @@ import {
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
-import OlFormatGeoJSON from 'ol/format/geojson';
+import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
+import {Feature as OlFeature} from 'ol/Feature';
+import {ProjectionLike as OlProjectionLike} from 'ol/proj'
 import {Time, TimePoint} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
@@ -36,26 +38,26 @@ export abstract class LayerData<D> {
     abstract get data(): D;
 }
 
-export class VectorData extends LayerData<Array<ol.Feature>> {
-    _data: Array<ol.Feature>;
+export class VectorData extends LayerData<Array<OlFeature>> {
+    _data: Array<OlFeature>;
     _extent: [number, number, number, number];
 
     static olParse(time: Time,
                    projection: Projection,
                    extent: [number, number, number, number],
                    source: (Document | Node | any | string),
-                   opt_options?: { dataProjection: ol.ProjectionLike, featureProjection: ol.ProjectionLike }): VectorData {
+                   opt_options?: { dataProjection: OlProjectionLike, featureProjection: OlProjectionLike }): VectorData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 
-    constructor(time: Time, projection: Projection, data: Array<ol.Feature>, extent: [number, number, number, number]) {
+    constructor(time: Time, projection: Projection, data: Array<OlFeature>, extent: [number, number, number, number]) {
         super('vector', time, projection);
         this._data = data;
         this._extent = extent;
         this.fakeIds(); // FIXME: use real IDs ...
     }
 
-    get data(): Array<ol.Feature> {
+    get data(): Array<OlFeature> {
         return this._data;
     }
 
@@ -94,7 +96,7 @@ export class RasterData extends LayerData<string> {
 }
 
 export interface VectorLayerData {
-    data$: Observable<Array<ol.Feature>>;
+    data$: Observable<Array<OlFeature>>;
     dataExtent$?: Observable<[number, number, number, number]>,
     state$: Observable<LoadingState>;
     reload$: Observer<void>;

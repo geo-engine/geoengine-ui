@@ -1,6 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {MapService} from '../../../map/map.service';
-import OlFormatWKT from 'ol/format/wkt';
+import {WKT as OlFormatWKT} from 'ol/format';
+import {Vector as OlVectorSource} from 'ol/source';
+import {GeometryType as OlGeometryType} from 'ol/geom';
+
 
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
@@ -27,7 +30,7 @@ import {Subscription} from 'rxjs';
 export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
 
     featureTypes = ['Polygon', 'Point'];
-    selectedFeatureType: ol.geom.GeometryType;
+    selectedFeatureType: OlGeometryType;
     isDrawingActive = false;
     olFeatureWriter = new OlFormatWKT();
     featureLayerName = 'new feature layer';
@@ -68,7 +71,7 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
         }
     }
 
-    private createAndAddOperatorFromSource(olSource: ol.source.Vector) {
+    private createAndAddOperatorFromSource(olSource: OlVectorSource) {
 
         let resultType: ResultType;
         let resultSymbology: AbstractVectorSymbology;

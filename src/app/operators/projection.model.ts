@@ -1,5 +1,4 @@
-import OlProjection from 'ol/proj/projection';
-import olProj from 'ol/proj'
+import {get as olGetProjection, addProjection as olAddProjection, Projection as OlProjection} from 'ol/proj';
 
 /**
  * A wrapper class around a projection string.
@@ -41,7 +40,7 @@ export abstract class Projection {
      * @return The `ol.proj.Projection` for openlayers.
      */
     getOpenlayersProjection(): OlProjection {
-        return olProj.get(this.getCode());
+        return olGetProjection(this.getCode());
     }
 
     /**
@@ -121,7 +120,7 @@ export class UTM32N extends Projection {
     private registerProjection() {
 
         if (!UTM32N.isProjectionRegistered) {
-            olProj.addProjection(new OlProjection({
+            olAddProjection(new OlProjection({
                 code: this.getCode(),
                 extent: this.getExtent(),
                 units: 'm'
@@ -156,7 +155,7 @@ export class GEOS extends Projection {
     }
 
     getOpenlayersProjection() {
-        let projection = olProj.get(this.getCode());
+        let projection = olGetProjection(this.getCode());
         projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
     }
@@ -172,7 +171,7 @@ export class GEOS extends Projection {
     private registerProjection() {
 
         if (!GEOS.isProjectionRegistered) {
-            olProj.addProjection(new OlProjection({
+            olAddProjection(new OlProjection({
                 code: this.getCode(),
                 extent: this.getExtent(),
                 units: 'm'

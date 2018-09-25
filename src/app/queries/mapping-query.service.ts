@@ -30,7 +30,7 @@ import {
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
 import * as moment from 'moment';
-import {Extent} from 'openlayers';
+import {Extent} from 'ol/extent';
 
 @Injectable()
 export class MappingQueryService {
