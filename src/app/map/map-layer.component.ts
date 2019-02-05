@@ -1,13 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {Layer as OlLayer} from 'ol/layer';
-import {Source as OlSource} from 'ol/source';
-import {Tile as OlLayerTile} from 'ol/layer';
-import {Tile as OlTileSource} from 'ol/source';
-import {Vector as OlLayerVector} from 'ol/layer';
-import {Vector as OlVectorSource} from 'ol/source';
-
+import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
+import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
 import {Projection} from '../operators/projection.model';
 import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
@@ -223,7 +218,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlT
                     // console.log("projection", this.source.getProjection().getCode, rasterData.projection.getCode());
 
                     // unfortunally there is no setProjection function, so reset the whole source
-                    this.source = new OlTileSource({
+                    this.source = new OlTileWmsSource({
                         url: rasterData.data,
                         params: {
                             time: rasterData.time.asRequestString(),
@@ -248,7 +243,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlT
                     this.source.refresh();
                 }
             } else {
-                this.source = new OlTileSource({
+                this.source = new OlTileWmsSource({
                     url: rasterData.data,
                     params: {
                         time: rasterData.time.asRequestString(),
