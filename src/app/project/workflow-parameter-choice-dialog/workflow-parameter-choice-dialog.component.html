@@ -1,16 +1,32 @@
-<wave-dialog-header>Workflow URL Parameter</wave-dialog-header>
-<md-dialog-content>
-    <p>
-        There
-        <span *ngIf="config?.layers?.length === 1; else numberOfLayers">is a layer</span>
-        <ng-template #numberOfLayers>are {{config?.layers?.length}} layers</ng-template>
-        available from the URL parameters.
+<wave-dialog-header>{{config?.dialogTitle}}</wave-dialog-header>
+<md-dialog-content class="mat-typography">
+    <p *ngIf="config?.layers?.length <= 0">
+        There is no layer available from the {{config?.sourceName}}.
+    </p>
+    <ng-container *ngIf="config?.layers?.length > 0">
+        <p *ngIf="config?.layers?.length === 1">
+            There is a layer available from the {{config?.sourceName}}:
+        </p>
+        <p *ngIf="config?.layers?.length > 1">
+            There are {{config?.layers?.length}} layers available from the {{config?.sourceName}}:
+        </p>
+        <md-list dense>
+            <md-list-item *ngFor="let layer of config?.layers">{{layer.name}}</md-list-item>
+        </md-list>
+    </ng-container>
+    <ng-container *ngIf="config?.nonAvailableNames.length > 0">
+        <p>The following input is not available or not visualizable:</p>
+        <md-list dense>
+            <md-list-item *ngFor="let name of config?.nonAvailableNames">{{name}}</md-list-item>
+        </md-list>
+    </ng-container>
+    <p *ngIf="config?.layers?.length > 0">
         You have the following options:
     </p>
 </md-dialog-content>
-<md-dialog-actions align="end">
+<md-dialog-actions align="end" *ngIf="config?.layers?.length > 0">
     <button md-raised-button color="primary" (click)="append()">Append to layers</button>
-    <button md-raised-button color="primary" (click)="replace()">Replace current layers</button>
+    <button md-raised-button color="primary" (click)="replace()" *ngIf="config?.numberOfLayersInProject > 0">Replace current layers</button>
     <span fxFlex></span>
     <button md-raised-button color="default" (click)="ignore()">Ignore</button>
 </md-dialog-actions>

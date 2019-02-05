@@ -44,7 +44,7 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {
-    BasketResult,
+    BasketResult, BasketAvailability,
     IBasketGroupedAbcdResult,
     IBasketPangaeaResult
 } from './operators/dialogs/baskets/gfbio-basket.model';
@@ -207,7 +207,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.projectService.getProjectStream().first().subscribe(project => {
                                 if (project.layers.length > 0) {
                                     // show popup
-                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layers: [newLayer]}});
+                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {
+                                        dialogTitle: 'Workflow URL Parameter',
+                                        sourceName: 'URL parameter',
+                                        layers: [newLayer],
+                                        nonAvailableNames: [],
+                                        numberOfLayersInProject: project.layers.length,
+                                    }});
                                 } else {
                                     // just add the layer if the layer array is empty
                                     this.projectService.addLayer(newLayer);
@@ -222,14 +228,17 @@ export class AppComponent implements OnInit, AfterViewInit {
                             const gfbioBasketId: number = JSON.parse(value);
                             this.projectService.getProjectStream().first().subscribe(project => {
                                 this.gfbioBasketIdToLayers(gfbioBasketId)
-                                    .subscribe((layers: Array<VectorLayer<AbstractVectorSymbology>>) => {
-                                            if (project.layers.length > 0) {
-                                                // show popup
-                                                this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layers: layers}});
-                                            } else {
-                                                // just add the layer if the layer array is empty
-                                                layers.forEach(layer => this.projectService.addLayer(layer));
-                                            }
+                                    .subscribe((importResult: BasketAvailability) => {
+                                            // show popup
+                                            this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                                                data: {
+                                                    dialogTitle: 'GFBio Basket Import',
+                                                    sourceName: 'GFBio Basket',
+                                                    layers: importResult.availableLayers,
+                                                    nonAvailableNames: importResult.nonAvailableNames,
+                                                    numberOfLayersInProject: project.layers.length,
+                                                },
+                                            });
                                         },
                                         error => {
                                             this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
@@ -247,13 +256,28 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private gfbioBasketIdToLayers(basketId: number): Observable<Array<VectorLayer<AbstractVectorSymbology>>> {
-        return this.mappingQueryService
+    private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
+        const [availableEntries, nonAvailableEntries] = this.mappingQueryService
             .getGFBioBasket(basketId)
-            .flatMap(basket => Observable
-                .from(basket.results)
-                .flatMap(result => this.gfbioBasketResultToLayer(result))
-                .toArray());
+            .flatMap(basket => Observable.from(basket.results))
+            .partition(basketResult => basketResult.available);
+
+        const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries
+            .flatMap(basketResult => this.gfbioBasketResultToLayer(basketResult))
+            .toArray();
+
+        const nonAvailableNames: Observable<Array<string>> = nonAvailableEntries
+            .map(basketResult => basketResult.title)
+            .toArray();
+
+        return Observable
+            .combineLatest(availableLayers, nonAvailableNames)
+            .map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
+                return {
+                    availableLayers: layers,
+                    nonAvailableNames: names,
+                } as BasketAvailability;
+            });
     }
 
     private gfbioBasketResultToLayer(result: BasketResult): Observable<VectorLayer<AbstractVectorSymbology>> {

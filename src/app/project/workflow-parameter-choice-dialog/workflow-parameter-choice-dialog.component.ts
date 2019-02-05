@@ -14,7 +14,13 @@ export class WorkflowParameterChoiceDialogComponent implements OnInit {
 
     constructor(private projectService: ProjectService,
                 private dialogRef: MdDialogRef<WorkflowParameterChoiceDialogComponent>,
-                @Inject(MD_DIALOG_DATA) private config: { layers: Array<Layer<Symbology>> }) {
+                @Inject(MD_DIALOG_DATA) private config: {
+                    dialogTitle: string,
+                    sourceName: string,
+                    layers: Array<Layer<Symbology>>,
+                    nonAvailableNames: Array<string>,
+                    numberOfLayersInProject: number,
+                }) {
     }
 
     ngOnInit() {
