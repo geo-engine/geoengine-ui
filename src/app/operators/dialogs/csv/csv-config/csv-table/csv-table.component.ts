@@ -67,7 +67,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLayerProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.LayerProperties));
         this.xColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.x));
         this.yColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.y));
-        setTimeout(this._changeDetectorRef.markForCheck());
+
+        setTimeout(() => this._changeDetectorRef.markForCheck(), 0); // FIXME: update to Angular 7 -> changed to lambda, 0
         this.untypedColumns = new BehaviorSubject(
             [this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]
         );
@@ -103,7 +104,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.dataProperties = data;
                 this.parse();
                 if (this.header.length > 0) {
-                    setTimeout(this.resize());
+                    setTimeout(() => this.resize(), 0); // FIXME: update to Angular 7 -> changed to lambda, 0
                 }
             }),
             this.propertiesService.formStatus$.subscribe(formStatus => {

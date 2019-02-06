@@ -4,6 +4,7 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {HttpClientModule} from '@angular/common/http';
 import 'hammerjs';
 
@@ -25,8 +26,6 @@ import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.p
 import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
-import {DragulaService} from 'ng2-dragula/components/dragula.provider';
-import {DragulaModule} from 'ng2-dragula/ng2-dragula';
 import {LegendComponent} from './layers/legend/legend.component';
 import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
 import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
@@ -278,8 +277,8 @@ export function configInitializer(config: Config) {
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         BrowserAnimationsModule,
         MaterialModule,
+        DragDropModule,
         FlexLayoutModule,
-        DragulaModule,
         ReactiveFormsModule,
         ColorPickerModule,
     ],
@@ -335,7 +334,6 @@ export function configInitializer(config: Config) {
         TerminologyLookupOperatorComponent
     ],
     providers: [
-        DragulaService,
         MatIconRegistry,
         FormBuilder,
         ProjectService,

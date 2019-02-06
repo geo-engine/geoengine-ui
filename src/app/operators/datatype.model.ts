@@ -124,7 +124,7 @@ class DataTypeCollection {
             case this.Alphanumeric.getCode():
                 return this.Alphanumeric;
             default:
-                throw 'Invalid Data Type';
+                throw new Error('Invalid Data Type');
         }
     }
 }

@@ -89,7 +89,7 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
         let reader: FileReader = new FileReader();
 
         reader.onload = ((e) => {
-            this.data.content = reader.result;
+            this.data.content = reader.result as string; // FIXME: update to angular 7 -> added "as string"
             this.data.progress = 100;
             this.status$.next(FormStatus.Finished);
         });
