@@ -29,7 +29,7 @@ import {Fill as OlStyleFill} from 'ol/style';
 import {OSM as OlSourceOSM} from 'ol/source';
 import {Image as OlLayerImage} from 'ol/layer';
 import {Stroke as OlStyleStroke} from 'ol/style';
-import {Tile as OlSourceTileWMS} from 'ol/source';
+import {TileWMS as OlTileWmsSource} from 'ol/source';
 import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
 import {XYZ} from 'ol/source';
 import {Layer as OlLayer} from 'ol/layer';
@@ -498,7 +498,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                     },
                 });
             case 'hosted':
-                const hostedSource = new OlSourceTileWMS({
+                const hostedSource = new OlTileWmsSource({
                     url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
                     params: {
                         layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
