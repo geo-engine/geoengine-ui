@@ -17,8 +17,9 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
 
     private timeStreamSubscription: Subscription;
 
-    timeStepDurationStreamSubscription: Subscription;
     timeRepresentation: string;
+
+    timeStepDurationStreamSubscription: Subscription;
     timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
 
     // private timeIsPlaying = false;

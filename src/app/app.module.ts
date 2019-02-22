@@ -143,6 +143,7 @@ import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-o
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
+import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -268,7 +269,8 @@ export function configInitializer(config: Config) {
         SensorSourceOperatorComponent,
         ColorBreakpointInputComponent,
         TerminologyLookupOperatorComponent,
-        VectorSourceDatasetComponent
+        VectorSourceDatasetComponent,
+        TickerInteractionComponent
     ],
     imports: [
         BrowserModule,
