@@ -40,6 +40,7 @@ import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model
 import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
 import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lookup-type';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
+import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -68,6 +69,8 @@ export abstract class OperatorTypeFactory {
                 return GdalSourceType.fromDict(dict as GdalSourceTypeDict);
             case OgrSourceType.TYPE:
                 return OgrSourceType.fromDict(dict as OgrSourceTypeDict);
+            case OgrRawSourceType.TYPE:
+                return OgrRawSourceType.fromDict(dict as OgrRawSourceTypeDict);
             case HistogramType.TYPE:
                 return HistogramType.fromDict(dict as HistogramTypeDict);
             case RScriptType.TYPE:

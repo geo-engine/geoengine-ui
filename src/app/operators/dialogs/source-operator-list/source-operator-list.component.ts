@@ -12,6 +12,7 @@ import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-s
 import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from '../country-polygon-selection/country-polygon-selection.component';
 import {SensorSourceOperatorComponent} from '../sensor-source-operator/sensor-source-operator.component';
+import {ChronicleDbSourceComponent} from '../chronicle-db-source/chronicle-db-source.component';
 
 @Component({
     selector: 'wave-source-operator-list',
@@ -40,6 +41,8 @@ export class SourceOperatorListComponent implements OnInit {
     DrawFeaturesComponent = OlDrawFeaturesComponent;
     PolygonSelectionComponent = CountryPolygonSelectionComponent;
     SensorSourceOperatorComponent = SensorSourceOperatorComponent;
+
+    ChronicleDbSourceComponent = ChronicleDbSourceComponent;
     //
 
     constructor(public layoutService: LayoutService) {

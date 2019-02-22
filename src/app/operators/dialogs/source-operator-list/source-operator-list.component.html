@@ -68,4 +68,12 @@
         <p mat-line>Select Sensor Data from Natur 4.0</p>
     </mat-list-item>
 
+    <mat-list-item
+        (click)="layoutService.setSidenavContentComponent({component: ChronicleDbSourceComponent, parent: SourceOperatorListComponent})"
+    >
+        <mat-icon mat-list-icon >location_on</mat-icon>
+        <h4 mat-line>ChronicleDB Source</h4>
+        <p mat-line>Select Sensor Data from Chronicle DB</p>
+    </mat-list-item>
+
 </mat-nav-list>

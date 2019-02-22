@@ -1,0 +1,23 @@
+<wave-sidenav-header>ChronicleDB</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex fxLayout="column" class="container">
+        <wave-dialog-section-heading title="Query String"
+                                     subtitle="Specify a query string"></wave-dialog-section-heading>
+        <!--<div fxLayout="row">-->
+            <mat-form-field fxFlex>
+                <textarea matInput formControlName="queryString" placeholder="Query String"></textarea>
+            </mat-form-field>
+        <!--</div>-->
+    </div>
+    <div class="actions">
+        <wave-operator-output-name formControlName="name"
+                                   [suggestion]="'ChronincleDB Sensor Data'"></wave-operator-output-name>
+        <button type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Add
+        </button>
+    </div>
+</form>
+
