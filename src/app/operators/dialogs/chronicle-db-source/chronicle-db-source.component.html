@@ -1,5 +1,5 @@
 <wave-sidenav-header>ChronicleDB</wave-sidenav-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add()" fxLayout="column">
     <div fxFlex fxLayout="column" class="container">
         <wave-dialog-section-heading title="Query String"
                                      subtitle="Specify a query string"></wave-dialog-section-heading>
@@ -20,4 +20,3 @@
         </button>
     </div>
 </form>
-
