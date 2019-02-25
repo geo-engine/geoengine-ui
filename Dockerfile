@@ -1,5 +1,5 @@
 # NodeJS Image
-FROM node:10.5-alpine AS builder
+FROM node:11.10-alpine AS builder
 
 # Setup directories
 WORKDIR /app
