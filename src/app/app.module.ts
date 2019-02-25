@@ -143,6 +143,7 @@ import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-o
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
+import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {ChronicleDbSourceComponent} from './operators/dialogs/chronicle-db-source/chronicle-db-source.component';
 
 export function configInitializer(config: Config) {
@@ -263,6 +264,7 @@ export function configInitializer(config: Config) {
         TableComponent,
         TerminologyLookupOperatorComponent,
         TextualAttributeFilterOperatorComponent,
+        TickerInteractionComponent,
         TimeConfigComponent,
         TimeInputComponent,
         TrimPipe,
