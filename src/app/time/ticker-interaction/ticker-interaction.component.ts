@@ -13,7 +13,7 @@ import {empty} from 'rxjs/internal/Observer';
 })
 export class TickerInteractionComponent implements OnInit, OnDestroy {
 
-    protected run$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    public run$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
     protected timer$: Observable<number> = this.run$
         .pipe(
@@ -29,7 +29,7 @@ export class TickerInteractionComponent implements OnInit, OnDestroy {
         map((x: number)  => (this.countdownSeconds - 1 - x))
     );
 
-    protected countdown_percent$: Observable<number> = this.countup$.pipe(
+    public countdown_percent$: Observable<number> = this.countup$.pipe(
         map((x: number)  => ((this.countdownSeconds - (x * this.countdownSeconds  / (this.countdownSeconds - 1))) / this.countdownSeconds * 100 ))
     );
 
