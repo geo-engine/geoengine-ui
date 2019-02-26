@@ -11,11 +11,11 @@ import {OgrRawSourceType} from '../../types/ogr-raw-source-type.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
-import {of, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {Config} from '../../../config.service';
+import {HttpClient} from '@angular/common/http';
 
-// TODO: fix URLs
-const CHRONICLE_DB_URL = 'http://0.0.0.0:6789/';
 const QUERY_SERVICE = '_queryInput';
 const SCHEMA_SERVICE = '_schemaInput';
 
@@ -38,7 +38,9 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
 
     form: FormGroup;
 
-    constructor(private formBuilder: FormBuilder,
+    constructor(private config: Config,
+                private formBuilder: FormBuilder,
+                private http: HttpClient,
                 private randomColorService: RandomColorService,
                 private projectService: ProjectService) {
     }
@@ -58,6 +60,8 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
     }
 
     add() {
+        const chronicleDbUrl = this.config.EMERGENCITY.CHRONICLE_DB_URL;
+
         const layerName = this.form.controls['name'].value as string;
         const queryString = this.form.controls['queryString'].value as string;
 
@@ -80,7 +84,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
 
                 const operator = new Operator({
                     operatorType: new OgrRawSourceType({
-                        filename: `${CHRONICLE_DB_URL}/${QUERY_SERVICE}?queryString=${encodeURIComponent(queryString)}`,
+                        filename: `${chronicleDbUrl}/${QUERY_SERVICE}?queryString=${encodeURIComponent(queryString)}`,
                         time: 'start+end',
                         time1_format: {
                             format: 'seconds',
@@ -119,19 +123,11 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
     }
 
     private getMetadata(queryString: string): Observable<AttributesReturnType> {
-        const schemaUrl = `${CHRONICLE_DB_URL}/${SCHEMA_SERVICE}?queryString=${encodeURIComponent(queryString)}`;
+        const chronicleDbUrl = this.config.EMERGENCITY.CHRONICLE_DB_URL;
 
-        // TODO: call from remote
-        console.log(`ChronicleDB schema request ${schemaUrl}`);
+        const schemaUrl = `${chronicleDbUrl}/${SCHEMA_SERVICE}?queryString=${encodeURIComponent(queryString)}`;
 
-        return of({
-            'x': '',
-            'y': '',
-            'time1': 't1',
-            'time2': 't2',
-            'numeric': ['PM2.5', 'PM10', 'REL. LUFTFEUCHTE', 'TEMPERATUR'],
-            'textual': ['ID', 'TIMESTAMP']
-        });
+        return this.http.get<AttributesReturnType>(schemaUrl);
     }
 
 }

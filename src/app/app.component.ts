@@ -313,7 +313,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: 'GFBio' | 'IDESSA' | 'GeoBon') {
+    private setTheme(project: 'GFBio' | 'IDESSA' | 'GeoBon' | 'EmergenCity') {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];
@@ -329,6 +329,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.overlayContainer.getContainerElement().classList.add(geoBonTheme);
                 break;
             case 'GFBio':
+            case 'EmergenCity':
             case 'IDESSA':
             default:
                 this.elementRef.nativeElement.classList.add(defaultTheme);

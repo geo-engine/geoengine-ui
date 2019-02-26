@@ -38,7 +38,7 @@ interface DelaysInterface {
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
 }
-type ProjectType = 'GFBio' | 'IDESSA' | 'GeoBon';
+type ProjectType = 'GFBio' | 'IDESSA' | 'GeoBon' | 'EmergenCity';
 interface DefaultsInterface {
     PROJECT: {
         NAME: string,
@@ -59,6 +59,10 @@ interface GfbioInterface {
     LIFERAY_PORTAL_URL: string;
 }
 
+interface EmergenCityInterface {
+    CHRONICLE_DB_URL: string;
+}
+
 interface TimeInterface {
     ALLOW_RANGES: boolean;
 }
@@ -76,6 +80,7 @@ interface ConfigInterface {
     DEFAULTS: DefaultsInterface;
     MAP: MapInterface;
     GFBIO: GfbioInterface;
+    EMERGENCITY: EmergenCityInterface;
     TIME: TimeInterface;
 }
 
@@ -136,6 +141,9 @@ const ConfigDefault = Immutable.fromJS({
     GFBIO: {
         LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
     },
+    EMERGENCITY: {
+        CHRONICLE_DB_URL: 'http://0.0.0.0:6789',
+    },
     TIME: {
         ALLOW_RANGES: true,
     },
@@ -184,6 +192,7 @@ export class Config {
     private _DEFAULTS: DefaultsInterface;
     private _MAP: MapInterface;
     private _GFBIO: GfbioInterface;
+    private _EMERGENCITY: EmergenCityInterface;
     private _TIME: TimeInterface;
 
 
@@ -229,6 +238,10 @@ export class Config {
 
     get GFBIO(): GfbioInterface {
         return this._GFBIO;
+    }
+
+    get EMERGENCITY(): EmergenCityInterface {
+        return this._EMERGENCITY;
     }
 
     get TIME(): TimeInterface {
@@ -295,6 +308,9 @@ export class Config {
                         break;
                     case 'GFBIO':
                         this._GFBIO = value;
+                        break;
+                    case 'EMERGENCITY':
+                        this._EMERGENCITY = value;
                         break;
                     case 'TIME':
                         this._TIME = value;
