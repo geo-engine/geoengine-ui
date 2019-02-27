@@ -26,6 +26,11 @@ interface AttributesReturnType {
     time2: string;
     numeric: Array<string>;
     textual: Array<string>;
+    provenance?: {
+        citation: string;
+        license: string;
+        uri: string;
+    };
 }
 
 @Component({
@@ -99,6 +104,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                             textual: metadata.textual,
                         },
                         on_error: 'skip',
+                        provenance: metadata.provenance,
                     }),
                     resultType: ResultTypes.POINTS,
                     projection: Projections.WGS_84,
