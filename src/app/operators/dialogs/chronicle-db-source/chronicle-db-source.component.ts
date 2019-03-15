@@ -90,6 +90,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                 const operator = new Operator({
                     operatorType: new OgrRawSourceType({
                         filename: `${chronicleDbUrl}/${QUERY_SERVICE}?queryString=${encodeURIComponent(queryString)}`,
+                        query_string: queryString,
                         time: 'start+end',
                         time1_format: {
                             format: 'seconds',

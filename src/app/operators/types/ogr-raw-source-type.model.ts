@@ -3,6 +3,7 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operat
 interface OgrRawSourceTypeConfig {
     filename: string;
     layer_name?: string;
+    query_string?: string;
     time: 'none' | 'start' | 'start+end' | 'start+duration';
     duration?: number | 'inf';
     time1_format?: MappingTimeFormat;
@@ -59,6 +60,7 @@ interface OgrRawSourceTypeMappingDict extends OperatorTypeMappingDict {
 export interface OgrRawSourceTypeDict extends OperatorTypeDict  {
     filename: string;
     layer_name?: string;
+    query_string?: string;
     time: 'none' | 'start' | 'start+end' | 'start+duration';
     duration?: number | 'inf';
     time1_format?: MappingTimeFormat;
@@ -120,6 +122,7 @@ export class OgrRawSourceType extends OperatorType {
         return [
             ['filename', this.config.filename.toString()],
             ['layer_name', this.config.layer_name ? this.config.layer_name.toString() : ''],
+            ['query_string', this.config.query_string ? this.config.query_string.toString() : ''],
             ['columns.time1', this.config.columns.time1 ? this.config.columns.time1.toString() : ''],
             ['columns.time2', this.config.columns.time2 ? this.config.columns.time2.toString() : ''],
             ['columns.numeric', this.config.columns.numeric.toString()],
