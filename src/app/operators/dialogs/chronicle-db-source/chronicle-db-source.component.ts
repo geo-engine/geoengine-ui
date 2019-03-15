@@ -53,7 +53,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.form = this.formBuilder.group({
             name: ['ChronincleDB Sensor Data', [Validators.required, WaveValidators.notOnlyWhitespace]],
-            queryString: ['SELECT * FROM SenseBox-Stream', Validators.required],
+            queryString: ['SELECT * FROM SenseBoxStream', Validators.required],
         });
     }
 

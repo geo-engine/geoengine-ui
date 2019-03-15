@@ -37,8 +37,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 private config: Config,
                 private userService: UserService,
                 private notificationService: NotificationService) {
+
+        const loginAuthName = this.config.PROJECT.toLowerCase() === 'gfbio' ? 'gfbio' : 'system';
         this.loginForm = this.formBuilder.group({
-            loginAuthority: ['gfbio', Validators.required],
+            loginAuthority: [loginAuthName, Validators.required],
             username: ['', Validators.compose([
                 Validators.required,
                 WaveValidators.keyword([this.config.USER.GUEST.NAME]),

@@ -119,7 +119,7 @@ export class OgrRawSourceType extends OperatorType {
     getParametersAsStrings(): Array<[string, string]> {
         return [
             ['filename', this.config.filename.toString()],
-            ['layer_name', this.config.layer_name.toString()],
+            ['layer_name', this.config.layer_name ? this.config.layer_name.toString() : ''],
             ['columns.time1', this.config.columns.time1 ? this.config.columns.time1.toString() : ''],
             ['columns.time2', this.config.columns.time2 ? this.config.columns.time2.toString() : ''],
             ['columns.numeric', this.config.columns.numeric.toString()],

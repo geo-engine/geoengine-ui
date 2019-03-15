@@ -17,7 +17,7 @@
             <ng-template ngFor let-parameter [ngForOf]="parameters$ | async">
                 <h3 mat-subheader>{{parameter.key}}</h3>
                 <mat-list-item>
-                    <p mat-line>{{parameter.value}}</p>
+                    <p mat-line [matTooltip]='parameter.value'>{{parameter.value}}</p>
                 </mat-list-item>
                 <mat-divider></mat-divider>
             </ng-template>
