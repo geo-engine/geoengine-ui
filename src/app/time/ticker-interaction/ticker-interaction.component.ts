@@ -48,7 +48,9 @@ export class TickerInteractionComponent implements OnInit, OnDestroy {
         });
 
         this.timer$.subscribe(x => {
-            this.timeForward();
+            if (x) {
+                this.timeForward();
+            }
             console.log(x);
         })
     }
