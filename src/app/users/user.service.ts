@@ -650,7 +650,10 @@ export class UserService {
                                     name: (source.name) ? source.name : sourceId,
                                     rasterLayer: sourceChannels,
                                     vectorLayer: sourceVectorLayer,
-                                    provenance: sourceProvenance
+                                    provenance: sourceProvenance,
+                                    descriptionText: source.descriptionText,
+                                    imgUrl: source.imgUrl,
+                                    tags: source.tags,
                                 });
                             }
                         }
