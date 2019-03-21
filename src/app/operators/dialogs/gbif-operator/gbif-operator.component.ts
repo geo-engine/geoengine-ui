@@ -74,6 +74,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     gbifCount: number;
     iucnCount: number;
 
+    taxonLevels: Array<string> = ['Species', 'Genus', 'Family'];
+
     private gbifColumns: BasicColumns = {numeric: [], textual: []};
     private gbifAttributes: Array<string> = [];
     private gbifUnits = new Map<string, Unit>();
@@ -98,7 +100,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.form = this.formBuilder.group({
             name: [undefined, Validators.required],
-            searchString: [undefined, Validators.required],
+            searchTerm: [undefined, Validators.required],
+            searchLevel: [this.taxonLevels[0], Validators.required],
             select: this.formBuilder.group({
                 gbif: [false],
                 iucn: [false],
@@ -110,14 +113,16 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.subscriptions.push(
             this.mode$.subscribe(mode => {
                 if (mode === Mode.SEARCH) {
-                    this.form.controls['searchString'].enable();
+                    this.form.controls['searchTerm'].enable();
+                    this.form.controls['searchLevel'].enable();
                 } else {
-                    this.form.controls['searchString'].disable();
+                    this.form.controls['searchTerm'].disable();
+                    this.form.controls['searchLevel'].disable();
                 }
             })
         );
 
-        this.autoCompleteResults$ = this.form.controls['searchString'].valueChanges.pipe(
+        this.autoCompleteResults$ = this.form.controls['searchTerm'].valueChanges.pipe(
             startWith(null),
             throttleTime(this.config.DELAYS.DEBOUNCE),
             distinctUntilChanged(),
@@ -125,6 +130,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 (autocompleteString: string) => {
                     if (autocompleteString && autocompleteString.length >= this.minSearchLength) {
                         return this.mappingQueryService.getGBIFAutoCompleteResults(
+                            this.form.controls['searchLevel'].value,
                             autocompleteString
                         );
                     } else {
@@ -166,9 +172,10 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.mode$.next(2);
         this.loading$.next(true);
 
-        const searchString = this.form.controls['searchString'].value as string;
+        const searchLevel = this.form.controls['searchLevel'].value as string;
+        const searchTerm = this.form.controls['searchTerm'].value as string;
 
-        this.mappingQueryService.getGBIFDataSourceCounts(searchString).then(results => {
+        this.mappingQueryService.getGBIFDataSourceCounts(searchLevel, searchTerm).then(results => {
             this.loading$.next(false);
 
             let totalCount = 0;
@@ -197,7 +204,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gbifCount = 0;
         this.iucnCount = 0;
 
-        this.form.controls['searchString'].setValue('');
+        this.form.controls['searchLevel'].setValue('Species');
+        this.form.controls['searchTerm'].setValue('');
 
         this.form.controls['select'].setValue({
             gbif: false,
@@ -207,7 +215,9 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     add(event: any) {
         const layerName = this.form.controls['name'].value as string;
-        const searchString = this.form.controls['searchString'].value as string;
+        const searchLevel = this.form.controls['searchLevel'].value as string;
+        const searchTerm = this.form.controls['searchTerm'].value as string;
+
 
         const sources: Array<{
             name: string, operatorType: OperatorType, resultType: ResultType
@@ -217,7 +227,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 name: 'IUCN',
                 operatorType: new GFBioSourceType({
                     dataSource: 'IUCN',
-                    scientificName: searchString,
+                    level: searchLevel,
+                    term: searchTerm,
                     columns: this.iucnColumns,
                 }),
                 resultType: ResultTypes.POLYGONS,
@@ -228,7 +239,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 name: 'GBIF',
                 operatorType: new GFBioSourceType({
                     dataSource: 'GBIF',
-                    scientificName: searchString,
+                    level: searchLevel,
+                    term: searchTerm,
                     columns: this.gbifColumns,
                 }),
                 resultType: ResultTypes.POINTS,
@@ -266,14 +278,9 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 name: `${layerName} (${source.name})`,
                 operator: operator,
                 symbology: symbology,
-                // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                //     operator, clustered,
-                // }),
-                // provenance: this.mappingQueryService.getProvenanceStream(operator),
                 clustered: clustered,
             });
 
-            // this.layerService.addLayer(layer);
             this.projectService.addLayer(layer);
         }
 
