@@ -1,6 +1,5 @@
-
-import {BehaviorSubject, Observable, Subscription, of as observableOf} from 'rxjs';
-import {mergeMap, distinctUntilChanged, throttleTime, startWith} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of as observableOf, Subscription} from 'rxjs';
+import {distinctUntilChanged, mergeMap, startWith, throttleTime} from 'rxjs/operators';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -14,18 +13,20 @@ import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
-    ComplexVectorSymbology
+    ComplexVectorSymbology,
+    MappingColorizerRasterSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
-import {Unit} from '../../unit.model';
+import {Interpolation, Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {HttpClient} from '@angular/common/http';
 import {LayerService} from '../../../layers/layer.service';
-import {VectorLayer} from '../../../layers/layer.model';
+import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {MatAutocompleteTrigger} from '@angular/material';
 import {ProjectService} from '../../../project/project.service';
+import {HeatmapType} from '../../types/heatmap-type.model';
 
 function oneIsTrue(group: FormGroup): { [key: string]: boolean } {
     const errors: {
@@ -218,12 +219,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         const searchLevel = this.form.controls['searchLevel'].value as string;
         const searchTerm = this.form.controls['searchTerm'].value as string;
 
-
-        const sources: Array<{
-            name: string, operatorType: OperatorType, resultType: ResultType
-        }> = [];
         if (this.form.controls['select'].value.iucn) {
-            sources.push({
+            this.addVectorLayer({
                 name: 'IUCN',
                 operatorType: new GFBioSourceType({
                     dataSource: 'IUCN',
@@ -232,10 +229,11 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     columns: this.iucnColumns,
                 }),
                 resultType: ResultTypes.POLYGONS,
-            });
+            }, layerName);
         }
+
         if (this.form.controls['select'].value.gbif) {
-            sources.push({
+            const source = {
                 name: 'GBIF',
                 operatorType: new GFBioSourceType({
                     dataSource: 'GBIF',
@@ -243,46 +241,88 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     term: searchTerm,
                     columns: this.gbifColumns,
                 }),
-                resultType: ResultTypes.POINTS,
-            });
+                resultType: ResultTypes.POINTS
+            };
+
+            this.addVectorLayer(source, layerName);
+             // this.addRasterLayer(source, layerName, 25)
+
+        }
+    }
+
+    addVectorLayer(source: {name: string, operatorType: OperatorType, resultType: ResultType}, layerName: string) {
+        const operator = new Operator({
+            operatorType: source.operatorType,
+            resultType: source.resultType,
+            projection: Projections.WGS_84,
+            attributes: source.name === 'GBIF' ? this.gbifAttributes : this.iucnAttributes,
+            dataTypes: source.name === 'GBIF' ? this.gbifDatatypes : this.iucnDatatypes,
+            units: source.name === 'GBIF' ? this.gbifUnits : this.iucnUnits,
+        });
+
+        let symbology: AbstractVectorSymbology;
+        switch (source.resultType) {
+            case ResultTypes.POINTS:
+                symbology = ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                });
+                break;
+            case ResultTypes.POLYGONS:
+                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                });
+                break;
+            default:
+                throw new UnexpectedResultType();
         }
 
-        for (const source of sources) {
-            const operator = new Operator({
-                operatorType: source.operatorType,
-                resultType: source.resultType,
-                projection: Projections.WGS_84,
-                attributes: source.name === 'GBIF' ? this.gbifAttributes : this.iucnAttributes,
-                dataTypes: source.name === 'GBIF' ? this.gbifDatatypes : this.iucnDatatypes,
-                units: source.name === 'GBIF' ? this.gbifUnits : this.iucnUnits,
-            });
+        const clustered = source.resultType === ResultTypes.POINTS;
+        const layer = new VectorLayer({
+            name: `${layerName} (${source.name})`,
+            operator: operator,
+            symbology: symbology,
+            clustered: clustered,
+        });
 
-            let symbology: AbstractVectorSymbology;
-            switch (source.resultType) {
-                case ResultTypes.POINTS:
-                    symbology = ComplexPointSymbology.createClusterSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    });
-                    break;
-                case ResultTypes.POLYGONS:
-                    symbology = ComplexVectorSymbology.createSimpleSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    });
-                    break;
-                default:
-                    throw new UnexpectedResultType();
-            }
+        this.projectService.addLayer(layer);
+    }
 
-            const clustered = source.resultType === ResultTypes.POINTS;
-            const layer = new VectorLayer({
-                name: `${layerName} (${source.name})`,
-                operator: operator,
-                symbology: symbology,
-                clustered: clustered,
-            });
+    addRasterLayer(source: {name: string, operatorType: OperatorType, resultType: ResultType}, layerName: string, max: number) {
+        const sourceOperator = new Operator({
+            operatorType: source.operatorType,
+            resultType: source.resultType,
+            projection: Projections.WGS_84,
+        });
 
-            this.projectService.addLayer(layer);
-        }
+        const countUnit = new Unit({
+            measurement: 'count',
+            unit: '',
+            interpolation: Interpolation.Continuous,
+            min: 0,
+            max: max
+        });
+
+        const heatmapOperator = new Operator({
+            operatorType: new HeatmapType({
+                attribute: '',
+                radius: 5,
+            }),
+            resultType: ResultTypes.RASTER,
+            projection: sourceOperator.projection,
+            attributes: ['value'],
+            dataTypes: new Map<string, DataType>().set('value', DataTypes.UInt32),
+            units: new Map<string, Unit>().set('value', countUnit),
+            pointSources: [sourceOperator],
+        });
+
+        this.projectService.addLayer(new RasterLayer({
+            name: `${layerName} (${source.name})`,
+            operator: heatmapOperator,
+            symbology: new MappingColorizerRasterSymbology({
+                unit: countUnit,
+            }),
+        }));
+
 
     }
 
