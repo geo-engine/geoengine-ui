@@ -120,7 +120,7 @@ export class OgrRawSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['filename', this.config.filename.toString()],
+            ['filename', this.config.query_string ? '' : this.config.filename.toString()], // FIXME: workaround for CronicalDB
             ['layer_name', this.config.layer_name ? this.config.layer_name.toString() : ''],
             ['query_string', this.config.query_string ? this.config.query_string.toString() : ''],
             ['columns.time1', this.config.columns.time1 ? this.config.columns.time1.toString() : ''],

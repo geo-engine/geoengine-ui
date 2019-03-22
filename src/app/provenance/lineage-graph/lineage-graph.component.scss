@@ -114,3 +114,12 @@ $operator-border-height: 1px;
 :host .graph /deep/ .layer-edge path {
     stroke-dasharray: 5, 5;
 }
+
+::ng-deep .mat-list .mat-list-item .mat-line{
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+::ng-deep  .mat-list .mat-list-item{
+    height:initial !important;
+}
