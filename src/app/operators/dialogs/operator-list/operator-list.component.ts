@@ -34,6 +34,8 @@ import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 import {HeatmapType} from '../../types/heatmap-type.model';
 import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminology-lookup.component';
 import {TerminologyLookupType} from '../../types/terminology-lookup-type';
+import {StatisticsType, StatisticsTypeDict} from '../../types/statistics-type.model';
+import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 
 interface OperatorListType {
     component: Type<any>;
@@ -82,6 +84,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: BoxPlotComponent,
         type: BoxPlotType,
         description: 'Box plot your data'
+    },
+    {
+        component: StatisticsPlotComponent,
+        type: StatisticsType,
+        description: 'Get statistics for any layer'
     }
 ];
 
