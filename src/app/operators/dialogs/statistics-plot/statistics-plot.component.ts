@@ -1,28 +1,21 @@
-/**
- * Created by Julian on 23/06/2017.
- */
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {Symbology} from '../../../layers/symbology/symbology.model';
-import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
-import {PieChartType} from '../../types/piechart-type.model';
 import {WaveValidators} from '../../../util/form.validators';
+import {StatisticsType} from '../../types/statistics-type.model';
 
 @Component({
-    selector: 'wave-pie-chart-operator',
-    templateUrl: './pie-chart-operator.component.html',
-    styleUrls: ['./pie-chart-operator.component.scss'],
+    selector: 'wave-statistics-plot',
+    templateUrl: './statistics-plot.component.html',
+    styleUrls: ['./statistics-plot.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
-
-    pointLayers: Array<Layer<Symbology>>;
 
     ResultTypes = ResultTypes;
 
@@ -33,24 +26,23 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.form = this.formBuilder.group({
             layer: [undefined, Validators.required],
-            attribute: [undefined, Validators.required],
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
     }
 
     add(event: any) {
         const sourceOperator: Operator = this.form.controls['layer'].value.operator;
-
         const operator: Operator = new Operator({
-            operatorType: new PieChartType({
-                attribute: this.form.controls['attribute'].value.toString(),
-                inputType: sourceOperator.resultType,
+            operatorType: new StatisticsType({
+                raster_height: 256,
+                raster_width: 256
             }),
             resultType: ResultTypes.PLOT,
             projection: sourceOperator.projection,
             pointSources: sourceOperator.resultType === ResultTypes.POINTS ? [sourceOperator] : undefined,
             lineSources: sourceOperator.resultType === ResultTypes.LINES ? [sourceOperator] : undefined,
             polygonSources: sourceOperator.resultType === ResultTypes.POLYGONS ? [sourceOperator] : undefined,
+            rasterSources: sourceOperator.resultType === ResultTypes.RASTER ? [sourceOperator] : undefined,
         });
 
         const plot = new Plot({

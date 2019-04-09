@@ -1,23 +1,26 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
-import {BasicColumns} from "../dialogs/baskets/csv.model";
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
+import {BasicColumns} from '../dialogs/baskets/csv.model';
 
 interface GFBioSourceTypeConfig {
     dataSource: string;
-    scientificName: string;
+    level: string; // family, genus, species
+    term: string;
     columns: BasicColumns;
 }
 
 interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
     dataSource: string;
-    scientificName: string;
+    level: string;
+    term: string;
     columns: BasicColumns;
 }
 
 export interface GFBioSourceTypeDict extends OperatorTypeDict  {
     dataSource: string;
-    scientificName: string;
+    level: string;
+    term: string;
     columns: BasicColumns;
+    scientificName?: string; // FIXME: legacy support
 }
 
 /**
@@ -33,20 +36,23 @@ export class GFBioSourceType extends OperatorType {
     static get NAME(): string { return GFBioSourceType._NAME; }
 
     private dataSource: string;
-    private scientificName: string;
+    private level: string;
+    private term: string;
     private columns: BasicColumns;
 
     constructor(config: GFBioSourceTypeConfig) {
         super();
         this.dataSource = config.dataSource;
-        this.scientificName = config.scientificName;
+        this.level = config.level;
+        this.term = config.term;
         this.columns = config.columns;
     }
 
     static fromDict(dict: GFBioSourceTypeDict): GFBioSourceType {
         return new GFBioSourceType({
             dataSource: dict.dataSource,
-            scientificName: dict.scientificName,
+            level: dict.level ? dict.level : 'species',
+            term: dict.term ? dict.term : dict.scientificName,
             columns: dict.columns,
         });
     }
@@ -68,7 +74,8 @@ export class GFBioSourceType extends OperatorType {
         columns.sort();
         return [
             ['dataSource', this.dataSource.toString()],
-            ['scientificName', this.scientificName.toString()],
+            ['level', this.level.toString()],
+            ['term', this.term.toString()],
             ['columns', columns.join(', ')],
         ];
     }
@@ -76,7 +83,8 @@ export class GFBioSourceType extends OperatorType {
     toMappingDict(): GFBioSourceTypeMappingDict {
         return {
             dataSource: this.dataSource,
-            scientificName: this.scientificName,
+            level: this.level,
+            term: this.term,
             columns: this.columns,
         };
     }
@@ -85,7 +93,8 @@ export class GFBioSourceType extends OperatorType {
         return {
             operatorType: GFBioSourceType.TYPE,
             dataSource: this.dataSource,
-            scientificName: this.scientificName,
+            level: this.level,
+            term: this.term,
             columns: this.columns,
         };
     }
