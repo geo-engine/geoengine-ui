@@ -65,22 +65,22 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "karmaConfig": "src/karma.conf.js",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "scripts": [],
-            "styles": [
-                "src/styles.scss",
-                "src/wave-app-theme.scss",
-                "node_modules/codemirror/lib/codemirror.css"
-            ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ]
+            "builder": "@angular-devkit/build-angular:karma",
+            "options": {
+              "main": "src/test.ts",
+              "polyfills": "src/polyfills.ts",
+              "tsConfig": "src/tsconfig.spec.json",
+              "karmaConfig": "src/karma.conf.js",
+              "styles": [
+                  "src/styles.scss",
+                  "src/wave-app-theme.scss",
+                  "node_modules/codemirror/lib/codemirror.css"
+              ],
+              "scripts": [],
+              "assets": [
+                  "src/favicon.ico",
+                  "src/assets"
+              ]
           }
         },
         "lint": {
