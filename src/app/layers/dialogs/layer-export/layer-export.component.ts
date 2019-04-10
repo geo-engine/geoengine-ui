@@ -7,14 +7,14 @@ import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-forma
 import {WCSOutputFormats} from '../../../queries/output-formats/wcs-output-format.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Layer} from '../../layer.model';
-import {Symbology} from '../../symbology/symbology.model';
+import {AbstractSymbology} from '../../symbology/symbology.model';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {ProjectService} from '../../../project/project.service';
 
 interface LayerExportComponentConfig {
-    layer: Layer<Symbology>;
+    layer: Layer<AbstractSymbology>;
 }
 
 @Component({
@@ -32,7 +32,7 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    layer: Layer<Symbology>;
+    layer: Layer<AbstractSymbology>;
 
     isRaster: boolean;
     isVector: boolean;

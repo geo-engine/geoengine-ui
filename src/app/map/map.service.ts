@@ -8,7 +8,7 @@ import {getHeight as olExtentGetHeight, getWidth as olExtentGetWidth, getInterse
 import {GeometryType as OlGeometryType} from 'ol/geom';
 import {Vector as OlSourceVector} from 'ol/source';
 
-import {Symbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {MapComponent} from './map.component';
 
@@ -29,7 +29,7 @@ export class MapService {
 
     private mapComponent: MapComponent;
     private zoomToExtent$ = new Subject<Extent>();
-    private zoomToLayer$ = new Subject<Layer<Symbology>>();
+    private zoomToLayer$ = new Subject<Layer<AbstractSymbology>>();
 
     constructor() {
         // this.viewportSize$.subscribe(
@@ -41,11 +41,11 @@ export class MapService {
         return this.zoomToExtent$;
     }
 
-    getZoomToLayerStream(): Observable<Layer<Symbology>> {
+    getZoomToLayerStream(): Observable<Layer<AbstractSymbology>> {
         return this.zoomToLayer$;
     }
 
-    public zoomToLayer(l: Layer<Symbology>) {
+    public zoomToLayer(l: Layer<AbstractSymbology>) {
         this.zoomToLayer$.next(l);
     }
 

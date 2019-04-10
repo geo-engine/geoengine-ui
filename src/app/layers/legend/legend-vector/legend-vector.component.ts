@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LegendComponent} from '../legend.component';
-import {SimpleVectorSymbology, ComplexVectorSymbology} from '../../symbology/symbology.model';
+import {AbstractVectorSymbology} from '../../symbology/symbology.model';
 
 @Component({
     selector: 'wave-legendary-vector',
@@ -9,13 +9,4 @@ import {SimpleVectorSymbology, ComplexVectorSymbology} from '../../symbology/sym
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LegendaryVectorComponent<S extends SimpleVectorSymbology> extends LegendComponent<S> {
-
-    isComplexSymbology(): boolean {
-        if (this.symbology instanceof ComplexVectorSymbology) {
-            return true;
-        }
-        return false;
-    }
-
-}
+export class LegendaryVectorComponent<S extends AbstractVectorSymbology> extends LegendComponent<S> {}

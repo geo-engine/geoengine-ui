@@ -4,7 +4,7 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {Symbology} from '../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
@@ -22,7 +22,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    pointLayers: Array<Layer<Symbology>>;
+    pointLayers: Array<Layer<AbstractSymbology>>;
 
     ResultTypes = ResultTypes;
 

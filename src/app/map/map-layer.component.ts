@@ -5,7 +5,7 @@ import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
 import {Projection} from '../operators/projection.model';
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, MappingColorizerRasterSymbology, AbstractSymbology} from '../layers/symbology/symbology.model';
 
 import {StyleCreator} from './style-creator';
 import {Layer, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
@@ -33,7 +33,7 @@ import {isNullOrUndefined} from 'util';
 export abstract class OlMapLayerComponent<
         OL extends OlLayer,
         OS extends OlSource,
-        S extends Symbology,
+        S extends AbstractSymbology,
         L extends Layer<S>
     >
     implements OnChanges {

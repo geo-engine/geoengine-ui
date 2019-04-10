@@ -41,7 +41,7 @@ import {GeometryType as OlGeometryType} from 'ol/geom';
 import {OlMapLayerComponent} from './map-layer.component';
 
 import {Projection, Projections} from '../operators/projection.model';
-import {AbstractVectorSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Layer} from '../layers/layer.model';
 import {LayerService} from '../layers/layer.service';
 import {ProjectService} from '../project/project.service';
@@ -49,7 +49,7 @@ import {MapService} from './map.service';
 import {Config} from '../config.service';
 import {StyleCreator} from './style-creator';
 
-type MapLayer = OlMapLayerComponent<OlLayer, OlSource, Symbology, Layer<Symbology>>;
+type MapLayer = OlMapLayerComponent<OlLayer, OlSource, AbstractSymbology, Layer<AbstractSymbology>>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 
@@ -86,7 +86,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
     private drawInteractionSource: OlSourceVector;
     private drawInteractionLayer: OlLayerVector;
 
-    private layers: Array<Layer<Symbology>> = []; // HACK
+    private layers: Array<Layer<AbstractSymbology>> = []; // HACK
 
     private subscriptions: Array<Subscription> = [];
 
@@ -130,7 +130,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         this.zoomToExtent(extent);
     }
 
-    zoomToLayer(layer: Layer<Symbology>) {
+    zoomToLayer(layer: Layer<AbstractSymbology>) {
         const candidates = this.contentChildren.filter(
             olLayerComponent => olLayerComponent.layer === layer
         );

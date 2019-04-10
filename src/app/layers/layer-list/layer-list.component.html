@@ -141,8 +141,11 @@
                                                   [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
                                         ></mat-icon>
                                     </ng-template>
-                                    <ng-template [ngIf]="false">
-                                        <mat-icon mat-list-icon svgIcon="symbology:line"></mat-icon>
+                                    <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_LINE">
+                                        <mat-icon mat-list-icon svgIcon="symbology:line"
+                                                  [style.stroke-width.px]='2'
+                                                  [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                        ></mat-icon>
                                     </ng-template>
                                     <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_VECTOR
                                         || layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">

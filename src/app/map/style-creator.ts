@@ -15,8 +15,6 @@ import {Feature as OlFeature} from 'ol';
 import {
     SymbologyType,
     AbstractVectorSymbology,
-    SimpleVectorSymbology,
-    SimplePointSymbology,
     ComplexVectorSymbology,
     ComplexPointSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
@@ -32,16 +30,17 @@ export class StyleCreator {
                 return StyleCreator.fromSimpleVectorSymbology(sym);
 
             case SymbologyType.SIMPLE_POINT:
-                return StyleCreator.fromSimplePointSymbology(sym as SimplePointSymbology);
+                return StyleCreator.fromSimplePointSymbology(sym as ComplexPointSymbology);
 
-            case SymbologyType.COMPLEX_VECTOR:
-                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
 
             case SymbologyType.COMPLEX_POINT:
                 return StyleCreator.fromComplexPointSymbology(sym as ComplexPointSymbology);
 
+            case SymbologyType.COMPLEX_VECTOR:
+                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
+
             default:
-                console.error('StyleCreator: unknown Symbology: ' + sym.getSymbologyType())
+                console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType())
                 return StyleCreator.fromSimpleVectorSymbology(sym); // Lets pretend unknown symbology is a simple vector...
         }
 
@@ -61,7 +60,7 @@ export class StyleCreator {
         });
     }
 
-    static fromSimplePointSymbology(sym: SimplePointSymbology): OlStyle {
+    static fromSimplePointSymbology(sym: ComplexPointSymbology): OlStyle {
             return new OlStyle({
                 image: new OlStyleCircle({
                     radius: sym.radius,
