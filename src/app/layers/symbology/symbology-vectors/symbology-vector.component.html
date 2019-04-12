@@ -69,7 +69,7 @@
             </div>
 
             <div *ngIf="fillByAttribute && !!symbology.fillAttribute">
-                <wave-colorizer-editor [ngModel]="symbology.fillColorizer" (ngModelChange)="updateFillColorizer($event)" [attributePlaceholder]="attribute?.name" [inputType] = "attribute?.type"></wave-colorizer-editor>
+                <wave-colorizer-editor [ngModel]="symbology.fillColorizer" (ngModelChange)="updateFillColorizer($event)" [attributePlaceholder]="fillAttribute?.name" [inputType] = "fillAttribute?.type"></wave-colorizer-editor>
             </div>
 
         </div>
@@ -99,7 +99,7 @@
             </div>
 
             <div *ngIf="strokeByAttribute && !!symbology.strokeAttribute">
-                <wave-colorizer-editor [ngModel]="symbology.strokeColorizer" (ngModelChange)="updateStrokeColorizer($event)" [attributePlaceholder]="attribute?.name" [inputType] = "attribute?.type"></wave-colorizer-editor>
+                <wave-colorizer-editor [ngModel]="symbology.strokeColorizer" (ngModelChange)="updateStrokeColorizer($event)" [attributePlaceholder]="strokeAttribute?.name" [inputType] = "strokeAttribute?.type"></wave-colorizer-editor>
             </div>
 
         </div>
