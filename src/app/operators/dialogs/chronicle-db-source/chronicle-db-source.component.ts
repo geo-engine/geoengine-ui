@@ -5,10 +5,10 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
-import {ComplexPointSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Projections} from '../../projection.model';
 import {OgrRawSourceType} from '../../types/ogr-raw-source-type.model';
-import {ResultTypes} from '../../result-type.model';
+import {ResultType, ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 import {Observable} from 'rxjs';
@@ -41,6 +41,10 @@ interface AttributesReturnType {
 })
 export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
 
+    // MAKE AVAILABLE FOR FORM
+    ResultTypes = ResultTypes;
+    //
+
     form: FormGroup;
 
     constructor(private config: Config,
@@ -54,6 +58,8 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
         this.form = this.formBuilder.group({
             name: ['ChronincleDB Sensor Data', [Validators.required, WaveValidators.notOnlyWhitespace]],
             queryString: ['SELECT * FROM SenseBoxStream', Validators.required],
+            resultType: [ResultTypes.POINTS, Validators.required],
+            clustered: [true, Validators.required],
         });
     }
 
@@ -69,6 +75,8 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
 
         const layerName = this.form.controls['name'].value as string;
         const queryString = this.form.controls['queryString'].value as string;
+        const resultType = this.form.controls['resultType'].value as ResultType;
+        const clustered = (this.form.controls['clustered'].value as boolean) && (resultType === ResultTypes.POINTS);
 
         this.getMetadata(queryString)
             .pipe(first())
@@ -107,20 +115,46 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                         on_error: 'skip',
                         provenance: metadata.provenance,
                     }),
-                    resultType: ResultTypes.POINTS,
+                    resultType: resultType,
                     projection: Projections.WGS_84,
                     attributes: attributeNames.sort(),
                     dataTypes: dataTypes,
                     units: units,
                 });
 
+                let symbology;
+                switch (resultType) {
+                    case ResultTypes.POINTS:
+                        if (clustered) {
+                            symbology = ComplexPointSymbology.createClusterSymbology({
+                                fillRGBA: this.randomColorService.getRandomColorRgba(),
+                            });
+                        } else {
+                            symbology = ComplexPointSymbology.createSimpleSymbology({
+                                fillRGBA: this.randomColorService.getRandomColorRgba(),
+                            });
+                        }
+                        break;
+                    case ResultTypes.LINES:
+                        // TODO: LINE SYMBOLOGY
+                        symbology = ComplexVectorSymbology.createSimpleSymbology({
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                        });
+                        break;
+                    case ResultTypes.POLYGONS:
+                        symbology = ComplexVectorSymbology.createSimpleSymbology({
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                        });
+                        break;
+                    default:
+                        throw new Error(`Unknown result data type ${resultType.toString()}`)
+                }
+
                 const layer = new VectorLayer({
                     name: layerName,
                     operator: operator,
-                    symbology: ComplexPointSymbology.createClusterSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    }),
-                    clustered: true,
+                    symbology: symbology,
+                    clustered: clustered,
                 });
 
                 this.projectService.addLayer(layer).subscribe(() => {
