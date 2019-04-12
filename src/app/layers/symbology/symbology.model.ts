@@ -284,6 +284,9 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
         this.fillAttribute = (config.fillAttribute) ? config.fillAttribute : undefined;
         this.fillColorizer = (config.fillColorizer) ? ColorizerData.fromDict(config.fillColorizer) : ColorizerData.empty();
 
+        this.strokeAttribute = (config.strokeAttribute) ? config.strokeAttribute : undefined;
+        this.strokeColorizer = (config.strokeColorizer) ? ColorizerData.fromDict(config.strokeColorizer) : ColorizerData.empty();
+
         this.textAttribute = (config.textAttribute) ? config.textAttribute : undefined;
         this.textColor = (config.textColor) ? Color.fromRgbaLike(config.textColor) : WHITE;
         this.textStrokeWidth = (config.textStrokeWidth) ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
@@ -305,6 +308,24 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
     unSetFillColorAttribute() {
         this.fillAttribute = undefined;
         this.fillColorizer = ColorizerData.empty()
+    }
+
+    setStrokeColorAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
+        this.strokeColorizer = clr;
+        this.strokeAttribute = name;
+    }
+
+    setOrUpdateStrokeColorizer(clr: ColorizerData): boolean {
+        if (clr && (!this.strokeColorizer || !clr.equals(this.strokeColorizer))) {
+            this.strokeColorizer = clr;
+            return true;
+        }
+        return false;
+    }
+
+    unSetStrokeColorAttribute() {
+        this.strokeAttribute = undefined;
+        this.strokeColorizer = ColorizerData.empty()
     }
 
     equals(other: AbstractVectorSymbology) {

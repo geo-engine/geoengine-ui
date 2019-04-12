@@ -33,7 +33,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
 
     @Input() layer: VectorLayer<ComplexPointSymbology> | VectorLayer<ComplexVectorSymbology>;
-    @Output('symbologyChanged') symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
+    @Output() symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
 
     _symbology: ComplexPointSymbology | ComplexVectorSymbology;
 
@@ -50,8 +50,10 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         return this._symbology;
     }
 
-    colorizeByAttribute = false;
+    fillByAttribute = false;
+    strokeByAttribute = false;
     fillAttribute: Attribute;
+    strokeAttribute: Attribute;
     attributes: Array<Attribute>;
 
     constructor() {}
@@ -75,8 +77,8 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         // console.log('SymbologyPointsComponent', 'ngOnInit', this);
     }
 
-    setColorizerAttribute() {
-        if (this.colorizeByAttribute && this.fillAttribute) {
+    setFillColorizerAttribute() {
+        if (this.fillByAttribute && this.fillAttribute) {
             this.symbology.setFillColorAttribute(this.fillAttribute.name);
             this.symbology.fillColorizer.clear();
             this.symbology.fillColorizer.addBreakpoint({
@@ -88,16 +90,36 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         }
     }
 
-    updateColorizeByAttribute(event: MatSlideToggleChange) {
-        this.colorizeByAttribute = event.checked;
-        this.setColorizerAttribute();
+    updateFillColorizeByAttribute(event: MatSlideToggleChange) {
+        this.fillByAttribute = event.checked;
+        this.setFillColorizerAttribute();
+    }
+
+    setStrokeColorizerAttribute() {
+        if (this.strokeByAttribute && this.strokeAttribute) {
+            this.symbology.setStrokeColorAttribute(this.strokeAttribute.name);
+            this.symbology.strokeColorizer.clear();
+            this.symbology.strokeColorizer.addBreakpoint({
+                rgba: this.symbology.strokeRGBA,
+                value: (this.strokeAttribute.type === 'number') ? 0 : '',
+            });
+        } else {
+            this.symbology.unSetStrokeColorAttribute();
+        }
+    }
+
+    updateStrokeColorizeByAttribute(event: MatSlideToggleChange) {
+        this.strokeByAttribute = event.checked;
+        this.setStrokeColorizerAttribute();
     }
 
     updateSymbologyFromLayer() {
         this.symbology = this.layer.symbology;
-        this.colorizeByAttribute = !!this.symbology.fillAttribute;
+        this.fillByAttribute = !!this.symbology.fillAttribute;
+        this.strokeByAttribute = !!this.symbology.strokeAttribute;
         this.gatherAttributes();
         this.fillAttribute = this.attributes.find(x => x.name === this.symbology.fillAttribute);
+        this.strokeAttribute = this.attributes.find(x => x.name === this.symbology.strokeAttribute);
     }
 
     gatherAttributes() {
@@ -167,10 +189,18 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         }
     }
 
-    updateColorizer(event: ColorizerData) {
+    updateFillColorizer(event: ColorizerData) {
         if (event && this.symbology) {
             // console.log('SymbologyPointsComponent', 'updateColorizer', event);
             this.symbology.setOrUpdateFilllColorizer(event);
+            this.update();
+        }
+    }
+
+    updateStrokeColorizer(event: ColorizerData) {
+        if (event && this.symbology) {
+            // console.log('SymbologyPointsComponent', 'updateColorizer', event);
+            this.symbology.setOrUpdateStrokeColorizer(event);
             this.update();
         }
     }
