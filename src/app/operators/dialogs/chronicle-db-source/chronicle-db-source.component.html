@@ -3,11 +3,18 @@
     <div fxFlex fxLayout="column" class="container">
         <wave-dialog-section-heading title="Query String"
                                      subtitle="Specify a query string"></wave-dialog-section-heading>
-        <!--<div fxLayout="row">-->
-            <mat-form-field fxFlex>
-                <textarea matInput formControlName="queryString" placeholder="Query String"></textarea>
-            </mat-form-field>
-        <!--</div>-->
+        <mat-form-field fxFlex>
+            <textarea matInput formControlName="queryString" placeholder="Query String"></textarea>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Geometry Type</mat-label>
+            <mat-select formControlName="resultType">
+                <mat-option [value]="ResultTypes.POINTS">Points</mat-option>
+                <mat-option [value]="ResultTypes.LINES">Lines</mat-option>
+                <mat-option [value]="ResultTypes.POLYGONS">Polygons</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-checkbox formControlName="clustered" *ngIf="form.value.resultType === ResultTypes.POINTS">Clustered</mat-checkbox>
     </div>
     <div class="actions">
         <wave-operator-output-name formControlName="name"
