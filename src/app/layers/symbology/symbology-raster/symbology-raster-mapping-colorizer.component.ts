@@ -56,7 +56,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
     }
 
     updateColorizer(event: ColorizerData) {
-        // console.log("updateColorizer", event, this.symbology.colorizer, !event.equals(this.symbology.colorizer));
+        // console.log("updateColorizer", event, this.symbology.fillColorizer, !event.equals(this.symbology.fillColorizer));
         if (event && !event.equals(this.symbology.colorizer)) {
             this.symbology.colorizer = event;
             this.update();

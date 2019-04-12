@@ -25,7 +25,13 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     static minRadius = 1;
 
     @Input() editRadius = true;
+    @Input() editFillColor = true;
     @Input() editStrokeWidth = true;
+    @Input() editStrokeColor = true;
+    @Input() editColorizeFillByAttribute = true;
+    @Input() editColorizeStrokeByAttribute = true;
+
+
     @Input() layer: VectorLayer<ComplexPointSymbology> | VectorLayer<ComplexVectorSymbology>;
     @Output('symbologyChanged') symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
 
@@ -45,7 +51,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     colorizeByAttribute = false;
-    attribute: Attribute;
+    fillAttribute: Attribute;
     attributes: Array<Attribute>;
 
     constructor() {}
@@ -70,15 +76,15 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     setColorizerAttribute() {
-        if (this.colorizeByAttribute && this.attribute) {
-            this.symbology.setColorAttribute(this.attribute.name);
-            this.symbology.colorizer.clear();
-            this.symbology.colorizer.addBreakpoint({
+        if (this.colorizeByAttribute && this.fillAttribute) {
+            this.symbology.setFillColorAttribute(this.fillAttribute.name);
+            this.symbology.fillColorizer.clear();
+            this.symbology.fillColorizer.addBreakpoint({
                 rgba: this.symbology.fillRGBA,
-                value: (this.attribute.type === 'number') ? 0 : '',
+                value: (this.fillAttribute.type === 'number') ? 0 : '',
             });
         } else {
-            this.symbology.unSetColorAttribute();
+            this.symbology.unSetFillColorAttribute();
         }
     }
 
@@ -89,9 +95,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     updateSymbologyFromLayer() {
         this.symbology = this.layer.symbology;
-        this.colorizeByAttribute = !!this.symbology.colorAttribute;
+        this.colorizeByAttribute = !!this.symbology.fillAttribute;
         this.gatherAttributes();
-        this.attribute = this.attributes.find(x => x.name === this.symbology.colorAttribute);
+        this.fillAttribute = this.attributes.find(x => x.name === this.symbology.fillAttribute);
     }
 
     gatherAttributes() {
@@ -164,7 +170,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     updateColorizer(event: ColorizerData) {
         if (event && this.symbology) {
             // console.log('SymbologyPointsComponent', 'updateColorizer', event);
-            this.symbology.setOrUpdateColorizer(event);
+            this.symbology.setOrUpdateFilllColorizer(event);
             this.update();
         }
     }

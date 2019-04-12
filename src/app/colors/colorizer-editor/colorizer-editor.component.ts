@@ -33,7 +33,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
 
     set colorizer(clr: ColorizerData) {
         if (clr && (!clr.equals(this._colorizer))) {
-            // console.log("ColorizerEditorComponent", 'set colorizer', clr, this._colorizer, clr.equals(this._colorizer));
+            // console.log("ColorizerEditorComponent", 'set fillColorizer', clr, this._colorizer, clr.equals(this._colorizer));
             this._colorizer = clr.clone();
             this.notify();
             // this.changeDetectorRef.markForCheck();

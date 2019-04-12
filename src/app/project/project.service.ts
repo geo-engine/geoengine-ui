@@ -21,7 +21,7 @@ import {Layer, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from
 import {
     AbstractVectorSymbology,
     RasterSymbology,
-    Symbology,
+    AbstractSymbology,
     SymbologyType
 } from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -37,18 +37,18 @@ import {DeprecatedMappingColorizerDoNotUse} from '../colors/colorizer-data.model
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
 
-    private layerData$: Map<Layer<Symbology>, ReplaySubject<LayerData<any>>>;
-    private layerDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
-    private layerDataSubscriptions: Map<Layer<Symbology>, Subscription>;
-    private layerSymbologyData$: Map<Layer<Symbology>, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
-    private layerSymbologyDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
-    private layerSymbologyDataSubscriptions: Map<Layer<Symbology>, Subscription>;
-    private layerProvenanceData$: Map<Layer<Symbology>, ReplaySubject<Array<Provenance>>>;
-    private layerProvenanceDataState$: Map<Layer<Symbology>, ReplaySubject<LoadingState>>;
-    private layerProvenanceDataSubscriptions: Map<Layer<Symbology>, Subscription>;
-    private layerCombinedState$: Map<Layer<Symbology>, Observable<LoadingState>>;
+    private layerData$: Map<Layer<AbstractSymbology>, ReplaySubject<LayerData<any>>>;
+    private layerDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
+    private layerDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
+    private layerSymbologyData$: Map<Layer<AbstractSymbology>, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
+    private layerSymbologyDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
+    private layerSymbologyDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
+    private layerProvenanceData$: Map<Layer<AbstractSymbology>, ReplaySubject<Array<Provenance>>>;
+    private layerProvenanceDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
+    private layerProvenanceDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
+    private layerCombinedState$: Map<Layer<AbstractSymbology>, Observable<LoadingState>>;
 
-    private newLayer$: Subject<Layer<Symbology>>;
+    private newLayer$: Subject<Layer<AbstractSymbology>>;
 
     private plotData$: Map<Plot, ReplaySubject<PlotData>>;
     private plotDataState$: Map<Plot, ReplaySubject<LoadingState>>;
@@ -76,7 +76,7 @@ export class ProjectService {
         this.layerProvenanceDataState$ = new Map();
         this.layerProvenanceDataSubscriptions = new Map();
         this.layerCombinedState$ = new Map();
-        this.newLayer$ = new Subject<Layer<Symbology>>();
+        this.newLayer$ = new Subject<Layer<AbstractSymbology>>();
     }
 
     createDefaultProject(): Project {
@@ -381,7 +381,7 @@ export class ProjectService {
      * @param layer
      * @param notify
      */
-    addLayer(layer: Layer<Symbology>, notify = true): Observable<void> {
+    addLayer(layer: Layer<AbstractSymbology>, notify = true): Observable<void> {
         this.createLayerDataStreams(layer);
 
         const subject: Subject<void> = new ReplaySubject<void>(1);
@@ -409,7 +409,7 @@ export class ProjectService {
      * Remove a plot from the project.
      * @param layer
      */
-    removeLayer(layer: Layer<Symbology>): Observable<void> {
+    removeLayer(layer: Layer<AbstractSymbology>): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
 
         if (this.layerService.getSelectedLayer() === layer) {
@@ -467,7 +467,7 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    reloadLayerData(layer: Layer<Symbology>) {
+    reloadLayerData(layer: Layer<AbstractSymbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
 
         if (this.layerDataSubscriptions.has(layer)) {
@@ -504,7 +504,7 @@ export class ProjectService {
      * Reload everything for the layer manually (e.g. on error).
      * @param layer
      */
-    reloadLayer(layer: Layer<Symbology>) {
+    reloadLayer(layer: Layer<AbstractSymbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
 
         if (this.layerDataSubscriptions.has(layer)) {
@@ -562,9 +562,9 @@ export class ProjectService {
 
     /**
      * Retrieve the layer models array as a stream.
-     * @returns {BehaviorSubject<Array<Layer<Symbology>>>}
+     * @returns {BehaviorSubject<Array<Layer<AbstractSymbology>>>}
      */
-    getLayerStream(): Observable<Array<Layer<Symbology>>> {
+    getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
         return this.project$.pipe(map(project => project.layers), distinctUntilChanged(), );
     }
 
@@ -573,7 +573,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LayerData<any>>}
      */
-    getLayerDataStream(layer: Layer<Symbology>): Observable<LayerData<any>> {
+    getLayerDataStream(layer: Layer<AbstractSymbology>): Observable<LayerData<any>> {
         return this.layerData$.get(layer);
     }
 
@@ -582,7 +582,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LoadingState>}
      */
-    getLayerDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+    getLayerDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerDataState$.get(layer);
     }
 
@@ -604,7 +604,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LayerData<any>>}
      */
-    getLayerSymbologyDataStream(layer: Layer<Symbology>): Observable<DeprecatedMappingColorizerDoNotUse> {
+    getLayerSymbologyDataStream(layer: Layer<AbstractSymbology>): Observable<DeprecatedMappingColorizerDoNotUse> {
         return this.layerSymbologyData$.get(layer);
     }
 
@@ -613,7 +613,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LoadingState>}
      */
-    getLayerSymbologyDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+    getLayerSymbologyDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerSymbologyDataState$.get(layer);
     }
 
@@ -622,7 +622,7 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<Array<Provenance>>}
      */
-    getLayerProvenanceDataStream(layer: Layer<Symbology>): Observable<Array<Provenance>> {
+    getLayerProvenanceDataStream(layer: Layer<AbstractSymbology>): Observable<Array<Provenance>> {
         return this.layerProvenanceData$.get(layer);
     }
 
@@ -631,11 +631,11 @@ export class ProjectService {
      * @param layer
      * @returns {ReplaySubject<LoadingState>}
      */
-    getLayerProvenanceDataStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+    getLayerProvenanceDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerProvenanceDataState$.get(layer);
     }
 
-    getLayerCombinedStatusStream(layer: Layer<Symbology>): Observable<LoadingState> {
+    getLayerCombinedStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         const state = this.layerCombinedState$.get(layer);
         return state;
     }
@@ -667,7 +667,7 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    getNewLayerStream(): Observable<Layer<Symbology>> {
+    getNewLayerStream(): Observable<Layer<AbstractSymbology>> {
         return this.newLayer$;
     }
 
@@ -675,7 +675,7 @@ export class ProjectService {
      * Sets the layers
      * @param layers
      */
-    setLayers(layers: Array<Layer<Symbology>>) {
+    setLayers(layers: Array<Layer<AbstractSymbology>>) {
         this.project$.pipe(first()).subscribe(project => {
             if (project.layers !== layers) {
                 this.changeProjectConfig({layers: layers});
@@ -688,16 +688,16 @@ export class ProjectService {
      * @param layer The layer to modify
      * @param changes
      */
-    changeLayer(layer: Layer<Symbology>, changes: {
+    changeLayer(layer: Layer<AbstractSymbology>, changes: {
         name ?: string,
-        symbology ?: Symbology,
+        symbology ?: AbstractSymbology,
         editSymbology ?: boolean,
         visible ?: boolean,
         expanded ?: boolean,
     }) {
         // change immutably
         //
-        // let newLayer: Layer<Symbology>;
+        // let newLayer: Layer<AbstractSymbology>;
         // if (layer instanceof VectorLayer) {
         //     newLayer = new VectorLayer<AbstractVectorSymbology>({
         //         name: changes.name ? changes.name : layer.name,
@@ -783,11 +783,11 @@ export class ProjectService {
      * Toggle the layer (extension).
      * @param layer The layer to modify
      */
-    toggleSymbology(layer: Layer<Symbology>) {
+    toggleSymbology(layer: Layer<AbstractSymbology>) {
         this.changeLayer(layer, {expanded: !layer.expanded});
     }
 
-    toggleEditSymbology(layer: Layer<Symbology>) {
+    toggleEditSymbology(layer: Layer<AbstractSymbology>) {
         this.changeLayer(layer, {editSymbology: !layer.editSymbology});
     }
 
@@ -796,7 +796,7 @@ export class ProjectService {
         projection?: Projection,
         time?: Time,
         plots?: Array<Plot>,
-        layers?: Array<Layer<Symbology>>,
+        layers?: Array<Layer<AbstractSymbology>>,
         timeStepDuration?: TimeStepDuration,
     }): Observable<void> {
         // console.log('Project::ProjectService.changeProjectConfig', config);
@@ -901,7 +901,7 @@ export class ProjectService {
         this.plotSubscriptions.delete(plot);
     }
 
-    private createLayerDataStreams(layer: Layer<Symbology>) {
+    private createLayerDataStreams(layer: Layer<AbstractSymbology>) {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
         const layerData$ = new ReplaySubject<LayerData<any>>(1);
@@ -1062,7 +1062,7 @@ export class ProjectService {
      * @param loadingState$
      * @returns {Subscription}
      */
-    private createLayerProvenanceSubscription(layer: Layer<Symbology>, provenance$: Observer<{}>,
+    private createLayerProvenanceSubscription(layer: Layer<AbstractSymbology>, provenance$: Observer<{}>,
                                               loadingState$: Observer<LoadingState>): Subscription {
         return observableCombineLatest(this.getTimeStream(), this.getProjectionStream()).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),

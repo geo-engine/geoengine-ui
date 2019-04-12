@@ -14,7 +14,7 @@
 // import {Projections} from '../projection.model';
 // import {Unit} from '../unit.model';
 // import {
-//     Symbology, MappingColorizerRasterSymbology, RasterSymbology,
+//     AbstractSymbology, MappingColorizerRasterSymbology, RasterSymbology,
 // } from '../../layers/symbology/symbology.model';
 // import {MsgRadianceType, MsgReflectanceType, MsgSolarangleType,
 //     MsgTemperatureType, MsgPansharpenType,
@@ -49,7 +49,7 @@
 // export class MsgRadianceOperatorComponent implements OnInit {
 //
 //     private configForm: FormGroup;
-//     private rasterSources: Array<Layer<Symbology>>;
+//     private rasterSources: Array<Layer<AbstractSymbology>>;
 //
 //     constructor(
 //         layerService: LayerService,
@@ -141,7 +141,7 @@
 // export class MsgReflectanceOperatorComponent implements OnInit {
 //
 //     private configForm: FormGroup;
-//     private rasterSources: Array<Layer<Symbology>>;
+//     private rasterSources: Array<Layer<AbstractSymbology>>;
 //
 //     // private forceSatellite: boolean = false;
 //     // private forceSatellteName: MeteosatSatelliteName;

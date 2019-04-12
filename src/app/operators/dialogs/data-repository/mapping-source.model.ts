@@ -57,6 +57,7 @@ export interface MappingSource {
     vectorLayer?: MappingSourceVectorLayer[];
     descriptionText?: string;
     imgUrl?: string;
+    tags?: Array<string>;
     provenance: ProvenanceInfo;
 }
 
@@ -65,6 +66,7 @@ export interface MappingSourceDict {
     name: string,
     descriptionText?: string,
     imgUrl?: string,
+    tags?: string[];
     colorizer?: MappingRasterColorizerDict,
     provenance?: {
         uri: string,

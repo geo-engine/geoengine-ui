@@ -5,6 +5,7 @@ interface OgrSourceTypeConfig {
     layer_id: string | number;
     numeric: string[];
     textual: string[];
+
 }
 
 interface OgrSourceTypeMappingDict extends OperatorTypeMappingDict {
@@ -12,6 +13,7 @@ interface OgrSourceTypeMappingDict extends OperatorTypeMappingDict {
     layer_name: string | number;
     numeric: string[];
     textual: string[];
+
 }
 
 export interface OgrSourceTypeDict extends OperatorTypeDict  {
@@ -19,6 +21,7 @@ export interface OgrSourceTypeDict extends OperatorTypeDict  {
     layer_id: string | number;
     numeric: string[];
     textual: string[];
+
 }
 
 /**

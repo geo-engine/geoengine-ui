@@ -1,8 +1,9 @@
-import {Style as OlStyle,
-    StyleFunction as OlStyleFunction,
+import {
     Circle as OlStyleCircle,
     Fill as OlStyleFill,
     Stroke as OlStyleStroke,
+    Style as OlStyle,
+    StyleFunction as OlStyleFunction,
     Text as OlStyleText,
 } from 'ol/style';
 // import {} from 'ol/style/Fill'
@@ -13,14 +14,12 @@ import {Feature as OlFeature} from 'ol';
 
 
 import {
-    SymbologyType,
     AbstractVectorSymbology,
-    SimpleVectorSymbology,
-    SimplePointSymbology,
-    ComplexVectorSymbology,
     ComplexPointSymbology,
+    ComplexVectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
-    DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR
+    DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR,
+    SymbologyType
 } from '../layers/symbology/symbology.model';
 
 export class StyleCreator {
@@ -28,20 +27,26 @@ export class StyleCreator {
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
         // console.log('StyleCreator', 'fromVectorSymbology', sym);
         switch (sym.getSymbologyType()) {
+
+            case SymbologyType.SIMPLE_LINE:
             case SymbologyType.SIMPLE_VECTOR:
                 return StyleCreator.fromSimpleVectorSymbology(sym);
 
             case SymbologyType.SIMPLE_POINT:
-                return StyleCreator.fromSimplePointSymbology(sym as SimplePointSymbology);
+                return StyleCreator.fromSimplePointSymbology(sym as ComplexPointSymbology);
 
-            case SymbologyType.COMPLEX_VECTOR:
-                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
 
             case SymbologyType.COMPLEX_POINT:
                 return StyleCreator.fromComplexPointSymbology(sym as ComplexPointSymbology);
 
+            case SymbologyType.COMPLEX_LINE:
+                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
+
+            case SymbologyType.COMPLEX_VECTOR:
+                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
+
             default:
-                console.error('StyleCreator: unknown Symbology: ' + sym.getSymbologyType())
+                console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType())
                 return StyleCreator.fromSimpleVectorSymbology(sym); // Lets pretend unknown symbology is a simple vector...
         }
 
@@ -61,7 +66,7 @@ export class StyleCreator {
         });
     }
 
-    static fromSimplePointSymbology(sym: SimplePointSymbology): OlStyle {
+    static fromSimplePointSymbology(sym: ComplexPointSymbology): OlStyle {
             return new OlStyle({
                 image: new OlStyleCircle({
                     radius: sym.radius,
@@ -79,9 +84,9 @@ export class StyleCreator {
 
       return (feature: OlFeature, resolution: number) => {
 
-          // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
+          // console.log(feature, this.fillAttribute, this.textAttribute, this.radiusAttribute);
 
-          const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
+          const featureColorValue = (sym.fillAttribute) ? feature.get(sym.fillAttribute) : undefined;
           const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
 
           // console.log(featureColorValue, featureTextValue, featureRadiusValue);
@@ -94,7 +99,7 @@ export class StyleCreator {
 
           if (!styleCache[styleKey]) {
 
-              const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
+              const colorBreakpointLookup = sym.fillColorizer.getBreakpointForValue(featureColorValue, true);
               // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
               const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
 
@@ -133,9 +138,9 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
+            // console.log(feature, this.fillAttribute, this.textAttribute, this.radiusAttribute);
 
-            const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
+            const featureColorValue = (sym.fillAttribute) ? feature.get(sym.fillAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ?  feature.get(sym.radiusAttribute) : undefined;
             // console.log(featureColorValue, featureTextValue, featureRadiusValue);
@@ -148,7 +153,7 @@ export class StyleCreator {
 
             if (!styleCache[styleKey]) {
 
-                const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
+                const colorBreakpointLookup = sym.fillColorizer.getBreakpointForValue(featureColorValue, true);
                 // console.log('StyleCreator', 'fromComplexPointSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
                 const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
                 const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;

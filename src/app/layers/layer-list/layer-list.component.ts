@@ -6,7 +6,7 @@ import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef}
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog, MatIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
-import {SymbologyType, Symbology} from '../symbology/symbology.model';
+import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
 
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
@@ -33,7 +33,7 @@ export class LayerListComponent implements OnDestroy {
     LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
     @Input() height: number;
-    layerList: Array<Layer<Symbology>> = [];
+    layerList: Array<Layer<AbstractSymbology>> = [];
 
     // make visible in template
     // tslint:disable:variable-name
@@ -88,7 +88,7 @@ export class LayerListComponent implements OnDestroy {
         this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
     }
 
-    toggleLayer(layer: Layer<Symbology>) {
+    toggleLayer(layer: Layer<AbstractSymbology>) {
         this.projectService.toggleSymbology(layer);
     }
 }

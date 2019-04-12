@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {Symbology, SymbologyType} from '../symbology.model';
+import {AbstractSymbology, SymbologyType} from '../symbology.model';
 import {Layer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
 
@@ -36,7 +36,7 @@ export class SymbologyEditorComponent implements OnChanges {
         return !!this.layer
     }
 
-    update_symbology(layer: Layer<Symbology>, symbology: Symbology) {
+    update_symbology(layer: Layer<AbstractSymbology>, symbology: AbstractSymbology) {
         // console.log('update_symbology', symbology);
         this.projectService.changeLayer(layer, {symbology: symbology});
     }

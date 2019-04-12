@@ -9,7 +9,7 @@ import {Set as ImmutableSet} from 'immutable';
 
 import {Layer} from './layer.model';
 import {FeatureID} from '../queries/geojson.model';
-import {Symbology} from './symbology/symbology.model';
+import {AbstractSymbology} from './symbology/symbology.model';
 
 export interface SelectedFeatures {
     selected: ImmutableSet<FeatureID>;
@@ -23,7 +23,7 @@ export interface SelectedFeatures {
  */
 @Injectable()
 export class LayerService {
-    private selectedLayer$: BehaviorSubject<Layer<Symbology>> = new BehaviorSubject(undefined);
+    private selectedLayer$: BehaviorSubject<Layer<AbstractSymbology>> = new BehaviorSubject(undefined);
     private selectedFeatures$: BehaviorSubject<SelectedFeatures> = new BehaviorSubject({
         selected: ImmutableSet<FeatureID>(),
     });
@@ -39,7 +39,7 @@ export class LayerService {
      * Does nothing if the layer is not within the list.
      * @param layer The layer to select.
      */
-    setSelectedLayer(layer: Layer<Symbology>) {
+    setSelectedLayer(layer: Layer<AbstractSymbology>) {
         if (layer !== this.selectedLayer$.value) {
             this.selectedLayer$.next(layer);
             this.selectedFeatures$.next({
@@ -51,14 +51,14 @@ export class LayerService {
     /**
      * @returns The currently selected layer as stream.
      */
-    getSelectedLayerStream(): Observable<Layer<Symbology>> {
+    getSelectedLayerStream(): Observable<Layer<AbstractSymbology>> {
         return this.selectedLayer$.asObservable();
     }
 
     /**
      * @returns The currently selected layer.
      */
-    getSelectedLayer(): Layer<Symbology> {
+    getSelectedLayer(): Layer<AbstractSymbology> {
         return this.selectedLayer$.getValue();
     }
 
@@ -77,7 +77,7 @@ export class LayerService {
     createLayerFromDict(
         dict: LayerDict,
         operatorMap = new Map<number, Operator>()
-    ): Layer<Symbology> {
+    ): Layer<AbstractSymbology> {
         switch (dict.type) {
             case 'raster':
                 return RasterLayer.fromDict(

@@ -87,6 +87,10 @@ export class ColorizerData implements IColorizerData {
         this.breakpoints = [];
     }
 
+    isEmpty() {
+        return this.breakpoints.length === 0;
+    }
+
     addBreakpoint(brk: ColorBreakpointDict) {
         this.breakpoints.push(new ColorBreakpoint(brk));
     }

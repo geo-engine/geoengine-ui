@@ -145,6 +145,7 @@ import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminolog
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {ChronicleDbSourceComponent} from './operators/dialogs/chronicle-db-source/chronicle-db-source.component';
+import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -159,6 +160,7 @@ export function configInitializer(config: Config) {
         BreakpointToCssStringPipe,
         ChangeProjectionComponent,
         ChronicleDbSourceComponent,
+        ChangeProjectionComponent,
         CodeEditorComponent,
         ColorBreakpointInputComponent,
         ColorizerEditorComponent,
@@ -257,6 +259,9 @@ export function configInitializer(config: Config) {
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SplashDialogComponent,
+        StatisticsPlotComponent,
+        SourceOperatorListComponent,
+        SplashDialogComponent,
         SymbologyEditorComponent,
         SymbologyRasterComponent,
         SymbologyRasterMappingColorizerComponent,
@@ -288,6 +293,10 @@ export function configInitializer(config: Config) {
     ],
     entryComponents: [
         AbcdRepositoryComponent,
+        BoxPlotComponent,
+        ChangeProjectionComponent,
+        ColorizerEditorComponent,
+        CountryPolygonSelectionComponent,
         BoxPlotComponent,
         ChangeProjectionComponent,
         ChronicleDbSourceComponent,
@@ -330,6 +339,15 @@ export function configInitializer(config: Config) {
         ScatterPlotComponent,
         SensorSourceOperatorComponent,
         SourceOperatorListComponent,
+        SplashDialogComponent,
+        SymbologyEditorComponent,
+        TerminologyLookupOperatorComponent,
+        TextualAttributeFilterOperatorComponent,
+        TimeConfigComponent,
+        WorkflowParameterChoiceDialogComponent,
+        WorkspaceSettingsComponent,
+        SourceOperatorListComponent,
+        StatisticsPlotComponent,
         SplashDialogComponent,
         SymbologyEditorComponent,
         TerminologyLookupOperatorComponent,

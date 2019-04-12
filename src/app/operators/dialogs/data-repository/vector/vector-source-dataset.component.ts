@@ -7,7 +7,7 @@ import {DataType, DataTypes} from '../../../datatype.model';
 import { VectorLayer} from '../../../../layers/layer.model';
 import {
     ComplexPointSymbology,
-    ComplexVectorSymbology,
+    ComplexVectorSymbology, LineSymbology,
 } from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
@@ -16,6 +16,7 @@ import {DataSource} from '@angular/cdk/table';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {OgrSourceType} from '../../../types/ogr-source-type.model';
 import {ResultTypes} from '../../../result-type.model';
+import {RgbaLike, WHITE} from '../../../../colors/color';
 
 @Component({
     selector: 'wave-vector-source-dataset',
@@ -56,14 +57,42 @@ export class VectorSourceDatasetComponent implements OnInit {
             throw new Error('Unsupported operator: ' + this.dataset.operator)
         }
 
+        let clustered = false;
+        let symbology;
+        switch (operator.resultType) {
+            case ResultTypes.POINTS: {
+                symbology = ComplexPointSymbology.createClusterSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                    fillColorizer: layer.colorizer
+                });
+                clustered = true;
+                break;
+            }
+            case ResultTypes.POLYGONS: {
+                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                    fillColorizer: layer.colorizer
+                });
+                break;
+            }
+            case ResultTypes.LINES: {
+                symbology = LineSymbology.createSymbology({
+                    fillRGBA: WHITE,
+                    strokeRGBA: this.randomColorService.getRandomColorRgba(),
+                    strokeWidth: 2,
+                });
+                break;
+            }
+            default: {
+                throw new Error('unhandled result type: ' + operator.resultType.name);
+            }
+        }
+
         const l = new VectorLayer({
             name: layer.name,
             operator: operator,
-            symbology: ComplexPointSymbology.createClusterSymbology({
-                fillRGBA: this.randomColorService.getRandomColorRgba(),
-                colorizer: layer.colorizer
-            }),
-            clustered: true
+            symbology: symbology,
+            clustered: clustered,
         });
         this.projectService.addLayer(l);
     }
@@ -116,6 +145,7 @@ export class VectorSourceDatasetComponent implements OnInit {
             layer_id: layer.id,
             textual: layer.textual,
             numeric: layer.numeric
+
         });
 
         const sourceOperator = new Operator({
