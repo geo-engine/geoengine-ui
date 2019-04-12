@@ -1,6 +1,6 @@
 {
     "/cgi-bin/*": {
-        "target": "https://sng107.sng.uni-frankfurt.de/dev/",
+        "target": "https://pc12412.mathematik.uni-marburg.de/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"
