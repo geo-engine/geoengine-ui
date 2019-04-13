@@ -2,10 +2,8 @@ import {
     DataPropertiesDict, FormStatus,
     SpatialPropertiesDict, TemporalPropertiesDict
 } from '../csv-config/csv-properties/csv-properties.component';
-import {Subject, BehaviorSubject} from 'rxjs';
+import {Subject, BehaviorSubject, Subscription, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {IntervalFormat} from '../interval.enum';
-import {Projections} from '../../../projection.model';
 
 @Injectable()
 export class CsvPropertiesService {
@@ -36,6 +34,7 @@ export class CsvPropertiesService {
     });
     private header = new BehaviorSubject<{value: string}[]>([]);
     private formStatus = new BehaviorSubject<FormStatus>(null);
+    public update = new BehaviorSubject<boolean>(true);
 
     xyColumn$: BehaviorSubject<{x: number, y?: number}> = new BehaviorSubject<{x: number, y?: number}>({x: 0, y: 0});
 
@@ -44,9 +43,11 @@ export class CsvPropertiesService {
     temporalProperties$ = this.temporalProperties.asObservable();
     header$ = this.header.asObservable();
     formStatus$ = this.formStatus.asObservable();
+    update$ = this.update.asObservable();
 
-    public changeDataProperties(p: DataPropertiesDict) {
+    public changeDataProperties(p: DataPropertiesDict): Observable<boolean> {
         this.dataProperties.next(p);
+        return this.update$;
     }
 
     public changeSpatialProperties(s: SpatialPropertiesDict) {
