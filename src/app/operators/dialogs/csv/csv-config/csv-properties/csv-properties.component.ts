@@ -80,11 +80,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         // {display: 'hours', value: 'h'},
         {display: 'seconds', value: 'seconds'},
     ];
-    intervalTypes: Array<{display: string, value: IntervalFormat}> = [
-        {display: '[Start,+inf)', value: IntervalFormat.StartInf},
-        {display: '[Start, End]', value: IntervalFormat.StartEnd},
-        {display: '[Start, Start+Duration]', value: IntervalFormat.StartDur},
-        {display: '[Start, Start+Constant]', value: IntervalFormat.StartConst},
+    intervalTypes: Array<{display: string, value: IntervalFormat, columns: number}> = [
+        {display: '[Start,+inf)', value: IntervalFormat.StartInf, columns: 1},
+        {display: '[Start, End]', value: IntervalFormat.StartEnd, columns: 2},
+        {display: '[Start, Start+Duration]', value: IntervalFormat.StartDur, columns: 2},
+        {display: '[Start, Start+Constant]', value: IntervalFormat.StartConst, columns: 1},
     ];
     decimalSeparators: string[] = [',', '.'];
     textQualifiers: string[] = ['"', '\''];

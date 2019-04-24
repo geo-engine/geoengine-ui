@@ -106,7 +106,6 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.header.length > 0) {
                     setTimeout(() => this.resize(), 0); // FIXME: update to Angular 7 -> changed to lambda, 0
                 }
-                this.propertiesService.update.next(true);
             }),
             this.propertiesService.formStatus$.subscribe(formStatus => {
                 if ([formStatus, this.formStatus].indexOf(FormStatus.TypingProperties) >= 0) {

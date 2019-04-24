@@ -165,8 +165,8 @@
                             placeholder="Interval type"
                             formControlName="intervalType"
                 >
-                    <mat-option *ngFor="let intervalType of intervalTypes" [value]="intervalType.value"
-                                [disabled]="([intervalTypes[1], intervalTypes[2]].indexOf(intervalType) >= 0) && header.length <= 3">
+                    <mat-option *ngFor="let intervalType of intervalTypes; let i = index" id="{{'interval_type' + i}}"  [value]="intervalType.value"
+                                [disabled]="2 + intervalType.columns > header.length">
                         {{intervalType.display}}
                     </mat-option>
                 </mat-select>

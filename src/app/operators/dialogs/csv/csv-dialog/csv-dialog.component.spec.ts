@@ -17,7 +17,8 @@ import {Operator} from "../../../operator.model";
 import {Observable} from "rxjs/index";
 import {of} from 'rxjs';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {ChangeDetectionStrategy} from "@angular/core";
+import {ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {interpolationV} from '@angular/core/src/render3';
 
 class MockUserService {
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
@@ -32,11 +33,13 @@ class MockProjectService {
 
 describe('CsvDialogComponent', () => {
     let component: CsvDialogComponent;
-    // let propertiesService: CsvPropertiesService;
     let fixture: ComponentFixture<CsvDialogComponent>;
+    let service: CsvPropertiesService;
+    let cd: ChangeDetectorRef;
+    let el: any;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
             declarations: [
                 CsvDialogComponent,
                 CsvPropertiesComponent,
@@ -59,60 +62,58 @@ describe('CsvDialogComponent', () => {
                 {provide: UserService, useClass: MockUserService},
                 {provide: MatDialogRef, useValue: {}}
             ]
-        })
-            .compileComponents();
-    }));
+        }).compileComponents();
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(CsvDialogComponent);
         component = fixture.componentInstance;
-        // propertiesService = TestBed.get(CsvPropertiesService);
         fixture.detectChanges();
+        el = fixture.nativeElement;
+        cd = fixture.componentRef.injector.get(ChangeDetectorRef);
+        service = fixture.componentRef.injector.get(CsvPropertiesService);
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should update table', (done) => {
-        const modifiedDate = new Date();
-        component.data = {
-            file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : modifiedDate.getDate(), type: 'csv'}),
-            content: '"a,b",c,d\n"1,2",3,4',
-            progress: 100,
-            isNull: false
-        };
-        component.uploading$.next(false);
-        fixture.detectChanges();
-
-        component.csvProperties.dataProperties.patchValue({isTextQualifier: true});
-        fixture.detectChanges();
-        component.csvTable._changeDetectorRef.detectChanges();
-        fixture.detectChanges();
-        setTimeout(() => {
-            fixture.detectChanges();
-            const table_rows = document.getElementsByTagName('tr');
-            expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(7);
-            done();
-        }, 200);
-    });
+    // it('should update table', (done) => {
+    //     const modifiedDate = new Date();
+    //     component.data = {
+    //         file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : modifiedDate.getDate(), type: 'csv'}),
+    //         content: '"a,b",c,d\n"1,2",3,4',
+    //         progress: 100,
+    //         isNull: false
+    //     };
+    //     component.uploading$.next(false);
+    //     fixture.detectChanges();
+    //
+    //     component.csvProperties.dataProperties.patchValue({isTextQualifier: true});
+    //     fixture.detectChanges();
+    //     component.csvTable._changeDetectorRef.detectChanges();
+    //     fixture.detectChanges();
+    //     setTimeout(() => {
+    //         fixture.detectChanges();
+    //         const table_rows = document.getElementsByTagName('tr');
+    //         expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(7);
+    //         done();
+    //     }, 200);
+    // });
 
     it('should disable/enable temporal properties', () => {
         const modifiedDate = new Date();
         component.data = {
             file: new File(['"a,b",c\n"1,2",3'], 'test-file.csv', {lastModified : modifiedDate.getDate(), type: 'csv'}),
-            content: 'a,b\n1,2',
+            content: '"a,b",c\n"1,2",3',
             progress: 100,
             isNull: false
         };
         component.uploading$.next(false);
-        fixture.detectChanges();
-        component.csvProperties.formStatus$.next(FormStatus.TemporalProperties);
-        fixture.detectChanges();
+        cd.detectChanges();
         expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeTruthy();
-        // component.csvProperties.dataProperties.get('isTextQualifier').setValue(false);
-        // fixture.detectChanges();
-        // expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
+        component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
+        cd.detectChanges();
+        expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
+        // TODO: Check if interval type options are getting disabled according to their columns attribute.
     });
 
     // it('should parse correctly', inject([CsvPropertiesService], (propertiesService: CsvPropertiesService) => {

@@ -34,7 +34,6 @@ export class CsvPropertiesService {
     });
     private header = new BehaviorSubject<{value: string}[]>([]);
     private formStatus = new BehaviorSubject<FormStatus>(null);
-    public update = new BehaviorSubject<boolean>(true);
 
     xyColumn$: BehaviorSubject<{x: number, y?: number}> = new BehaviorSubject<{x: number, y?: number}>({x: 0, y: 0});
 
@@ -43,11 +42,9 @@ export class CsvPropertiesService {
     temporalProperties$ = this.temporalProperties.asObservable();
     header$ = this.header.asObservable();
     formStatus$ = this.formStatus.asObservable();
-    update$ = this.update.asObservable();
 
-    public changeDataProperties(p: DataPropertiesDict): Observable<boolean> {
+    public changeDataProperties(p: DataPropertiesDict) {
         this.dataProperties.next(p);
-        return this.update$;
     }
 
     public changeSpatialProperties(s: SpatialPropertiesDict) {
