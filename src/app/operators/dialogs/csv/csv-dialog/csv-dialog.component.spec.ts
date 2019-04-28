@@ -113,7 +113,6 @@ describe('CsvDialogComponent', () => {
         component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
         cd.detectChanges();
         expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
-        // TODO: Check if interval type options are getting disabled according to their columns attribute.
     });
 
     // it('should parse correctly', inject([CsvPropertiesService], (propertiesService: CsvPropertiesService) => {

@@ -34,7 +34,7 @@ describe('CsvTableComponent', () => {
         fixture = TestBed.createComponent(TestHostComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        el = fixture.nativeElement;
+        el = fixture.debugElement.nativeElement;
         cd = fixture.componentRef.injector.get(ChangeDetectorRef);
         service = fixture.componentRef.injector.get(CsvPropertiesService);
     });
