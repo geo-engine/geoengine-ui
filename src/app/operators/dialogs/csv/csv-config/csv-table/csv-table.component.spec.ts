@@ -4,6 +4,8 @@ import {CsvPropertiesService} from "../../csv-dialog/csv.properties.service";
 import {CsvTableComponent} from "./csv-table.component";
 import {FormsModule} from "@angular/forms";
 import {MaterialModule} from "../../../../../material.module";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {By} from "@angular/platform-browser";
 
 describe('CsvTableComponent', () => {
     let component: TestHostComponent;
@@ -20,7 +22,8 @@ describe('CsvTableComponent', () => {
             ],
             imports: [
                 MaterialModule,
-                FormsModule
+                FormsModule,
+                BrowserAnimationsModule
             ],
             providers: [
                 CsvPropertiesService,
@@ -63,6 +66,38 @@ describe('CsvTableComponent', () => {
         expect(component.csvTable.header.length).toBe(3);
         table_rows = el.getElementsByTagName('tr');
         expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(5);
+    });
+
+    it('resizes', () => {
+        component.csvTable.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
+        service.changeDataProperties({
+            delimiter: ',',
+            decimalSeparator: '.',
+            isTextQualifier: false,
+            textQualifier: '"',
+            isHeaderRow: false,
+            headerRow: 0,
+        });
+        cd.detectChanges();
+        let tables = el.getElementsByTagName('table');
+        let header_table = null;
+        let body_table = null;
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i].id === 'headertable') {
+                header_table = tables[i];
+            } else if (tables[i].id === 'bodytable') {
+                body_table = tables[i];
+            }
+        }
+        expect(header_table).toBeTruthy();
+        expect(body_table).toBeTruthy();
+        let header_row = header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+        let body_row = body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+        expect(header_row.length).toBe(body_row.length);
+        for (let i = 0; i < header_row.length; i++) {
+            expect(header_row[i].getBoundingClientRect().width).toBe(component.csvTable.cellSizes[i]);
+            expect(header_row[i].getBoundingClientRect().width).toBe(body_row[i].getBoundingClientRect().width);
+        }
     });
 
     @Component({
