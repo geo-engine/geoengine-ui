@@ -1,6 +1,6 @@
 <div #tableframe class="table-frame" (window:resize)="_changeDetectorRef.detectChanges()">
     <div #typingdiv class="typingdiv" *ngIf="(isTypingProperties$ | async)">
-        <table #typingtable class="resizeTable" cellspacing="0" cellpadding="0">
+        <table #typingtable id="typingtable" class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;"
@@ -43,7 +43,7 @@
     </div>
     <br>
     <div #headerdiv class="headerdiv" (scroll)="headerScroll()">
-        <table #headertable class="resizeTable" cellspacing="0" cellpadding="0">
+        <table #headertable id="headertable" class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <!-- header goes here -->
                 <ng-template [ngIf]="(propertiesService.dataProperties$ | async).isHeaderRow">
@@ -77,7 +77,7 @@
     </div>
     <br>
     <div #bodydiv class="bodydiv" (scroll)="bodyScroll()">
-        <table #bodytable class="resizeTable" cellspacing="0" cellpadding="0">
+        <table #bodytable id="bodytable" class="resizeTable" cellspacing="0" cellpadding="0">
             <!-- body goes here -->
             <tr *ngFor="let el of elements; let i = index;" style="white-space: nowrap;">
                 <ng-template ngFor let-e [ngForOf]="el" let-k="index">

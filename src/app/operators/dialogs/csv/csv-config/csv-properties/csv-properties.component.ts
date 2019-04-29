@@ -130,7 +130,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     isLayerProperties$: Observable<boolean>;
 
     storageName$ = new ReplaySubject<string>(1);
-    private reservedNames$ = new BehaviorSubject<Array<string>>([]);
+    reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
     @ViewChild('stepper') public stepper: MatStepper;

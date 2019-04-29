@@ -1,13 +1,12 @@
-import {async, inject, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild} from "@angular/core";
-import {CsvPropertiesService} from "../../csv-dialog/csv.properties.service";
-import {CsvTableComponent} from "./csv-table.component";
-import {FormsModule} from "@angular/forms";
-import {MaterialModule} from "../../../../../material.module";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {By} from "@angular/platform-browser";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
+import {CsvTableComponent} from './csv-table.component';
+import {FormsModule} from '@angular/forms';
+import {MaterialModule} from '../../../../../material.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-describe('CsvTableComponent', () => {
+describe('Component: CsvTableComponent', () => {
     let component: TestHostComponent;
     let fixture: ComponentFixture<TestHostComponent>;
     let service: CsvPropertiesService;
@@ -68,7 +67,7 @@ describe('CsvTableComponent', () => {
         expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(5);
     });
 
-    it('resizes', () => {
+    it('resizes table columns and synchronizes header and body widths', async () => {
         component.csvTable.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
         service.changeDataProperties({
             delimiter: ',',
@@ -93,11 +92,19 @@ describe('CsvTableComponent', () => {
         expect(body_table).toBeTruthy();
         let header_row = header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
         let body_row = body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
-        expect(header_row.length).toBe(body_row.length);
-        for (let i = 0; i < header_row.length; i++) {
-            expect(header_row[i].getBoundingClientRect().width).toBe(component.csvTable.cellSizes[i]);
-            expect(header_row[i].getBoundingClientRect().width).toBe(body_row[i].getBoundingClientRect().width);
-        }
+        expect(header_row.length).toBe(2 * 4 - 1); // should display freshly parsed data(before we had 3 columns, now 4)
+        expect(header_row.length).toBe(body_row.length); // the custom header has the same number of columns as the body
+        fixture.whenStable().then(() => { // let the component call the resize method.
+            for (let i = 0; i < header_row.length; i++) {
+                expect(header_row[i].getBoundingClientRect().width).toBe(
+                    i % 2 === 0 ?
+                        component.csvTable.cellSizes[i / 2] :
+                        component.csvTable.cellSpacing
+                ); // Test whether or not the table resizes to the given values.
+                expect(header_row[i].getBoundingClientRect().width).toBe(body_row[i].getBoundingClientRect().width);
+                // Test if body and header have synchronized cell widths.
+            }
+        });
     });
 
     @Component({

@@ -159,13 +159,14 @@
                                      style="text-align: left"></wave-dialog-section-heading>
         <form fxLayout="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
-            <mat-slide-toggle formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
+            <mat-slide-toggle id="timeToggle" formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
             <mat-form-field>
-                <mat-select fxFlex
+                <mat-select id="intervalTypeSelect"
+                            fxFlex
                             placeholder="Interval type"
                             formControlName="intervalType"
                 >
-                    <mat-option *ngFor="let intervalType of intervalTypes; let i = index" id="{{'interval_type' + i}}" [value]="intervalType.value"
+                    <mat-option *ngFor="let intervalType of intervalTypes; let i = index" id="{{'intervalType' + i}}" [value]="intervalType.value"
                                 [disabled]="2 + intervalType.columns > header.length">
                         {{intervalType.display}}
                     </mat-option>
@@ -286,7 +287,7 @@
         <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
             <mat-form-field style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
-                       type="input" #layerNameComponent>
+                       type="input" #layerNameComponent id="layerNameComponent">
                 <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>
