@@ -2,26 +2,29 @@ import {ComponentFixture, inject} from '@angular/core/testing';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {By} from '@angular/platform-browser';
 import {ChangeDetectorRef} from '@angular/core';
+import {MatSelect} from '@angular/material';
 
 export class SelectSpecHelper {
 
     private oc: OverlayContainer;
     private oce: HTMLElement;
-    private trigger: HTMLElement;
+    private select: MatSelect;
 
     public constructor(private _fixture: ComponentFixture<any>, private _cdr: ChangeDetectorRef, private _id: string) {
         inject([OverlayContainer], (oc: OverlayContainer) => {
             this.oc = oc;
             this.oce = oc.getContainerElement();
         })();
-        this.trigger = _fixture.debugElement.query(By.css('#' + _id)).query(By.css('.mat-select-trigger')).nativeElement;
-        console.log(_fixture.debugElement.query(By.css('#' + _id)).nativeElement);
+        this.select = _fixture.debugElement.query(By.css('#' + _id)).componentInstance as MatSelect;
+        console.log(this.select.panelOpen);
     }
 
     public open() {
         this._cdr.detectChanges();
-        this.trigger.click();
+        this.select.open();
+        this.select.ngDoCheck();
         this._cdr.detectChanges();
+        console.log(this.select.panelOpen);
     }
 
     public getOptions(): HTMLElement[] {

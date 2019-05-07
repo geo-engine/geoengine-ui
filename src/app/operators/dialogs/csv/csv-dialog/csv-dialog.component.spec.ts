@@ -7,7 +7,7 @@ import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {CsvUploadComponent} from '../csv-upload/csv-upload.component';
 import {MaterialModule} from '../../../../material.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogModule, MatDialogRef, MatSelect, MatSlideToggle} from '@angular/material';
+import {MatDialogModule, MatDialogRef, MatSelect, MatSelectModule, MatSlideToggle} from '@angular/material';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {DialogHeaderComponent} from '../../../../dialogs/dialog-header/dialog-header.component';
 import {UserService} from '../../../../users/user.service';
@@ -19,7 +19,7 @@ import {of} from 'rxjs';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ChangeDetectorRef, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {Overlay, OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
+import {OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
 import {SelectSpecHelper} from '../../../../spec/select-spec.helper';
 
 class MockUserService {
@@ -44,7 +44,7 @@ describe('CsvDialogComponent', () => {
     let de: DebugElement;
     let oc: OverlayContainer; // Contains the overlay components, e.g. the mat-options for an unfolded mat-select.
     // (compare: "should disable/enable temporal properties")
-    let oce: HTMLElement; // OverlayContainerElement.
+    let oce: HTMLElement;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -62,6 +62,7 @@ describe('CsvDialogComponent', () => {
                 MatDialogModule,
                 ReactiveFormsModule,
                 BrowserAnimationsModule,
+                MatSelectModule,
                 OverlayModule
             ],
             providers: [
@@ -70,9 +71,7 @@ describe('CsvDialogComponent', () => {
                 {provide: ProjectService, useClass: MockProjectService},
                 {provide: UserService, useClass: MockUserService},
                 {provide: MatDialogRef, useValue: {}},
-                Overlay
-                // { provide: OverlayContainer, useFactory: () => {
-                //     oce = document.createElement('div');
+                // {provide: OverlayContainer, useFactory: () => {
                 //     return { getContainerElement: () => oce };
                 // }}
             ]
@@ -104,36 +103,37 @@ describe('CsvDialogComponent', () => {
 
     describe('Temporal Properties', () => {
         describe('Select', () => {
-            // let helper: SelectSpecHelper;
             let intervalSelect: MatSelect;
             let options: HTMLElement[];
+            let helper: SelectSpecHelper;
 
-            beforeEach(() => {
-                // helper = new SelectSpecHelper(fixture, cd, 'intervalTypeSelect');
-                // helper.open();
-                // options = helper.getOptions();
+            beforeEach(async () => {
                 component.csvProperties.formStatus$.next(FormStatus.TemporalProperties);
                 cd.detectChanges();
+                helper = new SelectSpecHelper(fixture, cd, 'intervalTypeSelect');
+                helper.open();
+                options = helper.getOptions();
             });
 
-            beforeEach(inject([OverlayContainer], (ov: OverlayContainer) => {
-                oc = ov;
-                oce = ov.getContainerElement();
-            }));
+            // beforeEach(inject([OverlayContainer], (ov: OverlayContainer) => {
+            //     oc = ov;
+            //     oce = ov.getContainerElement();
+            // }));
 
-            it('disables interval options not applicable', fakeAsync(() => {
-                intervalSelect = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
-                intervalSelect.open();
-                cd.detectChanges();
-                flush();
-                cd.detectChanges();
-                options = Array.from(oce.querySelectorAll('mat-option'));
-                console.log(oce, options, intervalSelect);
+            it('disables interval options not applicable', () => {
                 expect(options.length).toBe(component.csvProperties.intervalTypes.length);
-            }));
+                // intervalSelect = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
+                // intervalSelect.open();
+                // cd.detectChanges();
+                // flush();
+                // cd.detectChanges();
+                // options = Array.from(oce.querySelectorAll('mat-option'));
+                // console.log(oc.getContainerElement(), options, intervalSelect);
+                // expect(options.length).toBe(component.csvProperties.intervalTypes.length);
+            });
 
             afterEach(() => {
-                // helper.destroy();
+                helper.destroy();
             });
         });
 
@@ -162,7 +162,7 @@ describe('CsvDialogComponent', () => {
     });
 
     describe('Layer Properties', () => {
-        it('should detect taken name', (done) => {
+        it('should detect taken name', () => {
             component.csvProperties.formStatus$.next(FormStatus.LayerProperties);
             cd.detectChanges();
             component.csvProperties.layerProperties.patchValue({layerName: 'name is taken'});
