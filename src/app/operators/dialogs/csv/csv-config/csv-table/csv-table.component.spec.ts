@@ -67,7 +67,7 @@ describe('Component: CsvTableComponent', () => {
         expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(5);
     });
 
-    it('resizes table columns and synchronizes header and body widths', async () => {
+    it('resizes table columns and synchronizes header and body widths when using custom headers', async () => {
         component.csvTable.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
         service.changeDataProperties({
             delimiter: ',',

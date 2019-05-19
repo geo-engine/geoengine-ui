@@ -16,7 +16,6 @@ export class SelectSpecHelper {
             this.oce = oc.getContainerElement();
         })();
         this.select = _fixture.debugElement.query(By.css('#' + _id)).componentInstance as MatSelect;
-        console.log(this.select.panelOpen);
     }
 
     public open() {

@@ -167,7 +167,7 @@
                             formControlName="intervalType"
                 >
                     <mat-option *ngFor="let intervalType of intervalTypes; let i = index" id="{{'intervalType' + i}}" [value]="intervalType.value"
-                                [disabled]="2 + intervalType.columns > header.length">
+                                [disabled]="((propertiesService.spatialProperties$ | async).isWkt ? 1 : 2) + intervalType.columns > header.length">
                         {{intervalType.display}}
                     </mat-option>
                 </mat-select>

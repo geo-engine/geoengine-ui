@@ -35,7 +35,7 @@
         <button id="submit_btn"
                 mat-raised-button color="primary" (click)="submit()"
                 *ngIf="csvProperties.isLayerProperties$ | async"
-                [disabled]="!(csvProperties.actualPage$ | async).valid"
+                [disabled]="!csvProperties.valid"
         >
             Submit
         </button>

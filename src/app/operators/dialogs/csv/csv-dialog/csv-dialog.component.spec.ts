@@ -33,7 +33,7 @@ class MockProjectService {
 
 }
 
-describe('CsvDialogComponent', () => {
+describe('Component: CsvDialogComponent', () => {
     let component: CsvDialogComponent;
     let fixture: ComponentFixture<CsvDialogComponent>;
     let service: CsvPropertiesService;
@@ -101,6 +101,45 @@ describe('CsvDialogComponent', () => {
         tableComponent = component.csvTable;
     });
 
+    describe('Data Properties', () => {
+        it('resets column selection', () => {
+            component.csvProperties.dataProperties.patchValue({isTextQualifier: false, xColumn: 2});
+            cd.detectChanges();
+            expect(component.csvTable.header.length).toBe(3);
+            component.csvProperties.dataProperties.patchValue({isTextQualifier: true});
+            cd.detectChanges();
+            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(0);
+            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(1);
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2);
+            expect(component.csvProperties.temporalProperties.controls['endColumn'].value).toBe(3);
+        });
+    });
+
+    describe('Spatial Properties', () => {
+        it('the overwritten spatial column shows subordinate behavior (modulo csv table width)', () => {
+            // Set x Column to be y Column.
+            component.csvProperties.spatialProperties.patchValue({xColumn: 1}); // swap x and y columns (move modulo 2)
+            cd.detectChanges();
+            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(0); // x and y columns were swapped
+            // Make CSV 3 Columns wide
+            component.csvProperties.dataProperties.patchValue({isTextQualifier: false}); // now make csv 3 columns wide
+            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+            component.csvProperties.temporalProperties.patchValue({isTime: true}); // enable time
+            cd.detectChanges();
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2); // time gets initialized into
+            // free space
+            component.csvProperties.spatialProperties.patchValue({yColumn: 1}); // now move y up
+            cd.detectChanges();
+            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(2); // x gets moved up too
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0); // start column is now moved
+            // to 0, since there is free space.
+            component.csvProperties.spatialProperties.patchValue({yColumn: 2}); // set the y column to the last
+            cd.detectChanges();
+            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(1); // x column is moved modulo 3.
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0); // time hasn't changed
+        });
+    });
+
     describe('Temporal Properties', () => {
         describe('Select', () => {
             let intervalSelect: MatSelect;
@@ -121,7 +160,11 @@ describe('CsvDialogComponent', () => {
             // }));
 
             it('disables interval options not applicable', () => {
-                expect(options.length).toBe(component.csvProperties.intervalTypes.length);
+                // this.select = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
+                // this.select.open();
+                // cd.detectChanges();
+                // expect(fixture.debugElement.queryAll(By.css('.mat-option')).length).toBe(component.csvProperties.intervalTypes.length);
+
                 // intervalSelect = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
                 // intervalSelect.open();
                 // cd.detectChanges();
@@ -137,27 +180,38 @@ describe('CsvDialogComponent', () => {
             });
         });
 
-        it('should disable/enable temporal properties', () => {
-            expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeTruthy();
-            component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
-            cd.detectChanges();
-            expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
+        describe('should disable/enable temporal properties', () => {
+            it('disables or enables on (x,y)-Coordinate selection with 2 or 3 column table respectively', () => {
+                expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeTruthy();
+                component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
+                cd.detectChanges();
+                expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
 
-            // TODO: Find out how to get DOM Elements that are in the overlay. (First step: Inject OverlayContainer).
+                // TODO: Find out how to get DOM Elements that are in the overlay. (First step: Inject OverlayContainer).
 
-            // propertiesComponent.formStatus$.next(FormStatus.TemporalProperties);
-            // cd.detectChanges();
-            // let intervalTypeSelect = de.query(By.css('#intervalTypeSelect'));
-            // intervalTypeSelect.query(By.css('.mat-select-trigger')).nativeElement.click();
-            // cd.detectChanges();
-            // const options = oce.querySelectorAll('mat-option');
-            // expect(options.length).toBeGreaterThanOrEqual(propertiesComponent.intervalTypes.length);
-            // for (let i = 0; i < options.length; i++) {
-            //     if (options[i].id.startsWith('intervalType')) {
-            //         let j = parseInt(options[i].id.replace(/[^0-9]/g, ''), 10);
-            //         expect((<HTMLInputElement>options[i]).disabled).toBe(3 > propertiesComponent.intervalTypes[j].columns + 2);
-            //     }
-            // }
+                // propertiesComponent.formStatus$.next(FormStatus.TemporalProperties);
+                // cd.detectChanges();
+                // let intervalTypeSelect = de.query(By.css('#intervalTypeSelect'));
+                // intervalTypeSelect.query(By.css('.mat-select-trigger')).nativeElement.click();
+                // cd.detectChanges();
+                // const options = oce.querySelectorAll('mat-option');
+                // expect(options.length).toBeGreaterThanOrEqual(propertiesComponent.intervalTypes.length);
+                // for (let i = 0; i < options.length; i++) {
+                //     if (options[i].id.startsWith('intervalType')) {
+                //         let j = parseInt(options[i].id.replace(/[^0-9]/g, ''), 10);
+                //         expect((<HTMLInputElement>options[i]).disabled).toBe(3 > propertiesComponent.intervalTypes[j].columns + 2);
+                //     }
+                // }
+            });
+
+            it('enables when using WKT on 2 column table', () => {
+                expect(component.csvProperties.temporalProperties.controls['isTime'].value).toBeFalsy();
+                expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
+                component.csvProperties.spatialProperties.patchValue({isWkt: true});
+                cd.detectChanges();
+                expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+                // TODO: DOM HERE TOO
+            });
         });
     });
 
