@@ -251,6 +251,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.temporalUpdate();
                 } else {
                     this.temporalUpdate();
+                    let x = this.spatialProperties.controls['xColumn'].value;
                     if (this.spatialProperties.controls['yColumn'].value < 0 ||
                         this.spatialProperties.controls['yColumn'].value >= this.header.length) {
                         for (let i = 0; i < this.header.length; i++) {
@@ -261,6 +262,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                         }
                     }
                     this.spatialProperties.controls['yColumn'].enable();
+                    this.spatialProperties.controls['xColumn'].setValue(x);
                     this.spatialProperties.controls['wktResultType'].disable();
                     this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
                         y: this.spatialProperties.controls['yColumn'].value});

@@ -101,7 +101,16 @@ describe('Component: CsvDialogComponent', () => {
         tableComponent = component.csvTable;
     });
 
+    /** Section for data properties card.
+     * */
     describe('Data Properties', () => {
+        /** If the user corrects data properties settings as text qualifiers, resulting in the csv resizing such that either
+         * spatial or temporal properties are no longer in bounds we want to reset them to default values, i.e.
+         * x = 0
+         * y = 1
+         * start = 2
+         * end = 3.
+         * */
         it('resets column selection', () => {
             component.csvProperties.dataProperties.patchValue({isTextQualifier: false, xColumn: 2});
             cd.detectChanges();
@@ -115,8 +124,14 @@ describe('Component: CsvDialogComponent', () => {
         });
     });
 
+    /** Section for testing spatial Properties card.
+     * */
     describe('Spatial Properties', () => {
-        it('the overwritten spatial column shows subordinate behavior (modulo csv table width)', () => {
+        /** When using (x,y)-Coordinate selection and setting the x column to be the same as the y column, we want
+         * to respect the user choice and set it there. Since the x column can't have the same value as the y column we need
+         * to move y. This moving is w.r.t. the csv table width, i.e. incrementing by 1 if possible, otherwise decrease by 1.
+         * */
+        it('the overwritten spatial column shows subordinate behavior (with respect to csv table width)', () => {
             // Set x Column to be y Column.
             component.csvProperties.spatialProperties.patchValue({xColumn: 1}); // swap x and y columns (move modulo 2)
             cd.detectChanges();
@@ -138,9 +153,33 @@ describe('Component: CsvDialogComponent', () => {
             expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(1); // x column is moved modulo 3.
             expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0); // time hasn't changed
         });
+
+        /** When setting wkt to true the y-column selection vanishes. We want to the selection to be
+         * subordinate to the chosen value of x while wkt is used. When turning wkt off again, x should stay as is and y should
+         * move to a valid value.
+         * */
+        it('reserves x Column when moving to wkt', () => {
+            component.csvProperties.dataProperties.patchValue({textQualifier: false}); // 3 column table
+            component.csvProperties.temporalProperties.patchValue({isTime: true});
+            component.csvProperties.spatialProperties.patchValue({yColumn: 2});
+            cd.detectChanges();
+            component.csvProperties.spatialProperties.patchValue({isWkt: true});
+            cd.detectChanges();
+            component.csvProperties.spatialProperties.patchValue({xColumn: 2});
+            cd.detectChanges();
+            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(2);
+            component.csvProperties.spatialProperties.patchValue({isWkt: false});
+            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(2);
+            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(1);
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0);
+        });
     });
 
+    /** Section for temporal Properties card.
+     * */
     describe('Temporal Properties', () => {
+        /** Interval type select; this is not working right now since there is no (functioning) workaround for mat-select testing.
+         * */
         describe('Select', () => {
             let intervalSelect: MatSelect;
             let options: HTMLElement[];
@@ -179,43 +218,55 @@ describe('Component: CsvDialogComponent', () => {
                 helper.destroy();
             });
         });
+    });
 
-        describe('should disable/enable temporal properties', () => {
-            it('disables or enables on (x,y)-Coordinate selection with 2 or 3 column table respectively', () => {
-                expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeTruthy();
-                component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
-                cd.detectChanges();
-                expect(component.csvProperties.temporalProperties.get('isTime').disabled).toBeFalsy();
+    /** Subsection for testing the inter-card behavior of spatial and temporal properties.
+     * */
+    describe('Correlations of Spatial and Temporal Properties', () => {
+        /** When using (x,y)-Coordinate selection there are atleast 2 columns used. Therefore we need to check if the table
+         * does even offer more than 2 columns to enable the one-column time selection (i.e. [Start, inf) and [Start, Start + const)
+         * interval types). If it doesn't we expect temporal properties to be disabled completely.
+         * */
+        it('disables or enables temporal on (x,y)-Coordinate selection with 2 or 3 column table respectively', () => {
+            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
+            component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
+            cd.detectChanges();
+            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+        });
 
-                // TODO: Find out how to get DOM Elements that are in the overlay. (First step: Inject OverlayContainer).
+        /** Analogous test for WKT-selection. Only one column is used for spatial dimensions, therefore we can now have one column time
+         * selection with 2 column csvs already.
+         * */
+        it('enables temporal when using WKT on 2 column table', () => {
+            expect(component.csvProperties.temporalProperties.controls['isTime'].value).toBeFalsy();
+            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
+            component.csvProperties.spatialProperties.patchValue({isWkt: true});
+            cd.detectChanges();
+            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+            // TODO: DOM HERE TOO
+        });
 
-                // propertiesComponent.formStatus$.next(FormStatus.TemporalProperties);
-                // cd.detectChanges();
-                // let intervalTypeSelect = de.query(By.css('#intervalTypeSelect'));
-                // intervalTypeSelect.query(By.css('.mat-select-trigger')).nativeElement.click();
-                // cd.detectChanges();
-                // const options = oce.querySelectorAll('mat-option');
-                // expect(options.length).toBeGreaterThanOrEqual(propertiesComponent.intervalTypes.length);
-                // for (let i = 0; i < options.length; i++) {
-                //     if (options[i].id.startsWith('intervalType')) {
-                //         let j = parseInt(options[i].id.replace(/[^0-9]/g, ''), 10);
-                //         expect((<HTMLInputElement>options[i]).disabled).toBe(3 > propertiesComponent.intervalTypes[j].columns + 2);
-                //     }
-                // }
-            });
-
-            it('enables when using WKT on 2 column table', () => {
-                expect(component.csvProperties.temporalProperties.controls['isTime'].value).toBeFalsy();
-                expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
-                component.csvProperties.spatialProperties.patchValue({isWkt: true});
-                cd.detectChanges();
-                expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
-                // TODO: DOM HERE TOO
-            });
+        /** As stated documentation of test routine "Data Properties" -> "resets column selection" the default values for column selections
+         * might not be valid for small CSVs, i.e. temporal columns might be out of bounds (that is not really a problem for validity since
+         * we disable temporal properties then). They are just not proposed then. But when changing to wkt the y column vanishes making room
+         * for a start column proposition.
+         * */
+        it('proposes start column when changing selection to wkt', () => {
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2);
+            component.csvProperties.spatialProperties.patchValue({isWkt: true});
+            cd.detectChanges();
+            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(1); // start column takes former
+            // place of y column.
         });
     });
 
+    /** Section for layer properties card.
+     * */
     describe('Layer Properties', () => {
+        /** Mocked the UserService: the function getFeatureDBList now returns a 1-element array containing a dummy operator named
+         * "name is taken". Therefore we would expect this name to be taken leaving the layer properties with invalid status, setting
+         * layername to be "name is taken".
+         * */
         it('should detect taken name', () => {
             component.csvProperties.formStatus$.next(FormStatus.LayerProperties);
             cd.detectChanges();
@@ -229,6 +280,9 @@ describe('Component: CsvDialogComponent', () => {
         });
     });
 
+    /**If this test fails every other test fails by the very nature of themselves.
+     * Therefore it is not a problem with the component itself, if this doesn't pass.
+     * */
     it('should create', () => {
         expect(component).toBeTruthy();
     });
