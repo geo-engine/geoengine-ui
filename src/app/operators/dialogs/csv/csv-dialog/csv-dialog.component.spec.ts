@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, inject, TestBed, flush} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, inject, TestBed, flush, async} from '@angular/core/testing';
 
 import { CsvDialogComponent } from './csv-dialog.component';
 import {CsvPropertiesService} from './csv.properties.service';
@@ -7,7 +7,7 @@ import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {CsvUploadComponent} from '../csv-upload/csv-upload.component';
 import {MaterialModule} from '../../../../material.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogModule, MatDialogRef, MatSelect, MatSelectModule, MatSlideToggle} from '@angular/material';
+import {MatDialogModule, MatDialogRef, MatOption, MatSelect, MatSelectModule, MatSlideToggle} from '@angular/material';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {DialogHeaderComponent} from '../../../../dialogs/dialog-header/dialog-header.component';
 import {UserService} from '../../../../users/user.service';
@@ -42,9 +42,6 @@ describe('Component: CsvDialogComponent', () => {
     let tableComponent: CsvTableComponent;
     let el: any;
     let de: DebugElement;
-    let oc: OverlayContainer; // Contains the overlay components, e.g. the mat-options for an unfolded mat-select.
-    // (compare: "should disable/enable temporal properties")
-    let oce: HTMLElement;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -59,11 +56,8 @@ describe('Component: CsvDialogComponent', () => {
             imports: [
                 MaterialModule,
                 FormsModule,
-                MatDialogModule,
                 ReactiveFormsModule,
-                BrowserAnimationsModule,
-                MatSelectModule,
-                OverlayModule
+                BrowserAnimationsModule
             ],
             providers: [
                 CsvPropertiesService,
@@ -76,7 +70,9 @@ describe('Component: CsvDialogComponent', () => {
                 // }}
             ]
         }).compileComponents();
+    });
 
+    beforeEach(async(() => {
         fixture = TestBed.createComponent(CsvDialogComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -99,7 +95,7 @@ describe('Component: CsvDialogComponent', () => {
 
         propertiesComponent = component.csvProperties;
         tableComponent = component.csvTable;
-    });
+    }));
 
     /** Section for data properties card.
      * */
@@ -180,42 +176,34 @@ describe('Component: CsvDialogComponent', () => {
     describe('Temporal Properties', () => {
         /** Interval type select; this is not working right now since there is no (functioning) workaround for mat-select testing.
          * */
-        describe('Select', () => {
-            let intervalSelect: MatSelect;
-            let options: HTMLElement[];
-            let helper: SelectSpecHelper;
+        describe('MatSelect: Interval Type Select', () => {
+            let selectHelper: SelectSpecHelper;
 
-            beforeEach(async () => {
+            beforeEach(() => {
+                // Make sure select is shown in DOM and is enabled.
+                component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
+                cd.detectChanges();
+                component.csvProperties.temporalProperties.patchValue({isTime: true});
                 component.csvProperties.formStatus$.next(FormStatus.TemporalProperties);
                 cd.detectChanges();
-                helper = new SelectSpecHelper(fixture, cd, 'intervalTypeSelect');
-                helper.open();
-                options = helper.getOptions();
+                // Create select helper.
+                selectHelper = new SelectSpecHelper(de, cd, 'intervalTypeSelect');
             });
 
-            // beforeEach(inject([OverlayContainer], (ov: OverlayContainer) => {
-            //     oc = ov;
-            //     oce = ov.getContainerElement();
-            // }));
-
-            it('disables interval options not applicable', () => {
-                // this.select = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
-                // this.select.open();
-                // cd.detectChanges();
-                // expect(fixture.debugElement.queryAll(By.css('.mat-option')).length).toBe(component.csvProperties.intervalTypes.length);
-
-                // intervalSelect = fixture.debugElement.query(By.css('#intervalTypeSelect')).componentInstance as MatSelect;
-                // intervalSelect.open();
-                // cd.detectChanges();
-                // flush();
-                // cd.detectChanges();
-                // options = Array.from(oce.querySelectorAll('mat-option'));
-                // console.log(oc.getContainerElement(), options, intervalSelect);
-                // expect(options.length).toBe(component.csvProperties.intervalTypes.length);
+            it('disables interval type options that are non-applicable', () => {
+                selectHelper.open();
+                const options = selectHelper.getOptions();
+                // There is a mat-option for each interval type and vice versa.
+                expect(options.length).toBe(component.csvProperties.intervalTypes.length);
+                // The non-fitting options are disabled
+                for (let i = 0; i < component.csvProperties.intervalTypes.length; i++) {
+                    let it = component.csvProperties.intervalTypes[i];
+                    // TODO: expect non fitting types to be disabled
+                }
             });
 
             afterEach(() => {
-                helper.destroy();
+                selectHelper.destroy();
             });
         });
     });
