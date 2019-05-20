@@ -190,7 +190,7 @@ describe('Component: CsvDialogComponent', () => {
                 selectHelper = new SelectSpecHelper(de, cd, 'intervalTypeSelect');
             });
 
-            it('disables interval type options that are non-applicable', () => {
+            it('disables/enables interval type options that are non-applicable', () => {
                 selectHelper.open();
                 const options = selectHelper.getOptions();
                 // There is a mat-option for each interval type and vice versa.
@@ -198,7 +198,9 @@ describe('Component: CsvDialogComponent', () => {
                 // The non-fitting options are disabled
                 for (let i = 0; i < component.csvProperties.intervalTypes.length; i++) {
                     let it = component.csvProperties.intervalTypes[i];
-                    // TODO: expect non fitting types to be disabled
+                    expect(options[i].getAttribute('aria-disabled') === "true").toBe(
+                        component.csvProperties.header.length - (component.csvProperties.spatialProperties.controls['isWkt'].value ? 1 : 2) < it.columns
+                    );
                 }
             });
 
