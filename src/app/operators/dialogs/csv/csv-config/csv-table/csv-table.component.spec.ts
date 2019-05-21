@@ -5,16 +5,17 @@ import {CsvTableComponent} from './csv-table.component';
 import {FormsModule} from '@angular/forms';
 import {MaterialModule} from '../../../../../material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ComponentFixtureSpecHelper} from '../../../../../spec/component-fixture-spec.helper';
+import {IntervalFormat} from '../../interval.enum';
+import {FormStatus} from '../csv-properties/csv-properties.component';
 
 describe('Component: CsvTableComponent', () => {
-    let component: TestHostComponent;
-    let fixture: ComponentFixture<TestHostComponent>;
     let service: CsvPropertiesService;
-    let cd: ChangeDetectorRef;
-    let el: any;
+    let fixture: ComponentFixtureSpecHelper<TestHostComponent>;
+    let component: CsvTableComponent;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
+    beforeEach(() => {
+        fixture = new ComponentFixtureSpecHelper({
             declarations: [
                 CsvTableComponent,
                 TestHostComponent
@@ -28,14 +29,10 @@ describe('Component: CsvTableComponent', () => {
                 CsvPropertiesService,
                 ChangeDetectorRef
             ]
-        }).compileComponents();
+        }, TestHostComponent);
 
-        fixture = TestBed.createComponent(TestHostComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-        el = fixture.debugElement.nativeElement;
-        cd = fixture.componentRef.injector.get(ChangeDetectorRef);
-        service = fixture.componentRef.injector.get(CsvPropertiesService);
+        component = fixture.getComponentInstance().csvTable;
+        service = fixture.getInjected(CsvPropertiesService);
     });
 
     it('should parse and update correctly', () => {
@@ -47,12 +44,9 @@ describe('Component: CsvTableComponent', () => {
             isHeaderRow: true,
             headerRow: 0,
         });
-        cd.detectChanges();
-        // fixture.componentInstance.csvTable._changeDetectorRef.markForCheck();
-        // fixture.detectChanges();
-        expect(component.csvTable.header.length).toBe(4);
-        let table_rows = el.getElementsByTagName('tr');
-        expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(7);
+        fixture.detectChanges();
+        expect(getHeader().length).toBe(4);
+        expect(numberOfTableColumns()).toBe(4);
         service.changeDataProperties({
             delimiter: ',',
             decimalSeparator: '.',
@@ -61,14 +55,14 @@ describe('Component: CsvTableComponent', () => {
             isHeaderRow: true,
             headerRow: 0,
         });
-        cd.detectChanges();
-        expect(component.csvTable.header.length).toBe(3);
-        table_rows = el.getElementsByTagName('tr');
-        expect(table_rows[table_rows.length - 1].getElementsByTagName('td').length).toBe(5);
+        fixture.detectChanges();
+        expect(getHeader().length).toBe(3);
+        expect(numberOfTableColumns()).toBe(3);
     });
 
     it('resizes table columns and synchronizes header and body widths when using custom headers', async () => {
-        component.csvTable.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
+        component.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
+        const TABLE_WIDTH = 4;
         service.changeDataProperties({
             delimiter: ',',
             decimalSeparator: '.',
@@ -77,31 +71,19 @@ describe('Component: CsvTableComponent', () => {
             isHeaderRow: false,
             headerRow: 0,
         });
-        cd.detectChanges();
-        let tables = el.getElementsByTagName('table');
-        let header_table = null;
-        let body_table = null;
-        for (let i = 0; i < tables.length; i++) {
-            if (tables[i].id === 'headertable') {
-                header_table = tables[i];
-            } else if (tables[i].id === 'bodytable') {
-                body_table = tables[i];
-            }
-        }
-        expect(header_table).toBeTruthy();
-        expect(body_table).toBeTruthy();
-        let header_row = header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
-        let body_row = body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
-        expect(header_row.length).toBe(2 * 4 - 1); // should display freshly parsed data(before we had 3 columns, now 4)
-        expect(header_row.length).toBe(body_row.length); // the custom header has the same number of columns as the body
-        fixture.whenStable().then(() => { // let the component call the resize method.
+        fixture.detectChanges();
+        let header_row = headerRow();
+        let body_row = bodyRow();
+        expect(tableWidthWithoutSpacers(header_row)).toBe(TABLE_WIDTH);
+        expect(tableWidthWithoutSpacers(body_row)).toBe(TABLE_WIDTH);
+        fixture.whenStable().then(() => {
             for (let i = 0; i < header_row.length; i++) {
-                expect(header_row[i].getBoundingClientRect().width).toBe(
+                expect(clientWidth(header_row[i])).toBe(
                     i % 2 === 0 ?
-                        component.csvTable.cellSizes[i / 2] :
-                        component.csvTable.cellSpacing
+                        component.cellSizes[i / 2] :
+                        component.cellSpacing
                 ); // Test whether or not the table resizes to the given values.
-                expect(header_row[i].getBoundingClientRect().width).toBe(body_row[i].getBoundingClientRect().width);
+                expect(clientWidth(header_row[i])).toBe(clientWidth(body_row[i]));
                 // Test if body and header have synchronized cell widths.
             }
         });
@@ -126,5 +108,62 @@ describe('Component: CsvTableComponent', () => {
             progress: 100,
             isNull: false
         };
+    }
+
+    /**=====================================================================================================================================
+     * Method section for improving readability.
+     * =====================================================================================================================================
+     **/
+
+    /**Setters
+     */
+
+
+    /**Getters
+     */
+
+    let getHeader = function(): {value: string}[] {
+        return component.header;
+    };
+
+    /**Logic
+     */
+
+    let numberOfTableColumns = function(): number {
+        const table_rows = fixture.getElementsByTagName('tr');
+        if (table_rows.length === 0) {
+            return 0;
+        }
+        return tableWidthWithoutSpacers(table_rows[table_rows.length - 1].getElementsByTagName('td'));
+    };
+
+    let headerRow = function(): HTMLCollectionOf<HTMLTableCellElement> {
+        let tables = fixture.getElementsByTagName('table');
+        let header_table = null;
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i].id === 'headertable') {
+                header_table = tables[i];
+            }
+        }
+        return header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+    };
+
+    let bodyRow = function(): HTMLCollectionOf<HTMLTableCellElement> {
+        let tables = fixture.getElementsByTagName('table');
+        let body_table = null;
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i].id === 'bodytable') {
+                body_table = tables[i];
+            }
+        }
+        return body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+    };
+
+    let clientWidth = function(element: HTMLElement): number {
+        return element.getBoundingClientRect().width;
+    };
+
+    let tableWidthWithoutSpacers = function(row: HTMLCollectionOf<HTMLTableCellElement>): number {
+        return (row.length + 1) / 2
     }
 });

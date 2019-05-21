@@ -1,5 +1,3 @@
-import {ComponentFixture, fakeAsync, inject, TestBed, flush, async} from '@angular/core/testing';
-
 import { CsvDialogComponent } from './csv-dialog.component';
 import {CsvPropertiesService} from './csv.properties.service';
 import {CsvPropertiesComponent, FormStatus} from '../csv-config/csv-properties/csv-properties.component';
@@ -7,7 +5,7 @@ import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {CsvUploadComponent} from '../csv-upload/csv-upload.component';
 import {MaterialModule} from '../../../../material.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogModule, MatDialogRef, MatOption, MatSelect, MatSelectModule, MatSlideToggle} from '@angular/material';
+import {MatDialogRef} from '@angular/material';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {DialogHeaderComponent} from '../../../../dialogs/dialog-header/dialog-header.component';
 import {UserService} from '../../../../users/user.service';
@@ -17,10 +15,10 @@ import {Operator} from '../../../operator.model';
 import {Observable} from 'rxjs/index';
 import {of} from 'rxjs';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ChangeDetectorRef, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {OverlayContainer, OverlayModule} from '@angular/cdk/overlay';
 import {SelectSpecHelper} from '../../../../spec/select-spec.helper';
+import {ComponentFixtureSpecHelper} from '../../../../spec/component-fixture-spec.helper';
+import {IntervalFormat} from '../interval.enum';
 
 class MockUserService {
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
@@ -34,17 +32,16 @@ class MockProjectService {
 }
 
 describe('Component: CsvDialogComponent', () => {
-    let component: CsvDialogComponent;
-    let fixture: ComponentFixture<CsvDialogComponent>;
     let service: CsvPropertiesService;
-    let cd: ChangeDetectorRef;
     let propertiesComponent: CsvPropertiesComponent;
     let tableComponent: CsvTableComponent;
-    let el: any;
-    let de: DebugElement;
+    let fixture: ComponentFixtureSpecHelper<CsvDialogComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
+    /**
+     * Technical preparation.
+     */
+    beforeEach(() => {
+        fixture = new ComponentFixtureSpecHelper<CsvDialogComponent>({
             declarations: [
                 CsvDialogComponent,
                 CsvPropertiesComponent,
@@ -69,37 +66,38 @@ describe('Component: CsvDialogComponent', () => {
                 //     return { getContainerElement: () => oce };
                 // }}
             ]
-        }).compileComponents();
+        }, CsvDialogComponent);
+        service = fixture.getInjected(CsvPropertiesService);
     });
 
-    beforeEach(async(() => {
-        fixture = TestBed.createComponent(CsvDialogComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-        de = fixture.debugElement;
-        el = de.nativeElement;
-        cd = fixture.componentRef.injector.get(ChangeDetectorRef);
-        service = fixture.componentRef.injector.get(CsvPropertiesService);
-        // oc = fixture.componentRef.injector.get(OverlayContainer);
-        // oce = oc.getContainerElement();
-
+    /**
+     * Individual preparation.
+     */
+    beforeEach(() => {
         const modifiedDate = new Date();
-        component.data = {
+        fixture.getComponentInstance().data = {
             file: new File(['"a,b",c\n"1,2",3'], 'test-file.csv', {lastModified : modifiedDate.getDate(), type: 'csv'}),
             content: '"a,b",c\n"1,2",3',
             progress: 100,
             isNull: false
         };
-        component.uploading$.next(false);
-        cd.detectChanges();
+        fixture.getComponentInstance().uploading$.next(false);
+        fixture.detectChanges();
 
-        propertiesComponent = component.csvProperties;
-        tableComponent = component.csvTable;
-    }));
+        propertiesComponent = fixture.getComponentInstance().csvProperties;
+        tableComponent = fixture.getComponentInstance().csvTable;
+    });
 
     /** Section for data properties card.
      * */
     describe('Data Properties', () => {
+
+
+        beforeEach(() => {
+            setFormStatus(FormStatus.DataProperties);
+            fixture.detectChanges();
+        });
+
         /** If the user corrects data properties settings as text qualifiers, resulting in the csv resizing such that either
          * spatial or temporal properties are no longer in bounds we want to reset them to default values, i.e.
          * x = 0
@@ -108,46 +106,50 @@ describe('Component: CsvDialogComponent', () => {
          * end = 3.
          * */
         it('resets column selection', () => {
-            component.csvProperties.dataProperties.patchValue({isTextQualifier: false, xColumn: 2});
-            cd.detectChanges();
-            expect(component.csvTable.header.length).toBe(3);
-            component.csvProperties.dataProperties.patchValue({isTextQualifier: true});
-            cd.detectChanges();
-            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(0);
-            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(1);
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2);
-            expect(component.csvProperties.temporalProperties.controls['endColumn'].value).toBe(3);
+            setIsTextQualifier(false);
+            setXColumnIndex(2);
+            fixture.detectChanges();
+            expect(tableComponent.header.length).toBe(3);
+            setIsTextQualifier(true);
+            fixture.detectChanges();
+            expect(getXColumnIndex()).toBe(0);
+            expect(getYColumnIndex()).toBe(1);
+            expect(getStartColumnIndex()).toBe(2);
+            expect(getEndColumnIndex()).toBe(3);
         });
     });
 
     /** Section for testing spatial Properties card.
      * */
     describe('Spatial Properties', () => {
+
+
+        beforeEach(() => {
+            setFormStatus(FormStatus.SpatialProperties);
+            fixture.detectChanges();
+        });
+
         /** When using (x,y)-Coordinate selection and setting the x column to be the same as the y column, we want
          * to respect the user choice and set it there. Since the x column can't have the same value as the y column we need
          * to move y. This moving is w.r.t. the csv table width, i.e. incrementing by 1 if possible, otherwise decrease by 1.
          * */
         it('the overwritten spatial column shows subordinate behavior (with respect to csv table width)', () => {
-            // Set x Column to be y Column.
-            component.csvProperties.spatialProperties.patchValue({xColumn: 1}); // swap x and y columns (move modulo 2)
-            cd.detectChanges();
-            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(0); // x and y columns were swapped
-            // Make CSV 3 Columns wide
-            component.csvProperties.dataProperties.patchValue({isTextQualifier: false}); // now make csv 3 columns wide
-            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
-            component.csvProperties.temporalProperties.patchValue({isTime: true}); // enable time
-            cd.detectChanges();
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2); // time gets initialized into
-            // free space
-            component.csvProperties.spatialProperties.patchValue({yColumn: 1}); // now move y up
-            cd.detectChanges();
-            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(2); // x gets moved up too
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0); // start column is now moved
-            // to 0, since there is free space.
-            component.csvProperties.spatialProperties.patchValue({yColumn: 2}); // set the y column to the last
-            cd.detectChanges();
-            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(1); // x column is moved modulo 3.
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0); // time hasn't changed
+            setXColumnIndex(1);
+            fixture.detectChanges();
+            expect(getYColumnIndex()).toBe(0);
+            setIsTextQualifier(false);
+            expect(isTimeSelectionDisabled()).toBeFalsy();
+            setIsTime(true);
+            fixture.detectChanges();
+            expect(getStartColumnIndex()).toBe(2);
+            setYColumnIndex(1);
+            fixture.detectChanges();
+            expect(getXColumnIndex()).toBe(2);
+            expect(getStartColumnIndex()).toBe(0);
+            setYColumnIndex(2);
+            fixture.detectChanges();
+            expect(getXColumnIndex()).toBe(1);
+            expect(getStartColumnIndex()).toBe(0);
         });
 
         /** When setting wkt to true the y-column selection vanishes. We want to the selection to be
@@ -155,51 +157,56 @@ describe('Component: CsvDialogComponent', () => {
          * move to a valid value.
          * */
         it('reserves x Column when moving to wkt', () => {
-            component.csvProperties.dataProperties.patchValue({textQualifier: false}); // 3 column table
-            component.csvProperties.temporalProperties.patchValue({isTime: true});
-            component.csvProperties.spatialProperties.patchValue({yColumn: 2});
-            cd.detectChanges();
-            component.csvProperties.spatialProperties.patchValue({isWkt: true});
-            cd.detectChanges();
-            component.csvProperties.spatialProperties.patchValue({xColumn: 2});
-            cd.detectChanges();
-            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(2);
-            component.csvProperties.spatialProperties.patchValue({isWkt: false});
-            expect(component.csvProperties.spatialProperties.controls['xColumn'].value).toBe(2);
-            expect(component.csvProperties.spatialProperties.controls['yColumn'].value).toBe(1);
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(0);
+            setIsTextQualifier(false);
+            setIsTime(true);
+            setYColumnIndex(2);
+            fixture.detectChanges();
+            setIsWkt(true);
+            fixture.detectChanges();
+            setXColumnIndex(2);
+            fixture.detectChanges();
+            expect(getYColumnIndex()).toBe(2);
+            setIsWkt(false);
+            expect(getXColumnIndex()).toBe(2);
+            expect(getYColumnIndex()).toBe(1);
+            expect(getStartColumnIndex()).toBe(0);
         });
     });
 
     /** Section for temporal Properties card.
      * */
     describe('Temporal Properties', () => {
+
+
+        beforeEach(() => {
+            setFormStatus(FormStatus.TemporalProperties);
+            fixture.detectChanges();
+        });
+
         /** Interval type select; this is not working right now since there is no (functioning) workaround for mat-select testing.
          * */
         describe('MatSelect: Interval Type Select', () => {
             let selectHelper: SelectSpecHelper;
 
             beforeEach(() => {
-                // Make sure select is shown in DOM and is enabled.
-                component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
-                cd.detectChanges();
-                component.csvProperties.temporalProperties.patchValue({isTime: true});
-                component.csvProperties.formStatus$.next(FormStatus.TemporalProperties);
-                cd.detectChanges();
-                // Create select helper.
-                selectHelper = new SelectSpecHelper(de, cd, 'intervalTypeSelect');
+                setIsTextQualifier(false);
+                fixture.detectChanges();
+                setIsTime(true);
+                fixture.detectChanges();
+                selectHelper = fixture.getSelectHelper('intervalTypeSelect');
             });
 
             it('disables/enables interval type options that are non-applicable', () => {
                 selectHelper.open();
                 const options = selectHelper.getOptions();
+                const intervalTypes = getIntervalTypes();
                 // There is a mat-option for each interval type and vice versa.
-                expect(options.length).toBe(component.csvProperties.intervalTypes.length);
+                expect(options.length).toBe(intervalTypes.length);
                 // The non-fitting options are disabled
-                for (let i = 0; i < component.csvProperties.intervalTypes.length; i++) {
-                    let it = component.csvProperties.intervalTypes[i];
-                    expect(options[i].getAttribute('aria-disabled') === "true").toBe(
-                        component.csvProperties.header.length - (component.csvProperties.spatialProperties.controls['isWkt'].value ? 1 : 2) < it.columns
+                for (let i = 0; i < intervalTypes.length; i++) {
+                    let it = intervalTypes[i];
+                    expect(options[i].getAttribute('aria-disabled') === 'true').toBe(
+                        getHeader().length - numberOfSpatialColumns() < it.columns
                     );
                 }
             });
@@ -218,21 +225,21 @@ describe('Component: CsvDialogComponent', () => {
          * interval types). If it doesn't we expect temporal properties to be disabled completely.
          * */
         it('disables or enables temporal on (x,y)-Coordinate selection with 2 or 3 column table respectively', () => {
-            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
-            component.csvProperties.dataProperties.patchValue({isTextQualifier: false});
-            cd.detectChanges();
-            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+            expect(isTimeSelectionDisabled()).toBeTruthy();
+            setIsTextQualifier(false);
+            fixture.detectChanges();
+            expect(isTimeSelectionDisabled()).toBeFalsy();
         });
 
         /** Analogous test for WKT-selection. Only one column is used for spatial dimensions, therefore we can now have one column time
          * selection with 2 column csvs already.
          * */
         it('enables temporal when using WKT on 2 column table', () => {
-            expect(component.csvProperties.temporalProperties.controls['isTime'].value).toBeFalsy();
-            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeTruthy();
-            component.csvProperties.spatialProperties.patchValue({isWkt: true});
-            cd.detectChanges();
-            expect(component.csvProperties.temporalProperties.controls['isTime'].disabled).toBeFalsy();
+            expect(getIsTime()).toBeFalsy();
+            expect(isTimeSelectionDisabled()).toBeTruthy();
+            setIsWkt(true);
+            fixture.detectChanges();
+            expect(isTimeSelectionDisabled()).toBeFalsy();
             // TODO: DOM HERE TOO
         });
 
@@ -242,10 +249,10 @@ describe('Component: CsvDialogComponent', () => {
          * for a start column proposition.
          * */
         it('proposes start column when changing selection to wkt', () => {
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(2);
-            component.csvProperties.spatialProperties.patchValue({isWkt: true});
-            cd.detectChanges();
-            expect(component.csvProperties.temporalProperties.controls['startColumn'].value).toBe(1); // start column takes former
+            expect(getStartColumnIndex()).toBe(2);
+            setIsWkt(true);
+            fixture.detectChanges();
+            expect(getStartColumnIndex()).toBe(1); // start column takes former
             // place of y column.
         });
     });
@@ -253,20 +260,27 @@ describe('Component: CsvDialogComponent', () => {
     /** Section for layer properties card.
      * */
     describe('Layer Properties', () => {
+
+
+        beforeEach(() => {
+            setFormStatus(FormStatus.LayerProperties);
+            fixture.detectChanges();
+        });
+
         /** Mocked the UserService: the function getFeatureDBList now returns a 1-element array containing a dummy operator named
          * "name is taken". Therefore we would expect this name to be taken leaving the layer properties with invalid status, setting
          * layername to be "name is taken".
          * */
         it('should detect taken name', () => {
-            component.csvProperties.formStatus$.next(FormStatus.LayerProperties);
-            cd.detectChanges();
-            component.csvProperties.layerProperties.patchValue({layerName: 'name is taken'});
-            cd.detectChanges();
-            let layerNameInput = de.query(By.css('#layerNameComponent')).nativeElement;
+            setFormStatus(FormStatus.LayerProperties);
+            fixture.detectChanges();
+            setLayerName('name is taken');
+            fixture.detectChanges();
+            let layerNameValueDOM = fixture.queryDOM(By.css('#layerNameComponent')).nativeElement.value;
             // let submit = de.query(By.css('#submit_btn')).nativeElement;
-            expect(layerNameInput.value).toBe('name is taken');
-            expect(propertiesComponent.reservedNames$.getValue()[0]).toBe(layerNameInput.value);
-            expect(propertiesComponent.layerProperties.valid).toBeFalsy();
+            expect(layerNameValueDOM).toBe('name is taken');
+            expect(getReservedNames()[0]).toBe(layerNameValueDOM);
+            expect(isValid()).toBeFalsy();
         });
     });
 
@@ -274,6 +288,95 @@ describe('Component: CsvDialogComponent', () => {
      * Therefore it is not a problem with the component itself, if this doesn't pass.
      * */
     it('should create', () => {
-        expect(component).toBeTruthy();
+        expect(fixture.getComponentInstance()).toBeTruthy();
     });
+
+
+    /**=====================================================================================================================================
+     * Method section for improving readability.
+     * =====================================================================================================================================
+     **/
+
+    /**Setters
+     */
+    let setIsTextQualifier = function(isTextQualifier: boolean): void {
+        propertiesComponent.dataProperties.patchValue({isTextQualifier: isTextQualifier});
+    };
+
+    let setXColumnIndex = function(x: number) {
+        propertiesComponent.spatialProperties.patchValue({xColumn: x});
+    };
+
+    let setYColumnIndex = function(y: number) {
+        propertiesComponent.spatialProperties.patchValue({yColumn: y});
+    };
+
+    let setIsTime = function(isTime: boolean) {
+        propertiesComponent.temporalProperties.patchValue({isTime: isTime});
+    };
+
+    let setIsWkt = function(isWkt: boolean) {
+        propertiesComponent.spatialProperties.patchValue({isWkt: isWkt});
+    };
+
+    let setFormStatus = function(formStatus: FormStatus) {
+        propertiesComponent.formStatus$.next(formStatus);
+    };
+
+    let setLayerName = function(layerName: string) {
+        propertiesComponent.layerProperties.patchValue({layerName: layerName});
+    };
+
+    /**Getters
+     */
+
+    let getHeader = function(): {value: string}[] {
+        return tableComponent.header;
+    };
+
+    let getIntervalTypes = function(): {display: string, value: IntervalFormat, columns: number}[] {
+        return propertiesComponent.intervalTypes;
+    };
+
+    let getXColumnIndex = function(): number {
+        return propertiesComponent.spatialProperties.controls['xColumn'].value;
+    };
+
+    let getYColumnIndex = function(): number {
+        return propertiesComponent.spatialProperties.controls['yColumn'].value;
+    };
+
+    let getStartColumnIndex = function(): number {
+        return propertiesComponent.temporalProperties.controls['startColumn'].value;
+    };
+
+    let getEndColumnIndex = function(): number {
+        return propertiesComponent.temporalProperties.controls['endColumn'].value;
+    };
+
+    let getIsWkt = function(): boolean {
+        return propertiesComponent.spatialProperties.controls['isWkt'].value;
+    };
+
+    let getIsTime = function(): boolean {
+        return propertiesComponent.temporalProperties.controls['isTime'].value;
+    };
+
+    let getReservedNames = function(): string[] {
+        return propertiesComponent.reservedNames$.getValue();
+    };
+
+    /**Logic
+     */
+    let isTimeSelectionDisabled = function(): boolean {
+        return propertiesComponent.temporalProperties.controls['isTime'].disabled;
+    };
+
+    let numberOfSpatialColumns = function(): number {
+        return (getIsWkt() ? 1 : 2);
+    };
+
+    let isValid = function(): boolean {
+        return propertiesComponent.valid;
+    };
 });

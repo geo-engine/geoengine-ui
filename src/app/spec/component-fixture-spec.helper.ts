@@ -1,8 +1,10 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ChangeDetectorRef, DebugElement, SchemaMetadata, Type} from '@angular/core';
+import {ChangeDetectorRef, DebugElement, ElementRef, SchemaMetadata, Type} from '@angular/core';
 import {SelectSpecHelper} from './select-spec.helper';
+import {By} from '@angular/platform-browser';
+import {Predicate} from '@angular/core/src/debug/debug_node';
 
-class ComponentFixtureSpecHelper<T> {
+export class ComponentFixtureSpecHelper<T> {
 
     component: T;
     fixture: ComponentFixture<T>;
@@ -56,5 +58,17 @@ class ComponentFixtureSpecHelper<T> {
 
     public getNativeElement(): any {
         return this.el;
+    }
+
+    public queryDOM(predicate: Predicate<DebugElement>): DebugElement {
+        return this.de.query(predicate);
+    }
+
+    public getElementsByTagName(tagName: string): NodeListOf<HTMLElement> {
+        return this.el.getElementsByTagName(tagName);
+    }
+
+    public whenStable(): Promise<any> {
+        return this.fixture.whenStable();
     }
 }
