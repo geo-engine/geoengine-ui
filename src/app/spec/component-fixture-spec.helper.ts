@@ -1,13 +1,40 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ChangeDetectorRef, DebugElement, ElementRef, SchemaMetadata, Type} from '@angular/core';
+import {
+    ChangeDetectorRef, DebugElement, SchemaMetadata, Type, Component, ViewChild,
+    ViewContainerRef, ComponentFactoryResolver, Optional, NgModule
+} from '@angular/core';
 import {SelectSpecHelper} from './select-spec.helper';
-import {By} from '@angular/platform-browser';
 import {Predicate} from '@angular/core/src/debug/debug_node';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+
+@Component({
+    selector: 'wave-test-host',
+    template: `<ng-template #component></ng-template>`
+})
+class TestHostComponent {
+    @ViewChild('component', {read: ViewContainerRef}) component: ViewContainerRef;
+
+    constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+
+    public load<T>(type: Type<T>, inputs: any): T {
+        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(type);
+        this.component.clear();
+        const componentRef = this.component.createComponent(componentFactory);
+        if (inputs) {
+            for (const input in inputs) {
+                if (inputs.hasOwnProperty(input)) {
+                    componentRef.instance[input] = inputs[input];
+                }
+            }
+        }
+        return componentRef.instance;
+    };
+}
 
 export class ComponentFixtureSpecHelper<T> {
 
     component: T;
-    fixture: ComponentFixture<T>;
+    fixture: ComponentFixture<TestHostComponent>;
     cd: ChangeDetectorRef;
     el: any;
     de: DebugElement;
@@ -18,10 +45,27 @@ export class ComponentFixtureSpecHelper<T> {
         imports?: any[];
         schemas?: Array<SchemaMetadata | any[]>;
         aotSummaries?: () => any[];
-    }, type: Type<T>) {
-        TestBed.configureTestingModule(_app_module).compileComponents();
-        this.fixture = TestBed.createComponent(type);
-        this.component = this.fixture.componentInstance;
+    }, type: Type<T>, @Optional() inputs?: any) {
+
+        @NgModule({
+            entryComponents: [ type ]
+        })
+        class ENTRY_MODULE {};
+
+        _app_module.declarations.push(TestHostComponent);
+        _app_module.imports.push(
+            ENTRY_MODULE
+        );
+        TestBed.configureTestingModule(_app_module)
+            .overrideComponent(TestHostComponent, {
+                add: {
+                    providers: _app_module.providers
+                }
+            })
+            .compileComponents();
+        this.fixture = TestBed.createComponent(TestHostComponent);
+        this.component = this.fixture.componentInstance.load(type, inputs);
+        //this.component = this.fixture.componentInstance;
         this.fixture.detectChanges();
         this.de = this.fixture.debugElement;
         this.el = this.de.nativeElement;
@@ -72,3 +116,4 @@ export class ComponentFixtureSpecHelper<T> {
         return this.fixture.whenStable();
     }
 }
+

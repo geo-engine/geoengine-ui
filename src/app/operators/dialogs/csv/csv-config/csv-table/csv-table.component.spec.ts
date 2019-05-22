@@ -11,11 +11,11 @@ import {FormStatus} from '../csv-properties/csv-properties.component';
 
 describe('Component: CsvTableComponent', () => {
     let service: CsvPropertiesService;
-    let fixture: ComponentFixtureSpecHelper<TestHostComponent>;
+    let fixture: ComponentFixtureSpecHelper<CsvTableComponent>;
     let component: CsvTableComponent;
 
     beforeEach(() => {
-        fixture = new ComponentFixtureSpecHelper({
+        fixture = new ComponentFixtureSpecHelper<CsvTableComponent>({
             declarations: [
                 CsvTableComponent,
                 TestHostComponent
@@ -29,9 +29,18 @@ describe('Component: CsvTableComponent', () => {
                 CsvPropertiesService,
                 ChangeDetectorRef
             ]
-        }, TestHostComponent);
+        }, CsvTableComponent, {
+            data: {
+                file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : (new Date()).getDate(), type: 'csv'}),
+                content: '"a,b",c,d\n"1,2",3,4',
+                progress: 100,
+                isNull: false
+            },
+            cellSpacing: 10,
+            linesToParse: 15
+        });
 
-        component = fixture.getComponentInstance().csvTable;
+        component = fixture.getComponentInstance();
         service = fixture.getInjected(CsvPropertiesService);
     });
 
@@ -103,7 +112,7 @@ describe('Component: CsvTableComponent', () => {
         @ViewChild('csvTable') csvTable: CsvTableComponent;
         modifiedDate = new Date();
         data = {
-            file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : this.modifiedDate.getDate(), type: 'csv'}),
+            file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : (new Date()).getDate(), type: 'csv'}),
             content: '"a,b",c,d\n"1,2",3,4',
             progress: 100,
             isNull: false

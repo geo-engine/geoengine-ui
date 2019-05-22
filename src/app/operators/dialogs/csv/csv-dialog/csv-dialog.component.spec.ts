@@ -240,7 +240,6 @@ describe('Component: CsvDialogComponent', () => {
             setIsWkt(true);
             fixture.detectChanges();
             expect(isTimeSelectionDisabled()).toBeFalsy();
-            // TODO: DOM HERE TOO
         });
 
         /** As stated documentation of test routine "Data Properties" -> "resets column selection" the default values for column selections
