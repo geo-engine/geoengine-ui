@@ -65,7 +65,6 @@ export class ComponentFixtureSpecHelper<T> {
             .compileComponents();
         this.fixture = TestBed.createComponent(TestHostComponent);
         this.component = this.fixture.componentInstance.load(type, inputs);
-        //this.component = this.fixture.componentInstance;
         this.fixture.detectChanges();
         this.de = this.fixture.debugElement;
         this.el = this.de.nativeElement;
