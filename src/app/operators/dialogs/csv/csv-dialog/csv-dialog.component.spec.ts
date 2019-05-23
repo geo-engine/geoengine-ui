@@ -1,6 +1,9 @@
 import { CsvDialogComponent } from './csv-dialog.component';
 import {CsvPropertiesService} from './csv.properties.service';
-import {CsvPropertiesComponent, FormStatus} from '../csv-config/csv-properties/csv-properties.component';
+import {
+    CsvPropertiesComponent, FormStatus,
+    INTERVAL_TYPE_SELECT_ID, LAYER_NAME_INPUT_ID
+} from '../csv-config/csv-properties/csv-properties.component';
 import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {CsvUploadComponent} from '../csv-upload/csv-upload.component';
 import {MaterialModule} from '../../../../material.module';
@@ -18,7 +21,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {SelectSpecHelper} from '../../../../spec/select-spec.helper';
 import {ComponentFixtureSpecHelper} from '../../../../spec/component-fixture-spec.helper';
-import {IntervalFormat} from '../interval.enum';
+import {IntervalType} from '../csv-config/csv-properties/csv-properties.component';
+import 'hammerjs';
 
 class MockUserService {
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
@@ -61,7 +65,7 @@ describe('Component: CsvDialogComponent', () => {
                 RandomColorService,
                 {provide: ProjectService, useClass: MockProjectService},
                 {provide: UserService, useClass: MockUserService},
-                {provide: MatDialogRef, useValue: {}},
+                {provide: MatDialogRef, useValue: {}}
                 // {provide: OverlayContainer, useFactory: () => {
                 //     return { getContainerElement: () => oce };
                 // }}
@@ -193,7 +197,7 @@ describe('Component: CsvDialogComponent', () => {
                 fixture.detectChanges();
                 setIsTime(true);
                 fixture.detectChanges();
-                selectHelper = fixture.getSelectHelper('intervalTypeSelect');
+                selectHelper = fixture.getSelectHelper(INTERVAL_TYPE_SELECT_ID);
             });
 
             it('disables/enables interval type options that are non-applicable', () => {
@@ -206,7 +210,7 @@ describe('Component: CsvDialogComponent', () => {
                 for (let i = 0; i < intervalTypes.length; i++) {
                     let it = intervalTypes[i];
                     expect(options[i].getAttribute('aria-disabled') === 'true').toBe(
-                        getHeader().length - numberOfSpatialColumns() < it.columns
+                        getHeader().length - numberOfSpatialColumns() < it.requiredColumns
                     );
                 }
             });
@@ -275,7 +279,7 @@ describe('Component: CsvDialogComponent', () => {
             fixture.detectChanges();
             setLayerName('name is taken');
             fixture.detectChanges();
-            let layerNameValueDOM = fixture.queryDOM(By.css('#layerNameComponent')).nativeElement.value;
+            let layerNameValueDOM = fixture.queryDOM(By.css('#' + LAYER_NAME_INPUT_ID)).nativeElement.value;
             // let submit = de.query(By.css('#submit_btn')).nativeElement;
             expect(layerNameValueDOM).toBe('name is taken');
             expect(getReservedNames()[0]).toBe(layerNameValueDOM);
@@ -290,92 +294,79 @@ describe('Component: CsvDialogComponent', () => {
         expect(fixture.getComponentInstance()).toBeTruthy();
     });
 
-
-    /**=====================================================================================================================================
-     * Method section for improving readability.
-     * =====================================================================================================================================
-     **/
-
-    /**Setters
-     */
-    let setIsTextQualifier = function(isTextQualifier: boolean): void {
+    function setIsTextQualifier(isTextQualifier: boolean): void {
         propertiesComponent.dataProperties.patchValue({isTextQualifier: isTextQualifier});
     };
 
-    let setXColumnIndex = function(x: number) {
+    function setXColumnIndex(x: number) {
         propertiesComponent.spatialProperties.patchValue({xColumn: x});
     };
 
-    let setYColumnIndex = function(y: number) {
+    function setYColumnIndex(y: number) {
         propertiesComponent.spatialProperties.patchValue({yColumn: y});
     };
 
-    let setIsTime = function(isTime: boolean) {
+    function setIsTime(isTime: boolean) {
         propertiesComponent.temporalProperties.patchValue({isTime: isTime});
     };
 
-    let setIsWkt = function(isWkt: boolean) {
+    function setIsWkt(isWkt: boolean) {
         propertiesComponent.spatialProperties.patchValue({isWkt: isWkt});
     };
 
-    let setFormStatus = function(formStatus: FormStatus) {
+    function setFormStatus(formStatus: FormStatus) {
         propertiesComponent.formStatus$.next(formStatus);
     };
 
-    let setLayerName = function(layerName: string) {
+    function setLayerName(layerName: string) {
         propertiesComponent.layerProperties.patchValue({layerName: layerName});
     };
 
-    /**Getters
-     */
-
-    let getHeader = function(): {value: string}[] {
+    function getHeader(): {value: string}[] {
         return tableComponent.header;
     };
 
-    let getIntervalTypes = function(): {display: string, value: IntervalFormat, columns: number}[] {
+    function getIntervalTypes(): IntervalType[] {
         return propertiesComponent.intervalTypes;
     };
 
-    let getXColumnIndex = function(): number {
+    function getXColumnIndex(): number {
         return propertiesComponent.spatialProperties.controls['xColumn'].value;
     };
 
-    let getYColumnIndex = function(): number {
+    function getYColumnIndex(): number {
         return propertiesComponent.spatialProperties.controls['yColumn'].value;
     };
 
-    let getStartColumnIndex = function(): number {
+    function getStartColumnIndex(): number {
         return propertiesComponent.temporalProperties.controls['startColumn'].value;
     };
 
-    let getEndColumnIndex = function(): number {
+    function getEndColumnIndex(): number {
         return propertiesComponent.temporalProperties.controls['endColumn'].value;
     };
 
-    let getIsWkt = function(): boolean {
+    function getIsWkt(): boolean {
         return propertiesComponent.spatialProperties.controls['isWkt'].value;
     };
 
-    let getIsTime = function(): boolean {
+    function getIsTime(): boolean {
         return propertiesComponent.temporalProperties.controls['isTime'].value;
     };
 
-    let getReservedNames = function(): string[] {
+    function getReservedNames(): string[] {
         return propertiesComponent.reservedNames$.getValue();
     };
 
-    /**Logic
-     */
-    let isTimeSelectionDisabled = function(): boolean {
+    function isTimeSelectionDisabled(): boolean {
         return propertiesComponent.temporalProperties.controls['isTime'].disabled;
     };
 
-    let numberOfSpatialColumns = function(): number {
+    function numberOfSpatialColumns(): number {
         return (getIsWkt() ? 1 : 2);
     };
 
-    let isValid = function(): boolean {
-        return propertiesComponent.valid;
+    function isValid(): boolean {
+        return propertiesComponent.isValid;
     };
 });

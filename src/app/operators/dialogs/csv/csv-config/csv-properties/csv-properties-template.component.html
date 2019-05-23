@@ -1,4 +1,4 @@
-<mat-horizontal-stepper #stepper (selectionChange)="next($event)" linear>
+<mat-horizontal-stepper #CSV_PROPERTY_FORM_STATUS_STEPPER [id]="FORM_STATUS_STEPPER_ID" (selectionChange)="next($event)" linear>
     <mat-step [stepControl]="dataProperties">
         <!-- Label goes here -->
         <ng-template matStepLabel>
@@ -78,7 +78,7 @@
                     <mat-form-field>
                         <mat-select fxFlex="100"
                                     placeholder="{{xColumnName}}Coordinate column"
-                                    formControlName="xColumn" #xColumnSelect>
+                                    formControlName="xColumn">
                             <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
@@ -109,7 +109,7 @@
                     <mat-form-field *ngIf="!spatialProperties.controls['isWkt'].value">
                         <mat-select fxFlex="100"
                                     placeholder="{{spatialProperties.controls['spatialReferenceSystem'].value.yCoordinateName}}-Coordinate column"
-                                    formControlName="yColumn" #yColumnSelect>
+                                    formControlName="yColumn">
                             <ng-template ngFor let-h [ngForOf]="propertiesService.header$ | async" let-i="index">
                                 <mat-option [value]="i">
                                     <ng-template [ngIf]="h.value !== ''">
@@ -159,15 +159,16 @@
                                      style="text-align: left"></wave-dialog-section-heading>
         <form fxLayout="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
-            <mat-slide-toggle id="timeToggle" formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
+            <mat-slide-toggle #CSV_PROPERTY_IS_TIME_TOGGLE [id]="IS_TIME_TOGGLE_ID" formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
             <mat-form-field>
-                <mat-select id="intervalTypeSelect"
+                <mat-select #CSV_PROPERTY_INTERVAL_TYPE_SELECT
+                            [id]="INTERVAL_TYPE_SELECT_ID"
                             fxFlex
                             placeholder="Interval type"
                             formControlName="intervalType"
                 >
-                    <mat-option *ngFor="let intervalType of intervalTypes; let i = index" id="{{'intervalType' + i}}" [value]="intervalType.value"
-                                [disabled]="((propertiesService.spatialProperties$ | async).isWkt ? 1 : 2) + intervalType.columns > header.length">
+                    <mat-option *ngFor="let intervalType of intervalTypes; let i = index" [value]="intervalType.value"
+                                [disabled]="noAvailableColumnsForTimeSpecification((propertiesService.spatialProperties$ | async).isWkt, intervalType.requiredColumns)">
                         {{intervalType.display}}
                     </mat-option>
                 </mat-select>
@@ -287,7 +288,7 @@
         <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
             <mat-form-field style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
-                       type="input" #layerNameComponent id="layerNameComponent">
+                       type="input" #CSV_PROPERTY_LAYER_NAME_INPUT [id]="LAYER_NAME_INPUT_ID">
                 <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>

@@ -14,6 +14,14 @@ import {Observable, Subscription, BehaviorSubject} from 'rxjs';
 import {UploadData} from '../../csv-upload/csv-upload.component';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
 
+export const HEADER_TABLE_ID = 'CSV_TABLE_HEADER_TABLE',
+    HEADER_DIV_ID = 'CSV_TABLE_HEADER_DIV',
+    BODY_TABLE_ID = 'CSV_TABLE_BODY_TABLE',
+    BODY_DIV_ID = 'CSV_TABLE_BODY_DIV',
+    TYPING_TABLE_ID = 'CSV_TABLE_TYPING_TABLE',
+    TYPING_DIV_ID = 'CSV_TABLE_TYPING_DIV',
+    TABLE_FRAME_ID = 'CSV_TABLE_TABLE_FRAME';
+
 @Component({
     selector: 'wave-csv-table',
     templateUrl: './csv-table-template.component.html',
@@ -21,6 +29,14 @@ import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    HEADER_TABLE_ID = HEADER_TABLE_ID;
+    HEADER_DIV_ID = HEADER_DIV_ID;
+    BODY_TABLE_ID = BODY_TABLE_ID;
+    BODY_DIV_ID = BODY_DIV_ID;
+    TYPING_TABLE_ID = TYPING_TABLE_ID;
+    TYPING_DIV_ID = TYPING_DIV_ID;
+    TABLE_FRAME_ID = TABLE_FRAME_ID;
 
     @Input() data: UploadData;
     @Input() cellSpacing: number;
@@ -31,13 +47,13 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     untypedColumns: BehaviorSubject<number[]>;
     isWkt: BehaviorSubject<boolean>;
 
-    @ViewChild('headerdiv') headerDiv: ElementRef;
-    @ViewChild('bodydiv') bodyDiv: ElementRef;
-    @ViewChild('typingdiv') typingDiv: ElementRef;
-    @ViewChild('headertable') headerTable: ElementRef;
-    @ViewChild('bodytable') bodyTable: ElementRef;
-    @ViewChild('typingtable') typingTable: ElementRef;
-    @ViewChild('tableframe') tableFrame: ElementRef;
+    @ViewChild(HEADER_DIV_ID) headerDiv: ElementRef;
+    @ViewChild(BODY_DIV_ID) bodyDiv: ElementRef;
+    @ViewChild(TYPING_DIV_ID) typingDiv: ElementRef;
+    @ViewChild(HEADER_TABLE_ID) headerTable: ElementRef;
+    @ViewChild(BODY_TABLE_ID) bodyTable: ElementRef;
+    @ViewChild(TYPING_TABLE_ID) typingTable: ElementRef;
+    @ViewChild(TABLE_FRAME_ID) tableFrame: ElementRef;
 
     parsedData: Array<Array<string>>;
     customHeader: {value: string}[] = [];

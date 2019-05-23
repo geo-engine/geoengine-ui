@@ -1,13 +1,12 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ChangeDetectorRef, Component, ViewChild} from '@angular/core';
+import {ChangeDetectorRef} from '@angular/core';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
 import {CsvTableComponent} from './csv-table.component';
 import {FormsModule} from '@angular/forms';
 import {MaterialModule} from '../../../../../material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ComponentFixtureSpecHelper} from '../../../../../spec/component-fixture-spec.helper';
-import {IntervalFormat} from '../../interval.enum';
-import {FormStatus} from '../csv-properties/csv-properties.component';
+import { HEADER_TABLE_ID, BODY_TABLE_ID } from './csv-table.component';
+import 'hammerjs';
 
 describe('Component: CsvTableComponent', () => {
     let service: CsvPropertiesService;
@@ -17,8 +16,7 @@ describe('Component: CsvTableComponent', () => {
     beforeEach(() => {
         fixture = new ComponentFixtureSpecHelper<CsvTableComponent>({
             declarations: [
-                CsvTableComponent,
-                TestHostComponent
+                CsvTableComponent
             ],
             imports: [
                 MaterialModule,
@@ -98,47 +96,11 @@ describe('Component: CsvTableComponent', () => {
         });
     });
 
-    @Component({
-        selector: 'wave-table-test-host',
-        template: `<wave-csv-table
-            #csvTable
-            [data]="data"
-            [cellSpacing]="10"
-            [linesToParse]="15"
-        ></wave-csv-table>`,
-        providers: [CsvPropertiesService]
-    })
-    class TestHostComponent {
-        @ViewChild('csvTable') csvTable: CsvTableComponent;
-        modifiedDate = new Date();
-        data = {
-            file: new File(['"a,b",c,d\n"1,2",3,4'], 'test-file.csv', {lastModified : (new Date()).getDate(), type: 'csv'}),
-            content: '"a,b",c,d\n"1,2",3,4',
-            progress: 100,
-            isNull: false
-        };
-    }
-
-    /**=====================================================================================================================================
-     * Method section for improving readability.
-     * =====================================================================================================================================
-     **/
-
-    /**Setters
-     */
-
-
-    /**Getters
-     */
-
-    let getHeader = function(): {value: string}[] {
+    function getHeader(): {value: string}[] {
         return component.header;
     };
 
-    /**Logic
-     */
-
-    let numberOfTableColumns = function(): number {
+    function numberOfTableColumns(): number {
         const table_rows = fixture.getElementsByTagName('tr');
         if (table_rows.length === 0) {
             return 0;
@@ -146,33 +108,33 @@ describe('Component: CsvTableComponent', () => {
         return tableWidthWithoutSpacers(table_rows[table_rows.length - 1].getElementsByTagName('td'));
     };
 
-    let headerRow = function(): HTMLCollectionOf<HTMLTableCellElement> {
+    function headerRow(): HTMLCollectionOf<HTMLTableCellElement> {
         let tables = fixture.getElementsByTagName('table');
         let header_table = null;
         for (let i = 0; i < tables.length; i++) {
-            if (tables[i].id === 'headertable') {
+            if (tables[i].id === HEADER_TABLE_ID) {
                 header_table = tables[i];
             }
         }
         return header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
     };
 
-    let bodyRow = function(): HTMLCollectionOf<HTMLTableCellElement> {
+    function bodyRow(): HTMLCollectionOf<HTMLTableCellElement> {
         let tables = fixture.getElementsByTagName('table');
         let body_table = null;
         for (let i = 0; i < tables.length; i++) {
-            if (tables[i].id === 'bodytable') {
+            if (tables[i].id === BODY_TABLE_ID) {
                 body_table = tables[i];
             }
         }
         return body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
     };
 
-    let clientWidth = function(element: HTMLElement): number {
+    function clientWidth(element: HTMLElement): number {
         return element.getBoundingClientRect().width;
     };
 
-    let tableWidthWithoutSpacers = function(row: HTMLCollectionOf<HTMLTableCellElement>): number {
+    function tableWidthWithoutSpacers(row: HTMLCollectionOf<HTMLTableCellElement>): number {
         return (row.length + 1) / 2
     }
 });
