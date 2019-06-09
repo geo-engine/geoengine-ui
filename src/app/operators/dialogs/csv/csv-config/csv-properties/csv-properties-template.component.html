@@ -1,4 +1,4 @@
-<mat-horizontal-stepper #CSV_PROPERTY_FORM_STATUS_STEPPER [id]="FORM_STATUS_STEPPER_ID" (selectionChange)="next($event)" linear>
+<mat-horizontal-stepper #csv_form_status_stepper (selectionChange)="next($event)" linear>
     <mat-step [stepControl]="dataProperties">
         <!-- Label goes here -->
         <ng-template matStepLabel>
@@ -159,10 +159,9 @@
                                      style="text-align: left"></wave-dialog-section-heading>
         <form fxLayout="column" fxLayoutGap="1rem" fxLayoutAlign="space-around center"
               style="width: 100%; margin-bottom: 1rem;" [formGroup]="temporalProperties">
-            <mat-slide-toggle #CSV_PROPERTY_IS_TIME_TOGGLE [id]="IS_TIME_TOGGLE_ID" formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
+            <mat-slide-toggle [wave-test-id]="IS_TIME_TOGGLE_ID" formControlName="isTime" flex>The file includes temporal data.</mat-slide-toggle>
             <mat-form-field>
-                <mat-select #CSV_PROPERTY_INTERVAL_TYPE_SELECT
-                            [id]="INTERVAL_TYPE_SELECT_ID"
+                <mat-select [wave-test-id]="INTERVAL_TYPE_SELECT_ID"
                             fxFlex
                             placeholder="Interval type"
                             formControlName="intervalType"
@@ -288,7 +287,7 @@
         <form [formGroup]="layerProperties" style="width: 100%" fxLayout="column" fxLayoutAlign="space-around stretch">
             <mat-form-field style="width: 100%;">
                 <input matInput formControlName="layerName" placeholder="Layer Name"
-                       type="input" #CSV_PROPERTY_LAYER_NAME_INPUT [id]="LAYER_NAME_INPUT_ID">
+                       type="input" [wave-test-id]="LAYER_NAME_INPUT_ID">
                 <mat-hint class="error" *ngIf="!layerProperties.valid">Name is already in
                     use.
                 </mat-hint>

@@ -5,6 +5,8 @@ import {
 } from '@angular/core';
 import {SelectSpecHelper} from './select-spec.helper';
 import {Predicate} from '@angular/core/src/debug/debug_node';
+import {By} from '@angular/platform-browser';
+import {TestIdComponentDirective} from './test-id-component.directive';
 
 @Component({
     selector: 'wave-test-host',
@@ -128,8 +130,8 @@ export class ComponentFixtureSpecHelper<T> {
      * @param {string} id: id of the given select.
      * @returns {SelectSpecHelper}: A select helper instance for this select.
      */
-    public getSelectHelper(id: string): SelectSpecHelper {
-        return new SelectSpecHelper(this.debugElement, this.changeDetectorRef, id);
+    public getSelectHelper(select: DebugElement): SelectSpecHelper {
+        return new SelectSpecHelper(this.debugElement, this.changeDetectorRef, select);
     }
 
     public getComponentInstance(): T {
@@ -148,8 +150,23 @@ export class ComponentFixtureSpecHelper<T> {
         return this.debugElement.query(predicate);
     }
 
+    public querySelector(selector: string): HTMLElement {
+        return this.nativeElement.querySelector(selector);
+    }
+
     public getElementsByTagName(tagName: string): NodeListOf<HTMLElement> {
         return this.nativeElement.getElementsByTagName(tagName);
+    }
+
+    public getElementByTestId(id: string): DebugElement {
+        let nodes = this.debugElement.queryAll(By.directive(TestIdComponentDirective));
+        nodes = nodes.filter(node =>
+            node.nativeElement.getAttribute('ng-reflect-test_id') === id
+        );
+        if (nodes.length === 0) {
+            return null;
+        }
+        return nodes[0];
     }
 
     public whenStable(): Promise<any> {

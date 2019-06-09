@@ -21,12 +21,12 @@ export class SelectSpecHelper {
      * @param {string} _id: ID of the select to test. Make sure it is shown in DOM and is not disabled. (Actually it suffices that it is
      *         shown in DOM. That it is not disabled is necessary when calling open().
      */
-    public constructor(private de: DebugElement, private changeDetectorRef: ChangeDetectorRef, private id: string) {
+    public constructor(private de: DebugElement, private changeDetectorRef: ChangeDetectorRef, private select: DebugElement) {
         inject([OverlayContainer], (oc: OverlayContainer) => {
             this.overlayContainer = oc;
             this.overlayContainerElement = oc.getContainerElement();
         })();
-        this.trigger = de.query(By.css('#' + id)).query(By.css('.mat-select-trigger'));
+        this.trigger = select.query(By.css('.mat-select-trigger'));
     }
 
     /**

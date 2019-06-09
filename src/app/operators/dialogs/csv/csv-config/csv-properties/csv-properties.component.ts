@@ -48,10 +48,9 @@ export interface IntervalType {
     requiredColumns: number
 }
 
-export const INTERVAL_TYPE_SELECT_ID = 'CSV_PROPERTY_INTERVAL_TYPE_SELECT',
-    LAYER_NAME_INPUT_ID = 'CSV_PROPERTY_LAYER_NAME_INPUT',
-    IS_TIME_TOGGLE_ID = 'CSV_PROPERTY_IS_TIME_TOGGLE',
-    FORM_STATUS_STEPPER_ID = 'CSV_PROPERTY_FORM_STATUS_STEPPER';
+export const INTERVAL_TYPE_SELECT_ID = 'csv_interval_select',
+    LAYER_NAME_INPUT_ID = 'csv_layer_name_input',
+    IS_TIME_TOGGLE_ID = 'csv_is_time_toggle';
 
 export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, LayerProperties, Loading }
 
@@ -69,7 +68,6 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     INTERVAL_TYPE_SELECT_ID = INTERVAL_TYPE_SELECT_ID;
     LAYER_NAME_INPUT_ID = LAYER_NAME_INPUT_ID;
     IS_TIME_TOGGLE_ID = IS_TIME_TOGGLE_ID;
-    FORM_STATUS_STEPPER_ID = FORM_STATUS_STEPPER_ID;
 
     isSpatialVisited = false;
 
@@ -148,7 +146,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
-    @ViewChild(FORM_STATUS_STEPPER_ID) public stepper: MatStepper;
+    @ViewChild('csv_form_status_stepper') public stepper: MatStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 

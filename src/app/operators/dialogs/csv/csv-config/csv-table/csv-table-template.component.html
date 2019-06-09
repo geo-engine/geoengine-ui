@@ -1,6 +1,6 @@
-<div #CSV_TABLE_TABLE_FRAME [id]="TABLE_FRAME_ID" class="table-frame" (window:resize)="_changeDetectorRef.detectChanges()">
-    <div #CSV_TABLE_TYPING_DIV [id]="TYPING_DIV_ID" class="typingdiv" *ngIf="(isTypingProperties$ | async)">
-        <table #CSV_TABLE_TYPING_TABLE [id]="TYPING_TABLE_ID" class="resizeTable" cellspacing="0" cellpadding="0">
+<div #CSV_TABLE_TABLE_FRAME class="table-frame" [wave-test-id]="TABLE_FRAME_ID" (window:resize)="_changeDetectorRef.detectChanges()">
+    <div #CSV_TABLE_TYPING_DIV class="typingdiv" [wave-test-id]="TYPING_DIV_ID" *ngIf="(isTypingProperties$ | async)">
+        <table #CSV_TABLE_TYPING_TABLE class="resizeTable" [wave-test-id]="TYPING_TABLE_ID" cellspacing="0" cellpadding="0">
             <tr>
                 <ng-template ngFor let-h [ngForOf]="header" let-i="index">
                     <td class="custom" style="margin-left:0; margin-right:0; padding-bottom: 3px;"
@@ -42,8 +42,8 @@
         </table>
     </div>
     <br>
-    <div #CSV_TABLE_HEADER_DIV [id]="HEADER_DIV_ID" class="headerdiv" (scroll)="headerScroll()">
-        <table #CSV_TABLE_HEADER_TABLE [id]="HEADER_TABLE_ID" class="resizeTable" cellspacing="0" cellpadding="0">
+    <div #CSV_TABLE_HEADER_DIV [wave-test-id]="HEADER_DIV_ID" class="headerdiv" (scroll)="headerScroll()">
+        <table #CSV_TABLE_HEADER_TABLE [wave-test-id]="HEADER_TABLE_ID" class="resizeTable" cellspacing="0" cellpadding="0">
             <tr>
                 <!-- header goes here -->
                 <ng-template [ngIf]="(propertiesService.dataProperties$ | async).isHeaderRow">
@@ -76,8 +76,8 @@
         </table>
     </div>
     <br>
-    <div #CSV_TABLE_BODY_DIV [id]="BODY_DIV_ID" class="bodydiv" (scroll)="bodyScroll()">
-        <table #CSV_TABLE_BODY_TABLE [id]="BODY_TABLE_ID" class="resizeTable" cellspacing="0" cellpadding="0">
+    <div #CSV_TABLE_BODY_DIV [wave-test-id]="BODY_DIV_ID" class="bodydiv" (scroll)="bodyScroll()">
+        <table #CSV_TABLE_BODY_TABLE [wave-test-id]="BODY_TABLE_ID" class="resizeTable" cellspacing="0" cellpadding="0">
             <!-- body goes here -->
             <tr *ngFor="let el of elements; let i = index;" style="white-space: nowrap;">
                 <ng-template ngFor let-e [ngForOf]="el" let-k="index">

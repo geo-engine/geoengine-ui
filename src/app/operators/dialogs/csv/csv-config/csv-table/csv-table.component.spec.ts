@@ -7,6 +7,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ComponentFixtureSpecHelper} from '../../../../../spec/component-fixture-spec.helper';
 import { HEADER_TABLE_ID, BODY_TABLE_ID } from './csv-table.component';
 import 'hammerjs';
+import {TestIdComponentDirective} from '../../../../../spec/test-id-component.directive';
 
 describe('Component: CsvTableComponent', () => {
     let service: CsvPropertiesService;
@@ -16,7 +17,8 @@ describe('Component: CsvTableComponent', () => {
     beforeEach(() => {
         fixture = new ComponentFixtureSpecHelper<CsvTableComponent>({
             declarations: [
-                CsvTableComponent
+                CsvTableComponent,
+                TestIdComponentDirective
             ],
             imports: [
                 MaterialModule,
@@ -109,25 +111,25 @@ describe('Component: CsvTableComponent', () => {
     };
 
     function headerRow(): HTMLCollectionOf<HTMLTableCellElement> {
-        let tables = fixture.getElementsByTagName('table');
-        let header_table = null;
+        let tables = fixture.getElementsByTagName('table') as NodeListOf<HTMLTableElement>;
+        let header_table: HTMLTableElement;
         for (let i = 0; i < tables.length; i++) {
-            if (tables[i].id === HEADER_TABLE_ID) {
+            if (tables[i].getAttribute('ng-reflect-test_id') === HEADER_TABLE_ID) {
                 header_table = tables[i];
             }
         }
-        return header_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+        return header_table.getElementsByTagName('tr')[0].getElementsByTagName('td') as HTMLCollectionOf<HTMLTableCellElement>;
     };
 
     function bodyRow(): HTMLCollectionOf<HTMLTableCellElement> {
-        let tables = fixture.getElementsByTagName('table');
-        let body_table = null;
+        let tables = fixture.getElementsByTagName('table') as NodeListOf<HTMLTableElement>;
+        let body_table: HTMLTableElement;
         for (let i = 0; i < tables.length; i++) {
-            if (tables[i].id === BODY_TABLE_ID) {
+            if (tables[i].getAttribute('ng-reflect-test_id') === BODY_TABLE_ID) {
                 body_table = tables[i];
             }
         }
-        return body_table.getElementsByTagName('tr')[0].getElementsByTagName('td');
+        return body_table.getElementsByTagName('tr')[0].getElementsByTagName('td') as HTMLCollectionOf<HTMLTableCellElement>;
     };
 
     function clientWidth(element: HTMLElement): number {

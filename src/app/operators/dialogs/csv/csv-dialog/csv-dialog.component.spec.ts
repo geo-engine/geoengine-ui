@@ -23,6 +23,7 @@ import {SelectSpecHelper} from '../../../../spec/select-spec.helper';
 import {ComponentFixtureSpecHelper} from '../../../../spec/component-fixture-spec.helper';
 import {IntervalType} from '../csv-config/csv-properties/csv-properties.component';
 import 'hammerjs';
+import {TestIdComponentDirective} from '../../../../spec/test-id-component.directive';
 
 class MockUserService {
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
@@ -52,7 +53,8 @@ describe('Component: CsvDialogComponent', () => {
                 CsvTableComponent,
                 CsvUploadComponent,
                 DialogSectionHeadingComponent,
-                DialogHeaderComponent
+                DialogHeaderComponent,
+                TestIdComponentDirective
             ],
             imports: [
                 MaterialModule,
@@ -197,7 +199,7 @@ describe('Component: CsvDialogComponent', () => {
                 fixture.detectChanges();
                 setIsTime(true);
                 fixture.detectChanges();
-                selectHelper = fixture.getSelectHelper(INTERVAL_TYPE_SELECT_ID);
+                selectHelper = fixture.getSelectHelper(fixture.getElementByTestId(INTERVAL_TYPE_SELECT_ID));
             });
 
             it('disables/enables interval type options that are non-applicable', () => {
@@ -279,7 +281,7 @@ describe('Component: CsvDialogComponent', () => {
             fixture.detectChanges();
             setLayerName('name is taken');
             fixture.detectChanges();
-            let layerNameValueDOM = fixture.queryDOM(By.css('#' + LAYER_NAME_INPUT_ID)).nativeElement.value;
+            let layerNameValueDOM = fixture.getElementByTestId(LAYER_NAME_INPUT_ID).nativeElement.value;
             // let submit = de.query(By.css('#submit_btn')).nativeElement;
             expect(layerNameValueDOM).toBe('name is taken');
             expect(getReservedNames()[0]).toBe(layerNameValueDOM);

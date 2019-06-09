@@ -31,8 +31,8 @@
                 *ngIf="!(csvProperties.isDataProperties$ | async)">Prev</button>
         <button mat-raised-button color="primary" (click)="csvProperties.stepper.next()"
                 *ngIf="!(csvProperties.isLayerProperties$ | async)"
-                [disabled]="!(csvProperties.actualPage$ | async).isValid">Next</button>
-        <button id="submit_btn"
+                [disabled]="!(csvProperties.actualPage$ | async).valid">Next</button>
+        <button [wave-test-id]="'submit_btn'"
                 mat-raised-button color="primary" (click)="submit()"
                 *ngIf="csvProperties.isLayerProperties$ | async"
                 [disabled]="!csvProperties.isValid"
