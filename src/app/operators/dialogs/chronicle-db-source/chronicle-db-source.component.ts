@@ -7,7 +7,6 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Projections} from '../../projection.model';
-import {OgrRawSourceType} from '../../types/ogr-raw-source-type.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
@@ -15,6 +14,7 @@ import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {Config} from '../../../config.service';
 import {HttpClient} from '@angular/common/http';
+import {ChronicleDBSourceType} from '../../types/chronicle-db-source-type.model';
 
 const QUERY_SERVICE = '_queryInput';
 const SCHEMA_SERVICE = '_schemaInput';
@@ -96,7 +96,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                 }
 
                 const operator = new Operator({
-                    operatorType: new OgrRawSourceType({
+                    operatorType: new ChronicleDBSourceType({
                         filename: `${chronicleDbUrl}/${QUERY_SERVICE}?queryString=${encodeURIComponent(queryString)}`,
                         query_string: queryString,
                         time: 'start+end',

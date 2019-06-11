@@ -41,6 +41,7 @@ import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
 import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lookup-type';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
+import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-source-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -117,6 +118,8 @@ export abstract class OperatorTypeFactory {
                 return SensorSourceType.fromDict(dict as SensorSourceTypeDict);
             case TerminologyLookupType.TYPE:
                 return TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict);
+            case ChronicleDBSourceType.TYPE:
+                return ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict)
             default:
                 throw Error('There is not factory method defined for this operator.');
         }
