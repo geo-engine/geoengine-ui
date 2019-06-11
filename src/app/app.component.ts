@@ -19,7 +19,7 @@ import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
     ComplexVectorSymbology,
-    Symbology
+    AbstractSymbology
 } from './layers/symbology/symbology.model';
 import {ResultTypes} from './operators/result-type.model';
 
@@ -76,7 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     layerDetailViewVisible$: Observable<boolean>;
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
-    layersReverse$: Observable<Array<Layer<Symbology>>>;
+    layersReverse$: Observable<Array<Layer<AbstractSymbology>>>;
     // for ng-switch
     ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
     LayoutService = LayoutService;

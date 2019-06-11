@@ -173,8 +173,8 @@ export class SensorSourceOperatorComponent {
     addLayer(layerName: string, operator: Operator) {
         let symbology = new ComplexPointSymbology({
             fillRGBA: this.randomColorService.getRandomColorRgba(),
-            colorAttribute: 'node',
-            colorizer: {
+            fillAttribute: 'node',
+            fillColorizer: {
                 breakpoints: [
                     {value: 'rover0', rgba: {r: 255, g: 128, b: 0, a: 1.0}},
                     {value: 'bb00', rgba: {r: 0, g: 128, b: 255, a: 1.0}},

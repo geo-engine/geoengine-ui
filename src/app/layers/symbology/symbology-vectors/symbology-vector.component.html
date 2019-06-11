@@ -34,36 +34,83 @@
 -->
 
 <div>
-    <wave-color-breakpoint [ngModel]="symbology.fillColorBreakpoint" attributePlaceholder="Fill color" disabledAttribute="true"
+    <wave-color-breakpoint *ngIf="editFillColor" [ngModel]="symbology.fillColorBreakpoint" attributePlaceholder="Fill color" disabledAttribute="true"
                            (ngModelChange)="updateFill($event)">
     </wave-color-breakpoint>
-    <wave-color-breakpoint [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color" disabledAttribute="true"
+    <wave-color-breakpoint *ngIf="editStrokeColor" [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color" disabledAttribute="true"
                            (ngModelChange)="updateStroke($event)">
     </wave-color-breakpoint>
-
 </div>
+<mat-divider></mat-divider>
+
+<mat-tab-group>
+    <mat-tab label="Advanced Fill" *ngIf="editColorizeFillByAttribute">
+        <div>
+            <div>
+                <mat-slide-toggle
+                    [checked]="fillByAttribute"
+                    (change)="updateFillColorizeByAttribute($event)">
+                    Colorize by attribute
+                </mat-slide-toggle>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="fillAttribute"
+                                (ngModelChange)="setFillColorizerAttribute()"
+                                [disabled]="!fillByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of attributes"
+                            [value]="attribute"
+                        >{{attribute.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="fillByAttribute && !!symbology.fillAttribute">
+                <wave-colorizer-editor [ngModel]="symbology.fillColorizer" (ngModelChange)="updateFillColorizer($event)" [attributePlaceholder]="fillAttribute?.name" [inputType] = "fillAttribute?.type"></wave-colorizer-editor>
+            </div>
+
+        </div>
+    </mat-tab>
+    <mat-tab label="Advanced Stroke" *ngIf="editColorizeStrokeByAttribute">
+        <div>
+            <div>
+                <mat-slide-toggle
+                    [checked]="strokeByAttribute"
+                    (change)="updateStrokeColorizeByAttribute($event)">
+                    Colorize by attribute
+                </mat-slide-toggle>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="strokeAttribute"
+                                (ngModelChange)="setStrokeColorizerAttribute()"
+                                [disabled]="!strokeByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of attributes"
+                            [value]="attribute"
+                        >{{attribute.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="strokeByAttribute && !!symbology.strokeAttribute">
+                <wave-colorizer-editor [ngModel]="symbology.strokeColorizer" (ngModelChange)="updateStrokeColorizer($event)" [attributePlaceholder]="strokeAttribute?.name" [inputType] = "strokeAttribute?.type"></wave-colorizer-editor>
+            </div>
+
+        </div>
+    </mat-tab>
+</mat-tab-group>
+
 
 <div>
-    <mat-slide-toggle
-        [checked]="colorizeByAttribute"
-        (change)="updateColorizeByAttribute($event)">
-        Colorize by attribute
-    </mat-slide-toggle>
 
-    <mat-form-field>
-        <mat-select placeholder="Attribute"
-                    [(ngModel)]="attribute"
-                    (ngModelChange)="setColorizerAttribute()"
-                    [disabled]="!colorizeByAttribute">
-            <mat-option
-                *ngFor="let attribute of attributes"
-                [value]="attribute"
-            >{{attribute.name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+
+
 </div>
 
-<div *ngIf="colorizeByAttribute && !!symbology.colorAttribute">
-    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)" [attributePlaceholder]="attribute?.name" [inputType] = "attribute?.type"></wave-colorizer-editor>
-</div>
+

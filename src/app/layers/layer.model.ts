@@ -5,7 +5,7 @@ import {
     AbstractVectorSymbology,
     MappingColorizerRasterSymbology,
     RasterSymbology,
-    Symbology,
+    AbstractSymbology,
     SymbologyDict,
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -108,7 +108,7 @@ export interface LayerProvenance {
     reload$: Observer<void>;
 }
 
-interface LayerConfig<S extends Symbology> {
+interface LayerConfig<S extends AbstractSymbology> {
     name: string;
     operator: Operator;
     symbology: S;
@@ -147,7 +147,7 @@ export interface LayerDict {
     typeOptions?: LayerTypeOptionsDict;
 }
 
-export abstract class Layer<S extends Symbology> {
+export abstract class Layer<S extends AbstractSymbology> {
     protected _name: string;
     protected _expanded = false;
     protected _visible = true;
@@ -159,7 +159,7 @@ export abstract class Layer<S extends Symbology> {
      * Create the suitable layer type and initialize the callbacks.
      */
     static fromDict(dict: LayerDict,
-                    operatorMap = new Map<number, Operator>()): Layer<Symbology> {
+                    operatorMap = new Map<number, Operator>()): Layer<AbstractSymbology> {
         // console.log('Layer.fromDict()', dict);
         switch (dict.type) {
             case 'raster':
@@ -287,7 +287,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
         return new VectorLayer({
             name: dict.name,
             operator: operator,
-            symbology: Symbology.fromDict(dict.symbology) as AbstractVectorSymbology,
+            symbology: AbstractSymbology.fromDict(dict.symbology) as AbstractVectorSymbology,
             visible: dict.visible,
             expanded: dict.expanded,
             editSymbology: dict.editSymbology,
@@ -317,7 +317,7 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
 
     static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
-        const symbology = Symbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
+        const symbology = AbstractSymbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
         // console.log("RasterLayer.fromDict()", dict, symbology);
 
         return new RasterLayer({

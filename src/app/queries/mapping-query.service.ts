@@ -394,7 +394,7 @@ export class MappingQueryService {
         // console.log('colorizerRequest', colorizerRequest);
         return this.http.get<DeprecatedMappingColorizerDoNotUse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true)).pipe(
         // .catch((error, {}) => {
-        //    this.notificationService.error(`Could not load colorizer: »${error}«`);
+        //    this.notificationService.error(`Could not load fillColorizer: »${error}«`);
         //    return Observable.of({interpolation: 'unknown', breakpoints: []});
         // })
             map(c => {
@@ -455,13 +455,14 @@ export class MappingQueryService {
             ).toPromise();
     }
 
-    getGBIFAutoCompleteResults(scientificName: string): Promise<Array<string>> {
+    getGBIFAutoCompleteResults(level: string, term: string): Promise<Array<string>> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
             request: 'searchSpecies',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                term: scientificName,
+                level: level,
+                term: term,
             },
         });
 
@@ -471,13 +472,14 @@ export class MappingQueryService {
         return this.http.get<{ speciesNames: Array<string> }>(queryUrl).toPromise().then(response => response.speciesNames);
     }
 
-    getGBIFDataSourceCounts(scientificName: string): Promise<Array<{ name: string, count: number }>> {
+    getGBIFDataSourceCounts(level: string, term: string): Promise<Array<{ name: string, count: number }>> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
             request: 'queryDataSources',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                term: scientificName,
+                level: level,
+                term: term,
             },
         });
 

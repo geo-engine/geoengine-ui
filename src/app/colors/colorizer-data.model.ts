@@ -87,6 +87,10 @@ export class ColorizerData implements IColorizerData {
         this.breakpoints = [];
     }
 
+    isEmpty() {
+        return this.breakpoints.length === 0;
+    }
+
     addBreakpoint(brk: ColorBreakpointDict) {
         this.breakpoints.push(new ColorBreakpoint(brk));
     }
@@ -144,25 +148,27 @@ export class ColorizerData implements IColorizerData {
             }
         }
         const brk = this.breakpoints[brk_index];
-        const validBrk = brk_index >= 0 && ( this.breakpoints.length > 1 ||  brk.value === lookUpValue);
+        const validBrk = brk_index >= 0 && ( this.breakpoints.length >= 1 ||  brk.value === lookUpValue);
         const isLastBrk = brk_index >= this.breakpoints.length - 1;
         // console.log('ColorizerData', 'getBreakpointForValue', '#3', brk_index, validBrk, isLastBrk);
 
         if ( !validBrk ) {
+            console.log('ColorizerData', 'getBreakpointForValue', '!validBrk #3', brk_index, validBrk, isLastBrk);
             return undefined;
         }
 
-        if ( !interpolate || isLastBrk || brk.value === lookUpValue || !isGradient ) {
+        if ( !interpolate || isLastBrk || !isGradient || brk.value === lookUpValue ) {
             return brk;
         }
 
         // handling gradients for numbers...
         const brk_next = this.breakpoints[brk_index + 1];
+        // console.log('ColorizerData', 'getBreakpointForValue', '#4', typeof lookUpValue, typeof brk.value, typeof brk_next.value);
         if ( typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brk_next.value === 'number' ) {
             const diff = lookUpValue - brk.value;
             const frac_diff = diff / (brk_next.value - brk.value);
             const color = Color.interpolate(brk.rgba, brk_next.rgba, frac_diff);
-            // console.log('ColorizerData', 'getBreakpointForValue', '#4', brk.value, brk_next.value, diff, frac_diff, color);
+            // console.log('ColorizerData', 'getBreakpointForValue', '#5', brk.value, brk_next.value, diff, frac_diff, color);
 
             return new ColorBreakpoint({
                 rgba: color,

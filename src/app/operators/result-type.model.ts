@@ -109,6 +109,7 @@ class ResultTypeCollection {
             case this.POINTS.getCode():
             case 'point':
                 return this.POINTS;
+            case 'line string':
             case this.LINES.getCode():
                 return this.LINES;
             case this.POLYGONS.getCode():

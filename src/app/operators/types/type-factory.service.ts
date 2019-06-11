@@ -42,6 +42,7 @@ import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lo
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
 import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-source-type.model';
+import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -120,6 +121,8 @@ export abstract class OperatorTypeFactory {
                 return TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict);
             case ChronicleDBSourceType.TYPE:
                 return ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict)
+            case StatisticsType.TYPE:
+                return StatisticsType.fromDict(dict as StatisticsTypeDict);
             default:
                 throw Error('There is not factory method defined for this operator.');
         }

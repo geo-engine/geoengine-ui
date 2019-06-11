@@ -5,7 +5,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
-import {ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {ComplexLineSymbology, ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Projections} from '../../projection.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
@@ -136,8 +136,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                         }
                         break;
                     case ResultTypes.LINES:
-                        // TODO: LINE SYMBOLOGY
-                        symbology = ComplexVectorSymbology.createSimpleSymbology({
+                        symbology = ComplexLineSymbology.createSimpleSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         });
                         break;

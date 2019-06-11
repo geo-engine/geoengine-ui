@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {Symbology} from '../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../layers/symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ProjectService} from '../project.service';
@@ -14,7 +14,7 @@ export class WorkflowParameterChoiceDialogComponent implements OnInit {
 
     constructor(private projectService: ProjectService,
                 private dialogRef: MatDialogRef<WorkflowParameterChoiceDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public config: { layers: Array<Layer<Symbology>> }) {
+                @Inject(MAT_DIALOG_DATA) public config: { layers: Array<Layer<AbstractSymbology>> }) {
     }
 
     ngOnInit() {

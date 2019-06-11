@@ -5,7 +5,7 @@ import {
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Projection} from '../../../projection.model';
 import {Layer} from '../../../../layers/layer.model';
-import {Symbology} from '../../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../../layers/symbology/symbology.model';
 
 @Component({
     selector: 'wave-reprojection-selection',
@@ -21,7 +21,7 @@ export class ReprojectionSelectionComponent implements OnChanges, ControlValueAc
     /**
      * An array of layers that is traversed to get all projections.
      */
-    @Input() layers: Array<Layer<Symbology>>;
+    @Input() layers: Array<Layer<AbstractSymbology>>;
 
     projections: Array<Projection>;
     private selectedProjection: Projection;
