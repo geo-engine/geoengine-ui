@@ -9,21 +9,17 @@
         <mat-form-field>
             <mat-label>Geometry Type</mat-label>
             <mat-select formControlName="resultType">
-                <mat-option [value]="ResultTypes.POINTS">Points</mat-option>
-                <mat-option [value]="ResultTypes.LINES">Lines</mat-option>
-                <mat-option [value]="ResultTypes.POLYGONS">Polygons</mat-option>
+                <mat-option *ngFor="let resultType of validResultTypes" [value]="resultType">{{resultType}}</mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-checkbox formControlName="clustered" *ngIf="form.value.resultType === ResultTypes.POINTS">Clustered</mat-checkbox>
+        <mat-checkbox formControlName="clustered" *ngIf="resultTypeIsPoints$ | async">Clustered</mat-checkbox>
     </div>
     <div class="actions">
         <wave-operator-output-name formControlName="name"
                                    [suggestion]="'ChronincleDB Sensor Data'"></wave-operator-output-name>
-        <button type="submit"
-                mat-raised-button
-                color="primary"
-                [disabled]="(form.statusChanges | async) !== 'VALID'">
+        <button type="submit" mat-raised-button color="primary" [disabled]="isFormInvalid$ | async">
             Add
         </button>
     </div>
 </form>
+
