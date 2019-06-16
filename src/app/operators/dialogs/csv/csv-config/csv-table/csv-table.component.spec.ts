@@ -1,4 +1,5 @@
 import {ChangeDetectorRef} from '@angular/core';
+import {async} from '@angular/core/testing';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
 import {CsvTableComponent} from './csv-table.component';
 import {FormsModule} from '@angular/forms';
@@ -69,7 +70,7 @@ describe('Component: CsvTableComponent', () => {
         expect(numberOfTableColumns()).toBe(3);
     });
 
-    it('resizes table columns and synchronizes header and body widths when using custom headers', async () => {
+    it('resizes table columns and synchronizes header and body widths when using custom headers', async(async () => {
         component.data.content = '"a,b",c,dddddddddddddd\n"1,2",3,4';
         const TABLE_WIDTH = 4;
         service.changeDataProperties({
@@ -85,18 +86,21 @@ describe('Component: CsvTableComponent', () => {
         let body_row = bodyRow();
         expect(tableWidthWithoutSpacers(header_row)).toBe(TABLE_WIDTH);
         expect(tableWidthWithoutSpacers(body_row)).toBe(TABLE_WIDTH);
-        fixture.whenStable().then(() => {
-            for (let i = 0; i < header_row.length; i++) {
-                expect(clientWidth(header_row[i])).toBe(
-                    i % 2 === 0 ?
-                        component.cellSizes[i / 2] :
-                        component.cellSpacing
-                ); // Test whether or not the table resizes to the given values.
-                expect(clientWidth(header_row[i])).toBe(clientWidth(body_row[i]));
-                // Test if body and header have synchronized cell widths.
-            }
-        });
-    });
+        await fixture.whenStable();
+        fixture.detectChanges();
+        for (let i = 0; i < header_row.length; i++) {
+            console.log(clientWidth(header_row[i]));
+            console.log(i);
+            console.log(clientWidth(body_row[i]));
+            expect(clientWidth(header_row[i])).toBe(
+                i % 2 === 0 ?
+                    component.cellSizes[i] :
+                    component.cellSpacing
+            ); // Test whether or not the table resizes to the given values.
+            expect(clientWidth(header_row[i])).toBe(clientWidth(body_row[i]));
+            // Test if body and header have synchronized cell widths.
+        }
+    }));
 
     function getHeader(): {value: string}[] {
         return component.header;
