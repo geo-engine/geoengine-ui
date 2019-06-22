@@ -1,7 +1,7 @@
 import {ChangeDetectorRef} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
-import {CsvTableComponent} from './csv-table.component';
+import {CsvTableComponent, TYPING_TABLE_ID} from './csv-table.component';
 import {FormsModule} from '@angular/forms';
 import {MaterialModule} from '../../../../../material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -9,6 +9,7 @@ import {ComponentFixtureSpecHelper} from '../../../../../spec/component-fixture-
 import { HEADER_TABLE_ID, BODY_TABLE_ID } from './csv-table.component';
 import 'hammerjs';
 import {TestIdComponentDirective} from '../../../../../spec/test-id-component.directive';
+import {FormStatus} from '../csv-properties/csv-properties.component';
 
 describe('Component: CsvTableComponent', () => {
     let service: CsvPropertiesService;
@@ -89,9 +90,6 @@ describe('Component: CsvTableComponent', () => {
         await fixture.whenStable();
         fixture.detectChanges();
         for (let i = 0; i < header_row.length; i++) {
-            console.log(clientWidth(header_row[i]));
-            console.log(i);
-            console.log(clientWidth(body_row[i]));
             expect(clientWidth(header_row[i])).toBe(
                 i % 2 === 0 ?
                     component.cellSizes[i] :
@@ -99,6 +97,21 @@ describe('Component: CsvTableComponent', () => {
             ); // Test whether or not the table resizes to the given values.
             expect(clientWidth(header_row[i])).toBe(clientWidth(body_row[i]));
             // Test if body and header have synchronized cell widths.
+        }
+    }));
+
+    it('resizes table when entering typing properties', async(async () => {
+        service.changeFormStatus(FormStatus.TypingProperties);
+        fixture.detectChanges();
+        let header_row = headerRow();
+        let body_row = bodyRow();
+        let typing_row = typingRow();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        for (let i = 0; i < header_row.length; i++) {
+            expect(clientWidth(header_row[i])).toBe(clientWidth(body_row[i]));
+            expect(clientWidth(header_row[i])).toBe(clientWidth(typing_row[i]));
+            // Test if body, header and typing have synchronized cell widths.
         }
     }));
 
@@ -134,6 +147,17 @@ describe('Component: CsvTableComponent', () => {
             }
         }
         return body_table.getElementsByTagName('tr')[0].getElementsByTagName('td') as HTMLCollectionOf<HTMLTableCellElement>;
+    };
+
+    function typingRow(): HTMLCollectionOf<HTMLTableCellElement> {
+        let tables = fixture.getElementsByTagName('table') as NodeListOf<HTMLTableElement>;
+        let typing_table: HTMLTableElement;
+        for (let i = 0; i < tables.length; i++) {
+            if (tables[i].getAttribute('ng-reflect-test_id') === TYPING_TABLE_ID) {
+                typing_table = tables[i];
+            }
+        }
+        return typing_table.getElementsByTagName('tr')[0].getElementsByTagName('td') as HTMLCollectionOf<HTMLTableCellElement>;
     };
 
     function clientWidth(element: HTMLElement): number {

@@ -277,8 +277,6 @@ describe('Component: CsvDialogComponent', () => {
          * layername to be "name is taken".
          * */
         it('should detect taken name', () => {
-            setFormStatus(FormStatus.LayerProperties);
-            fixture.detectChanges();
             setLayerName('name is taken');
             fixture.detectChanges();
             let layerNameValueDOM = fixture.getElementByTestId(LAYER_NAME_INPUT_ID).nativeElement.value;
