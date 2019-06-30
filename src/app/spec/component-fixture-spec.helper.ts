@@ -8,6 +8,11 @@ import {Predicate} from '@angular/core/src/debug/debug_node';
 import {By} from '@angular/platform-browser';
 import {TestIdComponentDirective} from './test-id-component.directive';
 
+
+/**
+ * This Component is used to pass Inputs to the tested component.
+ * The inputs are given over the constructor arguments of the SpecHelper.
+ */
 @Component({
     selector: 'wave-test-host',
     template: `<ng-template #component></ng-template>`
@@ -91,13 +96,17 @@ export class ComponentFixtureSpecHelper<T> {
     }, type: Type<T>, @Optional() inputs?: {[key: string]: any }) {
 
         @NgModule({
-            entryComponents: [ type ]
+            declarations: [
+                TestHostComponent
+            ],
+            entryComponents: [
+                type
+            ]
         })
-        class ENTRY_MODULE {};
+        class EntryModule {};
 
-        _app_module.declarations.push(TestHostComponent);
         _app_module.imports.push(
-            ENTRY_MODULE
+            EntryModule
         );
         TestBed.configureTestingModule(_app_module)
             .overrideComponent(TestHostComponent, {

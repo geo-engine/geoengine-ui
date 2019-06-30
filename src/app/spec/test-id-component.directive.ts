@@ -1,10 +1,10 @@
 import {Directive, Input} from '@angular/core';
 
 @Directive({
-    selector: '[wave-test-id]'
+    selector: '[waveTestId]'
 })
 export class TestIdComponentDirective {
 
-    @Input('wave-test-id') test_id: string;
+    @Input('waveTestId') test_id: string;
 
 }
