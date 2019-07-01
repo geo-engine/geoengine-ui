@@ -16,24 +16,26 @@ import {
     ViewChild,
 } from '@angular/core';
 
-import ol from 'ol'
-import OlMap from 'ol/map';
-import OlLayerVector from 'ol/layer/vector';
-import OlSourceVector from 'ol/source/vector';
-import OlInteractionSelect from 'ol/interaction/select';
-import OlInteractionDraw from 'ol/interaction/draw';
-import OlCollection from 'ol/collection';
-import OlStyleStyle from 'ol/style/style';
-import OlGeomPoint from 'ol/geom/point';
-import OlView from 'ol/view';
-import OlLayerTile from 'ol/layer/tile';
-import OlStyleFill from 'ol/style/fill';
-import OlSourceOSM from 'ol/source/osm';
-import OlLayerImage from 'ol/layer/image';
-import OlStyleStroke from 'ol/style/stroke';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlFormatGeoJSON from 'ol/format/geojson';
-import XYZ from 'ol/source/xyz';
+import {Map as OlMap, View as OlView, Feature as OlFeature} from 'ol';
+import {Vector as OlLayerVector} from 'ol/layer';
+import {Vector as OlSourceVector} from 'ol/source';
+import {Select as OlInteractionSelect, SelectEvent as OlInteractionSelectEvent} from 'ol/interaction';
+import {Draw as OlInteractionDraw} from 'ol/interaction';
+import {Collection as OlCollection} from 'ol';
+import {Style as OlStyleStyle} from 'ol/style';
+import {Point as OlGeomPoint} from 'ol/geom';
+import {Tile as OlLayerTile} from 'ol/layer';
+import {Fill as OlStyleFill} from 'ol/style';
+import {OSM as OlSourceOSM} from 'ol/source';
+import {Image as OlLayerImage} from 'ol/layer';
+import {Stroke as OlStyleStroke} from 'ol/style';
+import {TileWMS as OlTileWmsSource} from 'ol/source';
+import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
+import {XYZ} from 'ol/source';
+import {Layer as OlLayer} from 'ol/layer';
+import {Source as OlSource} from 'ol/source';
+import {Extent as OlExtent} from 'ol'
+import {GeometryType as OlGeometryType} from 'ol/geom';
 
 
 import {OlMapLayerComponent} from './map-layer.component';
@@ -47,7 +49,7 @@ import {MapService} from './map.service';
 import {Config} from '../config.service';
 import {StyleCreator} from './style-creator';
 
-type MapLayer = OlMapLayerComponent<ol.layer.Layer, ol.source.Source, Symbology, Layer<Symbology>>;
+type MapLayer = OlMapLayerComponent<OlLayer, OlSource, Symbology, Layer<Symbology>>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 
@@ -78,11 +80,11 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
 
     private projection$: Observable<Projection>;
 
-    private map: ol.Map;
+    private map: OlMap;
 
-    private drawInteraction: ol.interaction.Draw;
-    private drawInteractionSource: ol.source.Vector;
-    private drawInteractionLayer: ol.layer.Vector;
+    private drawInteraction: OlInteractionDraw;
+    private drawInteractionSource: OlSourceVector;
+    private drawInteractionLayer: OlLayerVector;
 
     private layers: Array<Layer<Symbology>> = []; // HACK
 
@@ -142,7 +144,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         }
     }
 
-    zoomToExtent(extent: [number, number, number, number] | ol.Extent) {
+    zoomToExtent(extent: [number, number, number, number] | OlExtent) {
         // this.map.getView().fit(extent, this.map.getSize());
         this.map.getView().fit(extent);
     }
@@ -262,7 +264,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         });
     }
 
-    public startDrawInteraction(drawType: ol.geom.GeometryType) {
+    public startDrawInteraction(drawType: OlGeometryType) {
         if (this.drawInteraction) {
             throw new Error('only one draw interaction can be active!');
         }
@@ -290,7 +292,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         return (!!this.drawInteraction && !!this.drawInteractionLayer);
     }
 
-    public endDrawInteraction(): ol.source.Vector {
+    public endDrawInteraction(): OlSourceVector {
         if (!this.drawInteraction || !this.drawInteractionLayer) {
             console.error('no interaction or layer active!');
             return undefined;
@@ -313,17 +315,17 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
             loadTilesWhileInteracting: true, // TODO: check if moved to layer
         });
 
-        let selectedOlLayers: Array<ol.layer.Layer> = undefined;
+        let selectedOlLayers: Array<OlLayer> = undefined;
 
         // add the select interaction to the map
         const select = new OlInteractionSelect({
-            layers: (layerCandidate: ol.layer.Layer) => layerCandidate === selectedOlLayers[0],
+            layers: (layerCandidate: OlLayer) => layerCandidate === selectedOlLayers[0],
             wrapX: false,
         });
         (select as any).setActive(false);
         this.map.addInteraction(select);
         select.on(['select'], (event: {}) => {
-            const selectEvent = event as ol.interaction.Select.Event;
+            const selectEvent = event as OlInteractionSelectEvent;
             const selectedSymbology = this.layerService.getSelectedLayer().symbology;
 
             if (selectedSymbology instanceof AbstractVectorSymbology) {
@@ -370,7 +372,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         this.layerService.getSelectedFeaturesStream().subscribe(selected => {
             const selectedLayer = this.layerService.getSelectedLayer();
 
-            let newSelect = new OlCollection<ol.Feature>();
+            let newSelect = new OlCollection<OlFeature>();
             select.getFeatures().forEach(feature => {
                 if (selected.remove && selected.remove.contains(feature.getId())) {
                     newSelect.push(feature);
@@ -391,7 +393,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                         );
                         const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
 
-                        const vectorLayer = layer as ol.layer.Vector;
+                        const vectorLayer = layer as OlLayerVector;
                         vectorLayer.getSource().getFeatures().forEach(feature => {
                             if (selected.add && selected.add.contains(feature.getId())) {
                                 if (select.getFeatures().getArray().indexOf(feature) === -1) {
@@ -414,12 +416,12 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         const oldCenter = this.map.getView().getCenter();
         const oldZoom = this.map.getView().getZoom();
 
-        let newCenterPoint: ol.geom.Point;
+        let newCenterPoint: OlGeomPoint;
         if (oldProjection && oldCenter) {
             const oldCenterPoint = new OlGeomPoint(oldCenter);
             newCenterPoint = oldCenterPoint.clone().transform(
                 oldProjection, newProjection
-            ) as ol.geom.Point;
+            ) as OlGeomPoint;
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
@@ -459,7 +461,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
         );
     }
 
-    private createBackgroundLayer(projection: Projection): ol.layer.Image {
+    private createBackgroundLayer(projection: Projection): OlLayerImage {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 if (projection === Projections.WEB_MERCATOR) {
@@ -475,7 +477,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                         url: 'assets/countries.geo.json',
                         format: new OlFormatGeoJSON(),
                     }),
-                    style: (feature: ol.Feature, resolution: number): ol.style.Style => {
+                    style: (feature: OlFeature, resolution: number): OlStyleStyle => {
                         if (feature.getId() === 'BACKGROUND') {
                             return new OlStyleStyle({
                                 fill: new OlStyleFill({
@@ -496,7 +498,7 @@ export class MapComponent implements AfterViewInit, OnChanges, OnDestroy, AfterC
                     },
                 });
             case 'hosted':
-                const hostedSource = new OlSourceTileWMS({
+                const hostedSource = new OlTileWmsSource({
                     url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
                     params: {
                         layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,

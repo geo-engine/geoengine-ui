@@ -1,5 +1,5 @@
 # NodeJS Image
-FROM node:10.5-alpine AS builder
+FROM node:11.10-alpine AS builder
 
 # Setup directories
 WORKDIR /app
@@ -16,7 +16,7 @@ COPY . /app/wave
 RUN cd /app/wave && \
     rm -rf node_modules/ && \
     npm install && \
-    npm run build-production
+    NODE_OPTIONS="--max-old-space-size=4096" npm run build-production
 
 # Create Snakeoil SSL
 RUN openssl genrsa 1024 > /app/server.key && \

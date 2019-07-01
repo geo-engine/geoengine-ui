@@ -15,10 +15,10 @@ import {Layer, VectorData, VectorLayer} from '../../layers/layer.model';
 import {AbstractVectorSymbology} from '../../layers/symbology/symbology.model';
 import {FeatureID} from '../../queries/geojson.model';
 import {MapService} from '../../map/map.service';
-import ol from 'ol';
 import {ProjectService} from '../../project/project.service';
 import {Unit} from '../../operators/unit.model';
-import {Feature} from 'openlayers';
+import {Feature as OlFeature} from 'ol/Feature';
+import {Point as OlPoint} from 'ol/geom/Point';
 
 
 /**
@@ -98,7 +98,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public layerService;
 
     // Observables
-    public data$: Observable<Array<ol.Feature>>;
+    public data$: Observable<Array<OlFeature>>;
     public state$: Observable<LoadingState>;
 
     public offsetTop$: BehaviorSubject<number>;
@@ -155,7 +155,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     ngOnInit() {
-        this.dataSubscription = this.data$.subscribe((features: Array<ol.Feature>) => {
+        this.dataSubscription = this.data$.subscribe((features: Array<OlFeature>) => {
             this.dataHead = [];
             this.dataHeadUnits = [];
             this.data = [];
@@ -223,7 +223,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
     private initDataStream(): void {
         const dataStream: Observable<{
-            data$: Observable<Feature[]>, state$: Observable<LoadingState>, selectable: boolean
+            data$: Observable<OlFeature[]>, state$: Observable<LoadingState>, selectable: boolean
         }> = this.layerService.getSelectedLayerStream().pipe(
             map(layer => {
                     if (layer instanceof Layer) {
@@ -240,7 +240,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                                     return d.data.filter(x => {
                                         const xe = x.getGeometry().getExtent();
                                         const ve = v.extent;
-                                        const int = (x.getGeometry() as ol.geom.Point).intersectsExtent(ve); // todo not only point
+                                        const int = (x.getGeometry() as OlPoint).intersectsExtent(ve); // todo not only point
                                         // console.log(ve, x.getGeometry(), int);
                                         return int;
                                     });

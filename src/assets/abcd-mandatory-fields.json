@@ -1,132 +1,290 @@
 [
-{
-"name": "SourceInstitutionID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "SourceID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "UnitID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "DateLastEdited",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Description/RelatedDatasetGUID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Description/RelatedDatasetID",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonName",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonRank",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Identifications/Identification/Result/TaxonIdentified/ScientificName/FullScientificNameString",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "RecordBasis",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/FileURI",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/Format",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Text",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Details",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/URI",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "MultiMediaObjects/MultiMediaObject/Creator",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/DateTime/ISODateTimeBegin",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/Agents/GatheringAgent/AgentText",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/LocalityText",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/Country/Name",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/Country/ISO3166Code",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/NamedAreas/NamedArea/AreaName",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LongitudeDecimal",
-"numeric": true,
-"unit": "°"
-},
-{
-"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LatitudeDecimal",
-"numeric": true,
-"unit": "°"
-},
-{
-"name": "Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/SpatialDatum",
-"numeric": false,
-"unit": ""
-},
-{
-"name": "RecordURI",
-"numeric": false,
-"unit": ""
-}
+    {
+        "name": "/DataSets/DataSet/DatasetGUID",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/TechnicalContacts/TechnicalContact/Name",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/TechnicalContacts/TechnicalContact/Email",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/ContentContacts/ContentContact/Name",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/ContentContacts/ContentContact/Email",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/Description/Representation/Title",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/Description/Representation/Details",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/Description/Representation/URI",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/RevisionData/DateModified",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/Text",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/IPRStatements/Citations/Citation/Text",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/Details",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Metadata/IPRStatements/Licenses/License/URI",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": true,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/SourceInstitutionID",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/SourceID",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/UnitID",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/DateLastEdited",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonName",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/HigherTaxa/HigherTaxon/HigherTaxonRank",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Identifications/Identification/Result/TaxonIdentified/ScientificName/FullScientificNameString",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/RecordBasis",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/FileURI",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/Format",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Text",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/Details",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/IPR/Licenses/License/URI",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/MultiMediaObjects/MultiMediaObject/Creator",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/DateTime/ISODateTimeBegin",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/Agents/GatheringAgent/AgentText",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/LocalityText",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/Country/Name",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/Country/ISO3166Code",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": false,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LongitudeDecimal",
+        "numeric": true,
+        "vatMandatory": true,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": "°"
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/LatitudeDecimal",
+        "numeric": true,
+        "vatMandatory": true,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": "°"
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/Gathering/SiteCoordinateSets/SiteCoordinates/CoordinatesLatLong/SpatialDatum",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    },
+    {
+        "name": "/DataSets/DataSet/Units/Unit/RecordURI",
+        "numeric": false,
+        "vatMandatory": false,
+        "gfbioMandatory": true,
+        "globalField": false,
+        "unit": ""
+    }
 ]

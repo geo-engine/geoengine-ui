@@ -677,9 +677,7 @@ export class ProjectService {
      */
     setLayers(layers: Array<Layer<Symbology>>) {
         this.project$.pipe(first()).subscribe(project => {
-            // console.log("setLayers", layers);
             if (project.layers !== layers) {
-                // console.log("setLayers updates");
                 this.changeProjectConfig({layers: layers});
             }
         });

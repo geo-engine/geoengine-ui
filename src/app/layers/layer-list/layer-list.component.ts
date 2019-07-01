@@ -2,14 +2,14 @@
 import {first} from 'rxjs/operators';
 import {Observable, Subscription} from 'rxjs';
 
-import {Component, OnDestroy, Input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog, MatIconRegistry} from '@angular/material';
 import {LayoutService} from '../../layout.service';
 import {SymbologyType, Symbology} from '../symbology/symbology.model';
 
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
-import {DragulaService} from 'ng2-dragula';
 import {LayerService} from '../layer.service';
 import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
@@ -33,6 +33,7 @@ export class LayerListComponent implements OnDestroy {
     LayoutService = LayoutService;
     layerListVisibility$: Observable<boolean>;
     @Input() height: number;
+    layerList: Array<Layer<Symbology>> = [];
 
     // make visible in template
     // tslint:disable:variable-name
@@ -47,32 +48,17 @@ export class LayerListComponent implements OnDestroy {
     SymbologyEditorComponent = SymbologyEditorComponent;
     // tslint:enable
 
-    dragOptions = {
-        removeOnSpill: false,
-        revertOnSpill: true,
-        moves: (el, source, handle, sibling): boolean => {
-            let s = handle;
-            while ((s = s.parentElement) && !!s && !s.classList.contains('no-drag')) {
-            }
-            return !s;
-        }
-    };
-
     private subscriptions: Array<Subscription> = [];
-
-    private static domIndexOf(child: HTMLElement, parent: HTMLElement) {
-        return Array.prototype.indexOf.call(parent.children, child);
-    }
 
     constructor(public dialog: MatDialog,
                 public layoutService: LayoutService,
-                private dragulaService: DragulaService,
                 public projectService: ProjectService,
                 public layerService: LayerService,
                 private mapService: MapService,
                 private iconRegistry: MatIconRegistry,
                 private sanitizer: DomSanitizer,
-                public config: Config) {
+                public config: Config,
+                public changeDetectorRef: ChangeDetectorRef) {
         iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
             sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
         iconRegistry.addSvgIconInNamespace('symbology', 'line',
@@ -84,37 +70,22 @@ export class LayerListComponent implements OnDestroy {
 
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
-        this.handleDragAndDrop();
+        const sub = this.projectService.getLayerStream().subscribe(layerList => {
+            if (layerList !== this.layerList) {
+                this.layerList = layerList; // TODO: do we need a copy of the layerlist?
+                this.changeDetectorRef.markForCheck();
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     ngOnDestroy() {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
 
-    handleDragAndDrop() {
-        let dragIndex: number;
-        let dropIndex: number;
-
-        this.subscriptions.push(
-            this.dragulaService.drag.subscribe((value: [string, HTMLElement, HTMLElement]) => {
-                const [_, listItem, list] = value;
-                dragIndex = LayerListComponent.domIndexOf(listItem, list);
-                // console.log('drag', dragIndex);
-            })
-        );
-        this.subscriptions.push(
-            this.dragulaService.drop.subscribe((value: [string, HTMLElement, HTMLElement]) => {
-                const [_, listItem, list] = value;
-                dropIndex = LayerListComponent.domIndexOf(listItem, list);
-                // console.log('drop', dropIndex);
-
-                this.projectService.getLayerStream().pipe(first()).subscribe(layers => {
-                    let shiftedLayers: Array<Layer<Symbology>> = [...layers];
-                    shiftedLayers.splice(dropIndex, 0, shiftedLayers.splice(dragIndex, 1)[0]);
-                    this.projectService.setLayers(shiftedLayers)
-                });
-            })
-        );
+    drop(event: CdkDragDrop<string[]>) {
+        moveItemInArray(this.layerList, event.previousIndex, event.currentIndex);
+        this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
     }
 
     toggleLayer(layer: Layer<Symbology>) {

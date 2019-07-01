@@ -7,10 +7,21 @@
             ></wave-dialog-section-heading>
             <div fxLayout="row">
                 <mat-form-field fxFlex>
+                    <mat-label>Search Level</mat-label>
+                    <mat-select formControlName="searchLevel">
+                        <mat-option *ngFor="let level of taxonLevels" [value]="level">
+                            {{level}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row">
+                <mat-form-field fxFlex>
                     <input matInput
                            placeholder="Scientific Name"
                            [matAutocomplete]="auto"
-                           formControlName="searchString"
+                           formControlName="searchTerm"
                     >
                 </mat-form-field>
                 <mat-autocomplete #auto="matAutocomplete">
@@ -25,7 +36,7 @@
                         *ngIf="(mode$ | async) === Mode.SEARCH"
                         color="accent"
                         (click)="lookup()"
-                        [disabled]="(form.controls.searchString.valueChanges | async)?.length < minSearchLength"
+                        [disabled]="(form.controls.searchTerm.valueChanges | async)?.length < minSearchLength"
                 >
                     Lookup
                 </button>
@@ -57,7 +68,7 @@
         </div>
         <wave-operator-output-name
             formControlName="name"
-            [suggestion]="form.controls.searchString.valueChanges | async"
+            [suggestion]="form.controls.searchTerm.valueChanges | async"
         ></wave-operator-output-name>
         <div fxLayout="row">
             <button

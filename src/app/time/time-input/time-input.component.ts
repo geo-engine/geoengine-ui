@@ -78,6 +78,13 @@ export class TimeInputComponent implements  ControlValueAccessor, AfterViewInit,
         }
     }
 
+    updateDate(value: number){
+        if (value) {
+            this.time.date(value);
+            this.propagateChange();
+        }
+    }
+
     private propagateChange() {
 
         if (this.onChange) {

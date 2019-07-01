@@ -23,7 +23,6 @@
             "styles": [
               "src/styles.scss",
               "src/wave-app-theme.scss",
-              "node_modules/dragula/dist/dragula.min.css",
               "node_modules/codemirror/lib/codemirror.css"
             ],
             "scripts": []
@@ -38,7 +37,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

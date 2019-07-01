@@ -1,12 +1,8 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import ol from 'ol';
-import OlLayerTile from 'ol/layer/tile';
-import OlSourceTileWMS from 'ol/source/tilewms';
-import OlLayerVector from 'ol/layer/vector';
-import OlSourceVector from 'ol/source/vector';
-
+import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
+import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
 import {Projection} from '../operators/projection.model';
 import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
@@ -35,8 +31,8 @@ import {isNullOrUndefined} from 'util';
 //     changeDetection: ChangeDetectionStrategy.OnPush,
 // })
 export abstract class OlMapLayerComponent<
-        OL extends ol.layer.Layer,
-        OS extends ol.source.Source,
+        OL extends OlLayer,
+        OS extends OlSource,
         S extends Symbology,
         L extends Layer<S>
     >
@@ -65,8 +61,8 @@ export abstract class OlMapLayerComponent<
     abstract getExtent(): [number, number, number, number];
 }
 
-export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.layer.Vector,
-    ol.source.Vector,
+export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayerVector,
+    OlVectorSource,
     AbstractVectorSymbology,
     VectorLayer<AbstractVectorSymbology>> implements OnInit, OnChanges, OnDestroy {
 
@@ -76,7 +72,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<ol.laye
 
     protected constructor(protected projectService: ProjectService) {
         super(projectService);
-        this.source = new OlSourceVector({wrapX: false});
+        this.source = new OlVectorSource({wrapX: false});
         this._mapLayer = new OlLayerVector({
             source: this.source,
             updateWhileAnimating: true,
@@ -186,7 +182,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
-export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, ol.source.TileWMS,
+export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlTileSource,
     MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnChanges, OnInit {
 
     private dataSubscription: Subscription;
@@ -222,7 +218,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     // console.log("projection", this.source.getProjection().getCode, rasterData.projection.getCode());
 
                     // unfortunally there is no setProjection function, so reset the whole source
-                    this.source = new OlSourceTileWMS({
+                    this.source = new OlTileWmsSource({
                         url: rasterData.data,
                         params: {
                             time: rasterData.time.asRequestString(),
@@ -247,7 +243,7 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<ol.layer.Tile, o
                     this.source.refresh();
                 }
             } else {
-                this.source = new OlSourceTileWMS({
+                this.source = new OlTileWmsSource({
                     url: rasterData.data,
                     params: {
                         time: rasterData.time.asRequestString(),

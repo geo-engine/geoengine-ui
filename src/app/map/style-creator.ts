@@ -1,9 +1,16 @@
-import ol from 'ol';
-import OlStyleStyle from 'ol/style/style';
-import OlStyleFill from 'ol/style/fill'
-import OlStyleStroke from 'ol/style/stroke'
-import OlStyleCircle from 'ol/style/circle'
-import OlStyleText from 'ol/style/text'
+import {Style as OlStyle,
+    StyleFunction as OlStyleFunction,
+    Circle as OlStyleCircle,
+    Fill as OlStyleFill,
+    Stroke as OlStyleStroke,
+    Text as OlStyleText,
+} from 'ol/style';
+// import {} from 'ol/style/Fill'
+// import {Stroke as OlStyleStroke} from 'ol/style/Stroke'
+// import {Circle as OlStyleCircle} from 'ol/style/Circle'
+// import {Text as OlStyleText} from 'ol/style/Text'
+import {Feature as OlFeature} from 'ol';
+
 
 import {
     SymbologyType,
@@ -18,7 +25,7 @@ import {
 
 export class StyleCreator {
 
-    public static fromVectorSymbology(sym: AbstractVectorSymbology): ol.StyleFunction | ol.style.Style {
+    public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
         // console.log('StyleCreator', 'fromVectorSymbology', sym);
         switch (sym.getSymbologyType()) {
             case SymbologyType.SIMPLE_VECTOR:
@@ -47,15 +54,15 @@ export class StyleCreator {
         return highlightSymbology;
     }
 
-    static fromSimpleVectorSymbology(sym: AbstractVectorSymbology): ol.style.Style {
-        return new OlStyleStyle({
+    static fromSimpleVectorSymbology(sym: AbstractVectorSymbology): OlStyle {
+        return new OlStyle({
             fill: new OlStyleFill({ color: sym.fillRGBA.rgbaTuple() }),
             stroke: new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth }),
         });
     }
 
-    static fromSimplePointSymbology(sym: SimplePointSymbology): ol.style.Style {
-            return new OlStyleStyle({
+    static fromSimplePointSymbology(sym: SimplePointSymbology): OlStyle {
+            return new OlStyle({
                 image: new OlStyleCircle({
                     radius: sym.radius,
                     fill: new OlStyleFill({ color: sym.fillRGBA.rgbaTuple() }),
@@ -66,11 +73,11 @@ export class StyleCreator {
 
     // TODO: put style and cache into wrapper class?
 
-    static fromComplexVectorSymbology(sym: ComplexVectorSymbology): ol.StyleFunction {
+    static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
       // we need a style cache to speed things up. This dangles in the void of the GC...
-      const styleCache: {[key: string]: OlStyleStyle} = {};
+      const styleCache: {[key: string]: OlStyle} = {};
 
-      return (feature: ol.Feature, resolution: number) => {
+      return (feature: OlFeature, resolution: number) => {
 
           // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
 
@@ -108,7 +115,7 @@ export class StyleCreator {
                   })
               });
 
-              const style = new OlStyleStyle({
+              const style = new OlStyle({
                   stroke: stroke,
                   fill: fill,
                   text: textStyle
@@ -120,11 +127,11 @@ export class StyleCreator {
       };
     }
 
-    static fromComplexPointSymbology(sym: ComplexPointSymbology): ol.StyleFunction {
+    static fromComplexPointSymbology(sym: ComplexPointSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
-        const styleCache: {[key: string]: OlStyleStyle} = {};
+        const styleCache: {[key: string]: OlStyle} = {};
 
-        return (feature: ol.Feature, resolution: number) => {
+        return (feature: OlFeature, resolution: number) => {
 
             // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
 
@@ -165,7 +172,7 @@ export class StyleCreator {
                     })
                 });
 
-                const style = new OlStyleStyle({
+                const style = new OlStyle({
                     image: imageStyle,
                     text: textStyle
                 });

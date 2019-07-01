@@ -11,6 +11,10 @@
         <p *ngIf="_showDescription && dataset?.descriptionText">{{dataset?.descriptionText}}</p>
     </mat-card-content>
 
+    <mat-chip-list>
+        <mat-chip *ngFor="let tag of dataset.tags">{{tag}}</mat-chip>
+    </mat-chip-list>
+
     <mat-list>
         <mat-list-item>
             <mat-icon matListIcon>open_in_new</mat-icon>
