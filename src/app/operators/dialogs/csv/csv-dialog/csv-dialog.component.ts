@@ -39,8 +39,6 @@ export class CsvDialogComponent implements OnInit {
     uploading$ = new BehaviorSubject(false);
 
     constructor(private userService: UserService,
-                private layerService: LayerService,
-                private mappingQueryService: MappingQueryService,
                 private randomColorService: RandomColorService,
                 private projectService: ProjectService,
                 private dialogRef: MatDialogRef<CsvDialogComponent>,

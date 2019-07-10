@@ -2,10 +2,8 @@ import {
     DataPropertiesDict, FormStatus,
     SpatialPropertiesDict, TemporalPropertiesDict
 } from '../csv-config/csv-properties/csv-properties.component';
-import {Subject, BehaviorSubject} from 'rxjs';
+import {Subject, BehaviorSubject, Subscription, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {IntervalFormat} from '../interval.enum';
-import {Projections} from '../../../projection.model';
 
 @Injectable()
 export class CsvPropertiesService {

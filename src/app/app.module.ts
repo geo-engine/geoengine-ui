@@ -145,6 +145,7 @@ import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminolog
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
+import {TestIdComponentDirective} from './spec/test-id-component.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -273,6 +274,7 @@ export function configInitializer(config: Config) {
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
+        TestIdComponentDirective,
     ],
     imports: [
         BrowserAnimationsModule,
