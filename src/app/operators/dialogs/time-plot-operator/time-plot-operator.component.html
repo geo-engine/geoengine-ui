@@ -1,5 +1,5 @@
 <wave-sidenav-header>Time plot</wave-sidenav-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()" fxLayout="column">
     <div fxFlex class="container">
         <wave-layer-selection [types]="ResultTypes.VECTOR_TYPES" formControlName="layer"></wave-layer-selection>
         <div *ngIf="form.controls['layer'].valueChanges | async">
