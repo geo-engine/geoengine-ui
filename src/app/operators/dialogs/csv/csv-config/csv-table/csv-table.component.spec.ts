@@ -101,7 +101,6 @@ describe('Component: CsvTableComponent', () => {
             });
 
             it('should parse and update correctly', () => {
-                console.log(test_case.behavior);
                 service.changeDataProperties({
                     delimiter: ',',
                     decimalSeparator: '.',
