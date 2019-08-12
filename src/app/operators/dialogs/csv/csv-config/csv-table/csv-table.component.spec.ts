@@ -11,6 +11,7 @@ import 'hammerjs';
 import {TestIdComponentDirective} from '../../../../../spec/test-id-component.directive';
 import {FormStatus} from '../csv-properties/csv-properties.component';
 import {Map} from 'immutable';
+import {configureWaveTesting} from '../../../../../spec/wave-testing.configuration';
 
 interface Setting {
     delimiter: string,
@@ -33,6 +34,7 @@ interface TestCase {
 }
 
 describe('Component: CsvTableComponent', () => {
+    configureWaveTesting();
 
     let service: CsvPropertiesService;
     let fixture: ComponentFixtureSpecHelper<CsvTableComponent>;

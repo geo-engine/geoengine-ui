@@ -24,6 +24,7 @@ import {ComponentFixtureSpecHelper} from '../../../../spec/component-fixture-spe
 import {IntervalType} from '../csv-config/csv-properties/csv-properties.component';
 import 'hammerjs';
 import {TestIdComponentDirective} from '../../../../spec/test-id-component.directive';
+import {configureWaveTesting} from '../../../../spec/wave-testing.configuration';
 
 class MockUserService {
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
@@ -37,6 +38,8 @@ class MockProjectService {
 }
 
 describe('Component: CsvDialogComponent', () => {
+    configureWaveTesting();
+
     let service: CsvPropertiesService;
     let propertiesComponent: CsvPropertiesComponent;
     let tableComponent: CsvTableComponent;
