@@ -34,7 +34,6 @@ interface TestCase {
 }
 
 describe('Component: CsvTableComponent', () => {
-    configureWaveTesting();
 
     let service: CsvPropertiesService;
     let fixture: ComponentFixtureSpecHelper<CsvTableComponent>;
@@ -81,7 +80,7 @@ describe('Component: CsvTableComponent', () => {
     for (let i = 0; i < test_cases.length; i++) {
         let test_case = test_cases[i];
         describe('Test Case: ' + test_case.case_name, () => {
-            beforeEach(() => {
+            configureWaveTesting(() => {
                 fixture = new ComponentFixtureSpecHelper<CsvTableComponent>({
                     declarations: [
                         CsvTableComponent,

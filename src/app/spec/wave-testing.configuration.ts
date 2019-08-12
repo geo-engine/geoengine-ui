@@ -5,15 +5,14 @@ import { } from 'jasmine'; // get beforeAll, beforeEach, afterAll, afterEach env
  * The main computational workload of tests comes from resetting the TestBed.
  * When it is possible to reuse the TestBed in all described tests (f.e. you create a describe environment in which all tests
  * use the same dependencies) one should not reload the TestBed on every test (i.e. it environment).
- * By calling this function on the start of the describe environment one disables this resetting at the beginning of the tests and
+ * By calling this function instead of beforeEach to configure your TestBed one disables this resetting at the beginning of the tests and
  * re-enables it at the end.
  *
  * Example:
  * describe("Component: TestComponent", () => {
  *  describe("All the Tests depending on X", () => {
- *      configureWaveTests();
  *
- *      beforeEach(() => {
+ *      configureWaveTesting(() => {
  *          TestBed.configureTestingModule({
  *             providers: [X]
  *          }).compileComponents()
@@ -26,9 +25,8 @@ import { } from 'jasmine'; // get beforeAll, beforeEach, afterAll, afterEach env
  *      it();
  *  })
  *  describe("All the Tests depending on Y", () => {
- *      configureWaveTests();
  *
- *      beforeEach(() => {
+ *      configureWaveTesting(() => {
  *          TestBed.configureTestingModule({
  *             providers: [Y]
  *          }).compileComponents()
@@ -44,7 +42,7 @@ import { } from 'jasmine'; // get beforeAll, beforeEach, afterAll, afterEach env
  *
  * The TestBed gets recompiled when going from one describe to the other but inside the describes it won't.
  */
-export const configureWaveTesting = () => {
+export const configureWaveTesting = (beforeEachFn: () => void) => {
     const testBedApi: any = getTestBed();
     const oldTestBedReset = TestBed.resetTestingModule;
 
@@ -52,6 +50,10 @@ export const configureWaveTesting = () => {
         TestBed.resetTestingModule(); // recompile TestBed once.
         TestBed.resetTestingModule = () => TestBed; // Don't recompile until this function is set to default again,
                                                     // i.e. until afterAll is called.
+    });
+
+    beforeEach(() => {
+        beforeEachFn();
     });
 
     afterEach(() => {

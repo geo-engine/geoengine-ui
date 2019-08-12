@@ -38,7 +38,6 @@ class MockProjectService {
 }
 
 describe('Component: CsvDialogComponent', () => {
-    configureWaveTesting();
 
     let service: CsvPropertiesService;
     let propertiesComponent: CsvPropertiesComponent;
@@ -48,7 +47,7 @@ describe('Component: CsvDialogComponent', () => {
     /**
      * Technical preparation.
      */
-    beforeEach(() => {
+    configureWaveTesting(() => {
         fixture = new ComponentFixtureSpecHelper<CsvDialogComponent>({
             declarations: [
                 CsvDialogComponent,
