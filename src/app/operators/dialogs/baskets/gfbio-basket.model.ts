@@ -1,6 +1,8 @@
 import * as moment from 'moment';
 
 import {CsvColumn} from './csv.model';
+import {VectorLayer} from '../../../layers/layer.model';
+import {AbstractVectorSymbology} from '../../../layers/symbology/symbology.model';
 
 export type BasketResult = IBasketAbcdResult | IBasketPangaeaResult;
 
@@ -61,4 +63,9 @@ export interface BasketsOverviewBasket {
 export interface BasketsOverview {
     baskets: Array<BasketsOverviewBasket>,
     totalNumberOfBaskets: number,
+}
+
+export interface BasketAvailability {
+    availableLayers: Array<VectorLayer<AbstractVectorSymbology>>,
+    nonAvailableNames: Array<string>,
 }

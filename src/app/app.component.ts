@@ -1,6 +1,5 @@
-
 import {Observable, BehaviorSubject, of as observableOf, from as observableFrom} from 'rxjs';
-import {toArray, filter, map, tap, first, mergeMap} from 'rxjs/operators';
+import {toArray, filter, map, tap, first, flatMap, partition} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -48,7 +47,7 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {
-    BasketResult,
+    BasketResult, BasketAvailability,
     IBasketGroupedAbcdResult,
     IBasketPangaeaResult
 } from './operators/dialogs/baskets/gfbio-basket.model';
@@ -58,6 +57,7 @@ import {Operator} from './operators/operator.model';
 import {Config} from './config.service';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MapService} from './map/map.service';
+import {combineLatest} from 'rxjs/internal/observable/combineLatest';
 
 @Component({
     selector: 'wave-app',
@@ -115,7 +115,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.storageService.toString(); // just register
 
         this.layersReverse$ = this.projectService.getLayerStream().pipe(
-            map(layers => layers.slice(0).reverse()));
+            map(layers => layers.slice(0).reverse())
+        );
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
@@ -211,7 +212,15 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.projectService.getProjectStream().pipe(first()).subscribe(project => {
                                 if (project.layers.length > 0) {
                                     // show popup
-                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layers: [newLayer]}});
+                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                                        data: {
+                                            dialogTitle: 'Workflow URL Parameter',
+                                            sourceName: 'URL parameter',
+                                            layers: [newLayer],
+                                            nonAvailableNames: [],
+                                            numberOfLayersInProject: project.layers.length,
+                                        }
+                                    });
                                 } else {
                                     // just add the layer if the layer array is empty
                                     this.projectService.addLayer(newLayer);
@@ -228,14 +237,17 @@ export class AppComponent implements OnInit, AfterViewInit {
                                 first()
                             ).subscribe(project => {
                                 this.gfbioBasketIdToLayers(gfbioBasketId)
-                                    .subscribe((layers: Array<VectorLayer<AbstractVectorSymbology>>) => {
-                                            if (project.layers.length > 0) {
-                                                // show popup
-                                                this.dialog.open(WorkflowParameterChoiceDialogComponent, {data: {layers: layers}});
-                                            } else {
-                                                // just add the layer if the layer array is empty
-                                                layers.forEach(layer => this.projectService.addLayer(layer));
-                                            }
+                                    .subscribe((importResult: BasketAvailability) => {
+                                            // show popup
+                                            this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                                                data: {
+                                                    dialogTitle: 'GFBio Basket Import',
+                                                    sourceName: 'GFBio Basket',
+                                                    layers: importResult.availableLayers,
+                                                    nonAvailableNames: importResult.nonAvailableNames,
+                                                    numberOfLayersInProject: project.layers.length,
+                                                },
+                                            });
                                         },
                                         error => {
                                             this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
@@ -253,13 +265,36 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private gfbioBasketIdToLayers(basketId: number): Observable<Array<VectorLayer<AbstractVectorSymbology>>> {
-        return this.mappingQueryService
-            .getGFBioBasket(basketId).pipe(
-                mergeMap(basket => observableFrom(basket.results).pipe(
-                    mergeMap(result => this.gfbioBasketResultToLayer(result)),
-                    toArray())
-                )
+    private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
+        const [availableEntries, nonAvailableEntries]: [Observable<BasketResult>, Observable<BasketResult>] =
+            partition((basketResult: BasketResult) => basketResult.available)(
+                this.mappingQueryService
+                    .getGFBioBasket(basketId)
+                    .pipe(
+                        flatMap(basket => observableFrom(basket.results)),
+                    )
+            );
+
+        const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries
+            .pipe(
+                flatMap(basketResult => this.gfbioBasketResultToLayer(basketResult)),
+                toArray(),
+            );
+
+        const nonAvailableNames: Observable<Array<string>> = nonAvailableEntries
+            .pipe(
+                map(basketResult => basketResult.title),
+                toArray(),
+            );
+
+        return combineLatest(availableLayers, nonAvailableNames)
+            .pipe(
+                map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
+                    return {
+                        availableLayers: layers,
+                        nonAvailableNames: names,
+                    } as BasketAvailability;
+                })
             );
     }
 
@@ -270,9 +305,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 .getSourceSchemaAbcd().pipe(
                     map(
                         sourceSchema => GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
-                        result as IBasketGroupedAbcdResult,
-                        sourceSchema,
-                        true
+                            result as IBasketGroupedAbcdResult,
+                            sourceSchema,
+                            true
                         )
                     )
                 );
