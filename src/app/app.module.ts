@@ -141,6 +141,7 @@ import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-edit
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {TimePlotComponent} from "./operators/dialogs/time-plot-operator/time-plot-operator.component";
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
@@ -196,6 +197,24 @@ export function configInitializer(config: Config) {
         LayerExportComponent,
         LayerListComponent,
         LayerSelectionComponent,
+        ChangeProjectionComponent,
+        NewProjectComponent,
+        LoadProjectComponent,
+        SaveProjectAsComponent,
+        OperatorListComponent,
+        SidenavSearchComponent,
+        SidenavSearchRightDirective,
+        ROperatorComponent,
+        RScriptSaveComponent,
+        RScriptLoadComponent,
+        TimeInputComponent,
+        CsvPropertiesComponent,
+        CsvTableComponent,
+        PieChartComponent,
+        BoxPlotComponent,
+        ScatterPlotComponent,
+        TimePlotComponent,
+        WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         LegendaryMappingColorizerRasterComponent,
         LegendaryPointComponent,
@@ -337,6 +356,8 @@ export function configInitializer(config: Config) {
         TerminologyLookupOperatorComponent,
         TextualAttributeFilterOperatorComponent,
         TimeConfigComponent,
+        BoxPlotComponent,
+        TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
     ],

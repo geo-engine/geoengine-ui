@@ -34,6 +34,8 @@ import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 import {HeatmapType} from '../../types/heatmap-type.model';
 import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminology-lookup.component';
 import {TerminologyLookupType} from '../../types/terminology-lookup-type';
+import {TimePlotType} from "../../types/timeplot-type.model";
+import {TimePlotComponent} from "../time-plot-operator/time-plot-operator.component";
 import {StatisticsType, StatisticsTypeDict} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 
@@ -89,6 +91,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: StatisticsPlotComponent,
         type: StatisticsType,
         description: 'Get statistics for any layer'
+    },
+    {
+        component: TimePlotComponent,
+        type: TimePlotType,
+        description: 'Plot time data'
     }
 ];
 
