@@ -55,13 +55,18 @@ describe('Service: User Service', () => {
     });
 
     it('detects wrong credentials and sets session accordingly', () => {
+        let completed = null;
         this.service.login({user: 'test', password: 'test'})
             .subscribe((login_response) => {
                 expect(login_response).toBe(false);
 
                 expect(this.service.getSession().user).toBe(MockConfig.MOCK_USER.GUEST.NAME);
                 expect(this.service.getSession().sessionToken).toBe('');
-            }
+            },
+                (error) => {},
+                () => {
+                    completed = true;
+                }
         );
 
         this.backend.testLogin();
@@ -72,15 +77,21 @@ describe('Service: User Service', () => {
             staySignedIn: true,
             isExternallyConnected: false
         });
+        expect(completed).toBeTruthy();
     });
 
     it('detects right credentials and sets session accordingly', () => {
+        let completed = null;
         this.service.login({user: 'test', password: 'test_pw'})
             .subscribe((login_response) => {
                     expect(login_response).toBe(true);
 
                     expect(this.service.getSession().user).toBe('test');
                     expect(this.service.getSession().sessionToken).toBe('mockSessionToken')
+                },
+                (error) => {},
+                () => {
+                    completed = true;
                 }
             );
 
@@ -92,6 +103,7 @@ describe('Service: User Service', () => {
             staySignedIn: true,
             isExternallyConnected: false
         });
+        expect(completed).toBeTruthy();
     });
 });
 
