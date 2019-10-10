@@ -7,14 +7,40 @@
 </div>
 <div *ngIf="data.points">
     <h2>Point Layer Statistics</h2>
-    <ng-template ngFor let-points [ngForOf]="data.points" let-i="index">
+    <ng-template ngFor let-feature [ngForOf]="data.points" let-i="index">
         <h3 *ngIf="data.points.length > 1">Points {{i + 1}}</h3>
-        <ng-template ngFor let-pointdata [ngForOf]="points | keyvalue" let-j="index">
-            <h4>{{pointdata.key}}</h4>
-            <wave-layer-statistics-numeric-details [data]="pointdata.value"
-                                                   *ngIf="pointdata.value.mean"></wave-layer-statistics-numeric-details>
-            <wave-layer-statistics-textual-details [data]="pointdata.value"
-                                                   *ngIf="pointdata.value.value_counts"></wave-layer-statistics-textual-details>
+        <ng-template ngFor let-featureData [ngForOf]="feature | keyvalue" let-j="index">
+            <h4>{{featureData.key}}</h4>
+            <wave-layer-statistics-numeric-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.mean"></wave-layer-statistics-numeric-details>
+            <wave-layer-statistics-textual-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.value_counts"></wave-layer-statistics-textual-details>
+        </ng-template>
+    </ng-template>
+</div>
+<div *ngIf="data.lines">
+    <h2>Line Layer Statistics</h2>
+    <ng-template ngFor let-feature [ngForOf]="data.lines" let-i="index">
+        <h3 *ngIf="data.lines.length > 1">Points {{i + 1}}</h3>
+        <ng-template ngFor let-featureData [ngForOf]="feature | keyvalue" let-j="index">
+            <h4>{{featureData.key}}</h4>
+            <wave-layer-statistics-numeric-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.mean"></wave-layer-statistics-numeric-details>
+            <wave-layer-statistics-textual-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.value_counts"></wave-layer-statistics-textual-details>
+        </ng-template>
+    </ng-template>
+</div>
+<div *ngIf="data.polygons">
+    <h2>Polygon Layer Statistics</h2>
+    <ng-template ngFor let-feature [ngForOf]="data.polygons" let-i="index">
+        <h3 *ngIf="data.polygons.length > 1">Points {{i + 1}}</h3>
+        <ng-template ngFor let-featureData [ngForOf]="feature | keyvalue" let-j="index">
+            <h4>{{featureData.key}}</h4>
+            <wave-layer-statistics-numeric-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.mean"></wave-layer-statistics-numeric-details>
+            <wave-layer-statistics-textual-details [data]="featureData.value"
+                                                   *ngIf="featureData.value.value_counts"></wave-layer-statistics-textual-details>
         </ng-template>
     </ng-template>
 </div>
