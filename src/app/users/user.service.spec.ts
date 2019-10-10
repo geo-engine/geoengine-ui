@@ -7,6 +7,34 @@ import {UserService} from './user.service';
 import {HttpClientTestingModule, HttpTestingController, TestRequest} from '@angular/common/http/testing';
 import {NotificationService} from '../notification.service';
 
+export function clear_user_service_requests(http: HttpTestingController) {
+    // Answer default guest logins with empty sessionToken.
+    http.match((req) => req.body.includes('request=login&')).forEach(req =>
+        req.flush({
+            result: true,
+            session: ''
+        })
+    );
+
+    // Answer the info requests with the default guest setup.
+    http.match((req) => req.body.includes('request=info&')).forEach(req =>
+        req.flush({
+            email: 'guest',
+            externalid: '',
+            realname: 'guest',
+            result: true,
+            username: 'guest'
+        })
+    );
+
+    http.match((req) => req.body.includes('request=sourcelist&')).forEach(req =>
+        req.flush({
+            result: true,
+            sourcelist: []
+        })
+    );
+}
+
 describe('Service: User Service', () => {
 
     configureWaveTesting(() => {
@@ -24,32 +52,7 @@ describe('Service: User Service', () => {
         this.http = TestBed.get(HttpTestingController);
         this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
 
-
-        // Answer default guest logins with empty sessionToken.
-        this.http.match((req) => req.body.includes('request=login&')).forEach(req =>
-            req.flush({
-                result: true,
-                session: ''
-            })
-        );
-
-        // Answer the info requests with the default guest setup.
-        this.http.match((req) => req.body.includes('request=info&')).forEach(req =>
-            req.flush({
-                email: 'guest',
-                externalid: '',
-                realname: 'guest',
-                result: true,
-                username: 'guest'
-            })
-        );
-
-        this.http.match((req) => req.body.includes('request=sourcelist&')).forEach(req =>
-            req.flush({
-                result: true,
-                sourcelist: []
-            })
-        );
+        clear_user_service_requests(this.http);
 
         expect(this.http.match(req => true).length).toBe(0);
     });
@@ -107,7 +110,7 @@ describe('Service: User Service', () => {
     });
 });
 
-class MockBackend {
+export class MockBackend {
 
     logins = [
         {user: 'test', email: 'test_mail', realname: 'test_name test_after', password: 'test_pw', sources: []}
@@ -118,6 +121,10 @@ class MockBackend {
         for (let i = 0; i < reqs.length; i++) {
             reqs[i].flush(reqs[i].request.body);
         }
+
+        clear_user_service_requests(httpTestingController);
+
+        expect(httpTestingController.match(req => true).length).toBe(0);
     }
 
     public testLogin() {
