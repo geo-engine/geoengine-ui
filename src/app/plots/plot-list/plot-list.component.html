@@ -32,6 +32,9 @@
                 [interactable]="false"
             ></wave-histogram>
         </ng-template>
+        <ng-template ngSwitchCase="layer_statistics">
+            <wave-layer-statistics-view [data]="(projectService.getPlotDataStream(plot) | async)?.data"></wave-layer-statistics-view>
+        </ng-template>
         <ng-template ngSwitchCase="json">
             <pre>{{(projectService.getPlotDataStream(plot) | async)?.data | json}}</pre>
         </ng-template>

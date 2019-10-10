@@ -1,0 +1,20 @@
+<div *ngIf="data.rasters">
+    <h2>Raster Layer Statistics</h2>
+    <ng-template ngFor let-raster [ngForOf]="data.rasters" let-i="index">
+        <h3 *ngIf="data.rasters.length > 1">Raster {{i + 1}}</h3>
+        <wave-layer-statistics-numeric-details [data]="raster"></wave-layer-statistics-numeric-details>
+    </ng-template>
+</div>
+<div *ngIf="data.points">
+    <h2>Point Layer Statistics</h2>
+    <ng-template ngFor let-points [ngForOf]="data.points" let-i="index">
+        <h3 *ngIf="data.points.length > 1">Points {{i + 1}}</h3>
+        <ng-template ngFor let-pointdata [ngForOf]="points | keyvalue" let-j="index">
+            <h4>{{pointdata.key}}</h4>
+            <wave-layer-statistics-numeric-details [data]="pointdata.value"
+                                                   *ngIf="pointdata.value.mean"></wave-layer-statistics-numeric-details>
+            <wave-layer-statistics-textual-details [data]="pointdata.value"
+                                                   *ngIf="pointdata.value.value_counts"></wave-layer-statistics-textual-details>
+        </ng-template>
+    </ng-template>
+</div>
