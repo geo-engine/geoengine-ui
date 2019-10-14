@@ -1,5 +1,5 @@
 import {configureWaveTesting} from '../spec/wave-testing.configuration';
-import {async, inject, TestBed} from '@angular/core/testing';
+import {async, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {Config} from "../config.service";
 import {UserService} from "../users/user.service";
 import {NotificationService} from "../notification.service";
@@ -20,7 +20,7 @@ import {RScriptTypeDict} from "../operators/types/r-script-type.model";
 
 describe("Service: Project Service", () => {
 
-    configureWaveTesting(() => {
+    configureWaveTesting(fakeAsync(() => {
         TestBed.configureTestingModule({
             providers: [
                 {provide: Config, useClass: MockConfig},
@@ -70,11 +70,8 @@ describe("Service: Project Service", () => {
             isExternallyConnected: false
         });
         expect(completed).toBeTruthy();
-    });
 
-    it('adds a plot', async () => {
-        let completed = false;
-        this.service.addPlot(Plot.fromDict({
+        this.plot = Plot.fromDict({
             name: 'test_plot',
             operator: {
                 id: 0,
@@ -93,22 +90,56 @@ describe("Service: Project Service", () => {
                 lineSources: [],
                 polygonSources: [],
             }
-        })).subscribe(
+        });
+        this.plotUrl = MockConfig.MOCK_URL + '?time=2000-01-01T00:00:00.000Z&service=plot&request=&sessiontoken=mockSessionToken&crs=EPSG:3857&bbox=0,0,0,0&query=%7B%22type%22%3A%22r_script%22%2C%22params%22%3A%7B%22source%22%3A%22test_code%22%2C%22result%22%3A%22plot%22%2C%22plot_width%22%3A168%2C%22plot_height%22%3A168%7D%7D';
+        this.completed = false;
+
+        this.service.addPlot(this.plot).subscribe(
             () => {},
+            (error) => {},
+            () => {
+                this.completed = true;
+            });
+
+        // Wait until all promises are resolved (chain of multiple function calls in addPlot)
+        tick();
+
+        const request = this.http.expectOne(this.plotUrl);
+        request.flush({type: 'png', data: 'dummy_data'});
+    }));
+
+    it('uses the expected http calls', () => {
+        this.http.verify();
+    });
+
+    it('finalizes addPlot-Observable', () => {
+        expect(this.completed).toBeTruthy();
+    });
+
+    it('finalizes removePlot-Observable', async () => {
+        let completed = false;
+        await this.service.removePlot(this.plot).subscribe(() => {},
             (error) => {},
             () => {
                 completed = true;
             });
-        // TODO: Reverse engineer the URL.
-        setTimeout(() => {
-            const request = this.http.expectOne(MockConfig.MOCK_URL + '?time=&service=plot&request=&sessiontoken=mockSessionToken&crs=EPSG:3857&bbox=0,0,0,0&query=%7B%22type%22%3A%22r_script%22%2C%22params%22%3A%7B%22source%22%3A%22test_code%22%2C%22result%22%3A%22plot%22%2C%22plot_width%22%3A168%2C%22plot_height%22%3A168%7D%7D');
-            request.flush({type: 'png', data: 'dummy_data'});
-        });
-        this.http.verify();
+        expect(completed).toBeTruthy();
+    });
+
+    it('adds plot', async () => {
         await this.service.getProjectStream().subscribe((project) => {
             expect(project.plots.length).toBe(1);
         });
-        expect(completed).toBeTruthy();
+        await this.service.getPlotDataStream(this.plot).subscribe((data) => {
+            expect(data.data).toEqual('dummy_data');
+        });
+    });
+
+    it('removes plot', async () => {
+        await this.service.removePlot(this.plot);
+        await this.service.getProjectStream().subscribe((project) => {
+            expect(project.plots.length).toBe(0);
+        });
     });
 
     it('clears plots', async () => {
