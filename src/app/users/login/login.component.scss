@@ -52,3 +52,7 @@ button {
     color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
     margin-right: 1rem;
 }
+
+mat-card.info {
+    background-color: mat-color($wave-app-accent);
+}

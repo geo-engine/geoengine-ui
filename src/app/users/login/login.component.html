@@ -5,6 +5,10 @@
             <mat-button-toggle value="system" fxFlex>System</mat-button-toggle>
             <mat-button-toggle value="gfbio" fxFlex><img src="assets/logo_gfbio.png" alt="GFBio"></mat-button-toggle>
         </mat-button-toggle-group>
+        <mat-card class="info" *ngIf="loginForm.controls.loginAuthority.value === 'gfbio'">
+            In case you are using the new GFBio Single Sign On, please login via <a href="https://www.gfbio.org">www.gfbio.org</a>.
+            You can still login with your legacy GFBio account.
+        </mat-card>
         <mat-form-field>
             <input matInput type="text" placeholder="Username" formControlName="username">
         </mat-form-field>
