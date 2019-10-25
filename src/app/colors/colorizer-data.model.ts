@@ -68,6 +68,9 @@ export class ColorizerData implements IColorizerData {
     }
 
     static fromDict(dict: IColorizerData): ColorizerData {
+        if (!dict) { // return some default value in case of empty deserialization
+            return ColorizerData.empty();
+        }
         return new ColorizerData(dict);
     }
 
