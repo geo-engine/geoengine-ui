@@ -69,8 +69,12 @@ export class ColorizerData implements IColorizerData {
 
     static fromDict(dict: IColorizerData): ColorizerData {
         if (!dict) { // return some default value in case of empty deserialization
-            return ColorizerData.empty();
+            return ColorizerData.grayScaleColorizer({
+                min: 0,
+                max: 100,
+            });
         }
+
         return new ColorizerData(dict);
     }
 
@@ -125,14 +129,14 @@ export class ColorizerData implements IColorizerData {
     getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
         // console.log('ColorizerData', 'getBreakpointForValue', '#1', value, interpolate);
 
-        if (!value || !this.breakpoints || this.breakpoints.length <= 0 ) {
+        if (!value || !this.breakpoints || this.breakpoints.length <= 0) {
             return undefined;
         }
 
         const isGradient = this.type === 'gradient';
         const isNumber = typeof value === 'number';
         const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber(); // TODO: this is prob. not always the correct type.
-        const lookUpValue = (firstBrkIsNumber && ! isNumber) ? parseFloat(value as string) : value;
+        const lookUpValue = (firstBrkIsNumber && !isNumber) ? parseFloat(value as string) : value;
         const isLookupNumber = typeof lookUpValue === 'number';
         // console.log('ColorizerData', 'getBreakpointForValue', '#2', isGradient, isNumber, isLookupNumber, firstBrkIsNumber, lookUpValue);
 
@@ -147,21 +151,21 @@ export class ColorizerData implements IColorizerData {
             }
         }
         const brk = this.breakpoints[brk_index];
-        const validBrk = brk_index >= 0 && ( this.breakpoints.length > 1 ||  brk.value === lookUpValue);
+        const validBrk = brk_index >= 0 && (this.breakpoints.length > 1 || brk.value === lookUpValue);
         const isLastBrk = brk_index >= this.breakpoints.length - 1;
         // console.log('ColorizerData', 'getBreakpointForValue', '#3', brk_index, validBrk, isLastBrk);
 
-        if ( !validBrk ) {
+        if (!validBrk) {
             return undefined;
         }
 
-        if ( !interpolate || isLastBrk || brk.value === lookUpValue || !isGradient ) {
+        if (!interpolate || isLastBrk || brk.value === lookUpValue || !isGradient) {
             return brk;
         }
 
         // handling gradients for numbers...
         const brk_next = this.breakpoints[brk_index + 1];
-        if ( typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brk_next.value === 'number' ) {
+        if (typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brk_next.value === 'number') {
             const diff = lookUpValue - brk.value;
             const frac_diff = diff / (brk_next.value - brk.value);
             const color = Color.interpolate(brk.rgba, brk_next.rgba, frac_diff);
@@ -195,7 +199,7 @@ export class ColorizerData implements IColorizerData {
         }
 
         for (let i = 0; i < this.breakpoints.length; i++) {
-            if ( !this.getBreakpointAt(i).equals(other.getBreakpointAt(i)) ) {
+            if (!this.getBreakpointAt(i).equals(other.getBreakpointAt(i))) {
                 return false;
             }
         }
