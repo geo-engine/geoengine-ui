@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -7,14 +7,15 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ComplexLineSymbology, ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Projections} from '../../projection.model';
-import {OgrRawSourceType} from '../../types/ogr-raw-source-type.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
-import {Observable} from 'rxjs';
-import {first} from 'rxjs/operators';
+import {concat, Observable, of} from 'rxjs';
+import {distinctUntilChanged, first, map} from 'rxjs/operators';
 import {Config} from '../../../config.service';
 import {HttpClient} from '@angular/common/http';
+import {ChronicleDBSourceType} from '../../types/chronicle-db-source-type.model';
+import {NotificationService} from '../../../notification.service';
 
 const QUERY_SERVICE = '_queryInput';
 const SCHEMA_SERVICE = '_schemaInput';
@@ -39,35 +40,64 @@ interface AttributesReturnType {
     styleUrls: ['./chronicle-db-source.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
+export class ChronicleDbSourceComponent implements OnInit {
 
-    // MAKE AVAILABLE FOR FORM
-    ResultTypes = ResultTypes;
-    //
+    @Input() copyFrom: Operator = undefined;
 
     form: FormGroup;
+
+    validResultTypes: Array<ResultType> = [ResultTypes.POINTS, ResultTypes.LINES, ResultTypes.POLYGONS];
+    resultTypeIsPoints$: Observable<boolean>;
+    isFormInvalid$: Observable<boolean>;
 
     constructor(private config: Config,
                 private formBuilder: FormBuilder,
                 private http: HttpClient,
                 private randomColorService: RandomColorService,
+                private notificationService: NotificationService,
                 private projectService: ProjectService) {
     }
 
     ngOnInit() {
         this.form = this.formBuilder.group({
-            name: ['ChronincleDB Sensor Data', [Validators.required, WaveValidators.notOnlyWhitespace]],
+            name: ['ChronicleDB Sensor Data', [Validators.required, WaveValidators.notOnlyWhitespace]],
             queryString: ['SELECT * FROM SenseBoxStream', Validators.required],
             resultType: [ResultTypes.POINTS, Validators.required],
             clustered: [true, Validators.required],
         });
+
+        if (this.copyFrom) {
+            this.setupWithExistingOperator(this.copyFrom);
+        }
+
+        this.resultTypeIsPoints$ = this.initResultTypeIsPoints();
+        this.isFormInvalid$ = this.initIsFormInvalid();
     }
 
-    ngAfterViewInit(): void {
-        this.form.updateValueAndValidity({
-            onlySelf: false,
-            emitEvent: true
-        });
+    private setupWithExistingOperator(operator: Operator) {
+        const type = operator.operatorType as ChronicleDBSourceType;
+        const config = type.config;
+        this.form.get('queryString').setValue(config.query_string);
+        this.form.get('resultType').setValue(operator.resultType);
+        // cannot update `name` and `clustered` because information is missing in the operator
+    }
+
+    private initResultTypeIsPoints(): Observable<boolean> {
+        const formControl = this.form.get('resultType');
+        const originalValue = of(formControl.value as ResultType);
+        const updatedValues = this.form.get('resultType').valueChanges as Observable<ResultType>;
+        return concat(originalValue, updatedValues).pipe(
+            map((resultType: ResultType) => resultType === ResultTypes.POINTS),
+        );
+    }
+
+    private initIsFormInvalid(): Observable<boolean> {
+        const originalValue = of(!this.form.valid);
+        const updatedValues = this.form.statusChanges.pipe(
+            distinctUntilChanged(),
+            map(() => !this.form.valid)
+        );
+        return concat(originalValue, updatedValues);
     }
 
     add() {
@@ -96,7 +126,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                 }
 
                 const operator = new Operator({
-                    operatorType: new OgrRawSourceType({
+                    operatorType: new ChronicleDBSourceType({
                         filename: `${chronicleDbUrl}/${QUERY_SERVICE}?queryString=${encodeURIComponent(queryString)}`,
                         query_string: queryString,
                         time: 'start+end',
@@ -157,7 +187,7 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
                 });
 
                 this.projectService.addLayer(layer).subscribe(() => {
-                    // console.info('LAYER ADDED!');
+                    this.notificationService.info(`ChronicleDB Layer »${layer.name}« added.`);
                 });
             });
     }
@@ -169,5 +199,4 @@ export class ChronicleDbSourceComponent implements OnInit, AfterViewInit {
 
         return this.http.get<AttributesReturnType>(schemaUrl);
     }
-
 }

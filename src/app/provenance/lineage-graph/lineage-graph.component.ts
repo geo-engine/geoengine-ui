@@ -9,10 +9,12 @@ import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {AbstractSymbology} from '../../layers/symbology/symbology.model';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
+import {ChronicleDBSourceType} from '../../operators/types/chronicle-db-source-type.model';
+import {ChronicleDbSourceComponent} from '../../operators/dialogs/chronicle-db-source/chronicle-db-source.component';
 
 const GRAPH_STYLE = {
     general: {
@@ -58,6 +60,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private projectService: ProjectService,
+                private layoutService: LayoutService,
+                private dialogRef: MatDialogRef<LineageGraphComponent>,
                 @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<AbstractSymbology> }) {
     }
 
@@ -342,4 +346,21 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         };
     }
 
+    isModifyableOperator(): Observable<boolean> {
+        return this.selectedOperator$.pipe(
+            map(operator => operator.operatorType instanceof ChronicleDBSourceType)
+        );
+    }
+
+    modifyAndDuplicate() {
+        this.selectedOperator$.pipe(first()).subscribe(operator => {
+            this.layoutService.setSidenavContentComponent({
+                component: ChronicleDbSourceComponent,
+                config: {
+                    copyFrom: operator,
+                }
+            });
+            this.dialogRef.close();
+        });
+    }
 }
