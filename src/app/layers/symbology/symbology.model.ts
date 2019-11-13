@@ -236,6 +236,7 @@ export interface ComplexVectorSymbologyConfig extends VectorSymbologyConfig {
     fillAttribute?: string;
     strokeColorizer?: IColorizerData;
     strokeAttribute?: string;
+    strokeLineDash?: Array<number>;
     textAttribute?: string
     textColor?: RgbaLike;
     textStrokeWidth?: number;
@@ -246,6 +247,7 @@ export interface ComplexVectorSymbologyDict extends VectorSymbologyDict {
     fillAttribute: string;
     strokeColorizer: IColorizerData;
     strokeAttribute: string;
+    strokeLineDash: Array<number>;
     textAttribute: string
     textColor: RgbaLike;
     textStrokeWidth: number;
@@ -267,6 +269,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
 
     strokeColorizer: ColorizerData;
     strokeAttribute: string = undefined;
+    strokeLineDash: Array<number> = undefined;
 
     textAttribute: string = undefined;
     textColor: Color = undefined;
@@ -286,6 +289,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
 
         this.strokeAttribute = (config.strokeAttribute) ? config.strokeAttribute : undefined;
         this.strokeColorizer = (config.strokeColorizer) ? ColorizerData.fromDict(config.strokeColorizer) : ColorizerData.empty();
+        this.strokeLineDash = (config.strokeLineDash) ? config.strokeLineDash : [];
 
         this.textAttribute = (config.textAttribute) ? config.textAttribute : undefined;
         this.textColor = (config.textColor) ? Color.fromRgbaLike(config.textColor) : WHITE;
@@ -323,6 +327,14 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
         return false;
     }
 
+    setStrokeLineDash(sld: Array<number>) {
+        this.strokeLineDash = sld;
+    }
+
+    unsetStrokeLineDash() {
+        this.strokeLineDash = [];
+    }
+
     unSetStrokeColorAttribute() {
         this.strokeAttribute = undefined;
         this.strokeColorizer = ColorizerData.empty()
@@ -338,7 +350,8 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
                 && this.strokeAttribute && other.strokeAttribute && this.strokeAttribute === other.strokeAttribute
                 && this.textColor && this.textColor.equals(other.textColor)
                 && this.textStrokeWidth && other.textStrokeWidth && this.textStrokeWidth === other.textStrokeWidth
-                && this.textAttribute && other.textAttribute && this.textAttribute === other.textAttribute;
+                && this.textAttribute && other.textAttribute && this.textAttribute === other.textAttribute
+                && this.strokeLineDash === other.strokeLineDash;
         }
         return false;
     }
@@ -353,6 +366,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
             fillColorizer: this.fillColorizer ? this.fillColorizer.toDict() : undefined,
             strokeAttribute: this.strokeAttribute,
             strokeColorizer: this.strokeColorizer ? this.strokeColorizer.toDict() : undefined,
+            strokeLineDash: this.strokeLineDash,
             textAttribute: this.textAttribute,
             textColor: this.textColor.rgbaTuple(),
             textStrokeWidth: this.textStrokeWidth,
@@ -498,6 +512,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
             fillColorizer: this.fillColorizer ? this.fillColorizer.toDict() : undefined,
             strokeAttribute: this.strokeAttribute,
             strokeColorizer: this.strokeColorizer ? this.strokeColorizer.toDict() : undefined,
+            strokeLineDash: this.strokeLineDash,
             radiusAttribute: this.radiusAttribute,
             radius: this.radius,
             textAttribute: this.textAttribute,

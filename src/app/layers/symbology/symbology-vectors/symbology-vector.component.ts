@@ -6,6 +6,7 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {VectorLayer} from '../../layer.model';
 import {DataTypes} from '../../../operators/datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
+import {StrokeDashStyle} from '../stroke-dash-select/stroke-dash-select.component';
 
 interface Attribute {
     name: string,
@@ -28,6 +29,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     @Input() editFillColor = true;
     @Input() editStrokeWidth = true;
     @Input() editStrokeColor = true;
+    @Input() editStrokeDash = true;
     @Input() editColorizeFillByAttribute = true;
     @Input() editColorizeStrokeByAttribute = true;
 
@@ -156,6 +158,17 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
         this.symbology.strokeWidth = event.value;
         this.update();
+    }
+
+    updateStrokeDash(sds: StrokeDashStyle) {
+        // console.log('SymbologyVectorComponent:', 'updateStrokeDash() 1', sds, );
+
+        if (!!sds && sds !== this.symbology.strokeLineDash) {
+            // console.log('SymbologyVectorComponent:', 'updateStrokeDash() 2', sds, this.symbology.strokeLineDash);
+
+            this.symbology.setStrokeLineDash(sds);
+            this.update();
+        }
     }
 
     updateRadius(event: MatSliderChange) {

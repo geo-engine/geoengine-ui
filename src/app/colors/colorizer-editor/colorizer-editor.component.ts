@@ -56,8 +56,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
-                case 'colorPlaceholder':
-                {
+                case 'colorPlaceholder': {
                     this.changeDetectorRef.markForCheck();
                     break;
                 }
@@ -90,7 +89,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
                 this.notify();
             // }
         }
-        console.log(i, brk, this._colorizer, this);
+        // console.log(i, brk, this._colorizer, this);
     }
 
     addBreakpointAt(i: number) {
@@ -102,7 +101,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
             this._colorizer.addBreakpoint(this._colorizer.getBreakpointAt(i));
         }
         this.notify();
-        console.log(i, this._colorizer, this);
+        // console.log(i, this._colorizer, this);
     }
 
     removeBreakpointAt(i: number) {

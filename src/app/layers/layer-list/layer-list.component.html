@@ -139,13 +139,15 @@
                                                   [style.stroke-width.px]='2'
                                                   [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
                                                   [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                                  [style.stroke-dasharray]="layer.symbology?.strokeLineDash"
                                         ></mat-icon>
                                     </ng-template>
-                                    <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_LINE
-                                        || layer.symbology.getSymbologyType() === ST.COMPLEX_LINE">
+                                    <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_LINE
+                                        || layer.symbology.getSymbologyType() === ST.SIMPLE_LINE">
                                         <mat-icon mat-list-icon svgIcon="symbology:line"
                                                   [style.stroke-width.px]='2'
                                                   [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                                  [style.stroke-dasharray]="layer.symbology?.strokeLineDash"
                                         ></mat-icon>
                                     </ng-template>
                                     <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_VECTOR
@@ -154,6 +156,7 @@
                                                   [style.stroke-width.px]='2'
                                                   [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
                                                   [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                                  [style.stroke-dasharray]="layer.symbology?.strokeLineDash"
                                         ></mat-icon>
                                     </ng-template>
                                     <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER

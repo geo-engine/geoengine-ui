@@ -146,6 +146,7 @@ import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {ChronicleDbSourceComponent} from './operators/dialogs/chronicle-db-source/chronicle-db-source.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
+import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -278,6 +279,7 @@ export function configInitializer(config: Config) {
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
+        StrokeDashSelectComponent,
     ],
     imports: [
         BrowserAnimationsModule,

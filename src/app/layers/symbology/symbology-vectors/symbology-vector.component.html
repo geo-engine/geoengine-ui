@@ -40,6 +40,8 @@
     <wave-color-breakpoint *ngIf="editStrokeColor" [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color" disabledAttribute="true"
                            (ngModelChange)="updateStroke($event)">
     </wave-color-breakpoint>
+    <wave-stroke-dash-select (ngModelChange)="updateStrokeDash($event)" [ngModel]="symbology.strokeLineDash" *ngIf="editStrokeDash" [lines]="[[], [5, 5], [10, 10]]" >
+    </wave-stroke-dash-select>
 </div>
 <mat-divider></mat-divider>
 

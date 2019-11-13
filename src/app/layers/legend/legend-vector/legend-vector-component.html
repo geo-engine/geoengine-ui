@@ -4,6 +4,7 @@
                 [style.stroke-width.px]='symbology?.strokeWidth'
                 [style.stroke]='symbology?.strokeRGBA.rgbaCssString()'
                 [style.fill]='symbology?.fillRGBA.rgbaCssString()'
+                [style.stroke-dasharray]="symbology?.strokeLineDash"
         ></mat-icon>
         <span>Default color</span>
     </div>
@@ -13,6 +14,7 @@
                 [style.stroke-width.px]='symbology.strokeWidth'
                 [style.stroke]='symbology.strokeRGBA.rgbaCssString()'
                 [style.fill]='brk.rgba.rgbaCssString()'
+                [style.stroke-dasharray]="symbology?.strokeLineDash"
         ></mat-icon>
         <span fxFlex>{{brk.value}}</span>
     </div>
