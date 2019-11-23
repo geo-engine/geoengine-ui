@@ -15,7 +15,6 @@ import {MapService} from '../map/map.service';
 import {RScriptTypeDict} from '../operators/types/r-script-type.model';
 import {Layer} from '../layers/layer.model';
 import {RasterSourceType} from '../operators/types/raster-source-type.model';
-import {UnitDict} from '../operators/unit.model';
 import {RasterSymbologyDict} from '../layers/symbology/symbology.model';
 
 class MockConfig {
@@ -283,6 +282,28 @@ describe('Service: Project Service', () => {
 
         it('adds layer', async () => {
             await this.service.getLayerStream().subscribe(arr => expect(arr.length).toBe(1));
+        });
+
+        it('removes layer and finalizes Observable', async () => {
+            let completed = false;
+            await this.service.removeLayer(this.layer).subscribe(
+                () => {},
+                (error) => {},
+                () => {
+                    completed = true;
+                }
+            );
+            expect(completed).toBeTruthy();
+            await this.service.getProjectStream().subscribe((project) => {
+                expect(project.layers.length).toBe(0);
+            });
+        });
+
+        it('clears layers', async () => {
+            this.service.clearLayers();
+            await this.service.getProjectStream().subscribe((project) => {
+                expect(project.layers.length).toBe(0);
+            });
         });
     });
 });
