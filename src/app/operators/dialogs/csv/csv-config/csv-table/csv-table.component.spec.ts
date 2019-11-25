@@ -11,6 +11,7 @@ import 'hammerjs';
 import {TestIdComponentDirective} from '../../../../../spec/test-id-component.directive';
 import {FormStatus} from '../csv-properties/csv-properties.component';
 import {Map} from 'immutable';
+import {configureWaveTesting} from '../../../../../spec/wave-testing.configuration';
 
 interface Setting {
     delimiter: string,
@@ -79,7 +80,7 @@ describe('Component: CsvTableComponent', () => {
     for (let i = 0; i < test_cases.length; i++) {
         let test_case = test_cases[i];
         describe('Test Case: ' + test_case.case_name, () => {
-            beforeEach(() => {
+            configureWaveTesting(() => {
                 fixture = new ComponentFixtureSpecHelper<CsvTableComponent>({
                     declarations: [
                         CsvTableComponent,
@@ -101,7 +102,6 @@ describe('Component: CsvTableComponent', () => {
             });
 
             it('should parse and update correctly', () => {
-                console.log(test_case.behavior);
                 service.changeDataProperties({
                     delimiter: ',',
                     decimalSeparator: '.',

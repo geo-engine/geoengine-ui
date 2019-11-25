@@ -1,21 +1,37 @@
 # NodeJS Image
 FROM node:11.10-alpine AS builder
 
+# Make alpine edge repositories accessible
+RUN echo "http://dl-2.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
+	echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+	echo "http://dl-2.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    apk upgrade --update-cache --available
+
 # Setup directories
 WORKDIR /app
+
 
 # Add dependencies
 RUN apk add --no-cache \
     git \
-    openssl
+    openssl \
+    make \
+    g++ \
+    python \
+    xvfb \
+	firefox
 
 # Copy WAVE source code
 COPY . /app/wave
+
+# Start Xvfb server listening on :99.0
+RUN Xvfb :99 -screen 0 1280x720x16 & > xvfb.log &
 
 # Build WAVE
 RUN cd /app/wave && \
     rm -rf node_modules/ && \
     npm install && \
+    DISPLAY=:99.0 npm run test:headless[firefox] && \
     NODE_OPTIONS="--max-old-space-size=4096" npm run build-production
 
 # Create Snakeoil SSL

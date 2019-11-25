@@ -10,6 +10,10 @@
     "build-production": "ng build --prod",
     "serve-production": "node --max_old_space_size=8192 ./node_modules/.bin/ng serve --prod --proxy-config proxy.conf.json",
     "test": "ng test",
+    "test:chrome": "ng test --browsers Chrome",
+    "test:firefox": "ng test --browsers Firefox",
+    "test:headless[chrome]": "ng test --browsers ChromeHeadless --watch=false",
+    "test:headless[firefox]": "ng test --browsers FirefoxHeadless --watch=false",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "ng-update": "ng update"
