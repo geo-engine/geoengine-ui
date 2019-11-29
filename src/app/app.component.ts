@@ -29,7 +29,7 @@ import {ProjectService} from './project/project.service';
 import {UserService} from './users/user.service';
 import {StorageService, StorageStatus} from './storage/storage.service';
 
-import {MapComponent} from './map/map.component';
+import {MapContainerComponent} from './map/map-container/map-container.component';
 
 import {Layer, VectorLayer} from './layers/layer.model';
 import {LayerService} from './layers/layer.service';
@@ -66,7 +66,7 @@ import {combineLatest} from 'rxjs/internal/observable/combineLatest';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapComponent) mapComponent: MapComponent;
+    @ViewChild(MapContainerComponent) mapComponent: MapContainerComponent;
     @ViewChild(MatTabGroup) bottomTabs: MatTabGroup;
 
     @ViewChild(MatSidenav) rightSidenav: MatSidenav;

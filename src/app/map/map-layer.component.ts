@@ -30,7 +30,7 @@ import {isNullOrUndefined} from 'util';
 //     template: '',
 //     changeDetection: ChangeDetectionStrategy.OnPush,
 // })
-export abstract class OlMapLayerComponent<
+export abstract class MapLayerComponent<
         OL extends OlLayer,
         OS extends OlSource,
         S extends Symbology,
@@ -61,7 +61,7 @@ export abstract class OlMapLayerComponent<
     abstract getExtent(): [number, number, number, number];
 }
 
-export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayerVector,
+export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
     OlVectorSource,
     AbstractVectorSymbology,
     VectorLayer<AbstractVectorSymbology>> implements OnInit, OnChanges, OnDestroy {
@@ -139,7 +139,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayer
 @Component({
     selector: 'wave-ol-point-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlPointLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
@@ -152,7 +152,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-line-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlLineLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
@@ -165,7 +165,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-polygon-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlPolygonLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
@@ -178,11 +178,11 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-raster-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlRasterLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
     inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
-export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlTileSource,
+export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
     MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnChanges, OnInit {
 
     private dataSubscription: Subscription;

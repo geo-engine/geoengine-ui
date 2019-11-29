@@ -12,7 +12,7 @@
     <wave-layer-list class="mat-elevation-z4" [height]="middleContainerHeight$ | async"></wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
-        <wave-ol-map #map>
+        <wave-map-container #map>
             <ng-template ngFor let-layer [ngForOf]='layersReverse$ | async'>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer
@@ -51,7 +51,7 @@
                     ></wave-ol-raster-layer>
                 </ng-template>
             </ng-template>
-        </wave-ol-map>
+        </wave-map-container>
     </div>
     <div
         class="bottom-container mat-elevation-z4"

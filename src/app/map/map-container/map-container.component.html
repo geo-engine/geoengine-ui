@@ -1,0 +1,5 @@
+<mat-grid-list [cols]="numberOfColumns" [rowHeight]="rowHeight" gutterSize="0" *ngIf="grid">
+    <div class="map" #mapContainer *ngFor="let mapLayer of mapLayers"></div>
+</mat-grid-list>
+<div class="map" #mapContainer *ngIf="!grid"></div>
+<ng-content></ng-content>

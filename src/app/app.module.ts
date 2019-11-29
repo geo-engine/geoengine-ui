@@ -10,7 +10,7 @@ import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
-import {MapComponent} from './map/map.component';
+import {MapContainerComponent} from './map/map-container/map-container.component';
 import {
     OlLineLayerComponent,
     OlPointLayerComponent,
@@ -231,7 +231,7 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LoadProjectComponent,
         LoginComponent,
-        MapComponent,
+        MapContainerComponent,
         MappingColorizerToGradientPipe,
         MappingDataSourceFilter,
         MediaviewAudioComponent,
