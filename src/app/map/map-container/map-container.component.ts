@@ -125,14 +125,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     ngAfterViewInit() {
         this.projection$.pipe(first()).subscribe(projection => {
+            this.maps.forEach(map => map.setTarget(undefined)); // initially reset all DOM bindings
+
             this.initOpenlayersMap(projection);
 
-            // this.mapContainers.forEach((container, i) => this.maps[0].setTarget(container.nativeElement));
-            // TODO: init more than one?
-
             this.maps[0].on('moveend', _event => this.emitViewportSize());
-
-            this.mapLayers.forEach(layerComponent => this.maps[0].addLayer(layerComponent.mapLayer));
 
             this.subscriptions.push(
                 combineLatest(
@@ -150,7 +147,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         for (let propName in changes) {
             if (propName === 'grid') {
-                // TODO: implement grid switch
+                this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
             }
         }
     }
@@ -159,7 +156,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Notify the map that the container has resized.
      */
     resize() {
-        setTimeout(() => this.maps.forEach(map => map.updateSize()));
+        // setTimeout(() => this.maps.forEach(map => map.updateSize()));
+        setTimeout(() => this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection)));
     }
 
     zoomIn() {
@@ -222,37 +220,42 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private calculateGrid() {
+        const numberOfLayers = this.desiredNumberOfMaps();
+
         const containerWidth = this.gridListElement.nativeElement.clientWidth;
         const containerHeight = this.gridListElement.nativeElement.clientHeight;
-
-        if (!this.grid) {
-            this.numberOfRows = 1;
-            this.numberOfColumns = 1;
-
-            return;
-        }
-
-        const numberOfLayers = Math.max(this.mapLayers.length, 1); // require at least one space;
         const ratio = containerWidth / containerHeight;
 
         let rows = 1;
         let columns = 1;
 
-        let capacity = rows * columns;
-        for (let i = capacity; i <= numberOfLayers; ++i) {
-            if (i > capacity) { // need more space
-                if (columns <= rows * ratio) {
-                    columns += 1;
-                } else {
-                    rows += 1;
-
-                    while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
-                        columns -= 1;
-                    }
-                }
-                capacity = rows * columns;
+        while (rows * columns < numberOfLayers) {
+            if (columns <= rows * ratio) {
+                columns += 1;
+            } else {
+                rows += 1;
             }
         }
+
+        while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
+            columns -= 1;
+        }
+
+        // let capacity = rows * columns;
+        // for (let i = capacity; i <= numberOfLayers; ++i) {
+        //     if (i > capacity) { // need more space
+        //         if (columns <= rows * ratio) {
+        //             columns += 1;
+        //         } else {
+        //             rows += 1;
+        //
+        //             while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
+        //                 columns -= 1;
+        //             }
+        //         }
+        //         capacity = rows * columns;
+        //     }
+        // }
 
         this.numberOfRows = columns;
         this.numberOfColumns = columns;
@@ -426,7 +429,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private desiredNumberOfMaps(): number {
-        return this.grid ? this.mapLayers.length : 1;
+        return this.grid ? Math.max(this.mapLayers.length, 1) : 1;
     }
 
     private createAndSetView(projection: Projection) {

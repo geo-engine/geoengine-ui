@@ -25,8 +25,17 @@ export class MapService {
     });
 
     private mapComponent: MapContainerComponent;
+    private isGridStream = new BehaviorSubject(false);
 
     constructor() {
+    }
+
+    public get isGrid$(): Observable<boolean> {
+        return this.isGridStream;
+    }
+
+    public setGrid(isGrid: boolean) {
+        this.isGridStream.next(isGrid);
     }
 
     public registerMapComponent(mapComponent: MapContainerComponent) {

@@ -1,4 +1,3 @@
-
 import {first} from 'rxjs/operators';
 import {Observable, Subscription} from 'rxjs';
 
@@ -34,6 +33,7 @@ export class LayerListComponent implements OnDestroy {
     layerListVisibility$: Observable<boolean>;
     @Input() height: number;
     layerList: Array<Layer<Symbology>> = [];
+    mapIsGrid$: Observable<boolean>;
 
     // make visible in template
     // tslint:disable:variable-name
@@ -77,6 +77,8 @@ export class LayerListComponent implements OnDestroy {
             }
         });
         this.subscriptions.push(sub);
+
+        this.mapIsGrid$ = this.mapService.isGrid$;
     }
 
     ngOnDestroy() {

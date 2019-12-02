@@ -81,6 +81,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
     LayoutService = LayoutService;
 
+    mapIsGrid$: Observable<boolean>;
+
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     constructor(public layerService: LayerService,
@@ -126,6 +128,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.mapService.registerMapComponent(this.mapComponent);
+        this.mapIsGrid$ = this.mapService.isGrid$;
+
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
             tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
