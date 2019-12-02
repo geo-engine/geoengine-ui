@@ -148,8 +148,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        console.log('map changes', changes, this);
-
         for (let propName in changes) {
             if (propName === 'grid') {
                 // TODO: implement grid switch
@@ -220,7 +218,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     public layerForcesRedraw() {
-        console.log('LAYER FORCES REDRAW');
         this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
     }
 

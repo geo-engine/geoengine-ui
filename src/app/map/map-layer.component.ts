@@ -1,6 +1,5 @@
 import {
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -122,7 +121,6 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -135,7 +133,6 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -148,7 +145,6 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -161,7 +157,6 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer', 'projection', 'symbology', 'time', 'visible'],
 })
 export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
     MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnChanges, OnInit {
