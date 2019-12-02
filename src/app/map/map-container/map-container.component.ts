@@ -80,12 +80,13 @@ const MAX_ZOOM_LEVEL = 28;
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // display a grid of maps or all layers on a single map
-    @Input() grid = false; // TODO: false;
+    @Input() grid = true; // TODO: false;
 
-    @ViewChild(MatGridList, {read: ElementRef}) gridListElement: ElementRef;
-    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers: QueryList<ElementRef>;
+    @ViewChild(MatGridList, {read: ElementRef}) gridListElement !: ElementRef;
+    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers !: QueryList<ElementRef>;
 
-    @ContentChildren(MapLayerComponent) mapLayers: QueryList<MapLayer>;
+    @ContentChildren(MapLayerComponent) mapLayersRaw !: QueryList<MapLayer>;
+    mapLayers: Array<MapLayer> = []; // filtered
 
     numberOfRows = 1;
     numberOfColumns = 1;
@@ -135,7 +136,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
             this.subscriptions.push(
                 combineLatest(
-                    this.mapLayers.changes,
+                    this.mapLayersRaw.changes,
                     this.projection$,
                 ).pipe(
                     rxMap(([_changes, newProjection]) => newProjection)
@@ -216,6 +217,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.drawInteraction = undefined;
 
         return source;
+    }
+
+    public layerForcesRedraw() {
+        console.log('LAYER FORCES REDRAW');
+        this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
     }
 
     private calculateGrid() {
@@ -359,6 +365,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private redrawLayers(projection: Projection) {
+        this.mapLayers = this.mapLayersRaw.filter(layer => layer.visible);
+
         this.calculateGrid();
         this.changeDetectorRef.detectChanges(); // TODO: race condition?
 
@@ -366,8 +374,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             console.error('race condition!');
         }
 
-        if (this.maps.length > this.desiredNumberOfMaps()) { // reduce maps if necessary
-            this.maps.length = this.desiredNumberOfMaps();
+        while (this.maps.length > this.desiredNumberOfMaps()) {
+            const removedMap = this.maps.pop();
+            removedMap.setTarget(undefined); // remove DOM reference to map
         }
         while (this.maps.length < this.desiredNumberOfMaps()) { // enlarge maps if necessary
             this.maps.push(new OlMap({
@@ -380,7 +389,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         this.mapContainers.forEach((mapContainer, i) => {
-            this.maps[i].setTarget(mapContainer.nativeElement.children[0]);
+            const mapTarget: HTMLElement = mapContainer.nativeElement.children[0];
+            this.maps[i].setTarget(mapTarget);
+            this.maps[i].updateSize();
         });
 
         const oldProjection = this.view ? this.view.getProjection() : undefined;
@@ -403,14 +414,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.backgroundLayers.push(this.createBackgroundLayer(projection));
         }
 
-        const mapLayers = this.mapLayers.toArray();
+        // const mapLayers = this.mapLayers.toArray();
         this.maps.forEach((map, index) => {
             map.getLayers().clear();
             map.getLayers().push(this.backgroundLayers[index]);
 
             if (this.grid) {
-                const inverseIndex = mapLayers.length - index - 1;
-                map.getLayers().push(mapLayers[inverseIndex].mapLayer);
+                const inverseIndex = this.mapLayers.length - index - 1;
+                map.getLayers().push(this.mapLayers[inverseIndex].mapLayer);
             } else {
                 this.mapLayers.forEach(layerComponent => map.addLayer(layerComponent.mapLayer));
             }
