@@ -3,7 +3,7 @@ import {first, map as rxMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
+    ChangeDetectionStrategy, ChangeDetectorRef,
     Component,
     ContentChildren,
     ElementRef,
@@ -55,6 +55,8 @@ import {ProjectService} from '../../project/project.service';
 import {MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {StyleCreator} from '../style-creator';
+import {LayoutService} from '../../layout.service';
+import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 
 type MapLayer = MapLayerComponent<OlLayer, OlSource, Symbology, Layer<Symbology>>;
 
@@ -78,21 +80,23 @@ const MAX_ZOOM_LEVEL = 28;
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // display a grid of maps or all layers on a single map
-    @Input() grid = false;
+    @Input() grid = false; // TODO: false;
 
-    @ViewChild('mapContainer') mapContainer: ElementRef;
-    @ViewChildren('.map') mapContainers: QueryList<ElementRef>;
+    @ViewChild(MatGridList, {read: ElementRef}) gridListElement: ElementRef;
+    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers: QueryList<ElementRef>;
 
     @ContentChildren(MapLayerComponent) mapLayers: QueryList<MapLayer>;
 
-    numberOfColumns: number;
-    rowHeight: number;
+    numberOfRows = 1;
+    numberOfColumns = 1;
+    rowHeight = 'fit';
 
     private projection$: Observable<Projection> = this.projectService.getProjectionStream();
 
     private maps: Array<OlMap>;
     private view: OlView;
-    private backgroundLayer: OlLayer;
+    private backgroundLayerSource: OlSource;
+    private backgroundLayers: Array<OlLayer> = [];
 
     private drawInteraction: OlInteractionDraw;
 
@@ -100,8 +104,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private subscriptions: Array<Subscription> = [];
 
     constructor(private config: Config,
+                private changeDetectorRef: ChangeDetectorRef,
                 private mapService: MapService,
                 private layerService: LayerService,
+                private layoutService: LayoutService,
                 private projectService: ProjectService) {
         // set dummy maps so that they are not uninitialized
         this.view = new OlView({
@@ -120,7 +126,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.projection$.pipe(first()).subscribe(projection => {
             this.initOpenlayersMap(projection);
 
-            this.maps[0].setTarget(this.mapContainer.nativeElement);
+            // this.mapContainers.forEach((container, i) => this.maps[0].setTarget(container.nativeElement));
+            // TODO: init more than one?
 
             this.maps[0].on('moveend', _event => this.emitViewportSize());
 
@@ -209,6 +216,43 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.drawInteraction = undefined;
 
         return source;
+    }
+
+    private calculateGrid() {
+        const containerWidth = this.gridListElement.nativeElement.clientWidth;
+        const containerHeight = this.gridListElement.nativeElement.clientHeight;
+
+        if (!this.grid) {
+            this.numberOfRows = 1;
+            this.numberOfColumns = 1;
+
+            return;
+        }
+
+        const numberOfLayers = Math.max(this.mapLayers.length, 1); // require at least one space;
+        const ratio = containerWidth / containerHeight;
+
+        let rows = 1;
+        let columns = 1;
+
+        let capacity = rows * columns;
+        for (let i = capacity; i <= numberOfLayers; ++i) {
+            if (i > capacity) { // need more space
+                if (columns <= rows * ratio) {
+                    columns += 1;
+                } else {
+                    rows += 1;
+
+                    while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
+                        columns -= 1;
+                    }
+                }
+                capacity = rows * columns;
+            }
+        }
+
+        this.numberOfRows = columns;
+        this.numberOfColumns = columns;
     }
 
     private initOpenlayersMap(projection: Projection) {
@@ -315,6 +359,30 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private redrawLayers(projection: Projection) {
+        this.calculateGrid();
+        this.changeDetectorRef.detectChanges(); // TODO: race condition?
+
+        if (this.grid && this.mapContainers.length !== this.mapLayers.length) {
+            console.error('race condition!');
+        }
+
+        if (this.maps.length > this.desiredNumberOfMaps()) { // reduce maps if necessary
+            this.maps.length = this.desiredNumberOfMaps();
+        }
+        while (this.maps.length < this.desiredNumberOfMaps()) { // enlarge maps if necessary
+            this.maps.push(new OlMap({
+                controls: [],
+                logo: false,
+                view: this.view,
+                loadTilesWhileAnimating: true,  // TODO: check if moved to layer
+                loadTilesWhileInteracting: true, // TODO: check if moved to layer
+            }));
+        }
+
+        this.mapContainers.forEach((mapContainer, i) => {
+            this.maps[i].setTarget(mapContainer.nativeElement.children[0]);
+        });
+
         const oldProjection = this.view ? this.view.getProjection() : undefined;
         const projectionChanged = oldProjection !== projection.getOpenlayersProjection();
 
@@ -322,18 +390,35 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.createAndSetView(projection);
         }
 
-        if (projectionChanged || !this.backgroundLayer) {
-            this.backgroundLayer = this.createBackgroundLayer(projection);
+        if (projectionChanged || !this.backgroundLayerSource) {
+            this.backgroundLayerSource = this.createBackgroundLayerSource(projection);
+
+            this.backgroundLayers.length = 0;
         }
 
-        this.maps.forEach(map => {
-            map.getLayers().clear();
-            map.getLayers().push(this.backgroundLayer);
+        if (this.backgroundLayers.length > this.desiredNumberOfMaps()) { // reduce background layers if necessary
+            this.backgroundLayers.length = this.desiredNumberOfMaps();
+        }
+        while (this.backgroundLayers.length < this.desiredNumberOfMaps()) { // create background layers if necessary
+            this.backgroundLayers.push(this.createBackgroundLayer(projection));
+        }
 
-            this.mapLayers.forEach(
-                layerComponent => map.addLayer(layerComponent.mapLayer)
-            );
+        const mapLayers = this.mapLayers.toArray();
+        this.maps.forEach((map, index) => {
+            map.getLayers().clear();
+            map.getLayers().push(this.backgroundLayers[index]);
+
+            if (this.grid) {
+                const inverseIndex = mapLayers.length - index - 1;
+                map.getLayers().push(mapLayers[inverseIndex].mapLayer);
+            } else {
+                this.mapLayers.forEach(layerComponent => map.addLayer(layerComponent.mapLayer));
+            }
         });
+    }
+
+    private desiredNumberOfMaps(): number {
+        return this.grid ? this.mapLayers.length : 1;
     }
 
     private createAndSetView(projection: Projection) {
@@ -387,22 +472,17 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             case 'OSM':
                 if (projection === Projections.WEB_MERCATOR) {
                     return new OlLayerTile({
-                        source: new OlSourceOSM(),
+                        source: this.backgroundLayerSource,
                         wrapX: false,
                     });
                 } else {
                     return new OlLayerImage({ // placeholder image
-                        source: new OlImageStatic({
-                            imageExtent: [0, 0, 0, 0],
-                        }),
+                        source: this.backgroundLayerSource,
                     });
                 }
             case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
                 return new OlLayerVector({
-                    source: new OlSourceVector({
-                        url: 'assets/countries.geo.json',
-                        format: new OlFormatGeoJSON(),
-                    }),
+                    source: this.backgroundLayerSource,
                     style: (feature: OlFeature, _resolution: number): OlStyleStyle => {
                         if (feature.getId() === 'BACKGROUND') {
                             return new OlStyleStyle({
@@ -424,7 +504,35 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     },
                 });
             case 'hosted':
-                const hostedSource = new OlTileWmsSource({
+                return new OlLayerTile({
+                    source: this.backgroundLayerSource,
+                });
+            case 'XYZ':
+                return new OlLayerTile({
+                    source: this.backgroundLayerSource,
+                });
+            default:
+                throw Error('Unknown Background Layer Name');
+        }
+    }
+
+    private createBackgroundLayerSource(projection: Projection): OlSource {
+        switch (this.config.MAP.BACKGROUND_LAYER) {
+            case 'OSM':
+                if (projection === Projections.WEB_MERCATOR) {
+                    return new OlSourceOSM();
+                } else {
+                    return new OlImageStatic({
+                        imageExtent: [0, 0, 0, 0],
+                    });
+                }
+            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+                return new OlSourceVector({
+                    url: 'assets/countries.geo.json',
+                    format: new OlFormatGeoJSON(),
+                });
+            case 'hosted':
+                return new OlTileWmsSource({
                     url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
                     params: {
                         layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
@@ -434,20 +542,15 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                     projection: projection.getCode(),
                 });
-                return new OlLayerTile({
-                    source: hostedSource,
-                });
             case 'XYZ':
-                const xyzSource = new XYZ({
+                return new XYZ({
                     url: this.config.MAP.BACKGROUND_LAYER_URL,
                     wrapX: false,
                     projection: projection.getCode(),
-                });
-                return new OlLayerTile({
-                    source: xyzSource,
                 });
             default:
                 throw Error('Unknown Background Layer Name');
         }
     }
+
 }
