@@ -99,9 +99,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private backgroundLayerSource: OlSource;
     private backgroundLayers: Array<OlLayer> = [];
 
-    private drawInteraction: OlInteractionDraw;
+    private selectedOlLayer: OlLayer = undefined;
+    private userSelect: OlInteractionSelect;
 
+    private drawInteraction: OlInteractionDraw;
     private drawInteractionLayer: OlLayerVector;
+
     private subscriptions: Array<Subscription> = [];
 
     constructor(private config: Config,
@@ -129,7 +132,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
             this.initOpenlayersMap(projection);
 
+            // since all viewports are linked and there will always be the first map, we link the event only to map 0
             this.maps[0].on('moveend', _event => this.emitViewportSize());
+
+            this.initUserSelect();
 
             this.subscriptions.push(
                 combineLatest(
@@ -156,7 +162,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Notify the map that the container has resized.
      */
     resize() {
-        // setTimeout(() => this.maps.forEach(map => map.updateSize()));
         setTimeout(() => this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection)));
     }
 
@@ -229,6 +234,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         let rows = 1;
         let columns = 1;
 
+        // this is a heuristic of calculating the division of rows and columns for displaying the layers
         while (rows * columns < numberOfLayers) {
             if (columns <= rows * ratio) {
                 columns += 1;
@@ -240,22 +246,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
             columns -= 1;
         }
-
-        // let capacity = rows * columns;
-        // for (let i = capacity; i <= numberOfLayers; ++i) {
-        //     if (i > capacity) { // need more space
-        //         if (columns <= rows * ratio) {
-        //             columns += 1;
-        //         } else {
-        //             rows += 1;
-        //
-        //             while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
-        //                 columns -= 1;
-        //             }
-        //         }
-        //         capacity = rows * columns;
-        //     }
-        // }
 
         this.numberOfRows = columns;
         this.numberOfColumns = columns;
@@ -269,106 +259,118 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             loadTilesWhileInteracting: true, // TODO: check if moved to layer
         })];
         this.createAndSetView(projection);
+    }
 
-        let selectedOlLayers: Array<OlLayer> = undefined;
-
-        // add the select interaction to the map
-        const select = new OlInteractionSelect({
-            layers: (layerCandidate: OlLayer) => layerCandidate === selectedOlLayers[0],
-            wrapX: false,
+    private initUserSelect() {
+        this.userSelect = new OlInteractionSelect({
+            layers: (layerCandidate: OlLayer) => layerCandidate === this.selectedOlLayer,
         });
-        (select as any).setActive(false);
-        this.maps.forEach(map => map.addInteraction(select));
-        select.on(['select'], (event: {}) => {
-            const selectEvent = event as OlInteractionSelectEvent;
-            const selectedSymbology = this.layerService.getSelectedLayer().symbology;
+        this.userSelect.setActive(false);
 
-            if (selectedSymbology instanceof AbstractVectorSymbology) {
-                const highlightSymbology = StyleCreator.createHighlightSymbology(
-                    selectedSymbology as AbstractVectorSymbology
-                );
+        this.subscriptions.push(
+            this.layerService.getSelectedLayerStream().subscribe(selectedLayer => {
+                // reset old selection
+                this.userSelect.getFeatures().forEach(feature => feature.setStyle(undefined));
+                this.userSelect.getFeatures().clear();
+
+                const filteredLayers = this.mapLayers.filter(mapLayer => mapLayer.layer === selectedLayer);
+                this.selectedOlLayer = filteredLayers.length ? filteredLayers[0].mapLayer : undefined;
+                this.userSelect.setActive(!!this.selectedOlLayer);
+
+                this.attachUserSelectToMap();
+            })
+        );
+
+        this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
+            const selectedLayerSymbology = this.layerService.getSelectedLayer().symbology;
+
+            if (selectedLayerSymbology instanceof AbstractVectorSymbology) {
+                const highlightSymbology = StyleCreator.createHighlightSymbology(selectedLayerSymbology);
                 const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
-                selectEvent.selected.forEach((feature) => {
-                    feature.setStyle(highlightStyle);
-                });
+                selectEvent.selected.forEach(feature => feature.setStyle(highlightStyle));
             }
 
-            selectEvent.deselected.forEach((feature) => {
-                feature.setStyle(undefined);
-            });
+            selectEvent.deselected.forEach(feature => feature.setStyle(undefined));
 
             this.layerService.updateSelectedFeatures(
-                selectEvent.selected.map(
-                    feature => feature.getId()
-                ),
-                selectEvent.deselected.map(
-                    feature => feature.getId()
-                )
+                selectEvent.selected.map(feature => feature.getId()),
+                selectEvent.deselected.map(feature => feature.getId()),
             );
         });
 
-        this.layerService.getSelectedLayerStream().subscribe(layer => {
-            select.getFeatures().forEach((feature) => {
-                feature.setStyle(undefined);
-            });
-            select.getFeatures().clear();
-            if (layer && select) {
-                selectedOlLayers = this.mapLayers.filter(
-                    olLayerComponent => olLayerComponent.layer === layer
-                ).map(
-                    olLayerComponent => olLayerComponent.mapLayer
-                );
-                select.setActive(true);
-            } else {
-                select.setActive(false);
-            }
-        });
-
-        this.layerService.getSelectedFeaturesStream().subscribe(selected => {
-            const selectedLayer = this.layerService.getSelectedLayer();
-
-            let newSelect = new OlCollection<OlFeature>();
-            select.getFeatures().forEach(feature => {
-                if (selected.remove && selected.remove.contains(feature.getId())) {
-                    newSelect.push(feature);
-                    feature.setStyle(undefined);
-                }
-            });
-
-            newSelect.forEach(feature => {
-                select.getFeatures().remove(feature);
-            });
-
-            // TODO: clean this up when selected layer is removed
-            if (selectedOlLayers) {
-                selectedOlLayers.forEach(layer => {
-                    if (layer instanceof OlLayerVector && selectedLayer) {
-                        const highlightSymbology = StyleCreator.createHighlightSymbology(
-                            selectedLayer.symbology as AbstractVectorSymbology
-                        );
-                        const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
-
-                        const vectorLayer = layer as OlLayerVector;
-                        vectorLayer.getSource().getFeatures().forEach(feature => {
-                            if (selected.add && selected.add.contains(feature.getId())) {
-                                if (select.getFeatures().getArray().indexOf(feature) === -1) {
-                                    select.getFeatures().push(feature);
-                                    // todo: add resolution as third parameter
-                                    feature.setStyle(highlightStyle);
-                                }
-                            }
-                        });
+        this.subscriptions.push(
+            this.layerService.getSelectedFeaturesStream().subscribe(selectedFeatures => {
+                let newSelection = new OlCollection<OlFeature>();
+                this.userSelect.getFeatures().forEach(feature => {
+                    if (selectedFeatures.remove && selectedFeatures.remove.contains(feature.getId())) {
+                        newSelection.push(feature);
+                        feature.setStyle(undefined);
                     }
                 });
+
+                newSelection.forEach(feature => this.userSelect.getFeatures().remove(feature));
+
+                const selectedLayer = this.layerService.getSelectedLayer();
+
+                if (!selectedLayer || !this.selectedOlLayer) {
+                    return;
+                }
+
+                if (this.selectedOlLayer instanceof OlLayerVector) {
+                    const highlightSymbology = StyleCreator.createHighlightSymbology(selectedLayer.symbology as AbstractVectorSymbology);
+                    const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
+
+                    this.selectedOlLayer.getSource().getFeatures().forEach(feature => {
+                        if (selectedFeatures.add && selectedFeatures.add.contains(feature.getId())) {
+                            if (this.userSelect.getFeatures().getArray().indexOf(feature) === -1) {
+                                this.userSelect.getFeatures().push(feature);
+                                // todo: add resolution as third parameter
+                                feature.setStyle(highlightStyle);
+                            }
+                        }
+                    });
+                }
+            })
+        );
+    }
+
+    private attachUserSelectToMap() {
+        if (!this.userSelect) { // called too early
+            return;
+        }
+
+        let map;
+        if (!this.selectedOlLayer) {
+            map = undefined;
+        } else if (this.maps.length === 1) { // mono map, no choice
+            map = this.maps[0];
+        } else {
+            const selectedLayerIndex = this.mapLayers.map(layer => layer.mapLayer).indexOf(this.selectedOlLayer);
+            if (selectedLayerIndex >= 0) {
+                const inverseIndex = this.maps.length - selectedLayerIndex - 1;
+                map = this.maps[inverseIndex];
+            } else {
+                map = undefined; // actually, something went wrong
             }
-        });
+        }
+
+        const oldMap = this.userSelect.getMap();
+        if (map !== oldMap) {
+            if (oldMap) {
+                oldMap.removeInteraction(this.userSelect);
+            }
+            this.userSelect.setMap(map);
+            if (map) {
+                map.addInteraction(this.userSelect);
+            }
+        }
     }
 
     private redrawLayers(projection: Projection) {
         this.mapLayers = this.mapLayersRaw.filter(layer => layer.visible);
 
         this.calculateGrid();
-        this.changeDetectorRef.detectChanges(); // TODO: race condition?
+        this.changeDetectorRef.detectChanges();
 
         if (this.grid && this.mapContainers.length !== this.mapLayers.length) {
             console.error('race condition!');
@@ -426,6 +428,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 this.mapLayers.forEach(layerComponent => map.addLayer(layerComponent.mapLayer));
             }
         });
+
+        this.attachUserSelectToMap();
     }
 
     private desiredNumberOfMaps(): number {
