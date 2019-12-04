@@ -1,16 +1,11 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {MapService} from '../../../map/map.service';
 import {WKT as OlFormatWKT} from 'ol/format';
 import {Vector as OlVectorSource} from 'ol/source';
-import {GeometryType as OlGeometryType} from 'ol/geom';
-
-
+import OlGeometryType from 'ol/geom/GeometryType';
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
-import {
-    AbstractVectorSymbology, ComplexPointSymbology,
-    ComplexVectorSymbology
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
@@ -27,13 +22,17 @@ import {Subscription} from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
+export class OlDrawFeaturesComponent implements OnDestroy {
 
-    featureTypes = ['Polygon', 'Point'];
-    selectedFeatureType: OlGeometryType;
+    featureTypes = [ResultTypes.POLYGONS, ResultTypes.POINTS];
+    selectedFeatureType: ResultType;
+    olGeometryType: OlGeometryType;
+
     isDrawingActive = false;
     olFeatureWriter = new OlFormatWKT();
+
     featureLayerName = 'new feature layer';
+
     mapProjection: Projection;
     mapProjectionSubscription: Subscription;
 
@@ -48,17 +47,36 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         if (this.isDrawingActive) {
-            this.isDrawingActive = false;
-            this.mapService.endDrawInteraction();
-            this.notificationService.info('Draw features canceled.');
-            this.mapProjectionSubscription.unsubscribe();
+            this.cancelDrawing();
+        }
+        this.mapProjectionSubscription.unsubscribe();
+    }
+
+    updateFeatureType(resultType: ResultType) {
+        this.selectedFeatureType = resultType;
+
+        switch (resultType) {
+            case ResultTypes.POINTS:
+                this.olGeometryType = OlGeometryType.POINT;
+                break;
+            case ResultTypes.POLYGONS:
+                this.olGeometryType = OlGeometryType.POLYGON;
+                break;
+            default:
+                throw new UnexpectedResultType();
         }
     }
 
     startDrawing() {
         this.isDrawingActive = true;
-        this.mapService.startDrawInteraction(this.selectedFeatureType);
-        this.notificationService.info('Start drawing...')
+        this.mapService.startDrawInteraction(this.olGeometryType);
+        this.notificationService.info('Start drawing…');
+    }
+
+    cancelDrawing() {
+        this.isDrawingActive = false;
+        this.mapService.endDrawInteraction();
+        this.notificationService.info('Draw features canceled.')
     }
 
     endDrawing() {
@@ -67,24 +85,22 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
         if (olSource.getFeatures().length > 0) {
             this.createAndAddOperatorFromSource(olSource);
         } else {
-            this.notificationService.info('Empty layer skipped.')
+            this.notificationService.info('Empty layer skipped.');
         }
     }
 
     private createAndAddOperatorFromSource(olSource: OlVectorSource) {
-
-        let resultType: ResultType;
         let resultSymbology: AbstractVectorSymbology;
+        let clustered = false;
 
         switch (this.selectedFeatureType) {
-            case 'Point':
-                resultType = ResultTypes.POINTS;
+            case ResultTypes.POINTS:
                 resultSymbology = ComplexPointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
+                clustered = true;
                 break;
-            case 'Polygon':
-                resultType = ResultTypes.POLYGONS;
+            case ResultTypes.POLYGONS:
                 resultSymbology = ComplexVectorSymbology.createSimpleSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
@@ -105,12 +121,12 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
 
         const sourceType = new WKTSourceType({
             wkt: wkt,
-            type: resultType,
+            type: this.selectedFeatureType,
         });
 
         const operator = new Operator({
             operatorType: sourceType,
-            resultType: resultType,
+            resultType: this.selectedFeatureType,
             projection: Projections.WGS_84,
         });
 
@@ -118,19 +134,10 @@ export class OlDrawFeaturesComponent implements OnInit, OnDestroy {
             name: this.featureLayerName,
             operator: operator,
             symbology: resultSymbology,
-            clustered: false,
+            clustered: clustered,
         });
 
-        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
     }
-
-    cancelDrawing() {
-        this.isDrawingActive = false;
-        this.mapService.endDrawInteraction();
-        this.notificationService.info('Draw features canceled.')
-    }
-
-    ngOnInit(): void {}
 
 }

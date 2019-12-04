@@ -102,8 +102,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private selectedOlLayer: OlLayer = undefined;
     private userSelect: OlInteractionSelect;
 
-    private drawInteraction: OlInteractionDraw;
-    private drawInteractionLayer: OlLayerVector;
+    private drawInteractionSource: OlSourceVector;
+    private drawType: OlGeometryType;
+    private drawInteractions: Array<OlInteractionDraw> = [];
+    private drawInteractionLayers: Array<OlLayerVector> = [];
 
     private subscriptions: Array<Subscription> = [];
 
@@ -178,46 +180,80 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     public startDrawInteraction(drawType: OlGeometryType) {
-        if (this.drawInteraction) {
+        if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
         }
 
-        if (this.drawInteractionLayer) {
-            throw new Error('only one draw layer can be active!');
-        }
+        this.drawType = drawType;
+        this.drawInteractionSource = new OlSourceVector({wrapX: false});
 
-        const source = new OlSourceVector({wrapX: false});
-
-        this.drawInteractionLayer = new OlLayerVector({
-            source: source,
-        });
-
-        this.drawInteraction = new OlInteractionDraw({
-            source: source,
-            type: drawType
-        });
-
-        this.maps[0].addLayer(this.drawInteractionLayer);
-        this.maps[0].addInteraction(this.drawInteraction);
+        this.reattachDrawInteractions();
     }
 
     public isDrawInteractionAttached(): boolean {
-        return (!!this.drawInteraction && !!this.drawInteractionLayer);
+        return !!this.drawInteractionSource;
     }
 
     public endDrawInteraction(): OlSourceVector {
-        if (!this.drawInteraction || !this.drawInteractionLayer) {
+        if (!this.isDrawInteractionAttached()) {
             console.error('no interaction or layer active!');
             return undefined;
         }
 
-        const source = this.drawInteractionLayer.getSource();
-        this.maps[0].removeInteraction(this.drawInteraction);
-        this.maps[0].removeLayer(this.drawInteractionLayer);
-        this.drawInteractionLayer = undefined;
-        this.drawInteraction = undefined;
+        const source = this.drawInteractionSource;
+
+        this.drawInteractionSource = undefined;
+
+        this.reattachDrawInteractions();
 
         return source;
+    }
+
+    private createDrawInteractionLayer(): OlLayerVector {
+        return new OlLayerVector({
+            source: this.drawInteractionSource,
+        });
+    }
+
+    private createDrawInteraction(): OlInteractionDraw {
+        return new OlInteractionDraw({
+            source: this.drawInteractionSource,
+            type: this.drawType,
+        });
+    }
+
+    private reattachDrawInteractions() {
+        // remove layers
+        this.drawInteractionLayers.forEach((layer, index) => {
+            if (index < this.maps.length) {
+                this.maps[index].removeLayer(layer);
+            }
+            layer.setMap(undefined);
+        });
+        this.drawInteractionLayers.length = 0;
+
+        // remove interactions
+        this.drawInteractions.forEach((interaction, index) => {
+            if (index < this.maps.length) {
+                this.maps[index].removeInteraction(interaction);
+            }
+            interaction.setMap(undefined);
+        });
+        this.drawInteractions.length = 0;
+
+        // reattach
+        if (this.isDrawInteractionAttached()) {
+            this.maps.forEach(map => {
+                const drawInteractionLayer = this.createDrawInteractionLayer();
+                this.drawInteractionLayers.push(drawInteractionLayer);
+                map.addLayer(drawInteractionLayer);
+
+
+                const drawInteraction = this.createDrawInteraction();
+                this.drawInteractions.push(drawInteraction);
+                map.addInteraction(drawInteraction);
+            });
+        }
     }
 
     public layerForcesRedraw() {
@@ -372,7 +408,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();
 
-        if (this.grid && this.mapContainers.length !== this.mapLayers.length) {
+        if (this.grid && this.mapLayers.length && this.mapContainers.length !== this.mapLayers.length) {
             console.error('race condition!');
         }
 
@@ -416,18 +452,21 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.backgroundLayers.push(this.createBackgroundLayer(projection));
         }
 
-        // const mapLayers = this.mapLayers.toArray();
         this.maps.forEach((map, index) => {
             map.getLayers().clear();
             map.getLayers().push(this.backgroundLayers[index]);
 
             if (this.grid) {
-                const inverseIndex = this.mapLayers.length - index - 1;
-                map.getLayers().push(this.mapLayers[inverseIndex].mapLayer);
+                if (this.mapLayers.length) {
+                    const inverseIndex = this.mapLayers.length - index - 1;
+                    map.getLayers().push(this.mapLayers[inverseIndex].mapLayer);
+                }
             } else {
                 this.mapLayers.forEach(layerComponent => map.addLayer(layerComponent.mapLayer));
             }
         });
+
+        this.reattachDrawInteractions();
 
         this.attachUserSelectToMap();
     }
