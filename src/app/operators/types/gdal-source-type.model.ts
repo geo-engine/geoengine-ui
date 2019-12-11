@@ -1,10 +1,13 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface GdalSourceTypeConfig {
     channel: number;
     sourcename: string;
     transform: boolean;
+}
+
+export interface GdalSourceTypeCloneOptions {
+    channel?: number;
 }
 
 interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
@@ -66,6 +69,13 @@ export class GdalSourceType extends OperatorType {
         ];
     }
 
+    getParameterValue(parameterName: string): string | number | undefined {
+        switch (parameterName) {
+            case 'channel': return this.channel;
+            default: return undefined;
+        }
+    }
+
     toMappingDict(): GdalSourceTypeMappingDict {
         return {
             sourcename: this.sourcename,
@@ -81,6 +91,14 @@ export class GdalSourceType extends OperatorType {
             channel: this.channel,
             transform: this.transform,
         };
+    }
+
+    cloneWithOptions(options?: GdalSourceTypeCloneOptions): OperatorType {
+        return new GdalSourceType({
+            channel: options && options.channel ? options.channel : this.channel,
+            sourcename: this.sourcename,
+            transform: this.transform,
+        })
     }
 
 }

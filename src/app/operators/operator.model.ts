@@ -8,6 +8,11 @@ import {DataType, DataTypes} from './datatype.model';
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from './operator-type.model';
 import {OperatorTypeFactory} from './types/type-factory.service';
 import {ProjectionType} from './types/projection-type.model';
+import {
+    OperatorTypeParameterOptions,
+    OperatorTypeParameterOptionsDict
+} from './operator-type-parameter-options.model';
+import {OperatorTypeParameterOptionsFactory} from './parameter-options/type-parameter-options-factory.service';
 
 type OperatorId = number;
 type AttributeName = string;
@@ -17,6 +22,7 @@ type AttributeName = string;
  */
 interface OperatorConfig {
     operatorType: OperatorType;
+    operatorTypeParameterOptions?: OperatorTypeParameterOptions;
     resultType: ResultType;
     projection: Projection;
     attributes?: ImmutableList<AttributeName> | Array<AttributeName>;
@@ -29,11 +35,21 @@ interface OperatorConfig {
 }
 
 /**
+ * OperatorCloneOptions
+ */
+interface OperatorCloneOptions {
+    operatorType?: OperatorType;
+    operatorTypeParameterOptions?: OperatorTypeParameterOptions;
+}
+
+
+/**
  * Serialization interface
  */
 export interface OperatorDict {
     id: number;
     operatorType: OperatorTypeDict;
+    operatorTypeParameterOptions: OperatorTypeParameterOptionsDict;
     resultType: string;
     projection: string;
     attributes: Array<string>;
@@ -70,6 +86,7 @@ export class Operator {
 
     private _resultType: ResultType;
     private _operatorType: OperatorType;
+    private _operatorTypeParameterOptions: OperatorTypeParameterOptions;
 
     private _attributes: ImmutableList<AttributeName>;
     private _dataTypes: ImmutableMap<AttributeName, DataType>;
@@ -109,6 +126,9 @@ export class Operator {
         // create the operator from the dict (recursively)
         const operator = new Operator({
             operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
+            operatorTypeParameterOptions: operatorDict.operatorTypeParameterOptions ?
+                OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions)
+                : OperatorTypeParameterOptions.empty(),
             resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
             attributes: ImmutableList(operatorDict.attributes),
@@ -191,6 +211,12 @@ export class Operator {
             this._units = ImmutableMap<AttributeName, Unit>();
         }
 
+        if (config.operatorTypeParameterOptions) {
+            this._operatorTypeParameterOptions = config.operatorTypeParameterOptions;
+        } else {
+            this._operatorTypeParameterOptions = OperatorTypeParameterOptions.empty(); // TODO: handle operators without parameters?
+        }
+
         const returnChecked = (source: ImmutableList<Operator> | Array<Operator>,
                                type: ResultType): ImmutableList<Operator> => {
             if (source) {
@@ -233,6 +259,10 @@ export class Operator {
      */
     get operatorType(): OperatorType {
         return this._operatorType;
+    }
+
+    get operatorTypeParameterOptions(): OperatorTypeParameterOptions {
+        return this._operatorTypeParameterOptions;
     }
 
     /**
@@ -355,6 +385,7 @@ export class Operator {
                     srcProjection: this.projection,
                     destProjection: projection,
                 }),
+                operatorTypeParameterOptions: this._operatorTypeParameterOptions,
                 resultType: this.resultType,
                 projection: projection,
                 attributes: this._attributes,
@@ -384,6 +415,7 @@ export class Operator {
         id: this._id,
         resultType: this._resultType.getCode(),
         operatorType: this._operatorType.toDict(),
+        operatorTypeParameterOptions: this._operatorTypeParameterOptions.toDict(),
         projection: this._projection.getCode(),
         attributes: this._attributes.toArray(),
         dataTypes: this._dataTypes.map(
@@ -435,6 +467,23 @@ export class Operator {
         }
 
         return dict;
+    }
+
+    public cloneWithOptions(options?: OperatorCloneOptions): Operator {
+        return new Operator({
+            operatorType: options.operatorType ? options.operatorType : this._operatorType,
+            operatorTypeParameterOptions:
+                options.operatorTypeParameterOptions ? options.operatorTypeParameterOptions : this._operatorTypeParameterOptions,
+            resultType: this._resultType,
+            projection: this._projection,
+            attributes: this._attributes,
+            dataTypes: this._dataTypes,
+            units: this._units,
+            rasterSources: this.rasterSources,
+            pointSources: this.pointSources,
+            lineSources: this.lineSources,
+            polygonSources: this.polygonSources
+        });
     }
 
 }

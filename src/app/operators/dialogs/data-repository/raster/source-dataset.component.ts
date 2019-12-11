@@ -1,5 +1,4 @@
-
-import {of as observableOf, Observable} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MappingSource, MappingSourceRasterLayer, MappingTransform} from '../mapping-source.model';
 import {Unit} from '../../../unit.model';
@@ -8,8 +7,7 @@ import {ResultTypes} from '../../../result-type.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import {RasterLayer} from '../../../../layers/layer.model';
-import {
-    MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
+import {MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
@@ -17,6 +15,8 @@ import {GdalSourceType} from '../../../types/gdal-source-type.model';
 import {ExpressionType} from '../../../types/expression-type.model';
 import {ColorBreakpointDict} from '../../../../colors/color-breakpoint.model';
 import {ColorizerData, IColorizerData} from '../../../../colors/colorizer-data.model';
+import {GdalSourceParameterOptions} from '../../../parameter-options/gdal-source-parameter-options.model';
+import {ParameterType} from '../../../operator-type-parameter-options.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -176,8 +176,19 @@ export class SourceDatasetComponent implements OnInit {
             transform: doTransform, // TODO: user selectable transform?
         });
 
+        const operatorParameterOptions = new GdalSourceParameterOptions({
+            operatorType: operatorType.toString(),
+            channel: {
+                kind: ParameterType.NUMBER_RANGE,
+                start: 1,
+                stop: this.dataset.rasterLayer.length,
+                step: 1
+            }
+        });
+
         const sourceOperator = new Operator({
             operatorType: operatorType,
+            operatorTypeParameterOptions: operatorParameterOptions,
             resultType: ResultTypes.RASTER,
             projection: sourceProjection,
             attributes: ['value'],

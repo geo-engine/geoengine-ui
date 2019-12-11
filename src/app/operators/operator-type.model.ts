@@ -1,3 +1,12 @@
+
+
+// export interface OperatorTypeConfig {} // tslint:disable-line:no-empty-interface
+
+/**
+ * Options allowed when cloning the operator
+ */
+export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
+
 /**
  * Dictionary for querying the server.
  */
@@ -70,8 +79,18 @@ export abstract class OperatorType {
     abstract getIconUrl(): string;
 
     /**
+     * Get the value of a parameter. Currently limited to simple types!
+     */
+    public getParameterValue(parameterName: string): string | number | undefined {
+        return undefined;
+    }
+
+    /**
      * Get a human readable parameter list.
      */
     abstract getParametersAsStrings(): Array<[string, string]>;
 
+    cloneWithOptions(options?: OperatorTypeCloneOptions): OperatorType {
+        throw new Error('not yet implemented!');
+    }
 }

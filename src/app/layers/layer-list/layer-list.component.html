@@ -242,6 +242,12 @@
 
                             </div>
 
+                            <div *ngIf="layer.operator.operatorType.toString()==='GDAL Source' && !!layer.operator.operatorTypeParameterOptions">
+                                <wave-layer-list-workflow-parameter-slider [layer]="layer" parameterName="channel">
+
+                                </wave-layer-list-workflow-parameter-slider>
+                            </div>
+
                             <mat-progress-bar
                                 [mode]="(projectService.getLayerCombinedStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
                                 [value]="100"

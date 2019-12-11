@@ -2,7 +2,6 @@ import {Interpolation, Unit, UnitDict} from '../../operators/unit.model';
 import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
 import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
-import {Line} from 'tslint/lib/verify/lines';
 
 export enum SymbologyType {
     RASTER,

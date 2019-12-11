@@ -17,7 +17,7 @@ import {Plot, PlotData} from '../plots/plot.model';
 import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
-import {Layer, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
+import {Layer, LayerChanges, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {
     AbstractVectorSymbology,
     RasterSymbology,
@@ -688,76 +688,7 @@ export class ProjectService {
      * @param layer The layer to modify
      * @param changes
      */
-    changeLayer(layer: Layer<AbstractSymbology>, changes: {
-        name ?: string,
-        symbology ?: AbstractSymbology,
-        editSymbology ?: boolean,
-        visible ?: boolean,
-        expanded ?: boolean,
-    }) {
-        // change immutably
-        //
-        // let newLayer: Layer<AbstractSymbology>;
-        // if (layer instanceof VectorLayer) {
-        //     newLayer = new VectorLayer<AbstractVectorSymbology>({
-        //         name: changes.name ? changes.name : layer.name,
-        //         operator: layer.operator,
-        //         symbology: changes.symbology ? changes.symbology : layer.symbology,
-        //         editSymbology: changes.editSymbology !== undefined ? changes.editSymbology : layer.editSymbology,
-        //         visible: changes.visible !== undefined ? changes.visible : layer.visible,
-        //         expanded: changes.expanded !== undefined ? changes.expanded : layer.expanded,
-        //     });
-        // } else if (layer instanceof RasterLayer) {
-        //     newLayer = new RasterLayer<RasterSymbology>({
-        //         name: changes.name ? changes.name : layer.name,
-        //         operator: layer.operator,
-        //         symbology: (changes.symbology ? changes.symbology : layer.symbology) as RasterSymbology,
-        //         editSymbology: changes.editSymbology !== undefined ? changes.editSymbology : layer.editSymbology,
-        //         visible: changes.visible !== undefined ? changes.visible : layer.visible,
-        //         expanded: changes.expanded !== undefined ? changes.expanded : layer.expanded,
-        //     });
-        // }
-        //
-        // if (layer) {
-        //     this.project$.first().subscribe(project => {
-        //         let layers = project.layers;
-        //         const layerIndex = layers.indexOf(layer);
-        //         layers.splice(layerIndex, 1, newLayer);
-        //
-        //         this.layerData$.set(newLayer, this.layerData$.get(layer));
-        //         this.layerDataState$.set(newLayer, this.layerDataState$.get(layer));
-        //         this.layerDataSubscriptions.set(newLayer, this.layerDataSubscriptions.get(layer));
-        //
-        //         if (layer instanceof RasterLayer) {
-        //             this.layerSymbologyData$.set(newLayer, this.layerSymbologyData$.get(layer));
-        //             this.layerSymbologyDataState$.set(newLayer, this.layerSymbologyDataState$.get(layer));
-        //             this.layerSymbologyDataSubscriptions.set(newLayer, this.layerSymbologyDataSubscriptions.get(layer));
-        //         }
-        //
-        //         this.layerProvenanceData$.set(newLayer, this.layerProvenanceData$.get(layer));
-        //         this.layerProvenanceDataState$.set(newLayer, this.layerProvenanceDataState$.get(layer));
-        //         this.layerProvenanceDataSubscriptions.set(newLayer, this.layerProvenanceDataSubscriptions.get(layer));
-        //
-        //         this.changeProjectConfig({
-        //             layers: [...layers],
-        //         }).subscribe(() => {
-        //             this.layerData$.delete(layer);
-        //             this.layerDataState$.delete(layer);
-        //             this.layerDataSubscriptions.delete(layer);
-        //
-        //             if (layer instanceof RasterLayer) {
-        //                 this.layerSymbologyData$.delete(layer);
-        //                 this.layerSymbologyDataState$.delete(layer);
-        //                 this.layerSymbologyDataSubscriptions.delete(layer);
-        //             }
-        //
-        //             this.layerProvenanceData$.delete(layer);
-        //             this.layerProvenanceDataState$.delete(layer);
-        //             this.layerProvenanceDataSubscriptions.delete(layer);
-        //         });
-        //     });
-        // }
-
+    changeLayer(layer: Layer<AbstractSymbology>, changes: LayerChanges<AbstractSymbology>) {
         // change mutably
         layer._changeUnderlyingData(changes);
 

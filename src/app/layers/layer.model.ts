@@ -95,6 +95,15 @@ export class RasterData extends LayerData<string> {
 
 }
 
+export interface LayerChanges<S extends AbstractSymbology> {
+    name ?: string,
+    symbology ?: S,
+    editSymbology ?: boolean,
+    visible ?: boolean,
+    expanded ?: boolean,
+    operator ?: Operator,
+}
+
 export interface VectorLayerData {
     data$: Observable<Array<OlFeature>>;
     dataExtent$?: Observable<[number, number, number, number]>,
@@ -160,7 +169,6 @@ export abstract class Layer<S extends AbstractSymbology> {
      */
     static fromDict(dict: LayerDict,
                     operatorMap = new Map<number, Operator>()): Layer<AbstractSymbology> {
-        // console.log('Layer.fromDict()', dict);
         switch (dict.type) {
             case 'raster':
                 return RasterLayer.fromDict(
@@ -198,13 +206,10 @@ export abstract class Layer<S extends AbstractSymbology> {
      * @param data
      * @private
      */
-    _changeUnderlyingData(data: {
-        name?: string,
-        symbology?: S,
-        visible?: boolean,
-        expanded?: boolean,
-        editSymbology?: boolean,
-    }) {
+    _changeUnderlyingData(data: LayerChanges<S>) {
+
+        console.log('Layer', '_changeUnderlyingData', data);
+
         if (data.name) {
             this._name = data.name;
         }
@@ -223,6 +228,10 @@ export abstract class Layer<S extends AbstractSymbology> {
 
         if (data.editSymbology !== undefined) {
             this._editSymbology = data.editSymbology;
+        }
+
+        if (data.operator !== undefined && data.operator !== this.operator) {
+            this._operator = data.operator;
         }
     }
 
