@@ -91,14 +91,12 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
     private createAndAddOperatorFromSource(olSource: OlVectorSource) {
         let resultSymbology: AbstractVectorSymbology;
-        let clustered = false;
 
         switch (this.selectedFeatureType) {
             case ResultTypes.POINTS:
-                resultSymbology = ComplexPointSymbology.createClusterSymbology({
+                resultSymbology = ComplexPointSymbology.createSimpleSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
-                clustered = true;
                 break;
             case ResultTypes.POLYGONS:
                 resultSymbology = ComplexVectorSymbology.createSimpleSymbology({
@@ -134,7 +132,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
             name: this.featureLayerName,
             operator: operator,
             symbology: resultSymbology,
-            clustered: clustered,
+            clustered: false,
         });
 
         this.projectService.addLayer(layer);
