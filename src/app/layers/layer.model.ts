@@ -206,33 +206,42 @@ export abstract class Layer<S extends AbstractSymbology> {
      * @param data
      * @private
      */
-    _changeUnderlyingData(data: LayerChanges<S>) {
+    _changeUnderlyingData(data: LayerChanges<S>): LayerChanges<S> {
 
         console.log('Layer', '_changeUnderlyingData', data);
+        const validChanges: LayerChanges<S> = {};
 
-        if (data.name) {
+        if (data.name && data.name !== this._name) {
             this._name = data.name;
+            validChanges.name = this._name;
         }
 
         if (data.symbology) {
             this._symbology = data.symbology;
+            validChanges.symbology = this._symbology;
         }
 
-        if (data.visible !== undefined) {
+        if (data.visible !== undefined && data.visible !== this._visible) {
             this._visible = data.visible;
+            validChanges.visible = this._visible;
         }
 
-        if (data.expanded !== undefined) {
+        if (data.expanded !== undefined && data.expanded !== this._expanded) {
             this._expanded = data.expanded;
+            validChanges.expanded = this._expanded;
         }
 
-        if (data.editSymbology !== undefined) {
+        if (data.editSymbology !== undefined && data.editSymbology !== this._editSymbology) {
             this._editSymbology = data.editSymbology;
+            validChanges.editSymbology = this._editSymbology;
         }
 
         if (data.operator !== undefined && data.operator !== this.operator) {
             this._operator = data.operator;
+            validChanges.operator = this._operator;
         }
+
+        return validChanges;
     }
 
     get operator(): Operator {

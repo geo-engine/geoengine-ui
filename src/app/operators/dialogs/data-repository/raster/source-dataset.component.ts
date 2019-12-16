@@ -180,8 +180,8 @@ export class SourceDatasetComponent implements OnInit {
             operatorType: operatorType.toString(),
             channel: {
                 kind: ParameterType.NUMBER_RANGE,
-                start: 1,
-                stop: this.dataset.rasterLayer.length,
+                start: 0,
+                stop: this.dataset.rasterLayer.length - 1,
                 step: 1
             }
         });

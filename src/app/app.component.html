@@ -15,40 +15,16 @@
         <wave-ol-map #map>
             <ng-template ngFor let-layer [ngForOf]='layersReverse$ | async'>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
-                    <wave-ol-point-layer
-                        [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-point-layer>
+                    <wave-ol-point-layer [layer]="layer"></wave-ol-point-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
-                    <wave-ol-line-layer
-                        [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-line-layer>
+                    <wave-ol-line-layer [layer]="layer"></wave-ol-line-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
-                    <wave-ol-polygon-layer
-                        [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-polygon-layer>
+                    <wave-ol-polygon-layer [layer]="layer"></wave-ol-polygon-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
-                    <wave-ol-raster-layer
-                        [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
-                    ></wave-ol-raster-layer>
+                    <wave-ol-raster-layer [layer]="layer"></wave-ol-raster-layer>
                 </ng-template>
             </ng-template>
         </wave-ol-map>
