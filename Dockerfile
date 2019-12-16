@@ -19,7 +19,7 @@ RUN apk add --no-cache \
     g++ \
     python \
     xvfb \
-	firefox
+	firefox-esr
 
 # Copy WAVE source code
 COPY . /app/wave
