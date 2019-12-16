@@ -1,10 +1,10 @@
 <wave-sidenav-header>Draw Features</wave-sidenav-header>
 
 <mat-form-field>
-    <mat-select placeholder="Feature type" [(value)]="selectedFeatureType">
-        <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">
-            {{ featureType }}
-        </mat-option>
+    <mat-select placeholder="Feature type"
+                [value]="selectedFeatureType" (valueChange)="updateFeatureType($event)"
+                [disabled]="isDrawingActive">
+        <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">{{featureType}}</mat-option>
     </mat-select>
 </mat-form-field>
 
