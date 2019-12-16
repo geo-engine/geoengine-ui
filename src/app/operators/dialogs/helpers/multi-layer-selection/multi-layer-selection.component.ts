@@ -1,4 +1,3 @@
-
 import {combineLatest as observableCombineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription} from 'rxjs';
 
 import {first} from 'rxjs/operators';
@@ -191,9 +190,9 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
     add(event: any) {
         observableCombineLatest(
-                this.filteredLayers,
-                this.selectedLayers,
-            ).pipe(
+            this.filteredLayers,
+            this.selectedLayers,
+        ).pipe(
             first())
             .subscribe(([filteredLayers, selectedLayers]) => {
                 this.selectedLayers.next(selectedLayers.concat(
@@ -256,8 +255,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             layersForSelection[0] = layersForSelection.splice(selectedLayerIndex, 1, layersForSelection[0])[0];
         }
 
-        const difference = amount - layersForSelection.length;
-        for (let i = 0; i < difference; i++) {
+        while (layersForSelection.length < amount) {
             layersForSelection.push(layers[0]);
         }
 

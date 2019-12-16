@@ -1,4 +1,3 @@
-
 import {Observable, BehaviorSubject, of as observableOf, combineLatest as observableCombineLatest} from 'rxjs';
 
 import {map} from 'rxjs/operators';
@@ -34,14 +33,15 @@ import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 import {HeatmapType} from '../../types/heatmap-type.model';
 import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminology-lookup.component';
 import {TerminologyLookupType} from '../../types/terminology-lookup-type';
-import {TimePlotType} from "../../types/timeplot-type.model";
-import {TimePlotComponent} from "../time-plot-operator/time-plot-operator.component";
+import {TimePlotType} from '../../types/timeplot-type.model';
+import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 import {StatisticsType, StatisticsTypeDict} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
+import {CreateRgbComponent} from '../create-rgb/create-rgb.component';
 
 interface OperatorListType {
     component: Type<any>;
-    type: {NAME: string, ICON_URL: string};
+    type: { NAME: string, ICON_URL: string };
     description: string;
 }
 
@@ -105,6 +105,11 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
         type: ExpressionType,
         description: 'Calculate an expression on a raster',
     },
+    {
+        component: CreateRgbComponent,
+        type: ExpressionType,
+        description: 'Create an RGB from a set of rasters',
+    }
 ];
 
 const VECTOR_OPERATORS: Array<OperatorListType> = [
@@ -135,7 +140,7 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
     }
 ];
 
-const ALL_OPERATORS: Array<{name: string, list: Array<OperatorListType>}> = [
+const ALL_OPERATORS: Array<{ name: string, list: Array<OperatorListType> }> = [
     {name: 'Mixed', list: MIXED_OPERATORS},
     {name: 'Plots', list: PLOT_OPERATORS},
     {name: 'Raster', list: RASTER_OPERATORS},
@@ -150,7 +155,7 @@ const ALL_OPERATORS: Array<{name: string, list: Array<OperatorListType>}> = [
 })
 export class OperatorListComponent implements OnInit {
 
-    operatorGroups$: Observable<Array<{name: string, list: Array<OperatorListType>}>>;
+    operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
     searchString$ = new BehaviorSubject<string>('');
 
     constructor(private layoutService: LayoutService) {

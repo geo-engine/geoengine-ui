@@ -154,6 +154,7 @@ import {
 import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
+import {CreateRgbComponent} from './operators/dialogs/create-rgb/create-rgb.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -304,6 +305,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsViewComponent,
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
+        CreateRgbComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -323,6 +325,7 @@ export function configInitializer(config: Config) {
         ChangeProjectionComponent,
         ColorizerEditorComponent,
         CountryPolygonSelectionComponent,
+        CreateRgbComponent,
         CsvDialogComponent,
         CsvErrorDialog,
         DataRepositoryComponent,

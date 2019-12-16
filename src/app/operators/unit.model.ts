@@ -48,7 +48,7 @@ export interface UnitDict {
     min?: number;
     max?: number;
     interpolation: number;
-    classes: {[index: number]: string};
+    classes: { [index: number]: string };
 }
 
 export interface UnitMappingDict {
@@ -57,7 +57,7 @@ export interface UnitMappingDict {
     min?: number;
     max?: number;
     interpolation: string;
-    classes?: {[index: number]: string};
+    classes?: { [index: number]: string };
 }
 
 /**
@@ -121,26 +121,26 @@ export class Unit {
     }
 
     static fromMappingDict(dict: UnitMappingDict): Unit {
-      let interpolation = (!!dict.interpolation) ?
-        nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
-      let classes = new Map<number, Class>();
-      if (dict.classes !== undefined) {
-          if (interpolation === Interpolation.Unknown) {
-              interpolation = Interpolation.Discrete;
-          }
-          for (let className in dict.classes) {
-              classes.set(parseFloat(className), dict.classes[className]);
-          }
-      }
-      let config: UnitConfig = {
-          measurement: dict.measurement,
-          unit: dict.unit,
-          min: dict.min,
-          max: dict.max,
-          interpolation: interpolation,
-          classes: classes,
-      };
-      return new Unit(config);
+        let interpolation = (!!dict.interpolation) ?
+            nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
+        let classes = new Map<number, Class>();
+        if (dict.classes !== undefined) {
+            if (interpolation === Interpolation.Unknown) {
+                interpolation = Interpolation.Discrete;
+            }
+            for (let className in dict.classes) {
+                classes.set(parseFloat(className), dict.classes[className]);
+            }
+        }
+        let config: UnitConfig = {
+            measurement: dict.measurement,
+            unit: dict.unit,
+            min: dict.min,
+            max: dict.max,
+            interpolation: interpolation,
+            classes: classes,
+        };
+        return new Unit(config);
     }
 
     static get defaultUnit(): Unit {
@@ -178,7 +178,7 @@ export class Unit {
     toDict(): UnitDict {
         let classes: {
             [index: number]: string
-        } = this._classes === undefined ? {} : this._classes.toJS() as {[index: number]: string};
+        } = this._classes === undefined ? {} : this._classes.toJS() as { [index: number]: string };
 
         return {
             measurement: this._measurement,
@@ -204,7 +204,7 @@ export class Unit {
             dict.max = this._max;
         }
         if (this._unit === 'classification') {
-            dict['classes'] = this._classes.toJS() as {[index: number]: string};
+            dict['classes'] = this._classes.toJS() as { [index: number]: string };
         }
 
         return dict;

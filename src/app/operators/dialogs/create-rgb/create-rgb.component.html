@@ -1,0 +1,12 @@
+<wave-sidenav-header>Create RGB Raster</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div class="container">
+        <wave-multi-layer-selection [types]="inputTypes" formControlName="inputLayers"
+                                    [min]="inputMinLength" [max]="inputMaxLength"></wave-multi-layer-selection>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>
