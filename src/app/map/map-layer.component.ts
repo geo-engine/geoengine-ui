@@ -100,12 +100,12 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     }
 
     private updateOlLayer(changes: LayerChanges<AbstractVectorSymbology>) {
-        if (changes.visible) {
+        if (changes.visible !== undefined) {
             this.mapLayer.setVisible(this.layer.visible);
             this.mapRedraw.emit();
         }
 
-        if (changes.symbology) {
+        if (changes.symbology !== undefined) {
             const style = StyleCreator.fromVectorSymbology(this.layer.symbology);
             this.mapLayer.setStyle(style);
         }
@@ -222,10 +222,11 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
 
     private updateOlLayer(changes: LayerChanges<MappingColorizerRasterSymbology>) {
         if (this.source && this._mapLayer) {
-            if (changes.visible) {
+            if (changes.visible !== undefined) {
                 this._mapLayer.setVisible(this.layer.visible);
+                this.mapRedraw.emit();
             }
-            if (changes.symbology) {
+            if (changes.symbology !== undefined) {
                 this._mapLayer.setOpacity(this.layer.symbology.opacity);
                 // this._mapLayer.setHue(rasterSymbology.hue);
                 // this._mapLayer.setSaturation(rasterSymbology.saturation);
@@ -233,7 +234,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
                     colors: this.layer.symbology.mappingColorizerRequestString()
                 })
             }
-            if (changes.operator) {
+            if (changes.operator !== undefined) {
                 this.initializeOrReplaceOlSource();
             }
         }

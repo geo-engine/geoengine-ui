@@ -216,7 +216,7 @@ export abstract class Layer<S extends AbstractSymbology> {
             validChanges.name = this._name;
         }
 
-        if (data.symbology) {
+        if (data.symbology !== undefined) {
             this._symbology = data.symbology;
             validChanges.symbology = this._symbology;
         }
