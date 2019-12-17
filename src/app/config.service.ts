@@ -7,29 +7,29 @@ import * as Immutable from 'immutable';
 import {HttpClient} from '@angular/common/http';
 
 type MappingUrlType = string;
-interface WmsInterface {
+interface Wms {
     VERSION: string;
     FORMAT: string;
 }
-interface WfsInterface {
+interface Wfs {
     VERSION: string;
     FORMAT: string;
 }
-interface WcsInterface {
+interface Wcs {
     SERVICE: string;
     VERSION: string;
 }
-interface DebugModeInterface {
+interface DebugMode {
     WAVE: boolean;
     MAPPING: boolean;
 }
-interface UserInterface {
+interface User {
     GUEST: {
         NAME: string,
         PASSWORD: string,
     };
 }
-interface DelaysInterface {
+interface Delays {
     LOADING: {
         MIN: number,
     };
@@ -38,8 +38,8 @@ interface DelaysInterface {
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
 }
-type ProjectType = 'GFBio' | 'IDESSA' | 'GeoBon';
-interface DefaultsInterface {
+type Project = 'GFBio' | 'IDESSA' | 'GeoBon';
+interface Defaults {
     PROJECT: {
         NAME: string,
         TIME: string,
@@ -47,7 +47,7 @@ interface DefaultsInterface {
         PROJECTION: 'EPSG:3857' | 'EPSG:4326',
     };
 }
-interface MapInterface {
+interface Map {
     BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
     BACKGROUND_LAYER_URL: string;
     HOSTED_BACKGROUND_SERVICE: string;
@@ -55,28 +55,35 @@ interface MapInterface {
     HOSTED_BACKGROUND_SERVICE_VERSION: string;
     REFRESH_LAYERS_ON_CHANGE: boolean;
 }
-interface GfbioInterface {
+interface Gfbio {
     LIFERAY_PORTAL_URL: string;
 }
 
-interface TimeInterface {
+interface Time {
     ALLOW_RANGES: boolean;
 }
 
-interface ConfigInterface {
+interface Components {
+    PLAYBACK: {
+        AVAILABLE: boolean,
+    };
+}
+
+interface ConfigStructure {
+    COMPONENTS: Components;
     CONFIG_FILE: string;
+    DEBUG_MODE: DebugMode;
+    DEFAULTS: Defaults;
+    DELAYS: Delays;
+    GFBIO: Gfbio;
+    MAP: Map;
     MAPPING_URL: MappingUrlType;
-    WMS: WmsInterface;
-    WFS: WfsInterface;
-    WCS: WcsInterface;
-    DEBUG_MODE: DebugModeInterface;
-    USER: UserInterface;
-    DELAYS: DelaysInterface;
-    PROJECT: ProjectType;
-    DEFAULTS: DefaultsInterface;
-    MAP: MapInterface;
-    GFBIO: GfbioInterface;
-    TIME: TimeInterface;
+    PROJECT: Project;
+    TIME: Time;
+    USER: User;
+    WCS: Wcs;
+    WFS: Wfs;
+    WMS: Wms;
 }
 
 /**
@@ -84,27 +91,21 @@ interface ConfigInterface {
  * @type {any}
  */
 const ConfigDefault = Immutable.fromJS({
-    MAPPING_URL: '/cgi-bin/mapping_cgi',
-    WMS: {
-        VERSION: '1.3.0',
-        FORMAT: 'image/png',
-    },
-    WFS: {
-        VERSION: '2.0.0',
-        FORMAT: 'application/json',
-    },
-    WCS: {
-        SERVICE: 'WCS',
-        VERSION: '2.0.1',
+    COMPONENTS: {
+        PLAYBACK: {
+            AVAILABLE: false,
+        }
     },
     DEBUG_MODE: {
         WAVE: false,
         MAPPING: false,
     },
-    USER: {
-        GUEST: {
-            NAME: 'guest',
-            PASSWORD: 'guest',
+    DEFAULTS: {
+        PROJECT: {
+            NAME: 'Default',
+            TIME: '2000-06-06T12:00:00.000Z',
+            TIMESTEP: '1 month',
+            PROJECTION: 'EPSG:3857',
         },
     },
     DELAYS: {
@@ -116,14 +117,8 @@ const ConfigDefault = Immutable.fromJS({
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
     },
-    PROJECT: 'GFBio',
-    DEFAULTS: {
-        PROJECT: {
-            NAME: 'Default',
-            TIME: '2000-06-06T12:00:00.000Z',
-            TIMESTEP: '1 month',
-            PROJECTION: 'EPSG:3857',
-        },
+    GFBIO: {
+        LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
     },
     MAP: {
         BACKGROUND_LAYER: 'OSM',
@@ -133,13 +128,30 @@ const ConfigDefault = Immutable.fromJS({
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
         REFRESH_LAYERS_ON_CHANGE: false,
     },
-    GFBIO: {
-        LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
-    },
+    MAPPING_URL: '/cgi-bin/mapping_cgi',
+    PROJECT: 'GFBio',
     TIME: {
         ALLOW_RANGES: true,
     },
-} as ConfigInterface);
+    USER: {
+        GUEST: {
+            NAME: 'guest',
+            PASSWORD: 'guest',
+        },
+    },
+    WCS: {
+        SERVICE: 'WCS',
+        VERSION: '2.0.1',
+    },
+    WFS: {
+        VERSION: '2.0.0',
+        FORMAT: 'application/json',
+    },
+    WMS: {
+        VERSION: '1.3.0',
+        FORMAT: 'image/png',
+    },
+} as ConfigStructure);
 
 /**
  * Calls a recursive Object.freeze on an object.
@@ -173,65 +185,69 @@ export class Config {
         return 'assets/config.json';
     };
 
+    private _COMPONENTS: Components;
     private _MAPPING_URL: MappingUrlType;
-    private _WMS: WmsInterface;
-    private _WFS: WfsInterface;
-    private _WCS: WcsInterface;
-    private _DEBUG_MODE: DebugModeInterface;
-    private _USER: UserInterface;
-    private _DELAYS: DelaysInterface;
-    private _PROJECT: ProjectType;
-    private _DEFAULTS: DefaultsInterface;
-    private _MAP: MapInterface;
-    private _GFBIO: GfbioInterface;
-    private _TIME: TimeInterface;
+    private _WMS: Wms;
+    private _WFS: Wfs;
+    private _WCS: Wcs;
+    private _DEBUG_MODE: DebugMode;
+    private _USER: User;
+    private _DELAYS: Delays;
+    private _PROJECT: Project;
+    private _DEFAULTS: Defaults;
+    private _MAP: Map;
+    private _GFBIO: Gfbio;
+    private _TIME: Time;
 
+    get COMPONENTS(): Components {
+        return this._COMPONENTS;
+    }
 
     get MAPPING_URL(): MappingUrlType {
         return this._MAPPING_URL;
     }
 
-    get WMS(): WmsInterface {
+    get WMS(): Wms {
         return this._WMS;
     }
 
-    get WFS(): WfsInterface {
+    get WFS(): Wfs {
         return this._WFS;
     }
 
-    get WCS(): WcsInterface {
+    get WCS(): Wcs {
         return this._WCS;
     }
 
-    get DEBUG_MODE(): DebugModeInterface {
+    get DEBUG_MODE(): DebugMode {
         return this._DEBUG_MODE;
     }
 
-    get USER(): UserInterface {
+    get USER(): User {
         return this._USER;
     }
 
-    get DELAYS(): DelaysInterface {
+    get DELAYS(): Delays {
         return this._DELAYS;
     }
 
-    get PROJECT(): ProjectType {
+    get PROJECT(): Project {
         return this._PROJECT;
     }
 
-    get DEFAULTS(): DefaultsInterface {
+    get DEFAULTS(): Defaults {
         return this._DEFAULTS;
     }
 
-    get MAP(): MapInterface {
+    get MAP(): Map {
         return this._MAP;
     }
 
-    get GFBIO(): GfbioInterface {
+    get GFBIO(): Gfbio {
         return this._GFBIO;
     }
 
-    get TIME(): TimeInterface {
+    get TIME(): Time {
         return this._TIME;
     }
 
@@ -243,7 +259,7 @@ export class Config {
      */
     load(): Promise<void> {
         return this.http
-            .get<ConfigInterface>(Config.CONFIG_FILE).pipe(
+            .get<ConfigStructure>(Config.CONFIG_FILE).pipe(
             tap(
                 appConfig => {
                     const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
@@ -263,6 +279,9 @@ export class Config {
                 const value = deepFreeze(config[key]);
 
                 switch (key.toUpperCase()) {
+                    case 'COMPONENTS':
+                        this._COMPONENTS = value;
+                        break;
                     case 'MAPPING_URL':
                         this._MAPPING_URL = value;
                         break;

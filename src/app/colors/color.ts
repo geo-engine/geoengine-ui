@@ -91,6 +91,9 @@ export class Color implements IRgba, RgbaStruct {
      * @returns {Color}
      */
     static fromRgbaLike(rgba: RgbaLike, clone: boolean = true): Color {
+        if (!rgba) { // return some default on empty deserialization
+            return BLACK;
+        }
 
         if (rgba instanceof Color) {
             if (clone) {

@@ -16,6 +16,7 @@ mat-list-item {
     margin: 0;
     font-size: 0.87rem;
     background-color: white;
+    height: auto !important;
 }
 
 mat-list-item /deep/ .mat-list-item-content {

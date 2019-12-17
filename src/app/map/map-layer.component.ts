@@ -1,10 +1,19 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit, Output,
+    SimpleChange
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology, AbstractSymbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
 
 import {StyleCreator} from './style-creator';
 import {Layer, LayerChanges, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
@@ -24,21 +33,16 @@ import {Projection} from '../operators/projection.model';
  * * params
  * * style
  */
-// @Component({
-//     selector: 'wave-ol-layer',
-//     template: '',
-//     changeDetection: ChangeDetectionStrategy.OnPush,
-// })
-export abstract class OlMapLayerComponent<
-        OL extends OlLayer,
-        OS extends OlSource,
-        S extends AbstractSymbology,
-        L extends Layer<S>
-    > {
+export abstract class MapLayerComponent<OL extends OlLayer,
+    OS extends OlSource,
+    S extends Symbology,
+    L extends Layer<S>> {
 
     // TODO: refactor
 
     @Input() layer: L;
+    @Output() mapRedraw = new EventEmitter();
+
     protected source: OS;
 
     protected _mapLayer: OL;
@@ -53,11 +57,10 @@ export abstract class OlMapLayerComponent<
     abstract getExtent(): [number, number, number, number];
 }
 
-export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayerVector,
+export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
     OlVectorSource,
     AbstractVectorSymbology,
     VectorLayer<AbstractVectorSymbology>> implements OnInit, OnDestroy {
-
     private dataSubscription: Subscription;
     private layerChangesSubscription: Subscription;
 
@@ -72,7 +75,6 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayer
 
     ngOnInit() {
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: VectorData) => {
-            // console.log("OlVectorLayerComponent dataSub", x);
             this.source.clear(); // TODO: check if this is needed always...
             if (!(x === null || x === undefined)) {
                 this.source.addFeatures(x.data);
@@ -102,6 +104,7 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayer
     private updateOlLayer(changes: LayerChanges<AbstractVectorSymbology>) {
         if (changes.visible) {
             this.mapLayer.setVisible(this.layer.visible);
+            this.mapRedraw.emit();
         }
 
         if (changes.symbology) {
@@ -114,9 +117,8 @@ export abstract class OlVectorLayerComponent extends OlMapLayerComponent<OlLayer
 @Component({
     selector: 'wave-ol-point-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlPointLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer'],
 })
 export class OlPointLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -127,9 +129,8 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-line-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlLineLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer'],
 })
 export class OlLineLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -140,9 +141,8 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-polygon-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlPolygonLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer'],
 })
 export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     constructor(protected projectService: ProjectService) {
@@ -153,11 +153,10 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
 @Component({
     selector: 'wave-ol-raster-layer',
     template: '',
-    providers: [{provide: OlMapLayerComponent, useExisting: OlRasterLayerComponent}],
+    providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    inputs: ['layer'],
 })
-export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlTileSource,
+export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
     MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnInit, OnDestroy {
 
     private dataSubscription: Subscription;
@@ -174,9 +173,6 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlT
     }
 
     ngOnInit() {
-        // closure variables for checking the old state
-        console.log('map-layer-component', 'ngOnInit', this.layer);
-
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((rasterData: RasterData) => {
             if (rasterData !== null && rasterData !== undefined) {
 
@@ -331,6 +327,4 @@ export class OlRasterLayerComponent extends OlMapLayerComponent<OlLayerTile, OlT
     getExtent() {
         return this._mapLayer.getExtent();
     }
-
-
 }

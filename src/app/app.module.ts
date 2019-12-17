@@ -10,7 +10,7 @@ import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
-import {MapComponent} from './map/map.component';
+import {MapContainerComponent} from './map/map-container/map-container.component';
 import {
     OlLineLayerComponent,
     OlPointLayerComponent,
@@ -141,11 +141,22 @@ import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-edit
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {TimePlotComponent} from './operators/dialogs/time-plot-operator/time-plot-operator.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {VectorSourceDatasetComponent} from './operators/dialogs/data-repository/vector/vector-source-dataset.component';
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
-import {LayerListWorkflowParameterSliderComponent} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
+import {TestIdComponentDirective} from './spec/test-id-component.directive';
+import {LayerStatisticsViewComponent} from './plots/layer-statistics-view/layer-statistics-view.component';
+import {
+    LayerStatisticsNumericDetailsComponent
+} from './plots/layer-statistics-view/layer-statistics-numeric-details/layer-statistics-numeric-details.component';
+import {
+    LayerStatisticsTextualDetailsComponent
+} from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
+import {
+    LayerListWorkflowParameterSliderComponent
+} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -197,6 +208,24 @@ export function configInitializer(config: Config) {
         LayerListComponent,
         LayerListWorkflowParameterSliderComponent,
         LayerSelectionComponent,
+        ChangeProjectionComponent,
+        NewProjectComponent,
+        LoadProjectComponent,
+        SaveProjectAsComponent,
+        OperatorListComponent,
+        SidenavSearchComponent,
+        SidenavSearchRightDirective,
+        ROperatorComponent,
+        RScriptSaveComponent,
+        RScriptLoadComponent,
+        TimeInputComponent,
+        CsvPropertiesComponent,
+        CsvTableComponent,
+        PieChartComponent,
+        BoxPlotComponent,
+        ScatterPlotComponent,
+        TimePlotComponent,
+        WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
         LegendaryMappingColorizerRasterComponent,
         LegendaryPointComponent,
@@ -206,7 +235,7 @@ export function configInitializer(config: Config) {
         LineageGraphComponent,
         LoadProjectComponent,
         LoginComponent,
-        MapComponent,
+        MapContainerComponent,
         MappingColorizerToGradientPipe,
         MappingDataSourceFilter,
         MediaviewAudioComponent,
@@ -275,6 +304,10 @@ export function configInitializer(config: Config) {
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
+        TestIdComponentDirective,
+        LayerStatisticsViewComponent,
+        LayerStatisticsNumericDetailsComponent,
+        LayerStatisticsTextualDetailsComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -337,6 +370,8 @@ export function configInitializer(config: Config) {
         TerminologyLookupOperatorComponent,
         TextualAttributeFilterOperatorComponent,
         TimeConfigComponent,
+        BoxPlotComponent,
+        TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
     ],

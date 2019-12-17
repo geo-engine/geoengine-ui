@@ -16,13 +16,14 @@
             <ng-container matColumnDef="selection">
                 <mat-header-cell *matHeaderCellDef [style.left.px]="scrollContainer.scrollLeft" class="tableFixed tableFixedVertical">
                     <mat-checkbox *ngIf="data != null" [checked]="allSelected" [indeterminate]="!allEqual"
-                                 (change)="toggleAll()"></mat-checkbox>
+                                  (change)="toggleAll()"></mat-checkbox>
                 </mat-header-cell>
 
-                <mat-cell *matCellDef="let element; let i=index; let isFirst=first; let isLast=last" [style.left.px]="scrollContainer.scrollLeft"
-                         class="tableFixed tableFixedVertical">
+                <mat-cell *matCellDef="let element; let i=index; let isFirst=first; let isLast=last"
+                          [style.left.px]="scrollContainer.scrollLeft"
+                          class="tableFixed tableFixedVertical">
                     <mat-checkbox *ngIf="data != null && !isFirst && !isLast" [checked]="selected[i-1+firstDisplay]"
-                                 (change)="toggle(i-1+firstDisplay)"></mat-checkbox>
+                                  (change)="toggle(i-1+firstDisplay)"></mat-checkbox>
                 </mat-cell>
             </ng-container>
 
@@ -31,9 +32,11 @@
                     {{dataHeadUnits[j]}}
                 </mat-header-cell>
 
-                <mat-cell *matCellDef="let element; let isFirst=first; let isLast=last" [style.min-width.px]="avgWidths[j]" [style.max-width.px]="avgWidths[j]">
+                <mat-cell *matCellDef="let element; let isFirst=first; let isLast=last" [style.min-width.px]="avgWidths[j]"
+                          [style.max-width.px]="avgWidths[j]">
                     <ng-template [ngIf]="!isFirst && !isLast">
-                        <wave-datatable-mediaview *ngIf="colTypes[j] == 'media'" [url]="element.properties[t]" [type]="colTypes[j]"></wave-datatable-mediaview>
+                        <wave-datatable-mediaview *ngIf="colTypes[j] == 'media'" [url]="element.properties[t]"
+                                                  [type]="colTypes[j]"></wave-datatable-mediaview>
                         <span *ngIf="colTypes[j] != 'media'" [title]="element.properties[t]"> {{element.properties[t]}} </span>
                     </ng-template>
                 </mat-cell>
@@ -41,14 +44,12 @@
 
 
             <mat-header-row *matHeaderRowDef="tableDataHead" [style.top.px]="scrollContainer.scrollTop"
-                           class="tableFixed tableFixedHorizontal"></mat-header-row>
+                            class="tableFixed tableFixedHorizontal"></mat-header-row>
 
-            <!--<div #offsetterTop [style.height.px]="(offsetTop$ | async)" class="offsetterTop"> </div>-->
             <mat-row *matRowDef="let row; columns: tableDataHead; let i = index; let isFirst=first; let isLast=last;"
-                    [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
-                    [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
-                    [class.rowSelected]="selected[i-1+firstDisplay]"></mat-row>
-            <!--<div #offsetterBottom [style.height.px]="(offsetBottom$ | async)" class="offsetterBottom"> </div >-->
+                     [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
+                     [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
+                     [class.rowSelected]="selected[i-1+firstDisplay]"></mat-row>
 
         </mat-table>
     </ng-template>

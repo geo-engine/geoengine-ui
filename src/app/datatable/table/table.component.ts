@@ -1,10 +1,18 @@
-
-import {combineLatest as observableCombineLatest, of as observableOf, Observable, BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest as observableCombineLatest, Observable, of as observableOf, Subscription} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {
-    Component, ViewChild, ElementRef, ChangeDetectorRef, Input, AfterViewInit,
-    ChangeDetectionStrategy, OnInit, OnDestroy, OnChanges, SimpleChanges
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+    ViewChild
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
@@ -43,16 +51,14 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public height: number;
 
     // Data and Data-Subsets
-    public data: Array<any>;
+    public data: Array<{ id: string | number, properties: { [key: string]: any } }>;
     public tableData: TableDataSource;
     public dataHead: Array<string>;
     public tableDataHead: Array<string>;
     public dataHeadUnits: Array<string>;
 
     // For row-selection
-    // private rowsSelected: EventEmitter<Array<number>> = new EventEmitter();
     public selected: boolean[];
-    // private selectedRowsList: Array<number>;
     public allSelected: boolean;
     public allEqual: boolean;
 
@@ -75,7 +81,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public scrollLeft = 0;
 
     private scrollTopBefore = 0;
-    // private scrollLeftBefore = 0;
 
     private elementHeight = 41;
     private headerHeight = 41;
@@ -83,19 +88,13 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
     private minDisplayItemCount = 6;
     public displayItemCount = this.minDisplayItemCount;
-    // private displayOffsetMax = 10;
     private displayOffsetMin = 1;
 
     public displayItemCounter: number[];
 
     public firstDisplay: number;
-    // private lastDisplay: number;
 
     private scrolling = false;
-
-
-    private cdr;
-    public layerService;
 
     // Observables
     public data$: Observable<Array<OlFeature>>;
@@ -114,7 +113,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param object the object containing the keys
      * @returns {string[]} a string-array containing all the keys
      */
-    private static getArrayOfKeys(object: {[key: string]: any}): Array<string> {
+    private static getArrayOfKeys(object: { [key: string]: any }): Array<string> {
         return Object
             .keys(object)
             .filter(x => !(x.startsWith('___') || x === 'geometry'));
@@ -142,12 +141,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param mapService MapService Reference
      * @param projectService ProjectService Reference
      */
-    constructor(cdr: ChangeDetectorRef,
-                layerService: LayerService,
+    constructor(private cdr: ChangeDetectorRef,
+                public layerService: LayerService,
                 private mapService: MapService,
                 private projectService: ProjectService) {
-        this.cdr = cdr;
-        this.layerService = layerService;
 
         this.canvas = document.createElement('canvas');
 
@@ -158,15 +155,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         this.dataSubscription = this.data$.subscribe((features: Array<OlFeature>) => {
             this.dataHead = [];
             this.dataHeadUnits = [];
-            this.data = [];
+            this.tableDataHead = [];
 
             this.data = features.map(x => {
-                /*let properties = x.getProperties();
-                properties['id'] = x.getId();
-                return properties;*/
                 return {
                     id: x.getId(),
-                    properties: x.getProperties()
+                    properties: x.getProperties(),
                 };
             });
 
@@ -187,9 +181,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Get the height of the container and save it to variable
      */
     ngAfterViewInit() {
-        /*this.styleString = window.getComputedStyle(this.container.nativeElement).fontSize + ' ' +
-            window.getComputedStyle(this.container.nativeElement).getPropertyValue('font-family');*/
-
         this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
 
             for (let i = 0; i < this.data.length; i++) {
@@ -238,19 +229,16 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                                 const data = observableCombineLatest(
                                     vectorLayerData, this.mapService.getViewportSizeStream()).pipe(map(([d, v]) => {
                                     return d.data.filter(x => {
-                                        const xe = x.getGeometry().getExtent();
                                         const ve = v.extent;
-                                        const int = (x.getGeometry() as OlPoint).intersectsExtent(ve); // todo not only point
+
                                         // console.log(ve, x.getGeometry(), int);
-                                        return int;
+                                        return (x.getGeometry() as OlPoint).intersectsExtent(ve); // TODO: not only point
                                     });
-                                    // return d;
                                 }));
                                 return {
                                     data$: data,
                                     dataExtent$: vectorLayerData.pipe(map(x => x.extent)),
                                     state$: this.projectService.getLayerDataStatusStream(vectorLayer),
-                                    // reload$: this.projectService.,
                                     selectable: true,
                                 };
                             default:
@@ -291,7 +279,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      */
     private dataInit(): void {
         this.firstDisplay = 0;
-        // this.lastDisplay = 15;
 
         this.tableData = new TableDataSource(this.data, this.firstDisplay, this.displayItemCount);
 
@@ -487,22 +474,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     /**
-     * Checks whether a given text is too wide for the column with given id
-     * @param text the text for the column
-     * @param colID the ID of the column to test for
-     * @returns {boolean} true, if the text is too wide for the column, false otherwise
-     */
-
-    /*public textTooWideForColumn(text, colID) {
-        let w = this.getTextWidth(text, this.styleString);
-        if (w > this.oneLineMaxWidth) {
-            w = w / 2 + 50;
-        }
-        // console.log(w > this.avgWidths[colID]);
-        return w > this.avgWidths[colID];
-    }*/
-
-    /**
      * Called on Scrolling the Data-Table
      * Updates the auto-scrolling first row and first column and calls the virtual-scroll update functions (top and bottom)
      */
@@ -560,72 +531,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         }
     }
 
-
-    /**
-     * Virtual Scroll Update Function
-     * Loads or unloads data of the Data-Table if necessary
-     */
-    /*private updateScrollDown() {
-        let tableHeadHeight = this.elementHeight;
-
-        // Scrolling down
-        if (this.scrollTop + this.height >
-            tableHeadHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
-
-            let numberOfTopRows = Math.floor((this.scrollTop - tableHeadHeight) / this.elementHeight) - this.displayOffsetMin;
-
-            if (numberOfTopRows + this.displayItemCount > this.data.length) {
-                numberOfTopRows = this.data.length - this.displayItemCount;
-            }
-            if (numberOfTopRows < 0) {
-                numberOfTopRows = 0;
-            }
-
-
-            this.firstDisplay = numberOfTopRows;
-            this.tableData.update(this.data, this.firstDisplay, this.displayItemCount);
-
-            this.offsetBottom$.next((this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight);
-            // this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
-            this.offsetTop$.next(numberOfTopRows * this.elementHeight);
-            // this.offsetTop = numberOfTopRows * this.elementHeight;
-
-            // this.offsetBottom - (this.offsetTop - newOffsetTop);
-        }
-    }*/
-
-    /**
-     * Virtual Scroll Update Function
-     * Loads or unloads data of the Data-Table if necessary
-     */
-    /*private updateScrollUp() {
-        let tableHeadHeight = this.elementHeight;
-
-        // Scrolling up
-        if (this.scrollTop < tableHeadHeight + (this.firstDisplay + this.displayOffsetMin) * this.elementHeight) {
-
-            let numberOfTopRows = Math.floor((this.scrollTop + this.height) /
-                this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
-
-            if (numberOfTopRows + this.displayItemCount > this.data.length) {
-                numberOfTopRows = this.data.length - this.displayItemCount;
-            }
-            if (numberOfTopRows < 0) {
-                numberOfTopRows = 0;
-            }
-
-            this.firstDisplay = numberOfTopRows;
-            this.tableData.update(this.data, this.firstDisplay, this.displayItemCount);
-
-            this.offsetTop$.next(numberOfTopRows * this.elementHeight);
-            // this.offsetTop = numberOfTopRows * this.elementHeight;
-            this.offsetBottom$.next((this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight);
-            // this.offsetBottom = (this.data.length - numberOfTopRows - this.displayItemCount) * this.elementHeight;
-
-        }
-    }*/
-
-
     /**
      * Row-Selection
      * Called on clicking a checkbox to select a row
@@ -639,9 +544,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         } else {
             this.layerService.updateSelectedFeatures([], [this.data[index].id]);
         }
-
-        /*this.testSelected();
-         this.testEqual();*/
     }
 
     /**
@@ -664,9 +566,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
         } else {
             this.layerService.updateSelectedFeatures([], toggledList);
         }
-
-        /*this.testSelected();
-         this.testEqual(); */
     }
 
     /**
@@ -676,20 +575,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      */
     private testSelected(): void {
         this.allSelected = true;
-        // this.selectedRowsList = [];
         for (let s of this.selected) {
             if (!s) {
                 this.allSelected = false;
                 break;
             }
-            // this.allSelected = this.allSelected && this.selected[i];
-
-            /*if (this.selected[i]) {
-				this.selectedRowsList.push(Number(i));
-			}*/
         }
-
-        // this.rowsSelected.emit(this.selectedRowsList);
     }
 
     /**
@@ -703,7 +594,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 this.allEqual = false;
                 break;
             }
-            // this.allEqual = this.allEqual && (s === this.selected[0]);
         }
     }
 }
