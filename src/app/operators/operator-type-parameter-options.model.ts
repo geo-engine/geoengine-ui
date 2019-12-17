@@ -1,11 +1,10 @@
-import {OperatorTypeCloneOptions} from './operator-type.model';
-
 export type ParameterName = string;
 
 export const enum ParameterType {
     NUMBER_ARRAY,
     STRING_ARRAY,
     NUMBER_RANGE,
+    DICT_ARRAY
 }
 
 export interface ParameterOptionsNumberArrayConfig {
@@ -18,6 +17,11 @@ export interface ParameterOptionsStringArrayConfig {
     options: Array<string>;
 }
 
+export interface ParameterOptionsDictArrayConfig {
+    kind: ParameterType.DICT_ARRAY;
+    options: Array<{}>;
+}
+
 export interface ParameterOptionsNumberRangeConfig {
     kind: ParameterType.NUMBER_RANGE;
     start: number,
@@ -27,7 +31,8 @@ export interface ParameterOptionsNumberRangeConfig {
 
 export type ParameterOptionsConfig = ParameterOptionsNumberArrayConfig
     | ParameterOptionsStringArrayConfig
-    | ParameterOptionsNumberRangeConfig;
+    | ParameterOptionsNumberRangeConfig
+    | ParameterOptionsDictArrayConfig;
 
 export abstract class ParameterOption {
     abstract get parameterType(): ParameterType;
@@ -40,6 +45,8 @@ export abstract class ParameterOption {
                 return ParameterOptionsStringArray.fromDict(dict as ParameterOptionsStringArrayConfig);
             case ParameterType.NUMBER_RANGE:
                 return ParameterOptionsNumberRange.fromDict(dict as ParameterOptionsNumberRangeConfig);
+            case ParameterType.DICT_ARRAY:
+                return ParameterOptionsDictArray.fromDict(dict as ParameterOptionsDictArrayConfig);
             default:
                 throw new Error('unknown ParameterType');
         }
@@ -117,6 +124,30 @@ export class ParameterOptionsNumberRange extends ParameterOption {
             stop: this.stop,
             step: this.step,
             kind: ParameterType.NUMBER_RANGE
+        }
+    }
+}
+
+export class ParameterOptionsDictArray extends ParameterOption {
+    options: Array<{}>;
+
+    constructor(config: ParameterOptionsDictArrayConfig) {
+        super();
+        this.options = config.options;
+    }
+
+    get parameterType(): ParameterType {
+        return ParameterType.DICT_ARRAY;
+    }
+
+    static fromDict(dict: ParameterOptionsDictArrayConfig): ParameterOptionsDictArray {
+        return new  ParameterOptionsDictArray(dict);
+    }
+
+    toDict(): ParameterOptionsDictArrayConfig {
+        return {
+            options: this.options,
+            kind: ParameterType.DICT_ARRAY,
         }
     }
 }

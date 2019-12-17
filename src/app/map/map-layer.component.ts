@@ -13,7 +13,7 @@ import {Subscription} from 'rxjs';
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, MappingColorizerRasterSymbology, AbstractSymbology} from '../layers/symbology/symbology.model';
 
 import {StyleCreator} from './style-creator';
 import {Layer, LayerChanges, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
@@ -35,7 +35,7 @@ import {Projection} from '../operators/projection.model';
  */
 export abstract class MapLayerComponent<OL extends OlLayer,
     OS extends OlSource,
-    S extends Symbology,
+    S extends AbstractSymbology,
     L extends Layer<S>> {
 
     // TODO: refactor
@@ -44,11 +44,9 @@ export abstract class MapLayerComponent<OL extends OlLayer,
     @Output() mapRedraw = new EventEmitter();
 
     protected source: OS;
-
     protected _mapLayer: OL;
 
-    protected constructor(protected projectService: ProjectService) {
-    }
+    protected constructor(protected projectService: ProjectService) {}
 
     get mapLayer(): OL {
         return this._mapLayer;
