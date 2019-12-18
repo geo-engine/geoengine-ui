@@ -35,9 +35,10 @@ import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminol
 import {TerminologyLookupType} from '../../types/terminology-lookup-type';
 import {TimePlotType} from '../../types/timeplot-type.model';
 import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
-import {StatisticsType, StatisticsTypeDict} from '../../types/statistics-type.model';
+import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {CreateRgbComponent} from '../create-rgb/create-rgb.component';
+import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -107,7 +108,7 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
     },
     {
         component: CreateRgbComponent,
-        type: ExpressionType,
+        type: RgbaCompositeType,
         description: 'Create an RGB from a set of rasters',
     }
 ];

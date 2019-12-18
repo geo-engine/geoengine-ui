@@ -42,6 +42,7 @@ import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lo
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {TimePlotType, TimePlotTypeDict} from './timeplot-type.model';
 import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
+import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -120,6 +121,8 @@ export abstract class OperatorTypeFactory {
                 return StatisticsType.fromDict(dict as StatisticsTypeDict);
             case TimePlotType.TYPE:
                 return TimePlotType.fromDict(dict as TimePlotTypeDict);
+            case RgbaCompositeType.TYPE:
+                return RgbaCompositeType.fromDict(dict as RgbaCompositeTypeDict);
             default:
                 throw Error('There is not factory method defined for this operator.');
         }

@@ -9,6 +9,10 @@ form {
     padding: 0 1rem 1rem 1rem;
 }
 
+.container div mat-form-field:not(:last-child) {
+    margin-right: 1rem;
+}
+
 .actions {
     text-align: right;
     padding: 1rem;

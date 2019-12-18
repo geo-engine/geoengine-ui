@@ -1,8 +1,44 @@
 <wave-sidenav-header>Create RGB Raster</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
-    <div class="container">
+    <div class="container mat-typography">
         <wave-multi-layer-selection [types]="inputTypes" formControlName="inputLayers"
-                                    [min]="inputMinLength" [max]="inputMaxLength"></wave-multi-layer-selection>
+                                    [min]="numberOfRasters" [max]="numberOfRasters"></wave-multi-layer-selection>
+        <h3>Red Channel (A)</h3>
+        <div>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Min" formControlName="redMin">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Max" formControlName="redMax">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Scaling Factor" formControlName="redScale" min="0" max="1" step="0.1">
+            </mat-form-field>
+        </div>
+        <h3>Green Channel (A)</h3>
+        <div>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Min" formControlName="greenMin">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Max" formControlName="greenMax">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Scaling Factor" formControlName="greenScale" min="0" max="1" step="0.1">
+            </mat-form-field>
+        </div>
+        <h3>Blue Channel (A)</h3>
+        <div>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Min" formControlName="blueMin">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Max" formControlName="blueMax">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="number" placeholder="Scaling Factor" formControlName="blueScale" min="0" max="1" step="0.1">
+            </mat-form-field>
+        </div>
     </div>
     <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
