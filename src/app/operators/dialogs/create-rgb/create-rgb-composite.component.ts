@@ -14,12 +14,12 @@ import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 import {Subscription} from 'rxjs';
 
 @Component({
-    selector: 'wave-create-rgb',
-    templateUrl: './create-rgb.component.html',
-    styleUrls: ['./create-rgb.component.scss'],
+    selector: 'wave-create-rgb-composite',
+    templateUrl: './create-rgb-composite.component.html',
+    styleUrls: ['./create-rgb-composite.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateRgbComponent implements OnInit, OnDestroy {
+export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly numberOfRasters = 3;
 
@@ -117,7 +117,7 @@ export class CreateRgbComponent implements OnInit, OnDestroy {
                         new ColorBreakpoint({rgba: {r: 0, g: 0, b: 0, a: 0}, value: 0}),
                         new ColorBreakpoint({rgba: {r: 255, g: 255, b: 255, a: 255}, value: 0xffffffff}),
                     ],
-                    type: 'rgba',
+                    type: 'rgba_composite',
                 }),
             }),
         }));

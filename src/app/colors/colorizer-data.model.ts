@@ -10,7 +10,7 @@ export interface DeprecatedMappingColorizerDoNotUse {
     result?: string | number;
 }
 
-export type ColorizerType = 'gradient' | 'palette' | 'rgba';
+export type ColorizerType = 'gradient' | 'palette' | 'rgba_composite';
 
 export interface IColorizerData {
     breakpoints: Array<ColorBreakpointDict>;

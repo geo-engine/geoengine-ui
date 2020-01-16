@@ -37,7 +37,7 @@ import {TimePlotType} from '../../types/timeplot-type.model';
 import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
-import {CreateRgbComponent} from '../create-rgb/create-rgb.component';
+import {CreateRgbCompositeComponent} from '../create-rgb/create-rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 
 interface OperatorListType {
@@ -107,9 +107,9 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
         description: 'Calculate an expression on a raster',
     },
     {
-        component: CreateRgbComponent,
+        component: CreateRgbCompositeComponent,
         type: RgbaCompositeType,
-        description: 'Create an RGB from a set of rasters',
+        description: 'Create an RGB composite from a set of rasters',
     }
 ];
 
