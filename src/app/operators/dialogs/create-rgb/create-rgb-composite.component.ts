@@ -11,7 +11,11 @@ import {DataType, DataTypes} from '../../datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
-import {Subscription} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {MappingQueryService} from '../../../queries/mapping-query.service';
+import {first} from 'rxjs/operators';
+import {StatisticsType} from '../../types/statistics-type.model';
+import {LayoutService} from '../../../layout.service';
 
 @Component({
     selector: 'wave-create-rgb-composite',
@@ -22,13 +26,16 @@ import {Subscription} from 'rxjs';
 export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly numberOfRasters = 3;
+    readonly loadingSpinnerDiameter = 2 * LayoutService.remInPx();
 
     form: FormGroup;
+    isRasterStatsLoading$ = new BehaviorSubject(false);
 
     private inputLayersubscriptions: Subscription;
 
     constructor(private projectService: ProjectService,
-                private notificationService: NotificationService) {
+                private notificationService: NotificationService,
+                private mappingQueryService: MappingQueryService) {
     }
 
     ngOnInit() {
@@ -76,9 +83,11 @@ export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
             this.notificationService.error('RGBA calculation requires 3 inputs.');
             return;
         }
-        if (unequalProjections(operators)) {
-            this.notificationService.error('Input rasters must be of same projection.');
-            return;
+
+        // in case the operators have different projections, use projection of first one
+        const projection = operators[0].projection;
+        for (let i = 1; i < operators.length; ++i) {
+            operators[i] = operators[i].getProjectedOperator(projection);
         }
 
         const unit = new Unit({
@@ -103,7 +112,7 @@ export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
                     rasterBlueMax: this.form.controls['blueMax'].value,
                     rasterBlueScale: this.form.controls['blueScale'].value,
                 }),
-                projection: operators[0].projection,
+                projection: projection,
                 rasterSources: operators,
                 resultType: ResultTypes.RASTER,
                 attributes: ['value'],
@@ -122,14 +131,56 @@ export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
             }),
         }));
     }
+
+    calculateRasterStats() {
+        this.isRasterStatsLoading$.next(true);
+
+        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
+            const inputs: Array<RasterLayer<RasterSymbology>> = this.form.controls['inputLayers'].value;
+            const operators = inputs.map(layer => layer.operator);
+
+            const operatorA = operators[0];
+            const projection = operatorA.projection;
+            const operatorB = operators[1].getProjectedOperator(projection);
+            const operatorC = operators[2].getProjectedOperator(projection);
+
+            const operator = new Operator({
+                operatorType: new StatisticsType({
+                    raster_width: 1024,
+                    raster_height: 1024,
+                }),
+                projection: projection,
+                rasterSources: [operatorA, operatorB, operatorC],
+                resultType: ResultTypes.PLOT,
+            });
+
+            this.mappingQueryService.getPlotData({
+                extent: projection.getExtent(),
+                operator: operator,
+                projection: projection,
+                time: time,
+            }).subscribe(result => {
+                const rasterStatistics = ((result as any) as RasterStatisticsType).data.rasters;
+
+                ['red', 'green', 'blue'].forEach((color, i) => {
+                    this.form.controls[`${color}Min`].setValue(rasterStatistics[i].min);
+                    this.form.controls[`${color}Max`].setValue(rasterStatistics[i].max);
+                });
+
+                this.isRasterStatsLoading$.next(false);
+            });
+        });
+    }
 }
 
-function unequalProjections(operators: Operator[]) {
-    const projection = operators[0].projection;
-    for (const operator of operators) {
-        if (projection !== operator.projection) {
-            return true;
-        }
-    }
-    return false;
+interface RasterStatisticsType {
+    data: {
+        rasters: Array<{
+            count: number,
+            max: number,
+            mean: number,
+            min: number,
+            nan_count: number,
+        }>,
+    },
 }

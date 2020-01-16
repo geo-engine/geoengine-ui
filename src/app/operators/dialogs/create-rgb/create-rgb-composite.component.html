@@ -3,6 +3,14 @@
     <div class="container mat-typography">
         <wave-multi-layer-selection [types]="inputTypes" formControlName="inputLayers"
                                     [min]="numberOfRasters" [max]="numberOfRasters"></wave-multi-layer-selection>
+        <button type="button" mat-raised-button [disabled]="form.invalid"
+                *ngIf="!(isRasterStatsLoading$ | async); else rasterStatsLoadingAnimation"
+                (click)="calculateRasterStats()">
+            Calculate channel Min/Max values
+        </button>
+        <ng-template #rasterStatsLoadingAnimation>
+            <mat-spinner [diameter]="loadingSpinnerDiameter"></mat-spinner>
+        </ng-template>
         <h3>Red Channel (A)</h3>
         <div>
             <mat-form-field>
