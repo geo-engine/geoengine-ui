@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
-import {ParameterName, ParameterOptionsNumberRange, ParameterType} from '../../operator-type-parameter-options.model';
+import {ParameterName, ParameterOption} from '../../operator-type-parameter-options.model';
 import {ProjectService} from '../../../project/project.service';
+import {ParameterValue} from '../../operator-type.model';
 
 @Component({
     selector: 'wave-layer-list-workflow-parameter-slider',
@@ -14,9 +15,13 @@ import {ProjectService} from '../../../project/project.service';
     @Input() layer: Layer<L>;
     @Input() parameterName: ParameterName;
 
-    _parameterRange: ParameterOptionsNumberRange;
-    _parameterValue: number;
-    _parameterName: ParameterName;
+    _sliderRangeStart = 0;
+    _sliderRangeStop = 0;
+    _sliderRangeStep = 1;
+    _sliderValue = 0;
+
+    _parameterOptions: ParameterOption;
+    _parameterValue: ParameterValue;
 
     constructor(
         public changeDetectorRef: ChangeDetectorRef,
@@ -27,7 +32,7 @@ import {ProjectService} from '../../../project/project.service';
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'parameterName': {
-                    this._parameterName = this.parameterName;
+                    // this._parameterName = this.parameterName;
                     this.changeDetectorRef.markForCheck();
                     break;
                 }
@@ -43,30 +48,26 @@ import {ProjectService} from '../../../project/project.service';
     }
 
     updateParameterOptions() {
-        console.log('LayerListWorkflowParameterSliderComponent', 'updateParameterOptions', this);
         if (this.layer && this.layer.operator && this.layer.operator.operatorType && this.layer.operator.operatorTypeParameterOptions) {
-            const pValue = this.layer.operator.operatorType.getParameterValue(this._parameterName);
-            const pOption = this.layer.operator.operatorTypeParameterOptions.getParameterOption(this._parameterName);
+            const pValue = this.layer.operator.operatorType.getParameterValue(this.parameterName);
+            const pOption = this.layer.operator.operatorTypeParameterOptions.getParameterOption(this.parameterName);
+            this._parameterValue = pValue;
+            this._parameterOptions = pOption;
+            this._sliderRangeStop = this._parameterOptions.optionCount();
 
-            if (typeof(pValue) === 'number' && pOption.parameterType === ParameterType.NUMBER_RANGE) {
-                this._parameterValue = pValue as number;
-                this._parameterRange = pOption as ParameterOptionsNumberRange;
-            }
         }
     }
 
     update(event: any) {
-        console.log('LayerListWorkflowParameterSliderComponent', 'update', this, event);
         const opTypeOptions = {};
-        opTypeOptions[this._parameterName] = this._parameterValue;
+        opTypeOptions[this.parameterName] = this._parameterOptions.optionsAsArray[this._sliderValue];
         const opTypeClone = this.layer.operator.operatorType.cloneWithOptions(opTypeOptions);
-        console.log(opTypeOptions, opTypeClone);
         const opClone = this.layer.operator.cloneWithOptions({
             operatorType: opTypeClone
         });
-        console.log(this.layer.operator, opClone);
         this.projectService.changeLayer(this.layer, {
-            operator: opClone
+            operator: opClone,
+            name: this._parameterOptions.displayValuesAsArray[this._sliderValue] // TODO: find a nicer way to do this
         });
     }
 

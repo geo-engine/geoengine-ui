@@ -16,7 +16,7 @@ import {ExpressionType} from '../../../types/expression-type.model';
 import {ColorBreakpointDict} from '../../../../colors/color-breakpoint.model';
 import {ColorizerData, IColorizerData} from '../../../../colors/colorizer-data.model';
 import {GdalSourceParameterOptions} from '../../../parameter-options/gdal-source-parameter-options.model';
-import {ParameterType} from '../../../operator-type-parameter-options.model';
+import {ParameterOptionType} from '../../../operator-type-parameter-options.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -179,10 +179,13 @@ export class SourceDatasetComponent implements OnInit {
         const operatorParameterOptions = new GdalSourceParameterOptions({
             operatorType: operatorType.toString(),
             channel: {
-                kind: ParameterType.NUMBER_RANGE,
-                start: 0,
-                stop: this.dataset.rasterLayer.length - 1,
-                step: 1
+                kind: ParameterOptionType.DICT_ARRAY,
+                options: this.channels.map((c, i) => {
+                    return {
+                        displayValue: c.name,
+                        channelNumber: i
+                    }
+                }),
             }
         });
 
@@ -196,7 +199,6 @@ export class SourceDatasetComponent implements OnInit {
             units: new Map<string, Unit>().set('value', sourceUnit),
         });
 
-        // console.log('doTransform', doTransform, 'unit', sourceUnit, 'expression', 'A', 'datatype', sourceDataType, 'channel', channel);
         if (doTransform && channel.hasTransform) {
             const transformUnit = channel.transform.unit;
             const transformDatatype = DataTypes.fromCode(channel.transform.datatype);

@@ -1,4 +1,4 @@
-<span>{{_parameterName}} : {{_parameterRange?.start}} - {{_parameterRange?.stop}}</span>
-<mat-slider #slr thumbLabel [min]="_parameterRange?.start" [max]="_parameterRange?.stop" [step]="_parameterRange.step" [(value)]="_parameterValue"
+<span>{{parameterName}}</span>
+<mat-slider #slr [min]="_sliderRangeStart" [max]="_sliderRangeStop" [step]="_sliderRangeStep" [(value)]="_sliderValue"
             (change)="update($event)">
 </mat-slider>

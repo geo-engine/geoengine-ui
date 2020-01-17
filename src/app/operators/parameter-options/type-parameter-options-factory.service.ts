@@ -3,7 +3,7 @@ import {GdalSourceParameterOptions, GdalSourceParameterOptionsDict} from './gdal
 import {GdalSourceType} from '../types/gdal-source-type.model';
 
 /**
- * A simple factory for de-serializing operator types.
+ * A simple factory for de-serializing operator parameter options.
  */
 export abstract class OperatorTypeParameterOptionsFactory {
     /**
@@ -14,7 +14,7 @@ export abstract class OperatorTypeParameterOptionsFactory {
             case GdalSourceType.TYPE:
                 return GdalSourceParameterOptions.fromDict(dict as GdalSourceParameterOptionsDict);
             default:
-                throw Error('There is not factory method defined for this operator.');
+                throw Error('There is not factory method defined for this operator type.');
         }
     }
 }

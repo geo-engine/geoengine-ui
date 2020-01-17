@@ -20,6 +20,11 @@ export interface OperatorTypeDict {
 }
 
 /**
+ * The possible types of parameter values
+ */
+export type ParameterValue = number | string;
+
+/**
  * The operator basic type.
  */
 export abstract class OperatorType {
@@ -79,9 +84,9 @@ export abstract class OperatorType {
     abstract getIconUrl(): string;
 
     /**
-     * Get the value of a parameter. Currently limited to simple types!
+     * Get the value of a parameter
      */
-    public getParameterValue(parameterName: string): string | number | undefined {
+    public getParameterValue(parameterName: string): ParameterValue | undefined {
         return undefined;
     }
 

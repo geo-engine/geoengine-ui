@@ -6,8 +6,13 @@ interface GdalSourceTypeConfig {
     transform: boolean;
 }
 
+export interface GdalSourceOptionsChannel {
+    displayValue: string;
+    channelNumber: number;
+}
+
 export interface GdalSourceTypeCloneOptions {
-    channel?: number;
+    channel?: GdalSourceOptionsChannel;
 }
 
 interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
@@ -95,7 +100,7 @@ export class GdalSourceType extends OperatorType {
 
     cloneWithOptions(options?: GdalSourceTypeCloneOptions): OperatorType {
         return new GdalSourceType({
-            channel: options && options.channel ? options.channel : this.channel,
+            channel: options && options.channel ? options.channel.channelNumber : this.channel,
             sourcename: this.sourcename,
             transform: this.transform,
         })

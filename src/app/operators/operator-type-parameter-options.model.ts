@@ -1,6 +1,6 @@
 export type ParameterName = string;
 
-export const enum ParameterType {
+export const enum ParameterOptionType {
     NUMBER_ARRAY,
     STRING_ARRAY,
     NUMBER_RANGE,
@@ -8,52 +8,44 @@ export const enum ParameterType {
 }
 
 export interface ParameterOptionsNumberArrayConfig {
-    kind: ParameterType.NUMBER_ARRAY;
+    kind: ParameterOptionType.NUMBER_ARRAY;
     options: Array<number>;
 }
 
-export interface ParameterOptionsStringArrayConfig {
-    kind: ParameterType.STRING_ARRAY;
+export interface ParameterOptionStringArrayConfig {
+    kind: ParameterOptionType.STRING_ARRAY;
     options: Array<string>;
 }
 
-export interface ParameterOptionsDictArrayConfig {
-    kind: ParameterType.DICT_ARRAY;
-    options: Array<{}>;
-}
-
 export interface ParameterOptionsNumberRangeConfig {
-    kind: ParameterType.NUMBER_RANGE;
+    kind: ParameterOptionType.NUMBER_RANGE;
     start: number,
     stop: number,
     step?: number
 }
 
-export type ParameterOptionsConfig = ParameterOptionsNumberArrayConfig
-    | ParameterOptionsStringArrayConfig
-    | ParameterOptionsNumberRangeConfig
-    | ParameterOptionsDictArrayConfig;
-
-export abstract class ParameterOption {
-    abstract get parameterType(): ParameterType;
-
-    static fromDict(dict: ParameterOptionsConfig) {
-        switch (dict.kind) {
-            case ParameterType.NUMBER_ARRAY:
-                return ParameterOptionsNumberArray.fromDict(dict as ParameterOptionsNumberArrayConfig);
-            case ParameterType.STRING_ARRAY:
-                return ParameterOptionsStringArray.fromDict(dict as ParameterOptionsStringArrayConfig);
-            case ParameterType.NUMBER_RANGE:
-                return ParameterOptionsNumberRange.fromDict(dict as ParameterOptionsNumberRangeConfig);
-            case ParameterType.DICT_ARRAY:
-                return ParameterOptionsDictArray.fromDict(dict as ParameterOptionsDictArrayConfig);
-            default:
-                throw new Error('unknown ParameterType');
-        }
-    }
+export interface OptionsDict {
+    displayValue: string;
 }
 
-export class ParameterOptionsNumberArray extends ParameterOption {
+export interface ParameterOptionDictArrayConfig<T extends OptionsDict> {
+    kind: ParameterOptionType.DICT_ARRAY;
+    options: Array<T>;
+}
+
+export type ParameterOption = ParameterOptionNumberArray | ParameterOptionNumberRange | ParameterOptionStringArray
+    | ParameterOptionDictArray<OptionsDict>;
+
+export abstract class AbstractParameterOption<T> {
+    abstract get parameterType(): ParameterOptionType;
+    public optionCount(): number {
+        return this.optionsAsArray.length;
+    }
+    abstract get optionsAsArray(): Array<T>;
+    abstract get displayValuesAsArray(): Array<string>;
+}
+
+export class ParameterOptionNumberArray extends AbstractParameterOption<number> {
     options: Array<number>;
 
     constructor(config: ParameterOptionsNumberArrayConfig) {
@@ -61,43 +53,61 @@ export class ParameterOptionsNumberArray extends ParameterOption {
         this.options = config.options;
     }
 
-    get parameterType(): ParameterType {
-        return ParameterType.NUMBER_ARRAY;
+    get parameterType(): ParameterOptionType {
+        return ParameterOptionType.NUMBER_ARRAY;
     }
 
     static fromDict(dict: ParameterOptionsNumberArrayConfig) {
-        return new  ParameterOptionsNumberArray(dict);
+        return new  ParameterOptionNumberArray(dict);
     }
 
     toDict(): ParameterOptionsNumberArrayConfig {
         return {
             options: this.options,
-            kind: ParameterType.NUMBER_ARRAY
+            kind: ParameterOptionType.NUMBER_ARRAY
         }
+    }
+
+    get displayValuesAsArray(): Array<string> {
+        return this.options.map(x => x.toString());
+    }
+
+    get optionsAsArray(): Array<number> {
+        return this.options;
     }
 }
 
-export class ParameterOptionsStringArray extends ParameterOption {
+export class ParameterOptionStringArray extends AbstractParameterOption<string> {
     options: Array<string>;
 
-    constructor(config: ParameterOptionsStringArrayConfig) {
+    constructor(config: ParameterOptionStringArrayConfig) {
         super();
         this.options = config.options;
     }
 
-    get parameterType(): ParameterType {
-        return ParameterType.STRING_ARRAY;
+    get parameterType(): ParameterOptionType {
+        return ParameterOptionType.STRING_ARRAY;
     }
 
-    static fromDict(dict: ParameterOptionsStringArrayConfig) {
-        return new  ParameterOptionsStringArray(dict);
+    static fromDict(dict: ParameterOptionStringArrayConfig) {
+        return new  ParameterOptionStringArray(dict);
+    }
+
+    get displayValuesAsArray(): Array<string> {
+        return this.options.map(x => x.toString());
+    }
+
+    get optionsAsArray(): Array<string> {
+        return this.options;
     }
 }
 
-export class ParameterOptionsNumberRange extends ParameterOption {
+export class ParameterOptionNumberRange extends AbstractParameterOption<number> {
     start: number;
     stop: number;
     step = 1;
+
+    _array: Array<number>;
 
     constructor(config: ParameterOptionsNumberRangeConfig) {
         super();
@@ -106,16 +116,12 @@ export class ParameterOptionsNumberRange extends ParameterOption {
         this.step = config.step ? config.step : 1;
     }
 
-    get parameterType(): ParameterType {
-        return ParameterType.NUMBER_RANGE;
+    get parameterType(): ParameterOptionType {
+        return ParameterOptionType.NUMBER_RANGE;
     }
 
     static fromDict(dict: ParameterOptionsNumberRangeConfig) {
-        return new  ParameterOptionsNumberRange(dict);
-    }
-
-    get array(): Array<number> {
-        return
+        return new  ParameterOptionNumberRange(dict);
     }
 
     toDict(): ParameterOptionsNumberRangeConfig {
@@ -123,32 +129,64 @@ export class ParameterOptionsNumberRange extends ParameterOption {
             start: this.start,
             stop: this.stop,
             step: this.step,
-            kind: ParameterType.NUMBER_RANGE
+            kind: ParameterOptionType.NUMBER_RANGE
         }
+    }
+
+    private generateArray() {
+        if ( !this._array ) {
+            this._array = [];
+            for (let i = this.start; i < this.stop; i += this.step) {
+                this._array.push(i);
+            }
+        }
+    }
+
+    get displayValuesAsArray(): Array<string> {
+        this.generateArray();
+        return this._array.map(x => x.toString());
+    }
+
+    public optionCount(): number {
+        this.generateArray();
+        return this._array.length;
+    }
+
+    get optionsAsArray(): Array<number> {
+        this.generateArray();
+        return this._array;
     }
 }
 
-export class ParameterOptionsDictArray extends ParameterOption {
-    options: Array<{}>;
+export class ParameterOptionDictArray<T extends OptionsDict> extends AbstractParameterOption<T> {
+    options: Array<T>;
 
-    constructor(config: ParameterOptionsDictArrayConfig) {
+    constructor(config: ParameterOptionDictArrayConfig<T>) {
         super();
         this.options = config.options;
     }
 
-    get parameterType(): ParameterType {
-        return ParameterType.DICT_ARRAY;
+    get parameterType(): ParameterOptionType {
+        return ParameterOptionType.DICT_ARRAY;
     }
 
-    static fromDict(dict: ParameterOptionsDictArrayConfig): ParameterOptionsDictArray {
-        return new  ParameterOptionsDictArray(dict);
+    static fromDict<T extends OptionsDict>(dict: ParameterOptionDictArrayConfig<T>): ParameterOptionDictArray<T> {
+        return new  ParameterOptionDictArray(dict);
     }
 
-    toDict(): ParameterOptionsDictArrayConfig {
+    toDict(): ParameterOptionDictArrayConfig<T> {
         return {
             options: this.options,
-            kind: ParameterType.DICT_ARRAY,
+            kind: ParameterOptionType.DICT_ARRAY,
         }
+    }
+
+    get displayValuesAsArray(): Array<string> {
+        return this.options.map(o => o.displayValue);
+    }
+
+    get optionsAsArray(): Array<T> {
+        return this.options;
     }
 }
 
@@ -194,25 +232,23 @@ export abstract class OperatorTypeParameterOptions {
 
     public abstract getParameterOptions(): Array<[ParameterName, ParameterOption]>;
 
-    public abstract getParametersTypes(): Array<[ParameterName, ParameterType]>;
+    public abstract getParametersTypes(): Array<[ParameterName, ParameterOptionType]>;
 
     public getParameterNames(): Array<ParameterName> {
         return this.getParametersTypes().map(([n, _]) => n);
     }
-
-    // abstract generateOperatorConfigOption()
 }
 
 export class EmptyParameterOptions extends OperatorTypeParameterOptions {
     constructor () {
-        super({operatorType: 'empty dummy'})
+        super({operatorType: 'EMPTY_PARAMETER_OPTIONS'})
     }
 
     getParameterOptions(): Array<[ParameterName, ParameterOption]> {
         return [];
     }
 
-    getParametersTypes(): Array<[ParameterName, ParameterType]> {
+    getParametersTypes(): Array<[ParameterName, ParameterOptionType]> {
         return [];
     }
 
