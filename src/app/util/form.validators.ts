@@ -1,4 +1,3 @@
-
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
@@ -27,7 +26,7 @@ function minAndMax(controlMinName: string,
         options.checkOneExists = true;
     }
 
-    return (control: AbstractControl): {[key: string]: boolean} => {
+    return (control: AbstractControl): { [key: string]: boolean } => {
         const min = control.get(controlMinName).value;
         const max = control.get(controlMaxName).value;
 
@@ -58,9 +57,9 @@ function minAndMax(controlMinName: string,
  * @param condition
  * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
  */
-function conditionalValidator(validator: (control: AbstractControl) => {[key: string]: boolean},
+function conditionalValidator(validator: (control: AbstractControl) => { [key: string]: boolean },
                               condition: () => boolean) {
-    return (control: AbstractControl): {[key: string]: boolean} => {
+    return (control: AbstractControl): { [key: string]: boolean } => {
         if (condition()) {
             return validator(control);
         } else {
@@ -86,9 +85,9 @@ function keywordValidator(keywords: Array<string>) {
  * @returns {(control:AbstractControl)=>Observable<{[p: string]: boolean}>}
  */
 function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
+    return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
 
-        return Observable.create((observer: Observer<{[key: string]: boolean}>) => {
+        return Observable.create((observer: Observer<{ [key: string]: boolean }>) => {
             storageService.projectExists(control.value as string).pipe(
                 map(projectExists => {
                     const errors: {
@@ -120,8 +119,16 @@ function notOnlyWhitespace(control: AbstractControl) {
     return text.trim().length <= 0 ? {'onlyWhitespace': true} : null;
 }
 
+function isNumber(control: AbstractControl) {
+    const value = control.value;
+    const isInvalid = value === null || value === undefined || isNaN(value) || !isFinite(value);
+    return isInvalid ? {'isNoNumber': true} : null;
+}
+
+
 export const WaveValidators = {
     conditionalValidator: conditionalValidator,
+    isNumber: isNumber,
     keyword: keywordValidator,
     minAndMax: minAndMax,
     notOnlyWhitespace: notOnlyWhitespace,

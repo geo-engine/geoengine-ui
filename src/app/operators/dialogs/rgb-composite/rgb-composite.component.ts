@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/co
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {ProjectService} from '../../../project/project.service';
-import {RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology, RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {Layer, RasterLayer} from '../../../layers/layer.model';
+import {MappingColorizerRasterSymbology, RasterSymbology, Symbology} from '../../../layers/symbology/symbology.model';
 import {Interpolation, Unit} from '../../unit.model';
 import {Operator} from '../../operator.model';
 import {NotificationService} from '../../../notification.service';
@@ -11,24 +11,27 @@ import {DataType, DataTypes} from '../../datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-import {first} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {StatisticsType} from '../../types/statistics-type.model';
 import {LayoutService} from '../../../layout.service';
+import {WaveValidators} from '../../../util/form.validators';
 
 @Component({
     selector: 'wave-create-rgb-composite',
-    templateUrl: './create-rgb-composite.component.html',
-    styleUrls: ['./create-rgb-composite.component.scss'],
+    templateUrl: './rgb-composite.component.html',
+    styleUrls: ['./rgb-composite.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
+export class RgbCompositeComponent implements OnInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly numberOfRasters = 3;
     readonly loadingSpinnerDiameter = 2 * LayoutService.remInPx();
 
     form: FormGroup;
+    formIsInvalid$: Observable<boolean>;
+    notAllLayersSet$: Observable<boolean>;
     isRasterStatsLoading$ = new BehaviorSubject(false);
 
     private inputLayersubscriptions: Subscription;
@@ -44,16 +47,27 @@ export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
                 undefined,
                 [Validators.required, Validators.minLength(this.numberOfRasters), Validators.maxLength(this.numberOfRasters)],
             ),
-            'redMin': new FormControl(undefined, [Validators.required]),
-            'redMax': new FormControl(undefined, [Validators.required]),
-            'redScale': new FormControl(1, [Validators.required, Validators.min(0), Validators.max(1)]),
-            'greenMin': new FormControl(undefined, [Validators.required]),
-            'greenMax': new FormControl(undefined, [Validators.required]),
-            'greenScale': new FormControl(1, [Validators.required, Validators.min(0), Validators.max(1)]),
-            'blueMin': new FormControl(undefined, [Validators.required]),
-            'blueMax': new FormControl(undefined, [Validators.required]),
-            'blueScale': new FormControl(1, [Validators.required, Validators.min(0), Validators.max(1)]),
+            'redMin': new FormControl(undefined, [WaveValidators.isNumber]),
+            'redMax': new FormControl(undefined, [WaveValidators.isNumber]),
+            'redScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
+            'greenMin': new FormControl(undefined, [WaveValidators.isNumber]),
+            'greenMax': new FormControl(undefined, [WaveValidators.isNumber]),
+            'greenScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
+            'blueMin': new FormControl(undefined, [WaveValidators.isNumber]),
+            'blueMax': new FormControl(undefined, [WaveValidators.isNumber]),
+            'blueScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
         });
+
+        this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
+        this.notAllLayersSet$ = this.form.controls['inputLayers'].valueChanges.pipe(map((value: Array<Layer<Symbology>>) => {
+            return value === undefined
+                || value === null
+                || value.length !== 3
+                || value.some(layer => layer === undefined || layer === null);
+        }));
+
+        // calculate validity to enforce invalid state upfront
+        setTimeout(() => this.form.updateValueAndValidity());
 
         this.inputLayersubscriptions = this.form.controls['inputLayers'].valueChanges
             .subscribe((inputLayers: Array<RasterLayer<RasterSymbology>>) => { // set meaningful default values if possible
@@ -169,6 +183,16 @@ export class CreateRgbCompositeComponent implements OnInit, OnDestroy {
 
                 this.isRasterStatsLoading$.next(false);
             });
+        });
+    }
+
+    retrieveRasterStatsFromUnit() {
+        const operators: Array<Operator> = this.form.controls['inputLayers'].value.map(layer => layer.operator);
+
+        ['red', 'green', 'blue'].forEach((color, i) => {
+            const unit = operators[i].units.get('value', Unit.defaultUnit);
+            this.form.controls[`${color}Min`].setValue(unit.min);
+            this.form.controls[`${color}Max`].setValue(unit.max);
         });
     }
 }
