@@ -9,15 +9,15 @@ import * as d3 from 'd3';
  * Schema for histogram data.
  */
 export interface HistogramData {
-   type: string; // histogram
-   data: Array<number>;
-   lines?: Array<{name: string, pos: number}>;
-   metadata: {
-       numberOfBuckets: number,
-       min: number,
-       max: number,
-       nodata: number,
-   };
+    type: string; // histogram
+    data: Array<number>;
+    lines?: Array<{ name: string, pos: number }>;
+    metadata: {
+        numberOfBuckets: number,
+        min: number,
+        max: number,
+        nodata: number,
+    };
 }
 
 /**
@@ -44,86 +44,15 @@ interface Slider {
 
 @Component({
     selector: 'wave-histogram',
-    template: `<svg #svg class="histogram"></svg>`,
-    styles: [
-        `
-        :host {
-            display: block;
-        }
-        :host .histogram >>> .chartbg {
-          fill: transparent;
-        }
-
-        :host .histogram >>> .container {
-          fill: white;
-        }
-
-        :host .histogram >>> .chart {
-          font: 10px sans-serif;
-        }
-
-        :host .histogram >>> .bar rect {
-          fill: steelblue;
-          shape-rendering: crispEdges;
-        }
-
-        :host .histogram >>> .lines rect {
-          fill: #ff0000;
-          shape-rendering: crispEdges;
-        }
-
-        :host .histogram >>> .lines text {
-          fill : #ff0000;
-        }
-
-        :host .histogram >>> .bar text {
-          fill: #fff;
-        }
-
-        :host .histogram >>> .axis path,.axis line {
-          fill: none;
-          stroke: #000;
-          shape-rendering: crispEdges;
-        }
-
-        /* taken from http://bl.ocks.org/Caged/6476579 */
-
-        :host .histogram >>> .d3-tip {
-          line-height: 1;
-          font-weight: bold;
-          padding: 12px;
-          background: rgba(0, 0, 0, 0.8);
-          color: #fff;
-          border-radius: 2px;
-        }
-
-        /* Creates a small triangle extender for the tooltip */
-        :host .histogram >>> .d3-tip:after {
-          box-sizing: border-box;
-          display: inline;
-          font-size: 10px;
-          width: 100%;
-          line-height: 1;
-          color: rgba(0, 0, 0, 0.8);
-          content: "\25BC";
-          position: absolute;
-          text-align: center;
-        }
-
-        /* Style northward tooltips differently */
-        :host .histogram >>> .d3-tip.n:after {
-          margin: -1px 0 0 0;
-          top: 100%;
-          left: 0;
-        }
-        `,
-    ],
+    templateUrl: `histogram.component.html`,
+    styleUrls: [`histogram.component.scss`],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistogramComponent implements AfterViewInit, OnChanges {
     @ViewChild('svg') svgRef: ElementRef;
 
     @Input() data: HistogramData;
+    @Input() xUnit: string = 'Foobar'; // TODO: change to undefined or use field from data
 
     @Input() height: number;
     @Input() width: number;
@@ -142,9 +71,10 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     private xAxis: d3.svg.Axis;
     private maxWidth: number;
 
-    constructor() {}
+    constructor() {
+    }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         if (changes['data'] && !changes['data'].isFirstChange()) {
             // clean up histogram
             d3.select(this.svgRef.nativeElement).select('g').remove();
@@ -183,11 +113,13 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     private drawHistogram() {
         const drawLines: boolean = (this.data.lines !== undefined);
 
+        const maxDigitsOnYAxis = Math.max(...this.data.data.map(v => v > 9 ? Math.ceil(Math.log10(v)) : 1));
+
         const margin = {
             top: 10,
             right: 50,
-            bottom: this.selectable ? 80 : 30,
-            left: 50,
+            bottom: 30 + (this.xUnit ? 10 : 0) + (this.selectable ? 35 : 0),
+            left: 12 * maxDigitsOnYAxis + 25,
         };
 
         const width = this.width * this.viewBoxRatio - margin.left - margin.right;
@@ -195,11 +127,11 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         const height = this.height * this.viewBoxRatio - margin.top - margin.bottom;
 
         const x = d3.scale.linear()
-                          .domain([this.data.metadata.min, this.data.metadata.max])
-                          .range([0, width]);
+            .domain([this.data.metadata.min, this.data.metadata.max])
+            .range([0, width]);
 
         const y = d3.scale.linear().domain([0, d3.max(this.data.data)])
-                                   .range([height, 0]);
+            .range([height, 0]);
 
         const xAxis = d3.svg.axis().scale(x).orient('bottom');
         this.xAxis = xAxis;
@@ -207,40 +139,40 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         const yAxis = d3.svg.axis().scale(y).orient('left');
 
         const svg = d3.select(this.svgRef.nativeElement)
-                      .attr('width', this.width)
-                      .attr('height', this.height)
-                      .attr(
-                          'viewBox',
-                          [
-                              0,
-                              0,
-                              this.width * this.viewBoxRatio,
-                              this.height * this.viewBoxRatio,
-                          ].join(' ')
-                      )
-                      .append('g')
-                      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .attr(
+                'viewBox',
+                [
+                    0,
+                    0,
+                    this.width * this.viewBoxRatio,
+                    this.height * this.viewBoxRatio,
+                ].join(' ')
+            )
+            .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
         const container = svg.append('g').classed('container', true);
 
         const barWidth = width / this.data.metadata.numberOfBuckets;
 
         const bar = container.selectAll('.bar')
-                             .data(this.data.data)
-                             .enter()
-                             .append('g')
-                             .classed('bar', true)
-                             .attr('transform', (d, i) => {
-                                 let xPos = i * barWidth;
-                                 return `translate(${xPos},0)`;
-                             });
+            .data(this.data.data)
+            .enter()
+            .append('g')
+            .classed('bar', true)
+            .attr('transform', (d, i) => {
+                let xPos = i * barWidth;
+                return `translate(${xPos},0)`;
+            });
 
         bar.append('rect')
             .attr('height', d => {
                 return height - y(d);
             })
             .attr('width', (barWidth > 1) ? (barWidth - 1) : barWidth)
-            .attr('transform', (d, i) => {
+            .attr('transform', (d, _i) => {
                 let yTrans = y(d);
                 return `translate(0,${yTrans})`;
             });
@@ -249,50 +181,68 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         if (drawLines) {
             const lineContainer = container.append('g');
             const lines = lineContainer.selectAll('.lines')
-                                     .data(this.data.lines)
-                                     .enter()
-                                     .append('g')
-                                     .attr('class', 'lines');
+                .data(this.data.lines)
+                .enter()
+                .append('g')
+                .attr('class', 'lines');
             lines.append('rect')
-                 .attr('x', d => {
-                     return x(d.pos);
-                 }) // position()
-                 .attr('y', y(0) - height)
-                 .attr('height', height)
-                 .attr('width', 1);
+                .attr('x', d => {
+                    return x(d.pos);
+                }) // position()
+                .attr('y', y(0) - height)
+                .attr('height', height)
+                .attr('width', 1);
 
             lines.append('text')
-                 .attr('x', d => {
-                     return x(d.pos) + 5;
-                 }) // position()
-                 .attr('y', y(0) - height + 20)
-                 .text(d => {
-                     return d.name;
-                 });
+                .attr('x', d => {
+                    return x(d.pos) + 5;
+                }) // position()
+                .attr('y', y(0) - height + 20)
+                .text(d => {
+                    return d.name;
+                });
         }
 
         const borders = svg.append('g')
-                           .attr(
-                               'transform',
-                               `translate(${-margin.left},${-margin.top})`
-                           );
+            .attr(
+                'transform',
+                `translate(${-margin.left},${-margin.top})`
+            );
 
         borders.append('rect')
-               .attr('width', margin.left)
-               .attr('height', this.height)
-               .attr('fill', 'white');
+            .attr('width', margin.left)
+            .attr('height', this.height)
+            .attr('fill', 'white');
 
         borders.append('rect')
-               .attr('x', margin.left + width)
-               .attr('height', this.height)
-               .attr('width', margin.left).attr('fill', 'white');
+            .attr('x', margin.left + width)
+            .attr('height', this.height)
+            .attr('width', margin.left).attr('fill', 'white');
 
         svg.append('g')
-           .attr('class', 'x axis')
-           .attr('transform', `translate(0,${height})`)
-           .call(xAxis);
+            .attr('class', 'x axis')
+            .attr('transform', `translate(0,${height})`)
+            .call(xAxis);
 
-        svg.append('g').attr('class', 'y axis').call(yAxis);
+        if (this.xUnit) {
+            svg.append('g')
+                .append('text') // x axis label
+                .attr('x', width / 2)
+                .attr('y', height + margin.bottom)
+                .style('text-anchor', 'middle')
+                .text(this.xUnit);
+        }
+
+        svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis)
+            .append('text') // y axis label
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -margin.left)
+            .attr('x', -height / 2)
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .text('Frequency');
 
         let zoom: d3.behavior.Zoom<any>;
         if (this.selectable) {
@@ -310,17 +260,17 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             const xSlider = svg.append('g');
 
             const leftSlider: Slider = {
-                area: this.makeArea(xSlider, height),
-                pointer: this.makePointer(xSlider, height, sliderDim, 0),
-                text: this.makeText(xSlider, height, sliderDim, 0, this.data.metadata.min),
+                area: HistogramComponent.makeArea(xSlider, height),
+                pointer: HistogramComponent.makePointer(xSlider, height, sliderDim, 0),
+                text: HistogramComponent.makeText(xSlider, height, sliderDim, 0, this.data.metadata.min),
                 position: this.data.metadata.min,
             };
             this.leftSlider = leftSlider;
 
             const rightSlider: Slider = {
-                area: this.makeArea(xSlider, height),
-                pointer: this.makePointer(xSlider, height, sliderDim, width),
-                text: this.makeText(xSlider, height, sliderDim, width, this.data.metadata.max),
+                area: HistogramComponent.makeArea(xSlider, height),
+                pointer: HistogramComponent.makePointer(xSlider, height, sliderDim, width),
+                text: HistogramComponent.makeText(xSlider, height, sliderDim, width, this.data.metadata.max),
                 position: this.data.metadata.max,
             };
             this.rightSlider = rightSlider;
@@ -337,27 +287,27 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             // zoom
             if (this.interactable) {
                 zoom = d3.behavior.zoom()
-                                  .scaleExtent([1, 10])
-                                  .x(x)
-                                  .on(
-                                      'zoom',
-                                      this.sliderZoomed(svg, container, xAxis, height, width,
-                                                        leftSlider, rightSlider)
-                                  );
+                    .scaleExtent([1, 10])
+                    .x(x)
+                    .on(
+                        'zoom',
+                        this.sliderZoomed(svg, container, xAxis, height, width,
+                            leftSlider, rightSlider)
+                    );
             }
         } else {
             if (this.interactable) {
                 zoom = d3.behavior.zoom()
-                                  .scaleExtent([1, 10])
-                                  .x(x)
-                                  .on('zoom', this.zoomed(svg, container, xAxis));
+                    .scaleExtent([1, 10])
+                    .x(x)
+                    .on('zoom', this.zoomed(svg, container, xAxis));
             }
         }
 
         const chartbg = svg.append('rect')
-                           .attr('class', 'chartbg')
-                           .attr('width', width)
-                           .attr('height', height);
+            .attr('class', 'chartbg')
+            .attr('width', width)
+            .attr('height', height);
 
         if (this.interactable) {
             chartbg.call(zoom);
@@ -381,7 +331,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     private sliderZoomed(svg: d3.Selection<SVGSVGElement>,
                          container: d3.Selection<SVGGElement>,
                          xAxis: d3.svg.Axis,
-                         height: number,
+                         _height: number,
                          width: number,
                          leftSlider: Slider,
                          rightSlider: Slider): () => void {
@@ -389,65 +339,54 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             this.zoomed(svg, container, xAxis)();
 
             // set left slider
-            let newPointerpos = xAxis.scale()(leftSlider.position);
-            if (newPointerpos < 0) {
-                newPointerpos = 0;
-            }
-            if (newPointerpos > width) {
-                newPointerpos = width;
-            }
-            leftSlider.area.attr('width', newPointerpos);
-            leftSlider.pointer.attr('x', newPointerpos);
-            leftSlider.text.attr('x', newPointerpos);
+            const leftPointerPosition = clamp(xAxis.scale()(leftSlider.position), 0, width);
+            leftSlider.area.attr('width', leftPointerPosition);
+            leftSlider.pointer.attr('x', leftPointerPosition);
+            leftSlider.text.attr('x', leftPointerPosition);
+
             // set right slider
-            newPointerpos = xAxis.scale()(rightSlider.position);
-            if (newPointerpos < 0) {
-                newPointerpos = 0;
-            }
-            if (newPointerpos > width) {
-                newPointerpos = width;
-            }
-            rightSlider.area.attr('width', width - newPointerpos);
-            rightSlider.area.attr('x', newPointerpos);
-            rightSlider.pointer.attr('x', newPointerpos);
-            rightSlider.text.attr('x', newPointerpos);
+            const rightPointerPosition = clamp(xAxis.scale()(rightSlider.position), 0, width);
+            rightSlider.area.attr('width', width - rightPointerPosition);
+            rightSlider.area.attr('x', rightPointerPosition);
+            rightSlider.pointer.attr('x', rightPointerPosition);
+            rightSlider.text.attr('x', rightPointerPosition);
         };
     }
 
-    private makeArea(xSlider: d3.Selection<SVGGElement>,
-                     height: number): d3.Selection<SVGGElement> {
+    private static makeArea(xSlider: d3.Selection<SVGGElement>,
+                            height: number): d3.Selection<SVGGElement> {
         return xSlider.append('rect')
-                      .attr('x', 0)
-                      .attr('width', 0)
-                      .attr('height', height)
-                      .attr('fill-opacity', 0.2);
+            .attr('x', 0)
+            .attr('width', 0)
+            .attr('height', height)
+            .attr('fill-opacity', 0.2);
     }
 
-    private makePointer(xSlider: d3.Selection<SVGGElement>,
-                        height: number,
-                        sliderDim: SliderDim,
-                        xPosition: number): d3.Selection<SVGGElement> {
+    private static makePointer(xSlider: d3.Selection<SVGGElement>,
+                               height: number,
+                               sliderDim: SliderDim,
+                               xPosition: number): d3.Selection<SVGGElement> {
         return xSlider.append('rect')
-                      .attr('y', height + sliderDim.margin.top)
-                      .attr('x', xPosition)
-                      .attr('width', sliderDim.width)
-                      .attr('height', sliderDim.height)
-                      .attr('transform', 'translate(' + -(sliderDim.width / 2) + ',0)');
+            .attr('y', height + sliderDim.margin.top)
+            .attr('x', xPosition)
+            .attr('width', sliderDim.width)
+            .attr('height', sliderDim.height)
+            .attr('transform', 'translate(' + -(sliderDim.width / 2) + ',0)');
     }
 
-    private makeText(xSlider: d3.Selection<SVGGElement>,
-                     height: number,
-                     sliderDim: SliderDim,
-                     xPosition: number,
-                     value: number): d3.Selection<SVGGElement> {
+    private static makeText(xSlider: d3.Selection<SVGGElement>,
+                            height: number,
+                            sliderDim: SliderDim,
+                            xPosition: number,
+                            value: number): d3.Selection<SVGGElement> {
         return xSlider.append('text')
-                      .text(value.toFixed(2))
-                      .attr('x', xPosition - sliderDim.width / 2 + 5)
-                      .attr(
-                          'y',
-                          sliderDim.margin.top + height +
-                          sliderDim.height + sliderDim.margin.bottom
-                      );
+            .text(value.toFixed(2))
+            .attr('x', xPosition - sliderDim.width / 2 + 5)
+            .attr(
+                'y',
+                sliderDim.margin.top + height +
+                sliderDim.height + sliderDim.margin.bottom
+            );
     }
 
     private makeDrag(xAxis: d3.svg.Axis,
@@ -523,5 +462,15 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 slider.area.attr('x', newX);
             }
         });
+    }
+}
+
+function clamp(value: number, min: number, max: number): number {
+    if (value <= min) {
+        return min;
+    } else if (value >= max) {
+        return max;
+    } else {
+        return value;
     }
 }
