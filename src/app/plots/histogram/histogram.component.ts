@@ -136,7 +136,11 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         const xAxis = d3.svg.axis().scale(x).orient('bottom');
         this.xAxis = xAxis;
 
-        const yAxis = d3.svg.axis().scale(y).orient('left');
+        const yAxis = d3.svg.axis()
+            .scale(y)
+            .orient('left')
+            .tickFormat(d3.format('d')) // allow only integer ticks
+        ;
 
         const svg = d3.select(this.svgRef.nativeElement)
             .attr('width', this.width)
