@@ -17,6 +17,7 @@ export interface HistogramData {
         min: number,
         max: number,
         nodata: number,
+        unit: string,
     };
 }
 
@@ -52,7 +53,6 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     @ViewChild('svg') svgRef: ElementRef;
 
     @Input() data: HistogramData;
-    @Input() xUnit: string = 'Foobar'; // TODO: change to undefined or use field from data
 
     @Input() height: number;
     @Input() width: number;
@@ -118,7 +118,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         const margin = {
             top: 10,
             right: 50,
-            bottom: 30 + (this.xUnit ? 10 : 0) + (this.selectable ? 35 : 0),
+            bottom: 30 + (this.data.metadata.unit ? 10 : 0) + (this.selectable ? 35 : 0),
             left: 12 * maxDigitsOnYAxis + 25,
         };
 
@@ -224,13 +224,13 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             .attr('transform', `translate(0,${height})`)
             .call(xAxis);
 
-        if (this.xUnit) {
+        if (this.data.metadata.unit) {
             svg.append('g')
                 .append('text') // x axis label
                 .attr('x', width / 2)
                 .attr('y', height + margin.bottom)
                 .style('text-anchor', 'middle')
-                .text(this.xUnit);
+                .text(this.data.metadata.unit);
         }
 
         svg.append('g')
