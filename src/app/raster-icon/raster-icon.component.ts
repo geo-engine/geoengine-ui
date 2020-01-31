@@ -48,7 +48,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
         const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
         if (validSymbology) {
             colors = this.colorizer.breakpoints.map(br => Color.rgbaToCssString(br.rgba));
-            gradient = this.colorizer.type === 'gradient';
+            gradient = this.colorizer.type === 'gradient' || this.colorizer.type === 'logarithmic';
         }
 
         const numberOfColors = colors.length;
