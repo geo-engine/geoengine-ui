@@ -11,12 +11,7 @@ import 'hammerjs';
 import {AppComponent} from './app.component';
 import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
 import {MapContainerComponent} from './map/map-container/map-container.component';
-import {
-    OlLineLayerComponent,
-    OlPointLayerComponent,
-    OlPolygonLayerComponent,
-    OlRasterLayerComponent,
-} from './map/map-layer.component';
+import {OlLineLayerComponent, OlPointLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent,} from './map/map-layer.component';
 import {NbspPipe, ProvenanceListComponent} from './provenance/provenance-list/provenance-list.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
@@ -27,10 +22,10 @@ import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/sym
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {LegendComponent} from './layers/legend/legend.component';
-import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
-import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
-import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
-import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
+import {PointLegendComponent} from './layers/legend/legend-point/point-legend.component';
+import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
+import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
+import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
@@ -83,10 +78,7 @@ import {HelpComponent} from './help/help.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.properties.service';
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
-import {
-    CsvDialogComponent,
-    CsvErrorDialog
-} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
+import {CsvDialogComponent, CsvErrorDialog} from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {RasterIconComponent} from './raster-icon/raster-icon.component';
@@ -108,9 +100,7 @@ import {CsvTableComponent} from './operators/dialogs/csv/csv-config/csv-table/cs
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 import {ScatterPlotComponent} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.component';
 import {RouterModule} from '@angular/router';
-import {
-    WorkflowParameterChoiceDialogComponent
-} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
+import {WorkflowParameterChoiceDialogComponent} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 import {LayerShareComponent} from './layers/dialogs/layer-share/layer-share.component';
 import {TableComponent} from './datatable/table/table.component';
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
@@ -122,9 +112,7 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
-import {
-    GroupedAbcdBasketResultComponent
-} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
+import {GroupedAbcdBasketResultComponent} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {MatIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
@@ -148,15 +136,9 @@ import {TickerInteractionComponent} from './time/ticker-interaction/ticker-inter
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {TestIdComponentDirective} from './spec/test-id-component.directive';
 import {LayerStatisticsViewComponent} from './plots/layer-statistics-view/layer-statistics-view.component';
-import {
-    LayerStatisticsNumericDetailsComponent
-} from './plots/layer-statistics-view/layer-statistics-numeric-details/layer-statistics-numeric-details.component';
-import {
-    LayerStatisticsTextualDetailsComponent
-} from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
-import {
-    LayerListWorkflowParameterSliderComponent
-} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
+import {LayerStatisticsNumericDetailsComponent} from './plots/layer-statistics-view/layer-statistics-numeric-details/layer-statistics-numeric-details.component';
+import {LayerStatisticsTextualDetailsComponent} from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
+import {LayerListWorkflowParameterSliderComponent} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -227,10 +209,10 @@ export function configInitializer(config: Config) {
         TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
-        LegendaryMappingColorizerRasterComponent,
-        LegendaryPointComponent,
-        LegendaryRasterComponent,
-        LegendaryVectorComponent,
+        MappingRasterLegendComponent,
+        PointLegendComponent,
+        RasterLegendComponent,
+        VectorLegendComponent,
         LegendComponent,
         LineageGraphComponent,
         LoadProjectComponent,

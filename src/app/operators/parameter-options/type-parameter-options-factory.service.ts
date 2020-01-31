@@ -1,5 +1,5 @@
-import {OperatorTypeParameterOptions, OperatorTypeParameterOptionsDict} from '../operator-type-parameter-options.model';
-import {GdalSourceParameterOptions, GdalSourceParameterOptionsDict} from './gdal-source-parameter-options.model';
+import {OperatorTypeParameterOptions, OperatorTypeParameterOptionsConfig} from '../operator-type-parameter-options.model';
+import {GdalSourceParameterOptions, GdalSourceParameterOptionsConfig} from './gdal-source-parameter-options.model';
 import {GdalSourceType} from '../types/gdal-source-type.model';
 
 /**
@@ -9,12 +9,12 @@ export abstract class OperatorTypeParameterOptionsFactory {
     /**
      * Create operator type from serialized data.
      */
-    static fromDict(dict: OperatorTypeParameterOptionsDict): OperatorTypeParameterOptions {
+    static fromDict(dict: OperatorTypeParameterOptionsConfig): OperatorTypeParameterOptions {
         switch (dict.operatorType) {
             case GdalSourceType.TYPE:
-                return GdalSourceParameterOptions.fromDict(dict as GdalSourceParameterOptionsDict);
+                return GdalSourceParameterOptions.fromDict(dict as GdalSourceParameterOptionsConfig);
             default:
-                throw Error('There is not factory method defined for this operator type.');
+                throw Error('There is not ParameterOptions factory method defined for the "' + dict.operatorType + '" type.');
         }
     }
 }

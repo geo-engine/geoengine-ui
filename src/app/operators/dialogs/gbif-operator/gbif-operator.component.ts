@@ -245,7 +245,6 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             };
 
          this.addVectorLayer(source, layerName);
-             // this.addRasterLayer(source, layerName, 25)
         }
     }
 

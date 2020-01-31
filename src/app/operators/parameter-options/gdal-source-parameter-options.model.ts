@@ -1,22 +1,17 @@
 import {
-    ParameterName,
-    ParameterOptionType,
+    DictParameterArray,
+    DictParameterArrayConfig,
     OperatorTypeParameterOptions,
     OperatorTypeParameterOptionsConfig,
-    OperatorTypeParameterOptionsDict,
-    ParameterOptionDictArray,
-    ParameterOptionDictArrayConfig,
-    OptionsDict
+    OptionsDict,
+    ParameterName,
+    ParameterOptionType
 } from '../operator-type-parameter-options.model';
 
 import {GdalSourceType} from '../types/gdal-source-type.model';
 
-interface GdalSourceParameterOptionsConfig extends OperatorTypeParameterOptionsConfig {
-    channel: ParameterOptionDictArrayConfig<GdalSourceChannelOptions>;
-}
-
-export interface GdalSourceParameterOptionsDict extends OperatorTypeParameterOptionsDict  {
-    channel: ParameterOptionDictArrayConfig<GdalSourceChannelOptions>;
+export interface GdalSourceParameterOptionsConfig extends OperatorTypeParameterOptionsConfig {
+    channel: DictParameterArrayConfig<GdalSourceChannelOptions>;
 }
 
 export interface GdalSourceChannelOptions extends OptionsDict {
@@ -28,24 +23,24 @@ export interface GdalSourceChannelOptions extends OptionsDict {
  */
 export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
 
-    private channel: ParameterOptionDictArray<GdalSourceChannelOptions>;
+    private channel: DictParameterArray<GdalSourceChannelOptions>;
 
     constructor(config: GdalSourceParameterOptionsConfig) {
         super(config);
-        this.channel = ParameterOptionDictArray.fromDict<GdalSourceChannelOptions>(config.channel);
+        this.channel = DictParameterArray.fromDict<GdalSourceChannelOptions>(config.channel);
     }
 
-    static fromDict(dict: GdalSourceParameterOptionsDict) {
+    static fromDict(dict: GdalSourceParameterOptionsConfig) {
         return new GdalSourceParameterOptions(dict);
     }
 
-    getParameterOptions(): Array<[ParameterName, ParameterOptionDictArray<OptionsDict>]> {
+    getParameterOptions(): Array<[ParameterName, DictParameterArray<OptionsDict>]> {
         return [
             ['channel', this.channel]
         ];
     }
 
-    toDict(): GdalSourceParameterOptionsDict {
+    toDict(): GdalSourceParameterOptionsConfig {
         return {
             operatorType: GdalSourceType.TYPE,
             channel: this.channel.toDict(),

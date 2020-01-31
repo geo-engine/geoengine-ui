@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface NumericAttributeFilterTypeMappingDict extends OperatorTypeMappingDict {
     name: string;
@@ -93,6 +92,10 @@ export class NumericAttributeFilterType extends OperatorType {
             rangeMin: this.rangeMin,
             rangeMax: this.rangeMax,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return NumericAttributeFilterType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }

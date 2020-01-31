@@ -65,12 +65,12 @@ export abstract class AbstractSymbology implements ISymbology {
             case SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER]:
                 const mappingColorizerRasterSymbologyDict = dict as RasterSymbologyDict;
                 return new MappingColorizerRasterSymbology({
-                        hue: mappingColorizerRasterSymbologyDict.hue,
-                        opacity: mappingColorizerRasterSymbologyDict.opacity,
-                        saturation: mappingColorizerRasterSymbologyDict.saturation,
-                        unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
-                        colorizer: ColorizerData.fromDict(mappingColorizerRasterSymbologyDict.colorizer)
-                    });
+                    hue: mappingColorizerRasterSymbologyDict.hue,
+                    opacity: mappingColorizerRasterSymbologyDict.opacity,
+                    saturation: mappingColorizerRasterSymbologyDict.saturation,
+                    unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
+                    colorizer: ColorizerData.fromDict(mappingColorizerRasterSymbologyDict.colorizer)
+                });
             default:
                 throw new Error('Unsupported AbstractSymbology');
         }
@@ -78,13 +78,15 @@ export abstract class AbstractSymbology implements ISymbology {
 
     abstract getSymbologyType(): SymbologyType;
 
+    get symbologyType(): SymbologyType {
+        return this.getSymbologyType();
+    }
+
     get symbologyTypeId(): string {
         return SymbologyType[this.getSymbologyType()];
     }
 
     abstract clone(): AbstractSymbology;
-
-    // abstract equals(other: AbstractSymbology): boolean; TODO: equals for symbologys?
 
     abstract toConfig(): ISymbology;
 
@@ -108,9 +110,6 @@ interface VectorSymbologyDict extends SymbologyDict {
 export abstract class AbstractVectorSymbology extends AbstractSymbology {
     _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
     _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'});
-
-    // fillRGBA: Color = DEFAULT_VECTOR_FILL_COLOR;
-    // strokeRGBA: Color = DEFAULT_VECTOR_STROKE_COLOR;
     strokeWidth = 1;
 
     abstract describesArea(): boolean;
@@ -184,8 +183,8 @@ export interface LineSymbologyConfig extends VectorSymbologyConfig {
 
 export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
 
-    constructor(conf: LineSymbologyConfig) {
-        super(conf)
+    constructor(config: LineSymbologyConfig) {
+        super(config)
     }
 
     static createSymbology(conf: LineSymbologyConfig): LineSymbology {
@@ -214,7 +213,7 @@ export class LineSymbology extends AbstractVectorSymbology implements VectorSymb
 
     toDict(): VectorSymbologyDict {
         return {
-            symbologyType: this.getSymbologyType().toString(),
+            symbologyType: SymbologyType[SymbologyType.SIMPLE_LINE],
             fillRGBA: this.fillRGBA.rgbaTuple(),
             strokeRGBA: this.strokeRGBA.rgbaTuple(),
             strokeWidth: this.strokeWidth
@@ -305,7 +304,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
 
     toDict(): ComplexVectorSymbologyDict {
         return {
-            symbologyType: this.getSymbologyType().toString(),
+            symbologyType: SymbologyType[this.getSymbologyType()],
             fillRGBA: this.fillRGBA.rgbaTuple(),
             strokeRGBA: this.strokeRGBA.rgbaTuple(),
             strokeWidth: this.strokeWidth,
@@ -485,7 +484,6 @@ export class RasterSymbology extends AbstractSymbology implements IRasterSymbolo
     }
 
     equals(other: RasterSymbology) {
-        // console.log('RasterSymbology', 'equals', this, other);
         return this.saturation === other.saturation
             && this.opacity === other.opacity
             && this.hue === other.hue
@@ -543,7 +541,6 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     }
 
     equals(other: RasterSymbology) {
-        // console.log('MappingColorizerRasterSymbology', 'equals', this, other);
         if (other instanceof MappingColorizerRasterSymbology) {
             return super.equals(other as RasterSymbology)
                 && this.colorizer && this.colorizer.equals(other.colorizer)

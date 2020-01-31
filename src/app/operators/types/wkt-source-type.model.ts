@@ -1,7 +1,6 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-import {ResultTypes, ResultType} from '../result-type.model';
+import {ResultType, ResultTypes} from '../result-type.model';
 
 interface WKTSourceTypeMappingDict extends OperatorTypeMappingDict {
     type: string;
@@ -80,4 +79,7 @@ export class WKTSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return WKTSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

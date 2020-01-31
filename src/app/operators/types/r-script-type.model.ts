@@ -1,7 +1,6 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-import {ResultTypes, ResultType} from '../result-type.model';
+import {ResultType, ResultTypes} from '../result-type.model';
 
 interface RScriptTypeMappingDict extends OperatorTypeMappingDict {
     source: string;
@@ -80,4 +79,7 @@ export class RScriptType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return RScriptType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

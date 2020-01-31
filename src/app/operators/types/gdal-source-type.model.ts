@@ -98,7 +98,7 @@ export class GdalSourceType extends OperatorType {
         };
     }
 
-    cloneWithOptions(options?: GdalSourceTypeCloneOptions): OperatorType {
+    cloneWithModifications(options?: GdalSourceTypeCloneOptions): OperatorType {
         return new GdalSourceType({
             channel: options && options.channel ? options.channel.channelNumber : this.channel,
             sourcename: this.sourcename,

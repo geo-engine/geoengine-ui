@@ -95,7 +95,9 @@ export abstract class OperatorType {
      */
     abstract getParametersAsStrings(): Array<[string, string]>;
 
-    cloneWithOptions(options?: OperatorTypeCloneOptions): OperatorType {
-        throw new Error('not yet implemented!');
-    }
+    /**
+     * clone an operator type with modified parameters
+     * @param options a dictionary with modifications
+     */
+    abstract cloneWithModifications(options?: OperatorTypeCloneOptions): OperatorType;
 }

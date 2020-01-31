@@ -1,4 +1,16 @@
-<span>{{parameterName}}</span>
-<mat-slider #slr [min]="_sliderRangeStart" [max]="_sliderRangeStop" [step]="_sliderRangeStep" [(value)]="_sliderValue"
-            (change)="update($event)">
-</mat-slider>
+<ng-container
+    *ngIf="hasParameterOptions; then parameterSlider; else noParameterMessage">
+</ng-container>
+
+
+<ng-template #parameterSlider>
+    <span>{{parameterName}}</span>
+    <mat-slider [min]="sliderRangeStart" [max]="sliderRangeStop" [step]="sliderRangeStep" [(value)]="sliderValue"
+                (change)="update($event)">
+    </mat-slider>
+</ng-template>
+
+<ng-template #noParameterMessage>
+    <span> no "{{parameterName}}" options available </span>
+</ng-template>
+

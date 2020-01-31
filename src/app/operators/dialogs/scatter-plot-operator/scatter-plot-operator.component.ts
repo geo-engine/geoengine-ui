@@ -1,13 +1,10 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
-import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
 import {DataTypes} from '../../datatype.model';
-import {NumericPipe} from './scatter-plot-operator.pipe';
 import {ScatterPlotType} from '../../types/scatterplot-type.model';
 import {WaveValidators} from '../../../util/form.validators';
 
@@ -20,11 +17,7 @@ import {WaveValidators} from '../../../util/form.validators';
 export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
-
-    pointLayers: Array<Layer<AbstractSymbology>>;
-
     ResultTypes = ResultTypes;
-    NumericPipe = NumericPipe;
     DataTypes = DataTypes;
 
     constructor(private formBuilder: FormBuilder,

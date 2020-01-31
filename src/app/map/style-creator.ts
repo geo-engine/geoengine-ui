@@ -1,30 +1,30 @@
-import {Style as OlStyle,
-    StyleFunction as OlStyleFunction,
+import {
     Circle as OlStyleCircle,
     Fill as OlStyleFill,
     Stroke as OlStyleStroke,
+    Style as OlStyle,
+    StyleFunction as OlStyleFunction,
     Text as OlStyleText,
 } from 'ol/style';
-// import {} from 'ol/style/Fill'
-// import {Stroke as OlStyleStroke} from 'ol/style/Stroke'
-// import {Circle as OlStyleCircle} from 'ol/style/Circle'
-// import {Text as OlStyleText} from 'ol/style/Text'
+
 import {Feature as OlFeature} from 'ol';
 
 
 import {
-    SymbologyType,
     AbstractVectorSymbology,
-    ComplexVectorSymbology,
     ComplexPointSymbology,
+    ComplexVectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
-    DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR
+    DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR,
+    SymbologyType
 } from '../layers/symbology/symbology.model';
+
+const emptyValuePlaceholderSymbol = '|||';
+const valueSeparatorSymbol = ':::';
 
 export class StyleCreator {
 
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
-        // console.log('StyleCreator', 'fromVectorSymbology', sym);
         switch (sym.getSymbologyType()) {
             case SymbologyType.SIMPLE_VECTOR:
                 return StyleCreator.fromSimpleVectorSymbology(sym);
@@ -40,14 +40,14 @@ export class StyleCreator {
                 return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
 
             default:
-                console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType())
+                console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType());
                 return StyleCreator.fromSimpleVectorSymbology(sym); // Lets pretend unknown symbology is a simple vector...
         }
 
     }
 
     static createHighlightSymbology<S extends AbstractVectorSymbology> (sym: S): S {
-        const highlightSymbology: S = sym.clone() as S; // wtf?
+        const highlightSymbology: S = sym.clone() as S;
         highlightSymbology.fillRGBA = DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR;
         highlightSymbology.strokeRGBA = DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR;
         return highlightSymbology;
@@ -73,57 +73,57 @@ export class StyleCreator {
     // TODO: put style and cache into wrapper class?
 
     static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
-      // we need a style cache to speed things up. This dangles in the void of the GC...
-      const styleCache: {[key: string]: OlStyle} = {};
+        // we need a style cache to speed things up. This dangles in the void of the GC...
+        const styleCache: { [key: string]: OlStyle } = {};
 
-      return (feature: OlFeature, resolution: number) => {
+        return (feature: OlFeature, resolution: number) => {
 
-          // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
+            // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
 
-          const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
-          const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
+            const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
+            const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
 
-          // console.log(featureColorValue, featureTextValue, featureRadiusValue);
+            // console.log(featureColorValue, featureTextValue, featureRadiusValue);
 
-          let styleKey = '';
-          styleKey += (featureColorValue ? featureColorValue.toString() : '|||');
-          styleKey += (':::' + (featureTextValue ? featureTextValue.toString() : '|||'));
+            let styleKey = '';
+            styleKey += (featureColorValue ? featureColorValue.toString() : emptyValuePlaceholderSymbol);
+            styleKey += (valueSeparatorSymbol + (featureTextValue ? featureTextValue.toString() : emptyValuePlaceholderSymbol));
 
-          // console.log("ComplexVectorSymbology.getOlStyleAsFunction", "styleKey", styleKey);
+            // console.log("ComplexVectorSymbology.getOlStyleAsFunction", "styleKey", styleKey);
 
-          if (!styleCache[styleKey]) {
+            if (!styleCache[styleKey]) {
 
-              const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-              // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
-              const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+                const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
+                // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
+                const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
 
-              // console.log("ComplexVectorSymbology.getOlStyleAsFunction", colorLookup, color, radius);
+                // console.log("ComplexVectorSymbology.getOlStyleAsFunction", colorLookup, color, radius);
 
-              const fill = new OlStyleFill({ color: color });
-              const stroke = new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth });
+                const fill = new OlStyleFill({color: color});
+                const stroke = new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth});
 
-              // only build the text style if we are going to show it
-              const textStyle = (!featureTextValue) ? undefined : new OlStyleText({
-                  text: featureTextValue.toString(),
-                  fill: new OlStyleFill({
-                      color: sym.textColor.rgbaTuple(),
-                  }),
-                  stroke: new OlStyleStroke({
-                      color: sym.strokeRGBA.rgbaTuple(),
-                      width: sym.textStrokeWidth,
-                  })
-              });
+                // only build the text style if we are going to show it
+                const textStyle = (!featureTextValue) ? undefined : new OlStyleText({
+                    text: featureTextValue.toString(),
+                    fill: new OlStyleFill({
+                        color: sym.textColor.rgbaTuple(),
+                    }),
+                    stroke: new OlStyleStroke({
+                        color: sym.strokeRGBA.rgbaTuple(),
+                        width: sym.textStrokeWidth,
+                    })
+                });
 
-              const style = new OlStyle({
-                  stroke: stroke,
-                  fill: fill,
-                  text: textStyle
-              });
-              styleCache[styleKey] = style;
-          }
+                const style = new OlStyle({
+                    stroke: stroke,
+                    fill: fill,
+                    text: textStyle
+                });
+                styleCache[styleKey] = style;
+            }
 
-          return styleCache[styleKey];
-      };
+            return styleCache[styleKey];
+        };
     }
 
     static fromComplexPointSymbology(sym: ComplexPointSymbology): OlStyleFunction {
@@ -136,13 +136,13 @@ export class StyleCreator {
 
             const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
-            const featureRadiusValue = (sym.radiusAttribute) ?  feature.get(sym.radiusAttribute) : undefined;
+            const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
             // console.log(featureColorValue, featureTextValue, featureRadiusValue);
 
             let styleKey = '';
-            styleKey += (featureColorValue ? featureColorValue.toString() : '|||');
-            styleKey += (':::' + (featureTextValue ? featureTextValue.toString() : '|||'));
-            styleKey += (':::' + (featureRadiusValue ? featureRadiusValue.toString() : '|||'));
+            styleKey += (featureColorValue ? featureColorValue.toString() : emptyValuePlaceholderSymbol);
+            styleKey += (valueSeparatorSymbol + (featureTextValue ? featureTextValue.toString() : emptyValuePlaceholderSymbol));
+            styleKey += (valueSeparatorSymbol + (featureRadiusValue ? featureRadiusValue.toString() : emptyValuePlaceholderSymbol));
             // console.log('fromComplexPointSymbology', 'styleKey', styleKey);
 
             if (!styleCache[styleKey]) {

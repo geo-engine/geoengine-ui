@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface HistogramTypeMappingDict extends OperatorTypeMappingDict {
     attribute: string;
@@ -97,6 +96,10 @@ export class HistogramType extends OperatorType {
             range: this.range,
             buckets: this.buckets,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return HistogramType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }

@@ -137,39 +137,39 @@
                             <ng-template [ngIf]="!layer.visible">
                                 <mat-icon mat-list-icon>visibility_off</mat-icon>
                             </ng-template>
-                            <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_POINT
-                                        || layer.symbology.getSymbologyType() === ST.SIMPLE_POINT">
-                                <mat-icon mat-list-icon svgIcon="symbology:point"
-                                          [style.stroke-width.px]='2'
-                                          [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
-                                          [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
-                                ></mat-icon>
-                            </ng-template>
-                            <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.SIMPLE_LINE">
-                                <mat-icon mat-list-icon svgIcon="symbology:line"
-                                          [style.stroke-width.px]='2'
-                                          [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
-                                ></mat-icon>
-                            </ng-template>
-                            <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.COMPLEX_VECTOR
-                                        || layer.symbology.getSymbologyType() === ST.SIMPLE_VECTOR">
-                                <mat-icon mat-list-icon svgIcon="symbology:polygon"
-                                          [style.stroke-width.px]='2'
-                                          [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
-                                          [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
-                                ></mat-icon>
-                            </ng-template>
-                            <ng-template [ngIf]="layer.visible && layer.symbology.getSymbologyType() === ST.MAPPING_COLORIZER_RASTER
-                                        || layer.symbology.getSymbologyType() === ST.RASTER">
-                                <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
-                                    <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME"><span
-                                        class="lineThrough">access_time</span></ng-template>
-                                    <ng-template ngSwitchDefault>
-                                        <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
-                                                          [yCells]="6">
-                                        </wave-raster-icon>
+                            <ng-template [ngIf]="layer.visible">
+                                <ng-container [ngSwitch]="layer.symbology.symbologyType">
+                                    <mat-icon *ngSwitchCase="ST.COMPLEX_POINT"
+                                              mat-list-icon svgIcon="symbology:point"
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                    ></mat-icon>
+                                    <mat-icon *ngSwitchCase="ST.SIMPLE_LINE"
+                                              mat-list-icon svgIcon="symbology:line"
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                    ></mat-icon>
+                                    <mat-icon *ngSwitchCase="ST.COMPLEX_VECTOR"
+                                              mat-list-icon svgIcon="symbology:polygon"
+                                              [style.stroke-width.px]='2'
+                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                    ></mat-icon>
+                                    <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
+                                        <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
+                                            <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME">
+                                                <span class="lineThrough">access_time</span>
+                                            </ng-template>
+                                            <ng-template ngSwitchDefault>
+                                                <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
+                                                                  [yCells]="6">
+                                                </wave-raster-icon>
+                                            </ng-template>
+                                        </mat-icon>
                                     </ng-template>
-                                </mat-icon>
+                                    <mat-icon *ngSwitchDefault mat-list-icon>error_outline</mat-icon>
+                                </ng-container>
                             </ng-template>
                         </button>
 
@@ -200,42 +200,42 @@
                          class="legendary no-drag">
 
                         <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-                            <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-points>
+                            <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-point-legend>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-                            <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-points>
+                            <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-point-legend>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
-                            <wave-legendary-points fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-points>
+                            <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-point-legend>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
-                            <wave-legendary-vector fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-vector>
+                            <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-vector-legend>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
-                            <wave-legendary-vector fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-vector>
+                            <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-vector-legend>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.RASTER">
-                            <wave-legendary-raster fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-legendary-raster>
+                            <wave-legend-raster fxFlex="grow" [symbology]="layer.symbology">
+                            </wave-legend-raster>
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-                            <wave-legendary-mapping-colorizer-raster
+                            <wave-mapping-raster-legend
                                 fxFlex="grow"
                                 *ngIf="projectService.getLayerSymbologyDataStream(layer) | async"
                                 [symbology]="layer.symbology"
                                 [symbologyData]="projectService.getLayerSymbologyDataStream(layer) | async">
-                            </wave-legendary-mapping-colorizer-raster>
+                            </wave-mapping-raster-legend>
                         </ng-template>
 
                         <wave-legendary *ngSwitchDefault fxFlex="grow" [symbology]="layer.symbology">
@@ -248,7 +248,7 @@
                     </div>
 
                     <div *ngIf="layer.operator.operatorType.toString()==='GDAL Source' && !!layer.operator.operatorTypeParameterOptions">
-                        <wave-layer-list-workflow-parameter-slider [layer]="layer" parameterName="channel">
+                        <wave-layer-list-workflow-parameter-slider class="legendary no-drag" [layer]="layer" parameterName="channel">
 
                         </wave-layer-list-workflow-parameter-slider>
                     </div>

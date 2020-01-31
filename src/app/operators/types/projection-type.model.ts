@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 import {Projection, Projections} from '../projection.model';
 
@@ -80,4 +79,7 @@ export class ProjectionType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return ProjectionType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

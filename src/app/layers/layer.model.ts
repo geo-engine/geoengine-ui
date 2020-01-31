@@ -2,10 +2,10 @@ import {Observable, Observer} from 'rxjs';
 
 import {Operator, OperatorDict} from '../operators/operator.model';
 import {
+    AbstractSymbology,
     AbstractVectorSymbology,
     MappingColorizerRasterSymbology,
     RasterSymbology,
-    AbstractSymbology,
     SymbologyDict,
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -208,7 +208,6 @@ export abstract class Layer<S extends AbstractSymbology> {
      */
     _changeUnderlyingData(data: LayerChanges<S>): LayerChanges<S> {
 
-        console.log('Layer', '_changeUnderlyingData', data);
         const validChanges: LayerChanges<S> = {};
 
         if (data.name && data.name !== this._name) {
@@ -298,9 +297,7 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
         const clustered = (typeOptions && typeOptions.clustered)
             && typeOptions.clustered
-            // || dict.symbology instanceof ClusteredPointSymbology //FIXME: where is this needed?
             || false;
-        // console.log('VectorLayer', 'fromDict', clustered, dict);
 
         return new VectorLayer({
             name: dict.name,
@@ -316,7 +313,6 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     constructor(config: VectorLayerConfig<S>) {
         super(config);
         this.clustered = !!config.clustered;
-        // console.log('VectorLayer', config);
     }
 
     getLayerType(): LayerType {
@@ -336,7 +332,6 @@ export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
     static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         const symbology = AbstractSymbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
-        // console.log("RasterLayer.fromDict()", dict, symbology);
 
         return new RasterLayer({
             name: dict.name,

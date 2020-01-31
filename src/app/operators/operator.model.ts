@@ -8,10 +8,7 @@ import {DataType, DataTypes} from './datatype.model';
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from './operator-type.model';
 import {OperatorTypeFactory} from './types/type-factory.service';
 import {ProjectionType} from './types/projection-type.model';
-import {
-    OperatorTypeParameterOptions,
-    OperatorTypeParameterOptionsDict
-} from './operator-type-parameter-options.model';
+import {OperatorTypeParameterOptions, OperatorTypeParameterOptionsConfig} from './operator-type-parameter-options.model';
 import {OperatorTypeParameterOptionsFactory} from './parameter-options/type-parameter-options-factory.service';
 
 type OperatorId = number;
@@ -34,9 +31,6 @@ interface OperatorConfig {
     polygonSources?: ImmutableList<Operator> | Array<Operator>;
 }
 
-/**
- * OperatorCloneOptions
- */
 interface OperatorCloneOptions {
     operatorType?: OperatorType;
     operatorTypeParameterOptions?: OperatorTypeParameterOptions;
@@ -49,7 +43,7 @@ interface OperatorCloneOptions {
 export interface OperatorDict {
     id: number;
     operatorType: OperatorTypeDict;
-    operatorTypeParameterOptions: OperatorTypeParameterOptionsDict;
+    operatorTypeParameterOptions: OperatorTypeParameterOptionsConfig;
     resultType: string;
     projection: string;
     attributes: Array<string>;
@@ -127,8 +121,7 @@ export class Operator {
         const operator = new Operator({
             operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
             operatorTypeParameterOptions: operatorDict.operatorTypeParameterOptions ?
-                OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions)
-                : OperatorTypeParameterOptions.empty(),
+                OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions) : undefined,
             resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
             attributes: ImmutableList(operatorDict.attributes),
@@ -214,7 +207,7 @@ export class Operator {
         if (config.operatorTypeParameterOptions) {
             this._operatorTypeParameterOptions = config.operatorTypeParameterOptions;
         } else {
-            this._operatorTypeParameterOptions = OperatorTypeParameterOptions.empty(); // TODO: handle operators without parameters?
+            this._operatorTypeParameterOptions = undefined; // TODO: handle operators without parameters?
         }
 
         const returnChecked = (source: ImmutableList<Operator> | Array<Operator>,
@@ -261,7 +254,7 @@ export class Operator {
         return this._operatorType;
     }
 
-    get operatorTypeParameterOptions(): OperatorTypeParameterOptions {
+    get operatorTypeParameterOptions(): OperatorTypeParameterOptions | undefined {
         return this._operatorTypeParameterOptions;
     }
 
@@ -412,22 +405,22 @@ export class Operator {
 
     toDict(): OperatorDict {
       const dict: OperatorDict = {
-        id: this._id,
-        resultType: this._resultType.getCode(),
-        operatorType: this._operatorType.toDict(),
-        operatorTypeParameterOptions: this._operatorTypeParameterOptions.toDict(),
-        projection: this._projection.getCode(),
-        attributes: this._attributes.toArray(),
-        dataTypes: this._dataTypes.map(
-            (datatype, attribute) => [attribute, datatype.getCode()]
-        ).toArray() as Array<[string, string]>,
-        units: this._units.map(
-            (unit, attribute) => [attribute, unit.toDict()]
-        ).toArray() as Array<[string, UnitDict]>,
-        rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
-        pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
-        lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
-        polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
+          id: this._id,
+          resultType: this._resultType.getCode(),
+          operatorType: this._operatorType.toDict(),
+          operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
+          projection: this._projection.getCode(),
+          attributes: this._attributes.toArray(),
+          dataTypes: this._dataTypes.map(
+              (datatype, attribute) => [attribute, datatype.getCode()]
+          ).toArray() as Array<[string, string]>,
+          units: this._units.map(
+              (unit, attribute) => [attribute, unit.toDict()]
+          ).toArray() as Array<[string, UnitDict]>,
+          rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
+          pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
+          lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
+          polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
       };
 
       return dict;
@@ -469,7 +462,12 @@ export class Operator {
         return dict;
     }
 
-    public cloneWithOptions(options?: OperatorCloneOptions): Operator {
+    /**
+     * clone an operator with modified parameters
+     * @param options a dictionary with modifications
+     */
+
+    public cloneWithModifications(options?: OperatorCloneOptions): Operator {
         return new Operator({
             operatorType: options.operatorType ? options.operatorType : this._operatorType,
             operatorTypeParameterOptions:

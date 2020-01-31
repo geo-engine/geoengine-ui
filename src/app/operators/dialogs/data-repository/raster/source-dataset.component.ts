@@ -184,7 +184,7 @@ export class SourceDatasetComponent implements OnInit {
                     return {
                         displayValue: c.name,
                         channelNumber: i
-                    }
+                    };
                 }),
             }
         });
