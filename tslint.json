@@ -12,7 +12,9 @@
         "curly": true,
         "eofline": true,
         "forin": true,
-        "import-blacklist": [true],
+        "import-blacklist": [
+            true
+        ],
         "import-spacing": true,
         "indent": [
             true,
@@ -27,7 +29,17 @@
         "member-access": false,
         "member-ordering": [
             true,
-            "fields-first"
+            {
+                "order": [
+                    "public-static-field",
+                    "protected-static-field",
+                    "private-static-field",
+                    "public-instance-field",
+                    "protected-instance-field",
+                    "private-instance-field",
+                    "constructor"
+                ]
+            }
         ],
         "no-arg": true,
         "no-bitwise": true,
@@ -45,7 +57,10 @@
         "no-empty": false,
         "no-empty-interface": true,
         "no-eval": true,
-        "no-inferrable-types": [true, "ignore-params"],
+        "no-inferrable-types": [
+            true,
+            "ignore-params"
+        ],
         "no-shadowed-variable": true,
         "no-string-literal": false,
         "no-string-throw": true,
@@ -68,6 +83,7 @@
         ],
         "radix": true,
         "semicolon": [
+            true,
             "always"
         ],
         "triple-equals": [
