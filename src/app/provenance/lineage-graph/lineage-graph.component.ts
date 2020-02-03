@@ -1,9 +1,9 @@
-
 import {BehaviorSubject, Observable, ReplaySubject, of as observableOf} from 'rxjs';
 
 import {first, map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 
+import * as dagre from 'dagre';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
@@ -99,7 +99,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         this.projectService.getProjectStream().pipe(first()).subscribe(project => {
             let graph = new dagreD3.graphlib.Graph()
                 .setGraph({})
-                .setDefaultEdgeLabel(() => <any> { label: '' });
+                .setDefaultEdgeLabel(() => <any>{label: ''});
 
             if (this.selectedLayer) {
                 this.title$.next(`Lineage for ${this.selectedLayer.name}`);
