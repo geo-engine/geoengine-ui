@@ -40,7 +40,7 @@ export abstract class MapLayerComponent<OL extends OlLayer,
 
     get mapLayer(): OL {
         return this._mapLayer;
-    };
+    }
 
     abstract getExtent(): [number, number, number, number];
 }
@@ -211,11 +211,11 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
         if (changes.symbology) {
             this._mapLayer.setOpacity(this.layer.symbology.opacity);
-            // this._mapLayer.setHue(rasterSymbology.hue);
-            // this._mapLayer.setSaturation(rasterSymbology.saturation);
+            this._mapLayer.setHue(this.layer.symbology.hue);
+            this._mapLayer.setSaturation(this.layer.symbology.saturation);
             this.source.updateParams({
                 colors: this.layer.symbology.mappingColorizerRequestString()
-            })
+            });
         }
         if (changes.operator) {
             this.initializeOrReplaceOlSource();
@@ -263,7 +263,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
 
         this.addStateListenersToOlSource();
         this.initializeOrUpdateOlMapLayer();
-    };
+    }
 
     private createWmsQueryUrl(): string {
         return this.mappingQueryService.getWMSQueryUrl({

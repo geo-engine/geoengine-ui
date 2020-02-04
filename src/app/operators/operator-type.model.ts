@@ -1,5 +1,3 @@
-
-
 // export interface OperatorTypeConfig {} // tslint:disable-line:no-empty-interface
 
 /**
@@ -19,10 +17,14 @@ export interface OperatorTypeDict {
     operatorType: string;
 }
 
+export interface OptionsDict {
+    displayValue: string;
+}
+
 /**
  * The possible types of parameter values
  */
-export type ParameterValue = number | string;
+export type ParameterValue = number | string | OptionsDict;
 
 /**
  * The operator basic type.
@@ -36,7 +38,7 @@ export abstract class OperatorType {
         const hashCode = (str: string) => { // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
-               hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
+                hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
             }
             return hash;
         };
@@ -88,6 +90,22 @@ export abstract class OperatorType {
      */
     public getParameterValue(parameterName: string): ParameterValue | undefined {
         return undefined;
+    }
+
+    /**
+     * Get the DisplayValue of a parameter
+     * @param parameterName
+     */
+    public getParameterDisplayValue(parameterName: string): string | undefined {
+        const parameterValue = this.getParameterValue(parameterName);
+        if (!parameterValue) {
+            return undefined;
+        }
+        // parameters are either objects of 'OptionDict' i.e. they have a 'displayValue' or 'number | string'
+        if (typeof parameterValue === 'object') {
+            return parameterValue.displayValue;
+        }
+        return parameterValue.toString();
     }
 
     /**

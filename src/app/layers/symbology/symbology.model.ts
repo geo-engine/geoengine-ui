@@ -150,7 +150,6 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
     }
 
     equals(other: AbstractVectorSymbology) {
-        // console.log('AbstractVectorSymbology', 'equals', this, other);
         return other
             && this.fillColorBreakpoint.equals(other.fillColorBreakpoint)
             && this.strokeColorBreakpoint.equals(other.strokeColorBreakpoint)
@@ -184,11 +183,11 @@ export interface LineSymbologyConfig extends VectorSymbologyConfig {
 export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
 
     constructor(config: LineSymbologyConfig) {
-        super(config)
+        super(config);
     }
 
     static createSymbology(conf: LineSymbologyConfig): LineSymbology {
-        return new LineSymbology(conf)
+        return new LineSymbology(conf);
     }
 
     clone(): LineSymbology {
@@ -217,7 +216,7 @@ export class LineSymbology extends AbstractVectorSymbology implements VectorSymb
             fillRGBA: this.fillRGBA.rgbaTuple(),
             strokeRGBA: this.strokeRGBA.rgbaTuple(),
             strokeWidth: this.strokeWidth
-        }
+        };
     }
 
 }
@@ -226,7 +225,7 @@ export class LineSymbology extends AbstractVectorSymbology implements VectorSymb
 export interface ComplexVectorSymbologyConfig extends VectorSymbologyConfig {
     colorizer?: IColorizerData;
     colorAttribute?: string;
-    textAttribute?: string
+    textAttribute?: string;
     textColor?: RgbaLike;
     textStrokeWidth?: number;
 }
@@ -234,7 +233,7 @@ export interface ComplexVectorSymbologyConfig extends VectorSymbologyConfig {
 export interface ComplexVectorSymbologyDict extends VectorSymbologyDict {
     colorizer: IColorizerData;
     colorAttribute: string;
-    textAttribute: string
+    textAttribute: string;
     textColor: RgbaLike;
     textStrokeWidth: number;
 }
@@ -286,7 +285,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
 
     unSetColorAttribute() {
         this.colorAttribute = undefined;
-        this.colorizer = ColorizerData.empty()
+        this.colorizer = ColorizerData.empty();
     }
 
     equals(other: AbstractVectorSymbology) {
@@ -313,7 +312,7 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
             textAttribute: this.textAttribute,
             textColor: this.textColor.rgbaTuple(),
             textStrokeWidth: this.textStrokeWidth,
-        }
+        };
     }
 
 }
@@ -352,7 +351,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
 
     constructor(config: ComplexPointSymbologyConfig) {
         super(config);
-        // console.log('ComplexPointSymbology', config);
+
         if (config.radius) {
             this.radius = config.radius;
         }
@@ -392,7 +391,6 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
     }
 
     equals(other: AbstractVectorSymbology) {
-        // console.log('ComplexPointSymbology', 'equals', this, other);
         if (other instanceof ComplexPointSymbology) {
             return super.equals(other as AbstractComplexVectorSymbology)
             && this.radiusAttribute && other.radiusAttribute && this.radiusAttribute === other.radiusAttribute;
@@ -424,7 +422,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
             textAttribute: this.textAttribute,
             textColor: this.textColor.rgbaTuple(),
             textStrokeWidth: this.textStrokeWidth,
-        }
+        };
     }
 }
 

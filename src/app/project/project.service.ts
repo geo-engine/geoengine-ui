@@ -1,10 +1,15 @@
-
 import {
-    BehaviorSubject, Observable, Observer, ReplaySubject, Subject, Subscription,
-    of as observableOf, combineLatest as observableCombineLatest
+    BehaviorSubject,
+    combineLatest as observableCombineLatest,
+    Observable,
+    Observer,
+    of as observableOf,
+    ReplaySubject,
+    Subject,
+    Subscription
 } from 'rxjs';
 
-import {catchError, tap, first, debounceTime, switchMap, distinctUntilChanged, map} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, first, map, switchMap, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 
 import {Projection, Projections} from '../operators/projection.model';
@@ -18,12 +23,7 @@ import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Layer, LayerChanges, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
-import {
-    AbstractVectorSymbology,
-    RasterSymbology,
-    AbstractSymbology,
-    SymbologyType
-} from '../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractVectorSymbology, RasterSymbology} from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
@@ -718,7 +718,7 @@ export class ProjectService {
         if (Object.keys(validChanges).length > 0) {
             this.getLayerStream().pipe(first()).subscribe(layers => { // TODO: check if this is needed
                 this.changeProjectConfig({
-                    layers: [...layers],
+                    layers: layers,
                 });
             });
 
@@ -842,7 +842,7 @@ export class ProjectService {
         this.plotData$.set(plot, data$);
     }
 
-    private deletePlotDataStreas(plot: Plot) {
+    private deletePlotDataStreams(plot: Plot) {
         this.plotData$.get(plot).complete();
         this.plotData$.delete(plot);
 

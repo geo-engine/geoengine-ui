@@ -86,7 +86,7 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     simple_add(channel: MappingSourceRasterLayer) {
-        this.add(channel, channel.hasTransform && !this.useRawData )
+        this.add(channel, channel.hasTransform && !this.useRawData);
     }
 
     add(channel: MappingSourceRasterLayer, doTransform: boolean) {
@@ -127,7 +127,7 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     get channels(): Array<MappingSourceRasterLayer> {
-        return this.dataset.rasterLayer
+        return this.dataset.rasterLayer;
     }
 
     get channelDataSource(): ChannelDataSource {
@@ -171,14 +171,17 @@ export class SourceDatasetComponent implements OnInit {
         }
 
         const operatorType = new GdalSourceType({
-            channel: channel.id,
+            channelConfig: {
+                channelNumber: channel.id,
+                displayValue: channel.name,
+            },
             sourcename: this.dataset.source,
             transform: doTransform, // TODO: user selectable transform?
         });
 
         const operatorParameterOptions = new GdalSourceParameterOptions({
             operatorType: operatorType.toString(),
-            channel: {
+            channelConfig: {
                 kind: ParameterOptionType.DICT_ARRAY,
                 options: this.channels.map((c, i) => {
                     return {

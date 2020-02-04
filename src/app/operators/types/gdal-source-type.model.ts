@@ -1,18 +1,19 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface GdalSourceTypeConfig {
-    channel: number;
+    channel?: number; // required for old configs
+    channelConfig: GdalSourceChannelOptions;
     sourcename: string;
     transform: boolean;
 }
 
-export interface GdalSourceOptionsChannel {
+export interface GdalSourceChannelOptions {
     displayValue: string;
     channelNumber: number;
 }
 
 export interface GdalSourceTypeCloneOptions {
-    channel?: GdalSourceOptionsChannel;
+    channelConfig: GdalSourceChannelOptions;
 }
 
 interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
@@ -21,8 +22,8 @@ interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
     transform: boolean;
 }
 
-export interface GdalSourceTypeDict extends OperatorTypeDict  {
-    channel: number;
+export interface GdalSourceTypeDict extends OperatorTypeDict {
+    channelConfig: GdalSourceChannelOptions;
     sourcename: string;
     transform: boolean;
 }
@@ -39,7 +40,7 @@ export class GdalSourceType extends OperatorType {
     static get ICON_URL(): string { return GdalSourceType._ICON_URL; }
     static get NAME(): string { return GdalSourceType._NAME; }
 
-    private channel: number;
+    private channelConfig: GdalSourceChannelOptions;
     private sourcename: string;
     private transform: boolean;
 
@@ -49,7 +50,8 @@ export class GdalSourceType extends OperatorType {
 
     constructor(config: GdalSourceTypeConfig) {
         super();
-        this.channel = config.channel;
+        this.channelConfig = (config.channelConfig) ?
+            config.channelConfig : {displayValue: 'channel number ' + config.channel, channelNumber: config.channel}; // convert old configs
         this.sourcename = config.sourcename;
         this.transform = config.transform;
     }
@@ -68,23 +70,25 @@ export class GdalSourceType extends OperatorType {
 
     getParametersAsStrings(): Array<[string, string]> {
         return [
-            ['channel', this.channel.toString()],
+            ['channelConfig', this.channelConfig.displayValue.toString()],
             ['sourcename', this.sourcename.toString()],
             ['transform', this.transform.toString()],
         ];
     }
 
-    getParameterValue(parameterName: string): string | number | undefined {
+    getParameterValue(parameterName: string): GdalSourceChannelOptions | undefined {
         switch (parameterName) {
-            case 'channel': return this.channel;
-            default: return undefined;
+            case 'channelConfig':
+                return this.channelConfig;
+            default:
+                return undefined;
         }
     }
 
     toMappingDict(): GdalSourceTypeMappingDict {
         return {
             sourcename: this.sourcename,
-            channel: this.channel,
+            channel: this.channelConfig.channelNumber,
             transform: this.transform,
         };
     }
@@ -93,17 +97,17 @@ export class GdalSourceType extends OperatorType {
         return {
             operatorType: GdalSourceType.TYPE,
             sourcename: this.sourcename,
-            channel: this.channel,
+            channelConfig: this.channelConfig,
             transform: this.transform,
         };
     }
 
     cloneWithModifications(options?: GdalSourceTypeCloneOptions): OperatorType {
         return new GdalSourceType({
-            channel: options && options.channel ? options.channel.channelNumber : this.channel,
+            channelConfig: options && options.channelConfig ? options.channelConfig : this.channelConfig,
             sourcename: this.sourcename,
             transform: this.transform,
-        })
+        });
     }
 
 }

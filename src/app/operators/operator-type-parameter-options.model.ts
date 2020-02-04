@@ -1,3 +1,5 @@
+import {OptionsDict} from './operator-type.model';
+
 export type ParameterName = string;
 
 export const enum ParameterOptionType {
@@ -24,13 +26,9 @@ export interface StringParameterArrayConfig {
 
 export interface NumberParameterRangeConfig {
     kind: ParameterOptionType.NUMBER_RANGE;
-    start: number,
-    stop: number,
-    step?: number
-}
-
-export interface OptionsDict {
-    displayValue: string;
+    start: number;
+    stop: number;
+    step?: number;
 }
 
 export interface DictParameterArrayConfig<T extends OptionsDict> {
@@ -45,20 +43,53 @@ export type ParameterContainerType =
     | StringParameterArray
     | DictParameterArray<OptionsDict>;
 
+export enum TickType {
+    DISCRETE,
+    CONTINUOUS
+}
+
 export abstract class AbstractParameterContainer<T> {
 
     abstract get parameterType(): ParameterOptionType;
 
-    public getOptionCount(): number {
-        return this.listOfOptions.length;
+    abstract get tickType(): TickType;
+
+    abstract getDisplayValueForTick(tick: number): string | undefined;
+
+    containsValue(value: T): boolean {
+        return !!(this.getTickForValue(value));
     }
 
-    abstract get listOfOptions(): Array<T>;
+    abstract getValueForTick(tick: number): T | undefined;
 
-    abstract get listOfDisplayValues(): Array<string>;
+    abstract getTickForValue(value: T): number | undefined;
+
+    isValidTick(tick: number): boolean {
+        const inRange = tick >= this.firstTick && this.lastTick >= tick;
+
+        if (!inRange) {
+            return false;
+        }
+        if (this.tickType === TickType.DISCRETE) {
+            return Number.isInteger(tick);
+        }
+        return true;
+    }
+
+    abstract get firstTick(): number;
+
+    abstract get lastTick(): number;
+
+    get tickStepSize(): number {
+        return 1;
+    }
+
+    hasTicks() {
+        return this.firstTick < this.lastTick;
+    }
 
     static getEmptyOption(): EmptyParameterContainer {
-        return _emptyOption;
+        return EMPTY_OPTION;
     }
 }
 
@@ -68,21 +99,37 @@ export class EmptyParameterContainer extends AbstractParameterContainer<number |
         super();
     }
 
-    get listOfDisplayValues(): Array<string> {
-        return [];
-    }
-
-    get listOfOptions(): Array<number | string> {
-        return [];
-    }
-
     get parameterType(): ParameterOptionType {
         return ParameterOptionType.EMPTY;
     }
 
+    get firstTick(): number {
+        return 0;
+    }
+
+    getDisplayValueForTick(tick: number): string | undefined {
+        return undefined;
+    }
+
+    getTickForValue(value: number): number | undefined {
+        return undefined;
+    }
+
+    getValueForTick(tick: number): number | string | undefined {
+        return undefined;
+    }
+
+    get lastTick(): number {
+        return 0;
+    }
+
+    get tickType(): TickType {
+        return TickType.DISCRETE;
+    }
+
 }
 
-const _emptyOption = new EmptyParameterContainer();
+const EMPTY_OPTION = new EmptyParameterContainer();
 
 export class NumberParameterArray extends AbstractParameterContainer<number> {
     options: Array<number>;
@@ -107,13 +154,37 @@ export class NumberParameterArray extends AbstractParameterContainer<number> {
         };
     }
 
-    get listOfDisplayValues(): Array<string> {
-        return this.options.map(x => x.toString());
+    get firstTick(): number {
+        return 0;
     }
 
-    get listOfOptions(): Array<number> {
-        return this.options;
+    getDisplayValueForTick(tick: number): string | undefined {
+        return this.getValueForTick(tick).toString();
     }
+
+    getTickForValue(value: number): number | undefined {
+        const findIndex = this.options.findIndex(x => x === value);
+        if (findIndex < 0) {
+            return undefined;
+        }
+        return findIndex;
+    }
+
+    getValueForTick(tick: number): number | undefined {
+        if (!this.isValidTick(tick)) {
+            return undefined;
+        }
+        return this.options[tick];
+    }
+
+    get lastTick(): number {
+        return this.options.length - 1;
+    }
+
+    get tickType(): TickType {
+        return TickType.DISCRETE;
+    }
+
 }
 
 export class StringParameterArray extends AbstractParameterContainer<string> {
@@ -132,21 +203,42 @@ export class StringParameterArray extends AbstractParameterContainer<string> {
         return new StringParameterArray(dict);
     }
 
-    get listOfDisplayValues(): Array<string> {
-        return this.options.map(x => x.toString());
+    get firstTick(): number {
+        return 0;
     }
 
-    get listOfOptions(): Array<string> {
-        return this.options;
+    getDisplayValueForTick(tick: number): string | undefined {
+        return this.getValueForTick(tick).toString();
+    }
+
+    getTickForValue(value: string): number | undefined {
+        const findIndex = this.options.findIndex(x => x === value);
+        if (findIndex < 0) {
+            return undefined;
+        }
+        return findIndex;
+    }
+
+    getValueForTick(tick: number): string | undefined {
+        if (!this.isValidTick(tick)) {
+            return undefined;
+        }
+        return this.options[tick];
+    }
+
+    get lastTick(): number {
+        return this.options.length - 1;
+    }
+
+    get tickType(): TickType {
+        return TickType.DISCRETE;
     }
 }
 
 export class NumberParameterRange extends AbstractParameterContainer<number> {
     start: number;
     stop: number;
-    step = 1;
-
-    _array: Array<number>;
+    step = 1; // TODO: handle step sizes
 
     constructor(config: NumberParameterRangeConfig) {
         super();
@@ -172,28 +264,35 @@ export class NumberParameterRange extends AbstractParameterContainer<number> {
         };
     }
 
-    private generateArray() {
-        if ( !this._array ) {
-            this._array = [];
-            for (let i = this.start; i < this.stop; i += this.step) {
-                this._array.push(i);
-            }
+    get firstTick(): number {
+        return this.start;
+    }
+
+    getDisplayValueForTick(tick: number): string | undefined {
+        return this.getValueForTick(tick).toString();
+    }
+
+    getTickForValue(value: number): number | undefined {
+        return this.getValueForTick(value);
+    }
+
+    getValueForTick(tick: number): number | undefined {
+        if (!this.isValidTick(tick)) {
+            return undefined;
         }
+        return tick;
     }
 
-    get listOfDisplayValues(): Array<string> {
-        this.generateArray();
-        return this._array.map(x => x.toString());
+    get lastTick(): number {
+        return this.stop;
     }
 
-    public getOptionCount(): number {
-        this.generateArray();
-        return this._array.length;
+    get tickStepSize(): number {
+        return this.step;
     }
 
-    get listOfOptions(): Array<number> {
-        this.generateArray();
-        return this._array;
+    get tickType(): TickType {
+        return TickType.CONTINUOUS;
     }
 }
 
@@ -220,12 +319,35 @@ export class DictParameterArray<T extends OptionsDict> extends AbstractParameter
         };
     }
 
-    get listOfDisplayValues(): Array<string> {
-        return this.options.map(o => o.displayValue);
+    get firstTick(): number {
+        return 0;
     }
 
-    get listOfOptions(): Array<T> {
-        return this.options;
+    getDisplayValueForTick(tick: number): string | undefined {
+        return this.getValueForTick(tick).displayValue.toString();
+    }
+
+    getTickForValue(value: T): number | undefined {
+        const findIndex = this.options.findIndex(x => x.displayValue === value.displayValue); // TODO: review if displayValue is distinct
+        if (findIndex < 0) {
+            return undefined;
+        }
+        return findIndex;
+    }
+
+    getValueForTick(tick: number): T | undefined {
+        if (!this.isValidTick(tick)) {
+            return undefined;
+        }
+        return this.options[tick];
+    }
+
+    get lastTick(): number {
+        return this.options.length - 1;
+    }
+
+    get tickType(): TickType {
+        return TickType.DISCRETE;
     }
 }
 
@@ -254,7 +376,7 @@ export abstract class OperatorTypeParameterOptions {
 
     public getParameterOption(parameterName: ParameterName): ParameterContainerType {
         const res: [ParameterName, ParameterContainerType] = this.getParameterOptions().find(
-            ([pN, pO]) => pN === parameterName
+            ([pN, _]) => pN === parameterName
         );
         if (!res) {
             return AbstractParameterContainer.getEmptyOption();

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
-import {ParameterContainerType, ParameterName} from '../../operator-type-parameter-options.model';
+import {AbstractParameterContainer, ParameterContainerType, ParameterName} from '../../operator-type-parameter-options.model';
 import {ProjectService} from '../../../project/project.service';
 import {ParameterValue} from '../../operator-type.model';
 
@@ -15,6 +15,7 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
 
     @Input() layer: Layer<L>;
     @Input() parameterName: ParameterName;
+    @Input() parameterDisplayName = undefined;
 
     sliderRangeStart = 0;
     sliderRangeStop = 0;
@@ -32,6 +33,7 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
     ngOnChanges(changes: SimpleChanges): void {
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
+                case 'parameterDisplayName':
                 case 'parameterName': {
                     this.changeDetectorRef.markForCheck();
                     break;
@@ -47,8 +49,16 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
         }
     }
 
+    get parameterDisplayString(): string {
+        return (this.parameterDisplayName) ? this.parameterDisplayName : this.parameterName;
+    }
+
+    get parameterDisplayValue(): string {
+        return this.parameterOptionContainer.getDisplayValueForTick(this.sliderValue);
+    }
+
     get hasParameterOptions(): boolean {
-        return !!this.parameterOptionContainer && this.parameterOptionContainer.getOptionCount() > 1;
+        return !!this.parameterOptionContainer && this.parameterOptionContainer.hasTicks();
     }
 
     updateParameterOptions() {
@@ -57,22 +67,31 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
             const currentParameterOptionContainer = this.layer.operator.operatorTypeParameterOptions.getParameterOption(this.parameterName);
             this.parameterValue = currentParameterValue;
             this.parameterOptionContainer = currentParameterOptionContainer;
-            this.sliderRangeStop =
-                (this.parameterOptionContainer) ? this.parameterOptionContainer.getOptionCount() - 1 : this.sliderRangeStart;
+
+            this.sliderRangeStart = this.parameterOptionContainer.firstTick;
+            this.sliderRangeStop = this.parameterOptionContainer.lastTick;
+            this.sliderValue = (this.parameterOptionContainer as AbstractParameterContainer<ParameterValue>)
+                .getTickForValue(this.parameterValue);
         }
     }
 
     update(event: any) {
         const operatorTypeOptions = {};
-        operatorTypeOptions[this.parameterName] = this.parameterOptionContainer.listOfOptions[this.sliderValue];
+        operatorTypeOptions[this.parameterName] = this.parameterOptionContainer.getValueForTick(this.sliderValue);
         const operatorTypeClone = this.layer.operator.operatorType.cloneWithModifications(operatorTypeOptions);
         const operatorClone = this.layer.operator.cloneWithModifications({
             operatorType: operatorTypeClone
         });
-        this.projectService.changeLayer(this.layer, {
-            operator: operatorClone,
-            name: this.parameterOptionContainer.listOfDisplayValues[this.sliderValue] // TODO: find a nicer way to do this
-        });
+
+        const layerCloneOptions = {
+            operator: operatorClone
+        };
+        // check if layer name is identical to the current parameter display value. If true change the layer name to match the new parameter
+        if (this.layer.name === this.layer.operator.operatorType.getParameterDisplayValue(this.parameterName)) {
+            layerCloneOptions['name'] = this.parameterOptionContainer.getDisplayValueForTick(this.sliderValue);
+        }
+
+        this.projectService.changeLayer(this.layer, layerCloneOptions);
     }
 
     ngOnInit(): void {

@@ -3,15 +3,15 @@ import {
     DictParameterArrayConfig,
     OperatorTypeParameterOptions,
     OperatorTypeParameterOptionsConfig,
-    OptionsDict,
     ParameterName,
     ParameterOptionType
 } from '../operator-type-parameter-options.model';
 
 import {GdalSourceType} from '../types/gdal-source-type.model';
+import {OptionsDict} from '../operator-type.model';
 
 export interface GdalSourceParameterOptionsConfig extends OperatorTypeParameterOptionsConfig {
-    channel: DictParameterArrayConfig<GdalSourceChannelOptions>;
+    channelConfig: DictParameterArrayConfig<GdalSourceChannelOptions>;
 }
 
 export interface GdalSourceChannelOptions extends OptionsDict {
@@ -23,11 +23,11 @@ export interface GdalSourceChannelOptions extends OptionsDict {
  */
 export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
 
-    private channel: DictParameterArray<GdalSourceChannelOptions>;
+    private channelConfig: DictParameterArray<GdalSourceChannelOptions>;
 
     constructor(config: GdalSourceParameterOptionsConfig) {
         super(config);
-        this.channel = DictParameterArray.fromDict<GdalSourceChannelOptions>(config.channel);
+        this.channelConfig = DictParameterArray.fromDict<GdalSourceChannelOptions>(config.channelConfig);
     }
 
     static fromDict(dict: GdalSourceParameterOptionsConfig) {
@@ -36,20 +36,20 @@ export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
 
     getParameterOptions(): Array<[ParameterName, DictParameterArray<OptionsDict>]> {
         return [
-            ['channel', this.channel]
+            ['channelConfig', this.channelConfig]
         ];
     }
 
     toDict(): GdalSourceParameterOptionsConfig {
         return {
             operatorType: GdalSourceType.TYPE,
-            channel: this.channel.toDict(),
+            channelConfig: this.channelConfig.toDict(),
         };
     }
 
     getParametersTypes(): Array<[ParameterName, ParameterOptionType]> {
         return [
-            ['channel', this.channel.parameterType]
+            ['channelConfig', this.channelConfig.parameterType]
         ];
     }
 

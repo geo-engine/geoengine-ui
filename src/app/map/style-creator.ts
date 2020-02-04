@@ -19,8 +19,8 @@ import {
     SymbologyType
 } from '../layers/symbology/symbology.model';
 
-const emptyValuePlaceholderSymbol = '|||';
-const valueSeparatorSymbol = ':::';
+const EMPTY_VALUE_PLACEHOLDER_SYMBOL = '|||';
+const VALUE_SEPARATOR_SYMBOL = ':::';
 
 export class StyleCreator {
 
@@ -71,33 +71,23 @@ export class StyleCreator {
     }
 
     // TODO: put style and cache into wrapper class?
-
     static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
 
         return (feature: OlFeature, resolution: number) => {
 
-            // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
-
             const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
 
-            // console.log(featureColorValue, featureTextValue, featureRadiusValue);
-
             let styleKey = '';
-            styleKey += (featureColorValue ? featureColorValue.toString() : emptyValuePlaceholderSymbol);
-            styleKey += (valueSeparatorSymbol + (featureTextValue ? featureTextValue.toString() : emptyValuePlaceholderSymbol));
-
-            // console.log("ComplexVectorSymbology.getOlStyleAsFunction", "styleKey", styleKey);
+            styleKey += (featureColorValue ? featureColorValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL);
+            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureTextValue ? featureTextValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
 
             if (!styleCache[styleKey]) {
 
                 const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-                // console.log('StyleCreator', 'fromComplexVectorSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
                 const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
-
-                // console.log("ComplexVectorSymbology.getOlStyleAsFunction", colorLookup, color, radius);
 
                 const fill = new OlStyleFill({color: color});
                 const stroke = new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth});
@@ -132,30 +122,25 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            // console.log(feature, this.colorAttribute, this.textAttribute, this.radiusAttribute);
-
             const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
-            // console.log(featureColorValue, featureTextValue, featureRadiusValue);
+
 
             let styleKey = '';
-            styleKey += (featureColorValue ? featureColorValue.toString() : emptyValuePlaceholderSymbol);
-            styleKey += (valueSeparatorSymbol + (featureTextValue ? featureTextValue.toString() : emptyValuePlaceholderSymbol));
-            styleKey += (valueSeparatorSymbol + (featureRadiusValue ? featureRadiusValue.toString() : emptyValuePlaceholderSymbol));
-            // console.log('fromComplexPointSymbology', 'styleKey', styleKey);
+            styleKey += (featureColorValue ? featureColorValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL);
+            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureTextValue ? featureTextValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
+            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureRadiusValue ? featureRadiusValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
 
             if (!styleCache[styleKey]) {
 
                 const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-                // console.log('StyleCreator', 'fromComplexPointSymbology', 'colorBreakpointLookup:', colorBreakpointLookup);
                 const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
                 const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
-                // console.log('fromComplexPointSymbology', colorBreakpointLookup, color, radius);
 
                 const imageStyle = new OlStyleCircle({
-                        radius: radius,
-                        fill: new OlStyleFill({ color: color }),
+                    radius: radius,
+                    fill: new OlStyleFill({color: color}),
                         stroke: new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth }),
                     });
 

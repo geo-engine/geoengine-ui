@@ -26,7 +26,7 @@
     </mat-menu>
 
     <mat-toolbar color="primary">
-        <span fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
             <div class="only-large"></div>
 
             <div class="logo" *waveIfGfbio>
@@ -46,7 +46,7 @@
             >
                 <mat-icon>more_vert</mat-icon>
             </button>
-        </span>
+        </div>
     </mat-toolbar>
 
     <div cdkDropList class="layer-list" [style.max-height.px]="height-LayoutService.getToolbarHeightPx()"
@@ -247,8 +247,13 @@
 
                     </div>
 
-                    <div *ngIf="layer.operator.operatorType.toString()==='GDAL Source' && !!layer.operator.operatorTypeParameterOptions">
-                        <wave-layer-list-workflow-parameter-slider class="legendary no-drag" [layer]="layer" parameterName="channel">
+                    <div class="legendary no-drag"
+                         *ngIf="layer.operator.operatorType.toString()==='GDAL Source' && !!layer.operator.operatorTypeParameterOptions">
+                        <wave-layer-list-workflow-parameter-slider
+                            [layer]="layer"
+                            parameterName="channelConfig"
+                            parameterDisplayName="channel"
+                        >
 
                         </wave-layer-list-workflow-parameter-slider>
                     </div>
