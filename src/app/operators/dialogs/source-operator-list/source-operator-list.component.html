@@ -38,6 +38,7 @@
     </mat-list-item>
     <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: GbifOperatorComponent, parent: SourceOperatorListComponent})"
+        *waveIfGfbio
     >
         <img mat-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
         <h4 mat-line>Species Occurrences</h4>
@@ -47,7 +48,7 @@
     <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: DrawFeaturesComponent, parent: SourceOperatorListComponent})"
     >
-        <mat-icon mat-list-icon >create</mat-icon>
+        <mat-icon mat-list-icon>create</mat-icon>
         <h4 mat-line>Draw Features</h4>
         <p mat-line>Draw features on the map</p>
     </mat-list-item>
@@ -55,7 +56,7 @@
     <mat-list-item
         (click)="layoutService.setSidenavContentComponent({component: PolygonSelectionComponent, parent: SourceOperatorListComponent})"
     >
-        <mat-icon mat-list-icon >location_on</mat-icon>
+        <mat-icon mat-list-icon>location_on</mat-icon>
         <h4 mat-line>Country Selection</h4>
         <p mat-line>Select Country Borders</p>
     </mat-list-item>

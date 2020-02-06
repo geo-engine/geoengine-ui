@@ -158,7 +158,7 @@ import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create
 import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
-
+import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -201,6 +201,7 @@ export function configInitializer(config: Config) {
         HistogramComponent,
         HistogramOperatorComponent,
         IdessaLogoComponent,
+        IfEUMETSATDirective,
         IfGeoBonDirective,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,

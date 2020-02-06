@@ -1,4 +1,3 @@
-
 import {of as observableOf} from 'rxjs';
 
 import {catchError, tap} from 'rxjs/operators';
@@ -7,28 +6,34 @@ import * as Immutable from 'immutable';
 import {HttpClient} from '@angular/common/http';
 
 type MappingUrlType = string;
+
 interface Wms {
     VERSION: string;
     FORMAT: string;
 }
+
 interface Wfs {
     VERSION: string;
     FORMAT: string;
 }
+
 interface Wcs {
     SERVICE: string;
     VERSION: string;
 }
+
 interface DebugMode {
     WAVE: boolean;
     MAPPING: boolean;
 }
+
 interface User {
     GUEST: {
         NAME: string,
         PASSWORD: string,
     };
 }
+
 interface Delays {
     LOADING: {
         MIN: number,
@@ -38,7 +43,9 @@ interface Delays {
     STORAGE_DEBOUNCE: number;
     GUEST_LOGIN_HINT: number;
 }
-type Project = 'GFBio' | 'IDESSA' | 'GeoBon';
+
+type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon';
+
 interface Defaults {
     PROJECT: {
         NAME: string,
@@ -47,6 +54,7 @@ interface Defaults {
         PROJECTION: 'EPSG:3857' | 'EPSG:4326',
     };
 }
+
 interface Map {
     BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
     BACKGROUND_LAYER_URL: string;
@@ -55,6 +63,7 @@ interface Map {
     HOSTED_BACKGROUND_SERVICE_VERSION: string;
     REFRESH_LAYERS_ON_CHANGE: boolean;
 }
+
 interface Gfbio {
     LIFERAY_PORTAL_URL: string;
 }
@@ -260,20 +269,20 @@ export class Config {
     load(): Promise<void> {
         return this.http
             .get<ConfigStructure>(Config.CONFIG_FILE).pipe(
-            tap(
-                appConfig => {
-                    const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
+                tap(
+                    appConfig => {
+                        const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
 
-                    this.handleConfig(config);
-                },
-                () => { // error
-                    this.handleConfig(ConfigDefault.toJS());
-                }),
-            catchError(() => observableOf(undefined)), )
+                        this.handleConfig(config);
+                    },
+                    () => { // error
+                        this.handleConfig(ConfigDefault.toJS());
+                    }),
+                catchError(() => observableOf(undefined)),)
             .toPromise();
     }
 
-    private handleConfig(config: {[key: string]: any}) {
+    private handleConfig(config: { [key: string]: any }) {
         for (const key in config) {
             if (config.hasOwnProperty(key)) {
                 const value = deepFreeze(config[key]);

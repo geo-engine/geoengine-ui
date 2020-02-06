@@ -156,7 +156,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
 
         // show splash screen
-        if (this.userService.shouldShowIntroductoryPopup()) {
+        if (this.config.PROJECT === 'GFBio' && this.userService.shouldShowIntroductoryPopup()) {
             setTimeout(() => {
                 this.dialog.open(SplashDialogComponent, {});
             });
@@ -352,7 +352,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: 'GFBio' | 'IDESSA' | 'GeoBon') {
+    private setTheme(project: 'EUMETSAT' | 'GFBio' | 'GeoBon') {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];
@@ -368,7 +368,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.overlayContainer.getContainerElement().classList.add(geoBonTheme);
                 break;
             case 'GFBio':
-            case 'IDESSA':
+            case 'EUMETSAT':
             default:
                 this.elementRef.nativeElement.classList.add(defaultTheme);
                 this.overlayContainer.getContainerElement().classList.add(defaultTheme);
