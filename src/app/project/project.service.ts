@@ -728,7 +728,7 @@ export class ProjectService {
         }
     }
 
-    getLayerChangesStream(layer: Layer<AbstractSymbology>): Observable<LayerChanges<AbstractSymbology>> | undefined {
+    getLayerChangesStream(layer: Layer<AbstractSymbology>): Observable<LayerChanges<AbstractSymbology>> {
         return this.layerChanges$.get(layer);
     }
 
