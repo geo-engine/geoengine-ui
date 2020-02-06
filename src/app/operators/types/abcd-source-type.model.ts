@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {BasicColumns} from '../dialogs/baskets/csv.model';
 
 export interface ABCDSourceTypeConfig {
@@ -94,4 +93,7 @@ export class ABCDSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return ABCDSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

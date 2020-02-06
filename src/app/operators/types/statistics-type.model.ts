@@ -84,4 +84,8 @@ export class StatisticsType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return StatisticsType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

@@ -206,4 +206,8 @@ export class CsvSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return CsvSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

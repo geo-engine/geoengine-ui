@@ -51,4 +51,8 @@ export class RasterizePolygonType extends OperatorType {
             operatorType: RasterizePolygonType.TYPE,
         };
     }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return RasterizePolygonType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

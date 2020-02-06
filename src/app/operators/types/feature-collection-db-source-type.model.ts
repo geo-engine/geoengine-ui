@@ -78,4 +78,7 @@ export class FeatureCollectionDBSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return FeatureCollectionDBSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

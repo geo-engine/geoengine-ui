@@ -8,6 +8,8 @@ import {GeometryType as OlGeometryType} from 'ol/geom';
 import {Vector as OlSourceVector} from 'ol/source';
 
 import {MapContainerComponent} from './map-container/map-container.component';
+import {AbstractSymbology} from '../layers/symbology/symbology.model';
+import {Layer} from '../layers/layer.model';
 
 export interface ViewportSize {
     extent: Extent;

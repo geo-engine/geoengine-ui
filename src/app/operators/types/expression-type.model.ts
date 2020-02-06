@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
 import {DataType, DataTypes} from '../datatype.model';
@@ -90,4 +89,7 @@ export class ExpressionType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return ExpressionType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

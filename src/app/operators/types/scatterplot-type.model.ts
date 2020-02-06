@@ -125,4 +125,8 @@ export class ScatterPlotType extends OperatorType {
             inputType: this.inputType.getCode(),
         };
     }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return ScatterPlotType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

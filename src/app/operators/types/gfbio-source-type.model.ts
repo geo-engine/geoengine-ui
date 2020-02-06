@@ -99,4 +99,7 @@ export class GFBioSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return GFBioSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

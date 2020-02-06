@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit, Inject} from '@angular/core';
 
 import {Layer} from '../layer.model';
-import {Symbology} from '../symbology/symbology.model';
+import {AbstractSymbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ProjectService} from '../../project/project.service';
@@ -35,17 +35,17 @@ export class RenameLayerComponent implements OnInit {
 
     form: FormGroup;
 
-    private layer: Layer<Symbology>;
+    private layer: Layer<AbstractSymbology>;
 
     constructor(
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<RenameLayerComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<Symbology>}
+        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<AbstractSymbology>}
     ) {}
 
     ngOnInit(): void {
-        // this.layer = (this.dialogRef.config as {layer?: Layer<Symbology>}).layer;
+        // this.layer = (this.dialogRef.config as {layer?: Layer<AbstractSymbology>}).layer;
         this.layer = this.config.layer;
         this.form = this.formBuilder.group({
             layerName: [this.layer.name, Validators.required]

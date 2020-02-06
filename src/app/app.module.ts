@@ -27,10 +27,10 @@ import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/sym
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {LegendComponent} from './layers/legend/legend.component';
-import {LegendaryPointComponent} from './layers/legend/legend-point/legend-point.component';
-import {LegendaryRasterComponent} from './layers/legend/legend-raster/legend-raster.component';
-import {LegendaryMappingColorizerRasterComponent} from './layers/legend/legend-raster/legend-raster-mapping-colorizer.component';
-import {LegendaryVectorComponent} from './layers/legend/legend-vector/legend-vector.component';
+import {PointLegendComponent} from './layers/legend/legend-point/point-legend.component';
+import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
+import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
+import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {MappingQueryService} from './queries/mapping-query.service';
 import {UserService} from './users/user.service';
 import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
@@ -155,6 +155,10 @@ import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
 import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
+import {
+    LayerListWorkflowParameterSliderComponent
+} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
+
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -204,6 +208,7 @@ export function configInitializer(config: Config) {
         IfLoggedInDirective,
         LayerExportComponent,
         LayerListComponent,
+        LayerListWorkflowParameterSliderComponent,
         LayerSelectionComponent,
         ChangeProjectionComponent,
         NewProjectComponent,
@@ -224,10 +229,10 @@ export function configInitializer(config: Config) {
         TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         LayerShareComponent,
-        LegendaryMappingColorizerRasterComponent,
-        LegendaryPointComponent,
-        LegendaryRasterComponent,
-        LegendaryVectorComponent,
+        MappingRasterLegendComponent,
+        PointLegendComponent,
+        RasterLegendComponent,
+        VectorLegendComponent,
         LegendComponent,
         LineageGraphComponent,
         LoadProjectComponent,

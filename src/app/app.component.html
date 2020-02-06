@@ -17,40 +17,24 @@
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">
                     <wave-ol-point-layer
                         [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-point-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.LINES">
                     <wave-ol-line-layer
                         [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-line-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">
                     <wave-ol-polygon-layer
                         [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-polygon-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">
                     <wave-ol-raster-layer
                         [layer]="layer"
-                        [visible]="layer.visible"
-                        [symbology]="layer.symbology"
-                        [projection]="projectService.getProjectionStream() | async"
-                        [time]="projectService.getTimeStream() | async"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-raster-layer>
                 </ng-template>

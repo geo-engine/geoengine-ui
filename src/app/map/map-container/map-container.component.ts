@@ -48,7 +48,7 @@ import {SelectEvent as OlInteractionSelectEvent} from 'ol/interaction/Select';
 import {MapLayerComponent} from '../map-layer.component';
 
 import {Projection, Projections} from '../../operators/projection.model';
-import {AbstractVectorSymbology, Symbology} from '../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, AbstractSymbology} from '../../layers/symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
 import {LayerService} from '../../layers/layer.service';
 import {ProjectService} from '../../project/project.service';
@@ -58,7 +58,7 @@ import {StyleCreator} from '../style-creator';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 
-type MapLayer = MapLayerComponent<OlLayer, OlSource, Symbology, Layer<Symbology>>;
+type MapLayer = MapLayerComponent<OlLayer, OlSource, AbstractSymbology, Layer<AbstractSymbology>>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 const MIN_ZOOM_LEVEL = 0;
@@ -403,7 +403,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private redrawLayers(projection: Projection) {
-        this.mapLayers = this.mapLayersRaw.filter(layer => layer.visible);
+        this.mapLayers = this.mapLayersRaw.filter(mapLayer => mapLayer.layer.visible);
 
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();

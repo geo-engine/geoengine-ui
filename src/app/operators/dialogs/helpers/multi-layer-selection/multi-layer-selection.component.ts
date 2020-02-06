@@ -4,7 +4,7 @@ import {first} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {Symbology} from '../../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {LayerService} from '../../../../layers/layer.service';
@@ -54,7 +54,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> | Observable<Array<Layer<Symbology>>> = this.projectService.getLayerStream();
+    @Input() layers: Array<Layer<AbstractSymbology>> | Observable<Array<Layer<AbstractSymbology>>> = this.projectService.getLayerStream();
 
     /**
      * The minimum number of elements to select.
@@ -83,10 +83,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     @Input() title: string = undefined;
 
     onTouched: () => void;
-    onChange: (_: Array<Layer<Symbology>>) => void = undefined;
+    onChange: (_: Array<Layer<AbstractSymbology>>) => void = undefined;
 
-    filteredLayers: Subject<Array<Layer<Symbology>>> = new ReplaySubject(1);
-    selectedLayers = new BehaviorSubject<Array<Layer<Symbology>>>([]);
+    filteredLayers: Subject<Array<Layer<AbstractSymbology>>> = new ReplaySubject(1);
+    selectedLayers = new BehaviorSubject<Array<Layer<AbstractSymbology>>>([]);
 
     private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
@@ -124,14 +124,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     if (this.layers instanceof Observable) {
                         this.layers.pipe(first()).subscribe(layers => {
                             this.filteredLayers.next(
-                                layers.filter((layer: Layer<Symbology>) => {
+                                layers.filter((layer: Layer<AbstractSymbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;
                                 })
                             );
                         });
                     } else if (this.layers instanceof Array) {
                         this.filteredLayers.next(
-                            this.layers.filter((layer: Layer<Symbology>) => {
+                            this.layers.filter((layer: Layer<AbstractSymbology>) => {
                                 return this.types.indexOf(layer.operator.resultType) >= 0;
                             })
                         );
@@ -180,7 +180,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         this.selectionSubscription.unsubscribe();
     }
 
-    updateLayer(index: number, layer: Layer<Symbology>) {
+    updateLayer(index: number, layer: Layer<AbstractSymbology>) {
         this.selectedLayers.pipe(first()).subscribe(selectedLayers => {
             const newSelectedLayers = [...selectedLayers];
             newSelectedLayers[index] = layer;
@@ -217,7 +217,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
     }
 
-    writeValue(layers: Array<Layer<Symbology>>): void {
+    writeValue(layers: Array<Layer<AbstractSymbology>>): void {
         if (layers) {
             this.selectedLayers.next(layers);
         } else if (this.onChange) {
@@ -225,7 +225,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
     }
 
-    registerOnChange(fn: (_: Array<Layer<Symbology>>) => void): void {
+    registerOnChange(fn: (_: Array<Layer<AbstractSymbology>>) => void): void {
         this.onChange = fn;
 
         this.onChange(this.selectedLayers.getValue());
@@ -240,9 +240,9 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         return LetterNumberConverter.toLetters(i + 1);
     }
 
-    private layersForInitialSelection(layers: Array<Layer<Symbology>>,
-                                      blacklist: Array<Layer<Symbology>>,
-                                      amount: number): Array<Layer<Symbology>> {
+    private layersForInitialSelection(layers: Array<Layer<AbstractSymbology>>,
+                                      blacklist: Array<Layer<AbstractSymbology>>,
+                                      amount: number): Array<Layer<AbstractSymbology>> {
         if (layers.length === 0) {
             return [];
         }
