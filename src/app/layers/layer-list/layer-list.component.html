@@ -197,7 +197,7 @@
                     <div *ngIf="layer.expanded" [ngSwitch]="layer.symbology.getSymbologyType()"
                          fxLayoutAlign="space-between stretch"
                          fxLayout="row"
-                         class="legendary no-drag">
+                         class="legend no-drag">
 
                         <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
                             <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
@@ -247,8 +247,8 @@
 
                     </div>
 
-                    <div class="legendary no-drag"
-                         *ngIf="layer.operator.operatorType.toString()==='GDAL Source' && !!layer.operator.operatorTypeParameterOptions">
+                    <div class="legend no-drag"
+                         *ngIf="showChannelParameterSlider(layer)">
                         <wave-layer-list-workflow-parameter-slider
                             [layer]="layer"
                             parameterName="channelConfig"

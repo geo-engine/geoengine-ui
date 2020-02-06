@@ -19,9 +19,6 @@ import {
     SymbologyType
 } from '../layers/symbology/symbology.model';
 
-const EMPTY_VALUE_PLACEHOLDER_SYMBOL = '|||';
-const VALUE_SEPARATOR_SYMBOL = ':::';
-
 export class StyleCreator {
 
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
@@ -70,7 +67,15 @@ export class StyleCreator {
             });
     }
 
-    // TODO: put style and cache into wrapper class?
+    static buildStyleKey(
+        featureColorValue: string | number | undefined,
+        featureTextValue: string | number | undefined,
+        featureRadiusValue: string | number |undefined
+    ): string {
+        const VALUE_SEPARATOR_SYMBOL = ':::';
+        return `${featureColorValue}${VALUE_SEPARATOR_SYMBOL}${featureTextValue}${VALUE_SEPARATOR_SYMBOL}${featureRadiusValue}`;
+    }
+
     static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
@@ -80,9 +85,7 @@ export class StyleCreator {
             const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
 
-            let styleKey = '';
-            styleKey += (featureColorValue ? featureColorValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL);
-            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureTextValue ? featureTextValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
+            const styleKey = StyleCreator.buildStyleKey(featureColorValue, featureTextValue, undefined);
 
             if (!styleCache[styleKey]) {
 
@@ -126,11 +129,7 @@ export class StyleCreator {
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
 
-
-            let styleKey = '';
-            styleKey += (featureColorValue ? featureColorValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL);
-            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureTextValue ? featureTextValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
-            styleKey += (VALUE_SEPARATOR_SYMBOL + (featureRadiusValue ? featureRadiusValue.toString() : EMPTY_VALUE_PLACEHOLDER_SYMBOL));
+            const styleKey = StyleCreator.buildStyleKey(featureColorValue, featureTextValue, featureRadiusValue);
 
             if (!styleCache[styleKey]) {
 

@@ -65,9 +65,8 @@ export abstract class AbstractParameterContainer<T> {
     abstract getTickForValue(value: T): number | undefined;
 
     isValidTick(tick: number): boolean {
-        const inRange = tick >= this.firstTick && this.lastTick >= tick;
 
-        if (!inRange) {
+        if (tick < this.firstTick || tick > this.lastTick) {
             return false;
         }
         if (this.tickType === TickType.DISCRETE) {
@@ -238,7 +237,7 @@ export class StringParameterArray extends AbstractParameterContainer<string> {
 export class NumberParameterRange extends AbstractParameterContainer<number> {
     start: number;
     stop: number;
-    step = 1; // TODO: handle step sizes
+    step = 1;
 
     constructor(config: NumberParameterRangeConfig) {
         super();

@@ -472,6 +472,7 @@ export class ProjectService {
             }
         });
 
+        this.layerChanges$.get(layer).complete();
         this.layerChanges$.delete(layer);
 
         return subject.asObservable();
@@ -714,9 +715,9 @@ export class ProjectService {
             this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSybscription);
         }
 
-        // check if there are valid changes
+        // check if there are valid changes and update the project
         if (Object.keys(validChanges).length > 0) {
-            this.getLayerStream().pipe(first()).subscribe(layers => { // TODO: check if this is needed
+            this.getLayerStream().pipe(first()).subscribe(layers => {
                 this.changeProjectConfig({
                     layers: layers,
                 });
@@ -1080,6 +1081,9 @@ export class ProjectService {
     }
 
     private createLayerChangesStream(layer: Layer<AbstractSymbology>) {
+        if (this.layerChanges$.get(layer)) {
+            throw new Error('Layer changes stream already registered');
+        }
         this.layerChanges$.set(layer, new ReplaySubject<LayerChanges<AbstractSymbology>>(1));
     }
 }

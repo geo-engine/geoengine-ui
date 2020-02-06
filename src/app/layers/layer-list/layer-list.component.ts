@@ -93,4 +93,8 @@ export class LayerListComponent implements OnDestroy {
     toggleLayer(layer: Layer<AbstractSymbology>) {
         this.projectService.toggleSymbology(layer);
     }
+
+    showChannelParameterSlider(layer: Layer<AbstractSymbology>): boolean {
+        return layer.operator.operatorType.toString() === 'GDAL Source' && !!layer.operator.operatorTypeParameterOptions;
+    }
 }
