@@ -57,17 +57,13 @@ export abstract class AbstractSymbology implements ISymbology {
             case SymbologyType[SymbologyType.RASTER]:
                 const rasterSymbologyDict = dict as RasterSymbologyDict;
                 return new RasterSymbology({
-                    hue: rasterSymbologyDict.hue,
                     opacity: rasterSymbologyDict.opacity,
-                    saturation: rasterSymbologyDict.saturation,
                     unit: Unit.fromDict(rasterSymbologyDict.unit),
                 });
             case SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER]:
                 const mappingColorizerRasterSymbologyDict = dict as RasterSymbologyDict;
                 return new MappingColorizerRasterSymbology({
-                    hue: mappingColorizerRasterSymbologyDict.hue,
                     opacity: mappingColorizerRasterSymbologyDict.opacity,
-                    saturation: mappingColorizerRasterSymbologyDict.saturation,
                     unit: Unit.fromDict(mappingColorizerRasterSymbologyDict.unit),
                     colorizer: ColorizerData.fromDict(mappingColorizerRasterSymbologyDict.colorizer)
                 });
@@ -428,15 +424,11 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
 
 export interface IRasterSymbology extends ISymbology {
     opacity?: number;
-    hue?: number;
-    saturation?: number;
     unit: Unit;
 }
 
 export interface RasterSymbologyDict extends SymbologyDict {
     opacity: number;
-    hue: number;
-    saturation: number;
     unit: UnitDict;
     colorizer?: IColorizerData;
     noDataColor?: ColorBreakpointDict;
@@ -445,16 +437,12 @@ export interface RasterSymbologyDict extends SymbologyDict {
 
 export class RasterSymbology extends AbstractSymbology implements IRasterSymbology {
     opacity = 1;
-    hue = 0;
-    saturation = 0;
     unit: Unit;
 
     constructor(config: IRasterSymbology) {
         super();
         this.unit = config.unit;
         if (config.opacity) { this.opacity = config.opacity; }
-        if (config.hue) { this.hue = config.hue; }
-        if (config.saturation) { this.saturation = config.saturation; }
     }
 
     isContinuous() {
@@ -482,9 +470,7 @@ export class RasterSymbology extends AbstractSymbology implements IRasterSymbolo
     }
 
     equals(other: RasterSymbology) {
-        return this.saturation === other.saturation
-            && this.opacity === other.opacity
-            && this.hue === other.hue
+        return this.opacity === other.opacity
             && this.unit === other.unit;
     }
 
@@ -492,8 +478,6 @@ export class RasterSymbology extends AbstractSymbology implements IRasterSymbolo
         return {
             symbologyType: SymbologyType[SymbologyType.RASTER],
             opacity: this.opacity,
-            hue: this.hue,
-            saturation: this.saturation,
             unit: this.unit.toDict(),
         };
     }
@@ -552,8 +536,6 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
         return {
             symbologyType: SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER],
             opacity: this.opacity,
-            hue: this.hue,
-            saturation: this.saturation,
             unit: this.unit.toDict(),
             colorizer: this.colorizer.toDict(),
             noDataColor: this.noDataColor.toDict(),
