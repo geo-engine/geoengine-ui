@@ -142,7 +142,7 @@ export class ProjectService {
         this.layerSymbologyDataSubscriptions.clear();
         this.layerCombinedState$.clear();
 
-        // this is the layer changes subject
+        // clears all layer changes subscriptions, but completes them first
         this.layerChanges$.forEach(subject => subject.complete());
         this.layerChanges$.clear();
 
