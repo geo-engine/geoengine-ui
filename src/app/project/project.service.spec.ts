@@ -156,6 +156,7 @@ describe('Service: Project Service', () => {
                     pointSources: [],
                     lineSources: [],
                     polygonSources: [],
+                    operatorTypeParameterOptions: undefined,
                 }
             });
             this.plotUrl = MockConfig.MOCK_URL +
@@ -247,13 +248,12 @@ describe('Service: Project Service', () => {
                     rasterSources: [],
                     pointSources: [],
                     lineSources: [],
-                    polygonSources: []
+                    polygonSources: [],
+                    operatorTypeParameterOptions: undefined,
                 },
                 symbology: {
                     symbologyType: 'RASTER',
                     opacity: 0.5,
-                    hue: 0.5,
-                    saturation: 0.5,
                     unit: {
                         measurement: 'row',
                         unit: 'unknown'

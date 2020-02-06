@@ -106,4 +106,7 @@ export class PieChartType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return PieChartType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

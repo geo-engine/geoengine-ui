@@ -90,4 +90,8 @@ export class OgrSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return OgrSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

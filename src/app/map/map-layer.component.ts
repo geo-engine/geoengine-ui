@@ -1,29 +1,19 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit, Output,
-    SimpleChange
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
-import {Projection} from '../operators/projection.model';
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractVectorSymbology, MappingColorizerRasterSymbology} from '../layers/symbology/symbology.model';
 
 import {StyleCreator} from './style-creator';
-import {Layer, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
+import {Layer, LayerChanges, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
-import {Time} from '../time/time.model';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
-import {isNullOrUndefined} from 'util';
+import {Time} from '../time/time.model';
+import {Projection} from '../operators/projection.model';
 
 /**
  * The `ol-layer` component represents a single layer object of openLayer 3.
@@ -36,22 +26,13 @@ import {isNullOrUndefined} from 'util';
  */
 export abstract class MapLayerComponent<OL extends OlLayer,
     OS extends OlSource,
-    S extends Symbology,
-    L extends Layer<S>>
-    implements OnChanges {
-
-    // TODO: refactor
+    S extends AbstractSymbology,
+    L extends Layer<S>> {
 
     @Input() layer: L;
-    @Input() projection: Projection;
-    @Input() symbology: S;
-    @Input() time: Time;
-    @Input() visible = true;
-
     @Output() mapRedraw = new EventEmitter();
 
     protected source: OS;
-
     protected _mapLayer: OL;
 
     protected constructor(protected projectService: ProjectService) {
@@ -59,9 +40,7 @@ export abstract class MapLayerComponent<OL extends OlLayer,
 
     get mapLayer(): OL {
         return this._mapLayer;
-    };
-
-    abstract ngOnChanges(changes: { [propName: string]: SimpleChange }): void;
+    }
 
     abstract getExtent(): [number, number, number, number];
 }
@@ -69,9 +48,9 @@ export abstract class MapLayerComponent<OL extends OlLayer,
 export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
     OlVectorSource,
     AbstractVectorSymbology,
-    VectorLayer<AbstractVectorSymbology>> implements OnInit, OnChanges, OnDestroy {
-
+    VectorLayer<AbstractVectorSymbology>> implements OnInit, OnDestroy {
     private dataSubscription: Subscription;
+    private layerChangesSubscription: Subscription;
 
     protected constructor(protected projectService: ProjectService) {
         super(projectService);
@@ -85,34 +64,41 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     ngOnInit() {
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((x: VectorData) => {
             this.source.clear(); // TODO: check if this is needed always...
-            if (!isNullOrUndefined(x)) {
+            if (!(x === null || x === undefined)) {
                 this.source.addFeatures(x.data);
             }
-        })
-    }
+            this.updateOlLayer({symbology: this.layer.symbology}); // FIXME: HACK until data is a part of a layer
+        });
 
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-
-        if (changes['visible']) {
-            this.mapLayer.setVisible(this.visible);
-
-            this.mapRedraw.emit();
-        }
-
-        if (changes['symbology']) {
-            const style = StyleCreator.fromVectorSymbology(this.symbology);
-            this.mapLayer.setStyle(style);
-        }
+        this.layerChangesSubscription = this.projectService.getLayerChangesStream(this.layer)
+            .subscribe((changes: LayerChanges<AbstractVectorSymbology>) => {
+                this.updateOlLayer(changes);
+            });
     }
 
     ngOnDestroy() {
         if (this.dataSubscription) {
             this.dataSubscription.unsubscribe();
         }
+        if (this.layerChangesSubscription) {
+            this.layerChangesSubscription.unsubscribe();
+        }
     }
 
     getExtent() {
         return this.source.getExtent();
+    }
+
+    private updateOlLayer(changes: LayerChanges<AbstractVectorSymbology>) {
+        if (changes.visible) {
+            this.mapLayer.setVisible(this.layer.visible);
+            this.mapRedraw.emit();
+        }
+
+        if (changes.symbology) {
+            const style = StyleCreator.fromVectorSymbology(this.layer.symbology);
+            this.mapLayer.setStyle(style);
+        }
     }
 }
 
@@ -159,9 +145,14 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
-    MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnChanges, OnInit {
+    MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnInit, OnDestroy {
 
     private dataSubscription: Subscription;
+    private layerChangesSubscription: Subscription;
+    private timeSubscription: Subscription;
+
+    private projection: Projection;
+    private time: Time;
 
     constructor(protected projectService: ProjectService,
                 protected mappingQueryService: MappingQueryService,
@@ -170,79 +161,128 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     ngOnInit() {
-        // closure variables for checking the old state
-        let data = undefined;
-        let time = undefined;
-
         this.dataSubscription = this.projectService.getLayerDataStream(this.layer).subscribe((rasterData: RasterData) => {
-            if (isNullOrUndefined(rasterData)) {
-                // console.log("OlRasterLayerComponent constructor", rasterData);
+            if (!rasterData) {
                 return;
             }
 
-            if (this.source) {
-                if (time !== rasterData.time.asRequestString()) {
-                    // console.log("time", time, rasterData.time.asRequestString());
+            this.updateTime(rasterData.time);
+            this.updateProjection(rasterData.projection);
 
-                    this.source.updateParams({
-                        time: rasterData.time.asRequestString(),
-                        colors: this.symbology.mappingColorizerRequestString()
-                    });
-                    time = rasterData.time.asRequestString();
-                }
-                if (this.source.getProjection().getCode() !== rasterData.projection.getCode()) {
-                    // console.log("projection", this.source.getProjection().getCode, rasterData.projection.getCode());
-
-                    // unfortunally there is no setProjection function, so reset the whole source
-                    this.source = new OlTileWmsSource({
-                        url: rasterData.data,
-                        params: {
-                            time: rasterData.time.asRequestString(),
-                            colors: this.symbology.mappingColorizerRequestString()
-                        },
-                        projection: rasterData.projection.getCode(),
-                        wrapX: false,
-                    });
-
-                    if (this._mapLayer) {
-                        this._mapLayer.setSource(this.source);
-                    }
-                }
-                if (data !== rasterData.data) {
-                    // console.log("data", data, rasterData.data);
-
-                    this.source.setUrl(rasterData.data);
-                    data = rasterData.data;
-                }
-
-                if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
-                    this.source.refresh();
-                }
-            } else {
-                this.source = new OlTileWmsSource({
-                    url: rasterData.data,
-                    params: {
-                        time: rasterData.time.asRequestString(),
-                        colors: this.symbology.mappingColorizerRequestString()
-                    },
-                    projection: rasterData.projection.getCode(),
-                    wrapX: false,
-                });
-                data = rasterData.data;
-                time = rasterData.time.asRequestString();
+            if (!this.source) {
+                this.initializeOrReplaceOlSource();
             }
 
-            if (this._mapLayer) {
-                this._mapLayer.setSource(this.source);
-            } else {
-                this._mapLayer = new OlLayerTile({
-                    source: this.source,
-                    opacity: this.symbology.opacity,
-                });
+            if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
+                this.source.refresh();
             }
 
         });
 
+        this.layerChangesSubscription = this.projectService.getLayerChangesStream(this.layer)
+            .subscribe((changes: LayerChanges<MappingColorizerRasterSymbology>) => {
+                this.updateOlLayer(changes);
+                if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
+                    this.source.refresh();
+                }
+            });
+    }
+
+    ngOnDestroy() {
+        if (this.dataSubscription) {
+            this.dataSubscription.unsubscribe();
+        }
+        if (this.layerChangesSubscription) {
+            this.layerChangesSubscription.unsubscribe();
+        }
+        if (this.timeSubscription) {
+            this.timeSubscription.unsubscribe();
+        }
+    }
+
+    private updateOlLayer(changes: LayerChanges<MappingColorizerRasterSymbology>) {
+        if (!this.source || !this._mapLayer) {
+            return;
+        }
+
+        if (changes.visible) {
+            this._mapLayer.setVisible(this.layer.visible);
+            this.mapRedraw.emit();
+        }
+        if (changes.symbology) {
+            this._mapLayer.setOpacity(this.layer.symbology.opacity);
+            this.source.updateParams({
+                colors: this.layer.symbology.mappingColorizerRequestString()
+            });
+        }
+        if (changes.operator) {
+            this.initializeOrReplaceOlSource();
+        }
+    }
+
+    private updateProjection(p: Projection) {
+        if (!this.projection || this.source.getProjection().getCode() !== this.projection.getCode()) {
+            this.projection = p;
+            this.updateOlLayerProjection();
+        }
+    }
+
+    private updateOlLayerProjection() {
+        // there is no way to change the projection of a layer. // TODO: check newer OL versions for this
+        this.initializeOrReplaceOlSource();
+    }
+
+    private updateOlLayerTime() {
+        if (this.source) {
+            this.source.updateParams({
+                time: this.time.asRequestString(),
+                colors: this.layer.symbology.mappingColorizerRequestString()
+            });
+        }
+    }
+
+    private updateTime(t: Time) {
+        if (!this.time || !t.isSame(this.time)) {
+            this.time = t;
+            this.updateOlLayerTime();
+        }
+    }
+
+    private initializeOrReplaceOlSource() {
+        this.source = new OlTileWmsSource({
+            url: this.createWmsQueryUrl(),
+            params: {
+                time: this.time.asRequestString(),
+                colors: this.layer.symbology.mappingColorizerRequestString()
+            },
+            projection: this.projection.getCode(),
+            wrapX: false,
+        });
+
+        this.addStateListenersToOlSource();
+        this.initializeOrUpdateOlMapLayer();
+    }
+
+    private createWmsQueryUrl(): string {
+        return this.mappingQueryService.getWMSQueryUrl({
+            operator: this.layer.operator,
+            time: this.time,
+            projection: this.projection
+        });
+    }
+
+    private initializeOrUpdateOlMapLayer() {
+        if (this._mapLayer) {
+            this._mapLayer.setSource(this.source);
+        } else {
+            this._mapLayer = new OlLayerTile({
+                source: this.source,
+                opacity: this.layer.symbology.opacity,
+            });
+        }
+    }
+
+    private addStateListenersToOlSource() {
         // TILE LOADING STATE
         let tilesPending = 0;
 
@@ -260,25 +300,6 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             tilesPending--;
             this.projectService.changeRasterLayerDataStatus(this.layer, LoadingState.ERROR);
         });
-    }
-
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-        if (this._mapLayer) {
-            if (changes['visible']) {
-                this._mapLayer.setVisible(this.visible);
-
-                this.mapRedraw.emit();
-            }
-
-            if (changes['symbology']) {
-                this._mapLayer.setOpacity(this.symbology.opacity);
-                // this._mapLayer.setHue(rasterSymbology.hue);
-                // this._mapLayer.setSaturation(rasterSymbology.saturation);
-                this.source.updateParams({
-                    colors: this.symbology.mappingColorizerRequestString()
-                })
-            }
-        }
     }
 
     getExtent() {

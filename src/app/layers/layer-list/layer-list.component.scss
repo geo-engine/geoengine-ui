@@ -37,7 +37,6 @@ $background-color: map-get($background, background);
     align-items: flex-start;
     justify-content: space-between;
     box-sizing: border-box;
-    cursor: grab;
     background-color: $background-color;
 }
 
@@ -80,8 +79,9 @@ $background-color: map-get($background, background);
 .list-element-inner-container {
     width: 100%;
 
-    .legendary {
+    .legend {
         margin-left: 8px;
+        margin-right: 8px;
     }
 }
 

@@ -6,7 +6,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DataTypes, DataType} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {Layer} from '../../../layers/layer.model';
-import {Symbology} from '../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {HistogramType} from '../../types/histogram-type.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
@@ -14,7 +14,7 @@ import {Unit} from '../../unit.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
 
-function isVectorLayer(layer: Layer<Symbology>): boolean {
+function isVectorLayer(layer: Layer<AbstractSymbology>): boolean {
     return layer ? ResultTypes.VECTOR_TYPES.indexOf(layer.operator.resultType) >= 0 : false;
 }
 
@@ -100,7 +100,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     }
 
     add(event: any) {
-        const inputOperator = (this.form.controls['layer'].value as Layer<Symbology>).operator;
+        const inputOperator = (this.form.controls['layer'].value as Layer<AbstractSymbology>).operator;
 
         const attributeName = this.form.controls['attribute'].value as string;
 

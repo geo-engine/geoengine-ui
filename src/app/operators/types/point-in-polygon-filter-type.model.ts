@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface PointInPolygonFilterTypeMappingDict extends OperatorTypeMappingDict {}
 
@@ -51,6 +50,10 @@ export class PointInPolygonFilterType extends OperatorType {
         return {
             operatorType: PointInPolygonFilterType.TYPE,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return PointInPolygonFilterType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }
