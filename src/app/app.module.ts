@@ -155,6 +155,7 @@ import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
 import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
+import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -197,6 +198,7 @@ export function configInitializer(config: Config) {
         HistogramComponent,
         HistogramOperatorComponent,
         IdessaLogoComponent,
+        IfEUMETSATDirective,
         IfGeoBonDirective,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
