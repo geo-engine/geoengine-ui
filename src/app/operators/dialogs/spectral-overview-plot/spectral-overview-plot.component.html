@@ -1,0 +1,18 @@
+<wave-sidenav-header>Spectral Overview Plot</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" class="mat-typography">
+    <div class="container">
+        <wave-layer-selection [types]="rasterLayerTypes" formControlName="rasterLayer"></wave-layer-selection>
+        <mat-form-field>
+            <mat-label>Parameter Name</mat-label>
+            <mat-select formControlName="parameterName" [disabled]="disabledParameterNameChoice$ | async">
+                <mat-option *ngFor="let name of (availableParameterNames$ | async)" [value]="name">{{name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <wave-layer-selection [types]="pointLayerTypes" formControlName="pointLayer"></wave-layer-selection>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="formIsInvalid$ | async">
+            Create
+        </button>
+    </div>
+</form>

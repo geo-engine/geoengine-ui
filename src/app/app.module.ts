@@ -288,6 +288,7 @@ export function configInitializer(config: Config) {
         SidenavSearchComponent,
         SidenavSearchRightDirective,
         SmallTimeInteractionComponent,
+        SpectralOverviewPlotComponent,
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SplashDialogComponent,

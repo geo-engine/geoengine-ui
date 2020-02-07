@@ -40,6 +40,8 @@ import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.compon
 import {CreateRgbCompositeComponent} from '../create-rgb/create-rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 import {Config} from '../../../config.service';
+import {SpectralOverviewPlotComponent} from '../spectral-overview-plot/spectral-overview-plot.component';
+import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -89,6 +91,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: BoxPlotComponent,
         type: BoxPlotType,
         description: 'Box plot your data'
+    },
+    {
+        component: SpectralOverviewPlotComponent,
+        type: SpectralOverviewPlotType,
+        description: SpectralOverviewPlotType.NAME,
     },
     {
         component: StatisticsPlotComponent,
