@@ -1,5 +1,6 @@
 import {BreakPointValue, ColorBreakpoint, ColorBreakpointDict, IMappingRasterColorizerBreakpoint} from './color-breakpoint.model';
 import {Color} from './color';
+import {MplColormap, MplColormapName} from './mpl-colormaps/mpl-colormap.model';
 
 /**
  * DEPRECATED
@@ -30,8 +31,12 @@ export class ColorizerData implements IColorizerData {
 
     static grayScaleColorizer(minMax: { min: number, max: number }): ColorizerData {
 
+        const saveMin = (minMax.min) ? minMax.min : -1000;
+        const saveMax = (minMax.max) ? minMax.max : 1000;
+        const saveCenter = (saveMin + saveMax) / 2.0;
+
         const min_br: ColorBreakpointDict = {
-            value: (minMax.min !== undefined) ? minMax.min : -1000,
+            value: saveMin,
             rgba: Color.fromRgbaLike({
                 r: 0,
                 g: 0,
@@ -41,7 +46,7 @@ export class ColorizerData implements IColorizerData {
         };
 
         const mid_br: ColorBreakpointDict = {
-            value: (minMax.min !== undefined && minMax.max !== undefined) ? (minMax.max + minMax.min) / 2.0 : 0,
+            value: saveCenter,
             rgba: Color.fromRgbaLike({
                 r: 128,
                 g: 128,
@@ -51,7 +56,7 @@ export class ColorizerData implements IColorizerData {
         };
 
         const max_br: ColorBreakpointDict = {
-            value: (minMax.max !== undefined) ? minMax.max : 1000,
+            value: saveMax,
             rgba: Color.fromRgbaLike({
                 r: 255,
                 g: 255,
@@ -81,7 +86,7 @@ export class ColorizerData implements IColorizerData {
         return new ColorizerData({
             breakpoints: [],
             type: 'gradient'
-        })
+        });
     }
 
     constructor(config: IColorizerData) {
@@ -98,7 +103,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     addBreakpointAt(i: number, brk: ColorBreakpoint) {
-        this.breakpoints.splice(i, 0, brk)
+        this.breakpoints.splice(i, 0, brk);
     }
 
     removeBreakpointAt(i: number) {
@@ -221,8 +226,8 @@ export class ColorizerData implements IColorizerData {
                         a: (br.a) ? br.a : 1.0,
                     },
                     value: br.value,
-                })
+                });
             })
-        })
+        });
     }
 }

@@ -76,6 +76,7 @@ export class LayerListComponent implements OnDestroy {
                 this.changeDetectorRef.markForCheck();
             }
         });
+
         this.subscriptions.push(sub);
 
         this.mapIsGrid$ = this.mapService.isGrid$;

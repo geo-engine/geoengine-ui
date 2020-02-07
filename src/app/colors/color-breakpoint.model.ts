@@ -42,7 +42,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
         return {
             value: this.value,
             rgba: this.rgba.rgbaTuple()
-        }
+        };
     }
 
     setColor(color: RgbaLike) {
