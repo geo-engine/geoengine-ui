@@ -145,4 +145,8 @@ export class TerminologyLookupType extends OperatorType {
 
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return TerminologyLookupType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

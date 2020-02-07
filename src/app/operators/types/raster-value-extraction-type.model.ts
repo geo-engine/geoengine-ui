@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface RasterValueExtractionTypeMappingDict extends OperatorTypeMappingDict {
     xResolution: number;
@@ -81,5 +80,9 @@ export class RasterValueExtractionType extends OperatorType {
             yResolution: this.yResolution,
             attributeNames: this.attributeNames,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return RasterValueExtractionType.fromDict(this.toDict()); // TODO: add modifications
     }
 }

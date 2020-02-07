@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface RasterSourceTypeConfig {
     channel: number;
@@ -83,4 +82,7 @@ export class RasterSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return RasterSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

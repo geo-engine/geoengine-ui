@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 /**
  * The MSG radiance type.
@@ -9,9 +8,17 @@ export class MsgRadianceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgRadianceType._TYPE);
     private static _NAME = 'MSG Radiance Operator';
 
-    static get TYPE(): string { return MsgRadianceType._TYPE; }
-    static get ICON_URL(): string { return MsgRadianceType._ICON_URL; }
-    static get NAME(): string { return MsgRadianceType._NAME; }
+    static get TYPE(): string {
+        return MsgRadianceType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return MsgRadianceType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return MsgRadianceType._NAME;
+    }
 
     constructor(config: {}) {
         super();
@@ -21,15 +28,25 @@ export class MsgRadianceType extends OperatorType {
         return new MsgRadianceType({});
     }
 
-    getMappingName(): string { return MsgRadianceType.TYPE; }
+    getMappingName(): string {
+        return MsgRadianceType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgRadianceType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgRadianceType.ICON_URL;
+    }
 
-    toString(): string { return MsgRadianceType.NAME; }
+    toString(): string {
+        return MsgRadianceType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): OperatorTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict {
+        return {};
+    }
 
     toDict(): OperatorTypeDict {
         return {
@@ -37,6 +54,9 @@ export class MsgRadianceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgRadianceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }
 
 /* The MSG reflectance type */
@@ -122,6 +142,10 @@ export class MsgReflectanceType extends OperatorType {
         return dict;
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgRadianceType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }
 
 /* The MSG solarangle type */
@@ -162,23 +186,37 @@ export class MsgSolarangleType extends OperatorType {
         return new MsgRadianceType(dict);
     }
 
-    getMappingName(): string { return MsgSolarangleType.TYPE; }
+    getMappingName(): string {
+        return MsgSolarangleType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgSolarangleType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgSolarangleType.ICON_URL;
+    }
 
-    toString(): string { return MsgSolarangleType.NAME; }
+    toString(): string {
+        return MsgSolarangleType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): MsgSolarangleTypeMappingDict { return {
-        solarangle: this.solarangle,
-    }; }
+    toMappingDict(): MsgSolarangleTypeMappingDict {
+        return {
+            solarangle: this.solarangle,
+        };
+    }
 
     toDict(): MsgSolarangleTypeDict {
         return {
             operatorType: MsgSolarangleType.TYPE,
             solarangle: this.solarangle,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgSolarangleType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }
@@ -191,9 +229,17 @@ export class MsgTemperatureType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgTemperatureType._TYPE);
     private static _NAME = 'MSG Temperature Operator';
 
-    static get TYPE(): string { return MsgTemperatureType._TYPE; }
-    static get ICON_URL(): string { return MsgTemperatureType._ICON_URL; }
-    static get NAME(): string { return MsgTemperatureType._NAME; }
+    static get TYPE(): string {
+        return MsgTemperatureType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return MsgTemperatureType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return MsgTemperatureType._NAME;
+    }
 
     constructor(config: {}) {
         super();
@@ -203,20 +249,34 @@ export class MsgTemperatureType extends OperatorType {
         return new MsgTemperatureType(dict);
     }
 
-    getMappingName(): string { return MsgTemperatureType.TYPE; }
+    getMappingName(): string {
+        return MsgTemperatureType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgTemperatureType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgTemperatureType.ICON_URL;
+    }
 
-    toString(): string { return MsgTemperatureType.NAME; }
+    toString(): string {
+        return MsgTemperatureType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): OperatorTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict {
+        return {};
+    }
 
     toDict(): OperatorTypeDict {
         return {
             operatorType: MsgTemperatureType.TYPE,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgTemperatureType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }
@@ -236,9 +296,17 @@ export class MsgPansharpenType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgPansharpenType._TYPE);
     private static _NAME = 'MSG Pansharpen Operator';
 
-    static get TYPE(): string { return MsgPansharpenType._TYPE; }
-    static get ICON_URL(): string { return MsgPansharpenType._ICON_URL; }
-    static get NAME(): string { return MsgPansharpenType._NAME; }
+    static get TYPE(): string {
+        return MsgPansharpenType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return MsgPansharpenType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return MsgPansharpenType._NAME;
+    }
 
     constructor(config: MsgPansharpenTypeConfig) {
         super();
@@ -248,20 +316,34 @@ export class MsgPansharpenType extends OperatorType {
         return new MsgPansharpenType(dict);
     }
 
-    getMappingName(): string { return MsgPansharpenType.TYPE; }
+    getMappingName(): string {
+        return MsgPansharpenType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgPansharpenType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgPansharpenType.ICON_URL;
+    }
 
-    toString(): string { return MsgPansharpenType.NAME; }
+    toString(): string {
+        return MsgPansharpenType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): MsgPansharpenTypeMappingDict { return {}; }
+    toMappingDict(): MsgPansharpenTypeMappingDict {
+        return {};
+    }
 
     toDict(): MsgPansharpenTypeDict {
         return {
             operatorType: MsgPansharpenType.TYPE,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgPansharpenType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }
@@ -274,9 +356,17 @@ export class MsgCo2CorrectionType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgCo2CorrectionType._TYPE);
     private static _NAME = 'MSG CO2 Correction Operator';
 
-    static get TYPE(): string { return MsgCo2CorrectionType._TYPE; }
-    static get ICON_URL(): string { return MsgCo2CorrectionType._ICON_URL; }
-    static get NAME(): string { return MsgCo2CorrectionType._NAME; }
+    static get TYPE(): string {
+        return MsgCo2CorrectionType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return MsgCo2CorrectionType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return MsgCo2CorrectionType._NAME;
+    }
 
     constructor(config: {}) {
         super();
@@ -286,15 +376,25 @@ export class MsgCo2CorrectionType extends OperatorType {
         return new MsgCo2CorrectionType(dict);
     }
 
-    getMappingName(): string { return MsgCo2CorrectionType.TYPE; }
+    getMappingName(): string {
+        return MsgCo2CorrectionType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgCo2CorrectionType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgCo2CorrectionType.ICON_URL;
+    }
 
-    toString(): string { return MsgCo2CorrectionType.NAME; }
+    toString(): string {
+        return MsgCo2CorrectionType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): OperatorTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict {
+        return {};
+    }
 
     toDict(): OperatorTypeDict {
         return {
@@ -302,6 +402,9 @@ export class MsgCo2CorrectionType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgCo2CorrectionType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }
 
 export class MsgSofosGccThermalThresholdType extends OperatorType {
@@ -311,9 +414,17 @@ export class MsgSofosGccThermalThresholdType extends OperatorType {
     );
     private static _NAME = 'MSG SOFOS thermal threshold detection operator';
 
-    static get TYPE(): string { return MsgSofosGccThermalThresholdType._TYPE; }
-    static get ICON_URL(): string { return MsgSofosGccThermalThresholdType._ICON_URL; }
-    static get NAME(): string { return MsgSofosGccThermalThresholdType._NAME; }
+    static get TYPE(): string {
+        return MsgSofosGccThermalThresholdType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return MsgSofosGccThermalThresholdType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return MsgSofosGccThermalThresholdType._NAME;
+    }
 
     constructor(config: {}) {
         super();
@@ -323,19 +434,33 @@ export class MsgSofosGccThermalThresholdType extends OperatorType {
         return new MsgSofosGccThermalThresholdType(dict);
     }
 
-    getMappingName(): string { return MsgSofosGccThermalThresholdType.TYPE; }
+    getMappingName(): string {
+        return MsgSofosGccThermalThresholdType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgSofosGccThermalThresholdType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgSofosGccThermalThresholdType.ICON_URL;
+    }
 
-    toString(): string { return MsgSofosGccThermalThresholdType.NAME; }
+    toString(): string {
+        return MsgSofosGccThermalThresholdType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
-    toMappingDict(): OperatorTypeMappingDict { return {}; }
+    toMappingDict(): OperatorTypeMappingDict {
+        return {};
+    }
 
     toDict(): OperatorTypeDict {
         return {
             operatorType: MsgSofosGccThermalThresholdType.TYPE,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return MsgSofosGccThermalThresholdType.fromDict(this.toDict()); // TODO: add modifications
     }
 }

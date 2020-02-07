@@ -1,7 +1,7 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators, ControlValueAccessor} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {Symbology} from '../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
@@ -20,11 +20,11 @@ import {map} from 'rxjs/operators';
     styleUrls: ['./box-plot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BoxPlotComponent implements OnInit, AfterViewInit {
+export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    layers: Array<Layer<Symbology>>;
+    layers: Array<Layer<AbstractSymbology>>;
 
     ResultTypes = ResultTypes;
     DataTypes = DataTypes;

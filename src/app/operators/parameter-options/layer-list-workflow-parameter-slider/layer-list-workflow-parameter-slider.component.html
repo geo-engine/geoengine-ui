@@ -1,0 +1,16 @@
+<ng-container
+    *ngIf="hasParameterOptions; then parameterSlider; else noParameterMessage">
+</ng-container>
+
+
+<ng-template #parameterSlider>
+    <div>{{parameterDisplayString}}: {{parameterDisplayValue}}</div>
+    <mat-slider [min]="sliderRangeStart" [max]="sliderRangeStop" [step]="sliderRangeStep" [(value)]="sliderValue"
+                (change)="update($event)">
+    </mat-slider>
+</ng-template>
+
+<ng-template #noParameterMessage>
+    <span> no "{{parameterDisplayString}}" options available </span>
+</ng-template>
+

@@ -1,5 +1,4 @@
-
-import {of as observableOf, Observable} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {MappingSource, MappingSourceRasterLayer, MappingTransform} from '../mapping-source.model';
 import {Unit} from '../../../unit.model';
@@ -8,8 +7,7 @@ import {ResultTypes} from '../../../result-type.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import {RasterLayer} from '../../../../layers/layer.model';
-import {
-    MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
+import {MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
@@ -17,6 +15,8 @@ import {GdalSourceType} from '../../../types/gdal-source-type.model';
 import {ExpressionType} from '../../../types/expression-type.model';
 import {ColorBreakpointDict} from '../../../../colors/color-breakpoint.model';
 import {ColorizerData, IColorizerData} from '../../../../colors/colorizer-data.model';
+import {GdalSourceParameterOptions} from '../../../parameter-options/gdal-source-parameter-options.model';
+import {ParameterOptionType} from '../../../operator-type-parameter-options.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -86,7 +86,7 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     simple_add(channel: MappingSourceRasterLayer) {
-        this.add(channel, channel.hasTransform && !this.useRawData )
+        this.add(channel, channel.hasTransform && !this.useRawData);
     }
 
     add(channel: MappingSourceRasterLayer, doTransform: boolean) {
@@ -127,7 +127,7 @@ export class SourceDatasetComponent implements OnInit {
     }
 
     get channels(): Array<MappingSourceRasterLayer> {
-        return this.dataset.rasterLayer
+        return this.dataset.rasterLayer;
     }
 
     get channelDataSource(): ChannelDataSource {
@@ -171,13 +171,30 @@ export class SourceDatasetComponent implements OnInit {
         }
 
         const operatorType = new GdalSourceType({
-            channel: channel.id,
+            channelConfig: {
+                channelNumber: channel.id,
+                displayValue: channel.name,
+            },
             sourcename: this.dataset.source,
             transform: doTransform, // TODO: user selectable transform?
         });
 
+        const operatorParameterOptions = new GdalSourceParameterOptions({
+            operatorType: operatorType.toString(),
+            channelConfig: {
+                kind: ParameterOptionType.DICT_ARRAY,
+                options: this.channels.map((c, i) => {
+                    return {
+                        displayValue: c.name,
+                        channelNumber: i
+                    };
+                }),
+            }
+        });
+
         const sourceOperator = new Operator({
             operatorType: operatorType,
+            operatorTypeParameterOptions: operatorParameterOptions,
             resultType: ResultTypes.RASTER,
             projection: sourceProjection,
             attributes: ['value'],
@@ -185,7 +202,6 @@ export class SourceDatasetComponent implements OnInit {
             units: new Map<string, Unit>().set('value', sourceUnit),
         });
 
-        // console.log('doTransform', doTransform, 'unit', sourceUnit, 'expression', 'A', 'datatype', sourceDataType, 'channel', channel);
         if (doTransform && channel.hasTransform) {
             const transformUnit = channel.transform.unit;
             const transformDatatype = DataTypes.fromCode(channel.transform.datatype);

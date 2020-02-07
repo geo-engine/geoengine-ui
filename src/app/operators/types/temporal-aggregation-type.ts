@@ -79,4 +79,7 @@ export class TemporalAggregationType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return TemporalAggregationType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

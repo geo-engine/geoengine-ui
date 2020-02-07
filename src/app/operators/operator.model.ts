@@ -8,6 +8,8 @@ import {DataType, DataTypes} from './datatype.model';
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from './operator-type.model';
 import {OperatorTypeFactory} from './types/type-factory.service';
 import {ProjectionType} from './types/projection-type.model';
+import {OperatorTypeParameterOptions, OperatorTypeParameterOptionsConfig} from './operator-type-parameter-options.model';
+import {OperatorTypeParameterOptionsFactory} from './parameter-options/type-parameter-options-factory.service';
 
 type OperatorId = number;
 type AttributeName = string;
@@ -17,6 +19,7 @@ type AttributeName = string;
  */
 interface OperatorConfig {
     operatorType: OperatorType;
+    operatorTypeParameterOptions?: OperatorTypeParameterOptions;
     resultType: ResultType;
     projection: Projection;
     attributes?: ImmutableList<AttributeName> | Array<AttributeName>;
@@ -28,12 +31,19 @@ interface OperatorConfig {
     polygonSources?: ImmutableList<Operator> | Array<Operator>;
 }
 
+interface OperatorCloneOptions {
+    operatorType?: OperatorType;
+    operatorTypeParameterOptions?: OperatorTypeParameterOptions;
+}
+
+
 /**
  * Serialization interface
  */
 export interface OperatorDict {
     id: number;
     operatorType: OperatorTypeDict;
+    operatorTypeParameterOptions: OperatorTypeParameterOptionsConfig;
     resultType: string;
     projection: string;
     attributes: Array<string>;
@@ -70,6 +80,7 @@ export class Operator {
 
     private _resultType: ResultType;
     private _operatorType: OperatorType;
+    private _operatorTypeParameterOptions: OperatorTypeParameterOptions;
 
     private _attributes: ImmutableList<AttributeName>;
     private _dataTypes: ImmutableMap<AttributeName, DataType>;
@@ -109,6 +120,8 @@ export class Operator {
         // create the operator from the dict (recursively)
         const operator = new Operator({
             operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
+            operatorTypeParameterOptions: operatorDict.operatorTypeParameterOptions ?
+                OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions) : undefined,
             resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
             attributes: ImmutableList(operatorDict.attributes),
@@ -191,6 +204,12 @@ export class Operator {
             this._units = ImmutableMap<AttributeName, Unit>();
         }
 
+        if (config.operatorTypeParameterOptions) {
+            this._operatorTypeParameterOptions = config.operatorTypeParameterOptions;
+        } else {
+            this._operatorTypeParameterOptions = undefined; // TODO: handle operators without parameters?
+        }
+
         const returnChecked = (source: ImmutableList<Operator> | Array<Operator>,
                                type: ResultType): ImmutableList<Operator> => {
             if (source) {
@@ -233,6 +252,10 @@ export class Operator {
      */
     get operatorType(): OperatorType {
         return this._operatorType;
+    }
+
+    get operatorTypeParameterOptions(): OperatorTypeParameterOptions | undefined {
+        return this._operatorTypeParameterOptions;
     }
 
     /**
@@ -355,6 +378,7 @@ export class Operator {
                     srcProjection: this.projection,
                     destProjection: projection,
                 }),
+                operatorTypeParameterOptions: this._operatorTypeParameterOptions,
                 resultType: this.resultType,
                 projection: projection,
                 attributes: this._attributes,
@@ -381,21 +405,22 @@ export class Operator {
 
     toDict(): OperatorDict {
       const dict: OperatorDict = {
-        id: this._id,
-        resultType: this._resultType.getCode(),
-        operatorType: this._operatorType.toDict(),
-        projection: this._projection.getCode(),
-        attributes: this._attributes.toArray(),
-        dataTypes: this._dataTypes.map(
-            (datatype, attribute) => [attribute, datatype.getCode()]
-        ).toArray() as Array<[string, string]>,
-        units: this._units.map(
-            (unit, attribute) => [attribute, unit.toDict()]
-        ).toArray() as Array<[string, UnitDict]>,
-        rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
-        pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
-        lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
-        polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
+          id: this._id,
+          resultType: this._resultType.getCode(),
+          operatorType: this._operatorType.toDict(),
+          operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
+          projection: this._projection.getCode(),
+          attributes: this._attributes.toArray(),
+          dataTypes: this._dataTypes.map(
+              (datatype, attribute) => [attribute, datatype.getCode()]
+          ).toArray() as Array<[string, string]>,
+          units: this._units.map(
+              (unit, attribute) => [attribute, unit.toDict()]
+          ).toArray() as Array<[string, UnitDict]>,
+          rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
+          pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
+          lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
+          polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
       };
 
       return dict;
@@ -435,6 +460,28 @@ export class Operator {
         }
 
         return dict;
+    }
+
+    /**
+     * clone an operator with modified parameters
+     * @param options a dictionary with modifications
+     */
+
+    public cloneWithModifications(options?: OperatorCloneOptions): Operator {
+        return new Operator({
+            operatorType: options.operatorType ? options.operatorType : this._operatorType,
+            operatorTypeParameterOptions:
+                options.operatorTypeParameterOptions ? options.operatorTypeParameterOptions : this._operatorTypeParameterOptions,
+            resultType: this._resultType,
+            projection: this._projection,
+            attributes: this._attributes,
+            dataTypes: this._dataTypes,
+            units: this._units,
+            rasterSources: this.rasterSources,
+            pointSources: this.pointSources,
+            lineSources: this.lineSources,
+            polygonSources: this.polygonSources
+        });
     }
 
 }

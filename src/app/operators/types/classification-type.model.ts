@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 interface ClassificationTypeConfig {
     reclassNoData: boolean;
@@ -86,4 +85,7 @@ export class ClassificationType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return ClassificationType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

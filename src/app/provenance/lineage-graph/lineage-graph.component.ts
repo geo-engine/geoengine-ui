@@ -8,7 +8,7 @@ import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
-import {Symbology} from '../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../layers/symbology/symbology.model';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
@@ -49,7 +49,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     selectedOperator$ = new ReplaySubject<Operator>(1);
     parameters$ = new ReplaySubject<Array<{ key: string, value: string }>>(1);
 
-    private selectedLayer: Layer<Symbology> = undefined;
+    private selectedLayer: Layer<AbstractSymbology> = undefined;
 
     private maxWidth$ = new BehaviorSubject<number>(1);
     private maxHeight$ = new BehaviorSubject<number>(1);
@@ -58,7 +58,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private projectService: ProjectService,
-                @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<Symbology> }) {
+                @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<AbstractSymbology> }) {
     }
 
     ngOnInit() {
@@ -151,7 +151,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private addOperatorsToGraph(graph: dagre.graphlib.Graph,
                                 initialOperators: Array<Operator>,
-                                layers: Array<Layer<Symbology>>): Array<number> {
+                                layers: Array<Layer<AbstractSymbology>>): Array<number> {
         let operatorIdsInGraph: Array<number> = [];
 
         let operators: Array<Operator> = [...initialOperators];
@@ -211,8 +211,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private addLayersToGraph(graph: dagre.graphlib.Graph,
-                             layers: Array<Layer<Symbology>>,
-                             layersToAccent: Array<Layer<Symbology>>,
+                             layers: Array<Layer<AbstractSymbology>>,
+                             layersToAccent: Array<Layer<AbstractSymbology>>,
                              operatorIdsInGraph: Array<number>) {
         for (let layer of layers) {
             // operator of layer is contained in graph

@@ -68,4 +68,7 @@ export class SensorSourceType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return SensorSourceType.fromDict(this.toDict()); // TODO: add modifications
+    }
 }

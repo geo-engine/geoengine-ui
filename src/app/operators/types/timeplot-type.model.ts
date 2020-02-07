@@ -134,4 +134,8 @@ print(p)
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return TimePlotType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

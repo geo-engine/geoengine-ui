@@ -16,7 +16,7 @@ import {Plot} from '../../../../plots/plot.model';
 import {
     RasterSymbology,
     AbstractVectorSymbology,
-    Symbology,
+    AbstractSymbology,
     ComplexPointSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {MatDialog} from '@angular/material';
@@ -41,7 +41,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     form: FormGroup;
 
-    @Input() editable: Layer<Symbology> | Plot = undefined;
+    @Input() editable: Layer<AbstractSymbology> | Plot = undefined;
     editableSourceLines: Array<Operator> = undefined;
     editableSourcePoints: Array<Operator> = undefined;
     editableSourcePolygons: Array<Operator> = undefined;
@@ -224,7 +224,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
 
             // LAYER
-            let layer: Layer<Symbology>;
+            let layer: Layer<AbstractSymbology>;
             switch (resultType) {
                 case ResultTypes.POINTS:
                     layer = new VectorLayer({
@@ -249,7 +249,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                     });
                     break;
                 default:
-                    throw Error('Unknown Symbology Error');
+                    throw Error('Unknown AbstractSymbology Error');
             }
 
             if (this.editable) {
