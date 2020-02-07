@@ -155,6 +155,7 @@ import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
 import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
+import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -362,6 +363,7 @@ export function configInitializer(config: Config) {
         SaveProjectAsComponent,
         ScatterPlotComponent,
         SensorSourceOperatorComponent,
+        SpectralOverviewPlotComponent,
         SourceOperatorListComponent,
         StatisticsPlotComponent,
         SplashDialogComponent,
