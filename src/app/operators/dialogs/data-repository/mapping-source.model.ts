@@ -15,13 +15,13 @@ export interface ProvenanceInfo {
     citation: string;
 }
 
-export interface MappingSourceRasterLayer {
+export interface SourceRasterLayerDescription {
     name: string;
     id: number;
     datatype: string;
     nodata: number;
     unit: Unit;
-    colorizer: IColorizerData;
+    colorizer: IColorizerData | undefined;
     transform: MappingTransform;
     hasTransform: boolean;
     isSwitchable: boolean;
@@ -35,7 +35,7 @@ export interface MappingSourceRasterLayer {
     provenance: ProvenanceInfo;
 }
 
-export interface MappingSourceVectorLayer {
+export interface SourceVectorLayerDescription {
     name: string;
     id: number | string;
     title: string;
@@ -53,8 +53,8 @@ export interface MappingSource {
     operator: string;
     source: string;
     name: string;
-    rasterLayer?: MappingSourceRasterLayer[];
-    vectorLayer?: MappingSourceVectorLayer[];
+    rasterLayer?: SourceRasterLayerDescription[];
+    vectorLayer?: SourceVectorLayerDescription[];
     descriptionText?: string;
     imgUrl?: string;
     tags?: Array<string>;
@@ -62,12 +62,12 @@ export interface MappingSource {
 }
 
 export interface MappingSourceDict {
-    operator?: string,
-    name: string,
-    descriptionText?: string,
-    imgUrl?: string,
+    operator?: string;
+    name: string;
+    descriptionText?: string;
+    imgUrl?: string;
     tags?: string[];
-    colorizer?: MappingRasterColorizerDict,
+    colorizer?: MappingRasterColorizerDict;
     provenance?: {
         uri: string,
         license: string,
@@ -80,50 +80,55 @@ export interface MappingSourceDict {
         scale?: number[],
         size?: number[],
     };
-    channels?: [{
-        datatype: string,
-        nodata: number,
-        name?: string,
-        unit?: UnitMappingDict,
-        colorizer?: MappingRasterColorizerDict,
-        transform?: {
-            unit?: UnitMappingDict,
-            datatype: string,
-            scale: number,
-            offset: number,
-        },
-        coords: {
-            crs: string,
-            origin: number[],
-            scale: number[],
-            size: number[],
-        },
-        provenance?: {
-            uri: string,
-            license: string,
-            citation: string,
-        }
-    }];
-    layer?: [{
-        id?: number | string,
-        name: string,
-        title?: string,
-        geometry_type: string, // FIXME: this must be the layer type -> POINT, POLYGON, LINE...
-        textual?: string[],
-        numeric?: string[],
-        coords: {
-            crs: string,
-        };
-        uri?: string,
-        license?: string,
-        citation?: string,
-        provenance?: {
-            uri: string,
-            license: string,
-            citation: string,
-        }
-    }];
+    channels?: [MappingSourceRasterLayerDict];
+    layer?: [MappingSourceVectorLayerDict];
 }
+
+export interface MappingSourceRasterLayerDict {
+    datatype: string;
+    nodata: number;
+    name?: string;
+    unit?: UnitMappingDict;
+    colorizer?: MappingRasterColorizerDict;
+    transform?: {
+        unit?: UnitMappingDict,
+        datatype: string,
+        scale: number,
+        offset: number,
+    };
+    coords: {
+        crs: string,
+        origin: number[],
+        scale: number[],
+        size: number[],
+    };
+    provenance?: {
+        uri: string,
+        license: string,
+        citation: string,
+    };
+}
+
+export interface MappingSourceVectorLayerDict {
+    id?: number | string;
+    name: string;
+    title?: string;
+    geometry_type: string; // FIXME: this must be the layer type -> POINT, POLYGON, LINE...
+    textual?: string[];
+    numeric?: string[];
+    coords: {
+        crs: string,
+    };
+    uri?: string;
+    license?: string;
+    citation?: string;
+    provenance?: {
+        uri: string,
+        license: string,
+        citation: string,
+    };
+}
+
 
 export interface MappingSourceResponse {
     sourcelist: {[index: string]: MappingSourceDict};

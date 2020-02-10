@@ -1,6 +1,5 @@
 import {BreakPointValue, ColorBreakpoint, ColorBreakpointDict, IMappingRasterColorizerBreakpoint} from './color-breakpoint.model';
 import {Color} from './color';
-import {MplColormap, MplColormapName} from './mpl-colormaps/mpl-colormap.model';
 
 /**
  * DEPRECATED
@@ -89,6 +88,10 @@ export class ColorizerData implements IColorizerData {
         });
     }
 
+    static is_valid(colorizerData: IColorizerData) {
+        return colorizerData.breakpoints.length >= 2;
+    }
+
     constructor(config: IColorizerData) {
         this.breakpoints = (config.breakpoints) ? config.breakpoints.map(br => new ColorBreakpoint(br)) : [];
         this.type = (config.type) ? config.type : 'gradient';
@@ -173,7 +176,7 @@ export class ColorizerData implements IColorizerData {
             return new ColorBreakpoint({
                 rgba: color,
                 value: brk.value + diff
-            })
+            });
         }
 
         return undefined;
@@ -210,7 +213,7 @@ export class ColorizerData implements IColorizerData {
         return {
             breakpoints: this.breakpoints.map(br => br.toDict()),
             type: this.type
-        }
+        };
     }
 
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
