@@ -115,10 +115,13 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
         const maxDigitsOnYAxis = Math.max(...this.data.data.map(v => v > 9 ? Math.ceil(Math.log10(v)) : 1));
 
+        const xAxisTextPadding = 5;
+        const xAxisTextHeight = 10 + xAxisTextPadding;
+
         const margin = {
             top: 10,
             right: 50,
-            bottom: 30 + (this.data.metadata.unit ? 10 : 0) + (this.selectable ? 35 : 0),
+            bottom: 30 + (this.data.metadata.unit ? xAxisTextHeight : 0) + (this.selectable ? 35 : 0),
             left: 12 * maxDigitsOnYAxis + 25,
         };
 
@@ -232,7 +235,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             svg.append('g')
                 .append('text') // x axis label
                 .attr('x', width / 2)
-                .attr('y', height + margin.bottom)
+                .attr('y', height + margin.bottom - xAxisTextPadding)
                 .style('text-anchor', 'middle')
                 .text(this.data.metadata.unit);
         }
