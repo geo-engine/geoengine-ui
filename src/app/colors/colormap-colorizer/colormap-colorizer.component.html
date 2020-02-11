@@ -1,0 +1,41 @@
+<div class="component_container">
+    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
+        <mat-form-field>
+            <mat-label>Colormap name</mat-label>
+            <mat-select [(value)]="selectedColormapName">
+                <mat-option *ngFor="let colormapName of colormapNames" [value]="colormapName">
+                    {{colormapName}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Step distribution</mat-label>
+            <mat-select [(value)]=selectedColormapStepScales>
+                <mat-option *ngFor="let colormapStepScale of colormapStepScales" [value]="colormapStepScale">
+                    {{colormapStepScale}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div>
+        <table>
+            <tr>
+                <td><span>Color steps</span></td>
+                <td>
+                    <mat-slider [(ngModel)]="selectedColormapSteps" [min]="2" [max]="maxColormapSteps" [tickInterval]="1" [thumbLabel]="true">
+
+                    </mat-slider>
+                </td>
+                <td>{{selectedColormapSteps}}</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div>
+        <button mat-raised-button (click)="generateAndApplyNewColorTable()">Generate and Apply</button>
+    </div>
+
+</div>
