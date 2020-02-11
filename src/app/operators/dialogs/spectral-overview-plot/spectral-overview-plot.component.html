@@ -2,13 +2,16 @@
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" class="mat-typography">
     <div class="container">
         <wave-layer-selection [types]="rasterLayerTypes" formControlName="rasterLayer"></wave-layer-selection>
-        <mat-form-field>
-            <mat-label>Parameter Name</mat-label>
-            <mat-select formControlName="parameterName" [disabled]="disabledParameterNameChoice$ | async">
-                <mat-option *ngFor="let name of (availableParameterNames$ | async)" [value]="name">{{name}}</mat-option>
-            </mat-select>
-        </mat-form-field>
+        <mat-error *ngIf="rasterHasNoChannelConfigForSatelliteSensors$ | async">
+            This raster does not have multiple channels with wave length metadata.
+        </mat-error>
         <wave-layer-selection [types]="pointLayerTypes" formControlName="pointLayer"></wave-layer-selection>
+        <wave-operator-output-name formControlName="name"
+                                   [suggestion]="'Spectral Overview Plot of ' + (form.controls.rasterLayer.valueChanges | async)?.name">
+            <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-error>
+        </wave-operator-output-name>
     </div>
     <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="formIsInvalid$ | async">

@@ -21,6 +21,7 @@ export interface MappingSourceRasterLayer {
     datatype: string;
     nodata: number;
     unit: Unit;
+    methodology?: MappingRasterMethodology;
     colorizer: IColorizerData;
     transform: MappingTransform;
     hasTransform: boolean;
@@ -85,6 +86,7 @@ export interface MappingSourceDict {
         nodata: number,
         name?: string,
         unit?: UnitMappingDict,
+        methodology?: MappingRasterMethodology,
         colorizer?: MappingRasterColorizerDict,
         transform?: {
             unit?: UnitMappingDict,
@@ -127,4 +129,12 @@ export interface MappingSourceDict {
 
 export interface MappingSourceResponse {
     sourcelist: {[index: string]: MappingSourceDict};
+}
+
+export interface MappingRasterMethodology {
+    type: 'SATELLITE_SENSOR';
+}
+
+export interface MappingSatelliteSensorRasterMethodology extends MappingRasterMethodology {
+    central_wave_length_nm: number;
 }

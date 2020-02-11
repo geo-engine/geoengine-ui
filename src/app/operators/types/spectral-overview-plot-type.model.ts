@@ -1,6 +1,7 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
 import {ResultTypes} from '../result-type.model';
+import {Unit, UnitDict} from '../unit.model';
 
 interface SpectralOverviewPlotTypeMappingDict extends OperatorTypeMappingDict {
     source: string;
@@ -9,10 +10,14 @@ interface SpectralOverviewPlotTypeMappingDict extends OperatorTypeMappingDict {
 
 export interface SpectralOverviewPlotTypeDict extends OperatorTypeDict {
     instruments: Array<string>;
+    waveLenghts: Array<number>;
+    unit: UnitDict;
 }
 
 interface SpectralOverviewPlotTypeConfig {
     instruments: Array<string>;
+    waveLenghts: Array<number>;
+    unit: Unit;
 }
 
 export class SpectralOverviewPlotType extends OperatorType {
@@ -22,44 +27,61 @@ export class SpectralOverviewPlotType extends OperatorType {
 
     private readonly code: string;
     private readonly instruments: Array<string>;
+    private readonly waveLenghts: Array<number>;
+    private readonly unit: Unit;
 
     static fromDict(dict: SpectralOverviewPlotTypeDict): SpectralOverviewPlotType {
-        return new SpectralOverviewPlotType(dict);
+        return new SpectralOverviewPlotType({
+            instruments: dict.instruments,
+            waveLenghts: dict.waveLenghts,
+            unit: Unit.fromDict(dict.unit),
+        });
     }
 
     constructor(config: SpectralOverviewPlotTypeConfig) {
         super();
 
         this.instruments = config.instruments;
+        this.waveLenghts = config.waveLenghts;
+        this.unit = config.unit;
 
-        const instrument_columns = 'c("' + this.instruments.join('", "') + '")'; // TODO: escape strings
+        const instrument_columns = 'c(' + this.instruments.map(text => JSON.stringify(text)).join(', ') + ')';
+        let unit_label = this.unit.measurement;
+        if (this.unit.unit && this.unit.unit !== 'unknown') {
+            unit_label += ` in ${this.unit.unit}`;
+        }
+        unit_label = JSON.stringify(unit_label);
+
         this.code = `
             library(ggplot2);
 
-            points = mapping.loadPoints(0, mapping.qrect);
-            pivot = data.frame(points@data[${instrument_columns}]);
+            points = try(mapping.loadPoints(0, mapping.qrect), silent = T);
 
-            number_of_series = NROW(points);
-            series_length = ${this.instruments.length};
-
-            wave_lengths <- NULL;
-            values <- NULL;
-            markers <- NULL;
-            for (i in 1:number_of_series) {
-                wave_lengths <- c(wave_lengths, seq(1, series_length));
-                values <- c(values, as.numeric(pivot[i, 1:series_length]));
-                markers <- c(markers, rep(toString(i), series_length));
+            if (isS4(points)) {
+                pivot = data.frame(points@data[${instrument_columns}]);
+                #
+                number_of_series = NROW(points);
+                series_length = ${this.instruments.length};
+                #
+                wave_lengths <- c(${this.waveLenghts.join(', ')});
+                values <- NULL;
+                markers <- NULL;
+                #
+                for (i in 1:number_of_series) {
+                    values <- c(values, as.numeric(pivot[i, 1:series_length]));
+                    markers <- c(markers, rep(toString(i), series_length));
+                }
+                #
+                df <- data.frame(wave_length = wave_lengths, value = values, marker = markers);
+                #
+                plot = ggplot(df, aes(wave_length, value)) + geom_line(aes(colour = marker));
+                plot = plot + labs(x = "Wave Length in nm", y = ${unit_label}, colour = "Marker");
+                #
+                print(plot);
+            } else {
+                plot.new();
+                mtext("No marker points in viewport.");
             }
-
-            df <- data.frame(
-                wave_length = wave_lengths,
-                value = values,
-                marker = markers
-            );
-
-            plot = ggplot(df, aes(wave_length, value)) + geom_line(aes(colour = marker));
-
-            print(plot);
         `;
     }
 
@@ -93,6 +115,8 @@ export class SpectralOverviewPlotType extends OperatorType {
         return {
             operatorType: SpectralOverviewPlotType.TYPE,
             instruments: this.instruments,
+            waveLenghts: this.waveLenghts,
+            unit: this.unit.toDict(),
         };
     }
 
