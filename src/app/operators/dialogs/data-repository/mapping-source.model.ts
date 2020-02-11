@@ -62,12 +62,12 @@ export interface MappingSource {
 }
 
 export interface MappingSourceDict {
-    operator?: string,
-    name: string,
-    descriptionText?: string,
-    imgUrl?: string,
+    operator?: string;
+    name: string;
+    descriptionText?: string;
+    imgUrl?: string;
     tags?: string[];
-    colorizer?: MappingRasterColorizerDict,
+    colorizer?: MappingRasterColorizerDict;
     provenance?: {
         uri: string,
         license: string,
