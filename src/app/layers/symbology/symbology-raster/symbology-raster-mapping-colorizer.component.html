@@ -21,7 +21,24 @@
 </div>
 
 <div>
-    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+    <mat-tab-group>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>color_lens</mat-icon> color table
+            </ng-template>
+            <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>looks</mat-icon> color maps
+            </ng-template>
+            place ui elements here
+        </mat-tab>
+    </mat-tab-group>
+
+
+
+
 </div>
 
 
