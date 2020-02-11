@@ -5,7 +5,7 @@ import {colormap_inferno_data, colormap_magma_data, colormap_plasma_data, colorm
 
 export type MplColormapData = Array<[number, number, number]>;
 export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
-
+export type ColorMapStepScale = 'linear' | 'exponential' | 'log10' | 'log10_inverse' | 'exponential_inverse';
 
 
 export abstract class MplColormap {
@@ -23,36 +23,92 @@ export abstract class MplColormap {
         }
     }
 
-    static mplColorToRgb(mplColor: [number, number, number]): [number, number, number] {
+    private static calculateStepScales(steps: number, stepScale: ColorMapStepScale): Array<number> {
+        switch (stepScale) {
+            case 'linear': return MplColormap.generateLinearStepFractions(steps);
+            case 'exponential': return MplColormap.generateExpStepFractions(steps);
+            case 'exponential_inverse' : return MplColormap.inverseStepFractions(MplColormap.generateExpStepFractions(steps));
+            case 'log10': return MplColormap.generateLog10StepFractions(steps);
+            case 'log10_inverse' : return MplColormap.inverseStepFractions(MplColormap.generateLog10StepFractions(steps));
+        }
+    }
+
+    private static mplColorToRgb(mplColor: [number, number, number]): [number, number, number] {
         return [mplColor[0] * 255, mplColor[1] * 255, mplColor[2] * 255];
     }
 
     static creatColorizerDataWithName(
         mplColormapName: MplColormapName,
         min: number, max: number,
-        numberOfSteps: number | undefined = 16,
-        logScale: boolean = false
+        steps: number | undefined = 16,
+        stepScale: ColorMapStepScale = 'log10_inverse'
     ) {
-        return MplColormap.createColorizerDataWithColormap(
-            MplColormap.getMplColormapForName(mplColormapName), min, max, numberOfSteps, logScale
-        );
+
+        const colormap = MplColormap.getMplColormapForName(mplColormapName);
+        const trueSteps = (steps && steps <= colormap.length) ? steps : colormap.length;
+        const stepFractions = MplColormap.calculateStepScales(trueSteps, stepScale);
+
+        return MplColormap.createColorizerDataFromColormapAndStepFractions(colormap, min, max, stepFractions);
     }
 
-    private static createColorizerDataWithColormap (
+    private static generateLinearStepFractions(steps: number): Array<number> {
+        const maxIndex = steps - 1;
+        const stepFractions = new Array<number>(steps);
+        stepFractions[0] = 0;
+        stepFractions[maxIndex] = 1;
+
+        for (let i = 1; i < maxIndex ; i++) { // fill the values between 0 and 1.
+            stepFractions[i] = i / (maxIndex);
+        }
+
+        return stepFractions;
+    }
+
+    private static generateExpStepFractions(steps: number): Array<number> {
+        const maxIndex = steps - 1;
+        const stepFractions = new Array<number>(steps);
+        stepFractions[0] = 0;
+        stepFractions[maxIndex] = 1;
+
+        for (let i = 0; i < maxIndex - 1; i++) {
+            stepFractions[i + 1] = Math.exp(i) / ( Math.exp(maxIndex));
+        }
+
+        return stepFractions;
+    }
+
+    private static inverseStepFractions(stepFractions: Array<number>): Array<number> {
+        const inverseFraction = stepFractions.map( x => 1.0 - x).reverse();
+        return inverseFraction;
+    }
+
+    private static generateLog10StepFractions(steps: number): Array<number> {
+        const maxIndex = steps - 1;
+        const stepFractions = new Array<number>(steps);
+        stepFractions[0] = 0;
+        stepFractions[maxIndex] = 1;
+        for (let i = 2; i <= maxIndex + 1; i++) {
+            stepFractions[i - 1] = Math.log10(i) / Math.log10(maxIndex + 1);
+        }
+        return stepFractions;
+    }
+
+    private static createColorizerDataFromColormapAndStepFractions (
         colormap: MplColormapData,
         min: number, max: number,
-        steps: number | undefined = 16,
-        logScale: boolean = false
+        stepFractions: Array<number>,
     ) {
-        const trueSteps = (steps && steps <= colormap.length) ? steps : colormap.length;
-        const stepValueFraction = (max - min) / trueSteps;
-        const stepInColormap = colormap.length / trueSteps;
-
-        const breakpoints = new Array<ColorBreakpointDict>(trueSteps);
-        for (let i = 0; i < trueSteps; i++) {
+        const stepInColormap = colormap.length / stepFractions.length;
+        const valueRange = (max - min);
+        const breakpoints = new Array<ColorBreakpointDict>(stepFractions.length);
+        for (let i = 0; i < breakpoints.length; i++) {
+            const value = min + stepFractions[i] * valueRange;
+            const colormapIndex = Math.round(i * stepInColormap);
+            const colorMapValue = colormap[colormapIndex];
+            const color = Color.fromRgbaLike(MplColormap.mplColorToRgb(colorMapValue), false);
             const i_br: ColorBreakpointDict = {
-                value: i * stepValueFraction,
-                rgba: Color.fromRgbaLike(MplColormap.mplColorToRgb(colormap[i * stepInColormap]), false)
+                value: value,
+                rgba: color
             };
             breakpoints[i] = i_br;
         }

@@ -21,7 +21,7 @@ export interface SourceRasterLayerDescription {
     datatype: string;
     nodata: number;
     unit: Unit;
-    colorizer: IColorizerData | undefined;
+    colorizer?: IColorizerData;
     transform: MappingTransform;
     hasTransform: boolean;
     isSwitchable: boolean;
