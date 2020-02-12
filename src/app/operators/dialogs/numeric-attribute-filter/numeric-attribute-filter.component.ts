@@ -1,10 +1,9 @@
-
 import {BehaviorSubject, Observable, Subscription, combineLatest as observableCombineLatest} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy} from '@angular/core';
 
-import {HistogramData} from '../../../plots/histogram.component';
+import {HistogramData} from '../../../plots/histogram/histogram.component';
 
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
@@ -181,7 +180,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add(event: any) {
+    add(_event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 

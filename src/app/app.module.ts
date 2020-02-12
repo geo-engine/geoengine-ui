@@ -52,7 +52,7 @@ import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.c
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
 import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
-import {HistogramComponent} from './plots/histogram.component';
+import {HistogramComponent} from './plots/histogram/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
