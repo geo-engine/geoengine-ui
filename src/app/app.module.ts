@@ -159,6 +159,7 @@ import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
+import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -287,6 +288,7 @@ export function configInitializer(config: Config) {
         SidenavSearchComponent,
         SidenavSearchRightDirective,
         SmallTimeInteractionComponent,
+        SpectralOverviewPlotComponent,
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SplashDialogComponent,
@@ -368,6 +370,7 @@ export function configInitializer(config: Config) {
         SaveProjectAsComponent,
         ScatterPlotComponent,
         SensorSourceOperatorComponent,
+        SpectralOverviewPlotComponent,
         SourceOperatorListComponent,
         StatisticsPlotComponent,
         SplashDialogComponent,

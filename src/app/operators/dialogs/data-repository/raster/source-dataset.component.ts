@@ -174,6 +174,7 @@ export class SourceDatasetComponent implements OnInit {
             channelConfig: {
                 channelNumber: channel.id,
                 displayValue: channel.name,
+                methodology: channel.methodology,
             },
             sourcename: this.dataset.source,
             transform: doTransform, // TODO: user selectable transform?
@@ -185,8 +186,9 @@ export class SourceDatasetComponent implements OnInit {
                 kind: ParameterOptionType.DICT_ARRAY,
                 options: this.channels.map((c, i) => {
                     return {
+                        channelNumber: i,
                         displayValue: c.name,
-                        channelNumber: i
+                        methodology: c.methodology,
                     };
                 }),
             }
