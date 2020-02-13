@@ -1,4 +1,3 @@
-///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -154,12 +153,12 @@ import {
 import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
-import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
 import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
+import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -313,7 +312,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsViewComponent,
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
-        CreateRgbCompositeComponent,
+        RgbCompositeComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -333,7 +332,7 @@ export function configInitializer(config: Config) {
         ChangeProjectionComponent,
         ColorizerEditorComponent,
         CountryPolygonSelectionComponent,
-        CreateRgbCompositeComponent,
+        RgbCompositeComponent,
         CsvDialogComponent,
         CsvErrorDialog,
         DataRepositoryComponent,

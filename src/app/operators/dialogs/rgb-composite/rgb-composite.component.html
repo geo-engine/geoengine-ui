@@ -3,10 +3,15 @@
     <div class="container mat-typography">
         <wave-multi-layer-selection [types]="inputTypes" formControlName="inputLayers"
                                     [min]="numberOfRasters" [max]="numberOfRasters"></wave-multi-layer-selection>
-        <button type="button" mat-raised-button [disabled]="form.invalid"
+        <button type="button" mat-raised-button [disabled]="notAllLayersSet$ | async"
+                (click)="retrieveRasterStatsFromUnit()">
+            Set channel min/max values from metadata
+        </button>
+        <br>
+        <button type="button" mat-raised-button [disabled]="notAllLayersSet$ | async"
                 *ngIf="!(isRasterStatsLoading$ | async); else rasterStatsLoadingAnimation"
                 (click)="calculateRasterStats()">
-            Calculate channel Min/Max values
+            Calculate channel min/max values
         </button>
         <ng-template #rasterStatsLoadingAnimation>
             <mat-spinner [diameter]="loadingSpinnerDiameter"></mat-spinner>
@@ -49,7 +54,7 @@
         </div>
     </div>
     <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
+        <button type="submit" mat-raised-button color="primary" [disabled]="formIsInvalid$ | async">
             Create
         </button>
     </div>
