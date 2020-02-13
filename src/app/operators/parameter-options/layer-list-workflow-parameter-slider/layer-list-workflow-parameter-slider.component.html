@@ -1,5 +1,5 @@
 <ng-container
-    *ngIf="hasParameterOptions; then parameterSlider">
+    *ngIf="hasParameterOptions; then parameterSlider; else noParameterMessage">
 </ng-container>
 
 
@@ -10,3 +10,6 @@
     </mat-slider>
 </ng-template>
 
+<ng-template #noParameterMessage>
+    <span> no "{{parameterDisplayString}}" options available </span>
+</ng-template>
