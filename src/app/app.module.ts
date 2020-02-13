@@ -1,4 +1,3 @@
-///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -154,7 +153,6 @@ import {
 import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
-import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
 import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
