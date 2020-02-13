@@ -3,7 +3,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {ProjectService} from '../../../project/project.service';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology, RasterSymbology, Symbology} from '../../../layers/symbology/symbology.model';
+import {MappingColorizerRasterSymbology, RasterSymbology, AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Interpolation, Unit} from '../../unit.model';
 import {Operator} from '../../operator.model';
 import {NotificationService} from '../../../notification.service';
@@ -59,15 +59,12 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         });
 
         this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
-        this.notAllLayersSet$ = this.form.controls['inputLayers'].valueChanges.pipe(map((value: Array<Layer<Symbology>>) => {
+        this.notAllLayersSet$ = this.form.controls['inputLayers'].valueChanges.pipe(map((value: Array<Layer<AbstractSymbology>>) => {
             return value === undefined
                 || value === null
                 || value.length !== 3
                 || value.some(layer => layer === undefined || layer === null);
         }));
-
-        // calculate validity to enforce invalid state upfront
-        setTimeout(() => this.form.updateValueAndValidity());
 
         this.inputLayersubscriptions = this.form.controls['inputLayers'].valueChanges
             .subscribe((inputLayers: Array<RasterLayer<RasterSymbology>>) => { // set meaningful default values if possible
@@ -81,6 +78,11 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
                     }
                 });
             });
+
+        setTimeout(() => { // calculate validity to enforce invalid state upfront
+            this.form.updateValueAndValidity();
+            this.form.controls['inputLayers'].updateValueAndValidity();
+        });
     }
 
     ngOnDestroy() {
@@ -206,5 +208,5 @@ interface RasterStatisticsType {
             min: number,
             nan_count: number,
         }>,
-    },
+    };
 }
