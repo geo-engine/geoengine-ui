@@ -216,7 +216,7 @@ export class UserService {
                     });
                 }
             }),
-            map(([session, success]) => success as boolean), );
+            map(([_, success]) => success as boolean));
     }
 
     guestLogin(): Observable<boolean> {
@@ -224,6 +224,68 @@ export class UserService {
             user: this.config.USER.GUEST.NAME,
             password: this.config.USER.GUEST.PASSWORD,
         });
+    }
+
+    /**
+     * Login using a Java Web Token. If it was successful, set a new user.
+     * @param token The user's token.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    nature40JwtTokenLogin(token: string): Observable<boolean> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'login',
+            parameters: {token: token},
+        });
+
+        return this.loginRequestToUserDetails(parameters);
+    }
+
+    private loginRequestToUserDetails(parameters: MappingRequestParameters) {
+        const subject = new Subject<boolean>();
+
+        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+            mergeMap(response => {
+                const success = (typeof response.result === 'boolean') && response.result;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: response.session})
+                        .pipe(
+                            tap(user => {
+                                this.session$.next({
+                                    user: user.name,
+                                    sessionToken: response.session,
+                                    staySignedIn: false,
+                                    isExternallyConnected: true,
+                                });
+                            }),
+                            map(_ => true)
+                        );
+                } else {
+                    return observableOf(false);
+                }
+            }))
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+        return subject;
+    }
+
+    /**
+     * Retrieve the signed JWT client token.
+     */
+    getNature40JwtClientToken(): Observable<{ clientToken: string }> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'clientToken',
+            parameters: {},
+        });
+
+        return this.request<{ result: string | boolean, clientToken: string }>(parameters);
     }
 
     /**
@@ -443,34 +505,7 @@ export class UserService {
             parameters: {token: token},
         });
 
-        const subject = new Subject<boolean>();
-
-        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-            mergeMap(response => {
-                const success = typeof response.result === 'boolean' && response.result === true;
-
-                if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: response.session}).pipe(
-                        tap(user => {
-                            this.session$.next({
-                                user: user.name,
-                                sessionToken: response.session,
-                                staySignedIn: false,
-                                isExternallyConnected: true,
-                            });
-                        }),
-                        map(user => true), );
-                } else {
-                    return observableOf(false);
-                }
-            }))
-            .subscribe(
-                success => subject.next(success),
-                () => subject.next(false),
-                () => subject.complete()
-            );
-
-        return subject;
+        return this.loginRequestToUserDetails(parameters);
     }
 
     setIntroductoryPopup(show: boolean) {
@@ -663,7 +698,7 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }), );
+                    }));
             }));
     }
 

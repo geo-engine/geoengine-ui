@@ -102,17 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 public config: Config,
                 private elementRef: ElementRef,
                 private overlayContainer: OverlayContainer) {
-        iconRegistry.addSvgIconInNamespace(
-            'vat',
-            'logo',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg')
-        );
-
-        iconRegistry.addSvgIconInNamespace(
-            'geobon',
-            'logo',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg')
-        );
+        this.registerIcons();
 
         this.storageService.toString(); // just register
 
@@ -124,6 +114,35 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
 
         this.setTheme(this.config.PROJECT);
+    }
+
+    private registerIcons() {
+        this.iconRegistry.addSvgIconInNamespace(
+            'vat',
+            'logo',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
+        );
+
+        switch (this.config.PROJECT) { // project-specific icons
+            case 'EUMETSAT':
+                break;
+            case 'GFBio':
+                break;
+            case 'GeoBon':
+                this.iconRegistry.addSvgIconInNamespace(
+                    'geobon',
+                    'logo',
+                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
+                );
+                break;
+            case 'Nature40':
+                this.iconRegistry.addSvgIconInNamespace(
+                    'nature40',
+                    'icon',
+                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/natur_40_logo.svg'),
+                );
+                break;
+        }
     }
 
     ngOnInit() {
@@ -171,7 +190,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         } else {
 
             // handle query parameters directly if it is not embedded and using an auto login
-            this.handleWorkflowParameters();
+            this.handleQueryParameters();
 
         }
     }
@@ -191,7 +210,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         filter(status => status === StorageStatus.OK),
                         first()
                     ).subscribe(() => {
-                        this.handleWorkflowParameters();
+                        this.handleQueryParameters();
                     });
                 });
                 break;
@@ -205,7 +224,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    private handleWorkflowParameters() {
+    private handleQueryParameters() {
         this.activatedRoute.queryParams.subscribe(p => {
             for (const parameter of Object.keys(p)) {
                 const value = p[parameter];
@@ -262,11 +281,30 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.notificationService.error(`Invalid Workflow: »${error}«`);
                         }
                         break;
+                    case 'jws':
+                    case 'jwt':
+                        this.nature40JwtLogin(parameter, value);
+                        break;
                     default:
                         this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
                 }
             }
         });
+    }
+
+    private nature40JwtLogin(parameter: string, token: string) {
+        this.userService.nature40JwtTokenLogin(token).pipe(first()).subscribe(
+            success => {
+                if (success) {
+                    this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
+                } else {
+                    this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
+                }
+            },
+            error => {
+                this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
+            },
+        );
     }
 
     private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
@@ -352,7 +390,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: 'EUMETSAT' | 'GFBio' | 'GeoBon') {
+    private setTheme(project: 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40') {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];
@@ -369,6 +407,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 break;
             case 'GFBio':
             case 'EUMETSAT':
+            case 'Nature40':
             default:
                 this.elementRef.nativeElement.classList.add(defaultTheme);
                 this.overlayContainer.getContainerElement().classList.add(defaultTheme);

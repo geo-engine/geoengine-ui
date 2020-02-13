@@ -44,7 +44,7 @@ interface Delays {
     GUEST_LOGIN_HINT: number;
 }
 
-type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon';
+type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
 
 interface Defaults {
     PROJECT: {
@@ -68,6 +68,10 @@ interface Gfbio {
     LIFERAY_PORTAL_URL: string;
 }
 
+interface Nature40 {
+    SSO_JWT_PROVIDER_URL: string;
+}
+
 interface Time {
     ALLOW_RANGES: boolean;
 }
@@ -87,6 +91,7 @@ interface ConfigStructure {
     GFBIO: Gfbio;
     MAP: Map;
     MAPPING_URL: MappingUrlType;
+    NATURE40: Nature40;
     PROJECT: Project;
     TIME: Time;
     USER: User;
@@ -138,6 +143,9 @@ const ConfigDefault = Immutable.fromJS({
         REFRESH_LAYERS_ON_CHANGE: false,
     },
     MAPPING_URL: '/cgi-bin/mapping_cgi',
+    NATURE40: {
+        SSO_JWT_PROVIDER_URL: 'http://vhrz669.hrz.uni-marburg.de/nature40/sso?jws=',
+    },
     PROJECT: 'GFBio',
     TIME: {
         ALLOW_RANGES: true,
@@ -192,7 +200,7 @@ function deepFreeze(o) {
 export class Config {
     static get CONFIG_FILE(): string {
         return 'assets/config.json';
-    };
+    }
 
     private _COMPONENTS: Components;
     private _MAPPING_URL: MappingUrlType;
@@ -206,6 +214,7 @@ export class Config {
     private _DEFAULTS: Defaults;
     private _MAP: Map;
     private _GFBIO: Gfbio;
+    private _NATURE40: Nature40;
     private _TIME: Time;
 
     get COMPONENTS(): Components {
@@ -256,6 +265,10 @@ export class Config {
         return this._GFBIO;
     }
 
+    get NATURE40(): Nature40 {
+        return this._NATURE40;
+    }
+
     get TIME(): Time {
         return this._TIME;
     }
@@ -278,7 +291,7 @@ export class Config {
                     () => { // error
                         this.handleConfig(ConfigDefault.toJS());
                     }),
-                catchError(() => observableOf(undefined)),)
+                catchError(() => observableOf(undefined)))
             .toPromise();
     }
 
@@ -323,6 +336,9 @@ export class Config {
                         break;
                     case 'GFBIO':
                         this._GFBIO = value;
+                        break;
+                    case 'NATURE40':
+                        this._NATURE40 = value;
                         break;
                     case 'TIME':
                         this._TIME = value;

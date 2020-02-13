@@ -1,5 +1,5 @@
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
 import {Config} from '../../config.service';
@@ -11,16 +11,18 @@ import {NotificationService} from '../../notification.service';
 enum FormStatus {
     LoggedOut,
     LoggedIn,
-    Loading
+    Loading,
 }
 
 @Component({
     selector: 'wave-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, AfterViewInit {
+
+    readonly useSsoLogin = ['Nature40'].includes(this.config.PROJECT);
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     isLoggedIn$: Observable<boolean>;
@@ -116,6 +118,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
         );
     }
 
+    jwtNature40Login() {
+        this.userService.getNature40JwtClientToken().pipe(first()).subscribe(({clientToken}: { clientToken }) => {
+            window.location.href = this.config.NATURE40.SSO_JWT_PROVIDER_URL + clientToken;
+        });
+    }
+
+
     logout() {
         this.formStatus$.next(FormStatus.Loading);
         this.userService.guestLogin()
@@ -126,5 +135,4 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 },
                 error => this.notificationService.error(`The backend is currently unavailable (${error})`));
     }
-
 }
