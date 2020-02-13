@@ -1,4 +1,4 @@
-import {ColorBreakpoint, IMappingRasterColorizerBreakpoint, ColorBreakpointDict, BreakPointValue} from './color-breakpoint.model';
+import {BreakPointValue, ColorBreakpoint, ColorBreakpointDict, IMappingRasterColorizerBreakpoint} from './color-breakpoint.model';
 import {Color} from './color';
 
 /**
@@ -10,7 +10,7 @@ export interface DeprecatedMappingColorizerDoNotUse {
     result?: string | number;
 }
 
-export type ColorizerType = 'gradient' | 'palette' | 'rgba_composite';
+export type ColorizerType = 'gradient' | 'logarithmic' | 'palette' | 'rgba_composite';
 
 export interface IColorizerData {
     breakpoints: Array<ColorBreakpointDict>;
@@ -28,7 +28,6 @@ export class ColorizerData implements IColorizerData {
     breakpoints: Array<ColorBreakpoint>;
     type: ColorizerType;
 
-    // TODO: Chroma -> also add a temperature scale?
     static grayScaleColorizer(minMax: { min: number, max: number }): ColorizerData {
 
         const min_br: ColorBreakpointDict = {
@@ -127,7 +126,6 @@ export class ColorizerData implements IColorizerData {
      * @returns {ColorBreakpoint | undefined}
      */
     getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
-        // console.log('ColorizerData', 'getBreakpointForValue', '#1', value, interpolate);
 
         if (!value || !this.breakpoints || this.breakpoints.length <= 0) {
             return undefined;
@@ -138,8 +136,6 @@ export class ColorizerData implements IColorizerData {
         const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber(); // TODO: this is prob. not always the correct type.
         const lookUpValue = (firstBrkIsNumber && !isNumber) ? parseFloat(value as string) : value;
         const isLookupNumber = typeof lookUpValue === 'number';
-        // console.log('ColorizerData', 'getBreakpointForValue', '#2', isGradient, isNumber, isLookupNumber, firstBrkIsNumber, lookUpValue);
-
 
         let brk_index = -1;
         for (let index = 0; index < this.breakpoints.length; index++) {
@@ -153,7 +149,6 @@ export class ColorizerData implements IColorizerData {
         const brk = this.breakpoints[brk_index];
         const validBrk = brk_index >= 0 && (this.breakpoints.length > 1 || brk.value === lookUpValue);
         const isLastBrk = brk_index >= this.breakpoints.length - 1;
-        // console.log('ColorizerData', 'getBreakpointForValue', '#3', brk_index, validBrk, isLastBrk);
 
         if (!validBrk) {
             return undefined;
@@ -169,7 +164,6 @@ export class ColorizerData implements IColorizerData {
             const diff = lookUpValue - brk.value;
             const frac_diff = diff / (brk_next.value - brk.value);
             const color = Color.interpolate(brk.rgba, brk_next.rgba, frac_diff);
-            // console.log('ColorizerData', 'getBreakpointForValue', '#4', brk.value, brk_next.value, diff, frac_diff, color);
 
             return new ColorBreakpoint({
                 rgba: color,
@@ -208,7 +202,6 @@ export class ColorizerData implements IColorizerData {
     }
 
     toDict(): IColorizerData {
-        // console.log('toDict()', this);
         return {
             breakpoints: this.breakpoints.map(br => br.toDict()),
             type: this.type
@@ -216,7 +209,6 @@ export class ColorizerData implements IColorizerData {
     }
 
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
-        // console.log('ColorizerData.fromMappingColorizerData', mcd);
 
         return new ColorizerData({
             type: (!mcd || !mcd.type) ? 'gradient' : mcd.type,

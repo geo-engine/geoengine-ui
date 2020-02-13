@@ -39,11 +39,15 @@ import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
+import {Config} from '../../../config.service';
+import {SpectralOverviewPlotComponent} from '../spectral-overview-plot/spectral-overview-plot.component';
+import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
 
 interface OperatorListType {
     component: Type<any>;
     type: { NAME: string, ICON_URL: string };
     description: string;
+    projectScope?: string; // are operators only part of a specific project?
 }
 
 const MIXED_OPERATORS: Array<OperatorListType> = [
@@ -87,6 +91,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         component: BoxPlotComponent,
         type: BoxPlotType,
         description: 'Box plot your data'
+    },
+    {
+        component: SpectralOverviewPlotComponent,
+        type: SpectralOverviewPlotType,
+        description: SpectralOverviewPlotType.NAME,
     },
     {
         component: StatisticsPlotComponent,
@@ -138,6 +147,7 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         component: TerminologyLookupOperatorComponent,
         type: TerminologyLookupType,
         description: 'Terminology lookup',
+        projectScope: 'GFBio',
     }
 ];
 
@@ -159,7 +169,8 @@ export class OperatorListComponent implements OnInit {
     operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
     searchString$ = new BehaviorSubject<string>('');
 
-    constructor(private layoutService: LayoutService) {
+    constructor(private layoutService: LayoutService,
+                private config: Config) {
     }
 
     ngOnInit() {
@@ -177,9 +188,11 @@ export class OperatorListComponent implements OnInit {
                 for (const group of operatorGroups) {
                     const operators = [];
                     for (const operator of group.list) {
-                        const typeName = operator.type.NAME.toLowerCase();
-                        const description = operator.description.toLowerCase();
-                        if (typeName.indexOf(searchString) >= 0 || description.indexOf(searchString) >= 0) {
+                        const inProjectScope = () => !operator.projectScope || operator.projectScope === this.config.PROJECT;
+                        const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().indexOf(searchString) >= 0;
+                        const searchMatchesDescription = () => operator.description.toLowerCase().indexOf(searchString) >= 0;
+
+                        if (inProjectScope() && (searchMatchesTypeName() || searchMatchesDescription())) {
                             operators.push(operator);
                         }
                     }

@@ -3,12 +3,13 @@ import {LegendComponent} from '../legend.component';
 import {RasterSymbology} from '../../symbology/symbology.model';
 
 @Component({
-    selector: 'wave-legendary-raster',
+    selector: 'wave-legend-raster',
     template: `
         <span>This is a generic raster layer</span>
-        `,
+    `,
     styleUrls: [],
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LegendaryRasterComponent<S extends RasterSymbology> extends LegendComponent<S> {}
+export class RasterLegendComponent<S extends RasterSymbology> extends LegendComponent<S> {
+}

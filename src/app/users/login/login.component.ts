@@ -1,4 +1,3 @@
-
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
@@ -38,7 +37,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private notificationService: NotificationService) {
         this.loginForm = this.formBuilder.group({
-            loginAuthority: ['gfbio', Validators.required],
+            loginAuthority: [this.config.PROJECT === 'GFBio' ? 'gfbio' : 'system', Validators.required],
             username: ['', Validators.compose([
                 Validators.required,
                 WaveValidators.keyword([this.config.USER.GUEST.NAME]),

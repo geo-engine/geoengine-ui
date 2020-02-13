@@ -1,5 +1,4 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict}
-  from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {CsvParameters} from '../dialogs/baskets/csv.model';
 
 interface PangaeaSourceTypeConfig {
@@ -78,6 +77,10 @@ export class PangaeaSourceType extends OperatorType {
             doi: this.doi,
             csvParameters: this.csvParameters,
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return PangaeaSourceType.fromDict(this.toDict()); // TODO: add modifications
     }
 
 }

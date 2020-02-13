@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-import {ResultTypes, ResultType} from '../result-type.model';
+import {ResultType, ResultTypes} from '../result-type.model';
 
 interface BoxPlotTypeMappingDict extends OperatorTypeMappingDict {
     source: string;
@@ -132,5 +132,9 @@ export class BoxPlotType extends OperatorType {
             attributes: this.attributes,
             inputType: this.inputType.getCode(),
         };
+    }
+
+    cloneWithModifications(options?: {}): OperatorType {
+        return BoxPlotType.fromDict(this.toDict()); // TODO: add modifications
     }
 }

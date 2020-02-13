@@ -4,7 +4,7 @@ import {Plot, PlotDict} from '../plots/plot.model';
 import {Operator} from '../operators/operator.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
-import {Symbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Layer, LayerDict} from '../layers/layer.model';
 
 export interface ProjectConfig {
@@ -12,7 +12,7 @@ export interface ProjectConfig {
     projection: Projection;
     time: Time;
     plots?: Array<Plot>;
-    layers?: Array<Layer<Symbology>>;
+    layers?: Array<Layer<AbstractSymbology>>;
     timeStepDuration: TimeStepDuration;
 }
 
@@ -30,7 +30,7 @@ export class Project {
     private _time: Time;
     private _name: string;
     private _plots: Array<Plot>;
-    private _layers: Array<Layer<Symbology>>;
+    private _layers: Array<Layer<AbstractSymbology>>;
     private _timeStepDuration: TimeStepDuration;
 
     static fromJSON(parameters: {
@@ -108,7 +108,7 @@ export class Project {
             parameters.notificationService.error(`Cannot load time because of »${error}«`);
         }
 
-        let layers: Array<Layer<Symbology>>;
+        let layers: Array<Layer<AbstractSymbology>>;
         if (parameters.dict.layers) {
             layers = parameters.dict.layers
                 .map(layerDict => {
@@ -165,7 +165,7 @@ export class Project {
         return this._plots;
     }
 
-    get layers(): Array<Layer<Symbology>> {
+    get layers(): Array<Layer<AbstractSymbology>> {
             return this._layers;
     }
 

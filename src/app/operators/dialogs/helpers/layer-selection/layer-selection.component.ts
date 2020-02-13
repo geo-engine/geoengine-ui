@@ -5,7 +5,7 @@ import {Observable, BehaviorSubject, ReplaySubject, Subject, Subscription} from 
 import {Component, ChangeDetectionStrategy, forwardRef, Input, OnChanges, SimpleChange, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {Symbology} from '../../../../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../../../../layers/symbology/symbology.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {LayerService} from '../../../../layers/layer.service';
@@ -27,7 +27,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer<Symbology>> | Observable<Array<Layer<Symbology>>> = this.projectService.getLayerStream();
+    @Input() layers: Array<Layer<AbstractSymbology>> | Observable<Array<Layer<AbstractSymbology>>> = this.projectService.getLayerStream();
 
     /**
      * The type is used as a filter for the layers to choose from.
@@ -40,10 +40,10 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     @Input() title: string = undefined;
 
     onTouched: () => void;
-    onChange: (_: Layer<Symbology>) => void = undefined;
+    onChange: (_: Layer<AbstractSymbology>) => void = undefined;
 
-    filteredLayers: Subject<Array<Layer<Symbology>>> = new ReplaySubject(1);
-    selectedLayer = new BehaviorSubject<Layer<Symbology>>(undefined);
+    filteredLayers: Subject<Array<Layer<AbstractSymbology>>> = new ReplaySubject(1);
+    selectedLayer = new BehaviorSubject<Layer<AbstractSymbology>>(undefined);
 
     private subscriptions: Array<Subscription> = [];
 
@@ -92,14 +92,14 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                     if (this.layers instanceof Observable) {
                         this.layers.pipe(first()).subscribe(layers => {
                             this.filteredLayers.next(
-                                layers.filter((layer: Layer<Symbology>) => {
+                                layers.filter((layer: Layer<AbstractSymbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;
                                 })
                             );
                         });
                     } else if (this.layers instanceof Array) {
                         this.filteredLayers.next(
-                            this.layers.filter((layer: Layer<Symbology>) => {
+                            this.layers.filter((layer: Layer<AbstractSymbology>) => {
                                 return this.types.indexOf(layer.operator.resultType) >= 0;
                             })
                         );
@@ -126,13 +126,13 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         }
     }
 
-    writeValue(layer: Layer<Symbology>): void {
+    writeValue(layer: Layer<AbstractSymbology>): void {
         if (layer !== null) {
             this.selectedLayer.next(layer);
         }
     }
 
-    registerOnChange(fn: (_: Layer<Symbology>) => void): void {
+    registerOnChange(fn: (_: Layer<AbstractSymbology>) => void): void {
         this.onChange = fn;
 
         this.onChange(this.selectedLayer.getValue());
@@ -142,7 +142,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         this.onTouched = fn;
     }
 
-    setSelectedLayer(layer: Layer<Symbology>) {
+    setSelectedLayer(layer: Layer<AbstractSymbology>) {
         this.selectedLayer.next(layer);
     }
 }

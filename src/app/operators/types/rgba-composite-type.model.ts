@@ -148,4 +148,8 @@ export class RgbaCompositeType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return RgbaCompositeType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }

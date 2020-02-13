@@ -113,4 +113,8 @@ export class TextualAttributeFilterType extends OperatorType {
         };
     }
 
+    cloneWithModifications(options?: {}): OperatorType {
+        return TextualAttributeFilterType.fromDict(this.toDict()); // TODO: add modifications
+    }
+
 }
