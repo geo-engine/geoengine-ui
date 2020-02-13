@@ -1,6 +1,6 @@
 import {
     BehaviorSubject, Observable, Subject, combineLatest as observableCombineLatest, throwError as observableThrowError, EMPTY,
-    of as observableOf
+    of as observableOf, ReplaySubject
 } from 'rxjs';
 
 import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
@@ -286,6 +286,42 @@ export class UserService {
         });
 
         return this.request<{ result: string | boolean, clientToken: string }>(parameters);
+    }
+
+    getNature40Catalog(): Observable<Map<string, Array<Nature40CatalogEntry>>> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: this.getSession().sessionToken,
+            request: 'sourcelist',
+            parameters: {},
+        });
+
+        const subject = new ReplaySubject<Map<string, Array<Nature40CatalogEntry>>>(1);
+
+        this.request<{ result: boolean | string, sourcelist?: Array<Nature40CatalogEntry> }>(parameters).subscribe(
+            ({result, sourcelist}) => {
+                if (typeof result === 'string') { // unsuccessful
+                    subject.error(new Error(result));
+                    return;
+                }
+
+                const groupedValues = new Map<string, Array<Nature40CatalogEntry>>();
+                for (const entry of sourcelist) {
+                    const group = entry.provider.type;
+                    if (groupedValues.has(group)) {
+                        groupedValues.get(group).push(entry);
+                    } else {
+                        groupedValues.set(group, [entry]);
+                    }
+                }
+
+                subject.next(groupedValues);
+            },
+            () => subject.error(new Error('Unable to retrieve Nature 4.0 catalog data')),
+            () => subject.complete(),
+        );
+
+        return subject;
     }
 
     /**
@@ -702,4 +738,21 @@ export class UserService {
             }));
     }
 
+}
+
+export interface Nature40CatalogEntry {
+    global_id: string;
+    title: string;
+    description: string;
+    user_url: string;
+    provider: {
+        type: string,
+        id: string,
+        url: string,
+    };
+    dataset: {
+        type: string,
+        id: string,
+        url: string,
+    };
 }

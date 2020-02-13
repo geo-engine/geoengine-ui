@@ -299,6 +299,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                     this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
                 } else {
                     this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
+                    // log out, because mapping session exists, but JWT token has become invalid
+                    this.userService.guestLogin().pipe(first()).subscribe();
                 }
             },
             error => {

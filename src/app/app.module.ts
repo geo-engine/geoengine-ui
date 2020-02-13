@@ -159,6 +159,9 @@ import {
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
+import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-in.directive';
+import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -205,6 +208,8 @@ export function configInitializer(config: Config) {
         IfGeoBonDirective,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
+        IfNature40LoggedInDirective,
+        IfNature40AndGuestDirective,
         IfGuestDirective,
         IfLoggedInDirective,
         LayerExportComponent,
@@ -248,6 +253,7 @@ export function configInitializer(config: Config) {
         MediaviewPlaylistComponent,
         MediaviewVideoComponent,
         MultiLayerSelectionComponent,
+        Nature40CatalogComponent,
         NavigationComponent,
         NbspPipe,
         NewProjectComponent,
@@ -352,6 +358,7 @@ export function configInitializer(config: Config) {
         MediaviewImageComponent,
         MediaviewImageDialogComponent,
         MediaviewVideoComponent,
+        Nature40CatalogComponent,
         NewProjectComponent,
         NumericAttributeFilterOperatorComponent,
         OlDrawFeaturesComponent,
