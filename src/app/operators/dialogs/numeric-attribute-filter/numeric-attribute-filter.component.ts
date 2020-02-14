@@ -26,27 +26,6 @@ import {LayoutService} from '../../../layout.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {MapService} from '../../../map/map.service';
 
-function minMax(control: AbstractControl): { [key: string]: boolean } {
-    const min = control.get('min').value;
-    const max = control.get('max').value;
-
-    const errors: {
-        minOverMax?: boolean,
-        noFilter?: boolean,
-    } = {};
-
-    if (min && max && max < min) {
-        errors.minOverMax = true;
-    }
-
-    if (!min && !max) {
-        errors.noFilter = true;
-    }
-
-    return Object.keys(errors).length > 0 ? errors : null;
-}
-
-
 /**
  * This component allows creating the numeric attribute filter operator.
  */
@@ -82,7 +61,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 min: [undefined],
                 max: [undefined]
             }, {
-                validator: minMax
+                validator: WaveValidators.minAndMax('min', 'max')
             }),
             noData: [false, Validators.required]
         });
