@@ -1,41 +1,79 @@
 <div class="component_container">
-    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
-        <mat-form-field>
-            <mat-label>Colormap name</mat-label>
-            <mat-select [(value)]="selectedColormapName">
-                <mat-option *ngFor="let colormapName of colormapNames" [value]="colormapName">
-                    {{colormapName}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
 
-        <mat-form-field>
-            <mat-label>Step distribution</mat-label>
-            <mat-select [(value)]=selectedColormapStepScales>
-                <mat-option *ngFor="let colormapStepScale of colormapStepScales" [value]="colormapStepScale">
-                    {{colormapStepScale}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="$event.preventDefault();generateAndApplyNewColorTable($event)" fxLayout="column">
 
-    <div>
-        <table>
-            <tr>
-                <td><span>Color steps</span></td>
-                <td>
-                    <mat-slider [(ngModel)]="selectedColormapSteps" [min]="2" [max]="maxColormapSteps" [tickInterval]="1" [thumbLabel]="true">
 
-                    </mat-slider>
-                </td>
-                <td>{{selectedColormapSteps}}</td>
-            </tr>
-        </table>
+        <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
 
-    </div>
+            <wave-histogram [height]="histogramHeight" [width]="histogramWidth"
+                            [selectable]="true" [interactable]="false"
+                            *ngIf="data$ | async" [data]="data$ | async"
+                            [minRange]="form.controls.bounds.value.min"
+                            [maxRange]="form.controls.bounds.value.max"
+                            (minRangeChange)="form.controls.bounds.controls.min.setValue($event)"
+                            (maxRangeChange)="form.controls.bounds.controls.max.setValue($event)"
+            ></wave-histogram>
+            <mat-progress-spinner mode="indeterminate" *ngIf="dataLoading$ | async"></mat-progress-spinner>
 
-    <div>
-        <button mat-raised-button (click)="generateAndApplyNewColorTable()">Generate and Apply</button>
-    </div>
+            <div
+                formGroupName="bounds"
+                class="flex-container"
+                fxLayout="row" fxLayoutAlign="space-between center"
+                fxLayout.xs="column" fxLayoutAlign.xs="start"
+            >
+                <mat-form-field class="flex-item" fxFlex>
+                    <input matInput type="number" step="any" placeholder="Min" formControlName="min">
+                    <mat-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
+                        Specify at least minimum or maximum.
+                    </mat-hint>
+                </mat-form-field>
+                <mat-form-field class="flex-item" fxFlex>
+                    <input matInput type="number" step="any" placeholder="Max" formControlName="max">
+                    <mat-hint class="error" *ngIf="form.controls.bounds.errors?.minOverMax">
+                        The maximum must be greater or equal to the minimum.
+                    </mat-hint>
+                </mat-form-field>
+            </div>
+
+            <mat-form-field>
+                <mat-label>Colormap name</mat-label>
+                <mat-select formControlName="colormapName">
+                    <mat-option *ngFor="let colormapName of colormapNames" [value]="colormapName">
+                        {{colormapName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Step distribution</mat-label>
+                <mat-select formControlName="colormapStepScales">
+                    <mat-option *ngFor="let colormapStepScale of boundedColormapStepScales" [value]="colormapStepScale">
+                        {{colormapStepScale.stepScaleName}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <table>
+                <tr>
+                    <td><span>Color steps</span></td>
+                    <td>
+                        <mat-slider formControlName="colormapSteps" [min]="2" [max]="maxColormapSteps" [tickInterval]="1"
+                                    [thumbLabel]="true">
+                        </mat-slider>
+                    </td>
+                    <td>{{form.controls.colormapSteps.value}}</td>
+                </tr>
+            </table>
+
+        </div>
+
+        <div class="actions">
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
+                Create
+            </button>
+        </div>
+    </form>
 
 </div>

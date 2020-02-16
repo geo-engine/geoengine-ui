@@ -5,9 +5,25 @@ import {colormap_inferno_data, colormap_magma_data, colormap_plasma_data, colorm
 
 export type MplColormapData = Array<[number, number, number]>;
 export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
-export type ColorMapStepScale = 'linear' | 'exponential_steps' | 'exponential_values' | 'log_steps' | 'log_values' | 'log_values_inverse' |
+export type ColormapStepScale = 'linear' | 'exponential_steps' | 'exponential_values' | 'log_steps' | 'log_values' | 'log_values_inverse' |
     'exponential_values_inverse';
 
+export interface BoundedMplColormapStepScale {
+    stepScaleName: ColormapStepScale;
+    mustBeGreaterThanValue?: number;
+    mustBeBelowValue?: number;
+}
+
+export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
+export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedMplColormapStepScale> = [
+    {stepScaleName: 'linear'},
+    {stepScaleName: 'exponential_steps'},
+    {stepScaleName: 'exponential_values'},
+    {stepScaleName: 'log_steps', mustBeGreaterThanValue: 0},
+    {stepScaleName: 'log_values', mustBeGreaterThanValue: 0},
+    {stepScaleName: 'log_values_inverse'},
+    {stepScaleName: 'exponential_values_inverse'}
+];
 
 export abstract class MplColormap {
 
@@ -24,19 +40,26 @@ export abstract class MplColormap {
         }
     }
 
-    private static calculateStepScales(steps: number, min: number, max: number, stepScale: ColorMapStepScale): Array<number> {
+    private static calculateStepScales(steps: number, min: number, max: number, stepScale: ColormapStepScale): Array<number> {
         switch (stepScale) {
-            case 'linear': return MplColormap.generateLinearStepFractions(steps);
-            case 'exponential_steps': return MplColormap.generateExpStepFractionsSteps(steps);
-            case 'exponential_values': return MplColormap.generateExpStepFractionsValues(steps, min, max);
-            case 'exponential_values_inverse' : return MplColormap.inverseStepFractions(
-                MplColormap.generateExpStepFractionsValues(steps, min, max)
-            );
-            case 'log_steps': return MplColormap.generateLogStepFractionsSteps(steps);
-            case 'log_values': return MplColormap.generateLogStepFractionsValues(steps, min, max);
-            case 'log_values_inverse' : return MplColormap.inverseStepFractions(
-                MplColormap.generateLogStepFractionsValues(steps, min, max)
-            );
+            case 'linear':
+                return MplColormap.generateLinearStepFractions(steps);
+            case 'exponential_steps':
+                return MplColormap.generateExpStepFractionsSteps(steps);
+            case 'exponential_values':
+                return MplColormap.generateExpStepFractionsValues(steps, min, max);
+            case 'exponential_values_inverse' :
+                return MplColormap.inverseStepFractions(
+                    MplColormap.generateExpStepFractionsValues(steps, min, max)
+                );
+            case 'log_steps':
+                return MplColormap.generateLogStepFractionsSteps(steps);
+            case 'log_values':
+                return MplColormap.generateLogStepFractionsValues(steps, min, max);
+            case 'log_values_inverse' :
+                return MplColormap.inverseStepFractions(
+                    MplColormap.generateLogStepFractionsValues(steps, min, max)
+                );
         }
     }
 
@@ -48,7 +71,7 @@ export abstract class MplColormap {
         mplColormapName: MplColormapName,
         min: number, max: number,
         steps: number | undefined = 16,
-        stepScale: ColorMapStepScale = 'log_values'
+        stepScale: ColormapStepScale = 'log_values'
     ) {
 
         const colormap = MplColormap.getMplColormapForName(mplColormapName);
