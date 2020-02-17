@@ -36,14 +36,17 @@
             <mat-form-field class="flex-item" fxFlex>
                 <input matInput type="number" step="any" placeholder="Min" formControlName="min">
                 <span matSuffix>{{attributeUnit$ | async}}</span>
-                <mat-hint class="error" *ngIf="form.controls.bounds.errors?.noFilter">
-                    Specify at least minimum or maximum.
+                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.controls.bounds.errors?.noFilter">Specify at least
+                    minimum or maximum.
+                </mat-hint>
+                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.controls.bounds.errors?.noFiniteNumber">The numbers
+                    must be valid and finite.
                 </mat-hint>
             </mat-form-field>
             <mat-form-field class="flex-item" fxFlex>
                 <input matInput type="number" step="any" placeholder="Max" formControlName="max">
                 <span matSuffix>{{attributeUnit$ | async}}</span>
-                <mat-hint class="error" *ngIf="form.controls.bounds.errors?.minOverMax">
+                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
                 </mat-hint>
             </mat-form-field>
@@ -55,7 +58,7 @@
             [suggestion]="'Filtered ' + (form.controls.pointLayer.valueChanges | async)?.name"
         >
             <mat-hint
-                align="end" class="error"
+                align="end" [ngClass]="{'mat-error': true, 'mat-hint': false}"
                 *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
             >
                 The name must be non-empty.
