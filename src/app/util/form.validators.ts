@@ -19,10 +19,10 @@ function minAndMax(controlMinName: string,
     if (!options) {
         options = {};
     }
-    if (options.checkBothExist === undefined) {
+    if (typeof options.checkBothExist !== 'boolean') { // default
         options.checkBothExist = false;
     }
-    if (options.checkOneExists === undefined) {
+    if (typeof options.checkOneExists !== 'boolean') { // default
         options.checkOneExists = true;
     }
 
@@ -33,18 +33,26 @@ function minAndMax(controlMinName: string,
         const errors: {
             minOverMax?: boolean,
             noFilter?: boolean,
+            noFiniteNumber?: boolean,
         } = {};
 
-        if (min && max && max < min) {
+        const validMin = isFiniteNumber(min);
+        const validMax = isFiniteNumber(max);
+
+        if (validMin && validMax && max < min) {
             errors.minOverMax = true;
         }
 
-        if (options.checkOneExists && (!min && !max)) {
+        if (options.checkOneExists && (!validMin && !validMax)) {
             errors.noFilter = true;
         }
 
-        if (options.checkBothExist && (!min || !max)) {
+        if (options.checkBothExist && (!validMin || !validMax)) {
             errors.noFilter = true;
+        }
+
+        if ((!validMin && min !== undefined && min !== null) || (!validMax && max !== undefined && max !== null)) {
+            errors.noFiniteNumber = true;
         }
 
         return Object.keys(errors).length > 0 ? errors : null;
@@ -121,10 +129,12 @@ function notOnlyWhitespace(control: AbstractControl) {
 
 function isNumber(control: AbstractControl) {
     const value = control.value;
-    const isInvalid = value === null || value === undefined || isNaN(value) || !isFinite(value);
-    return isInvalid ? {'isNoNumber': true} : null;
+    return isFiniteNumber(value) ? null : {isNoNumber: true};
 }
 
+function isFiniteNumber(value: any): boolean {
+    return value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+}
 
 export const WaveValidators = {
     conditionalValidator: conditionalValidator,
