@@ -1,4 +1,3 @@
-
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
@@ -127,3 +126,93 @@ export const WaveValidators = {
     notOnlyWhitespace: notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
 };
+
+/**
+ * checks if a value is undefined or null
+ * @param value
+ */
+function nullOrUndefined(value: any) {
+    return value === undefined || value === null;
+}
+
+/**
+ * This Validator checks if a value is greater (or equal) to the provided minimum.
+ * @param controlValueProvider: function deriving the value of the control
+ * @param minValueProvider: function deriving the min value
+ * @param options: {checkEqual: true} enables checking for equal values
+ */
+export function valueAboveMin(
+    controlValueProvider: (control: AbstractControl) => number,
+    minValueProvider: (control: AbstractControl) => number,
+    options?: {
+        checkEqual?: boolean,
+    }) {
+    if (!options) {
+        options = {};
+    }
+
+    return (control: AbstractControl): { [key: string]: boolean } => {
+        const value = controlValueProvider(control);
+        const min = minValueProvider(control);
+
+        const errors: {
+            valueBelowMin?: boolean,
+            valueEqualsMin?: boolean,
+            noFilter?: boolean,
+        } = {};
+
+        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(min) && value === min) {
+            errors.valueEqualsMin = true;
+        }
+
+        if (!nullOrUndefined(value) && !nullOrUndefined(min) && value < min) {
+            errors.valueBelowMin = true;
+        }
+        if (nullOrUndefined(value)) {
+            errors.noFilter = true;
+        }
+
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+}
+
+/**
+ * This Validator checks if a value is below (or equal) to the provided maximum.
+ * @param controlValueProvider: function deriving the value of the control
+ * @param maxValueProvider: function deriving the min value
+ * @param options: {checkEqual: true} enables checking for equal values
+ */
+export function valueBelowMax(
+    controlValueProvider: (control: AbstractControl) => number,
+    maxValueProvider: (control: AbstractControl) => number,
+    options?: {
+        checkEqual?: boolean
+    }) {
+    if (!options) {
+        options = {};
+    }
+
+    return (control: AbstractControl): { [key: string]: boolean } => {
+        const value = controlValueProvider(control);
+        const max = maxValueProvider(control);
+
+        const errors: {
+            valueAboveMax?: boolean,
+            valueEqualsMax?: boolean,
+            noFilter?: boolean,
+        } = {};
+
+        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(max) && value === max) {
+            errors.valueEqualsMax = true;
+        }
+
+        if (!nullOrUndefined(value) && !nullOrUndefined(max) && value > max) {
+            errors.valueAboveMax = true;
+        }
+        if (nullOrUndefined(value)) {
+            errors.noFilter = true;
+        }
+
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+}

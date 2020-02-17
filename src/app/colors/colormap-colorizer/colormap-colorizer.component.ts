@@ -1,13 +1,4 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component, ElementRef, EventEmitter,
-    Input,
-    OnChanges, OnDestroy,
-    Output,
-    SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ColorizerData} from '../colorizer-data.model';
 import {
     BoundedMplColormapStepScale,
@@ -17,9 +8,8 @@ import {
     MplColormapName
 } from '../mpl-colormaps/mpl-colormap.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {WaveValidators} from '../../util/form.validators';
-import {BehaviorSubject, Subscription} from 'rxjs';
-import {LayoutService} from '../../layout.service';
+import {valueAboveMin, valueBelowMax, WaveValidators} from '../../util/form.validators';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'wave-colormap-colorizer',
@@ -27,7 +17,7 @@ import {LayoutService} from '../../layout.service';
     styleUrls: ['colormap-colorizer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColormapColorizerComponent implements OnChanges, AfterViewInit, OnDestroy {
+export class ColormapColorizerComponent implements OnInit, OnDestroy {
 
     @Output() colormapColorizerData = new EventEmitter<ColorizerData>();
     @Input() defaultNumberOfSteps = 16;
@@ -35,40 +25,37 @@ export class ColormapColorizerComponent implements OnChanges, AfterViewInit, OnD
 
     colormapNames = MPL_COLORMAP_NAMES;
     boundedColormapStepScales = COLORMAP_STEP_SCALES_WITH_BOUNDS;
-
     form: FormGroup;
-    dataLoading$ = new BehaviorSubject(false);
-    histogramWidth: number;
-    histogramHeight: number;
-    private subscriptions: Array<Subscription> = new Array<Subscription>();
+    colorizerData: ColorizerData = MplColormap.createColorizerDataWithName(this.colormapNames[0], 0, 1);
+    subscriptions: Array<Subscription> = [];
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
-        private elementRef: ElementRef,
     ) {
         this.form = formBuilder.group({
-            bounds: formBuilder.group({
-                min: [undefined],
-                max: [undefined]
+                bounds: formBuilder.group({
+                    min: [0],
+                    max: [1]
+                }, {
+                    validators: [WaveValidators.minAndMax('min', 'max', {checkBothExist: true})]
+                }),
+                colormapName: [this.colormapNames[0], [Validators.required]],
+                colormapSteps: [this.defaultNumberOfSteps, [Validators.required, Validators.min(2)]],
+                colormapStepScales: [this.boundedColormapStepScales[0]]
             }, {
-                validator: WaveValidators.minAndMax('min', 'max')
-            }),
-            colormapName: [this.colormapNames[0], [Validators.required]],
-            colormapSteps: [this.defaultNumberOfSteps, [Validators.required, Validators.min(2)]],
-            colormapStepScales: [this.boundedColormapStepScales[0]]
-        });
-    }
-
-    ngAfterViewInit() {
-        // calculate size for histogram
-        const formStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('form'));
-        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx() - LayoutService.scrollbarWidthPx();
-        const formHeight = parseInt(formStyle.height, 10) - 2 * LayoutService.remInPx();
-
-        this.histogramWidth = formWidth;
-        this.histogramHeight = Math.max(formHeight / 3, formWidth / 3);
-
+                validators: [
+                    valueAboveMin(
+                        c => c.get('bounds').get('min').value, c => c.get('colormapStepScales').value['requiresValueAbove'],
+                        {checkEqual: true}
+                    ),
+                    valueBelowMax(
+                        c => c.get('bounds').get('max').value, c => c.get('colormapStepScales').value['requiresValueBelow'],
+                        {checkEqual: true}
+                    )
+                ]
+            }
+        );
     }
 
     checkValidConfig() {
@@ -87,43 +74,55 @@ export class ColormapColorizerComponent implements OnChanges, AfterViewInit, OnD
         if (boundsMin >= boundsMax) {
             return false;
         }
-        if (boundedColormapStepScales.mustBeGreaterThanValue && boundsMin <= boundedColormapStepScales.mustBeGreaterThanValue) {
+        if (boundedColormapStepScales.requiresValueAbove && boundsMin <= boundedColormapStepScales.requiresValueAbove) {
             return false;
         }
-        if (boundedColormapStepScales.mustBeBelowValue && boundsMax >= boundedColormapStepScales.mustBeBelowValue) {
+        if (boundedColormapStepScales.requiresValueBelow && boundsMax >= boundedColormapStepScales.requiresValueBelow) {
             return false;
         }
         return true;
     }
 
-    generateAndApplyNewColorTable(event: any) {
-        if (!this.checkValidConfig()) {
-            throw new Error('invalid colormap colorizer generation input');
-        }
+    removeColorizerData() {
+        this.colorizerData = undefined;
+    }
 
+    updateColorizerData() {
+        if (!this.checkValidConfig()) {
+            this.colorizerData = undefined;
+            return;
+        }
         const colormapName: MplColormapName = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedMplColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
 
-        const colorizerData = MplColormap.creatColorizerDataWithName(
+        const colorizerData = MplColormap.createColorizerDataWithName(
             colormapName, boundsMin, boundsMax, colormapSteps, boundedColormapStepScales.stepScaleName
         );
-        this.colormapColorizerData.emit(colorizerData);
+
+        this.colorizerData = colorizerData;
     }
 
-    ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        for (let propName in changes) { // tslint:disable-line:forin
-            switch (propName) {
-                default: {// DO NOTHING
-                }
-
-            }
+    applyNewColorTable(_: any) {
+        if (this.colorizerData) {
+            this.colormapColorizerData.emit(this.colorizerData);
         }
     }
+
+    ngOnInit(): void {
+        const sub = this.form.valueChanges.subscribe(_ => {
+            if (this.form.invalid) {
+                this.removeColorizerData();
+            }
+            this.updateColorizerData();
+        });
+        this.subscriptions.push(sub);
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(s => s.unsubscribe());
+    }
+
 }

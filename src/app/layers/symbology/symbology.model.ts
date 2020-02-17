@@ -500,7 +500,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     constructor(config: IColorizerRasterSymbology) {
         super(config);
         this.colorizer = (config.colorizer) ? new ColorizerData(config.colorizer)
-            : MplColormap.creatColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
+            : MplColormap.createColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
         this.noDataColor = (config.noDataColor) ? new ColorBreakpoint(config.noDataColor)
             : new ColorBreakpoint({rgba: TRANSPARENT, value: 'NoData'});
         this.overflowColor = (config.overflowColor) ? new ColorBreakpoint(config.overflowColor)

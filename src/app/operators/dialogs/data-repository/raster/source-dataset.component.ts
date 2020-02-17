@@ -103,7 +103,7 @@ export class SourceDatasetComponent implements OnInit {
 
         // if there is no colorizer data defined for the channel, create a 'viridis' coloring with min, max bounds
         let colorizerConfig = (channel.colorizer && ColorizerData.is_valid(channel.colorizer)) ? channel.colorizer
-            : MplColormap.creatColorizerDataWithName(
+            : MplColormap.createColorizerDataWithName(
                 'VIRIDIS', unit.min, unit.max
             );
 
