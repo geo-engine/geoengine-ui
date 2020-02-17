@@ -159,6 +159,7 @@ import {
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -313,6 +314,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
+        RasterMaskComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -360,6 +362,7 @@ export function configInitializer(config: Config) {
         PlotDetailViewComponent,
         PlotListComponent,
         PointInPolygonFilterOperatorComponent,
+        RasterMaskComponent,
         RasterPolygonClipOperatorComponent,
         RasterValueExtractionOperatorComponent,
         RenameLayerComponent,
