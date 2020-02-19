@@ -7,7 +7,8 @@
     </wave-dialog-help>
     <div class="container mat-typography">
         <wave-layer-selection title="Raster" [types]="RASTER_TYPE" formControlName="input"></wave-layer-selection>
-        <wave-layer-selection title="Mask" [types]="RASTER_TYPE" formControlName="mask"></wave-layer-selection>
+        <wave-layer-selection title="Mask" [types]="RASTER_TYPE" [layers]="availableMaskLayers$ | async"
+                              formControlName="mask"></wave-layer-selection>
         <wave-operator-output-name formControlName="name" suggestion="Mask of">
             <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
