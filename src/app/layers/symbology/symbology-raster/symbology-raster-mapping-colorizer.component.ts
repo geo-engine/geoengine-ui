@@ -63,6 +63,14 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
         }
     }
 
+    get colorizerMinValue(): number | undefined {
+        return this.symbology.colorizer.firstBreakpoint.value as number;
+    }
+
+    get colorizerMaxValue(): number | undefined {
+        return this.symbology.colorizer.lastBreakpoint.value as number;
+    }
+
     update() {
         this.symbologyChanged.emit(this.symbology.clone());
     }

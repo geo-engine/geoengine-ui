@@ -2,7 +2,7 @@ import {Interpolation, Unit, UnitDict} from '../../operators/unit.model';
 import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
 import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
-import {MplColormap} from '../../colors/mpl-colormaps/mpl-colormap.model';
+import {Colormap} from '../../colors/colormaps/colormap.model';
 
 export enum SymbologyType {
     RASTER,
@@ -500,7 +500,7 @@ export class MappingColorizerRasterSymbology extends RasterSymbology
     constructor(config: IColorizerRasterSymbology) {
         super(config);
         this.colorizer = (config.colorizer) ? new ColorizerData(config.colorizer)
-            : MplColormap.creatColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
+            : Colormap.createColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
         this.noDataColor = (config.noDataColor) ? new ColorBreakpoint(config.noDataColor)
             : new ColorBreakpoint({rgba: TRANSPARENT, value: 'NoData'});
         this.overflowColor = (config.overflowColor) ? new ColorBreakpoint(config.overflowColor)

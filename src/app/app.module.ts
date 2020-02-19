@@ -157,6 +157,7 @@ import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
+import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 
@@ -313,6 +314,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
+        ColormapColorizerComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -381,6 +383,7 @@ export function configInitializer(config: Config) {
         TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
+        ColormapColorizerComponent
     ],
     providers: [
         {
