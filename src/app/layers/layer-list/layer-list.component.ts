@@ -96,6 +96,8 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showChannelParameterSlider(layer: Layer<AbstractSymbology>): boolean {
-        return layer.operator.operatorType.toString() === 'GDAL Source' && !!layer.operator.operatorTypeParameterOptions;
+        return layer.operator.operatorType.toString() === 'GDAL Source'
+            && !!layer.operator.operatorTypeParameterOptions
+            && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();
     }
 }

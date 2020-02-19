@@ -43,6 +43,7 @@ import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {TimePlotType, TimePlotTypeDict} from './timeplot-type.model';
 import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
+import {SpectralOverviewPlotType, SpectralOverviewPlotTypeDict} from './spectral-overview-plot-type.model';
 
 /**
  * A simple factory for de-serializing operator types.
@@ -115,6 +116,8 @@ export abstract class OperatorTypeFactory {
                 return HeatmapType.fromDict(dict as HeatmapTypeDict);
             case SensorSourceType.TYPE:
                 return SensorSourceType.fromDict(dict as SensorSourceTypeDict);
+            case SpectralOverviewPlotType.TYPE:
+                return SpectralOverviewPlotType.fromDict(dict as SpectralOverviewPlotTypeDict);
             case TerminologyLookupType.TYPE:
                 return TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict);
             case StatisticsType.TYPE:

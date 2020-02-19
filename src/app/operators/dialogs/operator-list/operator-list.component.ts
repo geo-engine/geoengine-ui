@@ -37,9 +37,11 @@ import {TimePlotType} from '../../types/timeplot-type.model';
 import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
-import {CreateRgbCompositeComponent} from '../create-rgb/create-rgb-composite.component';
+import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 import {Config} from '../../../config.service';
+import {SpectralOverviewPlotComponent} from '../spectral-overview-plot/spectral-overview-plot.component';
+import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
 
 interface OperatorListType {
     component: Type<any>;
@@ -91,6 +93,11 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         description: 'Box plot your data'
     },
     {
+        component: SpectralOverviewPlotComponent,
+        type: SpectralOverviewPlotType,
+        description: SpectralOverviewPlotType.NAME,
+    },
+    {
         component: StatisticsPlotComponent,
         type: StatisticsType,
         description: 'Get statistics for any layer'
@@ -109,7 +116,7 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
         description: 'Calculate an expression on a raster',
     },
     {
-        component: CreateRgbCompositeComponent,
+        component: RgbCompositeComponent,
         type: RgbaCompositeType,
         description: 'Create an RGB composite from a set of rasters',
     }

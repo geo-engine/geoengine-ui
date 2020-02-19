@@ -1,4 +1,3 @@
-
 import {
     BehaviorSubject, Observable, Subject, combineLatest as observableCombineLatest, throwError as observableThrowError, EMPTY,
     of as observableOf
@@ -603,6 +602,7 @@ export class UserService {
                                         datatype: channel.datatype,
                                         nodata: channel.nodata,
                                         unit: channelUnit,
+                                        methodology: channel.methodology,
                                         colorizer: channelColorizer,
                                         hasTransform: !!channel.transform,
                                         isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
