@@ -1,6 +1,6 @@
 import {
     BehaviorSubject, Observable, Subject, combineLatest, throwError as observableThrowError, EMPTY,
-    of as observableOf
+    of as observableOf, ReplaySubject,
 } from 'rxjs';
 
 import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
@@ -216,7 +216,7 @@ export class UserService {
                     });
                 }
             }),
-            map(([session, success]) => success as boolean), );
+            map(([_, success]) => success as boolean));
     }
 
     guestLogin(): Observable<boolean> {
@@ -224,6 +224,105 @@ export class UserService {
             user: this.config.USER.GUEST.NAME,
             password: this.config.USER.GUEST.PASSWORD,
         });
+    }
+
+    /**
+     * Login using a JSON Web Token (JWT).
+     * If it was successful, set a new user.
+     * @param token The user's token.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    nature40JwtTokenLogin(token: string): Observable<boolean> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'login',
+            parameters: {token: token},
+        });
+
+        return this.loginRequestToUserDetails(parameters);
+    }
+
+    private loginRequestToUserDetails(parameters: MappingRequestParameters) {
+        const subject = new Subject<boolean>();
+
+        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+            mergeMap(response => {
+                const success = (typeof response.result === 'boolean') && response.result;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: response.session})
+                        .pipe(
+                            tap(user => {
+                                this.session$.next({
+                                    user: user.name,
+                                    sessionToken: response.session,
+                                    staySignedIn: false,
+                                    isExternallyConnected: true,
+                                });
+                            }),
+                            map(_ => true)
+                        );
+                } else {
+                    return observableOf(false);
+                }
+            }))
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+        return subject;
+    }
+
+    /**
+     * Retrieve the signed JWT client token.
+     */
+    getNature40JwtClientToken(): Observable<{ clientToken: string }> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'clientToken',
+            parameters: {},
+        });
+
+        return this.request<{ result: string | boolean, clientToken: string }>(parameters);
+    }
+
+    getNature40Catalog(): Observable<Map<string, Array<Nature40CatalogEntry>>> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: this.getSession().sessionToken,
+            request: 'sourcelist',
+            parameters: {},
+        });
+
+        const subject = new ReplaySubject<Map<string, Array<Nature40CatalogEntry>>>(1);
+
+        this.request<{ result: boolean | string, sourcelist?: Array<Nature40CatalogEntry> }>(parameters).subscribe(
+            ({result, sourcelist}) => {
+                if (typeof result === 'string') { // unsuccessful
+                    subject.error(new Error(result));
+                    return;
+                }
+
+                const groupedValues = new Map<string, Array<Nature40CatalogEntry>>();
+                for (const entry of sourcelist) {
+                    const group = entry.provider.type;
+                    if (groupedValues.has(group)) {
+                        groupedValues.get(group).push(entry);
+                    } else {
+                        groupedValues.set(group, [entry]);
+                    }
+                }
+
+                subject.next(groupedValues);
+            },
+            () => subject.error(new Error('Unable to retrieve Nature 4.0 catalog data')),
+            () => subject.complete(),
+        );
+
+        return subject;
     }
 
     /**
@@ -443,34 +542,7 @@ export class UserService {
             parameters: {token: token},
         });
 
-        const subject = new Subject<boolean>();
-
-        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-            mergeMap(response => {
-                const success = typeof response.result === 'boolean' && response.result === true;
-
-                if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: response.session}).pipe(
-                        tap(user => {
-                            this.session$.next({
-                                user: user.name,
-                                sessionToken: response.session,
-                                staySignedIn: false,
-                                isExternallyConnected: true,
-                            });
-                        }),
-                        map(user => true), );
-                } else {
-                    return observableOf(false);
-                }
-            }))
-            .subscribe(
-                success => subject.next(success),
-                () => subject.next(false),
-                () => subject.complete()
-            );
-
-        return subject;
+        return this.loginRequestToUserDetails(parameters);
     }
 
     setIntroductoryPopup(show: boolean) {
@@ -612,7 +684,7 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }), );
+                    }),);
             }));
     }
 
@@ -685,4 +757,21 @@ export class UserService {
         } as SourceRasterLayerDescription;
     }
 
+}
+
+export interface Nature40CatalogEntry {
+    global_id: string;
+    title: string;
+    description: string;
+    user_url: string;
+    provider: {
+        type: string,
+        id: string,
+        url: string,
+    };
+    dataset: {
+        type: string,
+        id: string,
+        url: string,
+    };
 }
