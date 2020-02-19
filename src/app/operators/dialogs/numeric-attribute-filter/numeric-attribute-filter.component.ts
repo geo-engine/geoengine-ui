@@ -1,10 +1,9 @@
-
 import {BehaviorSubject, Observable, Subscription, combineLatest as observableCombineLatest} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy} from '@angular/core';
 
-import {HistogramData} from '../../../plots/histogram.component';
+import {HistogramData} from '../../../plots/histogram/histogram.component';
 
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
@@ -16,7 +15,7 @@ import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
 } from '../../../layers/symbology/symbology.model';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../../types/histogram-type.model';
@@ -59,9 +58,9 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             attribute: [undefined, Validators.required],
             bounds: formBuilder.group({
                 min: [undefined],
-                max: [undefined]
+                max: [undefined],
             }, {
-                validator: WaveValidators.minAndMax('min', 'max')
+                validator: WaveValidators.minAndMax('min', 'max'),
             }),
             noData: [false, Validators.required]
         });
@@ -160,7 +159,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
-    add(event: any) {
+    add(_event: any) {
         const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 
@@ -179,8 +178,8 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             operatorType: new NumericAttributeFilterType({
                 attributeName: attributeName,
                 includeNoData: noData,
-                rangeMin: boundsMin,
-                rangeMax: boundsMax,
+                rangeMin: boundsMin === null ? undefined : boundsMin,
+                rangeMax: boundsMax === null ? undefined : boundsMax,
             }),
             resultType: ResultTypes.POINTS,
             projection: vectorOperator.projection,

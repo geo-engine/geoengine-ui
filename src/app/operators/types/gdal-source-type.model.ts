@@ -1,4 +1,5 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
+import {MappingRasterMethodology} from '../dialogs/data-repository/mapping-source.model';
 
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
@@ -10,6 +11,7 @@ interface GdalSourceTypeConfig {
 export interface GdalSourceChannelOptions {
     displayValue: string;
     channelNumber: number;
+    methodology?: MappingRasterMethodology;
 }
 
 export interface GdalSourceTypeCloneOptions {

@@ -1,4 +1,3 @@
-///<reference path="operators/dialogs/terminology-lookup/terminology-lookup.component.ts"/>
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -52,7 +51,7 @@ import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.c
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
 import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
-import {HistogramComponent} from './plots/histogram.component';
+import {HistogramComponent} from './plots/histogram/histogram.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
@@ -154,12 +153,13 @@ import {
 import {
     LayerStatisticsTextualDetailsComponent
 } from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
-import {CreateRgbCompositeComponent} from './operators/dialogs/create-rgb/create-rgb-composite.component';
 import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
 import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
+import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
+import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -288,6 +288,7 @@ export function configInitializer(config: Config) {
         SidenavSearchComponent,
         SidenavSearchRightDirective,
         SmallTimeInteractionComponent,
+        SpectralOverviewPlotComponent,
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SplashDialogComponent,
@@ -312,7 +313,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsViewComponent,
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
-        CreateRgbCompositeComponent,
+        RgbCompositeComponent,
         ColormapColorizerComponent
     ],
     imports: [
@@ -333,7 +334,7 @@ export function configInitializer(config: Config) {
         ChangeProjectionComponent,
         ColorizerEditorComponent,
         CountryPolygonSelectionComponent,
-        CreateRgbCompositeComponent,
+        RgbCompositeComponent,
         CsvDialogComponent,
         CsvErrorDialog,
         DataRepositoryComponent,
@@ -370,6 +371,7 @@ export function configInitializer(config: Config) {
         SaveProjectAsComponent,
         ScatterPlotComponent,
         SensorSourceOperatorComponent,
+        SpectralOverviewPlotComponent,
         SourceOperatorListComponent,
         StatisticsPlotComponent,
         SplashDialogComponent,

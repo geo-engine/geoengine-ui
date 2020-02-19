@@ -19,32 +19,40 @@ function minAndMax(controlMinName: string,
     if (!options) {
         options = {};
     }
-    if (options.checkBothExist === undefined) {
+    if (typeof options.checkBothExist !== 'boolean') { // default
         options.checkBothExist = false;
     }
-    if (options.checkOneExists === undefined) {
+    if (typeof options.checkOneExists !== 'boolean') { // default
         options.checkOneExists = true;
     }
 
-    return (control: AbstractControl): {[key: string]: boolean} => {
+    return (control: AbstractControl): { [key: string]: boolean } => {
         const min = control.get(controlMinName).value;
         const max = control.get(controlMaxName).value;
 
         const errors: {
             minOverMax?: boolean,
             noFilter?: boolean,
+            noFiniteNumber?: boolean,
         } = {};
 
-        if (min && max && max < min) {
+        const validMin = isFiniteNumber(min);
+        const validMax = isFiniteNumber(max);
+
+        if (validMin && validMax && max < min) {
             errors.minOverMax = true;
         }
 
-        if (options.checkOneExists && (!min && !max)) {
+        if (options.checkOneExists && (!validMin && !validMax)) {
             errors.noFilter = true;
         }
 
-        if (options.checkBothExist && (!min || !max)) {
+        if (options.checkBothExist && (!validMin || !validMax)) {
             errors.noFilter = true;
+        }
+
+        if ((!validMin && min !== undefined && min !== null) || (!validMax && max !== undefined && max !== null)) {
+            errors.noFiniteNumber = true;
         }
 
         return Object.keys(errors).length > 0 ? errors : null;
@@ -57,9 +65,9 @@ function minAndMax(controlMinName: string,
  * @param condition
  * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
  */
-function conditionalValidator(validator: (control: AbstractControl) => {[key: string]: boolean},
+function conditionalValidator(validator: (control: AbstractControl) => { [key: string]: boolean },
                               condition: () => boolean) {
-    return (control: AbstractControl): {[key: string]: boolean} => {
+    return (control: AbstractControl): { [key: string]: boolean } => {
         if (condition()) {
             return validator(control);
         } else {
@@ -85,9 +93,9 @@ function keywordValidator(keywords: Array<string>) {
  * @returns {(control:AbstractControl)=>Observable<{[p: string]: boolean}>}
  */
 function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
+    return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
 
-        return Observable.create((observer: Observer<{[key: string]: boolean}>) => {
+        return Observable.create((observer: Observer<{ [key: string]: boolean }>) => {
             storageService.projectExists(control.value as string).pipe(
                 map(projectExists => {
                     const errors: {
@@ -119,8 +127,18 @@ function notOnlyWhitespace(control: AbstractControl) {
     return text.trim().length <= 0 ? {'onlyWhitespace': true} : null;
 }
 
+function isNumber(control: AbstractControl) {
+    const value = control.value;
+    return isFiniteNumber(value) ? null : {isNoNumber: true};
+}
+
+function isFiniteNumber(value: any): boolean {
+    return value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+}
+
 export const WaveValidators = {
     conditionalValidator: conditionalValidator,
+    isNumber: isNumber,
     keyword: keywordValidator,
     minAndMax: minAndMax,
     notOnlyWhitespace: notOnlyWhitespace,
