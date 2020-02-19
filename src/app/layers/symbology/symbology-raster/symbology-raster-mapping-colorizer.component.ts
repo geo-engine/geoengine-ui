@@ -1,9 +1,10 @@
-import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit} from '@angular/core';
 
 import {MappingColorizerRasterSymbology} from '../symbology.model';
 import {MatSliderChange} from '@angular/material';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {RasterLayer} from '../../layer.model';
 
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',
@@ -11,31 +12,18 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
     styleUrls: ['symbology-raster-mapping-colorizer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyRasterMappingColorizerComponent implements OnChanges {
+export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnInit {
 
-    _symbology: MappingColorizerRasterSymbology;
+    @Input() layer: RasterLayer<MappingColorizerRasterSymbology>;
+    @Output() symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> = new EventEmitter<MappingColorizerRasterSymbology>();
 
-    @Input()
-    set symbology(symbology: MappingColorizerRasterSymbology) {
-        // console.log('SymbologyRasterMappingColorizerComponent', 'set symbology');
-        if (symbology && !symbology.equals(this._symbology)) {
-            this._symbology = symbology; // TODO: figure out if this should clone;
-            // console.log('SymbologyRasterMappingColorizerComponent', 'set symbology', 'replaced');
-        }
+    symbology: MappingColorizerRasterSymbology;
+
+    constructor() {
     }
-
-    get symbology(): MappingColorizerRasterSymbology {
-        return this._symbology;
-    }
-
-    @Output('symbologyChanged') symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> =
-        new EventEmitter<MappingColorizerRasterSymbology>();
-
-    constructor() {}
 
     updateOpacity(event: MatSliderChange) {
-        // console.log("updateOpacity");
-        this.symbology.opacity = (!event.value || event.value === 0) ? 0 : event.value / 100;
+        this.symbology.opacity = (event.value === undefined || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
@@ -56,7 +44,6 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
     }
 
     updateColorizer(event: ColorizerData) {
-        // console.log("updateColorizer", event, this.symbology.colorizer, !event.equals(this.symbology.colorizer));
         if (event && !event.equals(this.symbology.colorizer)) {
             this.symbology.colorizer = event;
             this.update();
@@ -71,6 +58,13 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
         return this.symbology.colorizer.lastBreakpoint.value as number;
     }
 
+    updateSymbologyFromLayer() {
+        if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
+            return;
+        }
+        this.symbology = this.layer.symbology;
+    }
+
     update() {
         this.symbologyChanged.emit(this.symbology.clone());
     }
@@ -79,11 +73,17 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges {
         // this.changeDetectorRef.markForCheck(); // TODO: only markForCheck if there is a change!
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
-
+                case 'layer':
+                    this.updateSymbologyFromLayer();
+                    break;
                 default: // DO NOTHING
-                    // console.log('SymbologyRasterMappingColorizerComponent', 'ngOnChanges', 'default: ', propName)
+                // console.log('SymbologyRasterMappingColorizerComponent', 'ngOnChanges', 'default: ', propName)
 
             }
         }
+    }
+
+    ngOnInit(): void {
+        this.updateSymbologyFromLayer();
     }
 }
