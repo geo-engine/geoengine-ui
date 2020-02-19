@@ -1,9 +1,9 @@
 <wave-sidenav-header>Nature 4.0 Catalog</wave-sidenav-header>
 <ng-container [ngSwitch]="(catalog$ | async)?.size">
-    <div *ngSwitchCase="undefined" class="error">
+    <div *ngSwitchCase="undefined" class="info">
         <mat-spinner></mat-spinner>
     </div>
-    <div *ngSwitchCase="0" class="error mat-typography"><p>The catalog is currently empty.</p></div>
+    <div *ngSwitchCase="0" class="info mat-typography"><p>The catalog is currently empty.</p></div>
     <mat-list *ngSwitchDefault>
         <ng-template ngFor let-group [ngForOf]="(catalog$ | async) | keyvalue">
             <h3 mat-subheader fxLayout="row">
