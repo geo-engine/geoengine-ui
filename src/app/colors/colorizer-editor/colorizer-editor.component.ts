@@ -21,7 +21,7 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorizerEditorComponent), multi: true},
     ],
 })
-export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges, AfterViewInit {
+export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges {
 
     _colorizer: ColorizerData = undefined;
     onTouched: () => void;
@@ -33,10 +33,8 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
 
     set colorizer(clr: ColorizerData) {
         if (clr && (!clr.equals(this._colorizer))) {
-            // console.log("ColorizerEditorComponent", 'set colorizer', clr, this._colorizer, clr.equals(this._colorizer));
             this._colorizer = clr.clone();
             this.notify();
-            // this.changeDetectorRef.markForCheck();
         }
     }
 
@@ -56,24 +54,19 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
-                case 'colorPlaceholder':
-                {
+                case 'colorPlaceholder': {
                     this.changeDetectorRef.markForCheck();
                     break;
                 }
 
                 default: {// DO NOTHING
-                    // console.log('ColorizerEditorComponent', 'ngOnChanges', 'default: ', propName)
                 }
 
             }
         }
-
-        // this.changeDetectorRef.markForCheck();
     }
 
     updateType(type: ColorizerType) {
-        // console.log('updateType', type);
         if (type && this._colorizer) {
             const diff = this._colorizer.updateType(type);
             if (diff) {
@@ -86,9 +79,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         // TODO: check if this is valid
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
             const diff = this._colorizer.updateBreakpointAt(i, brk);
-            // if (diff) {
-                this.notify();
-            // }
+            this.notify();
         }
     }
 
@@ -111,15 +102,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     notify() {
-        // console.log('ColorizerEditorComponent', 'notify', this);
-
         if (this.onChange && this._colorizer) {
             this.onChange(this._colorizer.clone());
         }
-    }
-
-    ngAfterViewInit() {
-        // setTimeout(() => this.changeDetectorRef.markForCheck(), 10);
     }
 
     registerOnChange(fn: (_: ColorizerData) => void): void {

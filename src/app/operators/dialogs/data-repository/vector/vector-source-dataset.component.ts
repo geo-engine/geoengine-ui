@@ -1,7 +1,7 @@
 
 import {of as observableOf, Observable} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {MappingSource, MappingSourceRasterLayer, MappingSourceVectorLayer} from '../mapping-source.model';
+import {MappingSource, SourceRasterLayerDescription, SourceVectorLayerDescription} from '../mapping-source.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import { VectorLayer} from '../../../../layers/layer.model';
@@ -16,7 +16,7 @@ import {DataSource} from '@angular/cdk/table';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {OgrSourceType} from '../../../types/ogr-source-type.model';
 import {ResultTypes} from '../../../result-type.model';
-import {RgbaLike, WHITE} from '../../../../colors/color';
+import {WHITE} from '../../../../colors/color';
 
 @Component({
     selector: 'wave-vector-source-dataset',
@@ -48,13 +48,13 @@ export class VectorSourceDatasetComponent implements OnInit {
         this._tableSource = new LayerTableDataSource(this.dataset.vectorLayer);
     }
 
-    add(layer: MappingSourceVectorLayer) {
+    add(layer: SourceVectorLayerDescription) {
 
         let operator;
         if (this.dataset.operator === OgrSourceType.TYPE) {
             operator = this.createOgrSourceOperator(layer);
         } else {
-            throw new Error('Unsupported operator: ' + this.dataset.operator)
+            throw new Error('Unsupported operator: ' + this.dataset.operator);
         }
 
         let clustered = false;
@@ -97,8 +97,8 @@ export class VectorSourceDatasetComponent implements OnInit {
         this.projectService.addLayer(l);
     }
 
-    get layers(): Array<MappingSourceVectorLayer> {
-        return this.dataset.vectorLayer
+    get layers(): Array<SourceVectorLayerDescription> {
+        return this.dataset.vectorLayer;
     }
 
     get layerTableDataSource(): LayerTableDataSource {
@@ -123,11 +123,10 @@ export class VectorSourceDatasetComponent implements OnInit {
 
     /**
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
-     * @param {MappingSourceRasterLayer} channel
-     * @param {boolean} doTransform
+     * @param {SourceVectorLayerDescription} channel
      * @returns {Operator}
      */
-    createOgrSourceOperator(layer: MappingSourceVectorLayer): Operator {
+    createOgrSourceOperator(layer: SourceVectorLayerDescription): Operator {
         const sourceDataType = ResultTypes.fromCode(layer.geometryType); // TODO: move this to the user service?
         let sourceProjection: Projection;
         if (layer.coords.crs) {
@@ -159,15 +158,15 @@ export class VectorSourceDatasetComponent implements OnInit {
     }
 }
 
-class LayerTableDataSource extends DataSource<MappingSourceVectorLayer> {
-    private layers: Array<MappingSourceVectorLayer>;
+class LayerTableDataSource extends DataSource<SourceVectorLayerDescription> {
+    private layers: Array<SourceVectorLayerDescription>;
 
-    constructor(layers: Array<MappingSourceVectorLayer>) {
+    constructor(layers: Array<SourceVectorLayerDescription>) {
         super();
         this.layers = layers;
     }
 
-    connect(): Observable<Array<MappingSourceVectorLayer>> {
+    connect(): Observable<Array<SourceVectorLayerDescription>> {
         return observableOf(this.layers);
     }
 
