@@ -227,7 +227,8 @@ export class UserService {
     }
 
     /**
-     * Login using a Java Web Token. If it was successful, set a new user.
+     * Login using a JSON Web Token (JWT).
+     * If it was successful, set a new user.
      * @param token The user's token.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
@@ -683,7 +684,7 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }), );
+                    }),);
             }));
     }
 
