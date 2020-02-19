@@ -54,7 +54,7 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {UnexpectedResultType} from './util/errors';
 import {Operator} from './operators/operator.model';
-import {Config} from './config.service';
+import {Config, Project as ProjectType} from './config.service';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MapService} from './map/map.service';
 import {combineLatest} from 'rxjs/internal/observable/combineLatest';
@@ -392,7 +392,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40') {
+    private setTheme(project: ProjectType) {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];

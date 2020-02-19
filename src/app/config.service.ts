@@ -44,7 +44,7 @@ interface Delays {
     GUEST_LOGIN_HINT: number;
 }
 
-type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
+export type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
 
 interface Defaults {
     PROJECT: {
