@@ -182,6 +182,18 @@ export class ColorizerData implements IColorizerData {
         return undefined;
     }
 
+    get firstBreakpoint(): ColorBreakpoint | undefined {
+        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[0];
+    }
+
+    get lastBreakpoint(): ColorBreakpoint | undefined {
+        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[this.breakpoints.length - 1];
+    }
+
+    isEmpty(): boolean {
+        return !this.breakpoints || this.breakpoints.length === 0;
+    }
+
     updateType(type: ColorizerType): boolean {
         if (type && (!this.type || type !== this.type)) {
             this.type = type;

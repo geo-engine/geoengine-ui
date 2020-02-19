@@ -1,6 +1,6 @@
 <div class="component_container">
 
-    <form [formGroup]="form" (ngSubmit)="$event.preventDefault();applyNewColorTable($event)" fxLayout="column">
+    <form [formGroup]="form" (ngSubmit)="applyNewColorTable($event)" fxLayout="column">
 
         <div
             formGroupName="bounds"
@@ -14,7 +14,7 @@
                     Specify a minimum and a maximum.
                 </mat-hint>
                 <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}"
-                          *ngIf="form.errors?.valueBelowMin || form.errors?.valueEqualsMin">
+                          *ngIf="form.errors?.valueBelowOrEqual">
                     Min value must be greater then {{form.controls.colormapStepScales?.value.requiresValueAbove}}
                 </mat-hint>
             </mat-form-field>
@@ -24,7 +24,7 @@
                     The maximum must be greater or equal to the minimum.
                 </mat-hint>
                 <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}"
-                          *ngIf="form.errors?.valueAboveMax || form.errors?.valueEqualsMax">
+                          *ngIf="form.errors?.valueAboveOrEqual">
                     Max value must be lower then {{form.controls.colormapStepScales?.value.requiresValueBelow}}
                 </mat-hint>
             </mat-form-field>

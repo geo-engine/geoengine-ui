@@ -1,14 +1,24 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output, SimpleChanges
+} from '@angular/core';
 import {ColorizerData} from '../colorizer-data.model';
 import {
-    BoundedMplColormapStepScale,
+    BoundedColormapStepScale,
     COLORMAP_STEP_SCALES_WITH_BOUNDS,
-    MPL_COLORMAP_NAMES,
-    MplColormap,
+    COLORMAP_NAMES,
+    Colormap,
     MplColormapName
-} from '../mpl-colormaps/mpl-colormap.model';
+} from '../colormaps/colormap.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {valueAboveMin, valueBelowMax, WaveValidators} from '../../util/form.validators';
+import {valueRelation, WaveValidators} from '../../util/form.validators';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -17,16 +27,18 @@ import {Subscription} from 'rxjs';
     styleUrls: ['colormap-colorizer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColormapColorizerComponent implements OnInit, OnDestroy {
+export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges {
 
     @Output() colormapColorizerData = new EventEmitter<ColorizerData>();
     @Input() defaultNumberOfSteps = 16;
     @Input() maxColormapSteps = 16;
+    @Input() minValue = 0;
+    @Input() maxValue = 1;
 
-    colormapNames = MPL_COLORMAP_NAMES;
-    boundedColormapStepScales = COLORMAP_STEP_SCALES_WITH_BOUNDS;
+    readonly colormapNames = COLORMAP_NAMES;
+    readonly boundedColormapStepScales = COLORMAP_STEP_SCALES_WITH_BOUNDS;
     form: FormGroup;
-    colorizerData: ColorizerData = MplColormap.createColorizerDataWithName(this.colormapNames[0], 0, 1);
+    colorizerData: ColorizerData = Colormap.createColorizerDataWithName(this.colormapNames[0], 0, 1);
     subscriptions: Array<Subscription> = [];
 
     constructor(
@@ -45,27 +57,42 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy {
                 colormapStepScales: [this.boundedColormapStepScales[0]]
             }, {
                 validators: [
-                    valueAboveMin(
+                    valueRelation(
                         c => c.get('bounds').get('min').value, c => c.get('colormapStepScales').value['requiresValueAbove'],
-                        {checkEqual: true}
+                        {checkEqual: true, checkBelow: true}
                     ),
-                    valueBelowMax(
+                    valueRelation(
                         c => c.get('bounds').get('max').value, c => c.get('colormapStepScales').value['requiresValueBelow'],
-                        {checkEqual: true}
+                        {checkEqual: true, checkAbove: true}
                     )
                 ]
             }
         );
     }
 
+    patchMinMaxValues(min: number, max: number) {
+
+        const patchConfig: { min?: number, max?: number } = {};
+
+        if (min !== undefined) {
+            patchConfig.min = min;
+        }
+
+        if (max !== undefined) {
+            patchConfig.max = max;
+        }
+
+        this.form.controls.bounds.patchValue(patchConfig);
+    }
+
     checkValidConfig() {
         const colormapName: MplColormapName = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
-        const boundedColormapStepScales: BoundedMplColormapStepScale = this.form.controls['colormapStepScales'].value;
+        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
 
-        if (!MPL_COLORMAP_NAMES.find(x => x === colormapName)) {
+        if (!COLORMAP_NAMES.find(x => x === colormapName)) {
             return false;
         }
         if (colormapSteps > this.maxColormapSteps) {
@@ -94,11 +121,11 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy {
         }
         const colormapName: MplColormapName = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
-        const boundedColormapStepScales: BoundedMplColormapStepScale = this.form.controls['colormapStepScales'].value;
+        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
 
-        const colorizerData = MplColormap.createColorizerDataWithName(
+        const colorizerData = Colormap.createColorizerDataWithName(
             colormapName, boundsMin, boundsMax, colormapSteps, boundedColormapStepScales.stepScaleName
         );
 
@@ -119,10 +146,28 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy {
             this.updateColorizerData();
         });
         this.subscriptions.push(sub);
+
+        if (this.minValue && this.maxValue)
+            this.patchMinMaxValues(this.minValue, this.maxValue);
     }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        for (let propName in changes) { // tslint:disable-line:forin
+            switch (propName) {
+                case 'minValue':
+                case 'maxValue': {
+                    this.patchMinMaxValues(this.minValue, this.maxValue);
+                    break;
+                }
+
+                default: {// DO NOTHING
+                }
+
+            }
+        }
+    }
 }

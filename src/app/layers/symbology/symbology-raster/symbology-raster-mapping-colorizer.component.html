@@ -1,45 +1,55 @@
-<div>Layer Properties</div>
-<div>
-    <table>
-        <tr>
-            <td><span>Opacity</span></td>
-            <td>
-                <mat-slider #slo (change)="updateOpacity($event)" [value]="symbology?.opacity*100" max="100" min="1" step="1"
-                            thumbLabel>
-                </mat-slider>
-            </td>
-            <td>{{slo.displayValue}} %</td>
-        </tr>
-    </table>
-</div>
-<mat-divider></mat-divider>
-<div>
-    <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true"
-                           (ngModelChange)="updateNoDataColor($event)">
-    </wave-color-breakpoint>
-    <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true"
-                           (ngModelChange)="updateOverflowColor($event)">
-    </wave-color-breakpoint>
-</div>
+<mat-accordion multi="true" class="symbology-headers-align">
+    <mat-expansion-panel expanded=true>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>map</mat-icon>
+                <span>Global Layer Properties</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div>
+            <table>
+                <tr>
+                    <td><span>Opacity</span></td>
+                    <td>
+                        <mat-slider #slo (change)="updateOpacity($event)" [value]="symbology?.opacity*100" max="100" min="1" step="1"
+                                    thumbLabel>
+                        </mat-slider>
+                    </td>
+                    <td>{{slo.displayValue}} %</td>
+                </tr>
+            </table>
+        </div>
+        <mat-divider></mat-divider>
+        <div>
+            <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true"
+                                   (ngModelChange)="updateNoDataColor($event)">
+            </wave-color-breakpoint>
+            <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true"
+                                   (ngModelChange)="updateOverflowColor($event)">
+            </wave-color-breakpoint>
+        </div>
+    </mat-expansion-panel>
 
-<div>
-    <mat-tab-group>
-        <mat-tab>
-            <ng-template mat-tab-label>
-                <mat-icon>color_lens</mat-icon>
-                color table
-            </ng-template>
-            <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
-        </mat-tab>
-        <mat-tab>
-            <ng-template mat-tab-label>
+    <mat-expansion-panel expanded=true>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
                 <mat-icon>looks</mat-icon>
-                color maps
-            </ng-template>
-            <wave-colormap-colorizer (colormapColorizerData)="updateColorizer($event)">
-            </wave-colormap-colorizer>
-        </mat-tab>
-    </mat-tab-group>
-</div>
+                <span>Color Map</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <wave-colormap-colorizer
+            (colormapColorizerData)="updateColorizer($event)" [minValue]="colorizerMinValue" [maxValue]="colorizerMaxValue"
+        >
+        </wave-colormap-colorizer>
+    </mat-expansion-panel>
 
-
+    <mat-expansion-panel expanded=true>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>color_lens</mat-icon>
+                <span>Color Table</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+    </mat-expansion-panel>
+</mat-accordion>

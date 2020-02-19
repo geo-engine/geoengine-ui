@@ -17,7 +17,7 @@ import {ColorBreakpointDict} from '../../../../colors/color-breakpoint.model';
 import {ColorizerData, IColorizerData} from '../../../../colors/colorizer-data.model';
 import {GdalSourceParameterOptions} from '../../../parameter-options/gdal-source-parameter-options.model';
 import {ParameterOptionType} from '../../../operator-type-parameter-options.model';
-import {MplColormap} from '../../../../colors/mpl-colormaps/mpl-colormap.model';
+import {Colormap} from '../../../../colors/colormaps/colormap.model';
 
 @Component({
     selector: 'wave-source-dataset',
@@ -103,7 +103,7 @@ export class SourceDatasetComponent implements OnInit {
 
         // if there is no colorizer data defined for the channel, create a 'viridis' coloring with min, max bounds
         let colorizerConfig = (channel.colorizer && ColorizerData.is_valid(channel.colorizer)) ? channel.colorizer
-            : MplColormap.createColorizerDataWithName(
+            : Colormap.createColorizerDataWithName(
                 'VIRIDIS', unit.min, unit.max
             );
 

@@ -136,83 +136,62 @@ function nullOrUndefined(value: any) {
 }
 
 /**
- * This Validator checks if a value is greater (or equal) to the provided minimum.
+ * This Validator checks the relation of a value compared to another value.
  * @param controlValueProvider: function deriving the value of the control
- * @param minValueProvider: function deriving the min value
- * @param options: {checkEqual: true} enables checking for equal values
+ * @param compareValueProvider: function deriving the min value
+ * @param options: {checkEqual: true} enables checking for equal, {checkAbove: true} for above and {checkBelow: true] for below.
  */
-export function valueAboveMin(
+export function valueRelation(
     controlValueProvider: (control: AbstractControl) => number,
-    minValueProvider: (control: AbstractControl) => number,
+    compareValueProvider: (control: AbstractControl) => number,
     options?: {
         checkEqual?: boolean,
+        checkAbove?: boolean,
+        checkBelow?: boolean,
     }) {
     if (!options) {
-        options = {};
+        options = {
+            checkEqual: true,
+            checkAbove: true,
+            checkBelow: true,
+        };
     }
 
     return (control: AbstractControl): { [key: string]: boolean } => {
         const value = controlValueProvider(control);
-        const min = minValueProvider(control);
+        const compareValue = compareValueProvider(control);
 
         const errors: {
-            valueBelowMin?: boolean,
-            valueEqualsMin?: boolean,
+            valueAbove?: boolean,
+            valueAboveOrEqual?: boolean,
+            valueBelow?: boolean,
+            valueBelowOrEqual?: boolean,
+            valueEquals?: boolean,
             noFilter?: boolean,
         } = {};
 
-        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(min) && value === min) {
-            errors.valueEqualsMin = true;
+        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value === compareValue) {
+            errors.valueEquals = true;
+            if (options.checkBelow) {
+                errors.valueBelowOrEqual = true;
+            }
+            if (options.checkAbove) {
+                errors.valueAboveOrEqual = true;
+            }
         }
 
-        if (!nullOrUndefined(value) && !nullOrUndefined(min) && value < min) {
-            errors.valueBelowMin = true;
+        if (options.checkBelow && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value < compareValue) {
+            errors.valueBelow = true;
+            errors.valueBelowOrEqual = true;
+        }
+        if (options.checkAbove && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value > compareValue) {
+            errors.valueAbove = true;
+            errors.valueAboveOrEqual = true;
+
         }
         if (nullOrUndefined(value)) {
             errors.noFilter = true;
         }
-
-        return Object.keys(errors).length > 0 ? errors : null;
-    };
-}
-
-/**
- * This Validator checks if a value is below (or equal) to the provided maximum.
- * @param controlValueProvider: function deriving the value of the control
- * @param maxValueProvider: function deriving the min value
- * @param options: {checkEqual: true} enables checking for equal values
- */
-export function valueBelowMax(
-    controlValueProvider: (control: AbstractControl) => number,
-    maxValueProvider: (control: AbstractControl) => number,
-    options?: {
-        checkEqual?: boolean
-    }) {
-    if (!options) {
-        options = {};
-    }
-
-    return (control: AbstractControl): { [key: string]: boolean } => {
-        const value = controlValueProvider(control);
-        const max = maxValueProvider(control);
-
-        const errors: {
-            valueAboveMax?: boolean,
-            valueEqualsMax?: boolean,
-            noFilter?: boolean,
-        } = {};
-
-        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(max) && value === max) {
-            errors.valueEqualsMax = true;
-        }
-
-        if (!nullOrUndefined(value) && !nullOrUndefined(max) && value > max) {
-            errors.valueAboveMax = true;
-        }
-        if (nullOrUndefined(value)) {
-            errors.noFilter = true;
-        }
-
         return Object.keys(errors).length > 0 ? errors : null;
     };
 }
