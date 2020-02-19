@@ -1,5 +1,3 @@
-@import "../../../../wave-app-theme";
-
 $circle-width: 100px;
 
 form {
@@ -39,8 +37,4 @@ mat-form-field:not(:last-child) {
 
 .downward-margin {
     margin-bottom: 1rem;
-}
-
-.error {
-    color: mat-color($wave-app-warn);
 }

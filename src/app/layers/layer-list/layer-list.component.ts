@@ -76,6 +76,7 @@ export class LayerListComponent implements OnDestroy {
                 this.changeDetectorRef.markForCheck();
             }
         });
+
         this.subscriptions.push(sub);
 
         this.mapIsGrid$ = this.mapService.isGrid$;
@@ -95,6 +96,8 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showChannelParameterSlider(layer: Layer<AbstractSymbology>): boolean {
-        return layer.operator.operatorType.toString() === 'GDAL Source' && !!layer.operator.operatorTypeParameterOptions;
+        return layer.operator.operatorType.toString() === 'GDAL Source'
+            && !!layer.operator.operatorTypeParameterOptions
+            && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();
     }
 }

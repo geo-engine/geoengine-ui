@@ -1,6 +1,6 @@
 import {
-    BehaviorSubject, Observable, Subject, combineLatest as observableCombineLatest, throwError as observableThrowError, EMPTY,
-    of as observableOf, ReplaySubject
+    BehaviorSubject, Observable, Subject, combineLatest, throwError as observableThrowError, EMPTY,
+    of as observableOf, ReplaySubject,
 } from 'rxjs';
 
 import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
@@ -15,10 +15,10 @@ import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource,
-    MappingSourceRasterLayer,
+    SourceRasterLayerDescription,
     MappingSourceDict,
     MappingSourceResponse,
-    MappingTransform, MappingSourceVectorLayer, ProvenanceInfo
+    MappingTransform, SourceVectorLayerDescription, ProvenanceInfo, MappingSourceRasterLayerDict, MappingSourceVectorLayerDict
 } from '../operators/dialogs/data-repository/mapping-source.model';
 import {CsvColumn, CsvFile} from '../operators/dialogs/baskets/csv.model';
 
@@ -635,7 +635,8 @@ export class UserService {
     }
 
     private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
-        return observableCombineLatest(session$, reload$, (session, reload) => session).pipe(
+        return combineLatest(session$, reload$).pipe(
+            map(([session, _]) => session),
             switchMap(session => {
                 const parameters = new UserServiceRequestParameters({
                     request: 'sourcelist',
@@ -648,72 +649,20 @@ export class UserService {
                         for (const sourceId in json.sourcelist) {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
-                                const sourceProvenance: ProvenanceInfo = {
-                                    uri: (source.provenance) ? source.provenance.uri : '',
-                                    citation: source.provenance ? source.provenance.citation : '',
-                                    license: source.provenance ? source.provenance.license : '',
-                                };
+                                const sourceProvenance: ProvenanceInfo = this.parseSourceProvenance(source);
 
-                                const sourceChannels = (!source.channels) ? [] : source.channels.map((channel, index) => {
-                                    const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
-                                    const channelColorizer = channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) :
-                                        source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) :
-                                            ColorizerData.grayScaleColorizer(channelUnit);
-                                    const coords = channel.coords || source.coords; // fixme: throw?
-
-                                    const provenance: ProvenanceInfo = (channel.provenance) ? {
-                                        uri: (source.provenance) ? source.provenance.uri : '',
-                                        citation: source.provenance ? source.provenance.citation : '',
-                                        license: source.provenance ? source.provenance.license : '',
-                                    } : sourceProvenance;
-
-                                    return {
-                                        id: index,
-                                        name: channel.name || 'Channel #' + index,
-                                        datatype: channel.datatype,
-                                        nodata: channel.nodata,
-                                        unit: channelUnit,
-                                        methodology: channel.methodology,
-                                        colorizer: channelColorizer,
-                                        hasTransform: !!channel.transform,
-                                        isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-                                        transform: channel.transform === undefined ?
-                                            undefined : {
-                                                unit: channel.transform.unit ?
-                                                    Unit.fromMappingDict(channel.transform.unit)
-                                                    : Unit.defaultUnit,
-                                                datatype: channel.transform.datatype,
-                                                offset: channel.transform.offset,
-                                                scale: channel.transform.scale,
-                                            } as MappingTransform,
-                                        coords: coords,
-                                        provenance: provenance,
-                                    } as MappingSourceRasterLayer;
-                                });
+                                const sourceChannels = (!source.channels) ? [] : source.channels.map(
+                                    (channel, index) => {
+                                        return this.parseRasterChannel(channel, source, sourceProvenance, index);
+                                    }
+                                );
 
                                 // vector data
-                                const sourceVectorLayer = (!source.layer) ? [] : source.layer.map((layer, index) => {
-                                    // TODO: can we  safely assume EPSG: 4326 here?
-                                    const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
-
-                                    const provenance: ProvenanceInfo = (layer.provenance) ? {
-                                        uri: (source.provenance) ? source.provenance.uri : '',
-                                        citation: source.provenance ? source.provenance.citation : '',
-                                        license: source.provenance ? source.provenance.license : '',
-                                    } : sourceProvenance;
-
-                                    return {
-                                        id: layer.id || layer.name,
-                                        name: layer.title || layer.name || 'Layer #' + index,
-                                        title: layer.title || layer.name || 'Layer #' + index,
-                                        geometryType: layer.geometry_type || 'POINTS',
-                                        textual: layer.textual || [],
-                                        numeric: layer.numeric || [],
-                                        coords: coords,
-                                        provenance: provenance,
-                                    } as MappingSourceVectorLayer;
-                                });
-
+                                const sourceVectorLayer = (!source.layer) ? [] : source.layer.map(
+                                    (layer, index) => {
+                                        return this.parseVectorLayer(layer, source, sourceProvenance, index);
+                                    }
+                                );
 
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
@@ -734,8 +683,77 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }));
+                    }), );
             }));
+    }
+
+    private parseSourceProvenance(source: MappingSourceDict) {
+        return {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        };
+    }
+
+    private parseVectorLayer(
+        layer: MappingSourceVectorLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+    ): SourceVectorLayerDescription {
+        // TODO: can we  safely assume EPSG: 4326 here?
+        const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
+
+        const provenance: ProvenanceInfo = (layer.provenance) ? {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        } : sourceProvenance;
+
+        return {
+            id: layer.id || layer.name,
+            name: layer.title || layer.name || 'Layer #' + index,
+            title: layer.title || layer.name || 'Layer #' + index,
+            geometryType: layer.geometry_type || 'POINTS',
+            textual: layer.textual || [],
+            numeric: layer.numeric || [],
+            coords: coords,
+            provenance: provenance,
+        } as SourceVectorLayerDescription;
+    }
+
+    private parseRasterChannel(
+        channel: MappingSourceRasterLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+    ): SourceRasterLayerDescription {
+        const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
+        const sourceColorizer =
+            source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) : undefined;
+        const channelColorizer =
+            channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) : sourceColorizer;
+        const coords = channel.coords || source.coords; // fixme: throw?
+
+        const channelProvenance: ProvenanceInfo = (!channel.provenance) ? sourceProvenance : {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        };
+
+        return {
+            id: index,
+            name: channel.name || 'Channel #' + index,
+            datatype: channel.datatype,
+            nodata: channel.nodata,
+            unit: channelUnit,
+            methodology: channel.methodology,
+            colorizer: channelColorizer,
+            hasTransform: !!channel.transform,
+            isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+            transform: !channel.transform ? undefined : {
+                unit: channel.transform.unit ? Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
+                datatype: channel.transform.datatype,
+                offset: channel.transform.offset,
+                scale: channel.transform.scale,
+            } as MappingTransform,
+            coords: coords,
+            provenance: channelProvenance,
+        } as SourceRasterLayerDescription;
     }
 
 }

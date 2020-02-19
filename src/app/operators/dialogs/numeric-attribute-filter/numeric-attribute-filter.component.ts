@@ -15,7 +15,7 @@ import {
     AbstractVectorSymbology,
     ComplexPointSymbology,
 } from '../../../layers/symbology/symbology.model';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
 import {HistogramType} from '../../types/histogram-type.model';
@@ -24,27 +24,6 @@ import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {MapService} from '../../../map/map.service';
-
-function minMax(control: AbstractControl): { [key: string]: boolean } {
-    const min = control.get('min').value;
-    const max = control.get('max').value;
-
-    const errors: {
-        minOverMax?: boolean,
-        noFilter?: boolean,
-    } = {};
-
-    if (min && max && max < min) {
-        errors.minOverMax = true;
-    }
-
-    if (!min && !max) {
-        errors.noFilter = true;
-    }
-
-    return Object.keys(errors).length > 0 ? errors : null;
-}
-
 
 /**
  * This component allows creating the numeric attribute filter operator.
@@ -79,9 +58,9 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             attribute: [undefined, Validators.required],
             bounds: formBuilder.group({
                 min: [undefined],
-                max: [undefined]
+                max: [undefined],
             }, {
-                validator: minMax
+                validator: WaveValidators.minAndMax('min', 'max'),
             }),
             noData: [false, Validators.required]
         });
@@ -199,8 +178,8 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
             operatorType: new NumericAttributeFilterType({
                 attributeName: attributeName,
                 includeNoData: noData,
-                rangeMin: boundsMin,
-                rangeMax: boundsMax,
+                rangeMin: boundsMin === null ? undefined : boundsMin,
+                rangeMax: boundsMax === null ? undefined : boundsMax,
             }),
             resultType: ResultTypes.POINTS,
             projection: vectorOperator.projection,
