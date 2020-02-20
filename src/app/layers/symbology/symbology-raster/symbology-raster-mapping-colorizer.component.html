@@ -1,55 +1,86 @@
 <mat-accordion multi="true" class="symbology-headers-align">
-    <mat-expansion-panel expanded=true>
+    <mat-expansion-panel expanded=true #globalPanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>map</mat-icon>
                 <span>Global Layer Properties</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <div>
-            <table>
-                <tr>
-                    <td><span>Opacity</span></td>
-                    <td>
-                        <mat-slider #slo (change)="updateOpacity($event)" [value]="symbology?.opacity*100" max="100" min="1" step="1"
-                                    thumbLabel>
-                        </mat-slider>
-                    </td>
-                    <td>{{slo.displayValue}} %</td>
-                </tr>
-            </table>
-        </div>
-        <mat-divider></mat-divider>
-        <div>
-            <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true"
-                                   (ngModelChange)="updateNoDataColor($event)">
-            </wave-color-breakpoint>
-            <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true"
-                                   (ngModelChange)="updateOverflowColor($event)">
-            </wave-color-breakpoint>
-        </div>
+        <ng-template [ngIf]="globalPanel.expanded">
+            <div>
+                <table>
+                    <tr>
+                        <td><span>Opacity</span></td>
+                        <td>
+                            <mat-slider #slo (change)="updateOpacity($event)" [value]="symbology?.opacity*100" max="100" min="1" step="1"
+                                        thumbLabel>
+                            </mat-slider>
+                        </td>
+                        <td>{{slo.displayValue}} %</td>
+                    </tr>
+                </table>
+            </div>
+            <mat-divider></mat-divider>
+            <div>
+                <wave-color-breakpoint [ngModel]="symbology.noDataColor" attributePlaceholder="NoData color" disabledAttribute="true"
+                                       (ngModelChange)="updateNoDataColor($event)">
+                </wave-color-breakpoint>
+                <wave-color-breakpoint [ngModel]="symbology.overflowColor" attributePlaceholder="Overflow color" disabledAttribute="true"
+                                       (ngModelChange)="updateOverflowColor($event)">
+                </wave-color-breakpoint>
+            </div>
+        </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded=true>
+    <mat-expansion-panel expanded=true #colormapPanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>looks</mat-icon>
                 <span>Color Map</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <wave-colormap-colorizer
-            (colormapColorizerData)="updateColorizer($event)" [minValue]="colorizerMinValue" [maxValue]="colorizerMaxValue"
-        >
-        </wave-colormap-colorizer>
+
+        <ng-template [ngIf]="colormapPanel.expanded">
+            <div class="histogram">
+                <mat-progress-spinner mode="indeterminate" *ngIf="layerHistogramDataLoading$ | async"></mat-progress-spinner>
+                <wave-histogram
+                    *ngIf="layerHistogramData$ | async" [data]="layerHistogramData$ | async"
+                    [selectable]="true" [interactable]="false"
+                    [minRange]="layerMinValue"
+                    [maxRange]="layerMaxValue"
+                    (minRangeChange)="updateLayerMinValue($event)"
+                    (maxRangeChange)="updateLayerMaxValue($event)"
+                    [emmitInitialDataMinMax]="false"
+                ></wave-histogram>
+            </div>
+            <div>
+                <mat-slide-toggle
+                    [checked]="layerHistogramAutoReloadEnabled"
+                    (change)="updateHistogramAutoReload($event)"
+                >
+                    Sync map and histogram
+                </mat-slide-toggle>
+            </div>
+            <mat-divider></mat-divider>
+
+            <wave-colormap-colorizer
+                (colormapColorizerData)="updateColorizer($event)"
+                [minValue]="layerMinValue"
+                [maxValue]="layerMaxValue"
+            >
+            </wave-colormap-colorizer>
+        </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded=true>
+    <mat-expansion-panel expanded=false #colorTablePanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>color_lens</mat-icon>
                 <span>Color Table</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+        <ng-template [ngIf]="colorTablePanel.expanded">
+            <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></wave-colorizer-editor>
+        </ng-template>
     </mat-expansion-panel>
 </mat-accordion>

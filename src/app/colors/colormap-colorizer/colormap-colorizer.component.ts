@@ -34,6 +34,8 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     @Input() maxColormapSteps = 16;
     @Input() minValue = 0;
     @Input() maxValue = 1;
+    @Output() minValueChange = new EventEmitter<number>();
+    @Output() maxValueChange = new EventEmitter<number>();
 
     readonly colormapNames = COLORMAP_NAMES;
     readonly boundedColormapStepScales = COLORMAP_STEP_SCALES_WITH_BOUNDS;
@@ -73,12 +75,14 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     patchMinMaxValues(min: number, max: number) {
 
         const patchConfig: { min?: number, max?: number } = {};
+        const boundsMin: number = this.form.controls['bounds'].value.min;
+        const boundsMax: number = this.form.controls['bounds'].value.max;
 
-        if (min !== undefined) {
+        if (min !== undefined && min !== boundsMin) {
             patchConfig.min = min;
         }
 
-        if (max !== undefined) {
+        if (max !== undefined && max !== boundsMax) {
             patchConfig.max = max;
         }
 
@@ -144,11 +148,23 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
                 this.removeColorizerData();
             }
             this.updateColorizerData();
+
         });
         this.subscriptions.push(sub);
 
-        if (this.minValue && this.maxValue)
+        if (this.minValue && this.maxValue) {
             this.patchMinMaxValues(this.minValue, this.maxValue);
+        }
+
+        const subMinMax = this.form.controls['bounds'].valueChanges.subscribe(x => {
+            if (x.min !== undefined) {
+                this.minValueChange.emit(x.min.value);
+            }
+            if (x.max !== undefined) {
+                this.maxValueChange.emit(x.max.value);
+            }
+        });
+        this.subscriptions.push(subMinMax);
     }
 
     ngOnDestroy(): void {
