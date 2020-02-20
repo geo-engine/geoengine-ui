@@ -1,7 +1,7 @@
 <wave-sidenav-header>Raster Mask</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
     <wave-dialog-help>
-        The <em>Raster Mask</em> modifies an input raster layer by applying a second mask raster layer.
+        The <em>Raster Mask</em> modifies an input raster layer by applying another raster layer as a mask .
         The mask layer should contain either zeros and ones or NO DATA and ones.
         The resulting layer contains it original values at all positions that are neither zero nor NO DATA.
     </wave-dialog-help>
