@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 
 import * as d3 from 'd3';
+import {LayoutService} from '../../layout.service';
 
 /**
  * Schema for histogram data.
@@ -60,6 +61,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
     @Input() selectable = false;
     @Input() interactable = false;
+    @Input() emmitInitialDataMinMax = false;
 
     @Input() minRange: number = undefined;
     @Output() minRangeChange = new EventEmitter<number>();
@@ -71,7 +73,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     private xAxis: d3.svg.Axis;
     private maxWidth: number;
 
-    constructor() {
+    constructor(private elementRef: ElementRef) {
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
@@ -81,6 +83,10 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
             // draw new one
             this.drawHistogram();
+            if (this.emmitInitialDataMinMax) {
+                this.minRangeChange.emit(this.data.metadata.min);
+                this.maxRangeChange.emit(this.data.metadata.max);
+            }
         }
         // TODO: refactor the set slider position function out (here and in makeDrag)
         if (changes['minRange'] && !changes['minRange'].isFirstChange()) {
@@ -105,8 +111,16 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
     }
 
     ngAfterViewInit() {
+        if (!this.width || !this.height) {
+            this.calculateHistogramWidthAndHeight();
+        }
+
         if (this.data) {
             this.drawHistogram();
+            if (this.emmitInitialDataMinMax) {
+                this.minRangeChange.emit(this.data.metadata.min);
+                this.maxRangeChange.emit(this.data.metadata.max);
+            }
         }
     }
 
@@ -469,6 +483,14 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 slider.area.attr('x', newX);
             }
         });
+    }
+
+    private calculateHistogramWidthAndHeight() {
+        const panelStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('div'));
+        const panelWidth = parseInt(panelStyle.width, 10) - 2 * LayoutService.remInPx();
+        const panelheight = parseInt(panelStyle.height, 10) - 2 * LayoutService.remInPx();
+        this.width = panelWidth;
+        this.height = Math.max(panelheight / 3, panelWidth / 3);
     }
 }
 
