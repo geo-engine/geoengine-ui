@@ -1,10 +1,20 @@
 import {ColorBreakpointDict} from '../color-breakpoint.model';
 import {Color} from '../color';
 import {ColorizerData} from '../colorizer-data.model';
-import {colormap_inferno_data, colormap_magma_data, colormap_plasma_data, colormap_viridis_data} from './mpl-colormaps';
+import {
+    colormap_inferno_data,
+    colormap_magma_data,
+    colormap_plasma_data,
+    colormap_viridis_data,
+    MPL_COLORMAP_NAMES,
+    MplColormapName
+} from './mpl-colormaps';
+import {coolwarm_data, MORELAND_COLORMAP_NAMES, MorelandColormapName} from './moreland-colormaps';
 
 export type ColormapData = Array<[number, number, number]>;
-export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
+export type ColormapNames = MplColormapName | MorelandColormapName;
+export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES].concat(MORELAND_COLORMAP_NAMES);
+
 export type ColormapStepScale = 'linear' | 'log' | 'power_05' | 'power_2';
 
 export interface BoundedColormapStepScale {
@@ -13,7 +23,6 @@ export interface BoundedColormapStepScale {
     requiresValueBelow?: number;
 }
 
-export const COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
 export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> = [
     {stepScaleName: 'linear'},
     {stepScaleName: 'log', requiresValueAbove: 0},
@@ -23,7 +32,7 @@ export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> =
 
 export abstract class Colormap {
 
-    static getColormapForName(colormapName: MplColormapName): ColormapData {
+    static getColormapForName(colormapName: ColormapNames): ColormapData {
         switch (colormapName) {
             case 'INFERNO':
                 return colormap_inferno_data;
@@ -33,6 +42,8 @@ export abstract class Colormap {
                 return colormap_plasma_data;
             case 'VIRIDIS':
                 return colormap_viridis_data;
+            case 'COOLWARM':
+                return coolwarm_data;
         }
     }
 
@@ -57,7 +68,7 @@ export abstract class Colormap {
     }
 
     static createColorizerDataWithName(
-        colormapName: MplColormapName,
+        colormapName: ColormapNames,
         min: number, max: number,
         steps: number | undefined = 16,
         stepScale: ColormapStepScale = 'linear'
