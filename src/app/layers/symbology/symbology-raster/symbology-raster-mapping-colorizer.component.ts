@@ -6,27 +6,27 @@ import {
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChanges,
-    OnInit,
-    AfterViewInit, OnDestroy, ElementRef
+    OnDestroy, AfterViewInit, OnInit
 } from '@angular/core';
 
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology} from '../symbology.model';
+import {MappingColorizerRasterSymbology} from '../symbology.model';
 import {MatSliderChange} from '@angular/material';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {RasterLayer, VectorLayer} from '../../layer.model';
-import {BehaviorSubject, combineLatest as observableCombineLatest, Subscription} from 'rxjs';
+import {RasterLayer} from '../../layer.model';
+import {BehaviorSubject, combineLatest as observableCombineLatest, ReplaySubject, Subscription} from 'rxjs';
 import {HistogramData} from '../../../plots/histogram/histogram.component';
-import {LayoutService} from '../../../layout.service';
 import {ProjectService} from '../../../project/project.service';
 import {Operator} from '../../../operators/operator.model';
 import {HistogramType} from '../../../operators/types/histogram-type.model';
 import {DataType} from '../../../operators/datatype.model';
 import {Unit} from '../../../operators/unit.model';
-import {first} from 'rxjs/operators';
+import {debounceTime, filter} from 'rxjs/operators';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {MapService} from '../../../map/map.service';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle/typings/slide-toggle';
+import {Config} from '../../../config.service';
 
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',
@@ -34,7 +34,7 @@ import {MapService} from '../../../map/map.service';
     styleUrls: ['symbology-raster-mapping-colorizer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
+export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
 
     @Input() layer: RasterLayer<MappingColorizerRasterSymbology>;
     @Output() symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> = new EventEmitter<MappingColorizerRasterSymbology>();
@@ -43,17 +43,17 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnIn
 
     layerMinValue: number | undefined = undefined;
     layerMaxValue: number | undefined = undefined;
-    layerHistogramData$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
+    layerHistogramData$: ReplaySubject<HistogramData> = new ReplaySubject(1);
     layerHistogramDataLoading$ = new BehaviorSubject(false);
-    layerHistogramWidth: number;
-    layerHistogramHeight: number;
-    private subscriptions: Array<Subscription> = [];
+    layerHistogramAutoReloadEnabled = true;
+    private layerHistogramDataSubscription: Subscription = undefined;
+    private layerHistogramOperator: Operator;
 
     constructor(
         public projectService: ProjectService,
-        public elementRef: ElementRef,
         public mappingQueryService: MappingQueryService,
-        public mapService: MapService
+        public mapService: MapService,
+        public config: Config
     ) {
     }
 
@@ -120,14 +120,18 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnIn
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // this.changeDetectorRef.markForCheck(); // TODO: only markForCheck if there is a change!
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
-                case 'layer':
+                case 'layer': {
+                    if (changes['layer'].firstChange) {
+                        break;
+                    }
                     this.updateSymbologyFromLayer();
                     this.updateLayerMinMaxFromColorizer();
-                    this.updateLayerHistogram();
+                    this.updateLayerHistogramOperator();
+                    this.reinitializeLayerHistogramDataSubscription();
                     break;
+                }
                 default: // DO NOTHING
             }
         }
@@ -136,26 +140,55 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnIn
     ngOnInit(): void {
         this.updateSymbologyFromLayer();
         this.updateLayerMinMaxFromColorizer();
-        this.updateLayerHistogram();
     }
 
-    ngAfterViewInit() {
-        // calculate size for histogram
-        const panelStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('mat-expansion-panel'));
-        const panelWidth = parseInt(panelStyle.width, 10) - 2 * LayoutService.remInPx();
-        const paneleight = parseInt(panelStyle.height, 10) - 2 * LayoutService.remInPx();
-        this.layerHistogramWidth = panelWidth;
-        this.layerHistogramHeight = Math.max(paneleight / 3, panelWidth / 3);
+    ngAfterViewInit(): void {
+        this.updateLayerHistogramOperator();
+        this.reinitializeLayerHistogramDataSubscription();
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.layerHistogramDataSubscription.unsubscribe();
     }
 
-    updateLayerHistogram() {
-        this.layerHistogramData$.next(undefined);
+    updateHistogramAutoReload(event: MatSlideToggleChange) {
+        this.layerHistogramAutoReloadEnabled = event.checked;
+    }
 
-        const histogramOperator = new Operator({
+    reinitializeLayerHistogramDataSubscription() {
+        if (this.layerHistogramDataSubscription) {
+            this.layerHistogramDataSubscription.unsubscribe();
+        }
+
+        this.layerHistogramData$.next(undefined);
+        this.layerHistogramDataLoading$.next(true);
+
+        const sub = observableCombineLatest(
+            this.projectService.getTimeStream(),
+            this.projectService.getProjectionStream(),
+            this.mapService.getViewportSizeStream()
+        ).pipe(
+            filter(_ => this.layerHistogramAutoReloadEnabled),
+            debounceTime(this.config.DELAYS.DEBOUNCE)
+        ).subscribe(([projectTime, projection, viewport]) => {
+            this.layerHistogramData$.next(undefined);
+            this.layerHistogramDataLoading$.next(true);
+
+            this.mappingQueryService.getPlotData({
+                operator: this.layerHistogramOperator,
+                time: projectTime,
+                extent: viewport.extent,
+                projection: projection,
+            }).subscribe(data => {
+                this.layerHistogramData$.next(data as HistogramData);
+                this.layerHistogramDataLoading$.next(false);
+            });
+        });
+        this.layerHistogramDataSubscription = sub;
+    }
+
+    private updateLayerHistogramOperator() {
+        this.layerHistogramOperator = new Operator({
             operatorType: new HistogramType({
                 attribute: 'value',
                 range: 'data',
@@ -167,27 +200,5 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnIn
             units: new Map<string, Unit>(),
             rasterSources: [this.layer.operator],
         });
-
-        this.layerHistogramDataLoading$.next(true);
-        const sub = observableCombineLatest(this.projectService.getTimeStream().pipe(
-            first()),
-            this.projectService.getProjectionStream().pipe(
-                first()
-            )
-        )
-            .subscribe(([projectTime, projection]) => {
-                this.mappingQueryService.getPlotData({
-                    operator: histogramOperator,
-                    time: projectTime,
-                    extent: this.mapService.getViewportSize().extent,
-                    projection: projection,
-                }).subscribe(data => {
-                    this.layerHistogramData$.next(data as HistogramData);
-                    this.layerHistogramDataLoading$.next(false);
-                });
-            });
-
-
-        this.subscriptions.push(sub);
     }
 }

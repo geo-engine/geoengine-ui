@@ -143,7 +143,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnInit(): void {
-        const sub = this.form.valueChanges.subscribe(y => {
+        const sub = this.form.valueChanges.subscribe(_ => {
             if (this.form.invalid) {
                 this.removeColorizerData();
             }

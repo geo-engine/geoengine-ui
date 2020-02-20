@@ -39,3 +39,11 @@ mat-slider {
     justify-content: space-between;
     align-items: center;
 }
+
+.histogram {
+    width: 100%;
+}
+
+.histogram .mat-progress-spinner {
+    margin: 0 auto;
+}
