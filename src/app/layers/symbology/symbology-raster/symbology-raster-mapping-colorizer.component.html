@@ -30,15 +30,35 @@
         </div>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded=true>
+    <mat-expansion-panel expanded=true #colormapPanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>looks</mat-icon>
                 <span>Color Map</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
+
+        <ng-template [ngIf]="colormapPanel.expanded">
+            <mat-progress-spinner mode="indeterminate" *ngIf="layerHistogramDataLoading$ | async"></mat-progress-spinner>
+            <wave-histogram [height]="layerHistogramHeight" [width]="layerHistogramWidth"
+                            [selectable]="true" [interactable]="false"
+                            *ngIf="layerHistogramData$ | async" [data]="layerHistogramData$ | async"
+                            [minRange]="layerMinValue"
+                            [maxRange]="layerMaxValue"
+                            (minRangeChange)="updateLayerMinValue($event)"
+                            (maxRangeChange)="updateLayerMaxValue($event)"
+            ></wave-histogram>
+            <mat-action-row>
+                <button mat-raised-button (click)="updateLayerHistogram()">
+                    Reload histogram
+                </button>
+            </mat-action-row>
+        </ng-template>
+
         <wave-colormap-colorizer
-            (colormapColorizerData)="updateColorizer($event)" [minValue]="colorizerMinValue" [maxValue]="colorizerMaxValue"
+            (colormapColorizerData)="updateColorizer($event)"
+            [minValue]="layerMinValue"
+            [maxValue]="layerMaxValue"
         >
         </wave-colormap-colorizer>
     </mat-expansion-panel>
