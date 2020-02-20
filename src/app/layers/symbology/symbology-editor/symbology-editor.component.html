@@ -8,7 +8,7 @@
 
 <mat-divider></mat-divider>
 
-<div *ngIf="validLayer" [ngSwitch]="layer?.symbology?.getSymbologyType()"
+<div *ngIf="isValidLayer" [ngSwitch]="layer?.symbology?.getSymbologyType()"
      fxLayoutAlign="space-between stretch"
      fxLayout="row"
      class="symbology no-drag">
@@ -37,7 +37,7 @@
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
-        <wave-symbology-vector fxFlex="grow" 
+        <wave-symbology-vector fxFlex="grow"
                                [layer]="layer"
                                class="no-drag"
                                [editRadius]="false"
@@ -46,7 +46,7 @@
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
-        <wave-symbology-vector fxFlex="grow" 
+        <wave-symbology-vector fxFlex="grow"
                                [layer]="layer"
                                class="no-drag"
                                [editRadius]="false"
@@ -55,14 +55,14 @@
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.RASTER">
-        <wave-symbology-raster fxFlex="grow" [symbology]="layer.symbology"
+        <wave-symbology-raster fxFlex="grow" [layer]="layer"
                                (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-raster>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [symbology]="layer.symbology"
-                               (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [layer]="layer"
+                                                 (symbologyChanged)="update_symbology(layer, $event)">
             >
         </wave-symbology-raster-mapping-colorizer>
     </ng-template>

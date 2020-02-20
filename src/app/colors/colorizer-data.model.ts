@@ -30,8 +30,12 @@ export class ColorizerData implements IColorizerData {
 
     static grayScaleColorizer(minMax: { min: number, max: number }): ColorizerData {
 
+        const saveMin = (minMax.min) ? minMax.min : -1000;
+        const saveMax = (minMax.max) ? minMax.max : 1000;
+        const saveCenter = (saveMin + saveMax) / 2.0;
+
         const min_br: ColorBreakpointDict = {
-            value: (minMax.min !== undefined) ? minMax.min : -1000,
+            value: saveMin,
             rgba: Color.fromRgbaLike({
                 r: 0,
                 g: 0,
@@ -41,7 +45,7 @@ export class ColorizerData implements IColorizerData {
         };
 
         const mid_br: ColorBreakpointDict = {
-            value: (minMax.min !== undefined && minMax.max !== undefined) ? (minMax.max + minMax.min) / 2.0 : 0,
+            value: saveCenter,
             rgba: Color.fromRgbaLike({
                 r: 128,
                 g: 128,
@@ -51,7 +55,7 @@ export class ColorizerData implements IColorizerData {
         };
 
         const max_br: ColorBreakpointDict = {
-            value: (minMax.max !== undefined) ? minMax.max : 1000,
+            value: saveMax,
             rgba: Color.fromRgbaLike({
                 r: 255,
                 g: 255,
@@ -81,7 +85,11 @@ export class ColorizerData implements IColorizerData {
         return new ColorizerData({
             breakpoints: [],
             type: 'gradient'
-        })
+        });
+    }
+
+    static is_valid(colorizerData: IColorizerData) {
+        return colorizerData.breakpoints.length >= 2;
     }
 
     constructor(config: IColorizerData) {
@@ -98,7 +106,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     addBreakpointAt(i: number, brk: ColorBreakpoint) {
-        this.breakpoints.splice(i, 0, brk)
+        this.breakpoints.splice(i, 0, brk);
     }
 
     removeBreakpointAt(i: number) {
@@ -168,10 +176,22 @@ export class ColorizerData implements IColorizerData {
             return new ColorBreakpoint({
                 rgba: color,
                 value: brk.value + diff
-            })
+            });
         }
 
         return undefined;
+    }
+
+    get firstBreakpoint(): ColorBreakpoint | undefined {
+        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[0];
+    }
+
+    get lastBreakpoint(): ColorBreakpoint | undefined {
+        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[this.breakpoints.length - 1];
+    }
+
+    isEmpty(): boolean {
+        return !this.breakpoints || this.breakpoints.length === 0;
     }
 
     updateType(type: ColorizerType): boolean {
@@ -205,7 +225,7 @@ export class ColorizerData implements IColorizerData {
         return {
             breakpoints: this.breakpoints.map(br => br.toDict()),
             type: this.type
-        }
+        };
     }
 
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
@@ -221,8 +241,8 @@ export class ColorizerData implements IColorizerData {
                         a: (br.a) ? br.a : 1.0,
                     },
                     value: br.value,
-                })
+                });
             })
-        })
+        });
     }
 }

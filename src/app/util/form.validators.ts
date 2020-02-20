@@ -19,10 +19,10 @@ function minAndMax(controlMinName: string,
     if (!options) {
         options = {};
     }
-    if (options.checkBothExist === undefined) {
+    if (typeof options.checkBothExist !== 'boolean') { // default
         options.checkBothExist = false;
     }
-    if (options.checkOneExists === undefined) {
+    if (typeof options.checkOneExists !== 'boolean') { // default
         options.checkOneExists = true;
     }
 
@@ -33,18 +33,26 @@ function minAndMax(controlMinName: string,
         const errors: {
             minOverMax?: boolean,
             noFilter?: boolean,
+            noFiniteNumber?: boolean,
         } = {};
 
-        if (min && max && max < min) {
+        const validMin = isFiniteNumber(min);
+        const validMax = isFiniteNumber(max);
+
+        if (validMin && validMax && max < min) {
             errors.minOverMax = true;
         }
 
-        if (options.checkOneExists && (!min && !max)) {
+        if (options.checkOneExists && (!validMin && !validMax)) {
             errors.noFilter = true;
         }
 
-        if (options.checkBothExist && (!min || !max)) {
+        if (options.checkBothExist && (!validMin || !validMax)) {
             errors.noFilter = true;
+        }
+
+        if ((!validMin && min !== undefined && min !== null) || (!validMax && max !== undefined && max !== null)) {
+            errors.noFiniteNumber = true;
         }
 
         return Object.keys(errors).length > 0 ? errors : null;
@@ -121,10 +129,12 @@ function notOnlyWhitespace(control: AbstractControl) {
 
 function isNumber(control: AbstractControl) {
     const value = control.value;
-    const isInvalid = value === null || value === undefined || isNaN(value) || !isFinite(value);
-    return isInvalid ? {'isNoNumber': true} : null;
+    return isFiniteNumber(value) ? null : {isNoNumber: true};
 }
 
+function isFiniteNumber(value: any): boolean {
+    return value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+}
 
 export const WaveValidators = {
     conditionalValidator: conditionalValidator,
@@ -134,3 +144,72 @@ export const WaveValidators = {
     notOnlyWhitespace: notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
 };
+
+/**
+ * checks if a value is undefined or null
+ * @param value
+ */
+function nullOrUndefined(value: any) {
+    return value === undefined || value === null;
+}
+
+/**
+ * This Validator checks the relation of a value compared to another value.
+ * @param controlValueProvider: function deriving the value of the control
+ * @param compareValueProvider: function deriving the min value
+ * @param options: {checkEqual: true} enables checking for equal, {checkAbove: true} for above and {checkBelow: true] for below.
+ */
+export function valueRelation(
+    controlValueProvider: (control: AbstractControl) => number,
+    compareValueProvider: (control: AbstractControl) => number,
+    options?: {
+        checkEqual?: boolean,
+        checkAbove?: boolean,
+        checkBelow?: boolean,
+    }) {
+    if (!options) {
+        options = {
+            checkEqual: true,
+            checkAbove: true,
+            checkBelow: true,
+        };
+    }
+
+    return (control: AbstractControl): { [key: string]: boolean } => {
+        const value = controlValueProvider(control);
+        const compareValue = compareValueProvider(control);
+
+        const errors: {
+            valueAbove?: boolean,
+            valueAboveOrEqual?: boolean,
+            valueBelow?: boolean,
+            valueBelowOrEqual?: boolean,
+            valueEquals?: boolean,
+            noFilter?: boolean,
+        } = {};
+
+        if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value === compareValue) {
+            errors.valueEquals = true;
+            if (options.checkBelow) {
+                errors.valueBelowOrEqual = true;
+            }
+            if (options.checkAbove) {
+                errors.valueAboveOrEqual = true;
+            }
+        }
+
+        if (options.checkBelow && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value < compareValue) {
+            errors.valueBelow = true;
+            errors.valueBelowOrEqual = true;
+        }
+        if (options.checkAbove && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value > compareValue) {
+            errors.valueAbove = true;
+            errors.valueAboveOrEqual = true;
+
+        }
+        if (nullOrUndefined(value)) {
+            errors.noFilter = true;
+        }
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+}

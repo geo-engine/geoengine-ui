@@ -157,8 +157,12 @@ import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
+import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
+import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-in.directive';
+import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
 import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
 import { DialogHelpComponent } from './dialogs/dialog-help/dialog-help.component';
 
@@ -207,6 +211,8 @@ export function configInitializer(config: Config) {
         IfGeoBonDirective,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
+        IfNature40LoggedInDirective,
+        IfNature40AndGuestDirective,
         IfGuestDirective,
         IfLoggedInDirective,
         LayerExportComponent,
@@ -250,6 +256,7 @@ export function configInitializer(config: Config) {
         MediaviewPlaylistComponent,
         MediaviewVideoComponent,
         MultiLayerSelectionComponent,
+        Nature40CatalogComponent,
         NavigationComponent,
         NbspPipe,
         NewProjectComponent,
@@ -317,6 +324,7 @@ export function configInitializer(config: Config) {
         RgbCompositeComponent,
         RasterMaskComponent,
         DialogHelpComponent,
+        ColormapColorizerComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -356,6 +364,7 @@ export function configInitializer(config: Config) {
         MediaviewImageComponent,
         MediaviewImageDialogComponent,
         MediaviewVideoComponent,
+        Nature40CatalogComponent,
         NewProjectComponent,
         NumericAttributeFilterOperatorComponent,
         OlDrawFeaturesComponent,
@@ -386,6 +395,7 @@ export function configInitializer(config: Config) {
         TimePlotComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
+        ColormapColorizerComponent
     ],
     providers: [
         {

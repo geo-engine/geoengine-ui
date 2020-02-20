@@ -1,6 +1,6 @@
-<ng-template [ngIf]="isLoggedOut$ | async">
+<ng-template [ngIf]="!useSsoLogin && (isLoggedOut$ | async)">
     <wave-sidenav-header>Login</wave-sidenav-header>
-    <form [formGroup]="loginForm" (ngSubmit)="$event.preventDefault();login()">
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-button-toggle-group *waveIfGfbio formControlName="loginAuthority" fxLayout="row">
             <mat-button-toggle value="system" fxFlex>System</mat-button-toggle>
             <mat-button-toggle value="gfbio" fxFlex><img src="assets/logo_gfbio.png" alt="GFBio"></mat-button-toggle>
@@ -21,6 +21,15 @@
             Login
         </button>
     </form>
+</ng-template>
+<ng-template [ngIf]="useSsoLogin && (isLoggedOut$ | async)">
+    <wave-sidenav-header>Login</wave-sidenav-header>
+    <div class="container">
+        <button mat-raised-button type="button" (click)="jwtNature40Login()">
+            <mat-icon svgIcon="nature40:icon"></mat-icon>
+            Continue with LOEWE Nature 4.0 Single Sign On
+        </button>
+    </div>
 </ng-template>
 <ng-template [ngIf]="isLoading$ | async">
     <mat-spinner></mat-spinner>

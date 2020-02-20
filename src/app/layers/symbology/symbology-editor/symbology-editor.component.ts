@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {AbstractSymbology, SymbologyType} from '../symbology.model';
 import {Layer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
+import {Subscription} from 'rxjs';
 
 @Component({
     selector: 'wave-symbology-editor',
@@ -10,35 +11,35 @@ import {ProjectService} from '../../../project/project.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class SymbologyEditorComponent implements OnChanges {
+export class SymbologyEditorComponent implements OnDestroy {
 
     // make visible in template
     // tslint:disable:variable-name
-    ST = SymbologyType;
+    readonly ST = SymbologyType;
     // tslint:enable
 
-    @Input()
-    showLayerSelect = false;
+    @Input() showLayerSelect = false;
 
-    @Input()
-    layer = undefined;
+    @Input() layer: Layer<AbstractSymbology> = undefined;
+    validLayers: Array<Layer<AbstractSymbology>> = undefined;
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         public projectService: ProjectService
-    ) {}
-
-
-    ngOnChanges(changes: SimpleChanges): void {
-        // console.log('SymbologyEditorComponent', 'ngOnChanges', changes);
+    ) {
+        const sub = this.projectService.getLayerStream().subscribe(projectLayers => this.validLayers = projectLayers);
+        this.subscriptions.push(sub);
     }
 
-    get validLayer(): boolean {
-        return !!this.layer
+    get isValidLayer(): boolean {
+        return !!this.layer && !!this.layer.symbology && !!this.validLayers.find(x => x === this.layer);
     }
 
     update_symbology(layer: Layer<AbstractSymbology>, symbology: AbstractSymbology) {
-        // console.log('update_symbology', symbology);
         this.projectService.changeLayer(layer, {symbology: symbology});
     }
 
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(x => x.unsubscribe());
+    }
 }
