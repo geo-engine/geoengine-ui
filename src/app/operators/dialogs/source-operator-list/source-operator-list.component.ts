@@ -11,6 +11,7 @@ import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
 import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from '../country-polygon-selection/country-polygon-selection.component';
+import {Nature40CatalogComponent} from '../nature40-catalog/nature40-catalog.component';
 
 @Component({
     selector: 'wave-source-operator-list',
@@ -25,6 +26,8 @@ export class SourceOperatorListComponent implements OnInit {
     DataRepositoryComponent = DataRepositoryComponent;
     RasterSourceType = RasterSourceType;
 
+    readonly Nature40CatalogComponent = Nature40CatalogComponent;
+
     AbcdRepositoryComponent = AbcdRepositoryComponent;
     ABCDSourceType = ABCDSourceType;
 
@@ -38,6 +41,7 @@ export class SourceOperatorListComponent implements OnInit {
 
     DrawFeaturesComponent = OlDrawFeaturesComponent;
     PolygonSelectionComponent = CountryPolygonSelectionComponent;
+
     //
 
     constructor(public layoutService: LayoutService) {
