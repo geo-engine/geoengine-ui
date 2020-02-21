@@ -27,6 +27,14 @@ mat-slider {
     border: #000 solid 1px;
 }
 
+.colorizer_option_preview {
+    min-height: 20px;
+    border: #000 solid 1px;
+    width: 30%;
+    display: inline-block;
+}
+
+
 .fill_width {
     width: 100%;
 }

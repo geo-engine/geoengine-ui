@@ -1,5 +1,3 @@
-import {ColormapNames} from './colormap.model';
-
 /**
  * The colormap data in this file are based on:
  * "New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt, and (in the case of viridis) Eric Firing."
@@ -8,7 +6,7 @@ import {ColormapNames} from './colormap.model';
  */
 
 export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
-export const MPL_COLORMAP_NAMES: Array<ColormapNames> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
+export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
 
 
 export const colormap_magma_data: Array<[number, number, number]> =
