@@ -323,7 +323,10 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
-        ColormapColorizerComponent
+        ColormapColorizerComponent,
+        RasterMaskComponent,
+        DialogHelpComponent,
+        ColormapNameToColorizerDataPipe
     ],
     imports: [
         BrowserAnimationsModule,
