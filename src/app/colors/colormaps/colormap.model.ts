@@ -41,10 +41,12 @@ import {
     SCIENTIFIC_COLORMAP_NAMES,
     ScientificColormapName
 } from './scientific-colormaps/scientific-colormaps';
+import {colormap_rainbow_data, GENERIC_COLORMAP_NAMES, GenericColormapName} from './generic-colormaps';
 
 export type ColormapData = Array<[number, number, number]>;
-export type ColormapNames = MplColormapName | MorelandColormapName | ScientificColormapName;
-export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES];
+export type ColormapNames = MplColormapName | MorelandColormapName | ScientificColormapName | GenericColormapName;
+export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES,
+    ...GENERIC_COLORMAP_NAMES];
 
 export type ColormapStepScale = 'linear' | 'log' | 'power_05' | 'power_2';
 
@@ -132,6 +134,8 @@ export abstract class Colormap {
                 return colormap_vik_data;
             case 'VIKO':
                 return colormap_viko_data;
+            case 'RAINBOW':
+                return colormap_rainbow_data;
         }
     }
 
