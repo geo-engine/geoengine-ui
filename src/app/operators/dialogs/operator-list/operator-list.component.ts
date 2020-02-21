@@ -42,6 +42,7 @@ import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 import {Config} from '../../../config.service';
 import {SpectralOverviewPlotComponent} from '../spectral-overview-plot/spectral-overview-plot.component';
 import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
+import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
 
 interface OperatorListType {
     component: Type<any>;
@@ -114,6 +115,14 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
         component: ExpressionOperatorComponent,
         type: ExpressionType,
         description: 'Calculate an expression on a raster',
+    },
+    {
+        component: RasterMaskComponent,
+        type: {
+            NAME: 'Raster Mask',
+            ICON_URL: OperatorType.createIconDataUrl('Raster Mask'),
+        },
+        description: 'Apply a mask to a raster',
     },
     {
         component: RgbCompositeComponent,

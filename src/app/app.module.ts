@@ -163,6 +163,8 @@ import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-compo
 import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
 import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-in.directive';
 import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
+import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
+import { DialogHelpComponent } from './dialogs/dialog-help/dialog-help.component';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 
 export function configInitializer(config: Config) {
@@ -321,8 +323,7 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
-        ColormapColorizerComponent,
-        ColormapNameToColorizerDataPipe
+        ColormapColorizerComponent
     ],
     imports: [
         BrowserAnimationsModule,
