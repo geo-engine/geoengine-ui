@@ -12,7 +12,7 @@
                     <mat-icon mat-list-icon>open_in_new</mat-icon>
                 </a>
             </h3>
-            <mat-list-item *ngFor="let entry of group.value">
+            <mat-list-item *ngFor="let entry of group.value" (click)="add(entry)">
                 <ng-container [ngSwitch]="entry.dataset.type">
                     <img mat-list-icon *ngSwitchCase="'raster'" [src]="RASTER_ICON_URL" alt="Raster">
                     <img mat-list-icon *ngSwitchCase="'vector'" [src]="VECTOR_ICON_URL" alt="Vector">

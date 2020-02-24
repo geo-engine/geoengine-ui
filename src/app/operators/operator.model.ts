@@ -74,6 +74,8 @@ interface QueryDict {
  * It has several metadata fields for e.g. parameters and projection.
  */
 export class Operator {
+    static readonly RASTER_ATTRIBTE_NAME: AttributeName = 'value';
+
     private static _nextOperatorId = 1; // used for operator id generation
 
     private _id: OperatorId;
@@ -312,7 +314,7 @@ export class Operator {
      */
     get sourceCount(): number {
         return this.rasterSources.size + this.pointSources.size
-               + this.lineSources.size + this.polygonSources.size;
+            + this.lineSources.size + this.polygonSources.size;
     }
 
     /**
@@ -324,7 +326,7 @@ export class Operator {
         const predicate = (operator: Operator) => operator._id === id;
 
         for (const source of [this.rasterSources, this.pointSources,
-                              this.lineSources, this.polygonSources]) {
+            this.lineSources, this.polygonSources]) {
             const result = source.find(predicate);
 
             if (result) {
@@ -340,7 +342,7 @@ export class Operator {
      */
     hasSources(): boolean {
         return this.rasterSources.size > 0 || this.pointSources.size > 0
-               || this.lineSources.size > 0 || this.polygonSources.size > 0;
+            || this.lineSources.size > 0 || this.polygonSources.size > 0;
     }
 
     /**
@@ -385,13 +387,13 @@ export class Operator {
                 dataTypes: this._dataTypes,
                 units: this._units,
                 rasterSources: this.resultType === ResultTypes.RASTER ?
-                                ImmutableList.of(this) : ImmutableList<Operator>(),
+                    ImmutableList.of(this) : ImmutableList<Operator>(),
                 pointSources: this.resultType === ResultTypes.POINTS ?
-                                ImmutableList.of(this) : ImmutableList<Operator>(),
+                    ImmutableList.of(this) : ImmutableList<Operator>(),
                 lineSources: this.resultType === ResultTypes.LINES ?
-                                ImmutableList.of(this) : ImmutableList<Operator>(),
+                    ImmutableList.of(this) : ImmutableList<Operator>(),
                 polygonSources: this.resultType === ResultTypes.POLYGONS ?
-                                ImmutableList.of(this) : ImmutableList<Operator>(),
+                    ImmutableList.of(this) : ImmutableList<Operator>(),
             });
         }
     }
@@ -404,26 +406,26 @@ export class Operator {
     }
 
     toDict(): OperatorDict {
-      const dict: OperatorDict = {
-          id: this._id,
-          resultType: this._resultType.getCode(),
-          operatorType: this._operatorType.toDict(),
-          operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
-          projection: this._projection.getCode(),
-          attributes: this._attributes.toArray(),
-          dataTypes: this._dataTypes.map(
-              (datatype, attribute) => [attribute, datatype.getCode()]
-          ).toArray() as Array<[string, string]>,
-          units: this._units.map(
-              (unit, attribute) => [attribute, unit.toDict()]
-          ).toArray() as Array<[string, UnitDict]>,
-          rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
-          pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
-          lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
-          polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
-      };
+        const dict: OperatorDict = {
+            id: this._id,
+            resultType: this._resultType.getCode(),
+            operatorType: this._operatorType.toDict(),
+            operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
+            projection: this._projection.getCode(),
+            attributes: this._attributes.toArray(),
+            dataTypes: this._dataTypes.map(
+                (datatype, attribute) => [attribute, datatype.getCode()]
+            ).toArray() as Array<[string, string]>,
+            units: this._units.map(
+                (unit, attribute) => [attribute, unit.toDict()]
+            ).toArray() as Array<[string, UnitDict]>,
+            rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
+            pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
+            lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
+            polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
+        };
 
-      return dict;
+        return dict;
     }
 
     toJSON(): string {

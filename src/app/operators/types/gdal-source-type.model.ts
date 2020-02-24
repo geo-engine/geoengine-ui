@@ -1,5 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {MappingRasterMethodology} from '../dialogs/data-repository/mapping-source.model';
+import {UnitDict} from '../unit.model';
 
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
@@ -22,6 +23,20 @@ interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
     channel: number;
     sourcename: string;
     transform: boolean;
+    gdal_params?: {
+        channels: [{
+            datatype: string;
+            unit: UnitDict;
+        }];
+        coords: {
+            crs: string;
+        };
+        provenance: {
+            citation: string,
+            license: string,
+            uri: string,
+        };
+    };
 }
 
 export interface GdalSourceTypeDict extends OperatorTypeDict {
@@ -38,9 +53,17 @@ export class GdalSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(GdalSourceType._TYPE);
     private static _NAME = 'GDAL Source';
 
-    static get TYPE(): string { return GdalSourceType._TYPE; }
-    static get ICON_URL(): string { return GdalSourceType._ICON_URL; }
-    static get NAME(): string { return GdalSourceType._NAME; }
+    static get TYPE(): string {
+        return GdalSourceType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return GdalSourceType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return GdalSourceType._NAME;
+    }
 
     private channelConfig: GdalSourceChannelOptions;
     private sourcename: string;
