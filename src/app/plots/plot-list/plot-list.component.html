@@ -27,9 +27,8 @@
             <wave-histogram
                 *ngIf="cardWidth$ | async"
                 [data]="(projectService.getPlotDataStream(plot) | async)"
-                [height]="(cardWidth$ | async) / 2"
-                [width]="cardWidth$ | async"
                 [interactable]="false"
+                [autoResize]="true"
             ></wave-histogram>
         </ng-template>
         <ng-template ngSwitchCase="layer_statistics">
