@@ -7,7 +7,7 @@ import {MappingRequestParameters} from '../../../queries/request-parameters.mode
 import {HttpClient} from '@angular/common/http';
 import {Config} from '../../../config.service';
 import {first, flatMap} from 'rxjs/operators';
-import {Unit, UnitDict} from '../../unit.model';
+import {Unit, UnitMappingDict} from '../../unit.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {NotificationService} from '../../../notification.service';
@@ -56,30 +56,44 @@ export class Nature40CatalogComponent implements OnInit {
                 }
             })
         ).subscribe(
-            layer => this.projectService.addLayer(layer),
+            layer => {
+                this.projectService.addLayer(layer);
+            },
             error => this.notificationService.error(error),
         );
     }
 
     private static createGdalSourceLayer(entry: Nature40CatalogEntry,
                                          metadata: GdalSourceMetadata): RasterLayer<MappingColorizerRasterSymbology> {
-        let operator: Operator;
         for (const channel of metadata.channels) { // TODO: smart layer for other channels
-            const unit = Unit.fromDict(channel.unit);
-            operator = new Operator({
+            const datatype = DataTypes.fromCode(Nature40CatalogComponent.rsdbToMappingDataType(channel.datatype));
+            const unit = Unit.fromMappingDict(channel.unit);
+
+            const operator = new Operator({
                 attributes: [Operator.RASTER_ATTRIBTE_NAME],
                 dataTypes: ImmutableMap<string, DataType>().set(
                     Operator.RASTER_ATTRIBTE_NAME,
-                    DataTypes.fromCode(Nature40CatalogComponent.rsdbToMappingDataType(channel.datatype)),
+                    datatype,
                 ),
                 operatorType: new GdalSourceType({
-                    channel: channel.channel,
                     channelConfig: {
                         displayValue: channel.name,
-                        channelNumber: channel.channel,
+                        channelNumber: 0,
                     },
                     sourcename: channel.file_name,
                     transform: false,
+                    gdal_params: {
+                        channels: [{
+                            channel: channel.channel,
+                            datatype: datatype.getCode(),
+                            file_name: channel.file_name,
+                            unit,
+                        }],
+                        coords: {
+                            crs: channel.crs,
+                        },
+                        provenance: Nature40CatalogComponent.provenanceOfEntry(entry),
+                    }
                 }),
                 operatorTypeParameterOptions: undefined,
                 projection: Projections.fromCode(channel.crs),
@@ -90,10 +104,10 @@ export class Nature40CatalogComponent implements OnInit {
                 )
             });
 
-            return new RasterLayer<MappingColorizerRasterSymbology>({
+            return new RasterLayer({
                 name: entry.title,
                 operator,
-                symbology: new MappingColorizerRasterSymbology({unit: Unit.fromDict(metadata.channels[0].unit)}), // TODO: fix
+                symbology: new MappingColorizerRasterSymbology({unit}),
             });
         }
     }
@@ -148,6 +162,6 @@ interface GdalSourceMetadata extends Nature40CatalogEntryMetadata {
         datatype: string;
         file_name: string;
         name: string;
-        unit: UnitDict;
+        unit: UnitMappingDict;
     }>;
 }
