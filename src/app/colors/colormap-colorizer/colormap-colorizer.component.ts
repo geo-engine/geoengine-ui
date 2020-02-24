@@ -15,7 +15,7 @@ import {
     COLORMAP_STEP_SCALES_WITH_BOUNDS,
     COLORMAP_NAMES,
     Colormap,
-    MplColormapName
+    ColormapNames
 } from '../colormaps/colormap.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {valueRelation, WaveValidators} from '../../util/form.validators';
@@ -90,7 +90,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     checkValidConfig() {
-        const colormapName: MplColormapName = this.form.controls['colormapName'].value;
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
@@ -123,7 +123,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
             this.colorizerData = undefined;
             return;
         }
-        const colormapName: MplColormapName = this.form.controls['colormapName'].value;
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;

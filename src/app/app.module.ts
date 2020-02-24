@@ -165,6 +165,7 @@ import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-
 import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
 import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
 import { DialogHelpComponent } from './dialogs/dialog-help/dialog-help.component';
+import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -322,9 +323,10 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
+        ColormapColorizerComponent,
         RasterMaskComponent,
         DialogHelpComponent,
-        ColormapColorizerComponent
+        ColormapNameToColorizerDataPipe
     ],
     imports: [
         BrowserAnimationsModule,
@@ -373,7 +375,6 @@ export function configInitializer(config: Config) {
         PlotDetailViewComponent,
         PlotListComponent,
         PointInPolygonFilterOperatorComponent,
-        RasterMaskComponent,
         RasterPolygonClipOperatorComponent,
         RasterValueExtractionOperatorComponent,
         RenameLayerComponent,
