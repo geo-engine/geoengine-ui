@@ -12,7 +12,7 @@ import {Provenance} from '../provenance/provenance.model';
 import {LoadingState} from '../project/loading-state.model';
 import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
 import {Feature as OlFeature} from 'ol/Feature';
-import {ProjectionLike as OlProjectionLike} from 'ol/proj'
+import {ProjectionLike as OlProjectionLike} from 'ol/proj';
 import {Time, TimePoint} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
@@ -96,17 +96,17 @@ export class RasterData extends LayerData<string> {
 }
 
 export interface LayerChanges<S extends AbstractSymbology> {
-    name ?: string,
-    symbology ?: S,
-    editSymbology ?: boolean,
-    visible ?: boolean,
-    expanded ?: boolean,
-    operator ?: Operator,
+    name?: string;
+    symbology?: S;
+    editSymbology?: boolean;
+    visible?: boolean;
+    expanded?: boolean;
+    operator?: Operator;
 }
 
 export interface VectorLayerData {
     data$: Observable<Array<OlFeature>>;
-    dataExtent$?: Observable<[number, number, number, number]>,
+    dataExtent$?: Observable<[number, number, number, number]>;
     state$: Observable<LoadingState>;
     reload$: Observer<void>;
 }
@@ -284,7 +284,7 @@ export abstract class Layer<S extends AbstractSymbology> {
 
     protected get typeOptions(): LayerTypeOptionsDict {
         return {};
-    };
+    }
 }
 
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {

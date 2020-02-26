@@ -88,7 +88,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             parent = parent.parentElement;
         }
 
-        const width = parseInt(getComputedStyle(dialogContainer).maxWidth, 10) - 2 * LayoutService.remInPx();
+        const width = parseInt(getComputedStyle(dialogContainer).maxWidth, 10) - 2 * LayoutService.remInPx;
         const maxHeight = window.innerHeight * 0.8;
 
         this.maxWidth$.next(width);

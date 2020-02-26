@@ -90,7 +90,7 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     }
 
     private updateOlLayer(changes: LayerChanges<AbstractVectorSymbology>) {
-        if (changes.visible) {
+        if (changes.visible !== undefined) {
             this.mapLayer.setVisible(this.layer.visible);
             this.mapRedraw.emit();
         }
@@ -108,7 +108,7 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     providers: [{provide: MapLayerComponent, useExisting: OlPointLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlPointLayerComponent extends OlVectorLayerComponent {
+export class OlPointLayerComponent extends OlVectorLayerComponent implements OnInit, OnDestroy {
     constructor(protected projectService: ProjectService) {
         super(projectService);
     }
@@ -120,7 +120,7 @@ export class OlPointLayerComponent extends OlVectorLayerComponent {
     providers: [{provide: MapLayerComponent, useExisting: OlLineLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlLineLayerComponent extends OlVectorLayerComponent {
+export class OlLineLayerComponent extends OlVectorLayerComponent implements OnInit, OnDestroy {
     constructor(protected projectService: ProjectService) {
         super(projectService);
     }
@@ -132,7 +132,7 @@ export class OlLineLayerComponent extends OlVectorLayerComponent {
     providers: [{provide: MapLayerComponent, useExisting: OlPolygonLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlPolygonLayerComponent extends OlVectorLayerComponent {
+export class OlPolygonLayerComponent extends OlVectorLayerComponent implements OnInit, OnDestroy {
     constructor(protected projectService: ProjectService) {
         super(projectService);
     }
@@ -201,21 +201,21 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateOlLayer(changes: LayerChanges<MappingColorizerRasterSymbology>) {
-        if (!this.source || !this._mapLayer) {
+        if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }
 
-        if (changes.visible) {
+        if (changes.visible !== undefined) {
             this._mapLayer.setVisible(this.layer.visible);
             this.mapRedraw.emit();
         }
-        if (changes.symbology) {
+        if (changes.symbology !== undefined) {
             this._mapLayer.setOpacity(this.layer.symbology.opacity);
             this.source.updateParams({
                 colors: this.layer.symbology.mappingColorizerRequestString()
             });
         }
-        if (changes.operator) {
+        if (changes.operator !== undefined) {
             this.initializeOrReplaceOlSource();
         }
     }
@@ -242,7 +242,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateTime(t: Time) {
-        if (!this.time || !t.isSame(this.time)) {
+        if (this.time === undefined || !t.isSame(this.time)) {
             this.time = t;
             this.updateOlLayerTime();
         }

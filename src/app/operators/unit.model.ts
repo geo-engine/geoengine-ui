@@ -6,7 +6,7 @@ export const enum Interpolation {
     Discrete = 2,
 }
 
-function interpolationToName(interpolation: Interpolation): string {
+export function interpolationToName(interpolation: Interpolation): string {
     'use strict';
     switch (interpolation) {
         case Interpolation.Unknown:

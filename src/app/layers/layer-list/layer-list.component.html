@@ -235,12 +235,7 @@
                         </ng-template>
 
                         <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-                            <wave-mapping-raster-legend
-                                fxFlex="grow"
-                                *ngIf="projectService.getLayerSymbologyDataStream(layer) | async"
-                                [symbology]="layer.symbology"
-                                [symbologyData]="projectService.getLayerSymbologyDataStream(layer) | async">
-                            </wave-mapping-raster-legend>
+                            <wave-mapping-raster-legend fxFlex="grow" [symbology]="layer.symbology"></wave-mapping-raster-legend>
                         </ng-template>
 
                         <wave-legendary *ngSwitchDefault fxFlex="grow" [symbology]="layer.symbology">
