@@ -193,8 +193,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.handleQueryParameters();
 
         }
-
-        console.log(LayoutService.remInPx);
     }
 
     setTabIndex(index: number) {

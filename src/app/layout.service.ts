@@ -1,7 +1,7 @@
 import {
     fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
 import {Injectable, Type} from '@angular/core';
 import {Config} from './config.service';
@@ -305,13 +305,14 @@ export class LayoutService {
         return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
-            this.layerDetailViewVisible$,
-            (layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible): number => {
+            this.layerDetailViewVisible$
+        ).pipe(
+            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
                 return LayoutService.calculateMapHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
                     totalAvailableHeight
                 );
-            }
+            })
         );
     }
 
@@ -329,32 +330,30 @@ export class LayoutService {
             this.layerListVisible$,
             this.layerDetailViewVisible$,
             this.layerDetailViewTabIndex$,
-            this.layerDetailViewHeightPercentage$,
-            (layerListVisible,
-             layerDetailViewVisible,
-             layerDetailViewTabIndex,
-             layerDetailViewHeightPercentage) => {
+            this.layerDetailViewHeightPercentage$
+        ).pipe(
+            map(([layerListVisible, layerDetailViewVisible, layerDetailViewTabIndex, layerDetailViewHeightPercentage]) => {
                 return {
                     layerListVisible: layerListVisible,
                     layerDetailViewVisible: layerDetailViewVisible,
                     layerDetailViewTabIndex: layerDetailViewTabIndex,
                     layerDetailViewHeightPercentage: layerDetailViewHeightPercentage,
                 };
-            }
+            })
         );
     }
 
     setLayoutDict(dict: LayoutDict) {
-        if (dict.layerListVisible) {
+        if (typeof dict.layerListVisible === 'boolean') {
             this.setLayerListVisibility(dict.layerListVisible);
         }
-        if (dict.layerDetailViewVisible) {
+        if (typeof dict.layerDetailViewVisible === 'boolean') {
             this.setLayerDetailViewVisibility(dict.layerDetailViewVisible);
         }
-        if (dict.layerDetailViewTabIndex) {
+        if (typeof dict.layerDetailViewTabIndex === 'number') {
             this.setLayerDetailViewTabIndex(dict.layerDetailViewTabIndex);
         }
-        if (dict.layerDetailViewHeightPercentage) {
+        if (typeof dict.layerDetailViewHeightPercentage === 'number') {
             this.setLayerDetailViewHeightPercentage(dict.layerDetailViewHeightPercentage);
         }
     }
