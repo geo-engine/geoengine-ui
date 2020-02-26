@@ -27,7 +27,7 @@ import {WaveValidators} from '../../../util/form.validators';
 export class RgbCompositeComponent implements OnInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly numberOfRasters = 3;
-    readonly loadingSpinnerDiameter = 2 * LayoutService.remInPx();
+    readonly loadingSpinnerDiameter = 2 * LayoutService.remInPx;
 
     form: FormGroup;
     formIsInvalid$: Observable<boolean>;
