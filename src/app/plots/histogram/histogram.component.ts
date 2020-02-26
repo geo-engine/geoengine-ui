@@ -511,8 +511,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     private calculateHistogramWidthAndHeight() {
         const queryElem = this.elementRef.nativeElement.querySelector('div');
-        const panelWidth = queryElem.clientWidth - 2 * LayoutService.remInPx();
-        const panelheight = queryElem.clientHeight - 2 * LayoutService.remInPx();
+        const panelWidth = queryElem.clientWidth - 2 * LayoutService.remInPx;
+        const panelheight = queryElem.clientHeight - 2 * LayoutService.remInPx;
         this.width = panelWidth;
         this.height = Math.max(panelheight / 3, panelWidth / 3);
     }

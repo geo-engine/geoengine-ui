@@ -28,6 +28,8 @@ export interface SidenavConfig {
 @Injectable()
 export class LayoutService {
 
+    static readonly remInPx: number = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
     private static _scrollbarWidthPx: number;
 
     /**
@@ -59,10 +61,6 @@ export class LayoutService {
 
     constructor(private config: Config) {
         this.setupSidenavWidthStream();
-    }
-
-    static remInPx(): number {
-        return parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
     static scrollbarWidthPx() {
@@ -111,17 +109,17 @@ export class LayoutService {
     static getLayerDetailViewBarHeightPx(): number {
         const mobileLandscape = window.matchMedia('(max-width: 960px) and (orientation: landscape)').matches;
         if (mobileLandscape) {
-            return 2 * LayoutService.remInPx();
+            return 2 * LayoutService.remInPx;
         }
 
         const mobilePortrait = window.matchMedia('(max-width: 600px) and (orientation: portrait)').matches;
         if (mobilePortrait) {
-            return 2.5 * LayoutService.remInPx();
+            return 2.5 * LayoutService.remInPx;
         }
 
         const borderSizePx = 1;
 
-        return 3 * LayoutService.remInPx() + borderSizePx;
+        return 3 * LayoutService.remInPx + borderSizePx;
     }
 
     /**
@@ -371,7 +369,7 @@ export class LayoutService {
             const widthString = sidenavStyle.width;
 
             if (widthString.indexOf('px') === (widthString.length - 2)) {
-                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx();
+                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx;
             } else {
                 throw new Error('sidenav width must be a `px` value');
             }

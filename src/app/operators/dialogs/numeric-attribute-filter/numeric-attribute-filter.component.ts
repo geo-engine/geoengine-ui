@@ -145,8 +145,8 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     ngAfterViewInit() {
         // calculate size for histogram
         const formStyle = getComputedStyle(this.elementRef.nativeElement.querySelector('form'));
-        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx() - LayoutService.scrollbarWidthPx();
-        const formHeight = parseInt(formStyle.height, 10) - 2 * LayoutService.remInPx();
+        const formWidth = parseInt(formStyle.width, 10) - 2 * LayoutService.remInPx - LayoutService.scrollbarWidthPx();
+        const formHeight = parseInt(formStyle.height, 10) - 2 * LayoutService.remInPx;
 
         this.histogramWidth = formWidth;
         this.histogramHeight = Math.max(formHeight / 3, formWidth / 3);
