@@ -1,5 +1,3 @@
-@import "../../../../wave-app-theme";
-
 form {
     height: 100%;
     width: 100%;
@@ -9,6 +7,14 @@ form {
 .container {
     overflow-y: auto;
     padding: 0 1rem 1rem 1rem;
+
+    .custom-unit {
+        margin-bottom: 1rem;
+    }
+
+    > mat-error {
+        margin-bottom: 1rem;
+    }
 }
 
 .actions {
@@ -18,13 +24,5 @@ form {
 
 mat-form-field {
     width: 100%;
-    margin: 1rem 0;
-}
 
-mat-form-field {
-    margin-bottom: 1rem;
-}
-
-.error {
-    color: mat-color($wave-app-warn);
 }
