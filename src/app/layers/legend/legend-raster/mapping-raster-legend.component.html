@@ -22,7 +22,7 @@
                 *ngIf="isFirst"
                 [rowSpan]="symbology.colorizer.breakpoints.length"
                 [style.background]="symbology.colorizer | waveWappingColorizerToGradient | waveSafeStyle"></td>
-            <td>{{breakpoint.value}}</td>
+            <td>{{breakpoint.value | number:numberPipeParameters}}</td>
             <td *ngIf="isFirst">{{unitToString(symbology?.unit)}}</td>
         </ng-template>
         <ng-template [ngIf]="symbology.isDiscrete()">
