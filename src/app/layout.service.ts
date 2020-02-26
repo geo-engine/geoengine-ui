@@ -1,4 +1,3 @@
-
 import {
     fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
@@ -63,8 +62,7 @@ export class LayoutService {
     }
 
     static remInPx(): number {
-        // TODO: calculate
-        return 16;
+        return parseFloat(getComputedStyle(document.documentElement).fontSize);
     }
 
     static scrollbarWidthPx() {
@@ -388,7 +386,7 @@ export class LayoutService {
                 });
 
             this.sidenavContentMaxWidth$.next(getWidth());
-        })
+        });
     }
 
 }
