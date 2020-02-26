@@ -3,16 +3,17 @@
     <div fxFlex class="container">
         <wave-dialog-help>
             <p>The <em>Expression Operator</em> allows applying mathematical calculations on one or more raster layers.</p>
-            <p>For the expression, each raster is referred to an alphabetic character, e.g., A for the first raster.
+            <p>For the expression, each raster is referred to as an alphabetic character, e.g., A for the first raster.
                 It is possible to use basic operations like <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, e.g., <code>A
                     + B</code>.</p>
             <p>It is necessary to specify the output datatype for the expression.
-                The list indicates the datatype of the input.
-                Furthermore, it is required to specify the range of the data in the form of min and max values.
-                The system will choice a appropriate NO DATA value automatically.</p>
+                The list indicates the data type of the input.
+                Furthermore, it is required to specify the number range of the data in the form of min and max values.
+                The system will choose an appropriate NO DATA value automatically.</p>
             <p>There is the option to specify an output unit for the expression result, e.g. <em>temperature</em> in <em>°C</em>.
                 This will be shown in the legend and automatically used in plots, etc.</p>
-            <p>Since the input rasters can be in differing projections, it is required to specify the output projection.</p>
+            <p>Since the input rasters can be in differing projections, it is required to specify the output projection.
+                This projection is used when applying the operator.</p>
         </wave-dialog-help>
         <wave-multi-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayers"
                                     [min]="1" [max]="5"></wave-multi-layer-selection>
