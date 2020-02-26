@@ -196,15 +196,15 @@ export class ProjectService {
     }
 
     getProjectionStream(): Observable<Projection> {
-        return this.project$.pipe(map(project => project.projection), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.projection), distinctUntilChanged(),);
     }
 
     getTimeStream(): Observable<Time> {
-        return this.project$.pipe(map(project => project.time), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.time), distinctUntilChanged(),);
     }
 
     getTimeStepDurationStream(): Observable<TimeStepDuration> {
-        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged(),);
     }
 
     /**
@@ -316,7 +316,7 @@ export class ProjectService {
      * @returns {BehaviorSubject<Array<Plot>>}
      */
     getPlotStream(): Observable<Array<Plot>> {
-        return this.project$.pipe(map(project => project.plots), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.plots), distinctUntilChanged(),);
     }
 
     /**
@@ -576,7 +576,7 @@ export class ProjectService {
      * @returns {BehaviorSubject<Array<Layer<AbstractSymbology>>>}
      */
     getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
-        return this.project$.pipe(map(project => project.layers), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.layers), distinctUntilChanged(),);
     }
 
     /**
@@ -805,7 +805,7 @@ export class ProjectService {
                 let plotHeight = undefined;
 
                 if (isRScriptPlot) {
-                    const margin = 2 * LayoutService.remInPx();
+                    const margin = 2 * LayoutService.remInPx;
                     plotWidth = sidenavWidth - margin;
                     plotHeight = sidenavWidth - margin;
                 }
@@ -825,7 +825,7 @@ export class ProjectService {
                     this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ), )
+            ),)
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -920,7 +920,7 @@ export class ProjectService {
                 return LoadingState.OK;
             }), catchError(err => {
                 return observableOf(LoadingState.ERROR);
-            }), );
+            }),);
 
         this.layerCombinedState$.set(layer, combinedState$);
     }
@@ -959,7 +959,7 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ), )
+            ),)
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -1001,7 +1001,7 @@ export class ProjectService {
                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ), )
+            ),)
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -1038,7 +1038,7 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ), )
+            ),)
             .subscribe(
                 data => provenance$.next(data),
                 error => error // ignore error
@@ -1072,8 +1072,8 @@ export class ProjectService {
                             loadingState$.next(LoadingState.ERROR);
                         }
                         return observableOf({interpolation: 'unknown', breakpoints: []});
-                    }), );
-            }), )
+                    }),);
+            }),)
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error

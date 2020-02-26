@@ -1,4 +1,3 @@
-
 import {
     Observable, Subscription, fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Subject
 } from 'rxjs';
@@ -160,7 +159,7 @@ export class StorageService {
                 tap(() => {
                     // store pending change
                     this.pendingWorkspace = undefined;
-                }), )
+                }))
                 .subscribe(project => {
                     this.storageProvider.saveWorkspace({
                         project: project,
