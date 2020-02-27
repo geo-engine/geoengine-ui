@@ -159,7 +159,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         const subMinMax = this.form.controls['bounds'].valueChanges.subscribe(x => {
-            if (x.min !== undefined && typeof x.min === 'number') {
+            if (Number.isFinite(x.min)) {
                 this.minValueChange.emit(x.min.value);
             }
             if (Number.isFinite(x.max)) {
