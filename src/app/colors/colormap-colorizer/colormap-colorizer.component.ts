@@ -162,7 +162,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
             if (x.min !== undefined && typeof x.min === 'number') {
                 this.minValueChange.emit(x.min.value);
             }
-            if (x.max !== undefined && typeof x.max === 'number') {
+            if (Number.isFinite(x.max)) {
                 this.maxValueChange.emit(x.max.value);
             }
         });
