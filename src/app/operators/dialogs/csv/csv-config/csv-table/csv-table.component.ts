@@ -47,13 +47,13 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     untypedColumns: BehaviorSubject<number[]>;
     isWkt: BehaviorSubject<boolean>;
 
-    @ViewChild(HEADER_DIV_ID) headerDiv: ElementRef;
-    @ViewChild(BODY_DIV_ID) bodyDiv: ElementRef;
-    @ViewChild(TYPING_DIV_ID) typingDiv: ElementRef;
-    @ViewChild(HEADER_TABLE_ID) headerTable: ElementRef;
-    @ViewChild(BODY_TABLE_ID) bodyTable: ElementRef;
-    @ViewChild(TYPING_TABLE_ID) typingTable: ElementRef;
-    @ViewChild(TABLE_FRAME_ID) tableFrame: ElementRef;
+    @ViewChild(HEADER_DIV_ID, { static: true }) headerDiv: ElementRef;
+    @ViewChild(BODY_DIV_ID, { static: true }) bodyDiv: ElementRef;
+    @ViewChild(TYPING_DIV_ID, { static: false }) typingDiv: ElementRef;
+    @ViewChild(HEADER_TABLE_ID, { static: true }) headerTable: ElementRef;
+    @ViewChild(BODY_TABLE_ID, { static: true }) bodyTable: ElementRef;
+    @ViewChild(TYPING_TABLE_ID, { static: false }) typingTable: ElementRef;
+    @ViewChild(TABLE_FRAME_ID, { static: true }) tableFrame: ElementRef;
 
     parsedData: Array<Array<string>>;
     customHeader: {value: string}[] = [];

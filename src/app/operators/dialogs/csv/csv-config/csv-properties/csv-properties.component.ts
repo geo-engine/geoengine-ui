@@ -146,7 +146,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
-    @ViewChild('csv_form_status_stepper') public stepper: MatStepper;
+    @ViewChild('csv_form_status_stepper', { static: true }) public stepper: MatStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 

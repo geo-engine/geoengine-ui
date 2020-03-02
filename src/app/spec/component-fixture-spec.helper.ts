@@ -18,7 +18,7 @@ import {TestIdComponentDirective} from './test-id-component.directive';
     template: `<ng-template #component></ng-template>`
 })
 class TestHostComponent {
-    @ViewChild('component', {read: ViewContainerRef}) component: ViewContainerRef;
+    @ViewChild('component', /* TODO: add static flag */ { read: ViewContainerRef }) component: ViewContainerRef;
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 

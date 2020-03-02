@@ -64,7 +64,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    @ViewChild(MatAutocompleteTrigger) autoCompleteTrigger: MatAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger, { static: true }) autoCompleteTrigger: MatAutocompleteTrigger;
 
     mode$ = new BehaviorSubject(1);
     loading$ = new BehaviorSubject(false);

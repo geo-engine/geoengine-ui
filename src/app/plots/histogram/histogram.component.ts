@@ -54,7 +54,7 @@ interface Slider {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('svg') svgRef: ElementRef;
+    @ViewChild('svg', { static: true }) svgRef: ElementRef;
     @Input() data: HistogramData;
     @Input() height: number;
     @Input() width: number;

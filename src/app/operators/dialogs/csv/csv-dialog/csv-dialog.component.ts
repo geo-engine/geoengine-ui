@@ -33,8 +33,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class CsvDialogComponent implements OnInit {
 
     IntervalFormat = IntervalFormat;
-    @ViewChild(CsvPropertiesComponent) csvProperties;
-    @ViewChild(CsvTableComponent) csvTable;
+    @ViewChild(CsvPropertiesComponent, { static: false }) csvProperties;
+    @ViewChild(CsvTableComponent, { static: false }) csvTable;
     data: UploadData;
     uploading$ = new BehaviorSubject(false);
 

@@ -38,8 +38,8 @@ const GRAPH_STYLE = {
 })
 export class LineageGraphComponent implements OnInit, AfterViewInit {
 
-    @ViewChild('svg') svg: ElementRef;
-    @ViewChild('g') g: ElementRef;
+    @ViewChild('svg', { static: true }) svg: ElementRef;
+    @ViewChild('g', { static: true }) g: ElementRef;
 
     svgWidth$: Observable<number>;
     svgHeight$: Observable<number>;

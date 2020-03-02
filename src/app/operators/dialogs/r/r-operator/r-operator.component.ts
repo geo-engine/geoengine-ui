@@ -37,7 +37,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     ResultTypes = ResultTypes;
     //
 
-    @ViewChild(CodeEditorComponent) codeEditor: CodeEditorComponent;
+    @ViewChild(CodeEditorComponent, { static: true }) codeEditor: CodeEditorComponent;
 
     form: FormGroup;
 

@@ -15,7 +15,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild('target', {read: ViewContainerRef})
+    @ViewChild('target', { read: ViewContainerRef, static: true })
     target: ViewContainerRef;
 
     @ViewChildren('searchElements', {read: ViewContainerRef})

@@ -63,7 +63,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public allEqual: boolean;
 
     // Element-References
-    @ViewChild('scrollContainer') public container: ElementRef;
+    @ViewChild('scrollContainer', { static: true }) public container: ElementRef;
 
     // For text-width-calculation
     private styleString = '16px Roboto, sans-serif';
