@@ -16,7 +16,7 @@ mat-list-item {
 }
 
 .highlight,
-mat-list-item /deep/ .highlight {
+mat-list-item ::ng-deep .highlight {
     color: mat-color($wave-app-accent);
     text-decoration: underline;
 }
