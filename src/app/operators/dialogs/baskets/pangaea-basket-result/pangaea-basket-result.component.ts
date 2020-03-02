@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CsvColumns, CsvParameters} from '../csv.model';
 import {IBasketPangaeaResult} from '../gfbio-basket.model';
-import {BasketResult} from '../gfbio-basket-result.component';
+import {BasketResultComponent} from '../gfbio-basket-result.component';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {UserService} from '../../../../users/user.service';
 import {Projections} from '../../../projection.model';
@@ -20,7 +20,7 @@ import {PangaeaSourceType} from '../../../types/pangaea-source-type.model';
     styleUrls: ['./pangaea-basket-result.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaResult> {
+export class PangaeaBasketResultComponent extends BasketResultComponent<IBasketPangaeaResult> {
 
     static createOperatorFromPangaeaData(result: IBasketPangaeaResult): Operator {
         const csvColumns: CsvColumns = {
@@ -79,7 +79,7 @@ export class PangaeaBasketResultComponent extends BasketResult<IBasketPangaeaRes
                 userService: UserService,
                 projectService: ProjectService) {
         super(mappingQueryService, layerService, randomColorService, userService, projectService);
-    };
+    }
 
     createResultOperator(): Operator {
         return PangaeaBasketResultComponent.createOperatorFromPangaeaData(this.result);

@@ -24,6 +24,7 @@ import {Projection} from '../operators/projection.model';
  * * params
  * * style
  */
+@Component({})
 export abstract class MapLayerComponent<OL extends OlLayer,
     OS extends OlSource,
     S extends AbstractSymbology,

@@ -3,7 +3,7 @@ import {Observable, Subscription, of as observableOf} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {BasicColumns, CsvColumn} from '../csv.model';
 import {IBasketGroupedAbcdResult, IBasketGroupedAbcdUnits} from '../gfbio-basket.model';
-import {BasketResult} from '../gfbio-basket-result.component';
+import {BasketResultComponent} from '../gfbio-basket-result.component';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {UserService} from '../../../../users/user.service';
 import {ABCDSourceType, ABCDSourceTypeConfig} from '../../../types/abcd-source-type.model';
@@ -39,7 +39,7 @@ class UnitDataSource extends DataSource<IBasketGroupedAbcdUnits> {
     styleUrls: ['./grouped-abcd-basket-result.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupedAbcdResult> implements OnInit, OnDestroy {
+export class GroupedAbcdBasketResultComponent extends BasketResultComponent<IBasketGroupedAbcdResult> implements OnInit, OnDestroy {
     hasUnits = false;
     sourceSchema: Array<CsvColumn> = [];
 
@@ -101,7 +101,7 @@ export class GroupedAbcdBasketResultComponent extends BasketResult<IBasketGroupe
                 protected userService: UserService,
                 protected projectService: ProjectService) {
         super(mappingQueryService, layerService, randomColorService, userService, projectService);
-    };
+    }
 
     ngOnInit() {
         this.hasUnits = this.result.units.length > 0;
