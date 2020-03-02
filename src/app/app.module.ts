@@ -5,7 +5,6 @@ import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {HttpClientModule} from '@angular/common/http';
-import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
@@ -125,7 +124,6 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {MatIconRegistry} from '@angular/material/icon';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
@@ -166,6 +164,7 @@ import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-gue
 import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
+import {MatIconRegistry} from '@angular/material/icon';
 
 export function configInitializer(config: Config) {
     return () => config.load();
