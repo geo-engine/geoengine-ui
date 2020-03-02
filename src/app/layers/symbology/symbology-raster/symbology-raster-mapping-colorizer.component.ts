@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import {MappingColorizerRasterSymbology} from '../symbology.model';
-import {MatSliderChange} from '@angular/material';
+import {MatSliderChange} from '@angular/material/slider';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';

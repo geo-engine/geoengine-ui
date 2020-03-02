@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {AbstractSymbology} from '../../layers/symbology/symbology.model';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';

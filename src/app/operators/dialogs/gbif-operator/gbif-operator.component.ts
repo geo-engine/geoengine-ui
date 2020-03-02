@@ -24,7 +24,7 @@ import {HttpClient} from '@angular/common/http';
 import {LayerService} from '../../../layers/layer.service';
 import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {UnexpectedResultType} from '../../../util/errors';
-import {MatAutocompleteTrigger} from '@angular/material';
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {ProjectService} from '../../../project/project.service';
 import {HeatmapType} from '../../types/heatmap-type.model';
 

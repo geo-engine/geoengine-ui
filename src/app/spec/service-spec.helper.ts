@@ -1,14 +1,16 @@
 import {NgModule, Optional, SchemaMetadata, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ResponseOptions, XHRBackend, Response} from '@angular/http';
-import {MockBackend} from '@angular/http/testing';
+import {HttpResponse, HttpXhrBackend} from '@angular/common/http';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+
 
 @NgModule({
     providers: [
-        {provide: XHRBackend, useClass: MockBackend}
+        {provide: HttpXhrBackend, useClass: HttpClientTestingModule}
     ]
 })
-class HttpMockModule {}
+class HttpMockModule {
+}
 
 export interface Mock {
     module: any;
@@ -55,10 +57,10 @@ export class ServiceSpecHelper<T> {
      * @param {any} mockedResponse: The response that should be given.
      */
     httpResponseMock(mockedResponse: any) {
-        TestBed.get(XHRBackend).connections.subscribe((connection) => {
-            connection.mockRespond(new Response(new ResponseOptions({
-                body: JSON.stringify(mockedResponse)
-            })));
+        TestBed.get(HttpXhrBackend).connections.subscribe((connection) => {
+            connection.mockRespond(new Response(
+                JSON.stringify(mockedResponse)
+            ));
         });
     }
 

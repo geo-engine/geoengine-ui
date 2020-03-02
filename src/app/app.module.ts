@@ -84,7 +84,7 @@ import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.prope
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import {
     CsvDialogComponent,
-    CsvErrorDialog
+    CsvErrorDialogComponent
 } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
@@ -125,7 +125,7 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {MatIconRegistry} from '@angular/material';
+import {MatIconRegistry} from '@angular/material/icon';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
@@ -186,7 +186,7 @@ export function configInitializer(config: Config) {
         CountryPolygonSelectionComponent,
         CssStringToRgbaPipe,
         CsvDialogComponent,
-        CsvErrorDialog,
+        CsvErrorDialogComponent,
         CsvPropertiesComponent,
         CsvTableComponent,
         CsvUploadComponent,
@@ -348,7 +348,7 @@ export function configInitializer(config: Config) {
         CountryPolygonSelectionComponent,
         RgbCompositeComponent,
         CsvDialogComponent,
-        CsvErrorDialog,
+        CsvErrorDialogComponent,
         DataRepositoryComponent,
         ExpressionOperatorComponent,
         FeaturedbSourceListComponent,

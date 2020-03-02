@@ -2,7 +2,7 @@ import {filter, map, tap} from 'rxjs/operators';
 import {Observable, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {Interpolation, Unit} from '../../unit.model';
@@ -13,7 +13,7 @@ import {RasterLayer} from '../../../layers/layer.model';
 import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {ValidationErrors} from '@angular/forms/src/directives/validators';
+
 
 @Component({
     selector: 'wave-expression-operator',

@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
 import {ComplexPointSymbology, ComplexVectorSymbology} from '../symbology.model';
-import {MatSliderChange, MatSlideToggleChange} from '@angular/material';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {VectorLayer} from '../../layer.model';
 import {DataTypes} from '../../../operators/datatype.model';

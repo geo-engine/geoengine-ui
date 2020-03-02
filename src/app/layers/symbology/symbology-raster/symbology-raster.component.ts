@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 import {RasterSymbology} from '../symbology.model';
-import {MatSliderChange} from '@angular/material';
+import {MatSliderChange} from '@angular/material/slider';
 import {Layer} from '../../layer.model';
 
 @Component({

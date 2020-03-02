@@ -13,7 +13,7 @@ import {
 import {VectorLayer} from '../../../../layers/layer.model';
 import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
-import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {BehaviorSubject} from 'rxjs';
 import {Projections} from '../../../projection.model';
 import {CsvPropertiesService} from './csv.properties.service';
@@ -201,9 +201,9 @@ export class CsvDialogComponent implements OnInit {
     }
 
     openErrorDialog(error: HttpErrorResponse): void {
-        let errorDialogRef = this.errorDialog.open(CsvErrorDialog, {
+        let errorDialogRef = this.errorDialog.open(CsvErrorDialogComponent, {
             width: '400px',
-            data: { error: error },
+            data: {error: error},
         });
         errorDialogRef.afterClosed().subscribe(result => {
             if (result) {
@@ -244,12 +244,13 @@ export class CsvDialogComponent implements OnInit {
                 <button mat-raised-button (click)="dialogRef.close(true)">Abort</button>
                 <button mat-raised-button (click)="dialogRef.close(false)">Continue</button>
             </mat-dialog-actions>
-                `,
+    `,
 })
-export class CsvErrorDialog {
+export class CsvErrorDialogComponent {
 
     constructor(
-        public dialogRef: MatDialogRef<CsvErrorDialog>,
-        @Inject(MAT_DIALOG_DATA) public data: {error: HttpErrorResponse}) {}
+        public dialogRef: MatDialogRef<CsvErrorDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: { error: HttpErrorResponse }) {
+    }
 
 }

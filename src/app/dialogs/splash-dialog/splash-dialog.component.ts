@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {UserService} from '../../users/user.service';
-import {MatCheckboxChange} from '@angular/material';
+import {MatCheckboxChange} from '@angular/material/checkbox';
 
 @Component({
   selector: 'wave-splash-dialog',

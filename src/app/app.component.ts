@@ -11,7 +11,10 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import {MatDialog, MatIconRegistry, MatSidenav, MatTabGroup} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
+import {MatIconRegistry} from '@angular/material/icon';
+import {MatSidenav} from '@angular/material/sidenav';
+import {MatTabGroup} from '@angular/material/tabs';
 
 
 import {

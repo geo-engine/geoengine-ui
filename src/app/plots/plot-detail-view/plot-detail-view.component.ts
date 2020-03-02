@@ -2,7 +2,7 @@ import {ReplaySubject, BehaviorSubject, combineLatest as observableCombineLatest
 import {first} from 'rxjs/operators';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
 import {LayoutService} from '../../layout.service';

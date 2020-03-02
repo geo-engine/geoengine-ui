@@ -3,7 +3,8 @@ import {Observable, Subscription} from 'rxjs';
 
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {MatDialog, MatIconRegistry} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
+import {MatIconRegistry} from '@angular/material/icon';
 import {LayoutService} from '../../layout.service';
 import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
 

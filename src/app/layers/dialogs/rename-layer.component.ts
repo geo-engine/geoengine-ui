@@ -3,7 +3,7 @@ import {Component, ChangeDetectionStrategy, OnInit, Inject} from '@angular/core'
 import {Layer} from '../layer.model';
 import {AbstractSymbology} from '../symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {ProjectService} from '../../project/project.service';
 
 @Component({

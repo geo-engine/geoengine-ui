@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject, ViewChild, ElementRef} from '@angular/core';
 import {Layer} from '../../layer.model';
 import {AbstractSymbology} from '../../symbology/symbology.model';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 interface LayerShareComponentConfig {
     layer: Layer<AbstractSymbology>;
