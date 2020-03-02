@@ -57,7 +57,7 @@ export class ServiceSpecHelper<T> {
      * @param {any} mockedResponse: The response that should be given.
      */
     httpResponseMock(mockedResponse: any) {
-        TestBed.get(HttpXhrBackend).connections.subscribe((connection) => {
+        TestBed.inject(HttpXhrBackend).connections.subscribe((connection) => {
             connection.mockRespond(new Response(
                 JSON.stringify(mockedResponse)
             ));
@@ -65,7 +65,7 @@ export class ServiceSpecHelper<T> {
     }
 
     getService(): T {
-        return TestBed.get(this.type);
+        return TestBed.inject(this.type);
     }
 }
 

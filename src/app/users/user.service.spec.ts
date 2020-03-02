@@ -46,8 +46,8 @@ describe('Service: User Service', () => {
                 HttpClientTestingModule
             ]
         });
-        this.service = TestBed.get(UserService);
-        this.http = TestBed.get(HttpTestingController);
+        this.service = TestBed.inject(UserService);
+        this.http = TestBed.inject(HttpTestingController);
         this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
 
         clear_user_service_requests(this.http);
