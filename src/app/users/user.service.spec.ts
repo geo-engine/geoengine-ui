@@ -1,10 +1,8 @@
 import {configureWaveTesting} from '../spec/wave-testing.configuration';
-import {ServiceSpecHelper} from '../spec/service-spec.helper';
 import {Config} from '../config.service';
-import {inject, TestBed} from '@angular/core/testing';
-import {HttpClientModule} from '@angular/common/http';
+import {TestBed} from '@angular/core/testing';
 import {UserService} from './user.service';
-import {HttpClientTestingModule, HttpTestingController, TestRequest} from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {NotificationService} from '../notification.service';
 
 export function clear_user_service_requests(http: HttpTestingController) {
@@ -90,7 +88,7 @@ describe('Service: User Service', () => {
                     expect(login_response).toBe(true);
 
                     expect(this.service.getSession().user).toBe('test');
-                    expect(this.service.getSession().sessionToken).toBe('mockSessionToken')
+                    expect(this.service.getSession().sessionToken).toBe('mockSessionToken');
                 },
                 (error) => {},
                 () => {

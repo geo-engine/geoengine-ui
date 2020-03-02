@@ -44,7 +44,7 @@ class MockConfig {
             DEBOUNCE: 0,
             STORAGE_DEBOUNCE: 0,
             GUEST_LOGIN_HINT: 5,
-        }
+        };
     }
 
     get DEFAULTS(): {PROJECT: { NAME: string, TIME: string, TIMESTEP:
@@ -56,7 +56,7 @@ class MockConfig {
                 TIMESTEP: '1 hour',
                 PROJECTION: 'EPSG:3857'
             }
-        }
+        };
     }
 }
 
@@ -106,7 +106,7 @@ function login(http: HttpTestingController, backend: MockBackend) {
                 expect(login_response).toBe(true);
 
                 expect(user.getSession().user).toBe('test');
-                expect(user.getSession().sessionToken).toBe('mockSessionToken')
+                expect(user.getSession().sessionToken).toBe('mockSessionToken');
             },
             (error) => {},
             () => {
