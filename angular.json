@@ -24,7 +24,8 @@
               "styles": [
                   "src/styles.scss",
                   "src/wave-app-theme.scss",
-                  "node_modules/codemirror/lib/codemirror.css"
+                  "node_modules/codemirror/lib/codemirror.css",
+                  "node_modules/ol/ol.css"
               ],
               "scripts": []
           },
@@ -81,7 +82,8 @@
               "styles": [
                   "src/styles.scss",
                   "src/wave-app-theme.scss",
-                  "node_modules/codemirror/lib/codemirror.css"
+                  "node_modules/codemirror/lib/codemirror.css",
+                  "node_modules/ol/ol.css"
               ],
               "scripts": [],
               "assets": [
