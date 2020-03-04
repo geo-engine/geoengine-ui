@@ -3,7 +3,7 @@
 <div class="imageContainer">
 
     <mat-card>
-        <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+        <img [src]="imageURLs[currentImage]" (load)="imageLoaded()" [alt]="imageURLs[currentImage]">
     </mat-card>
 
     <div *ngIf="loading" class="loading">

@@ -40,7 +40,8 @@ export class MediaviewImageComponent {
     constructor(
         private dialog: MatDialog,
         private viewContainerRef: ViewContainerRef
-    ) { }
+    ) {
+    }
 
     /**
      * Shows the next image in the list of image-urls
@@ -78,8 +79,6 @@ export class MediaviewImageComponent {
         this.dialogRef.componentInstance.imageURLs = this.imageURLs;
         this.dialogRef.componentInstance.currentImage = this.currentImage;
 
-        this.dialogRef.afterClosed().subscribe(result => {
-            this.dialogRef = null;
-        });
+        this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
     }
 }
