@@ -31,7 +31,7 @@ import {Config} from '../../config.service';
 export class LayerListComponent implements OnDestroy {
 
     LayoutService = LayoutService;
-    layerListVisibility$: Observable<boolean>;
+    readonly layerListVisibility$: Observable<boolean>;
     @Input() height: number;
     layerList: Array<Layer<AbstractSymbology>> = [];
     mapIsGrid$: Observable<boolean>;

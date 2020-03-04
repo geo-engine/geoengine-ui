@@ -5,7 +5,7 @@
                 [ngSwitch]="layerListVisibility$ | async">
             <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
             <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
-            <span>Show/Hide Layerlist</span>
+            <span>Show/Hide Layer List</span>
         </button>
         <button mat-menu-item (click)="dialog.open(LineageGraphComponent)">
             <mat-icon>merge_type</mat-icon>
@@ -55,7 +55,7 @@
     </mat-toolbar>
 
     <div cdkDropList class="layer-list" [style.max-height.px]="height-LayoutService.getToolbarHeightPx()"
-         (cdkDropListDropped)="drop($event)">
+         *ngIf="layerListVisibility$ | async" (cdkDropListDropped)="drop($event)">
 
         <div class="layer-list-box"
              *ngIf="(projectService.getLayerStream() | async)?.length === 0">
