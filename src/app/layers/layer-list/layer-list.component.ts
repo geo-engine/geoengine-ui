@@ -1,13 +1,10 @@
-import {first} from 'rxjs/operators';
 import {Observable, Subscription} from 'rxjs';
-
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {LayoutService} from '../../layout.service';
 import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
-
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {LayerService} from '../layer.service';
@@ -15,7 +12,6 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
-import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
 import {ProjectService} from '../../project/project.service';
@@ -30,24 +26,21 @@ import {Config} from '../../config.service';
 })
 export class LayerListComponent implements OnDestroy {
 
-    LayoutService = LayoutService;
-    readonly layerListVisibility$: Observable<boolean>;
     @Input() height: number;
+
+    readonly layerListVisibility$: Observable<boolean>;
+    readonly mapIsGrid$: Observable<boolean>;
     layerList: Array<Layer<AbstractSymbology>> = [];
-    mapIsGrid$: Observable<boolean>;
 
     // make visible in template
-    // tslint:disable:variable-name
-    ST = SymbologyType;
-    LoadingState = LoadingState;
-    RenameLayerComponent = RenameLayerComponent;
-
-    LineageGraphComponent = LineageGraphComponent;
-    LayerExportComponent = LayerExportComponent;
-    LayerShareComponent = LayerShareComponent;
-    SourceOperatorListComponent = SourceOperatorListComponent;
-    SymbologyEditorComponent = SymbologyEditorComponent;
-    // tslint:enable
+    readonly LayoutService = LayoutService;
+    readonly ST = SymbologyType;
+    readonly LoadingState = LoadingState;
+    readonly RenameLayerComponent = RenameLayerComponent;
+    readonly LineageGraphComponent = LineageGraphComponent;
+    readonly LayerExportComponent = LayerExportComponent;
+    readonly LayerShareComponent = LayerShareComponent;
+    readonly SourceOperatorListComponent = SourceOperatorListComponent;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -71,14 +64,12 @@ export class LayerListComponent implements OnDestroy {
 
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
-        const sub = this.projectService.getLayerStream().subscribe(layerList => {
+        this.subscriptions.push(this.projectService.getLayerStream().subscribe(layerList => {
             if (layerList !== this.layerList) {
-                this.layerList = layerList; // TODO: do we need a copy of the layerlist?
+                this.layerList = layerList;
                 this.changeDetectorRef.markForCheck();
             }
-        });
-
-        this.subscriptions.push(sub);
+        }));
 
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
