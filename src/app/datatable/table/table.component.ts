@@ -63,15 +63,13 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public allEqual: boolean;
 
     // Element-References
-    @ViewChild('scrollContainer', { static: true }) public container: ElementRef;
+    @ViewChild('scrollContainer', {static: true}) public container: ElementRef;
 
-    // For text-width-calculation
-    private styleString = '16px Roboto, sans-serif';
-    private styleStringHead = '12px Roboto, sans-serif';
-    private columnMinWidth = 100;
-    private columnMaxWidth = 400;
-    private canvas;
+    public data$: Observable<Array<OlFeature>>;
+    public state$: Observable<LoadingState>;
 
+    public offsetTop$: BehaviorSubject<number>;
+    public offsetBottom$: BehaviorSubject<number>;
 
     public avgWidths: number[];
     public colTypes: string[];
@@ -80,32 +78,33 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     public scrollTop = 0;
     public scrollLeft = 0;
 
-    private scrollTopBefore = 0;
-
-    private elementHeight = 41;
-    private headerHeight = 41;
-
-
-    private minDisplayItemCount = 6;
-    public displayItemCount = this.minDisplayItemCount;
-    private displayOffsetMin = 1;
+    public displayItemCount: number;
 
     public displayItemCounter: number[];
 
     public firstDisplay: number;
 
+    private displayOffsetMin = 1;
+
     private scrolling = false;
 
-    // Observables
-    public data$: Observable<Array<OlFeature>>;
-    public state$: Observable<LoadingState>;
+    private scrollTopBefore = 0;
 
-    public offsetTop$: BehaviorSubject<number>;
-    public offsetBottom$: BehaviorSubject<number>;
+    private elementHeight = 41;
+    private headerHeight = 41;
+
+    private minDisplayItemCount = 6;
 
     private selectable$: Observable<boolean>;
     private dataSubscription: Subscription;
     private featureSubscription: Subscription;
+
+    // For text-width-calculation
+    private styleString = '16px Roboto, sans-serif';
+    private styleStringHead = '12px Roboto, sans-serif';
+    private columnMinWidth = 100;
+    private columnMaxWidth = 400;
+    private canvas;
 
 
     /**
@@ -147,6 +146,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 private projectService: ProjectService) {
 
         this.canvas = document.createElement('canvas');
+
+        this.displayItemCount = this.minDisplayItemCount;
 
         this.initDataStream();
     }
