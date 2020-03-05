@@ -30,7 +30,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         });
     }
 
-    add(event: any) {
+    add() {
         const sourceOperator: Operator = this.form.controls['layer'].value.operator;
         const operator: Operator = new Operator({
             operatorType: new StatisticsType({
