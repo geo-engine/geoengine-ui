@@ -17,6 +17,7 @@ import {LayerExportComponent} from '../dialogs/layer-export/layer-export.compone
 import {ProjectService} from '../../project/project.service';
 import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 import {Config} from '../../config.service';
+import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 
 @Component({
     selector: 'wave-layer-list',
@@ -41,6 +42,7 @@ export class LayerListComponent implements OnDestroy {
     readonly LayerExportComponent = LayerExportComponent;
     readonly LayerShareComponent = LayerShareComponent;
     readonly SourceOperatorListComponent = SourceOperatorListComponent;
+    readonly SymbologyEditorComponent = SymbologyEditorComponent;
 
     private subscriptions: Array<Subscription> = [];
 
