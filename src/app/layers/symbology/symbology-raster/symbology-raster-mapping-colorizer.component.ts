@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 
 import {MappingColorizerRasterSymbology} from '../symbology.model';
-import {MatSliderChange} from '@angular/material';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
@@ -25,8 +24,9 @@ import {debounceTime, filter, map, startWith} from 'rxjs/operators';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {MapService} from '../../../map/map.service';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle/typings/slide-toggle';
 import {Config} from '../../../config.service';
+import {MatSliderChange} from '@angular/material/slider';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',

@@ -13,7 +13,7 @@
     color: mat-color($wave-app-warn);
 }
 
-mat-card-header /deep/ .mat-card-header-text {
+mat-card-header ::ng-deep .mat-card-header-text {
     margin: 0;
 }
 

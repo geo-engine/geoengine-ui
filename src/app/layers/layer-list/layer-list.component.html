@@ -5,7 +5,7 @@
                 [ngSwitch]="layerListVisibility$ | async">
             <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
             <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
-            <span>Show/Hide Layerlist</span>
+            <span>Show/Hide Layer List</span>
         </button>
         <button mat-menu-item (click)="dialog.open(LineageGraphComponent)">
             <mat-icon>merge_type</mat-icon>
@@ -30,18 +30,18 @@
             <div class="only-large"></div>
 
             <div class="logo" *waveIfGfbio>
-                <mat-icon mat-list-icon svgIcon="vat:logo" alt="VAT"></mat-icon>
+                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
                 <span class="title">VAT</span>
             </div>
 
             <div class="logo" *waveIfEUMETSAT>
-                <mat-icon mat-list-icon svgIcon="vat:logo" alt="VAT"></mat-icon>
+                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
                 <span class="title">VAT</span>
             </div>
 
             <div class="geobon-logo" *waveIfGeoBon>
                 <span class="title">VAT <span class="up">@</span></span>
-                <mat-icon mat-list-icon svgIcon="geobon:logo" alt="GeoBon"></mat-icon>
+                <mat-icon mat-list-icon svgIcon="geobon:logo" aria-label="GeoBon"></mat-icon>
             </div>
 
             <button mat-icon-button
@@ -55,7 +55,7 @@
     </mat-toolbar>
 
     <div cdkDropList class="layer-list" [style.max-height.px]="height-LayoutService.getToolbarHeightPx()"
-         (cdkDropListDropped)="drop($event)">
+         *ngIf="layerListVisibility$ | async" (cdkDropListDropped)="drop($event)">
 
         <div class="layer-list-box"
              *ngIf="(projectService.getLayerStream() | async)?.length === 0">
@@ -147,19 +147,19 @@
                                     <mat-icon *ngSwitchCase="ST.COMPLEX_POINT"
                                               mat-list-icon svgIcon="symbology:point"
                                               [style.stroke-width.px]='2'
-                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
-                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                              [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
+                                              [style.fill]='$any(layer.symbology).fillRGBA.rgbaCssString()'
                                     ></mat-icon>
                                     <mat-icon *ngSwitchCase="ST.SIMPLE_LINE"
                                               mat-list-icon svgIcon="symbology:line"
                                               [style.stroke-width.px]='2'
-                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
+                                              [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
                                     ></mat-icon>
                                     <mat-icon *ngSwitchCase="ST.COMPLEX_VECTOR"
                                               mat-list-icon svgIcon="symbology:polygon"
                                               [style.stroke-width.px]='2'
-                                              [style.stroke]='layer.symbology.strokeRGBA.rgbaCssString()'
-                                              [style.fill]='layer.symbology.fillRGBA.rgbaCssString()'
+                                              [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
+                                              [style.fill]='$any(layer.symbology).fillRGBA.rgbaCssString()'
                                     ></mat-icon>
                                     <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
                                         <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">
@@ -167,8 +167,7 @@
                                                 <span class="lineThrough">access_time</span>
                                             </ng-template>
                                             <ng-template ngSwitchDefault>
-                                                <wave-raster-icon [colorizer]="layer.symbology.colorizer" [xCells]="6"
-                                                                  [yCells]="6">
+                                                <wave-raster-icon [colorizer]="$any(layer.symbology).colorizer" [xCells]="6" [yCells]="6">
                                                 </wave-raster-icon>
                                             </ng-template>
                                         </mat-icon>
@@ -179,22 +178,18 @@
                         </button>
 
 
-                        <div #layerName cdkDragHandle
-                             class="layer-list-item-text grabbable"
+                        <div cdkDragHandle class="layer-list-item-text grabbable"
                              fxFlex="grow"
                              (click)="layerService.setSelectedLayer(layer)"
                              [matTooltip]="layer.name" matTooltipPosition="after"
-                             [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-                        >
+                             [matTooltipShowDelay]="config.DELAYS.TOOLTIP">
                             {{layer.name}}
                         </div>
 
-                        <button #menuTrigger
-                                mat-icon-button class="secondary_action"
+                        <button mat-icon-button class="secondary_action"
                                 [matMenuTriggerFor]="layerMenu"
                                 matTooltip="Layer Actions" matTooltipPosition="after"
-                                [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-                        >
+                                [matTooltipShowDelay]="config.DELAYS.TOOLTIP">
                             <mat-icon>more_vert</mat-icon>
                         </button>
                     </div>
@@ -261,14 +256,11 @@
                     <mat-progress-bar
                         [mode]="(projectService.getLayerCombinedStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
                         [value]="100"
-                        [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : ''"
+                        [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : 'primary'"
                     ></mat-progress-bar>
 
                 </div>
             </div> <!-- layer-list-element -->
-            <!--
-                </ng-template>
-            </mat-list>-->
         </div>
     </div>
 

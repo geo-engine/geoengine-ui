@@ -1,3 +1,3 @@
-mat-form-field /deep/ .mat-form-field-infix {
+mat-form-field ::ng-deep .mat-form-field-infix {
     width: auto;
 }

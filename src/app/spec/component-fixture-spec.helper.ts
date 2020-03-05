@@ -1,10 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
     ChangeDetectorRef, DebugElement, SchemaMetadata, Type, Component, ViewChild,
-    ViewContainerRef, ComponentFactoryResolver, Optional, NgModule
+    ViewContainerRef, ComponentFactoryResolver, Optional, NgModule, Predicate
 } from '@angular/core';
 import {SelectSpecHelper} from './select-spec.helper';
-import {Predicate} from '@angular/core/src/debug/debug_node';
 import {By} from '@angular/platform-browser';
 import {TestIdComponentDirective} from './test-id-component.directive';
 
@@ -18,7 +17,7 @@ import {TestIdComponentDirective} from './test-id-component.directive';
     template: `<ng-template #component></ng-template>`
 })
 class TestHostComponent {
-    @ViewChild('component', {read: ViewContainerRef}) component: ViewContainerRef;
+    @ViewChild('component', {read: ViewContainerRef, static: true}) component: ViewContainerRef;
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
@@ -34,7 +33,7 @@ class TestHostComponent {
             }
         }
         return componentRef.instance;
-    };
+    }
 }
 
 /**
@@ -103,7 +102,8 @@ export class ComponentFixtureSpecHelper<T> {
                 type
             ]
         })
-        class EntryModule {};
+        class EntryModule {
+        }
 
         _app_module.imports.push(
             EntryModule

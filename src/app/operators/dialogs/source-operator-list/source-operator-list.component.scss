@@ -14,9 +14,10 @@ p {
 }
 
 .disabled {
-    /deep/ .mat-list-item-content {
+    ::ng-deep .mat-list-item-content {
         cursor: auto;
     }
+
     h4 {
         color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
     }

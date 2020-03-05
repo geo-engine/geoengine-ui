@@ -2,12 +2,12 @@ import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angula
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MatDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material/dialog';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {NotificationService} from '../../../../notification.service';
 
 export interface RScriptLoadResult {
-    script: RScript,
+    script: RScript;
 }
 
 @Component({

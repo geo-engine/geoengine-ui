@@ -1,16 +1,12 @@
 <wave-sidenav-header>Layer statistics plot</wave-sidenav-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
     <div fxFlex class="container">
         <wave-layer-selection [types]="ResultTypes.ALL_TYPES" formControlName="layer"></wave-layer-selection>
 
-        <wave-operator-output-name
-            formControlName="name"
-            [suggestion]="'Statistics of ' + (form.controls['layer'].valueChanges | async)?.name"
-        >
-            <mat-hint
-                align="end" class="error"
-                *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
-            >
+        <wave-operator-output-name formControlName="name"
+                                   [suggestion]="'Statistics of ' + $any(form.controls['layer'].valueChanges | async)?.name">
+            <mat-hint align="end" class="error"
+                      *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace">
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>

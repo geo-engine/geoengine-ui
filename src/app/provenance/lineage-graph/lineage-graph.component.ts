@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {AbstractSymbology} from '../../layers/symbology/symbology.model';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
@@ -38,8 +38,8 @@ const GRAPH_STYLE = {
 })
 export class LineageGraphComponent implements OnInit, AfterViewInit {
 
-    @ViewChild('svg') svg: ElementRef;
-    @ViewChild('g') g: ElementRef;
+    @ViewChild('svg', { static: true }) svg: ElementRef;
+    @ViewChild('g', { static: true }) g: ElementRef;
 
     svgWidth$: Observable<number>;
     svgHeight$: Observable<number>;
@@ -237,7 +237,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private addZoomSupport(svg: d3.Selection<SVGSVGElement>, svgGroup: d3.Selection<SVGGElement>,
+    private addZoomSupport(svg: d3.Selection<SVGElement, any, any, any>, svgGroup: d3.Selection<SVGElement, any, any, any>,
                            graph: dagre.graphlib.Graph,
                            svgWidth: number, svgHeight: number) {
         // calculate available space after subtracting the margin
@@ -251,22 +251,20 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             1 // do not scale more than 100% of size initially
         );
 
+        const initialX = (svgWidth - (scale * graph.graph().width)) / 2;
+        const initialY = (svgHeight - (scale * graph.graph().height)) / 2;
+
         // create zoom behavior
-        const zoom = d3.behavior.zoom()
-            .translate([
-                (svgWidth - (scale * graph.graph().width)) / 2,
-                (svgHeight - (scale * graph.graph().height)) / 2,
-            ])
-            .scale(scale);
+        const zoom = d3.zoom();
 
         // apply zoom to svg
-        zoom.event(svgGroup.transition().duration(500));
+        svgGroup.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(initialX, initialY).scale(scale));
 
         // add zoom handler
         zoom.on('zoom', () => {
-            const zoomEvent = d3.event as d3.ZoomEvent;
-            const zoomTranslate = isNaN(zoomEvent.translate[0]) ? [0, 0] : zoomEvent.translate;
-            const zoomScale = isNaN(zoomEvent.scale) ? 0 : zoomEvent.scale;
+            const zoomEvent = d3.event as d3.D3ZoomEvent<any, any>;
+            const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
+            const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
             svgGroup.attr(
                 'transform',
                 `translate(${zoomTranslate})scale(${zoomScale})`
@@ -275,7 +273,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.call(zoom);
     }
 
-    private addClickHandler(svg: d3.Selection<SVGSVGElement>, graph: dagre.graphlib.Graph) {
+    private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph) {
         svg.selectAll('.node').on('click', (nodeId: string) => {
             const node = graph.node(nodeId);
             if (node.type === 'operator') {
@@ -302,7 +300,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private fixLabelPosition(svg: d3.Selection<SVGSVGElement>) {
+    private fixLabelPosition(svg: d3.Selection<SVGElement, any, any, any>) {
         // HACK: move html label from center to top left
         svg.selectAll('.operator > .label > g > foreignObject')
             .attr('x', -GRAPH_STYLE.general.width / 2)

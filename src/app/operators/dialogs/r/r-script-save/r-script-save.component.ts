@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, Inject} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {StorageService} from '../../../../storage/storage.service';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {RScript} from '../../../../storage/storage-provider.model';
 import {BehaviorSubject} from 'rxjs';
 import {NotificationService} from '../../../../notification.service';

@@ -19,7 +19,7 @@ import {
     AbstractSymbology,
     ComplexPointSymbology
 } from '../../../../layers/symbology/symbology.model';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
 import {Config} from '../../../../config.service';
@@ -37,7 +37,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     ResultTypes = ResultTypes;
     //
 
-    @ViewChild(CodeEditorComponent) codeEditor: CodeEditorComponent;
+    @ViewChild(CodeEditorComponent, { static: true }) codeEditor: CodeEditorComponent;
 
     form: FormGroup;
 

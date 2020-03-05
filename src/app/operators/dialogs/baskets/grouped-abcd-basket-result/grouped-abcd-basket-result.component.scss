@@ -1,6 +1,6 @@
 @import '../../../../../wave-app-theme';
 
-mat-card-header /deep/ .mat-card-header-text {
+mat-card-header ::ng-deep .mat-card-header-text {
     margin: 0 !important;
 }
 

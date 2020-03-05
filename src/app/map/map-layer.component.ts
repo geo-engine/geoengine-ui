@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Directive, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
@@ -24,6 +24,8 @@ import {Projection} from '../operators/projection.model';
  * * params
  * * style
  */
+@Directive()
+// tslint:disable-next-line:directive-class-suffix
 export abstract class MapLayerComponent<OL extends OlLayer,
     OS extends OlSource,
     S extends AbstractSymbology,

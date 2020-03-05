@@ -9,9 +9,12 @@ import {
     ElementRef,
     HostListener,
     OnInit,
-    ViewChild
+    ViewChild, ViewContainerRef
 } from '@angular/core';
-import {MatDialog, MatIconRegistry, MatSidenav, MatTabGroup} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
+import {MatIconRegistry} from '@angular/material/icon';
+import {MatSidenav} from '@angular/material/sidenav';
+import {MatTabGroup} from '@angular/material/tabs';
 
 
 import {
@@ -66,11 +69,11 @@ import {combineLatest} from 'rxjs/internal/observable/combineLatest';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent) mapComponent: MapContainerComponent;
-    @ViewChild(MatTabGroup) bottomTabs: MatTabGroup;
+    @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
+    @ViewChild(MatTabGroup, {static: true}) bottomTabs: MatTabGroup;
 
-    @ViewChild(MatSidenav) rightSidenav: MatSidenav;
-    @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent;
+    @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
+    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
 
     layerListVisible$: Observable<boolean>;
     layerDetailViewVisible$: Observable<boolean>;
@@ -101,8 +104,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private mapService: MapService,
                 public config: Config,
                 private elementRef: ElementRef,
+                public vcRef: ViewContainerRef, // reference used by color picker
                 private overlayContainer: OverlayContainer) {
         this.registerIcons();
+
+        vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
 
         this.storageService.toString(); // just register
 
