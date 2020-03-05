@@ -1,6 +1,6 @@
 import {
     Component, ChangeDetectionStrategy, Input, Output, AfterViewInit, EventEmitter, ViewChild,
-    ElementRef, OnChanges, SimpleChange, OnDestroy, ChangeDetectorRef,
+    ElementRef, OnChanges, SimpleChange, OnDestroy,
 } from '@angular/core';
 
 import {LayoutService} from '../../layout.service';
@@ -54,7 +54,7 @@ interface Slider {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('svg', { static: true }) svgRef: ElementRef;
+    @ViewChild('svg', {static: true}) svgRef: ElementRef;
     @Input() data: HistogramData;
     @Input() height: number;
     @Input() width: number;
@@ -73,11 +73,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
     private maxWidth: number;
     private windowEventSubscription: Subscription;
 
-    constructor(
-        private elementRef: ElementRef,
-        private config: Config,
-        private changeDetectorRef: ChangeDetectorRef
-    ) {
+    constructor(private elementRef: ElementRef,
+                private config: Config) {
     }
 
     private static makeArea(xSlider: d3.Selection<SVGElement, any, any, any>,
@@ -206,8 +203,6 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
         const x = d3.scaleLinear()
             .domain([this.data.metadata.min, this.data.metadata.max])
             .range([0, width]);
-
-        const xReference = x.copy();
 
         const y = d3.scaleLinear().domain([0, d3.max(this.data.data)])
             .range([height, 0]);

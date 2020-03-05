@@ -1,20 +1,13 @@
-import {BehaviorSubject, Observable, Subscription, combineLatest as observableCombineLatest} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription, combineLatest} from 'rxjs';
 import {first, map} from 'rxjs/operators';
-
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy} from '@angular/core';
-
 import {HistogramData} from '../../../plots/histogram/histogram.component';
-
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
-
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {DataType, DataTypes} from '../../datatype.model';
-import {
-    AbstractVectorSymbology,
-    ComplexPointSymbology,
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Operator} from '../../operator.model';
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
@@ -35,15 +28,17 @@ import {MapService} from '../../../map/map.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumericAttributeFilterOperatorComponent implements AfterViewInit, OnDestroy {
-    ResultTypes = ResultTypes;
+    readonly ResultTypes = ResultTypes;
 
-    form: FormGroup;
-    attributes$: Observable<Array<string>>;
-    data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
-    dataLoading$ = new BehaviorSubject(false);
-    attributeUnit$ = new BehaviorSubject('');
+    readonly form: FormGroup;
+    readonly attributes$: Observable<Array<string>>;
+    readonly data$: BehaviorSubject<HistogramData> = new BehaviorSubject(undefined);
+    readonly dataLoading$ = new BehaviorSubject(false);
+    readonly attributeUnit$ = new BehaviorSubject('');
+
     histogramWidth: number;
     histogramHeight: number;
+
     private subscriptions: Array<Subscription> = [];
 
     constructor(private randomColorService: RandomColorService,
@@ -54,7 +49,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 private elementRef: ElementRef) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
-            pointLayer: [undefined, Validators.required],
+            inputLayer: [undefined, Validators.required],
             attribute: [undefined, Validators.required],
             bounds: formBuilder.group({
                 min: [undefined],
@@ -71,7 +66,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 return;
             }
 
-            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
+            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['inputLayer'].value;
 
             const operator = new Operator({
                 operatorType: new HistogramType({
@@ -83,30 +78,30 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 attributes: [],
                 dataTypes: new Map<string, DataType>(),
                 units: new Map<string, Unit>(),
-                pointSources: [vectorLayer.operator],
+                pointSources: vectorLayer.operator.resultType === ResultTypes.POINTS ? [vectorLayer.operator] : [],
+                lineSources: vectorLayer.operator.resultType === ResultTypes.LINES ? [vectorLayer.operator] : [],
+                polygonSources: vectorLayer.operator.resultType === ResultTypes.POLYGONS ? [vectorLayer.operator] : [],
             });
 
             this.dataLoading$.next(true);
-            observableCombineLatest(this.projectService.getTimeStream().pipe(
-                first()),
-                this.projectService.getProjectionStream().pipe(
-                    first()
-                )
-            )
-                .subscribe(([projectTime, projection]) => {
-                    this.mappingQueryService.getPlotData({
-                        operator: operator,
-                        time: projectTime,
-                        extent: this.mapService.getViewportSize().extent,
-                        projection: projection,
-                    }).subscribe(data => {
-                        this.data$.next(data as HistogramData);
-                        this.dataLoading$.next(false);
-                    });
+
+            combineLatest([
+                this.projectService.getTimeStream().pipe(first()),
+                this.projectService.getProjectionStream().pipe(first()),
+            ]).subscribe(([projectTime, projection]) => {
+                this.mappingQueryService.getPlotData({
+                    operator: operator,
+                    time: projectTime,
+                    extent: this.mapService.getViewportSize().extent,
+                    projection: projection,
+                }).subscribe(data => {
+                    this.data$.next(data as HistogramData);
+                    this.dataLoading$.next(false);
                 });
+            });
         }));
 
-        this.attributes$ = this.form.controls['pointLayer'].valueChanges.pipe(map(layer => {
+        this.attributes$ = this.form.controls['inputLayer'].valueChanges.pipe(map(layer => {
             // side effect!!!
             this.form.controls['attribute'].setValue(undefined);
 
@@ -129,7 +124,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                         return '';
                     }
 
-                    const operator = this.form.controls['pointLayer'].value.operator as Operator;
+                    const operator = this.form.controls['inputLayer'].value.operator as Operator;
                     const unit = operator.getUnit(attribute);
 
                     if (!unit || unit.unit === Unit.defaultUnit.unit || unit.measurement === Unit.defaultUnit.measurement) {
@@ -152,7 +147,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
         this.histogramHeight = Math.max(formHeight / 3, formWidth / 3);
 
         // initially get attributes
-        setTimeout(() => this.form.controls['pointLayer'].enable({emitEvent: true}));
+        setTimeout(() => this.form.controls['inputLayer'].enable({emitEvent: true}));
     }
 
     ngOnDestroy() {
@@ -160,7 +155,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     }
 
     add(_event: any) {
-        const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['pointLayer'].value;
+        const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['inputLayer'].value;
         const vectorOperator: Operator = vectorLayer.operator;
 
         const units = vectorOperator.units;
@@ -181,7 +176,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
                 rangeMin: boundsMin === null ? undefined : boundsMin,
                 rangeMax: boundsMax === null ? undefined : boundsMax,
             }),
-            resultType: ResultTypes.POINTS,
+            resultType: vectorOperator.resultType,
             projection: vectorOperator.projection,
             attributes: attributes,
             dataTypes: dataTypes,
@@ -207,27 +202,19 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
         const operator = new Operator(dict);
 
+        const symbology = vectorLayer.symbology.clone() as any as AbstractVectorSymbology;
+        symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
+
         const clustered = vectorLayer.clustered;
+
         const layer = new VectorLayer({
             name: name,
             operator: operator,
-            symbology: clustered ?
-                ComplexPointSymbology.createClusterSymbology({
-                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                }) :
-                new ComplexPointSymbology({
-                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                }),
-            // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-            //     operator, clustered,
-            // }),
-            // provenance: this.mappingQueryService.getProvenanceStream(operator),
-            clustered: clustered,
+            symbology,
+            clustered,
         });
 
-        // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
-
     }
 
 }
