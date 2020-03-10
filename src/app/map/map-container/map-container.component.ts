@@ -82,7 +82,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     // display a grid of maps or all layers on a single map
     @Input() grid = true; // TODO: false;
 
-    @ViewChild(MatGridList, {read: ElementRef}) gridListElement !: ElementRef;
+    @ViewChild(MatGridList, { read: ElementRef, static: true }) gridListElement !: ElementRef;
     @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers !: QueryList<ElementRef>;
 
     @ContentChildren(MapLayerComponent) mapLayersRaw !: QueryList<MapLayer>;

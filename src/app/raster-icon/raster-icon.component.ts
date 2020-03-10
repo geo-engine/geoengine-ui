@@ -2,9 +2,17 @@ import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChan
 import {IColorizerData} from '../colors/colorizer-data.model';
 import {Color} from '../colors/color';
 
+interface Cell {
+    xStart: number;
+    yStart: number;
+    xSize: number;
+    ySize: number;
+    colorString: string;
+}
+
 @Component({
     selector: 'wave-raster-icon',
-    templateUrl: './raster-icon.component.html',
+    templateUrl: './raster-icon.component.svg',
     styleUrls: ['./raster-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -14,64 +22,63 @@ export class RasterIconComponent implements OnInit, OnChanges {
     @Input() yCells: number;
     @Input() colorizer: IColorizerData;
 
-    xCellStarts: Array<number> = [];
-    yCellStarts: Array<number> = [];
-    colorMapping: Array<number>;
-    colors: Array<string>;
-    grays = ['rgba(191,191,191,1)', 'rgba(127,127,127,1)'];
+    cells: Array<Cell>;
+    cellSpace = 24; // This is the number of pixels used for the icon
 
     constructor() {
     }
 
-    cellColor(x: number, y: number): string {
+    cell(x: number, y: number): Cell {
         const idx = this.xCells * y + x;
-        const mapIdx = this.colorMapping[idx];
-        return this.colors[mapIdx];
+        return this.cells[idx];
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        this.updateColorMapping();
-        // console.log("RasterIconComponent.ngOnChanges", this);
+        this.generateCells(this.xCells, this.yCells);
     }
 
     ngOnInit() {
-        this.xCellStarts = Array.from({length: this.xCells}, (v, k) => k);
-        this.yCellStarts = Array.from({length: this.yCells}, (v, k) => k);
-        this.updateColorMapping();
-        // console.log("RasterIconComponent.ngOnInit", this);
+        this.generateCells(this.xCells, this.yCells);
     }
 
-    updateColorMapping() {
-        let colors = this.grays;
-        let gradient = true;
+    generateCells(xCells: number, yCells: number) {
+        this.cells = new Array<Cell>(xCells * yCells);
+        for (let y = 0; y < this.yCells; y++) {
+            for (let x = 0; x < this.xCells; x++) {
+                const idx = this.xCells * y + x;
+                this.cells[idx] = {
+                    xStart: x * this.cellSpace / this.xCells,
+                    yStart: y * this.cellSpace / this.yCells,
+                    xSize: this.cellSpace / this.xCells,
+                    ySize: this.cellSpace / this.yCells,
+                    colorString: Color.rgbaToCssString(this.cellColor(x, y))
+                };
+            }
+        }
+    }
+
+    cellColor(x: number, y: number): Color {
 
         const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
-        if (validSymbology) {
-            colors = this.colorizer.breakpoints.map(br => Color.rgbaToCssString(br.rgba));
-            gradient = this.colorizer.type === 'gradient' || this.colorizer.type === 'logarithmic';
+        if (!validSymbology) {
+            return Color.fromRgbaLike('ff000000');
         }
 
-        const numberOfColors = colors.length;
+        const numberOfCells = this.xCells * this.yCells;
+        const numberOfColors = this.colorizer.breakpoints.length;
+        const isGradient = this.colorizer.type === 'gradient' || this.colorizer.type === 'logarithmic';
 
-        if (!this.colorMapping || colors !== this.colors) {
-            const numberOfCells = this.xCells * this.yCells;
-            let colorMapping = new Array(numberOfCells);
+        const scale = isGradient ? numberOfColors / (this.xCells + this.yCells - 1) : numberOfColors / numberOfCells;
 
-            const scale = gradient ? numberOfColors / (this.xCells + this.yCells - 1) : numberOfColors / numberOfCells;
-
-            for (let y = 0; y < this.yCells; y++) {
-                for (let x = 0; x < this.xCells; x++) {
-                    const idx = y * this.xCells + x;
-                    if (numberOfColors === 2) {
-                        colorMapping[idx] = (y % 2 === 0) ? (x % 2) : ((x + 1) % 2);
-                    } else {
-                        const uidx = gradient ? this.xCells - 1 - x + y : idx;
-                        colorMapping[idx] = Math.trunc(uidx * scale) % numberOfColors;
-                    }
-                }
-            }
-            this.colorMapping = colorMapping;
-            this.colors = colors;
+        const idx = y * this.xCells + x;
+        let colorIdx = 0;
+        if (numberOfColors === 2) {
+            colorIdx = (y % 2 === 0) ? (x % 2) : ((x + 1) % 2);
+        } else {
+            const uidx = isGradient ? this.xCells - 1 - x + y : idx;
+            colorIdx = Math.trunc(uidx * scale) % numberOfColors;
         }
+        return Color.fromRgbaLike(this.colorizer.breakpoints[colorIdx].rgba);
     }
+
 }

@@ -6,7 +6,7 @@ export const enum Interpolation {
     Discrete = 2,
 }
 
-function interpolationToName(interpolation: Interpolation): string {
+export function interpolationToName(interpolation: Interpolation): string {
     'use strict';
     switch (interpolation) {
         case Interpolation.Unknown:
@@ -75,7 +75,7 @@ export interface UnitMappingDict {
  */
 export class Unit {
     private static _defaultUnit = new Unit({
-        measurement: 'raw',
+        measurement: 'unknown',
         unit: 'unknown',
         interpolation: Interpolation.Continuous,
     });
@@ -172,7 +172,15 @@ export class Unit {
     }
 
     toString(): string {
-        return `${this._measurement} (${this._unit})`;
+        const output = [];
+        if (this.measurement !== 'unknown') {
+            output.push(this.measurement);
+
+            if (this.unit !== 'unknown') {
+                output.push(` (${this.unit})`);
+            }
+        }
+        return output.join('');
     }
 
     toDict(): UnitDict {

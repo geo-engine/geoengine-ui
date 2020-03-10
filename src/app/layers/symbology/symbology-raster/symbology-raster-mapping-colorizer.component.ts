@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 
 import {MappingColorizerRasterSymbology} from '../symbology.model';
-import {MatSliderChange} from '@angular/material';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
@@ -21,12 +20,13 @@ import {Operator} from '../../../operators/operator.model';
 import {HistogramType} from '../../../operators/types/histogram-type.model';
 import {DataType} from '../../../operators/datatype.model';
 import {Unit} from '../../../operators/unit.model';
-import {debounceTime, filter} from 'rxjs/operators';
+import {debounceTime, filter, map, startWith} from 'rxjs/operators';
 import {ResultTypes} from '../../../operators/result-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {MapService} from '../../../map/map.service';
-import {MatSlideToggleChange} from '@angular/material/slide-toggle/typings/slide-toggle';
 import {Config} from '../../../config.service';
+import {MatSliderChange} from '@angular/material/slider';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',
@@ -47,7 +47,6 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     layerHistogramDataLoading$ = new BehaviorSubject(false);
     layerHistogramAutoReloadEnabled = true;
     private layerHistogramDataSubscription: Subscription = undefined;
-    private layerHistogramOperator: Operator;
 
     constructor(
         public projectService: ProjectService,
@@ -128,8 +127,9 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                     }
                     this.updateSymbologyFromLayer();
                     this.updateLayerMinMaxFromColorizer();
-                    this.updateLayerHistogramOperator();
+//                    this.updateLayerHistogramOperator();
                     this.reinitializeLayerHistogramDataSubscription();
+
                     break;
                 }
                 default: // DO NOTHING
@@ -143,7 +143,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     }
 
     ngAfterViewInit(): void {
-        this.updateLayerHistogramOperator();
+        // this.updateLayerHistogramOperator();
         this.reinitializeLayerHistogramDataSubscription();
     }
 
@@ -164,18 +164,25 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         this.layerHistogramDataLoading$.next(true);
 
         const sub = observableCombineLatest(
-            this.projectService.getTimeStream(),
-            this.projectService.getProjectionStream(),
-            this.mapService.getViewportSizeStream()
-        ).pipe(
-            filter(_ => this.layerHistogramAutoReloadEnabled),
-            debounceTime(this.config.DELAYS.DEBOUNCE)
-        ).subscribe(([projectTime, projection, viewport]) => {
+            observableCombineLatest(
+                this.projectService.getTimeStream(),
+                this.projectService.getProjectionStream(),
+                this.mapService.getViewportSizeStream()
+            ).pipe(
+                filter(_ => this.layerHistogramAutoReloadEnabled),
+                debounceTime(this.config.DELAYS.DEBOUNCE)
+            ),
+            this.projectService.getLayerChangesStream(this.layer).pipe(
+                startWith({operator: true}),
+                filter(c => c.operator !== undefined),
+                map(_ => this.buildHistogramOperator())
+            )
+        ).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
             this.layerHistogramData$.next(undefined);
             this.layerHistogramDataLoading$.next(true);
 
             this.mappingQueryService.getPlotData({
-                operator: this.layerHistogramOperator,
+                operator: histogramOperator,
                 time: projectTime,
                 extent: viewport.extent,
                 projection: projection,
@@ -187,8 +194,8 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         this.layerHistogramDataSubscription = sub;
     }
 
-    private updateLayerHistogramOperator() {
-        this.layerHistogramOperator = new Operator({
+    private buildHistogramOperator(): Operator {
+        return new Operator({
             operatorType: new HistogramType({
                 attribute: 'value',
                 range: 'data',

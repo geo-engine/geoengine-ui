@@ -1,4 +1,3 @@
-//@import '../../../../../node_modules/@angular/material/button/button-base';
 $mat-icon-button-size: 40px !default; // TODO: import when this is possible again
 $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
@@ -7,7 +6,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
     width: 100%;
     height: 100%;
 
-    mat-card{
+    mat-card {
         width: calc(100% - 2rem);
         margin: 1rem;
         padding: 0;
@@ -19,15 +18,15 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         display: block;
     }
 
-    .loading{
+    .loading {
         position: absolute;
         width: 100%;
-        height:100%;
+        height: 100%;
         top: 0;
         left: 0;
         background: fade_out(#ffffff, 0.5);
 
-        .spinner{
+        .spinner {
             position: relative;
             top: calc(50% - 50px);
             left: calc(50% - 50px);
@@ -55,7 +54,6 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
     }
 
     .buttons {
-        position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
@@ -64,18 +62,6 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         button {
             margin: 1rem;
         }
-
-        /*.previous{
-            margin: 1rem 2rem 1rem 1rem;
-        }
-
-        .next{
-            margin: 1rem 1rem 1rem 2rem;
-        }
-
-        .imageSize{
-
-        }*/
     }
 }
 

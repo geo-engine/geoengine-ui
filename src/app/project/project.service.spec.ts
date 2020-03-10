@@ -44,7 +44,7 @@ class MockConfig {
             DEBOUNCE: 0,
             STORAGE_DEBOUNCE: 0,
             GUEST_LOGIN_HINT: 5,
-        }
+        };
     }
 
     get DEFAULTS(): {PROJECT: { NAME: string, TIME: string, TIMESTEP:
@@ -56,7 +56,7 @@ class MockConfig {
                 TIMESTEP: '1 hour',
                 PROJECTION: 'EPSG:3857'
             }
-        }
+        };
     }
 }
 
@@ -98,7 +98,7 @@ function login(http: HttpTestingController, backend: MockBackend) {
 
     expect(http.match(req => true).length).toBe(0);
 
-    let user = TestBed.get(UserService);
+    let user = TestBed.inject(UserService);
 
     let completed = null;
     user.login({user: 'test', password: 'test_pw'})
@@ -106,7 +106,7 @@ function login(http: HttpTestingController, backend: MockBackend) {
                 expect(login_response).toBe(true);
 
                 expect(user.getSession().user).toBe('test');
-                expect(user.getSession().sessionToken).toBe('mockSessionToken')
+                expect(user.getSession().sessionToken).toBe('mockSessionToken');
             },
             (error) => {},
             () => {
@@ -129,8 +129,8 @@ describe('Service: Project Service', () => {
     describe('Plot tests', () => {
         configureWaveTesting(fakeAsync(() => {
             TestBed.configureTestingModule(module);
-            this.service = TestBed.get(ProjectService);
-            this.http = TestBed.get(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
+            this.service = TestBed.inject(ProjectService);
+            this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
             this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
             this.service.setProject(this.service.createDefaultProject());
 
@@ -224,8 +224,8 @@ describe('Service: Project Service', () => {
     describe('Layer tests', () => {
         configureWaveTesting(fakeAsync(() => {
             TestBed.configureTestingModule(module);
-            this.service = TestBed.get(ProjectService);
-            this.http = TestBed.get(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
+            this.service = TestBed.inject(ProjectService);
+            this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
             this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
             this.service.setProject(this.service.createDefaultProject());
 

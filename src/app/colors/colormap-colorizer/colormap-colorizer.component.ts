@@ -15,7 +15,7 @@ import {
     COLORMAP_STEP_SCALES_WITH_BOUNDS,
     COLORMAP_NAMES,
     Colormap,
-    MplColormapName
+    ColormapNames
 } from '../colormaps/colormap.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {valueRelation, WaveValidators} from '../../util/form.validators';
@@ -56,7 +56,8 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
                 }),
                 colormapName: [this.colormapNames[0], [Validators.required]],
                 colormapSteps: [this.defaultNumberOfSteps, [Validators.required, Validators.min(2)]],
-                colormapStepScales: [this.boundedColormapStepScales[0]]
+                colormapStepScales: [this.boundedColormapStepScales[0]],
+                colormapReverseColors: [false],
             }, {
                 validators: [
                     valueRelation(
@@ -90,7 +91,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     checkValidConfig() {
-        const colormapName: MplColormapName = this.form.controls['colormapName'].value;
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
@@ -123,14 +124,15 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
             this.colorizerData = undefined;
             return;
         }
-        const colormapName: MplColormapName = this.form.controls['colormapName'].value;
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
+        const reverseColormap: boolean = this.form.controls['colormapReverseColors'].value;
 
         const colorizerData = Colormap.createColorizerDataWithName(
-            colormapName, boundsMin, boundsMax, colormapSteps, boundedColormapStepScales.stepScaleName
+            colormapName, boundsMin, boundsMax, colormapSteps, boundedColormapStepScales.stepScaleName, reverseColormap
         );
 
         this.colorizerData = colorizerData;
@@ -157,10 +159,10 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         const subMinMax = this.form.controls['bounds'].valueChanges.subscribe(x => {
-            if (x.min !== undefined) {
+            if (Number.isFinite(x.min)) {
                 this.minValueChange.emit(x.min.value);
             }
-            if (x.max !== undefined) {
+            if (Number.isFinite(x.max)) {
                 this.maxValueChange.emit(x.max.value);
             }
         });

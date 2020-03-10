@@ -11,39 +11,47 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ],
-            "styles": [
-              "src/styles.scss",
-              "src/wave-app-theme.scss",
-              "node_modules/codemirror/lib/codemirror.css"
-            ],
-            "scripts": []
+              "aot": true,
+              "outputPath": "dist",
+              "index": "src/index.html",
+              "main": "src/main.ts",
+              "tsConfig": "src/tsconfig.app.json",
+              "polyfills": "src/polyfills.ts",
+              "assets": [
+                  "src/assets",
+                  "src/favicon.ico"
+              ],
+              "styles": [
+                  "src/styles.scss",
+                  "src/wave-app-theme.scss",
+                  "node_modules/codemirror/lib/codemirror.css",
+                  "node_modules/ol/ol.css"
+              ],
+              "scripts": []
           },
           "configurations": {
             "production": {
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ]
+                "budgets": [
+                    {
+                        "type": "anyComponentStyle",
+                        "maximumWarning": "6kb"
+                    }
+                ],
+                "optimization": true,
+                "outputHashing": "all",
+                "sourceMap": false,
+                "extractCss": true,
+                "namedChunks": false,
+                "aot": true,
+                "extractLicenses": true,
+                "vendorChunk": false,
+                "buildOptimizer": false,
+                "fileReplacements": [
+                    {
+                        "replace": "src/environments/environment.ts",
+                        "with": "src/environments/environment.prod.ts"
+                    }
+                ]
             }
           }
         },
@@ -74,7 +82,8 @@
               "styles": [
                   "src/styles.scss",
                   "src/wave-app-theme.scss",
-                  "node_modules/codemirror/lib/codemirror.css"
+                  "node_modules/codemirror/lib/codemirror.css",
+                  "node_modules/ol/ol.css"
               ],
               "scripts": [],
               "assets": [
@@ -122,12 +131,12 @@
   "defaultProject": "wave",
   "schematics": {
     "@schematics/angular:component": {
-      "inlineStyle": false,
-      "inlineTemplate": false,
-      "spec": true,
-      "changeDetection": "OnPush",
-      "prefix": "wave",
-      "styleext": "scss"
+        "inlineStyle": false,
+        "inlineTemplate": false,
+        "skipTests": false,
+        "changeDetection": "OnPush",
+        "prefix": "wave",
+        "style": "scss"
     },
     "@schematics/angular:directive": {
       "prefix": "wave"

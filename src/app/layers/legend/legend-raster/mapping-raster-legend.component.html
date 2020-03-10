@@ -1,38 +1,37 @@
-<div class='legend'>
-    <tbody>
+<tbody class="legend">
 
-    <ng-template [ngIf]='symbology.isUnknown()'>
-        <tr>
-            <td>Interpolation</td><td>{{symbology?.interpolation}}</td>
-        </tr>
-        <tr>
-            <td>Measurement</td><td>{{symbology?.unit?.measurement}}</td>
-        </tr>
-        <tr>
-            <td>Unit</td><td>{{symbology?.unit?.unit}}</td>
-        </tr>
-    </ng-template>
-    <ng-template [ngIf]='!symbology.isUnknown()'>
+<ng-template [ngIf]="symbology.isUnknown()">
+    <tr>
+        <td>Interpolation</td>
+        <td>{{interpolationToName(symbology?.unit?.interpolation)}}</td>
+    </tr>
+    <tr>
+        <td>Measurement</td>
+        <td>{{symbology?.unit?.measurement}}</td>
+    </tr>
+    <tr>
+        <td>Unit</td>
+        <td>{{symbology?.unit?.unit}}</td>
+    </tr>
+</ng-template>
 
+<ng-template [ngIf]="!symbology.isUnknown()">
+    <tr *ngFor="let breakpoint of symbology.colorizer.breakpoints; let isFirst = first">
+        <ng-template [ngIf]="symbology.isContinuous()">
+            <td class="gradient"
+                *ngIf="isFirst"
+                [rowSpan]="symbology.colorizer.breakpoints.length"
+                [style.background]="symbology.colorizer | waveWappingColorizerToGradient | waveSafeStyle"></td>
+            <td>{{breakpoint.value | number:numberPipeParameters}}</td>
+            <td *ngIf="isFirst">{{unitToString(symbology?.unit)}}</td>
+        </ng-template>
+        <ng-template [ngIf]="symbology.isDiscrete()">
+            <td class="classes">
+                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+            </td>
+            <td>{{symbology?.unit?.classes?.get(breakpoint.value)}}</td>
+        </ng-template>
+    </tr>
+</ng-template>
 
-        <tr *ngFor='let breakpoint of symbology.colorizer.breakpoints; let isFirst = first'>
-            <ng-template [ngIf]='symbology.isContinuous()'>
-                <td class='gradient'
-                    *ngIf='isFirst'
-                    [rowSpan]='symbology.colorizer.breakpoints.length'
-                    [style.background]='symbology.colorizer | waveWappingColorizerToGradient | waveSafeStyle'
-                ></td>
-                <td>{{breakpoint.value}}</td>
-                <td *ngIf='isFirst'>{{symbology?.unit?.unit}}</td>
-            </ng-template>
-            <ng-template [ngIf]='symbology.isDiscrete()'>
-                <td class ='classes'><div
-                    class='icon'
-                    [style.background-color]='breakpoint | breakpointToCssStringPipe'
-                ></div></td>
-                <td>{{symbology?.unit?.classes?.get(breakpoint.value)}}</td>
-            </ng-template>
-        </tr>
-    </ng-template>
-    </tbody>
-</div>
+</tbody>

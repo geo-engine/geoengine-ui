@@ -1,8 +1,19 @@
 
 import {Subscription, combineLatest as observableCombineLatest} from 'rxjs';
 import {
-    Component, OnInit, ChangeDetectionStrategy, ViewChild, ViewContainerRef,
-    ComponentRef, ComponentFactoryResolver, OnDestroy, ElementRef, Renderer, ViewChildren, QueryList, AfterViewInit
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ViewChild,
+    ViewContainerRef,
+    ComponentRef,
+    ComponentFactoryResolver,
+    OnDestroy,
+    ElementRef,
+    ViewChildren,
+    QueryList,
+    AfterViewInit,
+    Renderer2
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -15,7 +26,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild('target', {read: ViewContainerRef})
+    @ViewChild('target', { read: ViewContainerRef, static: true })
     target: ViewContainerRef;
 
     @ViewChildren('searchElements', {read: ViewContainerRef})
@@ -30,7 +41,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     constructor(private componentFactoryResolver: ComponentFactoryResolver,
                 public sidenavRef: SidenavRef,
                 public layoutService: LayoutService,
-                private renderer: Renderer) {
+                private renderer: Renderer2) {
     }
 
     ngOnInit() {
@@ -51,10 +62,12 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
                         searchElements.clear();
                     }
                     if (elements && searchElements) {
-                        this.renderer.projectNodes(
-                            searchElements.element.nativeElement,
-                            elements.map(e => e.nativeElement)
-                        );
+                        const parent = searchElements.element.nativeElement;
+                        const nodes = elements.map(e => e.nativeElement);
+
+                        for (let i = 0; i < nodes.length; i++) {
+                            this.renderer.appendChild(parent, nodes[i]);
+                        }
                     }
                 })
         );

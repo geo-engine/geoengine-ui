@@ -1,6 +1,6 @@
 @import '../../../../wave-app-theme';
 
-mat-toolbar /deep/ mat-toolbar-row:first-child {
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
     display: none;
 }
 
@@ -16,7 +16,7 @@ mat-row:hover {
     background-color: mat-color(map-get($wave-app-theme, background), hover);
 }
 
-mat-cell /deep/ .highlight {
+mat-cell ::ng-deep .highlight {
     color: mat-color($wave-app-accent);
 }
 

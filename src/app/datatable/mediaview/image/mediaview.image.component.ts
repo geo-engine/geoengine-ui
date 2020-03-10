@@ -1,7 +1,6 @@
 import {Component, Input, ViewContainerRef} from '@angular/core';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {MediaviewImageDialogComponent} from '../image-dialog/mediaview.image-dialog.component';
-import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-header.component';
 
 @Component({
     selector: 'wave-mediaview-image',
@@ -17,8 +16,6 @@ import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-
  */
 export class MediaviewImageComponent {
 
-    private dialogRef: MatDialogRef<any>;
-
     /**
      * Input: An array of image-urls to display in the dialog
      */
@@ -33,6 +30,7 @@ export class MediaviewImageComponent {
 
     public loading = true;
 
+    private dialogRef: MatDialogRef<any>;
 
     /**
      * Sets up all variables
@@ -42,7 +40,8 @@ export class MediaviewImageComponent {
     constructor(
         private dialog: MatDialog,
         private viewContainerRef: ViewContainerRef
-    ) { }
+    ) {
+    }
 
     /**
      * Shows the next image in the list of image-urls
@@ -80,8 +79,6 @@ export class MediaviewImageComponent {
         this.dialogRef.componentInstance.imageURLs = this.imageURLs;
         this.dialogRef.componentInstance.currentImage = this.currentImage;
 
-        this.dialogRef.afterClosed().subscribe(result => {
-            this.dialogRef = null;
-        });
+        this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
     }
 }

@@ -6,13 +6,10 @@ import {Layer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
-import {DataType, DataTypes} from '../../datatype.model';
-import {NumericPipe} from '../scatter-plot-operator/scatter-plot-operator.pipe';
+import {DataTypes} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {BoxPlotType} from '../../types/boxplot-type.model';
 import {BehaviorSubject, Subscription} from 'rxjs';
-import {toObservable} from '@angular/forms/src/validators';
-import {map} from 'rxjs/operators';
 
 @Component({
     selector: 'wave-box-plot-operator',
@@ -23,18 +20,14 @@ import {map} from 'rxjs/operators';
 export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
-
     layers: Array<Layer<AbstractSymbology>>;
-
     ResultTypes = ResultTypes;
     DataTypes = DataTypes;
+    selectedLayers = new BehaviorSubject<Array<{ attr: string }>>([]);
+    hasNumerics = new BehaviorSubject<Boolean>(false);
+    max = 5;
 
     private subscriptions: Array<Subscription> = [];
-
-    selectedLayers = new BehaviorSubject<Array<{attr: string}>>([]);
-    hasNumerics = new BehaviorSubject<Boolean>(false);
-
-    max = 5;
 
     constructor(private formBuilder: FormBuilder,
                 private projectService: ProjectService) {

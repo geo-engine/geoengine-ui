@@ -100,7 +100,7 @@ $background-color: map-get($background, background);
         vertical-align: sub;
     }
 
-    /deep/ svg {
+    ::ng-deep svg {
         border: 1px solid currentColor;
         border-radius: 50%;
     }
@@ -172,7 +172,7 @@ mat-toolbar div:first-child, button {
     width: 40px;
 }
 
-mat-toolbar /deep/ mat-toolbar-row:first-child {
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
     display: none !important;
 }
 
