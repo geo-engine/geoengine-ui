@@ -13,11 +13,16 @@
                 </a>
             </h3>
             <mat-list-item *ngFor="let entry of group.value" (click)="add(entry)">
-                <ng-container [ngSwitch]="entry.dataset.type">
+                <ng-container [ngSwitch]="entry.dataset.type" *ngIf="isNotResolving$(entry) | async; else metadataLoading">
                     <img mat-list-icon *ngSwitchCase="'raster'" [src]="RASTER_ICON_URL" alt="Raster">
                     <img mat-list-icon *ngSwitchCase="'vector'" [src]="VECTOR_ICON_URL" alt="Vector">
                     <mat-icon mat-list-icon *ngSwitchDefault>data_usage</mat-icon>
                 </ng-container>
+                <ng-template #metadataLoading>
+                    <div mat-list-icon>
+                        <mat-spinner diameter="24"></mat-spinner>
+                    </div>
+                </ng-template>
                 <div class="mat-list-text">
                     <h4 mat-line fxLayout="row">
                         <span fxFlex>{{entry.title}}</span>

@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Observable, of, throwError} from 'rxjs';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {Nature40CatalogEntry, UserService} from '../../../users/user.service';
 import {RasterSourceType} from '../../types/raster-source-type.model';
 import {OgrSourceType} from '../../types/ogr-source-type.model';
 import {MappingRequestParameters} from '../../../queries/request-parameters.model';
 import {HttpClient} from '@angular/common/http';
 import {Config} from '../../../config.service';
-import {first, flatMap} from 'rxjs/operators';
+import {first, flatMap, map} from 'rxjs/operators';
 import {Unit, UnitMappingDict} from '../../unit.model';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
@@ -26,12 +26,12 @@ import {Provenance} from '../../../provenance/provenance.model';
     styleUrls: ['./nature40-catalog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Nature40CatalogComponent implements OnInit {
-
+export class Nature40CatalogComponent implements OnInit, OnDestroy {
     readonly RASTER_ICON_URL: string = RasterSourceType.ICON_URL;
     readonly VECTOR_ICON_URL: string = OgrSourceType.ICON_URL;
 
     readonly catalog$: Observable<Map<string, Array<Nature40CatalogEntry>>>;
+    isResolving = new Map<Nature40CatalogEntry, BehaviorSubject<boolean>>();
 
     constructor(private userService: UserService,
                 private projectService: ProjectService,
@@ -44,22 +44,48 @@ export class Nature40CatalogComponent implements OnInit {
     ngOnInit() {
     }
 
+    ngOnDestroy() {
+        this.isResolving.forEach((subject, _entry) => subject.complete());
+    }
+
+    isNotResolving$(entry: Nature40CatalogEntry): Observable<boolean> {
+        if (!this.isResolving.has(entry)) {
+            this.isResolving.set(entry, new BehaviorSubject(false));
+        }
+
+        return this.isResolving.get(entry).pipe(map(value => !value));
+    }
+
     add(entry: Nature40CatalogEntry) {
+        if (this.isResolving.has(entry)) {
+            this.isResolving.get(entry).next(true);
+        } else {
+            this.isResolving.set(entry, new BehaviorSubject<boolean>(true));
+        }
+
         this.queryMetadata(entry).pipe(
             first(),
             flatMap(metadata => {
+                if (!metadata) {
+                    return throwError(`Datatype of »${entry.title}« is not yet supported`);
+                }
+
                 switch (metadata.type) {
                     case 'gdal_source':
                         return of(Nature40CatalogComponent.createGdalSourceLayer(entry, metadata as GdalSourceMetadata));
                     default:
                         return throwError(`Layer type »${metadata.type}« is not yet supported`);
                 }
-            })
+            }),
         ).subscribe(
             layer => {
+                this.isResolving.get(entry).next(false);
                 this.projectService.addLayer(layer);
             },
-            error => this.notificationService.error(error),
+            error => {
+                this.isResolving.get(entry).next(false);
+                this.notificationService.error(error);
+            },
         );
     }
 
