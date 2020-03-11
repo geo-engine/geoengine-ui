@@ -130,6 +130,7 @@ export class StyleCreator {
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
 
             const styleKey = StyleCreator.buildStyleKey(featureColorValue, featureTextValue, featureRadiusValue);
+            console.log('styleKey', styleKey);
 
             if (!styleCache[styleKey]) {
 

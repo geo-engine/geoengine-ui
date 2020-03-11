@@ -359,6 +359,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
         if (config.radiusAttribute) {
             this.radiusAttribute = config.radiusAttribute;
         }
+        this.radiusFactor = (config.radiusFactor) ? config.radiusFactor : 1.0;
     }
 
     /**
@@ -415,7 +416,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
         this.radiusFactor = factor;
     }
 
-    unSetColorAttribute() {
+    unSetRadiusAttribute() {
         this.radiusAttribute = undefined;
         this.radiusFactor = 1.0;
     }

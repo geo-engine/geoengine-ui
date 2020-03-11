@@ -1,8 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
 import {ComplexPointSymbology, ComplexVectorSymbology, SymbologyType} from '../symbology.model';
-import {MatSliderChange, MatSlideToggleChange} from '@angular/material';
-import {ComplexPointSymbology, ComplexVectorSymbology} from '../symbology.model';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
@@ -33,8 +31,11 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     @Output() symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
 
     symbology: ComplexPointSymbology | ComplexVectorSymbology;
-
-
+    colorizeByAttribute: boolean;
+    colorAttribute: Attribute;
+    radiusAttribute: Attribute;
+    radiusByAttribute: boolean;
+    attributes: Array<Attribute>;
 
     constructor() {
     }
@@ -76,19 +77,16 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     setRadiusAttribute() {
+        console.log('setRadiusAttribute');
         if (this.symbology instanceof ComplexPointSymbology) {
-
+            console.log('setRadiusAttribute', 'instanceof');
             if (this.radiusByAttribute && this.radiusAttribute) {
-
-                this.symbology.setRadiusAttribute(this.colorAttribute.name);
-                this.symbology.colorizer.clear();
-                this.symbology.colorizer.addBreakpoint({
-                    rgba: this.symbology.fillRGBA,
-                    value: (this.colorAttribute.type === 'number') ? 0 : '',
-                });
+                this.symbology.setRadiusAttribute(this.radiusAttribute.name);
+                console.log('setRadiusAttribute', 'radiusAttribute', this.radiusAttribute.name);
             } else {
-                this.symbology.unSetColorAttribute();
+                this.symbology.unSetRadiusAttribute();
             }
+            this.update();
         }
     }
 
@@ -175,5 +173,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             this.symbology.setOrUpdateColorizer(event);
             this.update();
         }
+    }
+
+    get isPointSymbology(): boolean {
+        return this.symbology.getSymbologyType() === SymbologyType.COMPLEX_POINT;
     }
 }
