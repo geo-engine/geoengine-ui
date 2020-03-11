@@ -43,6 +43,27 @@
 
 </div>
 
+<div *ngIf="isPointSymbology">
+    <mat-slide-toggle
+        [checked]="radiusByAttribute"
+        (change)="updateRadiusByAttribute($event)">
+        Radius by attribute
+    </mat-slide-toggle>
+
+    <mat-form-field>
+        <mat-select placeholder="Attribute"
+                    [(ngModel)]="colorAttribute"
+                    (ngModelChange)="setRadiusAttribute()"
+                    [disabled]="!radiusByAttribute">
+            <mat-option
+                *ngFor="let attribute of attributes"
+                [value]="attribute"
+            >{{attribute.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
 <div>
     <mat-slide-toggle
         [checked]="colorizeByAttribute"
@@ -52,7 +73,7 @@
 
     <mat-form-field>
         <mat-select placeholder="Attribute"
-                    [(ngModel)]="attribute"
+                    [(ngModel)]="colorAttribute"
                     (ngModelChange)="setColorizerAttribute()"
                     [disabled]="!colorizeByAttribute">
             <mat-option
@@ -65,5 +86,6 @@
 </div>
 
 <div *ngIf="colorizeByAttribute && !!symbology.colorAttribute">
-    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)" [attributePlaceholder]="attribute?.name" [inputType] = "attribute?.type"></wave-colorizer-editor>
+    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"
+                           [attributePlaceholder]="colorAttribute?.name" [inputType]="colorAttribute?.type"></wave-colorizer-editor>
 </div>

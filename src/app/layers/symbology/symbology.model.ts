@@ -237,11 +237,13 @@ export interface ComplexVectorSymbologyDict extends VectorSymbologyDict {
 export interface ComplexPointSymbologyConfig extends ComplexVectorSymbologyConfig {
     radius?: number;
     radiusAttribute?: string;
+    radiusFactor?: number;
 }
 
 interface ComplexPointSymbologyDict extends ComplexVectorSymbologyDict {
     radius: number;
     radiusAttribute: string;
+    radiusFactor: number;
 }
 
 export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbology {
@@ -343,6 +345,7 @@ export class ComplexVectorSymbology extends AbstractComplexVectorSymbology imple
 export class ComplexPointSymbology extends AbstractComplexVectorSymbology implements ComplexPointSymbologyConfig {
 
     radiusAttribute: string = undefined;
+    radiusFactor = 1.0;
     radius: number = DEFAULT_POINT_RADIUS;
 
     constructor(config: ComplexPointSymbologyConfig) {
@@ -401,8 +404,19 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
     describesArea(): boolean {
         return true;
     }
+
     describesRadius(): boolean {
         return true;
+    }
+
+    setRadiusAttribute(name: string, factor = 1.0) {
+        this.radiusAttribute = name;
+        this.radiusFactor = factor;
+    }
+
+    unSetColorAttribute() {
+        this.radiusAttribute = undefined;
+        this.radiusFactor = 1.0;
     }
 
     toDict(): ComplexPointSymbologyDict {
@@ -414,6 +428,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
             colorAttribute: this.colorAttribute,
             colorizer: this.colorizer ? this.colorizer.toDict() : undefined,
             radiusAttribute: this.radiusAttribute,
+            radiusFactor: this.radiusFactor,
             radius: this.radius,
             textAttribute: this.textAttribute,
             textColor: this.textColor.rgbaTuple(),

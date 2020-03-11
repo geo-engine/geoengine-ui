@@ -135,7 +135,7 @@ export class StyleCreator {
 
                 const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
                 const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
-                const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
+                const radius = featureRadiusValue ? featureRadiusValue as number * sym.radiusFactor : sym.radius * sym.radiusFactor;
 
                 const imageStyle = new OlStyleCircle({
                     radius: radius,
