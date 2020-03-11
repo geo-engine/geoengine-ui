@@ -10,42 +10,42 @@ import {IntervalFormat} from '../../interval.enum';
 import {Projection, Projections} from '../../../../projection.model';
 import {UserService} from '../../../../../users/user.service';
 import {WaveValidators} from '../../../../../util/form.validators';
-import {MatStepper} from '@angular/material';
+import {MatStepper} from '@angular/material/stepper';
 import {CsvPropertiesService} from '../../csv-dialog/csv.properties.service';
 import {ResultType, ResultTypes} from '../../../../result-type.model';
 
 export interface DataPropertiesDict {
-    delimiter: string,
-    decimalSeparator: string,
-    isTextQualifier: boolean,
-    textQualifier: string,
-    isHeaderRow: boolean,
-    headerRow: number,
+    delimiter: string;
+    decimalSeparator: string;
+    isTextQualifier: boolean;
+    textQualifier: string;
+    isHeaderRow: boolean;
+    headerRow: number;
 }
 
 export interface SpatialPropertiesDict {
-    xColumn: number,
-    yColumn: number,
-    spatialReferenceSystem: Projection,
-    coordinateFormat: string,
-    isWkt: boolean,
-    wktResultType: ResultType,
+    xColumn: number;
+    yColumn: number;
+    spatialReferenceSystem: Projection;
+    coordinateFormat: string;
+    isWkt: boolean;
+    wktResultType: ResultType;
 }
 
 export interface TemporalPropertiesDict {
-    intervalType: IntervalFormat,
-    isTime: boolean,
-    startColumn: number,
-    startFormat: string,
-    endColumn: number,
-    endFormat: string,
-    constantDuration: number,
+    intervalType: IntervalFormat;
+    isTime: boolean;
+    startColumn: number;
+    startFormat: string;
+    endColumn: number;
+    endFormat: string;
+    constantDuration: number;
 }
 
 export interface IntervalType {
-    display: string,
-    value: IntervalFormat,
-    requiredColumns: number
+    display: string;
+    value: IntervalFormat;
+    requiredColumns: number;
 }
 
 export const INTERVAL_TYPE_SELECT_ID = 'csv_interval_select',
@@ -146,7 +146,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
     @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
-    @ViewChild('csv_form_status_stepper') public stepper: MatStepper;
+    @ViewChild('csv_form_status_stepper', { static: true }) public stepper: MatStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
@@ -565,7 +565,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             endColumn: this.temporalProperties.controls['endColumn'].value,
             endFormat: this.temporalProperties.controls['endFormat'].value,
             constantDuration: this.temporalProperties.controls['constantDuration'].value,
-        }
+        };
     }
 
     get xColumnName(): string {
@@ -585,8 +585,8 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 }
 export function layerNameNoDuplicateValidator(reservedNames: BehaviorSubject<Array<string>>): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} => {
+    return (control: AbstractControl): { [key: string]: any } => {
         return reservedNames.getValue().indexOf(control.value) < 0 ? null :
             {'layerNameNoDuplicate': {value: 'Layer name already in use ' + control.value}};
-    }
+    };
 }

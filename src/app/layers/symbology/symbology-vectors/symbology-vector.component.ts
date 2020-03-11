@@ -1,15 +1,18 @@
-import {Component, Input, Output, EventEmitter, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
 import {ComplexPointSymbology, ComplexVectorSymbology, SymbologyType} from '../symbology.model';
 import {MatSliderChange, MatSlideToggleChange} from '@angular/material';
+import {ComplexPointSymbology, ComplexVectorSymbology} from '../symbology.model';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {VectorLayer} from '../../layer.model';
 import {DataTypes} from '../../../operators/datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 
 interface Attribute {
-    name: string,
-    type: 'number' | 'text',
+    name: string;
+    type: 'number' | 'text';
 }
 
 @Component({
@@ -27,48 +30,23 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     @Input() editRadius = true;
     @Input() editStrokeWidth = true;
     @Input() layer: VectorLayer<ComplexPointSymbology> | VectorLayer<ComplexVectorSymbology>;
-    @Output('symbologyChanged') symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
+    @Output() symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
 
-    colorizeByAttribute = false;
-    radiusByAttribute = false;
-    colorAttribute: Attribute | undefined;
-    radiusAttribute: Attribute | undefined;
-    attributes: Array<Attribute>;
-    _symbology: ComplexPointSymbology | ComplexVectorSymbology;
-    isPointSymbology = false;
+    symbology: ComplexPointSymbology | ComplexVectorSymbology;
 
-    @Input()
-    set symbology(symbology: ComplexPointSymbology | ComplexVectorSymbology) {
-        // console.log('SymbologyPointsComponent', 'set symbology');
-        if (symbology && !symbology.equals(this._symbology)) {
-            this._symbology = symbology; // TODO: figure out if this should clone;
-            if (symbology.getSymbologyType() === SymbologyType.COMPLEX_POINT) {
-                this.isPointSymbology = true;
-                this.rad
-            } else {
-                this.isPointSymbology = false;
-            }
-            // console.log('SymbologyPointsComponent', 'set symbology', 'replaced');
-        }
+
+
+    constructor() {
     }
-
-    get symbology(): ComplexPointSymbology | ComplexVectorSymbology {
-        return this._symbology;
-    }
-
-
-
-    constructor() {}
 
     ngOnChanges(changes: SimpleChanges) {
-        // console.log('SymbologyPointsComponent', 'ngOnChanges', changes, this);
-
         for (let propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'layer':
                     this.updateSymbologyFromLayer();
                     break;
                 case 'editRadius':
+                case 'editStrokeWidth':
                 default:
                 // DO NOTHING
             }
@@ -76,7 +54,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     ngOnInit() {
-        // console.log('SymbologyPointsComponent', 'ngOnInit', this);
+        this.updateSymbologyFromLayer();
     }
 
     setColorizerAttribute() {
@@ -120,6 +98,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     updateSymbologyFromLayer() {
+        if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
+            return;
+        }
         this.symbology = this.layer.symbology;
         this.colorizeByAttribute = !!this.symbology.colorAttribute;
         this.gatherAttributes();
@@ -127,10 +108,8 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     gatherAttributes() {
-        // console.log('gatherAttributes', this.layer.operator.dataTypes);
         let attributes: Array<Attribute> = [];
         this.layer.operator.dataTypes.forEach((datatype, attribute) => {
-            // console.log('gatherAttributes', attribute, datatype);
 
             if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                 attributes.push({
@@ -148,7 +127,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     update() {
-       // return a clone (immutablility)
+        // return a clone (immutablility)
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
@@ -178,7 +157,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     updateFill(fill: ColorBreakpoint) {
-        // console.log('SymbologyPointsComponent', 'updateFill', fill);
         if (fill && fill !== this.symbology.fillColorBreakpoint) {
             this.symbology.setFillColorBreakpoint(fill);
             this.update();
@@ -186,7 +164,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     updateStroke(stroke: ColorBreakpoint) {
-        // console.log('SymbologyPointsComponent', 'updateStroke', stroke);
         if (stroke && stroke !== this.symbology.strokeColorBreakpoint) {
             this.symbology.setStrokeColorBreakpoint(stroke);
             this.update();
@@ -195,7 +172,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     updateColorizer(event: ColorizerData) {
         if (event && this.symbology) {
-            // console.log('SymbologyPointsComponent', 'updateColorizer', event);
             this.symbology.setOrUpdateColorizer(event);
             this.update();
         }

@@ -1,8 +1,7 @@
-
 import {
     fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 
 import {Injectable, Type} from '@angular/core';
 import {Config} from './config.service';
@@ -28,6 +27,8 @@ export interface SidenavConfig {
  */
 @Injectable()
 export class LayoutService {
+
+    static readonly remInPx: number = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
     private static _scrollbarWidthPx: number;
 
@@ -60,11 +61,6 @@ export class LayoutService {
 
     constructor(private config: Config) {
         this.setupSidenavWidthStream();
-    }
-
-    static remInPx(): number {
-        // TODO: calculate
-        return 16;
     }
 
     static scrollbarWidthPx() {
@@ -113,17 +109,17 @@ export class LayoutService {
     static getLayerDetailViewBarHeightPx(): number {
         const mobileLandscape = window.matchMedia('(max-width: 960px) and (orientation: landscape)').matches;
         if (mobileLandscape) {
-            return 2 * LayoutService.remInPx();
+            return 2 * LayoutService.remInPx;
         }
 
         const mobilePortrait = window.matchMedia('(max-width: 600px) and (orientation: portrait)').matches;
         if (mobilePortrait) {
-            return 2.5 * LayoutService.remInPx();
+            return 2.5 * LayoutService.remInPx;
         }
 
         const borderSizePx = 1;
 
-        return 3 * LayoutService.remInPx() + borderSizePx;
+        return 3 * LayoutService.remInPx + borderSizePx;
     }
 
     /**
@@ -309,13 +305,14 @@ export class LayoutService {
         return observableCombineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
-            this.layerDetailViewVisible$,
-            (layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible): number => {
+            this.layerDetailViewVisible$
+        ).pipe(
+            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
                 return LayoutService.calculateMapHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
                     totalAvailableHeight
                 );
-            }
+            })
         );
     }
 
@@ -333,32 +330,30 @@ export class LayoutService {
             this.layerListVisible$,
             this.layerDetailViewVisible$,
             this.layerDetailViewTabIndex$,
-            this.layerDetailViewHeightPercentage$,
-            (layerListVisible,
-             layerDetailViewVisible,
-             layerDetailViewTabIndex,
-             layerDetailViewHeightPercentage) => {
+            this.layerDetailViewHeightPercentage$
+        ).pipe(
+            map(([layerListVisible, layerDetailViewVisible, layerDetailViewTabIndex, layerDetailViewHeightPercentage]) => {
                 return {
                     layerListVisible: layerListVisible,
                     layerDetailViewVisible: layerDetailViewVisible,
                     layerDetailViewTabIndex: layerDetailViewTabIndex,
                     layerDetailViewHeightPercentage: layerDetailViewHeightPercentage,
                 };
-            }
+            })
         );
     }
 
     setLayoutDict(dict: LayoutDict) {
-        if (dict.layerListVisible) {
+        if (typeof dict.layerListVisible === 'boolean') {
             this.setLayerListVisibility(dict.layerListVisible);
         }
-        if (dict.layerDetailViewVisible) {
+        if (typeof dict.layerDetailViewVisible === 'boolean') {
             this.setLayerDetailViewVisibility(dict.layerDetailViewVisible);
         }
-        if (dict.layerDetailViewTabIndex) {
+        if (typeof dict.layerDetailViewTabIndex === 'number') {
             this.setLayerDetailViewTabIndex(dict.layerDetailViewTabIndex);
         }
-        if (dict.layerDetailViewHeightPercentage) {
+        if (typeof dict.layerDetailViewHeightPercentage === 'number') {
             this.setLayerDetailViewHeightPercentage(dict.layerDetailViewHeightPercentage);
         }
     }
@@ -373,7 +368,7 @@ export class LayoutService {
             const widthString = sidenavStyle.width;
 
             if (widthString.indexOf('px') === (widthString.length - 2)) {
-                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx();
+                return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx;
             } else {
                 throw new Error('sidenav width must be a `px` value');
             }
@@ -388,7 +383,7 @@ export class LayoutService {
                 });
 
             this.sidenavContentMaxWidth$.next(getWidth());
-        })
+        });
     }
 
 }

@@ -1,8 +1,12 @@
 import {
     Component, ChangeDetectionStrategy, Input, Output, AfterViewInit, EventEmitter, ViewChild,
-    ElementRef, OnChanges, SimpleChange,
+    ElementRef, OnChanges, SimpleChange, OnDestroy,
 } from '@angular/core';
 
+import {LayoutService} from '../../layout.service';
+import {fromEvent as observableFromEvent, Subscription} from 'rxjs';
+import {debounceTime, filter} from 'rxjs/operators';
+import {Config} from '../../config.service';
 import * as d3 from 'd3';
 
 /**
@@ -37,9 +41,9 @@ interface SliderDim {
  * Helper interface for a slider
  */
 interface Slider {
-    area: d3.Selection<SVGGElement>;
-    pointer: d3.Selection<SVGGElement>;
-    text: d3.Selection<SVGGElement>;
+    area: d3.Selection<SVGElement, any, any, any>;
+    pointer: d3.Selection<SVGElement, any, any, any>;
+    text: d3.Selection<SVGElement, any, any, any>;
     position: number;
 }
 
@@ -49,38 +53,83 @@ interface Slider {
     styleUrls: [`histogram.component.scss`],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistogramComponent implements AfterViewInit, OnChanges {
-    @ViewChild('svg') svgRef: ElementRef;
-
+export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
+    @ViewChild('svg', {static: true}) svgRef: ElementRef;
     @Input() data: HistogramData;
-
     @Input() height: number;
     @Input() width: number;
     @Input() viewBoxRatio = 1;
-
     @Input() selectable = false;
     @Input() interactable = false;
-
+    @Input() emmitInitialDataMinMax = false;
+    @Input() autoResize = false;
     @Input() minRange: number = undefined;
     @Output() minRangeChange = new EventEmitter<number>();
     @Input() maxRange: number = undefined;
     @Output() maxRangeChange = new EventEmitter<number>();
-
     private leftSlider: Slider;
     private rightSlider: Slider;
-    private xAxis: d3.svg.Axis;
+    private xAxis: d3.Axis<d3.AxisDomain>;
     private maxWidth: number;
+    private windowEventSubscription: Subscription;
 
-    constructor() {
+    constructor(private elementRef: ElementRef,
+                private config: Config) {
+    }
+
+    private static makeArea(xSlider: d3.Selection<SVGElement, any, any, any>,
+                            height: number): d3.Selection<SVGElement, any, any, any> {
+        return xSlider.append('rect')
+            .attr('x', 0)
+            .attr('width', 0)
+            .attr('height', height)
+            .attr('fill-opacity', 0.2);
+    }
+
+    private static makePointer(xSlider: d3.Selection<SVGElement, any, any, any>,
+                               height: number,
+                               sliderDim: SliderDim,
+                               xPosition: number): d3.Selection<SVGElement, any, any, any> {
+        return xSlider.append('rect')
+            .attr('y', height + sliderDim.margin.top)
+            .attr('x', xPosition)
+            .attr('width', sliderDim.width)
+            .attr('height', sliderDim.height)
+            .attr('transform', 'translate(' + -(sliderDim.width / 2) + ',0)');
+    }
+
+    private static makeText(xSlider: d3.Selection<SVGElement, any, any, any>,
+                            height: number,
+                            sliderDim: SliderDim,
+                            xPosition: number,
+                            value: number): d3.Selection<SVGElement, any, any, any> {
+        return xSlider.append('text')
+            .text(value.toFixed(2))
+            .attr('x', xPosition - sliderDim.width / 2 + 5)
+            .attr(
+                'y',
+                sliderDim.margin.top + height +
+                sliderDim.height + sliderDim.margin.bottom
+            );
+    }
+
+    ngOnDestroy(): void {
+        if (this.windowEventSubscription) {
+            this.windowEventSubscription.unsubscribe();
+        }
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         if (changes['data'] && !changes['data'].isFirstChange()) {
             // clean up histogram
-            d3.select(this.svgRef.nativeElement).select('g').remove();
+            this.clearHistogram();
 
             // draw new one
             this.drawHistogram();
+            if (this.emmitInitialDataMinMax) {
+                this.minRangeChange.emit(this.data.metadata.min);
+                this.maxRangeChange.emit(this.data.metadata.max);
+            }
         }
         // TODO: refactor the set slider position function out (here and in makeDrag)
         if (changes['minRange'] && !changes['minRange'].isFirstChange()) {
@@ -104,10 +153,32 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         }
     }
 
+    private clearHistogram() {
+        d3.select(this.svgRef.nativeElement).select('g').remove();
+    }
+
     ngAfterViewInit() {
+        if (!this.width || !this.height) {
+            this.calculateHistogramWidthAndHeight();
+        }
+
         if (this.data) {
             this.drawHistogram();
+            if (this.emmitInitialDataMinMax) {
+                this.minRangeChange.emit(this.data.metadata.min);
+                this.maxRangeChange.emit(this.data.metadata.max);
+            }
         }
+        this.windowEventSubscription = observableFromEvent(window, 'resize').pipe(
+            filter(_ => this.autoResize),
+            debounceTime(this.config.DELAYS.DEBOUNCE))
+            .subscribe(() => {
+                this.clearHistogram();
+                this.calculateHistogramWidthAndHeight();
+                this.drawHistogram();
+            });
+
+
     }
 
     private drawHistogram() {
@@ -129,21 +200,17 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         this.maxWidth = width;
         const height = this.height * this.viewBoxRatio - margin.top - margin.bottom;
 
-        const x = d3.scale.linear()
+        const x = d3.scaleLinear()
             .domain([this.data.metadata.min, this.data.metadata.max])
             .range([0, width]);
 
-        const y = d3.scale.linear().domain([0, d3.max(this.data.data)])
+        const y = d3.scaleLinear().domain([0, d3.max(this.data.data)])
             .range([height, 0]);
 
-        const xAxis = d3.svg.axis().scale(x).orient('bottom');
+        const xAxis = d3.axisBottom(x);
         this.xAxis = xAxis;
 
-        const yAxis = d3.svg.axis()
-            .scale(y)
-            .orient('left')
-            .tickFormat(d3.format('d')) // allow only integer ticks
-        ;
+        const yAxis = d3.axisLeft(y).tickFormat(d3.format('d')); // allow only integer ticks
 
         const svg = d3.select(this.svgRef.nativeElement)
             .attr('width', this.width)
@@ -242,8 +309,9 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
         svg.append('g')
             .attr('class', 'y axis')
-            .call(yAxis)
-            .append('text') // y axis label
+            .call(yAxis);
+
+        svg.append('text') // y axis label
             .attr('transform', 'rotate(-90)')
             .attr('y', -margin.left)
             .attr('x', -height / 2)
@@ -251,7 +319,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             .style('text-anchor', 'middle')
             .text('Frequency');
 
-        let zoom: d3.behavior.Zoom<any>;
+        let zoom: d3.ZoomBehavior<any, any>;
         if (this.selectable) {
             // sliders to select a range
 
@@ -293,9 +361,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
             // zoom
             if (this.interactable) {
-                zoom = d3.behavior.zoom()
+                zoom = d3.zoom()
                     .scaleExtent([1, 10])
-                    .x(x)
                     .on(
                         'zoom',
                         this.sliderZoomed(svg, container, xAxis, height, width,
@@ -304,9 +371,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
             }
         } else {
             if (this.interactable) {
-                zoom = d3.behavior.zoom()
+                zoom = d3.zoom()
                     .scaleExtent([1, 10])
-                    .x(x)
                     .on('zoom', this.zoomed(svg, container, xAxis));
             }
         }
@@ -322,22 +388,23 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
 
     }
 
-    private zoomed(svg: d3.Selection<SVGSVGElement>,
-                   container: d3.Selection<SVGGElement>,
-                   xAxis: d3.svg.Axis): () => void {
+    private zoomed(svg: d3.Selection<SVGElement, any, any, any>,
+                   container: d3.Selection<SVGElement, any, any, any>,
+                   xAxis: d3.Axis<d3.AxisDomain>
+    ): () => void {
         return () => {
-            const zoomEvent = d3.event as d3.ZoomEvent;
+            const zoomEvent = d3.event as d3.D3ZoomEvent<any, any>;
             container.attr(
                 'transform',
-                `translate(${zoomEvent.translate[0]},0)scale(${zoomEvent.scale},1)`
+                `translate(${zoomEvent.transform.x},0)scale(${zoomEvent.transform.k},1)`
             );
             svg.select('.x.axis').call(xAxis);
         };
     }
 
-    private sliderZoomed(svg: d3.Selection<SVGSVGElement>,
-                         container: d3.Selection<SVGGElement>,
-                         xAxis: d3.svg.Axis,
+    private sliderZoomed(svg: d3.Selection<SVGElement, any, any, any>,
+                         container: d3.Selection<SVGElement, any, any, any>,
+                         xAxis: d3.Axis<d3.AxisDomain>,
                          _height: number,
                          width: number,
                          leftSlider: Slider,
@@ -360,54 +427,18 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
         };
     }
 
-    private static makeArea(xSlider: d3.Selection<SVGGElement>,
-                            height: number): d3.Selection<SVGGElement> {
-        return xSlider.append('rect')
-            .attr('x', 0)
-            .attr('width', 0)
-            .attr('height', height)
-            .attr('fill-opacity', 0.2);
-    }
-
-    private static makePointer(xSlider: d3.Selection<SVGGElement>,
-                               height: number,
-                               sliderDim: SliderDim,
-                               xPosition: number): d3.Selection<SVGGElement> {
-        return xSlider.append('rect')
-            .attr('y', height + sliderDim.margin.top)
-            .attr('x', xPosition)
-            .attr('width', sliderDim.width)
-            .attr('height', sliderDim.height)
-            .attr('transform', 'translate(' + -(sliderDim.width / 2) + ',0)');
-    }
-
-    private static makeText(xSlider: d3.Selection<SVGGElement>,
-                            height: number,
-                            sliderDim: SliderDim,
-                            xPosition: number,
-                            value: number): d3.Selection<SVGGElement> {
-        return xSlider.append('text')
-            .text(value.toFixed(2))
-            .attr('x', xPosition - sliderDim.width / 2 + 5)
-            .attr(
-                'y',
-                sliderDim.margin.top + height +
-                sliderDim.height + sliderDim.margin.bottom
-            );
-    }
-
-    private makeDrag(xAxis: d3.svg.Axis,
+    private makeDrag(xAxis: d3.Axis<d3.AxisDomain>,
                      slider: Slider,
                      leftSlider: Slider,
                      rightSlider: Slider,
                      width: number,
-                     isLeft: boolean): d3.behavior.Drag<{}> {
-        return d3.behavior.drag().on('drag', () => {
+                     isLeft: boolean): d3.DragBehavior<any, any, any> {
+        return d3.drag().on('drag', () => {
             const minX = this.data.metadata.min;
             const maxX = this.data.metadata.max;
             const bins = this.data.metadata.numberOfBuckets;
 
-            const dragEvent = d3.event as d3.DragEvent;
+            const dragEvent = d3.event as d3.D3DragEvent<any, any, any>;
             const eventX = dragEvent.x;
 
             let lowerbound: number;
@@ -440,12 +471,13 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 newX = upperbound;
             }
 
+
             // snap to closest bar
-            let newXVal = xAxis.scale().invert(newX);
+            let newXVal = (xAxis.scale() as d3.ScaleLinear<any, any>).invert(newX);
             const bw = (maxX - minX) / bins;
             const n = Math.round((newXVal - minX) / bw);
             newX = xAxis.scale()(minX + n * bw);
-            newXVal = xAxis.scale().invert(newX);
+            newXVal = (xAxis.scale() as d3.ScaleLinear<any, any>).invert(newX);
 
             slider.pointer.attr('x', newX);
             slider.position = newXVal;
@@ -469,6 +501,14 @@ export class HistogramComponent implements AfterViewInit, OnChanges {
                 slider.area.attr('x', newX);
             }
         });
+    }
+
+    private calculateHistogramWidthAndHeight() {
+        const queryElem = this.elementRef.nativeElement.querySelector('div');
+        const panelWidth = queryElem.clientWidth - 2 * LayoutService.remInPx;
+        const panelheight = queryElem.clientHeight - 2 * LayoutService.remInPx;
+        this.width = panelWidth;
+        this.height = Math.max(panelheight / 3, panelWidth / 3);
     }
 }
 

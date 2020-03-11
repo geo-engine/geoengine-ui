@@ -47,8 +47,9 @@
                             class="tableFixed tableFixedHorizontal"></mat-header-row>
 
             <mat-row *matRowDef="let row; columns: tableDataHead; let i = index; let isFirst=first; let isLast=last;"
-                     [class.offsetterTop]="isFirst" [style.height.px]="isFirst ? (offsetTop$ | async) : ''"
-                     [class.offsetterBottom]="isLast" [style.height.px]="isLast ? (offsetBottom$ | async) : ''"
+                     [class.offsetterTop]="isFirst"
+                     [style.height.px]="isFirst ? (offsetTop$ | async) : isLast ? (offsetBottom$ | async) : 0"
+                     [class.offsetterBottom]="isLast"
                      [class.rowSelected]="selected[i-1+firstDisplay]"></mat-row>
 
         </mat-table>

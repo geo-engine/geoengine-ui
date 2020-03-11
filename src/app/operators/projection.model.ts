@@ -106,7 +106,7 @@ export class UTM32N extends Projection {
     }
 
     getName(): string {
-        return 'UTM 32 N';
+        return 'WGS 84 / UTM 32 N';
     }
 
     getExtent(): [number, number, number, number] {
@@ -127,6 +127,40 @@ export class UTM32N extends Projection {
             }));
 
             UTM32N.isProjectionRegistered = true;
+        }
+
+    }
+}
+
+export class ETRS89UTM32N extends Projection {
+    private static isProjectionRegistered = false;
+
+    getCode(): string {
+        return 'EPSG:25832';
+    }
+
+    getName(): string {
+        return 'ETRS89 / UTM 32 N';
+    }
+
+    getExtent(): [number, number, number, number] {
+        return [265948.8191, 6421521.2254, 677786.3629, 7288831.7014];
+    }
+
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/25832';
+    }
+
+    private registerProjection() {
+
+        if (!ETRS89UTM32N.isProjectionRegistered) {
+            olAddProjection(new OlProjection({
+                code: this.getCode(),
+                extent: this.getExtent(),
+                units: 'm'
+            }));
+
+            ETRS89UTM32N.isProjectionRegistered = true;
         }
 
     }
@@ -188,6 +222,7 @@ class ProjectionCollection {
     WEB_MERCATOR: Projection = new WebMercator();
     GEOS: Projection = new GEOS();
     UTM32N: Projection = new UTM32N();
+    ETRS89UTM32N: Projection = new ETRS89UTM32N();
 
     // required to support already stored layers
     OLD_GEOS_CODE = 'EPSG:40453';
@@ -195,7 +230,7 @@ class ProjectionCollection {
     ALL_PROJECTIONS: Array<Projection>;
 
     constructor() {
-        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS];
+        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N];
     }
 
     fromCode(json: string) {
@@ -210,6 +245,8 @@ class ProjectionCollection {
                 return this.GEOS;
             case this.UTM32N.getCode():
                 return this.UTM32N;
+            case this.ETRS89UTM32N.getCode():
+                return this.ETRS89UTM32N;
             default:
                 throw new Error('Invalid Projection String');
         }

@@ -16,9 +16,10 @@ p {
 }
 
 .disabled {
-    /deep/ .mat-list-item-content {
+    ::ng-deep .mat-list-item-content {
         cursor: auto;
     }
+
     h4 {
         color: $secondary-color;
     }

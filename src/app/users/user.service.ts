@@ -1,6 +1,6 @@
 import {
-    BehaviorSubject, Observable, Subject, combineLatest as observableCombineLatest, throwError as observableThrowError, EMPTY,
-    of as observableOf
+    BehaviorSubject, Observable, Subject, combineLatest, throwError as observableThrowError, EMPTY,
+    of as observableOf, ReplaySubject,
 } from 'rxjs';
 
 import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
@@ -15,10 +15,10 @@ import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
 
 import {
     MappingSource,
-    MappingSourceRasterLayer,
+    SourceRasterLayerDescription,
     MappingSourceDict,
     MappingSourceResponse,
-    MappingTransform, MappingSourceVectorLayer, ProvenanceInfo
+    MappingTransform, SourceVectorLayerDescription, ProvenanceInfo, MappingSourceRasterLayerDict, MappingSourceVectorLayerDict
 } from '../operators/dialogs/data-repository/mapping-source.model';
 import {CsvColumn, CsvFile} from '../operators/dialogs/baskets/csv.model';
 
@@ -216,7 +216,7 @@ export class UserService {
                     });
                 }
             }),
-            map(([session, success]) => success as boolean), );
+            map(([_, success]) => success as boolean));
     }
 
     guestLogin(): Observable<boolean> {
@@ -224,6 +224,105 @@ export class UserService {
             user: this.config.USER.GUEST.NAME,
             password: this.config.USER.GUEST.PASSWORD,
         });
+    }
+
+    /**
+     * Login using a JSON Web Token (JWT).
+     * If it was successful, set a new user.
+     * @param token The user's token.
+     * @returns `true` if the login was succesful, `false` otherwise.
+     */
+    nature40JwtTokenLogin(token: string): Observable<boolean> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'login',
+            parameters: {token: token},
+        });
+
+        return this.loginRequestToUserDetails(parameters);
+    }
+
+    private loginRequestToUserDetails(parameters: MappingRequestParameters) {
+        const subject = new Subject<boolean>();
+
+        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
+            mergeMap(response => {
+                const success = (typeof response.result === 'boolean') && response.result;
+
+                if (success) {
+                    return this.getUserDetails({user: undefined, sessionToken: response.session})
+                        .pipe(
+                            tap(user => {
+                                this.session$.next({
+                                    user: user.name,
+                                    sessionToken: response.session,
+                                    staySignedIn: false,
+                                    isExternallyConnected: true,
+                                });
+                            }),
+                            map(_ => true)
+                        );
+                } else {
+                    return observableOf(false);
+                }
+            }))
+            .subscribe(
+                success => subject.next(success),
+                () => subject.next(false),
+                () => subject.complete()
+            );
+        return subject;
+    }
+
+    /**
+     * Retrieve the signed JWT client token.
+     */
+    getNature40JwtClientToken(): Observable<{ clientToken: string }> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: undefined,
+            request: 'clientToken',
+            parameters: {},
+        });
+
+        return this.request<{ result: string | boolean, clientToken: string }>(parameters);
+    }
+
+    getNature40Catalog(): Observable<Map<string, Array<Nature40CatalogEntry>>> {
+        const parameters = new MappingRequestParameters({
+            service: 'nature40',
+            sessionToken: this.getSession().sessionToken,
+            request: 'sourcelist',
+            parameters: {},
+        });
+
+        const subject = new ReplaySubject<Map<string, Array<Nature40CatalogEntry>>>(1);
+
+        this.request<{ result: boolean | string, sourcelist?: Array<Nature40CatalogEntry> }>(parameters).subscribe(
+            ({result, sourcelist}) => {
+                if (typeof result === 'string') { // unsuccessful
+                    subject.error(new Error(result));
+                    return;
+                }
+
+                const groupedValues = new Map<string, Array<Nature40CatalogEntry>>();
+                for (const entry of sourcelist) {
+                    const group = entry.provider.type;
+                    if (groupedValues.has(group)) {
+                        groupedValues.get(group).push(entry);
+                    } else {
+                        groupedValues.set(group, [entry]);
+                    }
+                }
+
+                subject.next(groupedValues);
+            },
+            () => subject.error(new Error('Unable to retrieve Nature 4.0 catalog data')),
+            () => subject.complete(),
+        );
+
+        return subject;
     }
 
     /**
@@ -443,34 +542,7 @@ export class UserService {
             parameters: {token: token},
         });
 
-        const subject = new Subject<boolean>();
-
-        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-            mergeMap(response => {
-                const success = typeof response.result === 'boolean' && response.result === true;
-
-                if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: response.session}).pipe(
-                        tap(user => {
-                            this.session$.next({
-                                user: user.name,
-                                sessionToken: response.session,
-                                staySignedIn: false,
-                                isExternallyConnected: true,
-                            });
-                        }),
-                        map(user => true), );
-                } else {
-                    return observableOf(false);
-                }
-            }))
-            .subscribe(
-                success => subject.next(success),
-                () => subject.next(false),
-                () => subject.complete()
-            );
-
-        return subject;
+        return this.loginRequestToUserDetails(parameters);
     }
 
     setIntroductoryPopup(show: boolean) {
@@ -564,7 +636,8 @@ export class UserService {
     }
 
     private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
-        return observableCombineLatest(session$, reload$, (session, reload) => session).pipe(
+        return combineLatest(session$, reload$).pipe(
+            map(([session, _]) => session),
             switchMap(session => {
                 const parameters = new UserServiceRequestParameters({
                     request: 'sourcelist',
@@ -577,72 +650,20 @@ export class UserService {
                         for (const sourceId in json.sourcelist) {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
-                                const sourceProvenance: ProvenanceInfo = {
-                                    uri: (source.provenance) ? source.provenance.uri : '',
-                                    citation: source.provenance ? source.provenance.citation : '',
-                                    license: source.provenance ? source.provenance.license : '',
-                                };
+                                const sourceProvenance: ProvenanceInfo = this.parseSourceProvenance(source);
 
-                                const sourceChannels = (!source.channels) ? [] : source.channels.map((channel, index) => {
-                                    const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
-                                    const channelColorizer = channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) :
-                                        source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) :
-                                            ColorizerData.grayScaleColorizer(channelUnit);
-                                    const coords = channel.coords || source.coords; // fixme: throw?
-
-                                    const provenance: ProvenanceInfo = (channel.provenance) ? {
-                                        uri: (source.provenance) ? source.provenance.uri : '',
-                                        citation: source.provenance ? source.provenance.citation : '',
-                                        license: source.provenance ? source.provenance.license : '',
-                                    } : sourceProvenance;
-
-                                    return {
-                                        id: index,
-                                        name: channel.name || 'Channel #' + index,
-                                        datatype: channel.datatype,
-                                        nodata: channel.nodata,
-                                        unit: channelUnit,
-                                        methodology: channel.methodology,
-                                        colorizer: channelColorizer,
-                                        hasTransform: !!channel.transform,
-                                        isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-                                        transform: channel.transform === undefined ?
-                                            undefined : {
-                                                unit: channel.transform.unit ?
-                                                    Unit.fromMappingDict(channel.transform.unit)
-                                                    : Unit.defaultUnit,
-                                                datatype: channel.transform.datatype,
-                                                offset: channel.transform.offset,
-                                                scale: channel.transform.scale,
-                                            } as MappingTransform,
-                                        coords: coords,
-                                        provenance: provenance,
-                                    } as MappingSourceRasterLayer;
-                                });
+                                const sourceChannels = (!source.channels) ? [] : source.channels.map(
+                                    (channel, index) => {
+                                        return this.parseRasterChannel(channel, source, sourceProvenance, index);
+                                    }
+                                );
 
                                 // vector data
-                                const sourceVectorLayer = (!source.layer) ? [] : source.layer.map((layer, index) => {
-                                    // TODO: can we  safely assume EPSG: 4326 here?
-                                    const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
-
-                                    const provenance: ProvenanceInfo = (layer.provenance) ? {
-                                        uri: (source.provenance) ? source.provenance.uri : '',
-                                        citation: source.provenance ? source.provenance.citation : '',
-                                        license: source.provenance ? source.provenance.license : '',
-                                    } : sourceProvenance;
-
-                                    return {
-                                        id: layer.id || layer.name,
-                                        name: layer.title || layer.name || 'Layer #' + index,
-                                        title: layer.title || layer.name || 'Layer #' + index,
-                                        geometryType: layer.geometry_type || 'POINTS',
-                                        textual: layer.textual || [],
-                                        numeric: layer.numeric || [],
-                                        coords: coords,
-                                        provenance: provenance,
-                                    } as MappingSourceVectorLayer;
-                                });
-
+                                const sourceVectorLayer = (!source.layer) ? [] : source.layer.map(
+                                    (layer, index) => {
+                                        return this.parseVectorLayer(layer, source, sourceProvenance, index);
+                                    }
+                                );
 
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
@@ -663,8 +684,94 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }), );
+                    }),);
             }));
     }
 
+    private parseSourceProvenance(source: MappingSourceDict) {
+        return {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        };
+    }
+
+    private parseVectorLayer(
+        layer: MappingSourceVectorLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+    ): SourceVectorLayerDescription {
+        // TODO: can we  safely assume EPSG: 4326 here?
+        const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
+
+        const provenance: ProvenanceInfo = (layer.provenance) ? {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        } : sourceProvenance;
+
+        return {
+            id: layer.id || layer.name,
+            name: layer.title || layer.name || 'Layer #' + index,
+            title: layer.title || layer.name || 'Layer #' + index,
+            geometryType: layer.geometry_type || 'POINTS',
+            textual: layer.textual || [],
+            numeric: layer.numeric || [],
+            coords: coords,
+            provenance: provenance,
+        } as SourceVectorLayerDescription;
+    }
+
+    private parseRasterChannel(
+        channel: MappingSourceRasterLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+    ): SourceRasterLayerDescription {
+        const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
+        const sourceColorizer =
+            source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) : undefined;
+        const channelColorizer =
+            channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) : sourceColorizer;
+        const coords = channel.coords || source.coords; // fixme: throw?
+
+        const channelProvenance: ProvenanceInfo = (!channel.provenance) ? sourceProvenance : {
+            uri: (source.provenance) ? source.provenance.uri : '',
+            citation: source.provenance ? source.provenance.citation : '',
+            license: source.provenance ? source.provenance.license : '',
+        };
+
+        return {
+            id: index,
+            name: channel.name || 'Channel #' + index,
+            datatype: channel.datatype,
+            nodata: channel.nodata,
+            unit: channelUnit,
+            methodology: channel.methodology,
+            colorizer: channelColorizer,
+            hasTransform: !!channel.transform,
+            isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
+            transform: !channel.transform ? undefined : {
+                unit: channel.transform.unit ? Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
+                datatype: channel.transform.datatype,
+                offset: channel.transform.offset,
+                scale: channel.transform.scale,
+            } as MappingTransform,
+            coords: coords,
+            provenance: channelProvenance,
+        } as SourceRasterLayerDescription;
+    }
+
+}
+
+export interface Nature40CatalogEntry {
+    global_id: string;
+    title: string;
+    description: string;
+    user_url: string;
+    provider: {
+        type: string,
+        id: string,
+        url: string,
+    };
+    dataset: {
+        type: string,
+        id: string,
+        url: string,
+    };
 }

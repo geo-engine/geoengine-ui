@@ -4,7 +4,7 @@ import {first, filter} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {LoadingState} from '../../project/loading-state.model';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {RScriptType} from '../../operators/types/r-script-type.model';
 import {BoxPlotType} from '../../operators/types/boxplot-type.model';

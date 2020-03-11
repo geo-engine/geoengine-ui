@@ -15,7 +15,7 @@ $operator-border-height: 1px;
 }
 
 /* node header */
-:host .graph /deep/ .label .header {
+:host .graph ::ng-deep .label .header {
     width: $general-width - (2 * $general-margin);
     padding: $general-margin;
     overflow: hidden;
@@ -25,7 +25,7 @@ $operator-border-height: 1px;
 }
 
 /* operator header */
-:host .graph /deep/ .operator .label .header {
+:host .graph ::ng-deep .operator .label .header {
     height: $general-header-height - (2 * $general-margin) - $general-header-height;
     line-height: $general-header-height - (2 * $general-margin) - $operator-border-height;
     color: rgba(0, 0, 0, 0.87);
@@ -33,7 +33,7 @@ $operator-border-height: 1px;
 }
 
 /* layer header */
-:host .graph /deep/ .layer .label .header {
+:host .graph ::ng-deep .layer .label .header {
     height: $general-header-height - (2 * $general-margin);
     line-height: $general-header-height - (2 * $general-margin);
     background-color: #3f51b5;
@@ -41,12 +41,12 @@ $operator-border-height: 1px;
 }
 
 /* layer header accent */
-:host .graph /deep/ .layer.accent .label .header {
+:host .graph ::ng-deep .layer.accent .label .header {
     background-color: #e91e63 !important;
 }
 
 /* operator header icon */
-:host .graph /deep/ .label .header .icon {
+:host .graph ::ng-deep .label .header .icon {
     display: block;
     float: left;
     width: $general-header-height - (2 * $general-margin) - $operator-border-height;
@@ -56,7 +56,7 @@ $operator-border-height: 1px;
 }
 
 /* operator parameter content */
-:host .graph /deep/ .label .parameters {
+:host .graph ::ng-deep .label .parameters {
     width: $general-width - (2 * $general-margin);
     height: $operator-height - $general-header-height - (2 * $general-margin);
     padding: $general-margin;
@@ -64,53 +64,56 @@ $operator-border-height: 1px;
 }
 
 /* operator parameter content table */
-:host .graph /deep/ .label .parameters table {
+:host .graph ::ng-deep .label .parameters table {
     width: $general-width - (2 * $general-margin);
     table-layout: fixed;
 }
-:host .graph /deep/ .label .parameters .key,
-:host .graph /deep/ .label .parameters .value {
+
+:host .graph ::ng-deep .label .parameters .key,
+:host .graph ::ng-deep .label .parameters .value {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-:host .graph /deep/ .label .parameters .key {
+
+:host .graph ::ng-deep .label .parameters .key {
     width: 33%;
 }
-:host .graph /deep/ .label .parameters .value {
+
+:host .graph ::ng-deep .label .parameters .value {
     width: 67%;
 }
 
 /* node box */
-:host .graph /deep/ .node rect {
+:host .graph ::ng-deep .node rect {
     stroke: rgba(0, 0, 0, 0.12);
     fill: #fff;
     stroke-width: 1.5px;
 }
 
 /* node box shadow */
-:host .graph /deep/ .label > g > foreignObject > div {
+:host .graph ::ng-deep .label > g > foreignObject > div {
     box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
     0px 5px 8px 0px rgba(0, 0, 0, 0.14),
     0px 1px 14px 0px rgba(0, 0, 0, 0.12);
 }
 
 /* pointer */
-:host .graph /deep/ .operator .label > g > foreignObject > div {
+:host .graph ::ng-deep .operator .label > g > foreignObject > div {
     cursor: pointer;
 }
 
 /* highlight */
-:host .graph /deep/ .highlight rect {
+:host .graph ::ng-deep .highlight rect {
     stroke: #3f51b5 !important;
 }
 
 /* edge */
-:host .graph /deep/ .edgePath path {
+:host .graph ::ng-deep .edgePath path {
     stroke: #333;
     stroke-width: 1.5px;
 }
 
 /* edge to layer */
-:host .graph /deep/ .layer-edge path {
+:host .graph ::ng-deep .layer-edge path {
     stroke-dasharray: 5, 5;
 }

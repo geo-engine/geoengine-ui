@@ -1,4 +1,4 @@
-import {Input} from '@angular/core';
+import {Input, Component, Directive} from '@angular/core';
 import {IBasketResult} from './gfbio-basket.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
@@ -11,7 +11,9 @@ import {UserService} from '../../../users/user.service';
 import {ProjectService} from '../../../project/project.service';
 import {UnexpectedResultType} from '../../../util/errors';
 
-export class BasketResult<T extends IBasketResult> {
+@Directive()
+// tslint:disable-next-line:directive-class-suffix
+export abstract class BasketResultComponent<T extends IBasketResult> {
     @Input() result: T;
 
 

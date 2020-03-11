@@ -9,9 +9,12 @@ import {
     ElementRef,
     HostListener,
     OnInit,
-    ViewChild
+    ViewChild, ViewContainerRef
 } from '@angular/core';
-import {MatDialog, MatIconRegistry, MatSidenav, MatTabGroup} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
+import {MatIconRegistry} from '@angular/material/icon';
+import {MatSidenav} from '@angular/material/sidenav';
+import {MatTabGroup} from '@angular/material/tabs';
 
 
 import {
@@ -54,7 +57,7 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {UnexpectedResultType} from './util/errors';
 import {Operator} from './operators/operator.model';
-import {Config} from './config.service';
+import {Config, Project as ProjectType} from './config.service';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {MapService} from './map/map.service';
 import {combineLatest} from 'rxjs/internal/observable/combineLatest';
@@ -66,11 +69,11 @@ import {combineLatest} from 'rxjs/internal/observable/combineLatest';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent) mapComponent: MapContainerComponent;
-    @ViewChild(MatTabGroup) bottomTabs: MatTabGroup;
+    @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
+    @ViewChild(MatTabGroup, {static: true}) bottomTabs: MatTabGroup;
 
-    @ViewChild(MatSidenav) rightSidenav: MatSidenav;
-    @ViewChild(SidenavContainerComponent) rightSidenavContainer: SidenavContainerComponent;
+    @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
+    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
 
     layerListVisible$: Observable<boolean>;
     layerDetailViewVisible$: Observable<boolean>;
@@ -101,18 +104,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private mapService: MapService,
                 public config: Config,
                 private elementRef: ElementRef,
+                public vcRef: ViewContainerRef, // reference used by color picker
                 private overlayContainer: OverlayContainer) {
-        iconRegistry.addSvgIconInNamespace(
-            'vat',
-            'logo',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg')
-        );
+        this.registerIcons();
 
-        iconRegistry.addSvgIconInNamespace(
-            'geobon',
-            'logo',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg')
-        );
+        vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
 
         this.storageService.toString(); // just register
 
@@ -124,6 +120,35 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
 
         this.setTheme(this.config.PROJECT);
+    }
+
+    private registerIcons() {
+        this.iconRegistry.addSvgIconInNamespace(
+            'vat',
+            'logo',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
+        );
+
+        switch (this.config.PROJECT) { // project-specific icons
+            case 'EUMETSAT':
+                break;
+            case 'GFBio':
+                break;
+            case 'GeoBon':
+                this.iconRegistry.addSvgIconInNamespace(
+                    'geobon',
+                    'logo',
+                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
+                );
+                break;
+            case 'Nature40':
+                this.iconRegistry.addSvgIconInNamespace(
+                    'nature40',
+                    'icon',
+                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/natur_40_logo.svg'),
+                );
+                break;
+        }
     }
 
     ngOnInit() {
@@ -171,7 +196,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         } else {
 
             // handle query parameters directly if it is not embedded and using an auto login
-            this.handleWorkflowParameters();
+            this.handleQueryParameters();
 
         }
     }
@@ -191,7 +216,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         filter(status => status === StorageStatus.OK),
                         first()
                     ).subscribe(() => {
-                        this.handleWorkflowParameters();
+                        this.handleQueryParameters();
                     });
                 });
                 break;
@@ -205,7 +230,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    private handleWorkflowParameters() {
+    private handleQueryParameters() {
         this.activatedRoute.queryParams.subscribe(p => {
             for (const parameter of Object.keys(p)) {
                 const value = p[parameter];
@@ -262,11 +287,32 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.notificationService.error(`Invalid Workflow: »${error}«`);
                         }
                         break;
+                    case 'jws':
+                    case 'jwt':
+                        this.nature40JwtLogin(parameter, value);
+                        break;
                     default:
                         this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
                 }
             }
         });
+    }
+
+    private nature40JwtLogin(parameter: string, token: string) {
+        this.userService.nature40JwtTokenLogin(token).pipe(first()).subscribe(
+            success => {
+                if (success) {
+                    this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
+                } else {
+                    this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
+                    // log out, because mapping session exists, but JWT token has become invalid
+                    this.userService.guestLogin().pipe(first()).subscribe();
+                }
+            },
+            error => {
+                this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
+            },
+        );
     }
 
     private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
@@ -352,7 +398,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: 'EUMETSAT' | 'GFBio' | 'GeoBon') {
+    private setTheme(project: ProjectType) {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];
@@ -369,6 +415,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 break;
             case 'GFBio':
             case 'EUMETSAT':
+            case 'Nature40':
             default:
                 this.elementRef.nativeElement.classList.add(defaultTheme);
                 this.overlayContainer.getContainerElement().classList.add(defaultTheme);

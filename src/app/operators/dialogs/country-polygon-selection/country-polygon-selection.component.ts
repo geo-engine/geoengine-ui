@@ -9,7 +9,7 @@ import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {ProjectService} from '../../../project/project.service';
 import {Projection, Projections} from '../../projection.model';
 import {CSVParameters, CsvSourceType} from '../../types/csv-source-type.model';
@@ -209,7 +209,7 @@ Sean Gilles did some clean up and made some enhancements.`,
 }
 
 interface CountryMapType {
-    [key: string]: string | number
+    [key: string]: string | number;
 }
 
 class CountryDataSource extends DataSource<CountryMapType> {

@@ -16,6 +16,6 @@ table {
         1px 1px 0 #fff !important;
 }
 
-:host /deep/ .color-picker {
+:host ::ng-deep .color-picker {
     position: fixed !important;
 }

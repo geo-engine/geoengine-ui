@@ -14,7 +14,7 @@ import {
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {ProjectService} from '../../../project/project.service';
 
 function nameComparator(a: string, b: string): number {
@@ -89,7 +89,7 @@ export class FeaturedbSourceListComponent implements OnInit {
             symbology: symbology,
             clustered: clustered,
         });
-        this.projectService.addLayer(layer)
+        this.projectService.addLayer(layer);
     }
 
 }

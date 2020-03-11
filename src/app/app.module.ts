@@ -5,7 +5,6 @@ import {MaterialModule} from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {HttpClientModule} from '@angular/common/http';
-import 'hammerjs';
 
 import {AppComponent} from './app.component';
 import {DataRepositoryComponent} from './operators/dialogs/data-repository/data-repository.component';
@@ -84,7 +83,7 @@ import {CsvPropertiesService} from './operators/dialogs/csv/csv-dialog/csv.prope
 import {CsvUploadComponent} from './operators/dialogs/csv/csv-upload/csv-upload.component';
 import {
     CsvDialogComponent,
-    CsvErrorDialog
+    CsvErrorDialogComponent
 } from './operators/dialogs/csv/csv-dialog/csv-dialog.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
@@ -125,7 +124,6 @@ import {
     GroupedAbcdBasketResultComponent
 } from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {MatIconRegistry} from '@angular/material';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
@@ -157,8 +155,16 @@ import {
     LayerListWorkflowParameterSliderComponent
 } from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
+import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
+import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-in.directive';
+import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
+import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
+import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
+import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
+import {MatIconRegistry} from '@angular/material/icon';
 
 export function configInitializer(config: Config) {
     return () => config.load();
@@ -179,7 +185,7 @@ export function configInitializer(config: Config) {
         CountryPolygonSelectionComponent,
         CssStringToRgbaPipe,
         CsvDialogComponent,
-        CsvErrorDialog,
+        CsvErrorDialogComponent,
         CsvPropertiesComponent,
         CsvTableComponent,
         CsvUploadComponent,
@@ -205,6 +211,8 @@ export function configInitializer(config: Config) {
         IfGeoBonDirective,
         IfGfbioDirective,
         IfGfbioLoggedInDirective,
+        IfNature40LoggedInDirective,
+        IfNature40AndGuestDirective,
         IfGuestDirective,
         IfLoggedInDirective,
         LayerExportComponent,
@@ -248,6 +256,7 @@ export function configInitializer(config: Config) {
         MediaviewPlaylistComponent,
         MediaviewVideoComponent,
         MultiLayerSelectionComponent,
+        Nature40CatalogComponent,
         NavigationComponent,
         NbspPipe,
         NewProjectComponent,
@@ -313,6 +322,10 @@ export function configInitializer(config: Config) {
         LayerStatisticsNumericDetailsComponent,
         LayerStatisticsTextualDetailsComponent,
         RgbCompositeComponent,
+        ColormapColorizerComponent,
+        RasterMaskComponent,
+        DialogHelpComponent,
+        ColormapNameToColorizerDataPipe
     ],
     imports: [
         BrowserAnimationsModule,
@@ -325,62 +338,6 @@ export function configInitializer(config: Config) {
         MaterialModule,
         ReactiveFormsModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-    ],
-    entryComponents: [
-        AbcdRepositoryComponent,
-        BoxPlotComponent,
-        ChangeProjectionComponent,
-        ColorizerEditorComponent,
-        CountryPolygonSelectionComponent,
-        RgbCompositeComponent,
-        CsvDialogComponent,
-        CsvErrorDialog,
-        DataRepositoryComponent,
-        ExpressionOperatorComponent,
-        FeaturedbSourceListComponent,
-        GbifOperatorComponent,
-        GfbioBasketsComponent,
-        HeatmapOperatorComponent,
-        HelpComponent,
-        HistogramOperatorComponent,
-        LayerExportComponent,
-        LayerShareComponent,
-        LineageGraphComponent,
-        LoadProjectComponent,
-        LoginComponent,
-        MediaviewAudioComponent,
-        MediaviewImageComponent,
-        MediaviewImageDialogComponent,
-        MediaviewVideoComponent,
-        NewProjectComponent,
-        NumericAttributeFilterOperatorComponent,
-        OlDrawFeaturesComponent,
-        OperatorListComponent,
-        PieChartComponent,
-        PlotDetailViewComponent,
-        PlotListComponent,
-        PointInPolygonFilterOperatorComponent,
-        RasterPolygonClipOperatorComponent,
-        RasterValueExtractionOperatorComponent,
-        RenameLayerComponent,
-        ROperatorComponent,
-        RScriptLoadComponent,
-        RScriptSaveComponent,
-        SaveProjectAsComponent,
-        ScatterPlotComponent,
-        SensorSourceOperatorComponent,
-        SpectralOverviewPlotComponent,
-        SourceOperatorListComponent,
-        StatisticsPlotComponent,
-        SplashDialogComponent,
-        SymbologyEditorComponent,
-        TerminologyLookupOperatorComponent,
-        TextualAttributeFilterOperatorComponent,
-        TimeConfigComponent,
-        BoxPlotComponent,
-        TimePlotComponent,
-        WorkflowParameterChoiceDialogComponent,
-        WorkspaceSettingsComponent,
     ],
     providers: [
         {

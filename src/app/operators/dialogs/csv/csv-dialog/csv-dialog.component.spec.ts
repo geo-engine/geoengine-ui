@@ -8,17 +8,16 @@ import {CsvTableComponent} from '../csv-config/csv-table/csv-table.component';
 import {CsvUploadComponent} from '../csv-upload/csv-upload.component';
 import {MaterialModule} from '../../../../material.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogRef} from '@angular/material';
+import {MatDialogRef} from '@angular/material/dialog';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {DialogHeaderComponent} from '../../../../dialogs/dialog-header/dialog-header.component';
 import {UserService} from '../../../../users/user.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {ProjectService} from '../../../../project/project.service';
 import {Operator} from '../../../operator.model';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {of} from 'rxjs';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {By} from '@angular/platform-browser';
 import {SelectSpecHelper} from '../../../../spec/select-spec.helper';
 import {ComponentFixtureSpecHelper} from '../../../../spec/component-fixture-spec.helper';
 import {IntervalType} from '../csv-config/csv-properties/csv-properties.component';
@@ -298,77 +297,77 @@ describe('Component: CsvDialogComponent', () => {
 
     function setIsTextQualifier(isTextQualifier: boolean): void {
         propertiesComponent.dataProperties.patchValue({isTextQualifier: isTextQualifier});
-    };
+    }
 
     function setXColumnIndex(x: number) {
         propertiesComponent.spatialProperties.patchValue({xColumn: x});
-    };
+    }
 
     function setYColumnIndex(y: number) {
         propertiesComponent.spatialProperties.patchValue({yColumn: y});
-    };
+    }
 
     function setIsTime(isTime: boolean) {
         propertiesComponent.temporalProperties.patchValue({isTime: isTime});
-    };
+    }
 
     function setIsWkt(isWkt: boolean) {
         propertiesComponent.spatialProperties.patchValue({isWkt: isWkt});
-    };
+    }
 
     function setFormStatus(formStatus: FormStatus) {
         propertiesComponent.formStatus$.next(formStatus);
-    };
+    }
 
     function setLayerName(layerName: string) {
         propertiesComponent.layerProperties.patchValue({layerName: layerName});
-    };
+    }
 
     function getHeader(): {value: string}[] {
         return tableComponent.header;
-    };
+    }
 
     function getIntervalTypes(): IntervalType[] {
         return propertiesComponent.intervalTypes;
-    };
+    }
 
     function getXColumnIndex(): number {
         return propertiesComponent.spatialProperties.controls['xColumn'].value;
-    };
+    }
 
     function getYColumnIndex(): number {
         return propertiesComponent.spatialProperties.controls['yColumn'].value;
-    };
+    }
 
     function getStartColumnIndex(): number {
         return propertiesComponent.temporalProperties.controls['startColumn'].value;
-    };
+    }
 
     function getEndColumnIndex(): number {
         return propertiesComponent.temporalProperties.controls['endColumn'].value;
-    };
+    }
 
     function getIsWkt(): boolean {
         return propertiesComponent.spatialProperties.controls['isWkt'].value;
-    };
+    }
 
     function getIsTime(): boolean {
         return propertiesComponent.temporalProperties.controls['isTime'].value;
-    };
+    }
 
     function getReservedNames(): string[] {
         return propertiesComponent.reservedNames$.getValue();
-    };
+    }
 
     function isTimeSelectionDisabled(): boolean {
         return propertiesComponent.temporalProperties.controls['isTime'].disabled;
-    };
+    }
 
     function numberOfSpatialColumns(): number {
         return (getIsWkt() ? 1 : 2);
-    };
+    }
 
     function isValid(): boolean {
         return propertiesComponent.isValid;
-    };
+    }
 });

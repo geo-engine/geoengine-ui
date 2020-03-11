@@ -1,9 +1,8 @@
-
 import {ReplaySubject, BehaviorSubject, combineLatest as observableCombineLatest} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
 import {LayoutService} from '../../layout.service';
@@ -33,12 +32,12 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         observableCombineLatest(
-                this.projectService.getPlotDataStream(this.plot),
-                this.projectService.getTimeStream(),
-                this.projectService.getProjectionStream(),
-                this.mapService.getViewportSizeStream(),
-                this.maxWidth$, this.maxHeight$
-            ).pipe(
+            this.projectService.getPlotDataStream(this.plot),
+            this.projectService.getTimeStream(),
+            this.projectService.getProjectionStream(),
+            this.mapService.getViewportSizeStream(),
+            this.maxWidth$, this.maxHeight$
+        ).pipe(
             first())
             .subscribe(([plotData, time, projection, viewport, width, height]) => {
                 // set data uri for png type and load full screen image
@@ -51,7 +50,7 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
                             time: time,
                             extent: viewport.extent,
                             projection: projection,
-                            plotWidth: width - LayoutService.remInPx(),
+                            plotWidth: width - LayoutService.remInPx,
                             plotHeight: height,
                         }).pipe(
                         first())
@@ -66,8 +65,8 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         setTimeout(() => {
-            this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx());
-            this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx() - LayoutService.getToolbarHeightPx());
+            this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
+            this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
         });
     }
 

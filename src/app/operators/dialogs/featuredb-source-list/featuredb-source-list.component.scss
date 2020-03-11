@@ -1,6 +1,6 @@
 @import '../../../../wave-app-theme';
 
-mat-toolbar /deep/ mat-toolbar-row:first-child {
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
     display: none;
 }
 
@@ -12,6 +12,6 @@ p {
     color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
 }
 
-mat-list-item /deep/ .highlight {
+mat-list-item ::ng-deep .highlight {
     color: mat-color($wave-app-accent);
 }
