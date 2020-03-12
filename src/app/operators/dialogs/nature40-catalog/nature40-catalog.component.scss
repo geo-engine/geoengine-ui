@@ -5,3 +5,11 @@
         margin: 2rem auto 0 auto;
     }
 }
+
+mat-list-item {
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(black, 0.12);
+    }
+}
