@@ -1,10 +1,10 @@
 import {
     Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit,
-    Input, forwardRef, OnChanges, SimpleChanges, SimpleChange
+    Input, forwardRef, OnChanges, SimpleChange,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import moment from 'moment';
+import {Moment, unitOfTime} from 'moment';
 
 
 @Component({
@@ -21,19 +21,19 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
 
     @Input() disabled: false;
 
-    private _time: moment.Moment;
+    private _time: Moment;
     onTouched: () => void;
-    onChange: (_: moment.Moment) => void = undefined;
+    onChange: (_: Moment) => void = undefined;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {
     }
 
-    get time(): moment.Moment {
+    get time(): Moment {
         return this._time;
-    };
+    }
 
     // set accessor including call the onchange callback
-    set time(time: moment.Moment) {
+    set time(time: Moment) {
         if (time !== this._time) {
             this._time = time;
             if (this.onChange) {
@@ -56,12 +56,12 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         this.onTouched();
     }
 
-    writeValue(time: moment.Moment): void {
+    writeValue(time: Moment): void {
         this.time = time;
         this.changeDetectorRef.markForCheck();
     }
 
-    registerOnChange(fn: (_: moment.Moment) => void): void {
+    registerOnChange(fn: (_: Moment) => void): void {
         this.onChange = fn;
         this.propagateChange();
     }
@@ -70,7 +70,7 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         this.onTouched = fn;
     }
 
-    update(timeUnit: moment.unitOfTime.Base, value: number) {
+    update(timeUnit: unitOfTime.Base, value: number) {
         if (value) {
             this.time.set(timeUnit, value);
             this.propagateChange();

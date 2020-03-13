@@ -1,14 +1,13 @@
-import moment from 'moment';
-import DurationInputArg2 = moment.DurationInputArg2;
+import {DurationInputArg1, DurationInputArg2, Moment, MomentInput, utc} from 'moment';
 
 export interface SimpleMoment {
-    year: number,
-    month: number,
-    day: number,
-    hour: number,
-    minute: number,
-    second: number,
-    millisecond: number
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    second: number;
+    millisecond: number;
 }
 
 
@@ -31,21 +30,21 @@ export function timeFromDict(dict: TimeDict) {
 }
 
 export interface TimeStepDuration {
-    durationAmount: moment.DurationInputArg1,
-    durationUnit: moment.DurationInputArg2
+    durationAmount: DurationInputArg1;
+    durationUnit: DurationInputArg2;
 }
 
 export interface Time {
     getType(): TimeType;
 
-    getStart(): moment.Moment;
+    getStart(): Moment;
 
-    getEnd(): moment.Moment;
+    getEnd(): Moment;
 
     // getFormatString(): string;
-    add(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2): Time;
+    add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time;
 
-    subtract(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2): Time;
+    subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time;
 
     clone(): Time;
 
@@ -63,33 +62,33 @@ export interface TimePointDict extends TimeDict {
 }
 
 export class TimePoint implements Time {
-    start: moment.Moment;
+    start: Moment;
 
     static fromDict(dict: TimePointDict): TimePoint {
         return new TimePoint(dict.start);
     }
 
-    constructor(start: moment.MomentInput) {
-        this.start = moment.utc(start);
+    constructor(start: MomentInput) {
+        this.start = utc(start);
     }
 
     getType(): TimeType {
         return 'TimePoint';
     }
 
-    getStart(): moment.Moment {
+    getStart(): Moment {
         return this.start;
     }
 
-    getEnd(): moment.Moment {
+    getEnd(): Moment {
         return this.getStart();
     }
 
-    add(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2): TimePoint {
+    add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): TimePoint {
         return new TimePoint(this.start.add(durationAmount, durationUnit));
     }
 
-    subtract(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2): TimePoint {
+    subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): TimePoint {
         return new TimePoint(this.start.subtract(durationAmount, durationUnit));
     }
 
@@ -124,8 +123,8 @@ export interface TimeIntervalDict extends TimePointDict {
 }
 
 export class TimeInterval implements Time {
-    start: moment.Moment;
-    end: moment.Moment;
+    start: Moment;
+    end: Moment;
 
     static fromDict(dict: TimeIntervalDict): TimeInterval {
         return new TimeInterval(dict.start, dict.end);
@@ -154,9 +153,9 @@ export class TimeInterval implements Time {
         return new TimeInterval(min, max);
     }
 
-    constructor(start: moment.MomentInput, end: moment.MomentInput) {
-        this.start = moment.utc(start);
-        this.end = moment.utc(end);
+    constructor(start: MomentInput, end: MomentInput) {
+        this.start = utc(start);
+        this.end = utc(end);
 
         if (this.start === this.end) {
             this.end = this.end.clone();
@@ -167,22 +166,22 @@ export class TimeInterval implements Time {
         return 'TimeInterval';
     }
 
-    getStart(): moment.Moment {
+    getStart(): Moment {
         return this.start;
     }
 
-    getEnd(): moment.Moment {
+    getEnd(): Moment {
         return this.end;
     }
 
-    add(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2): TimeInterval {
+    add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): TimeInterval {
         return new TimeInterval(
             this.start.add(durationAmount, durationUnit),
             this.end.add(durationAmount, durationUnit)
         );
     }
 
-    subtract(durationAmount: moment.DurationInputArg1, durationUnit?: DurationInputArg2) {
+    subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2) {
         return new TimeInterval(
             this.start.subtract(durationAmount, durationUnit),
             this.end.subtract(durationAmount, durationUnit)

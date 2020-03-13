@@ -5,7 +5,7 @@ import {tap, mergeMap, catchError} from 'rxjs/operators';
 
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 
-import moment from 'moment';
+import moment from 'moment/src/moment';
 
 import {Basket, BasketsOverview, BasketTypeAbcdGrouped} from './gfbio-basket.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
@@ -46,7 +46,7 @@ export class GfbioBasketsComponent implements OnDestroy {
             observableCombineLatest(this.page$, this.limit$, this.reload$).pipe(
                 tap(() => this.isOverviewLoading$.next(true)),
                 mergeMap(([page, limit]) => this.mappingQueryService
-                    .getGFBioBaskets({offset: page * limit, limit: limit}).pipe(
+                    .getGFBioBaskets({offset: page * limit, limit}).pipe(
                         tap(() => this.isError$.next(false)),
                         catchError(error => {
                             this.isError$.next(true);

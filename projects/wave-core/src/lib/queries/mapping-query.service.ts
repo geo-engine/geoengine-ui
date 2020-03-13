@@ -28,8 +28,8 @@ import {
     IBasketAbcdResult,
     IBasketGroupedAbcdResult
 } from '../operators/dialogs/baskets/gfbio-basket.model';
-import moment from 'moment';
 import {Extent} from 'ol/extent';
+import moment from 'moment/src/moment';
 
 @Injectable()
 export class MappingQueryService {
@@ -144,7 +144,6 @@ export class MappingQueryService {
 
     /**
      * Retrieve the plot data by querying MAPPING.
-     * @param config
      * @returns a Promise of PlotData
      */
     getPlotData(config: {
@@ -266,7 +265,6 @@ export class MappingQueryService {
     /**
      * Get MAPPING query parameters for the WMS request.
      * @returns the query parameters
-     * @param config
      */
     getWMSQueryParameters(config: {
         operator: Operator,
@@ -294,7 +292,6 @@ export class MappingQueryService {
     /**
      * Get a MAPPING url for the WMS request.
      * @returns the query url
-     * @param config
      */
     getWMSQueryUrl(config: {
         operator: Operator,
@@ -308,7 +305,7 @@ export class MappingQueryService {
 
             const aggregationOperator = new Operator({
                 operatorType: new TemporalAggregationType({
-                    duration: duration,
+                    duration,
                     aggregation: 'avg',
                 }),
                 resultType: config.operator.resultType,
@@ -376,7 +373,7 @@ export class MappingQueryService {
 
 
         // TODO
-        let timeStart = MappingQueryService.stripEndingTime(time);
+        const timeStart = MappingQueryService.stripEndingTime(time);
 
         const request = new MappingRequestParameters({
             service: 'WMS',
@@ -412,7 +409,7 @@ export class MappingQueryService {
     }): Promise<Array<Provenance>> {
 
         // TODO
-        let timeStart = MappingQueryService.stripEndingTime(config.time);
+        const timeStart = MappingQueryService.stripEndingTime(config.time);
 
         const request = new MappingRequestParameters({
             service: 'provenance',
@@ -460,8 +457,8 @@ export class MappingQueryService {
             request: 'searchSpecies',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                level: level,
-                term: term,
+                level,
+                term,
             },
         });
 
@@ -477,8 +474,8 @@ export class MappingQueryService {
             request: 'queryDataSources',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                level: level,
-                term: term,
+                level,
+                term,
             },
         });
 
@@ -512,8 +509,8 @@ export class MappingQueryService {
                 basketId: number,
                 query: string,
                 timestamp: string,
-            }>,
-            totalNumberOfBaskets: number,
+            }>;
+            totalNumberOfBaskets: number;
         }
 
         return this.http
@@ -538,7 +535,7 @@ export class MappingQueryService {
             request: 'basket',
             sessionToken: this.userService.getSession().sessionToken,
             parameters: {
-                id: id,
+                id,
             },
         });
 
@@ -551,7 +548,7 @@ export class MappingQueryService {
 
                     const basketResults: Array<BasketResult> = [];
                     basket.results.forEach(result => {
-                        let entry = basketResults.find((b) => b.dataLink === result.dataLink);
+                        const entry = basketResults.find((b) => b.dataLink === result.dataLink);
 
                         if (result.type === 'abcd') {
                             const abcd = result as IBasketAbcdResult;
@@ -568,12 +565,12 @@ export class MappingQueryService {
                             if (!entry) {
                                 const metadataLink = abcd.metadataLink;
                                 const grouped: IBasketGroupedAbcdResult = {
-                                    title: title,
+                                    title,
                                     dataLink: abcd.dataLink,
                                     authors: abcd.authors,
                                     available: abcd.available,
                                     dataCenter: abcd.dataCenter,
-                                    metadataLink: metadataLink,
+                                    metadataLink,
                                     units: (unit) ? [unit] : [],
                                     type: 'abcd_grouped',
                                     resultType: 'points',

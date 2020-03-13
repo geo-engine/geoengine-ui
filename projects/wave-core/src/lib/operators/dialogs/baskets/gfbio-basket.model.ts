@@ -1,4 +1,4 @@
-import moment from 'moment';
+import {Moment} from 'moment';
 
 import {CsvColumn} from './csv.model';
 import {VectorLayer} from '../../../layers/layer.model';
@@ -51,21 +51,21 @@ export interface IBasketPangaeaResult extends IBasketResult {
 export interface Basket {
     query: string;
     results: Array<BasketResult>;
-    timestamp: moment.Moment;
+    timestamp: Moment;
 }
 
 export interface BasketsOverviewBasket {
-    basketId: number,
-    query: string,
-    timestamp: moment.Moment,
+    basketId: number;
+    query: string;
+    timestamp: Moment;
 }
 
 export interface BasketsOverview {
-    baskets: Array<BasketsOverviewBasket>,
-    totalNumberOfBaskets: number,
+    baskets: Array<BasketsOverviewBasket>;
+    totalNumberOfBaskets: number;
 }
 
 export interface BasketAvailability {
-    availableLayers: Array<VectorLayer<AbstractVectorSymbology>>,
-    nonAvailableNames: Array<string>,
+    availableLayers: Array<VectorLayer<AbstractVectorSymbology>>;
+    nonAvailableNames: Array<string>;
 }

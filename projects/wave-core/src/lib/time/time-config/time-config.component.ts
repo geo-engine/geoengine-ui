@@ -7,9 +7,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 
 const startBeforeEndValidator = () => (control: FormGroup) => {
-    let start = control.controls.start.value as Moment;
-    let end = control.controls.end.value as Moment;
-    let timeAsPoint = control.controls.timeAsPoint.value as boolean;
+    const start = control.controls.start.value as Moment;
+    const end = control.controls.end.value as Moment;
+    const timeAsPoint = control.controls.timeAsPoint.value as boolean;
 
     if (start && end && (timeAsPoint || start.isBefore(end) )) {
         return null;
@@ -48,7 +48,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         const equalAmount = option.durationAmount === selectedElement.durationAmount;
         const equalUnit = option.durationUnit === selectedElement.durationUnit;
         return equalAmount && equalUnit;
-    };
+    }
 
     constructor(private projectService: ProjectService,
                 private changeDetectorRef: ChangeDetectorRef,
@@ -72,7 +72,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
     ngOnInit() {
-        let sub = this.projectService.getTimeStream().subscribe(time => {
+        const sub = this.projectService.getTimeStream().subscribe(time => {
             this.time = time.clone();
             this.reset();
         });
