@@ -1,0 +1,36 @@
+@import '../../../../../../../old-files/src/wave-app-theme';
+
+.datagroup {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.datagroup a {
+    color: mat-color($wave-app-primary) !important;
+}
+
+.item {
+    width: 100%;
+    cursor: pointer;
+}
+
+.highlight,
+mat-list-item ::ng-deep .highlight {
+    color: mat-color($wave-app-accent);
+    text-decoration: underline;
+}
+
+mat-list-item ::ng-deep .mat-list-item-content {
+    height: auto !important;
+}
+
+img {
+    padding: 5px 5px 5px 0;
+}
+
+.secondary_action {
+    float: right;
+}
+
+.error {
+    text-align: center;
+}

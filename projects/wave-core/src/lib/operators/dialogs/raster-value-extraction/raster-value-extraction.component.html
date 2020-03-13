@@ -1,0 +1,44 @@
+<wave-sidenav-header>Extract a Raster Value and Add it to the Vector Layer</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-layer-selection
+            [types]="[ResultTypes.POINTS, ResultTypes.POLYGONS]"
+            formControlName="vectorLayer"
+        ></wave-layer-selection>
+        <wave-multi-layer-selection
+            [types]="[ResultTypes.RASTER]"
+            formControlName="rasterLayers"
+            [min]="1" [max]="5"
+        ></wave-multi-layer-selection>
+        <wave-dialog-section-heading
+            title="Configuration" subtitle="Specify the operator"
+        ></wave-dialog-section-heading>
+        <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
+            <mat-form-field
+                *ngFor="let control of form['controls']['valueNames']['controls']; let i = index"
+            >
+                <input
+                    [formControl]="control"
+                    matInput type="text"
+                    placeholder="Value Name for Raster {{LetterNumberConverter.toLetters(i+1)}}"
+                >
+                <mat-hint *ngIf="$any(form.controls.valueNames).controls[i].errors?.duplicateName" class="error">
+                    Duplicate Value
+                </mat-hint>
+            </mat-form-field>
+        </div>
+        <wave-operator-output-name formControlName="name">
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>

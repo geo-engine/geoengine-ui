@@ -1,0 +1,34 @@
+@import '../../../../../../old-files/src/wave-app-theme';
+
+$secondary-color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+
+mat-list-item {
+    cursor: pointer;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+p {
+    color: $secondary-color;
+}
+
+.disabled {
+    ::ng-deep .mat-list-item-content {
+        cursor: auto;
+    }
+
+    h4 {
+        color: $secondary-color;
+    }
+
+    img {
+        filter: grayscale(100%);
+    }
+
+    mat-icon {
+        color: $secondary-color;
+    }
+}

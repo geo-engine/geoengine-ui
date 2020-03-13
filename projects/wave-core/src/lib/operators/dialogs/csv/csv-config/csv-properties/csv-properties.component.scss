@@ -1,0 +1,37 @@
+@import "../../../../../../../../../old-files/src/wave-app-theme";
+
+$latitudeColor: #26c5ff;
+$longitudeColor: orange;
+$startColor: darkgreen;
+$endColor: darkviolet;
+$backgroundColor: mat-color(map-get($wave-app-theme, primary));
+$titleColor: white; /*Inherit from theme here.*/
+
+div.latitudeSelector mat-select ::ng-deep span.mat-select-placeholder {
+    color: $latitudeColor;
+}
+
+div.longitudeSelector mat-select ::ng-deep span.mat-select-placeholder {
+    color: $longitudeColor;
+}
+
+div.startSelector mat-select ::ng-deep span.mat-select-placeholder {
+    color: $startColor;
+}
+
+div.endSelector mat-select ::ng-deep span.mat-select-placeholder {
+    color: $endColor;
+}
+
+div.constantSelector mat-form-field ::ng-deep span.mat-input-placeholder {
+    color: $endColor;
+}
+
+.custom mat-form-field ::ng-deep label.mat-input-placeholder {
+    color: $titleColor;
+    opacity: 0.75;
+}
+
+.error {
+    color: mat-color($wave-app-warn);
+}

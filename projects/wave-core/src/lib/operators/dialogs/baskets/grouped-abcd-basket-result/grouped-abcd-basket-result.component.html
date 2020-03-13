@@ -1,0 +1,61 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>{{result.title | waveTrimPipe}}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <table class='main'>
+            <tr>
+                <td>Authors</td>
+                <td><span *ngFor="let author of result.authors" class='author'>{{author | waveTrimPipe}}</span></td>
+            </tr>
+            <tr>
+                <td>Data center</td>
+                <td>{{result.dataCenter | waveTrimPipe}}</td>
+            </tr>
+            <tr>
+                <td>Metadata</td>
+                <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
+            </tr>
+        </table>
+
+        <ng-template [ngIf]='hasUnits'>
+            <p class="no-bottom-margin">Units from multiple search results based on this dataset:</p>
+            <mat-table #table [dataSource]="unitDataSource">
+                <ng-container matColumnDef="prefix">
+                    <mat-header-cell *matHeaderCellDef>Unit</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">{{unit.prefix}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">{{unit.type}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="unitId">
+                    <mat-header-cell *matHeaderCellDef>Unit Id</mat-header-cell>
+                    <mat-cell *matCellDef="let unit">
+                        <a href='{{unit.metadataLink}}' target="_blank">{{unit.unitId}}</a>
+                    </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedUnitColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedUnitColumns;"></mat-row>
+            </mat-table>
+        </ng-template>
+    </mat-card-content>
+
+    <mat-card-actions>
+        <div *ngIf="result.available; else noResult">
+            <button mat-button color='primary' (click)='add(true)' *ngIf="hasUnits"><span>Add</span> <u>units</u> as <span>layer</span>
+            </button>
+            <button mat-button color='primary' (click)='add(false)'><span>Add</span> <u>dataset</u> <span>as layer</span></button>
+        </div>
+
+        <ng-template #noResult>
+            <em>This dataset is currently not available in the VAT system</em>
+            <ul>
+                <li *ngIf='!$any(result).isGeoReferenced'> no georeference detected</li>
+            </ul>
+        </ng-template>
+    </mat-card-actions>
+</mat-card>
+
+<mat-divider></mat-divider>

@@ -1,0 +1,9 @@
+@import '../../../../../../../old-files/src/wave-app-theme';
+
+div {
+    margin-top: 1em;
+}
+
+input {
+    color: mat-color(map-get($wave-app-theme, foreground), text) !important;
+}

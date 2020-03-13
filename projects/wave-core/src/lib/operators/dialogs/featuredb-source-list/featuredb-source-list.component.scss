@@ -1,0 +1,17 @@
+@import '../../../../../../../old-files/src/wave-app-theme';
+
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
+    display: none;
+}
+
+mat-list-item {
+    cursor: pointer;
+}
+
+p {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}
+
+mat-list-item ::ng-deep .highlight {
+    color: mat-color($wave-app-accent);
+}
