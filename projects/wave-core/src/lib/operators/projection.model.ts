@@ -218,6 +218,8 @@ export class GEOS extends Projection {
 }
 
 export class ProjectionCollection {
+    static readonly INSTANCE = new ProjectionCollection();
+
     WGS_84: Projection = new WGS84();
     WEB_MERCATOR: Projection = new WebMercator();
     GEOS: Projection = new GEOS();
@@ -253,4 +255,4 @@ export class ProjectionCollection {
     }
 }
 
-export const Projections = ProjectionCollection.constructor(); // tslint:disable-line:variable-name
+export const Projections = ProjectionCollection.INSTANCE; // tslint:disable-line:variable-name

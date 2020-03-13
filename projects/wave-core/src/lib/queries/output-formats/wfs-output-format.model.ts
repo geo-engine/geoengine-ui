@@ -21,7 +21,9 @@ class ExportWFSOutputFormat extends WFSOutputFormat {
 /**
  * WFS Output Formats
  */
-class WFSOutputFormatCollection {
+export class WFSOutputFormatCollection {
+    static readonly INSTANCE = new WFSOutputFormatCollection();
+
     private _JSON = new WFSOutputFormat('application/json', 'GeoJSON');
     private _CSV = new WFSOutputFormat('csv', 'CSV');
     private _JSON_ZIP = new ExportWFSOutputFormat(this._JSON);
@@ -61,4 +63,4 @@ class WFSOutputFormatCollection {
  * Export WFSOutputFormat as singleton.
  */
 // tslint:disable-next-line:variable-name
-export const WFSOutputFormats = WFSOutputFormatCollection.constructor();
+export const WFSOutputFormats = WFSOutputFormatCollection.INSTANCE;

@@ -1,1 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'wave-app-theme';
+
+body {
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+}
+
+a {
+    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+}

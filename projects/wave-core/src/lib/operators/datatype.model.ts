@@ -169,6 +169,8 @@ class Alphanumeric extends DataType {
 }
 
 export class DataTypeCollection {
+    static readonly INSTANCE = new DataTypeCollection();
+
     // tslint:disable:variable-name
     Byte: DataType = new Byte();
     Int16: DataType = new Int16();
@@ -217,4 +219,4 @@ export class DataTypeCollection {
     }
 }
 
-export const DataTypes = DataTypeCollection.constructor(); // tslint:disable-line:variable-name
+export const DataTypes = DataTypeCollection.INSTANCE; // tslint:disable-line:variable-name

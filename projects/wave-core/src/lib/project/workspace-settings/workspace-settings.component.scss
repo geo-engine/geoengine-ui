@@ -1,4 +1,4 @@
-@import '../../../../../../old-files/src/wave-app-theme';
+@import '../../../../../wave-app/src/wave-app-theme';
 
 $secondary-color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
 

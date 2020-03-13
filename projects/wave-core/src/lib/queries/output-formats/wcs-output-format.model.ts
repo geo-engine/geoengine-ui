@@ -22,6 +22,8 @@ class ExportWCSOutputFormat extends WCSOutputFormat {
  * WCS Output Formats
  */
 export class WCSOutputFormatCollection {
+    static readonly INSTANCE = new WCSOutputFormatCollection();
+
     private _TIFF = new WCSOutputFormat('image/tiff', 'GeoTIFF');
     private _EXPORT_TIFF = new ExportWCSOutputFormat(this._TIFF);
     private _TYPES = [this._TIFF];
@@ -47,4 +49,4 @@ export class WCSOutputFormatCollection {
  * Export WCSOutputFormatCollection as singleton.
  */
 // tslint:disable-next-line:variable-name
-export const WCSOutputFormats = WCSOutputFormatCollection.constructor();
+export const WCSOutputFormats = WCSOutputFormatCollection.INSTANCE;

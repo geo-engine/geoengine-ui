@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, of as observableOf, from as observableFrom} from 'rxjs';
+import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest} from 'rxjs';
 import {toArray, filter, map, tap, first, flatMap, partition} from 'rxjs/operators';
 
 import {
@@ -15,55 +15,46 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
-
-
 import {
-    AbstractVectorSymbology,
+    Layer,
+    SidenavContainerComponent,
+    VectorLayer,
+    MapContainerComponent,
+    AbstractSymbology,
+    LayerService,
+    LayoutService,
+    ProjectService,
+    UserService,
+    StorageService,
+    RandomColorService,
+    MappingQueryService,
+    NotificationService,
+    MapService,
+    Config,
+    ProjectConfigType,
+    ResultTypes,
     ComplexPointSymbology,
     ComplexVectorSymbology,
-    AbstractSymbology
-} from '../../../wave-core/src/lib/layers/symbology/symbology.model';
-import {ResultTypes} from '../../../wave-core/src/lib/operators/result-type.model';
-
-import {LayoutService} from '../../../wave-core/src/lib/layout.service';
-import {SidenavContainerComponent} from '../../../wave-core/src/lib/sidenav/sidenav-container/sidenav-container.component';
-
-import {ProjectService} from '../../../wave-core/src/lib/project/project.service';
-import {UserService} from '../../../wave-core/src/lib/users/user.service';
-import {StorageService, StorageStatus} from '../../../wave-core/src/lib/storage/storage.service';
-
-import {MapContainerComponent} from '../../../wave-core/src/lib/map/map-container/map-container.component';
-
-import {Layer, VectorLayer} from '../../../wave-core/src/lib/layers/layer.model';
-import {LayerService} from '../../../wave-core/src/lib/layers/layer.service';
-import {SplashDialogComponent} from '../../../wave-core/src/lib/dialogs/splash-dialog/splash-dialog.component';
-import {PlotListComponent} from '../../../wave-core/src/lib/plots/plot-list/plot-list.component';
-import {DomSanitizer} from '@angular/platform-browser';
-import {RandomColorService} from '../../../wave-core/src/lib/util/services/random-color.service';
-import {ActivatedRoute} from '@angular/router';
-import {NotificationService} from '../../../wave-core/src/lib/notification.service';
-import {
-    WorkflowParameterChoiceDialogComponent
-} from '../../../wave-core/src/lib/project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
-import {MappingQueryService} from '../../../wave-core/src/lib/queries/mapping-query.service';
-import {
-    GroupedAbcdBasketResultComponent
-} from '../../../wave-core/src/lib/operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
-import {
-    BasketResult, BasketAvailability,
+    PlotListComponent,
+    SplashDialogComponent,
+    UnexpectedResultType,
+    IBasketPangaeaResult,
     IBasketGroupedAbcdResult,
-    IBasketPangaeaResult
-} from '../../../wave-core/src/lib/operators/dialogs/baskets/gfbio-basket.model';
-import {PangaeaBasketResultComponent} from '../../../wave-core/src/lib/operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
-import {UnexpectedResultType} from '../../../wave-core/src/lib/util/errors';
-import {Operator} from '../../../wave-core/src/lib/operators/operator.model';
-import {Config, Project as ProjectType} from '../../../wave-core/src/lib/config.service';
+    PangaeaBasketResultComponent,
+    GroupedAbcdBasketResultComponent,
+    Operator,
+    AbstractVectorSymbology,
+    BasketResult,
+    BasketAvailability,
+    WorkflowParameterChoiceDialogComponent,
+    StorageStatus,
+} from 'wave-core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {ActivatedRoute} from '@angular/router';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {MapService} from '../../../wave-core/src/lib/map/map.service';
-import {combineLatest} from 'rxjs/internal/observable/combineLatest';
 
 @Component({
-    selector: 'wave-app',
+    selector: 'waveApp-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -337,7 +328,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 toArray(),
             );
 
-        return combineLatest(availableLayers, nonAvailableNames)
+        return combineLatest([availableLayers, nonAvailableNames])
             .pipe(
                 map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
                     return {
@@ -390,15 +381,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 
                 return new VectorLayer({
                     name: result.title,
-                    operator: operator,
-                    symbology: symbology,
-                    clustered: clustered,
+                    operator,
+                    symbology,
+                    clustered,
                 });
             })
         );
     }
 
-    private setTheme(project: ProjectType) {
+    private setTheme(project: ProjectConfigType) {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];

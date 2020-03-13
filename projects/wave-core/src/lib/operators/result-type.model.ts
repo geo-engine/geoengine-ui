@@ -53,6 +53,8 @@ class Text extends ResultType {
 }
 
 export class ResultTypeCollection {
+    static readonly INSTANCE = new ResultTypeCollection();
+
     RASTER: ResultType = new Raster();
     POINTS: ResultType = new Points();
     LINES: ResultType = new Lines();
@@ -124,4 +126,4 @@ export class ResultTypeCollection {
     }
 }
 
-export const ResultTypes = ResultTypeCollection.constructor(); // tslint:disable-line:variable-name
+export const ResultTypes = ResultTypeCollection.INSTANCE; // tslint:disable-line:variable-name

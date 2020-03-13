@@ -44,7 +44,7 @@ interface Delays {
     GUEST_LOGIN_HINT: number;
 }
 
-export type Project = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
+export type ProjectConfigType = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
 
 interface Defaults {
     PROJECT: {
@@ -92,7 +92,7 @@ interface ConfigStructure {
     MAP: Map;
     MAPPING_URL: MappingUrlType;
     NATURE40: Nature40;
-    PROJECT: Project;
+    PROJECT: ProjectConfigType;
     TIME: Time;
     USER: User;
     WCS: Wcs;
@@ -181,7 +181,7 @@ function deepFreeze(o) {
         return o;
     }
 
-    Object.getOwnPropertyNames(o).forEach(function (prop) {
+    Object.getOwnPropertyNames(o).forEach(function(prop) {
         if (o[prop] !== null
             && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
             && !Object.isFrozen(o[prop])) {
@@ -210,7 +210,7 @@ export class Config {
     private _DEBUG_MODE: DebugMode;
     private _USER: User;
     private _DELAYS: Delays;
-    private _PROJECT: Project;
+    private _PROJECT: ProjectConfigType;
     private _DEFAULTS: Defaults;
     private _MAP: Map;
     private _GFBIO: Gfbio;
@@ -249,7 +249,7 @@ export class Config {
         return this._DELAYS;
     }
 
-    get PROJECT(): Project {
+    get PROJECT(): ProjectConfigType {
         return this._PROJECT;
     }
 
