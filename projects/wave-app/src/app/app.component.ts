@@ -7,7 +7,7 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    HostListener,
+    HostListener, Inject,
     OnInit,
     ViewChild, ViewContainerRef
 } from '@angular/core';
@@ -31,7 +31,7 @@ import {
     NotificationService,
     MapService,
     Config,
-    ProjectConfigType,
+    ProjectNameConfig,
     ResultTypes,
     ComplexPointSymbology,
     ComplexVectorSymbology,
@@ -52,9 +52,10 @@ import {
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {OverlayContainer} from '@angular/cdk/overlay';
+import {AppConfig} from './app-config.service';
 
 @Component({
-    selector: 'waveApp-root',
+    selector: 'wave-app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,7 +94,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
                 private mapService: MapService,
-                public config: Config,
+                @Inject(Config) readonly config: AppConfig,
                 private elementRef: ElementRef,
                 public vcRef: ViewContainerRef, // reference used by color picker
                 private overlayContainer: OverlayContainer) {
@@ -389,7 +390,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setTheme(project: ProjectConfigType) {
+    private setTheme(project: ProjectNameConfig) {
         const defaultTheme = 'default-theme';
         const geoBonTheme = 'geobon-theme';
         const allThemes = [defaultTheme, geoBonTheme];

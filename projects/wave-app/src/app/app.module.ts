@@ -19,6 +19,7 @@ import {
 } from 'wave-core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AppConfig} from './app-config.service';
 
 @NgModule({
     declarations: [
@@ -32,13 +33,13 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
         WaveCoreModule,
     ],
     providers: [
+        {provide: Config, useClass: AppConfig},
         {
             provide: APP_INITIALIZER,
-            useFactory: (config: Config) => () => config.load(),
+            useFactory: (config: AppConfig) => () => config.load(),
             deps: [Config],
             multi: true,
         },
-        Config,
         LayerService,
         LayoutService,
         MappingQueryService,

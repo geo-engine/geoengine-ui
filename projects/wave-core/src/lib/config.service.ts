@@ -1,71 +1,70 @@
-import {of as observableOf} from 'rxjs';
-
+import {of} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import * as Immutable from 'immutable';
+import {mergeDeep} from 'immutable';
 import {HttpClient} from '@angular/common/http';
 
 type MappingUrlType = string;
 
 interface Wms {
-    VERSION: string;
-    FORMAT: string;
+    readonly VERSION: string;
+    readonly FORMAT: string;
 }
 
 interface Wfs {
-    VERSION: string;
-    FORMAT: string;
+    readonly VERSION: string;
+    readonly FORMAT: string;
 }
 
 interface Wcs {
-    SERVICE: string;
-    VERSION: string;
+    readonly SERVICE: string;
+    readonly VERSION: string;
 }
 
 interface DebugMode {
-    WAVE: boolean;
-    MAPPING: boolean;
+    readonly WAVE: boolean;
+    readonly MAPPING: boolean;
 }
 
 interface User {
-    GUEST: {
-        NAME: string,
-        PASSWORD: string,
+    readonly GUEST: {
+        readonly NAME: string,
+        readonly PASSWORD: string,
     };
 }
 
 interface Delays {
-    LOADING: {
-        MIN: number,
+    readonly LOADING: {
+        readonly MIN: number,
     };
-    TOOLTIP: number;
-    DEBOUNCE: number;
-    STORAGE_DEBOUNCE: number;
-    GUEST_LOGIN_HINT: number;
+    readonly TOOLTIP: number;
+    readonly DEBOUNCE: number;
+    readonly STORAGE_DEBOUNCE: number;
+    readonly GUEST_LOGIN_HINT: number;
 }
 
-export type ProjectConfigType = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
+export type ProjectNameConfig = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
 
 interface Defaults {
-    PROJECT: {
-        NAME: string,
-        TIME: string,
-        TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year',
-        PROJECTION: 'EPSG:3857' | 'EPSG:4326',
+    readonly PROJECT: {
+        readonly NAME: string,
+        readonly TIME: string,
+        readonly TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year',
+        readonly PROJECTION: 'EPSG:3857' | 'EPSG:4326',
     };
 }
 
 interface Map {
-    BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
-    BACKGROUND_LAYER_URL: string;
-    HOSTED_BACKGROUND_SERVICE: string;
-    HOSTED_BACKGROUND_LAYER_NAME: string;
-    HOSTED_BACKGROUND_SERVICE_VERSION: string;
-    REFRESH_LAYERS_ON_CHANGE: boolean;
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
+    readonly BACKGROUND_LAYER_URL: string;
+    readonly HOSTED_BACKGROUND_SERVICE: string;
+    readonly HOSTED_BACKGROUND_LAYER_NAME: string;
+    readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
 interface Gfbio {
-    LIFERAY_PORTAL_URL: string;
+    readonly LIFERAY_PORTAL_URL: string;
 }
 
 interface Nature40 {
@@ -73,43 +72,26 @@ interface Nature40 {
 }
 
 interface Time {
-    ALLOW_RANGES: boolean;
+    readonly ALLOW_RANGES: boolean;
 }
 
-interface Components {
-    PLAYBACK: {
-        AVAILABLE: boolean,
-    };
+export interface WaveConfigStructure {
+    readonly DEBUG_MODE: DebugMode;
+    readonly DEFAULTS: Defaults;
+    readonly DELAYS: Delays;
+    readonly GFBIO: Gfbio;
+    readonly MAP: Map;
+    readonly MAPPING_URL: MappingUrlType;
+    readonly NATURE40: Nature40;
+    readonly PROJECT: ProjectNameConfig;
+    readonly TIME: Time;
+    readonly USER: User;
+    readonly WCS: Wcs;
+    readonly WFS: Wfs;
+    readonly WMS: Wms;
 }
 
-interface ConfigStructure {
-    COMPONENTS: Components;
-    CONFIG_FILE: string;
-    DEBUG_MODE: DebugMode;
-    DEFAULTS: Defaults;
-    DELAYS: Delays;
-    GFBIO: Gfbio;
-    MAP: Map;
-    MAPPING_URL: MappingUrlType;
-    NATURE40: Nature40;
-    PROJECT: ProjectConfigType;
-    TIME: Time;
-    USER: User;
-    WCS: Wcs;
-    WFS: Wfs;
-    WMS: Wms;
-}
-
-/**
- * The default config
- * @type {any}
- */
-const ConfigDefault = Immutable.fromJS({
-    COMPONENTS: {
-        PLAYBACK: {
-            AVAILABLE: false,
-        }
-    },
+export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     DEBUG_MODE: {
         WAVE: false,
         MAPPING: false,
@@ -168,29 +150,7 @@ const ConfigDefault = Immutable.fromJS({
         VERSION: '1.3.0',
         FORMAT: 'image/png',
     },
-} as ConfigStructure);
-
-/**
- * Calls a recursive Object.freeze on an object.
- * @param o
- * @returns {any}
- */
-function deepFreeze(o) {
-    Object.freeze(o);
-    if (o === undefined) {
-        return o;
-    }
-
-    Object.getOwnPropertyNames(o).forEach(function(prop) {
-        if (o[prop] !== null
-            && (typeof o[prop] === 'object' || typeof o[prop] === 'function')
-            && !Object.isFrozen(o[prop])) {
-            deepFreeze(o[prop]);
-        }
-    });
-
-    return o;
-}
+};
 
 /**
  * A service that provides config entries.
@@ -198,156 +158,84 @@ function deepFreeze(o) {
  */
 @Injectable()
 export class Config {
-    static get CONFIG_FILE(): string {
-        return 'assets/config.json';
-    }
+    static readonly CONFIG_FILE = 'assets/config.json';
 
-    private _COMPONENTS: Components;
-    private _MAPPING_URL: MappingUrlType;
-    private _WMS: Wms;
-    private _WFS: Wfs;
-    private _WCS: Wcs;
-    private _DEBUG_MODE: DebugMode;
-    private _USER: User;
-    private _DELAYS: Delays;
-    private _PROJECT: ProjectConfigType;
-    private _DEFAULTS: Defaults;
-    private _MAP: Map;
-    private _GFBIO: Gfbio;
-    private _NATURE40: Nature40;
-    private _TIME: Time;
-
-    get COMPONENTS(): Components {
-        return this._COMPONENTS;
-    }
+    protected config: WaveConfigStructure;
 
     get MAPPING_URL(): MappingUrlType {
-        return this._MAPPING_URL;
+        return this.config.MAPPING_URL;
     }
 
     get WMS(): Wms {
-        return this._WMS;
+        return this.config.WMS;
     }
 
     get WFS(): Wfs {
-        return this._WFS;
+        return this.config.WFS;
     }
 
     get WCS(): Wcs {
-        return this._WCS;
+        return this.config.WCS;
     }
 
     get DEBUG_MODE(): DebugMode {
-        return this._DEBUG_MODE;
+        return this.config.DEBUG_MODE;
     }
 
     get USER(): User {
-        return this._USER;
+        return this.config.USER;
     }
 
     get DELAYS(): Delays {
-        return this._DELAYS;
+        return this.config.DELAYS;
     }
 
-    get PROJECT(): ProjectConfigType {
-        return this._PROJECT;
+    get PROJECT(): ProjectNameConfig {
+        return this.config.PROJECT;
     }
 
     get DEFAULTS(): Defaults {
-        return this._DEFAULTS;
+        return this.config.DEFAULTS;
     }
 
     get MAP(): Map {
-        return this._MAP;
+        return this.config.MAP;
     }
 
     get GFBIO(): Gfbio {
-        return this._GFBIO;
+        return this.config.GFBIO;
     }
 
     get NATURE40(): Nature40 {
-        return this._NATURE40;
+        return this.config.NATURE40;
     }
 
     get TIME(): Time {
-        return this._TIME;
+        return this.config.TIME;
     }
 
-    constructor(private http: HttpClient) {
+    constructor(protected http: HttpClient) {
     }
 
+    // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    load(): Promise<void> {
+    load(defaults?: WaveConfigStructure): Promise<void> {
+        if (!defaults) {
+            defaults = WAVE_DEFAULT_CONFIG;
+        }
         return this.http
-            .get<ConfigStructure>(Config.CONFIG_FILE).pipe(
+            .get<WaveConfigStructure>(Config.CONFIG_FILE).pipe(
                 tap(
                     appConfig => {
-                        const config = ConfigDefault.mergeDeep(Immutable.fromJS(appConfig)).toJS();
-
-                        this.handleConfig(config);
+                        this.config = mergeDeep(defaults, appConfig);
                     },
                     () => { // error
-                        this.handleConfig(ConfigDefault.toJS());
+                        this.config = defaults;
                     }),
-                catchError(() => observableOf(undefined)))
+                catchError(() => of(undefined)))
             .toPromise();
-    }
-
-    private handleConfig(config: { [key: string]: any }) {
-        for (const key in config) {
-            if (config.hasOwnProperty(key)) {
-                const value = deepFreeze(config[key]);
-
-                switch (key.toUpperCase()) {
-                    case 'COMPONENTS':
-                        this._COMPONENTS = value;
-                        break;
-                    case 'MAPPING_URL':
-                        this._MAPPING_URL = value;
-                        break;
-                    case 'WMS':
-                        this._WMS = value;
-                        break;
-                    case 'WFS':
-                        this._WFS = value;
-                        break;
-                    case 'WCS':
-                        this._WCS = value;
-                        break;
-                    case 'DEBUG_MODE':
-                        this._DEBUG_MODE = value;
-                        break;
-                    case 'USER':
-                        this._USER = value;
-                        break;
-                    case 'DELAYS':
-                        this._DELAYS = value;
-                        break;
-                    case 'PROJECT':
-                        this._PROJECT = value;
-                        break;
-                    case 'DEFAULTS':
-                        this._DEFAULTS = value;
-                        break;
-                    case 'MAP':
-                        this._MAP = value;
-                        break;
-                    case 'GFBIO':
-                        this._GFBIO = value;
-                        break;
-                    case 'NATURE40':
-                        this._NATURE40 = value;
-                        break;
-                    case 'TIME':
-                        this._TIME = value;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
     }
 
 }
