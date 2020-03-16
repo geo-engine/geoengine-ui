@@ -411,12 +411,8 @@ export class Operator {
             operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
             projection: this._projection.getCode(),
             attributes: this._attributes.toArray(),
-            dataTypes: this._dataTypes.map(
-                (datatype, attribute) => [attribute, datatype.getCode()]
-            ).toArray() as any as Array<[string, string]>,
-            units: this._units.map(
-                (unit, attribute) => [attribute, unit.toDict()]
-            ).toArray() as any as Array<[string, UnitDict]>,
+            dataTypes: this._dataTypes.map(datatype => datatype.getCode()).toArray(),
+            units: this._units.map(unit => unit.toDict()).toArray(),
             rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
             pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
             lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
