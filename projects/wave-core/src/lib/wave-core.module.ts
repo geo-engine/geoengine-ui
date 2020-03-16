@@ -372,7 +372,10 @@ const MATERIAL_MODULES = [
         ReactiveFormsModule,
     ],
     exports: [
+        /* re-exports */
         ...MATERIAL_MODULES,
+        FlexLayoutModule,
+        /* library exports */
         GroupedAbcdBasketResultComponent,
         LayerListComponent,
         MapContainerComponent,

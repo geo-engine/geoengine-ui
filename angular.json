@@ -87,7 +87,9 @@
                             "projects/wave-app/src/assets"
                         ],
                         "styles": [
-                            "projects/wave-app/src/styles.scss"
+                            "projects/wave-app/src/styles.scss",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
                         ],
                         "scripts": []
                     },
