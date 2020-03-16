@@ -9,7 +9,7 @@ wave-layer-list {
     min-width: 200px;
     left: 0;
     top: 0;
-    background-color: rgba(255,255,255,0.87);
+    background-color: rgba(255, 255, 255, 0.87);
     border-bottom-right-radius: 2px;
 }
 
@@ -111,8 +111,4 @@ wave-layer-list {
     ::ng-deep mat-tab-header {
         border: 0;
     }
-}
-
-wave-data-table {
-    height: 100%;
 }
