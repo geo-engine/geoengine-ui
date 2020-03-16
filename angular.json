@@ -84,7 +84,12 @@
                         "aot": true,
                         "assets": [
                             "projects/wave-app/src/favicon.ico",
-                            "projects/wave-app/src/assets"
+                            "projects/wave-app/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/wave-core/assets",
+                                "output": "assets"
+                            }
                         ],
                         "styles": [
                             "projects/wave-app/src/styles.scss",

@@ -40,6 +40,6 @@
         }
     },
     "assets": [
-        "./assets/*"
+        "assets"
     ]
 }
