@@ -1,5 +1,5 @@
-import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest} from 'rxjs';
-import {toArray, filter, map, tap, first, flatMap, partition} from 'rxjs/operators';
+import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest, partition} from 'rxjs';
+import {toArray, filter, map, tap, first, flatMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -148,7 +148,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.mapIsGrid$ = this.mapService.isGrid$;
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
-            tap(() => this.mapComponent.resize()));
+            tap(() => this.mapComponent.resize()),
+        );
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
@@ -309,12 +310,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
         const [availableEntries, nonAvailableEntries]: [Observable<BasketResult>, Observable<BasketResult>] =
-            partition((basketResult: BasketResult) => basketResult.available)(
+            partition(
                 this.mappingQueryService
                     .getGFBioBasket(basketId)
                     .pipe(
                         flatMap(basket => observableFrom(basket.results)),
-                    )
+                    ),
+                (basketResult: BasketResult) => basketResult.available,
             );
 
         const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries

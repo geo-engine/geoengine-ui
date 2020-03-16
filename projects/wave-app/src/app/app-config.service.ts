@@ -29,7 +29,6 @@ export class AppConfig extends Config {
     }
 
     load(): Promise<void> {
-        console.log('<<<<< load! >>>>>');
         return super.load(APP_CONFIG_DEFAULTS);
     }
 }
