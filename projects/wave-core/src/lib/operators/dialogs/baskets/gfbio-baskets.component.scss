@@ -1,5 +1,3 @@
-@import '../../../../../../wave-app/src/wave-app-theme';
-
 div.loading {
     padding: 32px calc(50% - 100px / 2);
 }
@@ -14,12 +12,12 @@ mat-progress-spinner {
 }
 
 mat-list-item.clickable:hover {
-    background-color: mat-color(map-get($wave-app-theme, background), hover);
+    background-color: var(--wave-background-hover-color, grey);
 }
 
 .small {
     font-size: small;
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, grey);
 }
 
 .no-search-term {

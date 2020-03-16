@@ -1,11 +1,9 @@
-@import '../../../../../../wave-app/src/wave-app-theme';
-
 mat-toolbar ::ng-deep mat-toolbar-row:first-child {
     display: none;
 }
 
 p {
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, black);
 }
 
 mat-row {
@@ -13,11 +11,11 @@ mat-row {
 }
 
 mat-row:hover {
-    background-color: mat-color(map-get($wave-app-theme, background), hover);
+    background-color: var(--wave-background-hover-color, grey);
 }
 
 mat-cell ::ng-deep .highlight {
-    color: mat-color($wave-app-accent);
+    color: var(--wave-accent-color, grey);
 }
 
 mat-progress-spinner {

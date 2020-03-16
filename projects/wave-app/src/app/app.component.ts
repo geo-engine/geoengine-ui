@@ -6,7 +6,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
     HostListener, Inject,
     OnInit,
     ViewChild, ViewContainerRef
@@ -31,7 +30,6 @@ import {
     NotificationService,
     MapService,
     Config,
-    ProjectNameConfig,
     ResultTypes,
     ComplexPointSymbology,
     ComplexVectorSymbology,
@@ -51,7 +49,6 @@ import {
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {AppConfig} from './app-config.service';
 
 @Component({
@@ -67,37 +64,35 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
 
-    layerListVisible$: Observable<boolean>;
-    layerDetailViewVisible$: Observable<boolean>;
+    readonly ResultTypes = ResultTypes;
+    readonly LayoutService = LayoutService;
+
+    readonly layersReverse$: Observable<Array<Layer<AbstractSymbology>>>;
+    readonly layerListVisible$: Observable<boolean>;
+    readonly layerDetailViewVisible$: Observable<boolean>;
+
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
-    layersReverse$: Observable<Array<Layer<AbstractSymbology>>>;
-    // for ng-switch
-    ResultTypes = ResultTypes; // tslint:disable-line:no-unused-variable variable-name
-    LayoutService = LayoutService;
-
     mapIsGrid$: Observable<boolean>;
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(public layerService: LayerService,
-                public layoutService: LayoutService,
-                public projectService: ProjectService,
+    constructor(@Inject(Config) readonly config: AppConfig,
+                readonly layerService: LayerService,
+                readonly layoutService: LayoutService,
+                readonly projectService: ProjectService,
+                readonly vcRef: ViewContainerRef, // reference used by color picker
                 private userService: UserService,
                 private storageService: StorageService,
                 private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MatDialog,
                 private iconRegistry: MatIconRegistry,
-                private sanitizer: DomSanitizer,
                 private randomColorService: RandomColorService,
                 private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
                 private mapService: MapService,
-                @Inject(Config) readonly config: AppConfig,
-                private elementRef: ElementRef,
-                public vcRef: ViewContainerRef, // reference used by color picker
-                private overlayContainer: OverlayContainer) {
+                private sanitizer: DomSanitizer) {
         this.registerIcons();
 
         vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
@@ -110,8 +105,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
-
-        this.setTheme(this.config.PROJECT);
     }
 
     private registerIcons() {
@@ -390,29 +383,5 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
             })
         );
-    }
-
-    private setTheme(project: ProjectNameConfig) {
-        const defaultTheme = 'default-theme';
-        const geoBonTheme = 'geobon-theme';
-        const allThemes = [defaultTheme, geoBonTheme];
-
-        for (const theme of allThemes) {
-            this.elementRef.nativeElement.classList.remove(theme);
-            this.overlayContainer.getContainerElement().classList.remove(theme);
-        }
-
-        switch (project) {
-            case 'GeoBon':
-                this.elementRef.nativeElement.classList.add(geoBonTheme);
-                this.overlayContainer.getContainerElement().classList.add(geoBonTheme);
-                break;
-            case 'GFBio':
-            case 'EUMETSAT':
-            case 'Nature40':
-            default:
-                this.elementRef.nativeElement.classList.add(defaultTheme);
-                this.overlayContainer.getContainerElement().classList.add(defaultTheme);
-        }
     }
 }

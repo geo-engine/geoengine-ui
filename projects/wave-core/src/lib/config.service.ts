@@ -43,7 +43,7 @@ interface Delays {
     readonly GUEST_LOGIN_HINT: number;
 }
 
-export type ProjectNameConfig = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
+type ProjectNameConfig = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
 
 interface Defaults {
     readonly PROJECT: {

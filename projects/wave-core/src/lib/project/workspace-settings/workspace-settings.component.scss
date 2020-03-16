@@ -1,7 +1,3 @@
-@import '../../../../../wave-app/src/wave-app-theme';
-
-$secondary-color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
-
 mat-list-item {
     cursor: pointer;
 }
@@ -12,7 +8,7 @@ img {
 }
 
 p {
-    color: $secondary-color;
+    color: var(--wave-foreground-secondary-text-color, grey);
 }
 
 .disabled {
@@ -21,7 +17,7 @@ p {
     }
 
     h4 {
-        color: $secondary-color;
+        color: var(--wave-foreground-secondary-text-color, grey);
     }
 
     img {
@@ -29,6 +25,6 @@ p {
     }
 
     mat-icon {
-        color: $secondary-color;
+        color: var(--wave-foreground-secondary-text-color, grey);
     }
 }

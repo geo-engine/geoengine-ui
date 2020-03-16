@@ -1,15 +1,14 @@
-//@import '../../../../../node_modules/@angular/material/button/button-base';
 $mat-icon-button-size: 40px !default; // TODO: import when this is possible again
 
 .videoContainer {
 
-    mat-card{
+    mat-card {
         width: calc(100% - 2rem);
         margin: 1rem;
         padding: 0;
     }
 
-    video{
+    video {
         width: 100%;
         margin: 0;
         display: block;

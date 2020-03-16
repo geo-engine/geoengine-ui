@@ -1,5 +1,3 @@
-//@import '../../../../../node_modules/@angular/material/dialog/dialog';
-//@import '../../../../../node_modules/@angular/material/button/button-base';
 $mat-dialog-padding: 24px !default; // TODO: import when this is possible again
 $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
@@ -16,7 +14,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
     right: #{-$mat-fab-size/2};
 }*/
 
-.imageContainer{
+.imageContainer {
     max-width: calc(100vw - 4rem);
     max-height: calc(100vh - 4rem);
     display: flex;
@@ -28,7 +26,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         display: block;
     }
 
-    mat-dialog-content{
+    mat-dialog-content {
         padding: 0;
         margin: 0;
         max-height: inherit;
@@ -46,7 +44,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
             word-break: keep-all;
         }*/
 
-        .separator{
+        .separator {
             flex-grow: 1;
         }
 
@@ -59,15 +57,15 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         }
     }
 
-    .loading{
+    .loading {
         position: absolute;
         width: 100%;
-        height:100%;
+        height: 100%;
         top: 0;
         left: 0;
         background: rgba(#ffffff, 50%);
 
-        .spinner{
+        .spinner {
             position: relative;
             top: calc(50% - 100px);
             left: calc(50% - 100px);
@@ -85,11 +83,11 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
             margin: 1rem;
         }
 
-        .previous{
+        .previous {
             margin-right: 2rem;
         }
 
-        .next{
+        .next {
             margin-left: 2rem;
         }
     }

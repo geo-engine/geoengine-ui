@@ -1,11 +1,11 @@
-@import '../../../../../../../wave-app/src/wave-app-theme';
+@import '~@angular/material/theming';
 
 $mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function,
 background-color 200ms $swift-ease-in-out-timing-function !default;
 
 
 .dataset-name {
-    color: mat-color($wave-app-primary) !important;
+    color: var(--wave-primary-color, black) !important;
 }
 
 .dataset-uri {
@@ -22,7 +22,7 @@ mat-list-item {
 }
 
 .mat-row {
-    color: mat-color($wave-app-primary) !important;
+    color: var(--wave-primary-color, black) !important;
     cursor: pointer;
     min-height: 40px !important;
 }

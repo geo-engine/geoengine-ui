@@ -1,10 +1,8 @@
-@import "../../../../../../../../wave-app/src/wave-app-theme";
-
 $latitudeColor: #26c5ff;
 $longitudeColor: orange;
 $startColor: darkgreen;
 $endColor: darkviolet;
-$backgroundColor: mat-color(map-get($wave-app-theme, primary));
+$backgroundColor: var(--wave-primary-color, grey);
 $titleColor: white; /*Inherit from theme here.*/
 
 div.latitudeSelector mat-select ::ng-deep span.mat-select-placeholder {

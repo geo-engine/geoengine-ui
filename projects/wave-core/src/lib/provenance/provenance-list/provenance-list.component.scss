@@ -1,5 +1,3 @@
-@import '../../../../../wave-app/src/wave-app-theme';
-
 :host {
     display: block;
 }
@@ -25,7 +23,7 @@ mat-list-item ::ng-deep .mat-list-item-content {
 }
 
 dt {
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, grey);
     width: 60px;
     float: left;
     clear: left;
@@ -44,7 +42,7 @@ dd {
     width: 100%;
     height: 100%;
     text-align: center;
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, grey);
 }
 
 .no-layer span {

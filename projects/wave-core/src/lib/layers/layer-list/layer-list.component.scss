@@ -1,12 +1,4 @@
-@import "../../../../../wave-app/src/wave-app-theme";
-
-$accent: map-get($wave-app-theme, accent);
-$background: map-get($wave-app-theme, background);
-$background-color: map-get($background, background);
-
 .container {
-    //width: 200px;
-    //background-color: white;
     max-height: inherit;
     height: inherit;
 }
@@ -37,7 +29,7 @@ $background-color: map-get($background, background);
     align-items: flex-start;
     justify-content: space-between;
     box-sizing: border-box;
-    background-color: $background-color;
+    background-color: var(--wave-background-color, white);
 }
 
 
@@ -184,7 +176,7 @@ mat-progress-bar {
 }
 
 .active-layer {
-    background-color: mat-color($accent, 0.32);
+    background-color: var(--wave-faded-accent-color, grey);
 }
 
 .lineThrough {

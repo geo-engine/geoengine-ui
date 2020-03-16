@@ -1,5 +1,3 @@
-@import '../../../../../../wave-app/src/wave-app-theme';
-
 mat-list-item {
     cursor: pointer;
 }
@@ -10,7 +8,7 @@ img {
 }
 
 p {
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, grey);
 }
 
 .disabled {
@@ -19,7 +17,7 @@ p {
     }
 
     h4 {
-        color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+        color: var(--wave-foreground-secondary-text-color, grey);
     }
 
     img {

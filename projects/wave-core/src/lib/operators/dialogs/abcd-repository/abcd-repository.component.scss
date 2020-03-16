@@ -1,11 +1,9 @@
-@import '../../../../../../wave-app/src/wave-app-theme';
-
 .datagroup {
-    color: mat-color($wave-app-primary) !important;
+    color: var(--wave-primary-color, black) !important;
 }
 
 .datagroup a {
-    color: mat-color($wave-app-primary) !important;
+    color: var(--wave-primary-color, black) !important;
 }
 
 .searchInput {
@@ -18,7 +16,7 @@ mat-list-item {
 
 .highlight,
 mat-list-item ::ng-deep .highlight {
-    color: mat-color($wave-app-accent);
+    color: var(--wave-accent-color, grey);
     text-decoration: underline;
 }
 

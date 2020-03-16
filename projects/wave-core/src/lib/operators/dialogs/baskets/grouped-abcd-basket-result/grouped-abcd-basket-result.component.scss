@@ -1,12 +1,10 @@
-@import '../../../../../../../wave-app/src/wave-app-theme';
-
 mat-card-header ::ng-deep .mat-card-header-text {
     margin: 0 !important;
 }
 
 mat-card-title {
     font-size: large !important;
-    color: mat-color(map-get($wave-app-theme, primary));
+    color: var(--wave-primary-color, black);
 }
 
 table.main {
@@ -17,7 +15,7 @@ table.main {
 }
 
 .main td:first-child {
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, black);
     margin-right: 1rem;
 }
 

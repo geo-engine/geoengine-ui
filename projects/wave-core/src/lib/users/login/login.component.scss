@@ -1,5 +1,3 @@
-@import '../../../../../wave-app/src/wave-app-theme';
-
 form {
     padding: 1rem;
 }
@@ -32,7 +30,7 @@ mat-spinner {
 }
 
 .error {
-    color: mat-color($wave-app-warn);
+    color: var(--wave-warn-color, red);
 }
 
 .container {
@@ -49,10 +47,10 @@ button {
 }
 
 .label {
-    color: mat-color(map-get($wave-app-theme, foreground), secondary-text);
+    color: var(--wave-foreground-secondary-text-color, grey);
     margin-right: 1rem;
 }
 
 mat-card.info {
-    background-color: mat-color($wave-app-accent);
+    background-color: var(--wave-accent-color, grey);
 }
