@@ -47,13 +47,12 @@ import {
     WorkflowParameterChoiceDialogComponent,
     StorageStatus,
     NavigationButton,
-    LoginComponent,
     SourceOperatorListComponent,
+    NavigationComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
-import {ThemePalette} from '@angular/material/core';
 
 @Component({
     selector: 'wave-app-root',
@@ -219,41 +218,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private setupNavigation(): Array<NavigationButton> {
         return [
-            {
-                sidenavConfig: {component: LoginComponent},
-                icon: '',
-                iconObservable: this.userService.isGuestUserStream().pipe(map(isGuest => isGuest ? 'person_outline' : 'person')),
-                tooltip: '',
-                tooltipObservable: this.userService.isGuestUserStream().pipe(map(isGuest => isGuest ? 'Login' : 'User Account')),
-                colorObservable: combineLatest([
-                    this.userService.isGuestUserStream(),
-                    this.layoutService.getSidenavContentComponentStream()
-                ]).pipe(
-                    distinctUntilChanged(),
-                    mergeScan( // abort inner observable when new source event arises
-                        ([wasGuest, state], [isGuest, sidenavConfig], _index) => {
-                            if (sidenavConfig && sidenavConfig.component === LoginComponent) {
-                                return observableOf([isGuest, 'primary']);
-                            } else if (!wasGuest && isGuest) { // show 'accent' color for some time
-                                return new Observable(observer => {
-                                    observer.next([isGuest, 'accent']);
-                                    setTimeout(
-                                        () => {
-                                            observer.next([isGuest, undefined]);
-                                            observer.complete();
-                                        },
-                                        this.config.DELAYS.GUEST_LOGIN_HINT,
-                                    );
-                                });
-                            } else {
-                                return observableOf([isGuest, undefined]);
-                            }
-                        },
-                        [true, 'accent' as ThemePalette]
-                    ),
-                    map(([_wasGuest, state]) => state as ThemePalette),
-                ),
-            },
+            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
                 sidenavConfig: {component: SourceOperatorListComponent},
                 icon: 'add',
