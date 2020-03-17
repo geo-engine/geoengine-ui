@@ -378,6 +378,7 @@ const MATERIAL_MODULES = [
         /* library exports */
         GroupedAbcdBasketResultComponent,
         LayerListComponent,
+        LoginComponent,
         MapContainerComponent,
         NavigationComponent,
         OlDrawFeaturesComponent,
@@ -390,6 +391,7 @@ const MATERIAL_MODULES = [
         ProvenanceListComponent,
         SidenavContainerComponent,
         SmallTimeInteractionComponent,
+        SourceOperatorListComponent,
         SplashDialogComponent,
         TableComponent,
         TickerInteractionComponent,

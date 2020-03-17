@@ -24,6 +24,7 @@ export * from './lib/operators/dialogs/baskets/grouped-abcd-basket-result/groupe
 export * from './lib/operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 export * from './lib/operators/dialogs/baskets/pangaea.model';
 export * from './lib/operators/dialogs/draw-features/ol-draw-features.component';
+export * from './lib/operators/dialogs/source-operator-list/source-operator-list.component';
 export * from './lib/operators/operator.model';
 export * from './lib/operators/projection.model';
 export * from './lib/operators/result-type.model';
@@ -44,6 +45,7 @@ export * from './lib/storage/providers/mapping-storage-provider.model';
 export * from './lib/storage/storage.service';
 export * from './lib/time/small-time-interaction/small-time-interaction.component';
 export * from './lib/time/ticker-interaction/ticker-interaction.component';
+export * from './lib/users/login/login.component';
 export * from './lib/users/user.service';
 export * from './lib/util/errors';
 export * from './lib/util/pipes/safe-html.pipe';
