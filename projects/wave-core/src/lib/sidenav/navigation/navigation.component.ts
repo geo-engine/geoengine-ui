@@ -10,6 +10,7 @@ import {Config} from '../../config.service';
 export interface NavigationButton {
     sidenavConfig: SidenavConfig;
     icon: string;
+    svgIcon?: string;
     tooltip: string;
     colorObservable?: Observable<ThemePalette>;
     iconObservable?: Observable<string>;

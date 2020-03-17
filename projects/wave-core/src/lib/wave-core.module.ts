@@ -377,6 +377,7 @@ const MATERIAL_MODULES = [
         FlexLayoutModule,
         /* library exports */
         GroupedAbcdBasketResultComponent,
+        HelpComponent,
         LayerListComponent,
         LoginComponent,
         MapContainerComponent,
@@ -386,6 +387,7 @@ const MATERIAL_MODULES = [
         OlPointLayerComponent,
         OlPolygonLayerComponent,
         OlRasterLayerComponent,
+        OperatorListComponent,
         PangaeaBasketResultComponent,
         PlotListComponent,
         ProvenanceListComponent,
@@ -395,7 +397,9 @@ const MATERIAL_MODULES = [
         SplashDialogComponent,
         TableComponent,
         TickerInteractionComponent,
+        TimeConfigComponent,
         WorkflowParameterChoiceDialogComponent,
+        WorkspaceSettingsComponent,
         ZoomHandlesComponent,
     ]
 })

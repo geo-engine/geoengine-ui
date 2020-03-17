@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest, partition} from 'rxjs';
-import {toArray, filter, map, tap, first, flatMap, distinctUntilChanged, mergeScan} from 'rxjs/operators';
+import {toArray, filter, map, tap, first, flatMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -49,6 +49,10 @@ import {
     NavigationButton,
     SourceOperatorListComponent,
     NavigationComponent,
+    OperatorListComponent,
+    TimeConfigComponent,
+    WorkspaceSettingsComponent,
+    HelpComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -118,6 +122,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             'logo',
             this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
         );
+
+        // used for navigation
+        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
         switch (this.config.PROJECT) { // project-specific icons
             case 'EUMETSAT':
@@ -223,6 +230,32 @@ export class AppComponent implements OnInit, AfterViewInit {
                 sidenavConfig: {component: SourceOperatorListComponent},
                 icon: 'add',
                 tooltip: 'Add Data',
+            },
+            {
+                sidenavConfig: {component: OperatorListComponent},
+                icon: '',
+                svgIcon: 'cogs',
+                tooltip: 'Operators',
+            },
+            {
+                sidenavConfig: {component: PlotListComponent},
+                icon: 'equalizer',
+                tooltip: 'Plots',
+            },
+            {
+                sidenavConfig: {component: TimeConfigComponent},
+                icon: 'access_time',
+                tooltip: 'Time',
+            },
+            {
+                sidenavConfig: {component: WorkspaceSettingsComponent},
+                icon: 'settings',
+                tooltip: 'Workspace',
+            },
+            {
+                sidenavConfig: {component: HelpComponent},
+                icon: 'help',
+                tooltip: 'Help',
             },
         ];
     }
