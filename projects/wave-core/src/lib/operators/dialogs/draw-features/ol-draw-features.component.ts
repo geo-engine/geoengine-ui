@@ -5,7 +5,12 @@ import {Vector as OlVectorSource} from 'ol/source';
 import OlGeometryType from 'ol/geom/GeometryType';
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
-import {AbstractVectorSymbology, ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {
+    AbstractVectorSymbology,
+    ComplexLineSymbology,
+    ComplexPointSymbology,
+    ComplexVectorSymbology
+} from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
@@ -24,7 +29,7 @@ import {Subscription} from 'rxjs';
 
 export class OlDrawFeaturesComponent implements OnDestroy {
 
-    featureTypes = [ResultTypes.POLYGONS, ResultTypes.POINTS];
+    featureTypes = [ResultTypes.POLYGONS, ResultTypes.POINTS, ResultTypes.LINES];
     selectedFeatureType: ResultType;
     olGeometryType: OlGeometryType;
 
@@ -62,6 +67,9 @@ export class OlDrawFeaturesComponent implements OnDestroy {
             case ResultTypes.POLYGONS:
                 this.olGeometryType = OlGeometryType.POLYGON;
                 break;
+            case ResultTypes.LINES:
+                this.olGeometryType = OlGeometryType.LINE_STRING;
+                break;
             default:
                 throw new UnexpectedResultType();
         }
@@ -76,7 +84,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
     cancelDrawing() {
         this.isDrawingActive = false;
         this.mapService.endDrawInteraction();
-        this.notificationService.info('Draw features canceled.')
+        this.notificationService.info('Draw features canceled.');
     }
 
     endDrawing() {
@@ -103,6 +111,11 @@ export class OlDrawFeaturesComponent implements OnDestroy {
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
+            case ResultTypes.LINES:
+                resultSymbology = ComplexLineSymbology.createSimpleSymbology({
+                    strokeRGBA: this.randomColorService.getRandomColorRgba(),
+                });
+                break;
             default:
                 throw new UnexpectedResultType();
         }
@@ -114,11 +127,11 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
         // handle layers with only one input
         if (olSource.getFeatures().length === 1) {
-            wkt = 'GEOMETRYCOLLECTION(' + wkt + ')'
+            wkt = 'GEOMETRYCOLLECTION(' + wkt + ')';
         }
 
         const sourceType = new WKTSourceType({
-            wkt: wkt,
+            wkt,
             type: this.selectedFeatureType,
         });
 
@@ -130,7 +143,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
         const layer = new VectorLayer({
             name: this.featureLayerName,
-            operator: operator,
+            operator,
             symbology: resultSymbology,
             clustered: false,
         });

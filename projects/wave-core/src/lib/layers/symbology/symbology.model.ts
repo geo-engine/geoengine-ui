@@ -94,7 +94,7 @@ export abstract class AbstractSymbology implements ISymbology {
 }
 
 export interface VectorSymbologyConfig extends ISymbology {
-    fillRGBA: RgbaLike;
+    fillRGBA?: RgbaLike;
     strokeRGBA?: RgbaLike;
     strokeWidth?: number;
 }
@@ -167,8 +167,12 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
 
     protected constructor(config: VectorSymbologyConfig) {
         super();
-        this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
-        if (config.strokeRGBA) { this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA); }
+        if (config.fillRGBA) {
+            this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
+        }
+        if (config.strokeRGBA) {
+            this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA);
+        }
         if (config.strokeWidth) { this.strokeWidth = config.strokeWidth; }
     }
 }
