@@ -6,6 +6,7 @@ import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
 import {UserService} from '../../users/user.service';
 import {LoginComponent} from '../../users/login/login.component';
 import {Config} from '../../config.service';
+import {SidenavRef} from '../sidenav-ref.service';
 
 export interface NavigationButton {
     sidenavConfig: SidenavConfig;
@@ -31,6 +32,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     private sidenavConfigSubscription: Subscription;
 
     constructor(private layoutService: LayoutService,
+                private sidenavRef: SidenavRef,
                 private changeDetectorRef: ChangeDetectorRef) {
     }
 
@@ -56,7 +58,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
             return undefined;
         }
 
-        if (this.sidenavConfig.component === sidenavConfig.component || this.sidenavConfig.parent === sidenavConfig.component) {
+        const currentComponent = this.sidenavConfig.component;
+        const parentComponent = this.sidenavRef.getBackButtonComponent()?.component;
+        if (currentComponent === sidenavConfig.component || parentComponent === sidenavConfig.component) {
             return 'primary';
         } else {
             return undefined;

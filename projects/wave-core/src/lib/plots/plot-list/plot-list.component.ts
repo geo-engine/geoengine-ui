@@ -1,4 +1,3 @@
-
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {first, filter} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
@@ -50,14 +49,14 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.subsriptions.push(
             this.projectService.getPlotStream().pipe(
                 filter(plots => plots.length > 0),
-                first(), )
-                .subscribe(() => {
-                    setTimeout(() => {
-                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
-                        const width = parseInt(getComputedStyle(cardContent).width, 10);
-                        this.cardWidth$.next(width);
-                    });
-                })
+                first(),
+            ).subscribe(() => {
+                setTimeout(() => {
+                    const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
+                    const width = parseInt(getComputedStyle(cardContent).width, 10);
+                    this.cardWidth$.next(width);
+                });
+            })
         );
     }
 
@@ -68,7 +67,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     editRPlot(plot: Plot) {
         this.layoutService.setSidenavContentComponent({
             component: ROperatorComponent,
-            parent: PlotListComponent,
+            keepParent: true,
             config: {
                 editable: plot,
             }

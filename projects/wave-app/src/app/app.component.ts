@@ -53,6 +53,9 @@ import {
     TimeConfigComponent,
     WorkspaceSettingsComponent,
     HelpComponent,
+    SourceOperatorListButton,
+    GFBioSourceType,
+    GbifOperatorComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -227,7 +230,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: SourceOperatorListComponent},
+                sidenavConfig: {component: SourceOperatorListComponent, config: {buttons: this.setupSourceOperatorListButtons()}},
                 icon: 'add',
                 tooltip: 'Add Data',
             },
@@ -257,6 +260,21 @@ export class AppComponent implements OnInit, AfterViewInit {
                 icon: 'help',
                 tooltip: 'Help',
             },
+        ];
+    }
+
+    private setupSourceOperatorListButtons(): Array<SourceOperatorListButton> {
+        return [
+            SourceOperatorListComponent.createDataRepositoryButton(),
+            SourceOperatorListComponent.createDrawFeaturesButton(),
+            ...SourceOperatorListComponent.createCustomFeaturesButtons(),
+            {
+                name: 'Species Occurrences',
+                description: 'Query data from GBIF',
+                iconSrc: GFBioSourceType.ICON_URL,
+                sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
+            },
+            SourceOperatorListComponent.createCountryPolygonsButton(),
         ];
     }
 

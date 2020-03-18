@@ -1,14 +1,14 @@
-
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Injectable, Component, Type, EventEmitter, ElementRef, QueryList} from '@angular/core';
+import {Injectable, EventEmitter, ElementRef, QueryList} from '@angular/core';
+import {SidenavConfig} from '../layout.service';
 
 
 @Injectable()
 export class SidenavRef {
 
     private title$ = new BehaviorSubject<string>(undefined);
-    private backButtonComponent$ = new BehaviorSubject<Type<Component>>(undefined);
+    private backButtonComponent$ = new BehaviorSubject<SidenavConfig>(undefined);
 
     private searchElements$ = new BehaviorSubject<Array<ElementRef>>(undefined);
     private searchElementsSubscription: Subscription;
@@ -27,15 +27,15 @@ export class SidenavRef {
         return this.title$;
     }
 
-    setBackButtonComponent(component: Type<Component>) {
+    setBackButtonComponent(component: SidenavConfig) {
         this.backButtonComponent$.next(component);
     }
 
-    getBackButtonComponentStream(): Observable<Type<Component>> {
+    getBackButtonComponentStream(): Observable<SidenavConfig> {
         return this.backButtonComponent$;
     }
 
-    getBackButtonComponent(): Type<Component> {
+    getBackButtonComponent(): SidenavConfig {
         return this.backButtonComponent$.getValue();
     }
 
