@@ -1,8 +1,5 @@
-import {
-    fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Observable, ReplaySubject, Subject
-} from 'rxjs';
+import {fromEvent, combineLatest, BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
-
 import {Injectable, Type} from '@angular/core';
 import {Config} from './config.service';
 
@@ -18,7 +15,8 @@ export interface LayoutDict {
 
 export interface SidenavConfig {
     component: Type<any>;
-    parent?: Type<any>;
+    keepParent?: boolean;
+    parent?: SidenavConfig;
     config?: { [key: string]: any };
 }
 
@@ -155,7 +153,6 @@ export class LayoutService {
 
     /**
      * Set the new Component to show in the sidenav
-     * @param sidenavConfig
      */
     setSidenavContentComponent(sidenavConfig: SidenavConfig) {
         this.sidenavContentComponent$.next(sidenavConfig);
@@ -274,17 +271,17 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getLayerDetailViewStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return observableCombineLatest(
+        return combineLatest([
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$,
-            (layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible): number => {
-
+        ]).pipe(
+            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
                 return LayoutService.calculateLayerDetailViewHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
-                    totalAvailableHeight
+                    totalAvailableHeight,
                 );
-            }
+            }),
         );
     }
 
@@ -302,7 +299,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return observableCombineLatest(
+        return combineLatest(
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
             this.layerDetailViewVisible$
@@ -326,18 +323,18 @@ export class LayoutService {
     }
 
     getLayoutDictStream(): Observable<LayoutDict> {
-        return observableCombineLatest(
+        return combineLatest([
             this.layerListVisible$,
             this.layerDetailViewVisible$,
             this.layerDetailViewTabIndex$,
-            this.layerDetailViewHeightPercentage$
-        ).pipe(
+            this.layerDetailViewHeightPercentage$,
+        ]).pipe(
             map(([layerListVisible, layerDetailViewVisible, layerDetailViewTabIndex, layerDetailViewHeightPercentage]) => {
                 return {
-                    layerListVisible: layerListVisible,
-                    layerDetailViewVisible: layerDetailViewVisible,
-                    layerDetailViewTabIndex: layerDetailViewTabIndex,
-                    layerDetailViewHeightPercentage: layerDetailViewHeightPercentage,
+                    layerListVisible,
+                    layerDetailViewVisible,
+                    layerDetailViewTabIndex,
+                    layerDetailViewHeightPercentage,
                 };
             })
         );
@@ -376,11 +373,11 @@ export class LayoutService {
 
         // this timeout prevents calling the `getWidth` function before the DOM is initialized
         setTimeout(() => {
-            observableFromEvent(window, 'resize').pipe(
-                debounceTime(this.config.DELAYS.DEBOUNCE))
-                .subscribe(() => {
-                    this.sidenavContentMaxWidth$.next(getWidth());
-                });
+            fromEvent(window, 'resize').pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE),
+            ).subscribe(() => {
+                this.sidenavContentMaxWidth$.next(getWidth());
+            });
 
             this.sidenavContentMaxWidth$.next(getWidth());
         });
