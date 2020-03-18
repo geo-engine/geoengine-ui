@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/umr-dbs/wave.svg?branch=master)](https://travis-ci.org/umr-dbs/wave)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fumr-dbs%2Fwave%2Fbadge&style=flat)](https://actions-badge.atrox.dev/umr-dbs/wave/goto)
 
 # WAVE - Workflow, Analysis and Visualization Editor
 *WAVE* is the official frontend of *VAT*.
@@ -7,19 +7,19 @@ You can serve *WAVE* via any http server, e.g. Apache.
 
 ## Requirements
 You need to have [Node.js](https://nodejs.org) installed.
-Verify that you are running at least node v5.x.x and npm 3.x.x.
-You can check this by running node -v and npm -v in a terminal/console window.
+Verify that you are running at least `node v12.x.x` and `npm 6.x.x`.
+You can check this by running node -v and npm -v in a terminal or console window.
 
-### Ubuntu 14.04 LTS and higher
+### Ubuntu 18.04 LTS and higher
 ```
-curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
 ## How to build
 ### Production
 ```
-rm -rf node_modules
+rm -rf node_modules package-lock.json
 npm install
 npm run build-production
 ```
@@ -28,12 +28,14 @@ You can find the output in the `dist` directory.
 ### Development Live Server
 You need to modify the `proxy.conf.json` file to point to a valid *MAPPING* instance.
 ```
-rm -rf node_modules
+rm -rf node_modules package-lock.json
 npm install
 npm start
 ```
 You can visit `http://localhost:4200/`.
 
+### Apps
+*TODO: describe whichs apps are there and how to build them*
 
 ## Configuration
 Under `assets/config.json` can be an (optional) configuration file.
