@@ -169,7 +169,7 @@ export class StyleCreator {
                 if (sym.strokeDashStyle && sym.strokeDashStyle.length > 1) {
                     strokeStyle.setLineDash(sym.strokeDashStyle);
                 }
-                const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
+                const radius = featureRadiusValue ? featureRadiusValue as number * sym.radiusFactor : sym.radius;
 
                 const imageStyle = new OlStyleCircle({
                     radius,

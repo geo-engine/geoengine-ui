@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
-import {ComplexPointSymbology, ComplexVectorSymbology, StrokeDashStyle} from '../symbology.model';
+import {ComplexPointSymbology, ComplexVectorSymbology, StrokeDashStyle, SymbologyType} from '../symbology.model';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
@@ -34,6 +34,8 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     strokeByAttribute = false;
     fillColorAttribute: Attribute;
     strokeColorAttribute: Attribute;
+    radiusAttribute: Attribute;
+    radiusByAttribute: boolean;
     attributes: Array<Attribute>;
 
     constructor() {
@@ -89,6 +91,25 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     updateStrokeColorizeByAttribute(event: MatSlideToggleChange) {
         this.strokeByAttribute = event.checked;
         this.setStrokeColorizerAttribute();
+    }
+
+    setRadiusAttribute() {
+        console.log('setRadiusAttribute');
+        if (this.symbology instanceof ComplexPointSymbology) {
+            console.log('setRadiusAttribute', 'instanceof');
+            if (this.radiusByAttribute && this.radiusAttribute) {
+                this.symbology.setRadiusAttribute(this.radiusAttribute.name);
+                console.log('setRadiusAttribute', 'radiusAttribute', this.radiusAttribute.name);
+            } else {
+                this.symbology.unSetRadiusAttribute();
+            }
+            this.update();
+        }
+    }
+
+    updateRadiusByAttribute(event: MatSlideToggleChange) {
+        this.radiusByAttribute = event.checked;
+        this.setRadiusAttribute();
     }
 
     updateSymbologyFromLayer() {
@@ -183,5 +204,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             this.symbology.setOrUpdateStrokeColorizer(event);
             this.update();
         }
+    }
+
+    get isPointSymbology(): boolean {
+        return this.symbology.getSymbologyType() === SymbologyType.COMPLEX_POINT;
     }
 }
