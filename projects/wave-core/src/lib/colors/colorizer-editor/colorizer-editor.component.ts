@@ -43,7 +43,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     @Input() disabledAttribute: false;
     @Input() disabledColor: false;
     @Input() inputType: 'number' | 'string' = 'number';
-    @Input() attributePlaceholder: 'attribute';
+    @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder: 'color';
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {

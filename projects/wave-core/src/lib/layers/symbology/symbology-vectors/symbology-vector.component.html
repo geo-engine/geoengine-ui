@@ -1,70 +1,140 @@
-<table>
-    <tr *ngIf="editStrokeWidth">
-        <td>
-            <span>Stroke width</span>
-        </td>
-        <td>
-            <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
-                        (change)="updateStrokeWidth($event)">
-            </mat-slider>
-            <span>{{sls.displayValue}} px</span>
-        </td>
-    </tr>
-    <tr *ngIf="editRadius">
-        <td>
-            <span>Radius</span>
-        </td>
-        <td>
-            <mat-slider #slr thumbLabel min="0" max="10" step="1" [value]="$any(symbology).radius"
-                        (change)="updateRadius($event)">
-            </mat-slider>
-            <span>{{slr.displayValue}} px</span>
-        </td>
-    </tr>
-</table>
-<!--
-<div>
-    <mat-form-field>
-        <mat-select placeholder="Color Attribute" formControlName="attribute">
-            <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
--->
+<mat-accordion multi="true" class="symbology-headers-align">
+    <mat-expansion-panel expanded=true #globalPanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>map</mat-icon>
+                <span>Global Layer Properties</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template [ngIf]="globalPanel.expanded">
 
-<div>
-    <wave-color-breakpoint [ngModel]="symbology.fillColorBreakpoint" attributePlaceholder="Fill color" disabledAttribute="true"
-                           (ngModelChange)="updateFill($event)">
-    </wave-color-breakpoint>
-    <wave-color-breakpoint [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color" disabledAttribute="true"
-                           (ngModelChange)="updateStroke($event)">
-    </wave-color-breakpoint>
+            <table>
+                <tr *ngIf="editStrokeWidth">
+                    <td>
+                        <span>Stroke width</span>
+                    </td>
+                    <td>
+                        <mat-slider #sls thumbLabel min="0" max="10" step="1" [value]="symbology.strokeWidth"
+                                    (change)="updateStrokeWidth($event)">
+                        </mat-slider>
+                        <span>{{sls.displayValue}} px</span>
+                    </td>
+                </tr>
+                <tr *ngIf="editRadius">
+                    <td>
+                        <span>Radius</span>
+                    </td>
+                    <td>
+                        <mat-slider #slr thumbLabel min="0" max="10" step="1" [value]="$any(symbology).radius"
+                                    (change)="updateRadius($event)">
+                        </mat-slider>
+                        <span>{{slr.displayValue}} px</span>
+                    </td>
+                </tr>
+            </table>
+            <mat-divider></mat-divider>
 
-</div>
+            <wave-stroke-dash-select (ngModelChange)="updateStrokeDash($event)" [ngModel]="symbology.strokeDashStyle"
+                                     [lines]="[[], [5, 5], [10, 10]]">
+            </wave-stroke-dash-select>
 
-<div>
-    <mat-slide-toggle
-        [checked]="colorizeByAttribute"
-        (change)="updateColorizeByAttribute($event)">
-        Colorize by attribute
-    </mat-slide-toggle>
+            <mat-divider></mat-divider>
 
-    <mat-form-field>
-        <mat-select placeholder="Attribute"
-                    [(ngModel)]="attribute"
-                    (ngModelChange)="setColorizerAttribute()"
-                    [disabled]="!colorizeByAttribute">
-            <mat-option
-                *ngFor="let attribute of attributes"
-                [value]="attribute"
-            >{{attribute.name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
+            <div>
+                <wave-color-breakpoint [ngModel]="symbology.fillColorBreakpoint" attributePlaceholder="Fill color" disabledAttribute="true"
+                                       (ngModelChange)="updateFill($event)">
+                </wave-color-breakpoint>
+                <wave-color-breakpoint [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color"
+                                       disabledAttribute="true"
+                                       (ngModelChange)="updateStroke($event)">
+                </wave-color-breakpoint>
 
-<div *ngIf="colorizeByAttribute && !!symbology.colorAttribute">
-    <wave-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"
-                           [attributePlaceholder]="attribute?.name" [inputType]="attribute?.type"></wave-colorizer-editor>
-</div>
+            </div>
+
+        </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded=true #fillColorByAttributePanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>map</mat-icon>
+                <span>Fill Color By Attribute</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template [ngIf]="fillColorByAttributePanel.expanded">
+
+            <div>
+                <mat-slide-toggle
+                    [checked]="fillByAttribute"
+                    (change)="updateFillColorizeByAttribute($event)">
+                    Fill Color By Attribute
+                </mat-slide-toggle>
+
+                <mat-form-field>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="fillColorAttribute"
+                                (ngModelChange)="setFillColorizerAttribute()"
+                                [disabled]="!fillByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of attributes"
+                            [value]="attribute"
+                        >{{attribute.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="fillByAttribute && !!symbology.fillColorAttribute">
+                <wave-colorizer-editor [ngModel]="symbology.fillColorizer" (ngModelChange)="updateFillColorizer($event)"
+                                       [attributePlaceholder]="fillColorAttribute?.name"
+                                       [inputType]="fillColorAttribute?.type"></wave-colorizer-editor>
+            </div>
+
+        </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded=true #fillColorByAttributePanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>map</mat-icon>
+                <span>Stroke Color By Attribute</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template [ngIf]="fillColorByAttributePanel.expanded">
+
+            <div>
+                <mat-slide-toggle
+                    [checked]="strokeByAttribute"
+                    (change)="updateStrokeColorizeByAttribute($event)">
+                    Stroke Color By Attribute
+                </mat-slide-toggle>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="strokeColorAttribute"
+                                (ngModelChange)="setStrokeColorizerAttribute()"
+                                [disabled]="!strokeByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of attributes"
+                            [value]="attribute"
+                        >{{attribute.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="strokeByAttribute && !!symbology.strokeColorAttribute">
+                <wave-colorizer-editor [ngModel]="symbology.strokeColorizer" (ngModelChange)="updateStrokeColorizer($event)"
+                                       [attributePlaceholder]="strokeColorAttribute?.name"
+                                       [inputType]="strokeColorAttribute?.type"></wave-colorizer-editor>
+            </div>
+
+        </ng-template>
+    </mat-expansion-panel>
+
+</mat-accordion>
+
+
+
+

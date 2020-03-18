@@ -50,3 +50,4 @@ export * from './lib/util/pipes/safe-html.pipe';
 export * from './lib/util/pipes/trim.pipe';
 export * from './lib/util/services/random-color.service';
 export * from './lib/wave-core.module';
+export * from './lib/layers/symbology/stroke-dash-select/stroke-dash-select.component';

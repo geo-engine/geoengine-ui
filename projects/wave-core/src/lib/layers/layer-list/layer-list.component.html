@@ -149,17 +149,20 @@
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
                                               [style.fill]='$any(layer.symbology).fillRGBA.rgbaCssString()'
+                                              [style.stroke-dasharray]='$any(layer.symbology)?.strokeDashStyle'
                                     ></mat-icon>
                                     <mat-icon *ngSwitchCase="ST.SIMPLE_LINE"
                                               mat-list-icon svgIcon="symbology:line"
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
+                                              [style.stroke-dasharray]='$any(layer.symbology)?.strokeDashStyle'
                                     ></mat-icon>
                                     <mat-icon *ngSwitchCase="ST.COMPLEX_VECTOR"
                                               mat-list-icon svgIcon="symbology:polygon"
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
                                               [style.fill]='$any(layer.symbology).fillRGBA.rgbaCssString()'
+                                              [style.stroke-dasharray]='$any(layer.symbology)?.strokeDashStyle'
                                     ></mat-icon>
                                     <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
                                         <mat-icon mat-list-icon [ngSwitch]="(projectService.getLayerCombinedStatusStream(layer) | async)">

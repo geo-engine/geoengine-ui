@@ -67,6 +67,10 @@ interface Gfbio {
     readonly LIFERAY_PORTAL_URL: string;
 }
 
+interface EmergenCity {
+    readonly CHRONICLE_DB_URL: string;
+}
+
 interface Nature40 {
     SSO_JWT_PROVIDER_URL: string;
 }
@@ -79,6 +83,7 @@ export interface WaveConfigStructure {
     readonly DEBUG_MODE: DebugMode;
     readonly DEFAULTS: Defaults;
     readonly DELAYS: Delays;
+    readonly EMERGENCITY: EmergenCity;
     readonly GFBIO: Gfbio;
     readonly MAP: Map;
     readonly MAPPING_URL: MappingUrlType;
@@ -112,6 +117,9 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         DEBOUNCE: 400,
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
+    },
+    EMERGENCITY: {
+        CHRONICLE_DB_URL: ''
     },
     GFBIO: {
         LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
@@ -149,7 +157,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
-    },
+    }
 };
 
 /**
@@ -212,6 +220,10 @@ export class Config {
 
     get TIME(): Time {
         return this.config.TIME;
+    }
+
+    get EMERGENCITY(): EmergenCity {
+        return this.config.EMERGENCITY;
     }
 
     constructor(protected http: HttpClient) {

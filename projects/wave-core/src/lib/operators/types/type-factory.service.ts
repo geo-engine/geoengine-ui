@@ -40,6 +40,8 @@ import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model
 import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
 import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lookup-type';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
+import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
+import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-source-type.model';
 import {TimePlotType, TimePlotTypeDict} from './timeplot-type.model';
 import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
@@ -72,6 +74,8 @@ export abstract class OperatorTypeFactory {
                 return GdalSourceType.fromDict(dict as GdalSourceTypeDict);
             case OgrSourceType.TYPE:
                 return OgrSourceType.fromDict(dict as OgrSourceTypeDict);
+            case OgrRawSourceType.TYPE:
+                return OgrRawSourceType.fromDict(dict as OgrRawSourceTypeDict);
             case HistogramType.TYPE:
                 return HistogramType.fromDict(dict as HistogramTypeDict);
             case RScriptType.TYPE:
@@ -120,6 +124,8 @@ export abstract class OperatorTypeFactory {
                 return SpectralOverviewPlotType.fromDict(dict as SpectralOverviewPlotTypeDict);
             case TerminologyLookupType.TYPE:
                 return TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict);
+            case ChronicleDBSourceType.TYPE:
+                return ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict);
             case StatisticsType.TYPE:
                 return StatisticsType.fromDict(dict as StatisticsTypeDict);
             case TimePlotType.TYPE:

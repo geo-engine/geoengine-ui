@@ -36,6 +36,32 @@
         </wave-symbology-vector>
     </ng-template>
 
+    <ng-template [ngSwitchCase]="ST.SIMPLE_LINE">
+        <wave-symbology-vector fxFlex="grow"
+                               class="no-drag" [layer]="layer"
+                               [editRadius]="false"
+                               [editFillColor]="false"
+                               [editColorizeFillByAttribute]="false"
+                               [editStrokeColor]="true"
+                               [editStrokeWidth]="true"
+                               [editColorizeStrokeByAttribute]="true"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
+    <ng-template [ngSwitchCase]="ST.COMPLEX_LINE">
+        <wave-symbology-vector fxFlex="grow"
+                               class="no-drag" [layer]="layer"
+                               [editRadius]="false"
+                               [editFillColor]="false"
+                               [editColorizeFillByAttribute]="false"
+                               [editStrokeColor]="true"
+                               [editStrokeWidth]="true"
+                               [editColorizeStrokeByAttribute]="true"
+                               (symbologyChanged)="update_symbology(layer, $event)">
+        </wave-symbology-vector>
+    </ng-template>
+
     <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
         <wave-symbology-vector fxFlex="grow"
                                [layer]="layer"

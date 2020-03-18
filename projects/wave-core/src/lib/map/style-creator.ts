@@ -23,6 +23,9 @@ export class StyleCreator {
 
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
         switch (sym.getSymbologyType()) {
+
+            case SymbologyType.SIMPLE_LINE:
+                return StyleCreator.fromSimpleLineSymbology(sym);
             case SymbologyType.SIMPLE_VECTOR:
                 return StyleCreator.fromSimpleVectorSymbology(sym);
 
@@ -32,6 +35,9 @@ export class StyleCreator {
 
             case SymbologyType.COMPLEX_POINT:
                 return StyleCreator.fromComplexPointSymbology(sym as ComplexPointSymbology);
+
+            case SymbologyType.COMPLEX_LINE:
+                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
 
             case SymbologyType.COMPLEX_VECTOR:
                 return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
@@ -43,37 +49,45 @@ export class StyleCreator {
 
     }
 
-    static createHighlightSymbology<S extends AbstractVectorSymbology> (sym: S): S {
+    static createHighlightSymbology<S extends AbstractVectorSymbology>(sym: S): S {
         const highlightSymbology: S = sym.clone() as S;
         highlightSymbology.fillRGBA = DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR;
         highlightSymbology.strokeRGBA = DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR;
         return highlightSymbology;
     }
 
+    static fromSimpleLineSymbology(sym: AbstractVectorSymbology): OlStyle {
+        return new OlStyle({
+            stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
+        });
+    }
+
     static fromSimpleVectorSymbology(sym: AbstractVectorSymbology): OlStyle {
         return new OlStyle({
-            fill: new OlStyleFill({ color: sym.fillRGBA.rgbaTuple() }),
-            stroke: new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth }),
+            fill: new OlStyleFill({color: sym.fillRGBA.rgbaTuple()}),
+            stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
         });
     }
 
     static fromSimplePointSymbology(sym: ComplexPointSymbology): OlStyle {
-            return new OlStyle({
-                image: new OlStyleCircle({
-                    radius: sym.radius,
-                    fill: new OlStyleFill({ color: sym.fillRGBA.rgbaTuple() }),
-                    stroke: new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth }),
-                }),
-            });
+        return new OlStyle({
+            image: new OlStyleCircle({
+                radius: sym.radius,
+                fill: new OlStyleFill({color: sym.fillRGBA.rgbaTuple()}),
+                stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
+            }),
+        });
     }
 
     static buildStyleKey(
-        featureColorValue: string | number | undefined,
+        featureFillColorValue: string | number | undefined,
+        featureStrokeColorValue: string | number | undefined,
         featureTextValue: string | number | undefined,
-        featureRadiusValue: string | number |undefined
+        featureRadiusValue: string | number | undefined
     ): string {
         const VALUE_SEPARATOR_SYMBOL = ':::';
-        return `${featureColorValue}${VALUE_SEPARATOR_SYMBOL}${featureTextValue}${VALUE_SEPARATOR_SYMBOL}${featureRadiusValue}`;
+        return `${featureFillColorValue}${VALUE_SEPARATOR_SYMBOL}${featureStrokeColorValue}${VALUE_SEPARATOR_SYMBOL}`
+            + `${featureTextValue}${VALUE_SEPARATOR_SYMBOL}${featureRadiusValue}`;
     }
 
     static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
@@ -82,18 +96,24 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
+            const featureFillColorValue = (sym.fillColorAttribute && sym.describesArea()) ? feature.get(sym.fillColorAttribute) : undefined;
+            const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
-
-            const styleKey = StyleCreator.buildStyleKey(featureColorValue, featureTextValue, undefined);
+            const styleKey = StyleCreator.buildStyleKey(featureFillColorValue, featureStrokeColorValue, featureTextValue, undefined);
 
             if (!styleCache[styleKey]) {
+                const fillColorBreakpointLookup = sym.fillColorizer.getBreakpointForValue(featureFillColorValue, true);
+                const fillColor = fillColorBreakpointLookup ? fillColorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
 
-                const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-                const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+                const strokeColorBreakpointLookup = sym.strokeColorizer.getBreakpointForValue(featureStrokeColorValue, true);
+                const strokeColor = strokeColorBreakpointLookup ? strokeColorBreakpointLookup.rgba.rgbaTuple() : sym.strokeRGBA.rgbaTuple();
 
-                const fill = new OlStyleFill({color: color});
-                const stroke = new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth});
+                const fillStyle = new OlStyleFill({color: fillColor});
+                const strokeStyle = new OlStyleStroke({color: strokeColor, width: sym.strokeWidth});
+
+                if (sym.strokeDashStyle && sym.strokeDashStyle.length > 1) {
+                    strokeStyle.setLineDash(sym.strokeDashStyle);
+                }
 
                 // only build the text style if we are going to show it
                 const textStyle = (!featureTextValue) ? undefined : new OlStyleText({
@@ -108,8 +128,8 @@ export class StyleCreator {
                 });
 
                 const style = new OlStyle({
-                    stroke: stroke,
-                    fill: fill,
+                    stroke: strokeStyle,
+                    fill: fillStyle,
                     text: textStyle
                 });
                 styleCache[styleKey] = style;
@@ -125,23 +145,35 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            const featureColorValue = (sym.colorAttribute) ? feature.get(sym.colorAttribute) : undefined;
+            const featureFillColorValue = (sym.fillColorAttribute && sym.describesArea()) ? feature.get(sym.fillColorAttribute) : undefined;
+            const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
-
-            const styleKey = StyleCreator.buildStyleKey(featureColorValue, featureTextValue, featureRadiusValue);
+            const styleKey = StyleCreator.buildStyleKey(
+                featureFillColorValue, featureStrokeColorValue, featureTextValue, featureRadiusValue
+            );
 
             if (!styleCache[styleKey]) {
 
-                const colorBreakpointLookup = sym.colorizer.getBreakpointForValue(featureColorValue, true);
-                const color = colorBreakpointLookup ? colorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+                const fillColorBreakpointLookup = sym.fillColorizer.getBreakpointForValue(featureFillColorValue, true);
+                const fillColor = fillColorBreakpointLookup ? fillColorBreakpointLookup.rgba.rgbaTuple() : sym.fillRGBA.rgbaTuple();
+
+                const strokeColorBreakpointLookup = sym.strokeColorizer.getBreakpointForValue(featureStrokeColorValue, true);
+                const strokeColor = strokeColorBreakpointLookup ? strokeColorBreakpointLookup.rgba.rgbaTuple() : sym.strokeRGBA.rgbaTuple();
+
+                const fillStyle = new OlStyleFill({color: fillColor});
+                const strokeStyle = new OlStyleStroke({color: strokeColor, width: sym.strokeWidth});
+
+                if (sym.strokeDashStyle && sym.strokeDashStyle.length > 1) {
+                    strokeStyle.setLineDash(sym.strokeDashStyle);
+                }
                 const radius = featureRadiusValue ? featureRadiusValue as number : sym.radius;
 
                 const imageStyle = new OlStyleCircle({
-                    radius: radius,
-                    fill: new OlStyleFill({color: color}),
-                        stroke: new OlStyleStroke({ color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth }),
-                    });
+                    radius,
+                    fill: fillStyle,
+                    stroke: strokeStyle,
+                });
 
                 // only build the text style if we are going to show it
                 const textStyle = (!featureTextValue) ? undefined : new OlStyleText({

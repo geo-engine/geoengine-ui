@@ -9,10 +9,12 @@ import * as d3 from 'd3';
 import {LayoutService} from '../../layout.service';
 import {Layer} from '../../layers/layer.model';
 import {AbstractSymbology} from '../../layers/symbology/symbology.model';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
+import {ChronicleDBSourceType} from '../../operators/types/chronicle-db-source-type.model';
+import {ChronicleDbSourceComponent} from '../../operators/dialogs/chronicle-db-source/chronicle-db-source.component';
 
 const GRAPH_STYLE = {
     general: {
@@ -58,6 +60,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     constructor(private elementRef: ElementRef,
                 private projectService: ProjectService,
+                private layoutService: LayoutService,
+                private dialogRef: MatDialogRef<LineageGraphComponent>,
                 @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<AbstractSymbology> }) {
     }
 
@@ -81,7 +85,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private calculateDialogBounds() {
-        let dialogContainer = undefined;
+        let dialogContainer;
         let parent = this.elementRef.nativeElement.parentElement;
         while (!dialogContainer) {
             dialogContainer = parent.querySelector('.cdk-overlay-pane');
@@ -97,9 +101,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private drawGraph() {
         this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-            let graph = new dagreD3.graphlib.Graph()
+            const graph = new dagreD3.graphlib.Graph()
                 .setGraph({})
-                .setDefaultEdgeLabel(() => <any>{label: ''});
+                .setDefaultEdgeLabel(() => ({label: ''}) as any);
 
             if (this.selectedLayer) {
                 this.title$.next(`Lineage for ${this.selectedLayer.name}`);
@@ -126,12 +130,12 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             }
 
             // create the renderer
-            let render = new dagreD3.render();
+            const render = new dagreD3.render();
 
             // Set up an SVG group so that we can translate the final graph.
             // console.log(this.graphContainer.nativeElement);
-            let svg = d3.select(this.svg.nativeElement);
-            let svgGroup = d3.select(this.g.nativeElement);
+            const svg = d3.select(this.svg.nativeElement);
+            const svgGroup = d3.select(this.g.nativeElement);
 
             // Run the renderer. This is what draws the final graph.
             render(svgGroup, graph);
@@ -152,18 +156,18 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     private addOperatorsToGraph(graph: dagre.graphlib.Graph,
                                 initialOperators: Array<Operator>,
                                 layers: Array<Layer<AbstractSymbology>>): Array<number> {
-        let operatorIdsInGraph: Array<number> = [];
+        const operatorIdsInGraph: Array<number> = [];
 
-        let operators: Array<Operator> = [...initialOperators];
-        let edges: Array<[number, number]> = [];
+        const operators: Array<Operator> = [...initialOperators];
+        const edges: Array<[number, number]> = [];
         while (operators.length > 0) {
-            let operator = operators.pop();
+            const operator = operators.pop();
 
             operatorIdsInGraph.push(operator.id);
 
             // add node to graph
             graph.setNode(`operator_${operator.id}`, {
-                operator: operator,
+                operator,
                 type: 'operator',
                 class: `operator operator_${operator.id}`,
                 labelType: 'html',
@@ -191,7 +195,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             });
 
             // add children
-            for (let resultType of ResultTypes.INPUT_TYPES) {
+            for (const resultType of ResultTypes.INPUT_TYPES) {
                 operator.getSources(resultType).forEach(child => {
                     operators.push(child);
                     edges.push([child.id, operator.id]);
@@ -200,7 +204,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         }
 
         // add edges to graph
-        for (let [sourceId, targetId] of edges) {
+        for (const [sourceId, targetId] of edges) {
             graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`);
         }
 
@@ -214,7 +218,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                              layers: Array<Layer<AbstractSymbology>>,
                              layersToAccent: Array<Layer<AbstractSymbology>>,
                              operatorIdsInGraph: Array<number>) {
-        for (let layer of layers) {
+        for (const layer of layers) {
             // operator of layer is contained in graph
             if (operatorIdsInGraph.indexOf(layer.operator.id) >= 0) {
                 // add node
@@ -286,7 +290,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                 this.parameters$.next(
                     operator.operatorType.getParametersAsStrings().map(([key, value]) => {
                         return {
-                            key: key,
+                            key,
                             value: value.toString(),
                         };
                     })
@@ -340,4 +344,21 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         };
     }
 
+    isModifyableOperator(): Observable<boolean> {
+        return this.selectedOperator$.pipe(
+            map(operator => operator.operatorType instanceof ChronicleDBSourceType)
+        );
+    }
+
+    modifyAndDuplicate() {
+        this.selectedOperator$.pipe(first()).subscribe(operator => {
+            this.layoutService.setSidenavContentComponent({
+                component: ChronicleDbSourceComponent,
+                config: {
+                    copyFrom: operator,
+                }
+            });
+            this.dialogRef.close();
+        });
+    }
 }

@@ -1,7 +1,6 @@
-
 import {of as observableOf, Observable} from 'rxjs';
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {MappingSource, SourceRasterLayerDescription, SourceVectorLayerDescription} from '../mapping-source.model';
+import {MappingSource, SourceVectorLayerDescription} from '../mapping-source.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import { VectorLayer} from '../../../../layers/layer.model';
@@ -63,7 +62,7 @@ export class VectorSourceDatasetComponent implements OnInit {
             case ResultTypes.POINTS: {
                 symbology = ComplexPointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    colorizer: layer.colorizer
+                    fillColorizer: layer.colorizer
                 });
                 clustered = true;
                 break;
@@ -71,7 +70,7 @@ export class VectorSourceDatasetComponent implements OnInit {
             case ResultTypes.POLYGONS: {
                 symbology = ComplexVectorSymbology.createSimpleSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    colorizer: layer.colorizer
+                    fillColorizer: layer.colorizer
                 });
                 break;
             }
@@ -90,9 +89,9 @@ export class VectorSourceDatasetComponent implements OnInit {
 
         const l = new VectorLayer({
             name: layer.name,
-            operator: operator,
-            symbology: symbology,
-            clustered: clustered,
+            operator,
+            symbology,
+            clustered,
         });
         this.projectService.addLayer(l);
     }
@@ -105,7 +104,7 @@ export class VectorSourceDatasetComponent implements OnInit {
         return this._tableSource;
     }
 
-    get displayedColumns(): Array<String> {
+    get displayedColumns(): Array<string> {
         return this._displayedColumns;
     }
 
@@ -123,8 +122,6 @@ export class VectorSourceDatasetComponent implements OnInit {
 
     /**
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
-     * @param {SourceVectorLayerDescription} channel
-     * @returns {Operator}
      */
     createOgrSourceOperator(layer: SourceVectorLayerDescription): Operator {
         const sourceDataType = ResultTypes.fromCode(layer.geometryType); // TODO: move this to the user service?
@@ -144,14 +141,15 @@ export class VectorSourceDatasetComponent implements OnInit {
             layer_id: layer.id,
             textual: layer.textual,
             numeric: layer.numeric
+
         });
 
         const sourceOperator = new Operator({
-            operatorType: operatorType,
+            operatorType,
             resultType: sourceDataType,
             projection: sourceProjection,
             attributes: [].concat(layer.numeric, layer.textual),
-            dataTypes: dataTypes,
+            dataTypes,
         });
 
         return sourceOperator;
