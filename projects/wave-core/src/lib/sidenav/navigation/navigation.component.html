@@ -1,52 +1,8 @@
 <div>
-    <button mat-raised-button
-            [color]="loginColor$ | async"
-            (click)="layoutService.setSidenavContentComponent({component: LoginComponent})"
-            [matTooltip]="(userService.isGuestUserStream() | async) ? 'Login' : 'User Account'" matTooltipPosition="before"
-    >
-        <mat-icon *waveIfLoggedIn>person</mat-icon>
-        <mat-icon *waveIfGuest>person_outline</mat-icon>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, SourceOperatorListComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
-            matTooltip="Add Data" matTooltipPosition="before"
-    >
-        <mat-icon>add</mat-icon>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, OperatorListComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: OperatorListComponent})"
-            matTooltip="Operators" matTooltipPosition="before"
-    >
-        <span class="icon-cogs"></span>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, PlotListComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: PlotListComponent})"
-            matTooltip="Plots" matTooltipPosition="before"
-    >
-        <mat-icon>equalizer</mat-icon>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, TimeConfigComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: TimeConfigComponent})"
-            matTooltip="Time" matTooltipPosition="before"
-    >
-        <mat-icon>access_time</mat-icon>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, WorkspaceSettingsComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: WorkspaceSettingsComponent})"
-            matTooltip="Workspace" matTooltipPosition="before"
-    >
-        <mat-icon>settings</mat-icon>
-    </button>
-    <button mat-raised-button
-            [color]="buttonColor(layoutService.getSidenavContentComponentStream() | async, HelpComponent)"
-            (click)="layoutService.setSidenavContentComponent({component: HelpComponent})"
-            matTooltip="Help" matTooltipPosition="before"
-    >
-        <mat-icon>help</mat-icon>
+    <button mat-raised-button *ngFor="let button of buttons"
+            [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
+            (click)="setComponent(button.sidenavConfig)"
+            [matTooltip]="button.tooltipObservable ? (button.tooltipObservable | async) : button.tooltip" matTooltipPosition="before">
+        <mat-icon [svgIcon]="button.svgIcon">{{button.iconObservable ? (button.iconObservable | async) : button.icon}}</mat-icon>
     </button>
 </div>

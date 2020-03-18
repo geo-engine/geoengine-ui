@@ -8,7 +8,7 @@
         <wave-ticker-interaction *ngIf="config.COMPONENTS.PLAYBACK.AVAILABLE" class="mat-elevation-z4"></wave-ticker-interaction>
         <div></div> <!-- moves Time Interaction to center (cf. space-around @ flex) -->
     </div>
-    <wave-navigation></wave-navigation>
+    <wave-navigation [buttons]="navigationInput"></wave-navigation>
     <wave-layer-list class="mat-elevation-z4" [height]="middleContainerHeight$ | async"></wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">

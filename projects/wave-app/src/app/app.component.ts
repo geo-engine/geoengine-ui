@@ -46,6 +46,13 @@ import {
     BasketAvailability,
     WorkflowParameterChoiceDialogComponent,
     StorageStatus,
+    NavigationButton,
+    SourceOperatorListComponent,
+    NavigationComponent,
+    OperatorListComponent,
+    TimeConfigComponent,
+    WorkspaceSettingsComponent,
+    HelpComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -70,6 +77,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layersReverse$: Observable<Array<Layer<AbstractSymbology>>>;
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
+
+    readonly navigationInput = this.setupNavigation();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -113,6 +122,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             'logo',
             this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
         );
+
+        // used for navigation
+        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
         switch (this.config.PROJECT) { // project-specific icons
             case 'EUMETSAT':
@@ -209,6 +221,43 @@ export class AppComponent implements OnInit, AfterViewInit {
             default:
             // unhandled message
         }
+    }
+
+    private setupNavigation(): Array<NavigationButton> {
+        return [
+            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
+            {
+                sidenavConfig: {component: SourceOperatorListComponent},
+                icon: 'add',
+                tooltip: 'Add Data',
+            },
+            {
+                sidenavConfig: {component: OperatorListComponent},
+                icon: '',
+                svgIcon: 'cogs',
+                tooltip: 'Operators',
+            },
+            {
+                sidenavConfig: {component: PlotListComponent},
+                icon: 'equalizer',
+                tooltip: 'Plots',
+            },
+            {
+                sidenavConfig: {component: TimeConfigComponent},
+                icon: 'access_time',
+                tooltip: 'Time',
+            },
+            {
+                sidenavConfig: {component: WorkspaceSettingsComponent},
+                icon: 'settings',
+                tooltip: 'Workspace',
+            },
+            {
+                sidenavConfig: {component: HelpComponent},
+                icon: 'help',
+                tooltip: 'Help',
+            },
+        ];
     }
 
     @HostListener('window:resize')
