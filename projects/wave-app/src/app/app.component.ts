@@ -56,6 +56,11 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
+    DEFAULT_MIXED_OPERATOR_DIALOGS,
+    DEFAULT_PLOT_OPERATOR_DIALOGS,
+    DEFAULT_RASTER_OPERATOR_DIALOGS,
+    DEFAULT_VECTOR_OPERATOR_DIALOGS,
+    OperatorListButtonGroups,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -81,7 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly navigationInput = this.setupNavigation();
+    readonly navigationButtons = this.setupNavigation();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -230,12 +235,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: SourceOperatorListComponent, config: {buttons: this.setupSourceOperatorListButtons()}},
+                sidenavConfig: {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}},
                 icon: 'add',
                 tooltip: 'Add Data',
             },
             {
-                sidenavConfig: {component: OperatorListComponent},
+                sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
                 icon: '',
                 svgIcon: 'cogs',
                 tooltip: 'Operators',
@@ -263,7 +268,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         ];
     }
 
-    private setupSourceOperatorListButtons(): Array<SourceOperatorListButton> {
+    private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
         return [
             SourceOperatorListComponent.createDataRepositoryButton(),
             SourceOperatorListComponent.createDrawFeaturesButton(),
@@ -275,6 +280,15 @@ export class AppComponent implements OnInit, AfterViewInit {
                 sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
             },
             SourceOperatorListComponent.createCountryPolygonsButton(),
+        ];
+    }
+
+    private static createOperatorListButtons(): OperatorListButtonGroups {
+        return [
+            {name: 'Mixed', list: DEFAULT_MIXED_OPERATOR_DIALOGS},
+            {name: 'Plots', list: DEFAULT_PLOT_OPERATOR_DIALOGS},
+            {name: 'Raster', list: DEFAULT_RASTER_OPERATOR_DIALOGS},
+            {name: 'Vector', list: DEFAULT_VECTOR_OPERATOR_DIALOGS},
         ];
     }
 
@@ -451,4 +465,5 @@ export class AppComponent implements OnInit, AfterViewInit {
             })
         );
     }
+
 }

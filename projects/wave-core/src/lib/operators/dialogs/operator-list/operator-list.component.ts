@@ -1,7 +1,7 @@
-import {Observable, BehaviorSubject, of as observableOf, combineLatest as observableCombineLatest} from 'rxjs';
-
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Component, OnInit, ChangeDetectionStrategy, Type} from '@angular/core';
+
+import {ChangeDetectionStrategy, Component, Input, OnInit, Type} from '@angular/core';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 
 import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
@@ -31,27 +31,21 @@ import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-
 import {OperatorType} from '../../operator-type.model';
 import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 import {HeatmapType} from '../../types/heatmap-type.model';
-import {TerminologyLookupOperatorComponent} from '../terminology-lookup/terminology-lookup.component';
-import {TerminologyLookupType} from '../../types/terminology-lookup-type';
 import {TimePlotType} from '../../types/timeplot-type.model';
 import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
-import {Config} from '../../../config.service';
-import {SpectralOverviewPlotComponent} from '../spectral-overview-plot/spectral-overview-plot.component';
-import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
 import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
 
-interface OperatorListType {
+export interface OperatorListType {
     component: Type<any>;
     type: { NAME: string, ICON_URL: string };
     description: string;
-    projectScope?: string; // are operators only part of a specific project?
 }
 
-const MIXED_OPERATORS: Array<OperatorListType> = [
+export const DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
     {
         component: RasterValueExtractionOperatorComponent,
         type: RasterValueExtractionType,
@@ -72,7 +66,7 @@ const MIXED_OPERATORS: Array<OperatorListType> = [
     }
 ];
 
-const PLOT_OPERATORS: Array<OperatorListType> = [
+export const DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
     {
         component: HistogramOperatorComponent,
         type: HistogramType,
@@ -94,11 +88,6 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
         description: 'Box plot your data'
     },
     {
-        component: SpectralOverviewPlotComponent,
-        type: SpectralOverviewPlotType,
-        description: SpectralOverviewPlotType.NAME,
-    },
-    {
         component: StatisticsPlotComponent,
         type: StatisticsType,
         description: 'Get statistics for any layer'
@@ -110,7 +99,7 @@ const PLOT_OPERATORS: Array<OperatorListType> = [
     }
 ];
 
-const RASTER_OPERATORS: Array<OperatorListType> = [
+export const DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
     {
         component: ExpressionOperatorComponent,
         type: ExpressionType,
@@ -131,7 +120,7 @@ const RASTER_OPERATORS: Array<OperatorListType> = [
     }
 ];
 
-const VECTOR_OPERATORS: Array<OperatorListType> = [
+export const DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [
     {
         component: NumericAttributeFilterOperatorComponent,
         type: NumericAttributeFilterType,
@@ -152,19 +141,18 @@ const VECTOR_OPERATORS: Array<OperatorListType> = [
         type: TextualAttributeFilterType,
         description: 'Filter data via text filter',
     },
-    {
-        component: TerminologyLookupOperatorComponent,
-        type: TerminologyLookupType,
-        description: 'Terminology lookup',
-        projectScope: 'GFBio',
-    }
 ];
 
-const ALL_OPERATORS: Array<{ name: string, list: Array<OperatorListType> }> = [
-    {name: 'Mixed', list: MIXED_OPERATORS},
-    {name: 'Plots', list: PLOT_OPERATORS},
-    {name: 'Raster', list: RASTER_OPERATORS},
-    {name: 'Vector', list: VECTOR_OPERATORS},
+export type OperatorListButtonGroups = Array<{
+    name: string;
+    list: Array<OperatorListType>;
+}>;
+
+const DEFAULT_OPERATOR_DIALOGS: OperatorListButtonGroups = [
+    {name: 'Mixed', list: DEFAULT_MIXED_OPERATOR_DIALOGS},
+    {name: 'Plots', list: DEFAULT_PLOT_OPERATOR_DIALOGS},
+    {name: 'Raster', list: DEFAULT_RASTER_OPERATOR_DIALOGS},
+    {name: 'Vector', list: DEFAULT_VECTOR_OPERATOR_DIALOGS},
 ];
 
 @Component({
@@ -175,47 +163,50 @@ const ALL_OPERATORS: Array<{ name: string, list: Array<OperatorListType> }> = [
 })
 export class OperatorListComponent implements OnInit {
 
+    @Input() operators: OperatorListButtonGroups = DEFAULT_OPERATOR_DIALOGS;
+
     operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
     searchString$ = new BehaviorSubject<string>('');
 
-    constructor(private layoutService: LayoutService,
-                private config: Config) {
+    constructor(private layoutService: LayoutService) {
     }
 
     ngOnInit() {
-        this.operatorGroups$ = observableCombineLatest(
-            observableOf(ALL_OPERATORS),
+        this.operatorGroups$ = combineLatest([
+            of(this.operators),
             this.searchString$.pipe(map(s => s.toLowerCase())),
-            (operatorGroups, searchString) => {
-                const nameComparator = (a: string, b: string): number => {
-                    const stripped = (s: string): string => s.replace(' ', '');
+        ]).pipe(
+            map(([operatorGroups, searchString]) => {
+                    const nameComparator = (a: string, b: string): number => {
+                        const stripped = (s: string): string => s.replace(' ', '');
 
-                    return stripped(a).localeCompare(stripped(b));
-                };
+                        return stripped(a).localeCompare(stripped(b));
+                    };
 
-                const filteredGroups = [];
-                for (const group of operatorGroups) {
-                    const operators = [];
-                    for (const operator of group.list) {
-                        const inProjectScope = () => !operator.projectScope || operator.projectScope === this.config.PROJECT;
-                        const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().indexOf(searchString) >= 0;
-                        const searchMatchesDescription = () => operator.description.toLowerCase().indexOf(searchString) >= 0;
+                    const filteredGroups = [];
+                    for (const group of operatorGroups) {
+                        const operators = [];
+                        for (const operator of group.list) {
+                            const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
+                            const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
 
-                        if (inProjectScope() && (searchMatchesTypeName() || searchMatchesDescription())) {
-                            operators.push(operator);
+
+                            if (searchMatchesTypeName() || searchMatchesDescription()) {
+                                operators.push(operator);
+                            }
+                        }
+
+                        if (operators.length > 0) {
+                            filteredGroups.push({
+                                name: group.name,
+                                list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
+                            });
                         }
                     }
 
-                    if (operators.length > 0) {
-                        filteredGroups.push({
-                            name: group.name,
-                            list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
-                        });
-                    }
+                    return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
                 }
-
-                return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
-            }
+            ),
         );
     }
 
