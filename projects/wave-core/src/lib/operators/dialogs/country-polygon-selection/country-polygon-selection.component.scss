@@ -1,0 +1,25 @@
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
+    display: none;
+}
+
+p {
+    color: var(--wave-foreground-secondary-text-color, black);
+}
+
+mat-row {
+    cursor: pointer;
+}
+
+mat-row:hover {
+    background-color: var(--wave-background-hover-color, grey);
+}
+
+mat-cell ::ng-deep .highlight {
+    color: var(--wave-accent-color, grey);
+}
+
+mat-progress-spinner {
+    width: 25%;
+    height: auto;
+    margin: 2rem auto;
+}

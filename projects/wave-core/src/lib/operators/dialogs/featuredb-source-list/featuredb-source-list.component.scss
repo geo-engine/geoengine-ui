@@ -1,0 +1,15 @@
+mat-toolbar ::ng-deep mat-toolbar-row:first-child {
+    display: none;
+}
+
+mat-list-item {
+    cursor: pointer;
+}
+
+p {
+    color: var(--wave-foreground-secondary-text-color, grey);
+}
+
+mat-list-item ::ng-deep .highlight {
+    color: var(--wave-accent-color, grey);
+}

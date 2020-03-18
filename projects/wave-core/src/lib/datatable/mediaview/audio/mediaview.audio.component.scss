@@ -1,0 +1,37 @@
+$mat-icon-button-size: 40px !default; // TODO: import when this is possible again
+
+.audioContainer {
+
+    mat-card {
+        width: calc(100% - 2rem);
+        margin: 1rem;
+        padding: 0;
+    }
+
+    audio {
+        width: 100%;
+        margin: 0;
+        display: block;
+    }
+
+    .info {
+        float: left;
+        width: 100%;
+
+        h3 {
+            float: left;
+            margin: 1rem;
+            width: calc(100% - 4rem - #{$mat-icon-button-size});
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+        }
+
+        .externalLink {
+            float: right;
+            margin: 1rem;
+        }
+    }
+}
+
+

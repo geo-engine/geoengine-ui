@@ -1,0 +1,34 @@
+.datagroup {
+    color: var(--wave-primary-color, black) !important;
+}
+
+.datagroup a {
+    color: var(--wave-primary-color, black) !important;
+}
+
+.item {
+    width: 100%;
+    cursor: pointer;
+}
+
+.highlight,
+mat-list-item ::ng-deep .highlight {
+    color: var(--wave-accent-color, grey);
+    text-decoration: underline;
+}
+
+mat-list-item ::ng-deep .mat-list-item-content {
+    height: auto !important;
+}
+
+img {
+    padding: 5px 5px 5px 0;
+}
+
+.secondary_action {
+    float: right;
+}
+
+.error {
+    text-align: center;
+}
