@@ -1,6 +1,6 @@
 <div fxLayout="column">
     <div fxLayout="row" fxLayoutAlign="start center">
-        <mat-icon mat-list-icon svgIcon="symbology:polygon"
+        <mat-icon mat-list-icon [svgIcon]='symbology.symbologyIconName'
                   [style.stroke-width.px]='symbology?.strokeWidth'
                   [style.stroke]='symbology?.strokeRGBA.rgbaCssString()'
                   [style.fill]='symbology?.fillRGBA.rgbaCssString()'
@@ -10,7 +10,7 @@
     </div>
 
     <div *ngFor='let brk of $any(symbology)?.breakpoints' fxLayoutAlign="start center">
-        <mat-icon mat-list-icon svgIcon="symbology:polygon"
+        <mat-icon mat-list-icon [svgIcon]='symbology.symbologyIconName'
                   [style.stroke-width.px]='symbology.strokeWidth'
                   [style.stroke]='symbology.strokeRGBA.rgbaCssString()'
                   [style.fill]='brk.rgba.rgbaCssString()'

@@ -6,7 +6,7 @@ import {DataType, DataTypes} from '../../../datatype.model';
 import { VectorLayer} from '../../../../layers/layer.model';
 import {
     ComplexPointSymbology,
-    ComplexVectorSymbology, LineSymbology,
+    ComplexVectorSymbology, ComplexLineSymbology,
 } from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
@@ -75,7 +75,7 @@ export class VectorSourceDatasetComponent implements OnInit {
                 break;
             }
             case ResultTypes.LINES: {
-                symbology = LineSymbology.createSymbology({
+                symbology = ComplexLineSymbology.createSimpleSymbology({
                     fillRGBA: WHITE,
                     strokeRGBA: this.randomColorService.getRandomColorRgba(),
                     strokeWidth: 2,

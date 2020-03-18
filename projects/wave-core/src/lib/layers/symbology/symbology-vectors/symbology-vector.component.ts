@@ -25,15 +25,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     static minStrokeWidth = 0;
     static minRadius = 1;
 
-    @Input() editRadius = true;
-    @Input() editFillColor = true;
-    @Input() editStrokeWidth = true;
-    @Input() editStrokeColor = true;
-    @Input() editStrokeDash = true;
-    @Input() editColorizeFillByAttribute = true;
-    @Input() editColorizeStrokeByAttribute = true;
-
-
     @Input() layer: VectorLayer<ComplexPointSymbology> | VectorLayer<ComplexVectorSymbology>;
     @Output() symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
 

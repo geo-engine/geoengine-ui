@@ -9,7 +9,7 @@
         <ng-template [ngIf]="globalPanel.expanded">
 
             <table>
-                <tr *ngIf="editStrokeWidth">
+                <tr *ngIf="symbology.describesElementStroke()">
                     <td>
                         <span>Stroke width</span>
                     </td>
@@ -20,7 +20,7 @@
                         <span>{{sls.displayValue}} px</span>
                     </td>
                 </tr>
-                <tr *ngIf="editRadius">
+                <tr *ngIf="symbology.describesPointsWithRadius()">
                     <td>
                         <span>Radius</span>
                     </td>
@@ -34,17 +34,20 @@
             </table>
             <mat-divider></mat-divider>
 
-            <wave-stroke-dash-select (ngModelChange)="updateStrokeDash($event)" [ngModel]="symbology.strokeDashStyle"
+            <wave-stroke-dash-select *ngIf="symbology.describesElementStroke()"
+                                     (ngModelChange)="updateStrokeDash($event)" [ngModel]="symbology.strokeDashStyle"
                                      [lines]="[[], [5, 5], [10, 10]]">
             </wave-stroke-dash-select>
 
             <mat-divider></mat-divider>
 
             <div>
-                <wave-color-breakpoint [ngModel]="symbology.fillColorBreakpoint" attributePlaceholder="Fill color" disabledAttribute="true"
+                <wave-color-breakpoint *ngIf="symbology.describesElementFill()" [ngModel]="symbology.fillColorBreakpoint"
+                                       attributePlaceholder="Fill color" disabledAttribute="true"
                                        (ngModelChange)="updateFill($event)">
                 </wave-color-breakpoint>
-                <wave-color-breakpoint [ngModel]="symbology.strokeColorBreakpoint" attributePlaceholder="Stroke color"
+                <wave-color-breakpoint *ngIf="symbology.describesElementStroke()" [ngModel]="symbology.strokeColorBreakpoint"
+                                       attributePlaceholder="Stroke color"
                                        disabledAttribute="true"
                                        (ngModelChange)="updateStroke($event)">
                 </wave-color-breakpoint>
@@ -54,7 +57,7 @@
         </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded=true #fillColorByAttributePanel>
+    <mat-expansion-panel *ngIf="symbology.describesElementFill()" expanded=true #fillColorByAttributePanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>map</mat-icon>
@@ -93,14 +96,14 @@
         </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded=true #fillColorByAttributePanel>
+    <mat-expansion-panel *ngIf="symbology.describesElementStroke()" expanded=true #strokeColorByAttributePanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 <mat-icon>map</mat-icon>
                 <span>Stroke Color By Attribute</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-template [ngIf]="fillColorByAttributePanel.expanded">
+        <ng-template [ngIf]="strokeColorByAttributePanel.expanded">
 
             <div>
                 <mat-slide-toggle

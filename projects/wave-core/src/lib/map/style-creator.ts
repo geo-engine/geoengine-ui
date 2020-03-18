@@ -96,10 +96,12 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            const featureFillColorValue = (sym.fillColorAttribute && sym.describesArea()) ? feature.get(sym.fillColorAttribute) : undefined;
+            const featureFillColorValue =
+                (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
-            const styleKey = StyleCreator.buildStyleKey(featureFillColorValue, featureStrokeColorValue, featureTextValue, undefined);
+            const styleKey =
+                StyleCreator.buildStyleKey(featureFillColorValue, featureStrokeColorValue, featureTextValue, undefined);
 
             if (!styleCache[styleKey]) {
                 const fillColorBreakpointLookup = sym.fillColorizer.getBreakpointForValue(featureFillColorValue, true);
@@ -145,7 +147,7 @@ export class StyleCreator {
 
         return (feature: OlFeature, resolution: number) => {
 
-            const featureFillColorValue = (sym.fillColorAttribute && sym.describesArea()) ? feature.get(sym.fillColorAttribute) : undefined;
+            const featureFillColorValue = (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;

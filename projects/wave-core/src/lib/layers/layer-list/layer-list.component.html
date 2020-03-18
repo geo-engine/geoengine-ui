@@ -151,7 +151,7 @@
                                               [style.fill]='$any(layer.symbology).fillRGBA.rgbaCssString()'
                                               [style.stroke-dasharray]='$any(layer.symbology)?.strokeDashStyle'
                                     ></mat-icon>
-                                    <mat-icon *ngSwitchCase="ST.SIMPLE_LINE"
+                                    <mat-icon *ngSwitchCase="ST.COMPLEX_LINE"
                                               mat-list-icon svgIcon="symbology:line"
                                               [style.stroke-width.px]='2'
                                               [style.stroke]='$any(layer.symbology).strokeRGBA.rgbaCssString()'
@@ -202,27 +202,17 @@
                          fxLayout="row"
                          class="legend no-drag">
 
-                        <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-                            <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-point-legend>
-                        </ng-template>
-
-                        <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-                            <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
-                            </wave-point-legend>
-                        </ng-template>
-
                         <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
                             <wave-point-legend fxFlex="grow" [symbology]="layer.symbology">
                             </wave-point-legend>
                         </ng-template>
 
-                        <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
+                        <ng-template [ngSwitchCase]="ST.COMPLEX_LINE">
                             <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology">
                             </wave-vector-legend>
                         </ng-template>
 
-                        <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+                        <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
                             <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology">
                             </wave-vector-legend>
                         </ng-template>

@@ -49,7 +49,9 @@ export abstract class AbstractSymbology implements ISymbology {
                 return new ComplexPointSymbology(dict as ComplexPointSymbologyDict);
 
             case SymbologyType[SymbologyType.SIMPLE_LINE]:
-                return LineSymbology.createSymbology(dict as VectorSymbologyDict);
+                return ComplexLineSymbology.createSimpleSymbology(dict as VectorSymbologyDict);
+            case SymbologyType[SymbologyType.COMPLEX_LINE]:
+                return ComplexLineSymbology.createSymbology(dict as VectorSymbologyDict);
 
             case SymbologyType[SymbologyType.SIMPLE_VECTOR]:
                 return ComplexVectorSymbology.createSimpleSymbology(dict as VectorSymbologyDict);
@@ -110,8 +112,27 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
     _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'});
     strokeWidth = 1;
 
-    abstract describesArea(): boolean;
-    abstract describesRadius(): boolean;
+    abstract describesElementFill(): boolean;
+
+    abstract describesElementStroke(): boolean;
+
+    abstract describesPointsWithRadius(): boolean;
+
+    public get symbologyIconName(): string {
+        switch (this.getSymbologyType()) {
+            case SymbologyType.SIMPLE_POINT:
+            case SymbologyType.COMPLEX_POINT:
+                return 'symbology:point';
+            case SymbologyType.SIMPLE_LINE:
+            case SymbologyType.COMPLEX_LINE:
+                return 'symbology:line';
+            case SymbologyType.SIMPLE_VECTOR:
+            case SymbologyType.COMPLEX_VECTOR:
+                return 'symbology:polygon';
+            default:
+                throw new Error(`No symbology icon name defined for ${this.symbologyType}`);
+        }
+    }
 
     // Wrap colors in ColorBreakpoint for easy form usage
     set fillColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
@@ -152,8 +173,8 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
             && this.fillColorBreakpoint.equals(other.fillColorBreakpoint)
             && this.strokeColorBreakpoint.equals(other.strokeColorBreakpoint)
             && this.strokeWidth === other.strokeWidth
-            && this.describesArea() === other.describesArea()
-            && this.describesRadius() === other.describesRadius();
+            && this.describesElementFill() === other.describesElementFill()
+            && this.describesPointsWithRadius() === other.describesPointsWithRadius();
     }
 
 
@@ -175,52 +196,6 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         }
         if (config.strokeWidth) { this.strokeWidth = config.strokeWidth; }
     }
-}
-
-export interface LineSymbologyConfig extends VectorSymbologyConfig {
-    strokeRGBA: RgbaLike;
-    strokeWidth: number;
-}
-
-export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
-
-    constructor(config: LineSymbologyConfig) {
-        super(config);
-    }
-
-    static createSymbology(conf: LineSymbologyConfig): LineSymbology {
-        return new LineSymbology(conf);
-    }
-
-    clone(): LineSymbology {
-        return LineSymbology.createSymbology(this);
-    }
-
-    describesArea(): boolean {
-        return false;
-    }
-
-    describesRadius(): boolean {
-        return false;
-    }
-
-    getSymbologyType(): SymbologyType {
-        return SymbologyType.SIMPLE_LINE;
-    }
-
-    toConfig(): ISymbology {
-        return this.clone();
-    }
-
-    toDict(): VectorSymbologyDict {
-        return {
-            symbologyType: SymbologyType[SymbologyType.SIMPLE_LINE],
-            fillRGBA: this.fillRGBA.rgbaTuple(),
-            strokeRGBA: this.strokeRGBA.rgbaTuple(),
-            strokeWidth: this.strokeWidth
-        };
-    }
-
 }
 
 export type StrokeDashStyle = Array<number>;
@@ -309,21 +284,21 @@ export abstract class AbstractComplexVectorSymbology extends AbstractVectorSymbo
     }
 
     setStrokeColorAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
-        this.fillColorizer = clr;
-        this.fillColorAttribute = name;
+        this.strokeColorizer = clr;
+        this.strokeColorAttribute = name;
     }
 
     setOrUpdateStrokeColorizer(clr: ColorizerData): boolean {
-        if (clr && (!this.fillColorizer || !clr.equals(this.fillColorizer))) {
-            this.fillColorizer = clr;
+        if (clr && (!this.strokeColorizer || !clr.equals(this.strokeColorizer))) {
+            this.strokeColorizer = clr;
             return true;
         }
         return false;
     }
 
     unSetStrokeColorAttribute() {
-        this.fillColorAttribute = undefined;
-        this.fillColorizer = ColorizerData.empty();
+        this.strokeColorAttribute = undefined;
+        this.strokeColorizer = ColorizerData.empty();
     }
 
     setStrokeDashStyle(strokeDashStyle: StrokeDashStyle) {
@@ -381,11 +356,15 @@ export class ComplexLineSymbology extends AbstractComplexVectorSymbology impleme
         return new ComplexLineSymbology(config);
     }
 
-    describesArea(): boolean {
+    describesElementStroke(): boolean {
+        return true;
+    }
+
+    describesElementFill(): boolean {
         return false;
     }
 
-    describesRadius(): boolean {
+    describesPointsWithRadius(): boolean {
         return false;
     }
 
@@ -416,11 +395,15 @@ export class ComplexVectorSymbology extends AbstractComplexVectorSymbology imple
         return new ComplexVectorSymbology(config);
     }
 
-    describesArea(): boolean {
+    describesElementStroke(): boolean {
         return true;
     }
 
-    describesRadius(): boolean {
+    describesElementFill(): boolean {
+        return true;
+    }
+
+    describesPointsWithRadius(): boolean {
         return false;
     }
 
@@ -482,7 +465,7 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
     equals(other: AbstractVectorSymbology) {
         if (other instanceof ComplexPointSymbology) {
             return super.equals(other as AbstractComplexVectorSymbology)
-            && this.radiusAttribute && other.radiusAttribute && this.radiusAttribute === other.radiusAttribute;
+                && this.radiusAttribute && other.radiusAttribute && this.radiusAttribute === other.radiusAttribute;
         }
         return false;
     }
@@ -491,10 +474,15 @@ export class ComplexPointSymbology extends AbstractComplexVectorSymbology implem
         return this.clone();
     }
 
-    describesArea(): boolean {
+    describesElementStroke(): boolean {
         return true;
     }
-    describesRadius(): boolean {
+
+    describesElementFill(): boolean {
+        return true;
+    }
+
+    describesPointsWithRadius(): boolean {
         return true;
     }
 
