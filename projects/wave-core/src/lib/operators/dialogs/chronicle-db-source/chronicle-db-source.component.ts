@@ -5,7 +5,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
-import {ComplexLineSymbology, ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {LineSymbology, PointSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Projections} from '../../projection.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {DataTypes} from '../../datatype.model';
@@ -156,22 +156,22 @@ export class ChronicleDbSourceComponent implements OnInit {
                 switch (resultType) {
                     case ResultTypes.POINTS:
                         if (clustered) {
-                            symbology = ComplexPointSymbology.createClusterSymbology({
+                            symbology = PointSymbology.createClusterSymbology({
                                 fillRGBA: this.randomColorService.getRandomColorRgba(),
                             });
                         } else {
-                            symbology = ComplexPointSymbology.createSimpleSymbology({
+                            symbology = PointSymbology.createSymbology({
                                 fillRGBA: this.randomColorService.getRandomColorRgba(),
                             });
                         }
                         break;
                     case ResultTypes.LINES:
-                        symbology = ComplexLineSymbology.createSimpleSymbology({
+                        symbology = LineSymbology.createSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         });
                         break;
                     case ResultTypes.POLYGONS:
-                        symbology = ComplexVectorSymbology.createSimpleSymbology({
+                        symbology = VectorSymbology.createSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         });
                         break;

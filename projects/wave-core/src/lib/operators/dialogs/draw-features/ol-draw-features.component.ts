@@ -7,9 +7,9 @@ import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
 import {
     AbstractVectorSymbology,
-    ComplexLineSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology
+    LineSymbology,
+    PointSymbology,
+    VectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
@@ -102,17 +102,17 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
         switch (this.selectedFeatureType) {
             case ResultTypes.POINTS:
-                resultSymbology = ComplexPointSymbology.createSimpleSymbology({
+                resultSymbology = PointSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case ResultTypes.POLYGONS:
-                resultSymbology = ComplexVectorSymbology.createSimpleSymbology({
+                resultSymbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case ResultTypes.LINES:
-                resultSymbology = ComplexLineSymbology.createSimpleSymbology({
+                resultSymbology = LineSymbology.createSymbology({
                     strokeRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;

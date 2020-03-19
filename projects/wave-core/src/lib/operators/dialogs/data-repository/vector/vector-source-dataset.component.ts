@@ -5,8 +5,8 @@ import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import { VectorLayer} from '../../../../layers/layer.model';
 import {
-    ComplexPointSymbology,
-    ComplexVectorSymbology, ComplexLineSymbology,
+    PointSymbology,
+    VectorSymbology, LineSymbology,
 } from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
@@ -60,7 +60,7 @@ export class VectorSourceDatasetComponent implements OnInit {
         let symbology;
         switch (operator.resultType) {
             case ResultTypes.POINTS: {
-                symbology = ComplexPointSymbology.createClusterSymbology({
+                symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                     fillColorizer: layer.colorizer
                 });
@@ -68,14 +68,14 @@ export class VectorSourceDatasetComponent implements OnInit {
                 break;
             }
             case ResultTypes.POLYGONS: {
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                     fillColorizer: layer.colorizer
                 });
                 break;
             }
             case ResultTypes.LINES: {
-                symbology = ComplexLineSymbology.createSimpleSymbology({
+                symbology = LineSymbology.createSymbology({
                     fillRGBA: WHITE,
                     strokeRGBA: this.randomColorService.getRandomColorRgba(),
                     strokeWidth: 2,

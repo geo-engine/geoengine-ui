@@ -7,7 +7,7 @@ import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 import {
-    AbstractVectorSymbology, ComplexPointSymbology,
+    AbstractVectorSymbology, PointSymbology,
 } from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
@@ -66,20 +66,20 @@ export class PointInPolygonFilterOperatorComponent {
 
         const clustered = pointLayer.clustered;
         const layer = new VectorLayer({
-            name: name,
-            operator: operator,
+            name,
+            operator,
             symbology: clustered ?
-                ComplexPointSymbology.createClusterSymbology({
+                PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }) :
-                new ComplexPointSymbology({
+                PointSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }),
             // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
             //     operator, clustered,
             // }),
             // provenance: this.mappingQueryService.getProvenanceStream(operator),
-            clustered: clustered,
+            clustered,
         });
         // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);

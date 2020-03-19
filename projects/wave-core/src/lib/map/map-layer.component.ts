@@ -4,7 +4,7 @@ import {Subscription} from 'rxjs';
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
-import {AbstractSymbology, AbstractVectorSymbology, MappingColorizerRasterSymbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractVectorSymbology, MappingRasterSymbology} from '../layers/symbology/symbology.model';
 
 import {StyleCreator} from './style-creator';
 import {Layer, LayerChanges, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
@@ -147,7 +147,7 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent implements O
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
-    MappingColorizerRasterSymbology, RasterLayer<MappingColorizerRasterSymbology>> implements OnInit, OnDestroy {
+    MappingRasterSymbology, RasterLayer<MappingRasterSymbology>> implements OnInit, OnDestroy {
 
     private dataSubscription: Subscription;
     private layerChangesSubscription: Subscription;
@@ -182,7 +182,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         });
 
         this.layerChangesSubscription = this.projectService.getLayerChangesStream(this.layer)
-            .subscribe((changes: LayerChanges<MappingColorizerRasterSymbology>) => {
+            .subscribe((changes: LayerChanges<MappingRasterSymbology>) => {
                 this.updateOlLayer(changes);
                 if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
                     this.source.refresh();
@@ -202,7 +202,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    private updateOlLayer(changes: LayerChanges<MappingColorizerRasterSymbology>) {
+    private updateOlLayer(changes: LayerChanges<MappingRasterSymbology>) {
         if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }

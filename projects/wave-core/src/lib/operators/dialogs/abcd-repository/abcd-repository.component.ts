@@ -14,7 +14,7 @@ import {Unit} from '../../unit.model';
 import {UserService} from '../../../users/user.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
-import {ComplexPointSymbology} from '../../../layers/symbology/symbology.model';
+import {PointSymbology} from '../../../layers/symbology/symbology.model';
 import {ProjectService} from '../../../project/project.service';
 
 type Grouped<T> = Iterable<Group<T>>;
@@ -42,10 +42,10 @@ export class AbcdRepositoryComponent {
         private projectService: ProjectService,
     ) {
         this.groups = this.userService.getAbcdArchivesStream().pipe(map(archives => {
-            let groups: {[groupname: string]: Group<AbcdArchive>} = {};
+            const groups: { [groupname: string]: Group<AbcdArchive> } = {};
 
-            for (let a of archives) {
-                if ( !groups[a.provider] ) {
+            for (const a of archives) {
+                if (!groups[a.provider]) {
                     groups[a.provider] = {
                         group: [],
                         name: a.provider,
@@ -56,7 +56,7 @@ export class AbcdRepositoryComponent {
 
             const iterableGroups: Array<Group<AbcdArchive>> = [];
             const keys = Object.keys(groups).sort();
-            for (let key of keys) {
+            for (const key of keys) {
                 const value = groups[key];
                 value.group = value.group.sort((x, y) => (x.dataset < y.dataset) ? 0 : 1);
                 iterableGroups.push(value);
@@ -79,7 +79,7 @@ export class AbcdRepositoryComponent {
 
         this.userService.getSourceSchemaAbcd().pipe(first()).subscribe(sourceSchema => {
 
-            for (let attribute of sourceSchema) {
+            for (const attribute of sourceSchema) {
 
                 if (attribute.numeric) {
                     basicColumns.numeric.push(attribute.name);
@@ -104,16 +104,16 @@ export class AbcdRepositoryComponent {
                 operatorType: new ABCDSourceType(sourceTypeConfig),
                 resultType: ResultTypes.POINTS,
                 projection: Projections.WGS_84,
-                attributes: attributes,
-                dataTypes: dataTypes,
-                units: units,
+                attributes,
+                dataTypes,
+                units,
             });
 
             const clustered = true;
-            const layer = new VectorLayer<ComplexPointSymbology>({
+            const layer = new VectorLayer<PointSymbology>({
                 name: archive.dataset,
-                operator: operator,
-                symbology: ComplexPointSymbology.createClusterSymbology({
+                operator,
+                symbology: PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }),
                 // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
@@ -121,7 +121,7 @@ export class AbcdRepositoryComponent {
                 //    clustered,
                 // }),
                 // provenance: this.mappingQueryService.getProvenanceStream(operator),
-                clustered: clustered,
+                clustered,
             });
             // this.layerService.addLayer(layer);
             this.projectService.addLayer(layer);

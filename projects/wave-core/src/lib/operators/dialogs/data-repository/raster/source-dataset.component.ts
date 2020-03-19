@@ -7,7 +7,7 @@ import {ResultTypes} from '../../../result-type.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
 import {RasterLayer} from '../../../../layers/layer.model';
-import {MappingColorizerRasterSymbology} from '../../../../layers/symbology/symbology.model';
+import {MappingRasterSymbology} from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
@@ -39,9 +39,6 @@ export class SourceDatasetComponent implements OnInit {
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
-     * @param {IColorizerData} colorizerConfig
-     * @param {MappingTransform} transform
-     * @returns {IColorizerData}
      */
     static createAndTransformColorizer(colorizerConfig: IColorizerData, transform: MappingTransform): IColorizerData {
         if (transform) {
@@ -114,8 +111,8 @@ export class SourceDatasetComponent implements OnInit {
 
         const layer = new RasterLayer({
             name: channel.name,
-            operator: operator,
-            symbology: new MappingColorizerRasterSymbology({
+            operator,
+            symbology: MappingRasterSymbology.createSymbology({
                 unit: (doTransform) ? channel.transform.unit : unit,
                 colorizer: colorizerConfig,
             }),
@@ -140,7 +137,7 @@ export class SourceDatasetComponent implements OnInit {
         return this._channelSource;
     }
 
-    get displayedColumns(): Array<String> {
+    get displayedColumns(): Array<string> {
         return this._displayedColumns;
     }
 
@@ -162,9 +159,6 @@ export class SourceDatasetComponent implements OnInit {
 
     /**
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
-     * @param {SourceRasterLayerDescription} channel
-     * @param {boolean} doTransform
-     * @returns {Operator}
      */
     createGdalSourceOperator(channel: SourceRasterLayerDescription, doTransform: boolean): Operator {
         const sourceDataType = channel.datatype;
@@ -201,7 +195,7 @@ export class SourceDatasetComponent implements OnInit {
         });
 
         const sourceOperator = new Operator({
-            operatorType: operatorType,
+            operatorType,
             operatorTypeParameterOptions: operatorParameterOptions,
             resultType: ResultTypes.RASTER,
             projection: sourceProjection,
@@ -258,7 +252,7 @@ export class SourceDatasetComponent implements OnInit {
         });
 
         const operator = new Operator({
-            operatorType: operatorType,
+            operatorType,
             resultType: ResultTypes.RASTER,
             projection: sourceProjection,
             attributes: ['value'],

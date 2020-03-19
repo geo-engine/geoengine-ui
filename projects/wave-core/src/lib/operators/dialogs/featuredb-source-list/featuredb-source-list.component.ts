@@ -9,8 +9,8 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology
+    PointSymbology,
+    VectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {CsvDialogComponent} from '../csv/csv-dialog/csv-dialog.component';
@@ -72,12 +72,12 @@ export class FeaturedbSourceListComponent implements OnInit {
         let clustered: boolean;
 
         if (entry.operator.resultType === ResultTypes.POINTS) {
-            symbology = ComplexPointSymbology.createClusterSymbology({
+            symbology = PointSymbology.createClusterSymbology({
                 fillRGBA: color,
             });
             clustered = true;
         } else {
-            symbology = ComplexVectorSymbology.createSimpleSymbology({
+            symbology = VectorSymbology.createSymbology({
                 fillRGBA: color,
             });
             clustered = false;
@@ -86,8 +86,8 @@ export class FeaturedbSourceListComponent implements OnInit {
         const layer = new VectorLayer({
             name: entry.name,
             operator: entry.operator,
-            symbology: symbology,
-            clustered: clustered,
+            symbology,
+            clustered,
         });
         this.projectService.addLayer(layer);
     }

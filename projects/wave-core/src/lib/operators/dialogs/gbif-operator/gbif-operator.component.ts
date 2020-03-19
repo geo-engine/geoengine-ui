@@ -12,9 +12,9 @@ import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology,
-    MappingColorizerRasterSymbology
+    PointSymbology,
+    VectorSymbology,
+    MappingRasterSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {BasicColumns} from '../baskets/csv.model';
@@ -244,7 +244,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 resultType: ResultTypes.POINTS
             };
 
-         this.addVectorLayer(source, layerName);
+            this.addVectorLayer(source, layerName);
         }
     }
 
@@ -261,12 +261,12 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         let symbology: AbstractVectorSymbology;
         switch (source.resultType) {
             case ResultTypes.POINTS:
-                symbology = ComplexPointSymbology.createClusterSymbology({
+                symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case ResultTypes.POLYGONS:
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
@@ -277,9 +277,9 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         const clustered = source.resultType === ResultTypes.POINTS;
         const layer = new VectorLayer({
             name: `${layerName} (${source.name})`,
-            operator: operator,
-            symbology: symbology,
-            clustered: clustered,
+            operator,
+            symbology,
+            clustered,
         });
 
         this.projectService.addLayer(layer);
@@ -297,7 +297,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             unit: '',
             interpolation: Interpolation.Continuous,
             min: 0,
-            max: max
+            max
         });
 
         const heatmapOperator = new Operator({
@@ -316,7 +316,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projectService.addLayer(new RasterLayer({
             name: `${layerName} (${source.name})`,
             operator: heatmapOperator,
-            symbology: new MappingColorizerRasterSymbology({
+            symbology: MappingRasterSymbology.createSymbology({
                 unit: countUnit,
             }),
         }));

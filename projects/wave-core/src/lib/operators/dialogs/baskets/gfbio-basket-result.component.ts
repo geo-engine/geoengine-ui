@@ -1,9 +1,9 @@
-import {Input, Component, Directive} from '@angular/core';
+import {Input, Directive} from '@angular/core';
 import {IBasketResult} from './gfbio-basket.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {VectorLayer} from '../../../layers/layer.model';
-import {ComplexPointSymbology, ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {PointSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {LayerService} from '../../../layers/layer.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -30,13 +30,13 @@ export abstract class BasketResultComponent<T extends IBasketResult> {
 
         switch (operator.resultType) {
             case ResultTypes.POINTS:
-                symbology = ComplexPointSymbology.createClusterSymbology({
+                symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 clustered = true;
                 break;
             case ResultTypes.POLYGONS:
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
@@ -45,10 +45,10 @@ export abstract class BasketResultComponent<T extends IBasketResult> {
         }
 
         const layer = new VectorLayer({
-            name: name,
-            operator: operator,
-            symbology: symbology,
-            clustered: clustered,
+            name,
+            operator,
+            symbology,
+            clustered,
         });
         this.projectService.addLayer(layer);
     }

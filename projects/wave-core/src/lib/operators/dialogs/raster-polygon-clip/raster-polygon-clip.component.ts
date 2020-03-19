@@ -5,7 +5,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {RasterLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {AbstractRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -45,7 +45,7 @@ export class RasterPolygonClipOperatorComponent implements OnInit {
             return;
         }
 
-        const rasterLayer: RasterLayer<RasterSymbology> = this.form.controls['rasterLayer'].value;
+        const rasterLayer: RasterLayer<AbstractRasterSymbology> = this.form.controls['rasterLayer'].value;
         const rasterOperator: Operator = rasterLayer.operator;
         const polygonOperator: Operator = this.form.controls['polygonLayer'].value.operator;
 
@@ -76,7 +76,7 @@ export class RasterPolygonClipOperatorComponent implements OnInit {
         });
 
         const layer = new RasterLayer({
-            name: name,
+            name,
             operator: expressionOperator,
             symbology: rasterLayer.symbology,
         });

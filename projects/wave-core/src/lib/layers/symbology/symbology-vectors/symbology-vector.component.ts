@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
-import {ComplexPointSymbology, ComplexVectorSymbology, StrokeDashStyle, SymbologyType} from '../symbology.model';
+import {PointSymbology, VectorSymbology, StrokeDashStyle, SymbologyType} from '../symbology.model';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
@@ -25,10 +25,10 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     static minStrokeWidth = 0;
     static minRadius = 1;
 
-    @Input() layer: VectorLayer<ComplexPointSymbology> | VectorLayer<ComplexVectorSymbology>;
-    @Output() symbologyChanged = new EventEmitter<ComplexPointSymbology | ComplexVectorSymbology>();
+    @Input() layer: VectorLayer<PointSymbology> | VectorLayer<VectorSymbology>;
+    @Output() symbologyChanged = new EventEmitter<PointSymbology | VectorSymbology>();
 
-    symbology: ComplexPointSymbology | ComplexVectorSymbology;
+    symbology: PointSymbology | VectorSymbology;
 
     fillByAttribute = false;
     strokeByAttribute = false;
@@ -95,7 +95,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     setRadiusAttribute() {
         console.log('setRadiusAttribute');
-        if (this.symbology instanceof ComplexPointSymbology) {
+        if (this.symbology instanceof PointSymbology) {
             console.log('setRadiusAttribute', 'instanceof');
             if (this.radiusByAttribute && this.radiusAttribute) {
                 this.symbology.setRadiusAttribute(this.radiusAttribute.name);
@@ -167,7 +167,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     updateRadius(event: MatSliderChange) {
 
-        if (!(this.symbology instanceof ComplexPointSymbology)) {
+        if (!(this.symbology instanceof PointSymbology)) {
             console.error('SymbologyVectorComponent: cant change radius for non point symbology');
             return;
         }

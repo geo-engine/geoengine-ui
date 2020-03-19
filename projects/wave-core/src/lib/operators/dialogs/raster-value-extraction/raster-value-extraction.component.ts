@@ -7,8 +7,8 @@ import {Subscription} from 'rxjs';
 import {VectorLayer} from '../../../layers/layer.model';
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology
+    PointSymbology,
+    VectorSymbology
 } from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
@@ -18,9 +18,6 @@ import {ProjectService} from '../../../project/project.service';
 /**
  * Checks for collisions of value name.
  * Uses `startsWith` semantics.
- * @param {FormControl} vectorLayerControl
- * @param {FormArray} valueNames
- * @returns {(control: FormControl) => {[p: string]: boolean}}
  */
 function valueNameCollision(vectorLayerControl: FormControl, valueNames: FormArray) {
     return (control: FormControl): { [key: string]: boolean } => {
@@ -179,10 +176,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 clustered = this.form.controls['vectorLayer'].value.clustered;
 
                 symbology = clustered ?
-                    ComplexPointSymbology.createClusterSymbology({
+                    PointSymbology.createClusterSymbology({
                         fillRGBA: this.randomColorService.getRandomColorRgba(),
                     }) :
-                    ComplexPointSymbology.createSimpleSymbology({
+                    PointSymbology.createSymbology({
                         fillRGBA: this.randomColorService.getRandomColorRgba(),
                     });
 
@@ -194,7 +191,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
                 break;
             case ResultTypes.POLYGONS:
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
 
@@ -219,8 +216,8 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                 yResolution: resolutionY,
                 attributeNames: valueNames,
             }),
-            resultType: resultType,
-            projection: projection,
+            resultType,
+            projection,
             attributes: attributes.asImmutable(),  // immutable!
             dataTypes: dataTypes.asImmutable(),  // immutable!
             units: units.asImmutable(), // immutable!
@@ -231,10 +228,10 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         });
 
         const layer = new VectorLayer({
-            name: name,
-            operator: operator,
-            symbology: symbology,
-            clustered: clustered,
+            name,
+            operator,
+            symbology,
+            clustered,
         });
 
         this.projectService.addLayer(layer);

@@ -3,7 +3,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {ProjectService} from '../../../project/project.service';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology, RasterSymbology, AbstractSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingRasterSymbology, AbstractRasterSymbology, AbstractSymbology} from '../../../layers/symbology/symbology.model';
 import {Interpolation, Unit} from '../../unit.model';
 import {Operator} from '../../operator.model';
 import {NotificationService} from '../../../notification.service';
@@ -43,19 +43,19 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.form = new FormGroup({
-            'inputLayers': new FormControl(
+            inputLayers: new FormControl(
                 undefined,
                 [Validators.required, Validators.minLength(this.numberOfRasters), Validators.maxLength(this.numberOfRasters)],
             ),
-            'redMin': new FormControl(undefined, [WaveValidators.isNumber]),
-            'redMax': new FormControl(undefined, [WaveValidators.isNumber]),
-            'redScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
-            'greenMin': new FormControl(undefined, [WaveValidators.isNumber]),
-            'greenMax': new FormControl(undefined, [WaveValidators.isNumber]),
-            'greenScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
-            'blueMin': new FormControl(undefined, [WaveValidators.isNumber]),
-            'blueMax': new FormControl(undefined, [WaveValidators.isNumber]),
-            'blueScale': new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
+            redMin: new FormControl(undefined, [WaveValidators.isNumber]),
+            redMax: new FormControl(undefined, [WaveValidators.isNumber]),
+            redScale: new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
+            greenMin: new FormControl(undefined, [WaveValidators.isNumber]),
+            greenMax: new FormControl(undefined, [WaveValidators.isNumber]),
+            greenScale: new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
+            blueMin: new FormControl(undefined, [WaveValidators.isNumber]),
+            blueMax: new FormControl(undefined, [WaveValidators.isNumber]),
+            blueScale: new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
         });
 
         this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
@@ -67,7 +67,7 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         }));
 
         this.inputLayersubscriptions = this.form.controls['inputLayers'].valueChanges
-            .subscribe((inputLayers: Array<RasterLayer<RasterSymbology>>) => { // set meaningful default values if possible
+            .subscribe((inputLayers: Array<RasterLayer<AbstractRasterSymbology>>) => { // set meaningful default values if possible
                 const colors = ['red', 'green', 'blue'];
                 inputLayers.forEach((inputRaster, i) => {
                     if (inputRaster && !this.form.controls[`${colors[i]}Min`].value) {
@@ -92,7 +92,7 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
     }
 
     add() {
-        const inputs: Array<RasterLayer<RasterSymbology>> = this.form.controls['inputLayers'].value;
+        const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
         const operators = inputs.map(layer => layer.operator);
 
         if (inputs.length !== 3) {
@@ -128,14 +128,14 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
                     rasterBlueMax: this.form.controls['blueMax'].value,
                     rasterBlueScale: this.form.controls['blueScale'].value,
                 }),
-                projection: projection,
+                projection,
                 rasterSources: operators,
                 resultType: ResultTypes.RASTER,
                 attributes: ['value'],
                 dataTypes: new Map<string, DataType>().set('value', DataTypes.UInt32),
                 units: new Map<string, Unit>().set('value', unit),
             }),
-            symbology: new MappingColorizerRasterSymbology({
+            symbology: MappingRasterSymbology.createSymbology({
                 unit,
                 colorizer: new ColorizerData({
                     breakpoints: [
@@ -152,7 +152,7 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         this.isRasterStatsLoading$.next(true);
 
         this.projectService.getTimeStream().pipe(first()).subscribe(time => {
-            const inputs: Array<RasterLayer<RasterSymbology>> = this.form.controls['inputLayers'].value;
+            const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
             const operators = inputs.map(layer => layer.operator);
 
             const operatorA = operators[0];
@@ -165,16 +165,16 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
                     raster_width: 1024,
                     raster_height: 1024,
                 }),
-                projection: projection,
+                projection,
                 rasterSources: [operatorA, operatorB, operatorC],
                 resultType: ResultTypes.PLOT,
             });
 
             this.mappingQueryService.getPlotData({
                 extent: projection.getExtent(),
-                operator: operator,
-                projection: projection,
-                time: time,
+                operator,
+                projection,
+                time,
             }).subscribe(result => {
                 const rasterStatistics = ((result as any) as RasterStatisticsType).data.rasters;
 

@@ -4,8 +4,8 @@ import {Operator, OperatorDict} from '../operators/operator.model';
 import {
     AbstractSymbology,
     AbstractVectorSymbology,
-    MappingColorizerRasterSymbology,
-    RasterSymbology,
+    MappingRasterSymbology,
+    AbstractRasterSymbology,
     SymbologyDict,
 } from './symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
@@ -130,7 +130,7 @@ interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConf
     clustered?: boolean;
 }
 
-interface RasterLayerConfig<S extends RasterSymbology> extends LayerConfig<S> { // tslint:disable-line:no-empty-interface
+interface RasterLayerConfig<S extends AbstractRasterSymbology> extends LayerConfig<S> { // tslint:disable-line:no-empty-interface
 }
 
 type LayerType = 'raster' | 'vector';
@@ -203,8 +203,6 @@ export abstract class Layer<S extends AbstractSymbology> {
     /**
      * Changes the underlying data
      * Do not use this method publically!!!
-     * @param data
-     * @private
      */
     _changeUnderlyingData(data: LayerChanges<S>): LayerChanges<S> {
 
@@ -301,12 +299,12 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
         return new VectorLayer({
             name: dict.name,
-            operator: operator,
+            operator,
             symbology: AbstractSymbology.fromDict(dict.symbology) as AbstractVectorSymbology,
             visible: dict.visible,
             expanded: dict.expanded,
             editSymbology: dict.editSymbology,
-            clustered: clustered,
+            clustered,
         });
     }
 
@@ -327,16 +325,16 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
 
 }
 
-export class RasterLayer<S extends RasterSymbology> extends Layer<S> {
+export class RasterLayer<S extends AbstractRasterSymbology> extends Layer<S> {
 
-    static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<RasterSymbology> {
+    static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<AbstractRasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
-        const symbology = AbstractSymbology.fromDict(dict.symbology) as RasterSymbology | MappingColorizerRasterSymbology;
+        const symbology = AbstractSymbology.fromDict(dict.symbology) as AbstractRasterSymbology | MappingRasterSymbology;
 
         return new RasterLayer({
             name: dict.name,
-            operator: operator,
-            symbology: symbology,
+            operator,
+            symbology,
             visible: dict.visible,
             expanded: dict.expanded,
             editSymbology: dict.editSymbology,

@@ -12,8 +12,8 @@ import {Feature as OlFeature} from 'ol';
 
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology,
+    PointSymbology,
+    VectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
     DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR,
     SymbologyType
@@ -30,17 +30,17 @@ export class StyleCreator {
                 return StyleCreator.fromSimpleVectorSymbology(sym);
 
             case SymbologyType.SIMPLE_POINT:
-                return StyleCreator.fromSimplePointSymbology(sym as ComplexPointSymbology);
+                return StyleCreator.fromSimplePointSymbology(sym as PointSymbology);
 
 
             case SymbologyType.COMPLEX_POINT:
-                return StyleCreator.fromComplexPointSymbology(sym as ComplexPointSymbology);
+                return StyleCreator.fromComplexPointSymbology(sym as PointSymbology);
 
             case SymbologyType.COMPLEX_LINE:
-                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
+                return StyleCreator.fromComplexVectorSymbology(sym as VectorSymbology);
 
             case SymbologyType.COMPLEX_VECTOR:
-                return StyleCreator.fromComplexVectorSymbology(sym as ComplexVectorSymbology);
+                return StyleCreator.fromComplexVectorSymbology(sym as VectorSymbology);
 
             default:
                 console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType());
@@ -69,7 +69,7 @@ export class StyleCreator {
         });
     }
 
-    static fromSimplePointSymbology(sym: ComplexPointSymbology): OlStyle {
+    static fromSimplePointSymbology(sym: PointSymbology): OlStyle {
         return new OlStyle({
             image: new OlStyleCircle({
                 radius: sym.radius,
@@ -90,7 +90,7 @@ export class StyleCreator {
             + `${featureTextValue}${VALUE_SEPARATOR_SYMBOL}${featureRadiusValue}`;
     }
 
-    static fromComplexVectorSymbology(sym: ComplexVectorSymbology): OlStyleFunction {
+    static fromComplexVectorSymbology(sym: VectorSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
 
@@ -141,13 +141,14 @@ export class StyleCreator {
         };
     }
 
-    static fromComplexPointSymbology(sym: ComplexPointSymbology): OlStyleFunction {
+    static fromComplexPointSymbology(sym: PointSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
-        const styleCache: {[key: string]: OlStyle} = {};
+        const styleCache: { [key: string]: OlStyle } = {};
 
         return (feature: OlFeature, resolution: number) => {
 
-            const featureFillColorValue = (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
+            const featureFillColorValue =
+                (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
             const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
             const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
