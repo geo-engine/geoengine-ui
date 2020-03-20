@@ -49,7 +49,6 @@ import {
     OperatorListComponent,
     TimeConfigComponent,
     WorkspaceSettingsComponent,
-    HelpComponent,
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
@@ -80,6 +79,7 @@ import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-
 import {ABCDSourceType} from './operators/types/abcd-source-type.model';
 import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
+import {HelpComponent} from './help/help.component';
 
 @Component({
     selector: 'wave-gfbio-root',

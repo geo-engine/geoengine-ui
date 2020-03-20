@@ -36,6 +36,7 @@ import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {GFBioMappingQueryService} from './queries/mapping-query.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
+import { HelpComponent } from './help/help.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.compo
         PangaeaBasketResultComponent,
         SplashDialogComponent,
         TerminologyLookupOperatorComponent,
+        HelpComponent,
     ],
     imports: [
         BrowserAnimationsModule,

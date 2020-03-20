@@ -49,7 +49,7 @@ import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.compo
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
-import {FeedbackComponent} from './help/feedback/feedback.component';
+import {HelpFeedbackComponent} from './help/feedback/help-feedback.component';
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
 import {VatLogoComponent} from './logo.component';
@@ -157,6 +157,15 @@ import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 import {CommonModule} from '@angular/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {HelpAboutComponent} from './help/about/help-about.component';
+import {HelpGeneralInformationComponent} from './help/general-information/help-general-information.component';
+import {HelpQuickDemoComponent} from './help/quick-demo/help-quick-demo.component';
+import {HelpOverviewComponent} from './help/overview/help-overview.component';
+import {HelpAccountComponent} from './help/account/help-account.component';
+import {HelpDataComponent} from './help/data/help-data.component';
+import {HelpOperatorsComponent} from './help/operators/help-operators.component';
+import {HelpLineageComponent} from './help/lineage/help-lineage.component';
+import {HelpExportComponent} from './help/export/help-export.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -226,10 +235,19 @@ const WAVE_PIPES = [
         DialogSectionHeadingComponent,
         ExpressionOperatorComponent,
         FeaturedbSourceListComponent,
-        FeedbackComponent,
         GbifOperatorComponent,
         HeatmapOperatorComponent,
+        HelpAboutComponent,
+        HelpAccountComponent,
         HelpComponent,
+        HelpDataComponent,
+        HelpExportComponent,
+        HelpFeedbackComponent,
+        HelpGeneralInformationComponent,
+        HelpLineageComponent,
+        HelpOperatorsComponent,
+        HelpOverviewComponent,
+        HelpQuickDemoComponent,
         HistogramComponent,
         HistogramOperatorComponent,
         IfGuestDirective,
@@ -335,7 +353,17 @@ const WAVE_PIPES = [
         DialogHelpComponent,
         DialogSectionHeadingComponent,
         GbifOperatorComponent,
+        HelpAboutComponent,
+        HelpAccountComponent,
         HelpComponent,
+        HelpDataComponent,
+        HelpExportComponent,
+        HelpFeedbackComponent,
+        HelpGeneralInformationComponent,
+        HelpLineageComponent,
+        HelpOperatorsComponent,
+        HelpOverviewComponent,
+        HelpQuickDemoComponent,
         LayerListComponent,
         LayerSelectionComponent,
         LoginComponent,

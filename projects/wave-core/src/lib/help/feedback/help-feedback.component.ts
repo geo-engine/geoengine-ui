@@ -3,11 +3,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /** @title Feedback component */
 @Component({
-    selector: 'wave-feedback',
-    templateUrl: 'feedback.component.html',
-    styleUrls: ['feedback.component.scss']
+    selector: 'wave-help-feedback',
+    templateUrl: 'help-feedback.component.html',
+    styleUrls: ['help-feedback.component.scss']
 })
-export class FeedbackComponent implements OnInit {
+export class HelpFeedbackComponent implements OnInit {
 
     form: FormGroup;
 
