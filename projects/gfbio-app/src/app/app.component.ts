@@ -38,7 +38,6 @@ import {
     ComplexPointSymbology,
     ComplexVectorSymbology,
     PlotListComponent,
-    SplashDialogComponent,
     UnexpectedResultType,
     Operator,
     AbstractVectorSymbology,
@@ -80,6 +79,7 @@ import {LoginComponent} from './login/login.component';
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {ABCDSourceType} from './operators/types/abcd-source-type.model';
 import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.component';
+import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 
 @Component({
     selector: 'wave-gfbio-root',

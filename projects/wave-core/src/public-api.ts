@@ -24,7 +24,6 @@ export * from './lib/datatable/table/table.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
-export * from './lib/dialogs/splash-dialog/splash-dialog.component';
 export * from './lib/help/help.component';
 export * from './lib/layers/layer-list/layer-list.component';
 export * from './lib/layers/symbology/symbology-raster/symbology-raster.component';

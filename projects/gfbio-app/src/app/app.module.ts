@@ -35,6 +35,7 @@ import {
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {GFBioMappingQueryService} from './queries/mapping-query.service';
+import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import {GFBioMappingQueryService} from './queries/mapping-query.service';
         GroupedAbcdBasketResultComponent,
         LoginComponent,
         PangaeaBasketResultComponent,
+        SplashDialogComponent,
         TerminologyLookupOperatorComponent,
     ],
     imports: [
@@ -55,7 +57,6 @@ import {GFBioMappingQueryService} from './queries/mapping-query.service';
         WaveCoreModule,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => () => config.load(),
@@ -70,13 +71,14 @@ import {GFBioMappingQueryService} from './queries/mapping-query.service';
         },
         LayerService,
         LayoutService,
-        {provide: MappingQueryService, useClass: GFBioMappingQueryService},
         MapService,
         NotificationService,
         ProjectService,
         RandomColorService,
         SidenavRef,
         StorageService,
+        {provide: Config, useClass: AppConfig},
+        {provide: MappingQueryService, useClass: GFBioMappingQueryService},
         {provide: UserService, useClass: GFBioUserService},
     ],
     bootstrap: [AppComponent],

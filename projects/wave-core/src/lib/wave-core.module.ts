@@ -52,7 +52,7 @@ import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source
 import {FeedbackComponent} from './help/feedback/feedback.component';
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
-import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
+import {VatLogoComponent} from './logo.component';
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {HelpComponent} from './help/help.component';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
@@ -130,7 +130,6 @@ import {SmallTimeInteractionComponent} from './time/small-time-interaction/small
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {SourceOperatorListComponent} from './operators/dialogs/source-operator-list/source-operator-list.component';
-import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
@@ -229,12 +228,10 @@ const WAVE_PIPES = [
         FeaturedbSourceListComponent,
         FeedbackComponent,
         GbifOperatorComponent,
-        GFBioLogoComponent,
         HeatmapOperatorComponent,
         HelpComponent,
         HistogramComponent,
         HistogramOperatorComponent,
-        IdessaLogoComponent,
         IfGuestDirective,
         IfLoggedInDirective,
         LayerExportComponent,
@@ -298,7 +295,6 @@ const WAVE_PIPES = [
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SpectralOverviewPlotComponent,
-        SplashDialogComponent,
         StatisticsPlotComponent,
         SymbologyEditorComponent,
         SymbologyRasterComponent,
@@ -361,7 +357,6 @@ const WAVE_PIPES = [
         SidenavSearchComponent,
         SmallTimeInteractionComponent,
         SourceOperatorListComponent,
-        SplashDialogComponent,
         TableComponent,
         TickerInteractionComponent,
         TimeConfigComponent,

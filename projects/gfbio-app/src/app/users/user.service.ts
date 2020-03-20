@@ -75,14 +75,15 @@ export class GFBioUserService extends UserService {
         return this.http.get<string | { exception: string, message: string }>(
             this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
             {headers: parameters.getHeaders()}
-        ).pipe(mergeMap(response => {
-            if (typeof response === 'string') {
-                return of(response); // token
-            } else {
-                const result: { exception: string, message: string } = response;
-                return throwError(result.message);
-            }
-        }));
+        ).pipe(
+            mergeMap(response => {
+                if (typeof response === 'string') {
+                    return of(response); // token
+                } else {
+                    return throwError(response.message);
+                }
+            }),
+        );
     }
 
     /**
@@ -140,6 +141,15 @@ export class GFBioUserService extends UserService {
         });
 
         return super.loginRequestToUserDetails(parameters);
+    }
+
+    setIntroductoryPopup(show: boolean) {
+        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
+    }
+
+    shouldShowIntroductoryPopup(): boolean {
+        const show = localStorage.getItem('showIntroductoryPopup');
+        return show === null || JSON.parse(show);
     }
 
 }

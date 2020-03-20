@@ -384,15 +384,6 @@ export class UserService {
         return this.rasterSourceError$;
     }
 
-    setIntroductoryPopup(show: boolean) {
-        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
-    }
-
-    shouldShowIntroductoryPopup(): boolean {
-        const show = localStorage.getItem('showIntroductoryPopup');
-        return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
-    }
-
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
         if (this.isGuestUser()) {
             return observableOf([]);
