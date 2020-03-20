@@ -52,10 +52,6 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
-    DEFAULT_MIXED_OPERATOR_DIALOGS,
-    DEFAULT_PLOT_OPERATOR_DIALOGS,
-    DEFAULT_RASTER_OPERATOR_DIALOGS,
-    DEFAULT_VECTOR_OPERATOR_DIALOGS,
     OperatorListButtonGroups,
 } from 'wave-core';
 
@@ -299,13 +295,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static createOperatorListButtons(): OperatorListButtonGroups {
         return [
-            {name: 'Mixed', list: DEFAULT_MIXED_OPERATOR_DIALOGS},
-            {name: 'Plots', list: DEFAULT_PLOT_OPERATOR_DIALOGS},
-            {name: 'Raster', list: DEFAULT_RASTER_OPERATOR_DIALOGS},
+            {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
+            {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
+            {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
             {
                 name: 'Vector',
                 list: [
-                    ...DEFAULT_VECTOR_OPERATOR_DIALOGS,
+                    ...OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS,
                     {
                         component: TerminologyLookupOperatorComponent,
                         type: TerminologyLookupType,

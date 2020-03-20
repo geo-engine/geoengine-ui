@@ -36,7 +36,7 @@ import {AppConfig} from './app-config.service';
         {provide: Config, useClass: AppConfig},
         {
             provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => appInitializer(config),
+            useFactory: (config: AppConfig) => () => config.load(),
             deps: [Config],
             multi: true,
         },
@@ -54,8 +54,4 @@ import {AppConfig} from './app-config.service';
     bootstrap: [AppComponent],
 })
 export class AppModule {
-}
-
-function appInitializer(config: AppConfig) {
-    config.load().then();
 }

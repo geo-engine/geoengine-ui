@@ -1,50 +1,39 @@
-<ng-template [ngIf]="!useSsoLogin && (isLoggedOut$ | async)">
-    <wave-sidenav-header>Login</wave-sidenav-header>
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <mat-card class="info" *ngIf="loginForm.controls.loginAuthority.value === 'gfbio'">
-            In case you are using the new GFBio Single Sign On, please login via <a href="https://www.gfbio.org">www.gfbio.org</a>.
-            You can still login with your legacy GFBio account.
-        </mat-card>
-        <mat-form-field>
-            <input matInput type="text" placeholder="Username" formControlName="username">
-        </mat-form-field>
-        <mat-form-field>
-            <input matInput type="password" placeholder="Password" formControlName="password">
-        </mat-form-field>
-        <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
-        <mat-checkbox formControlName="staySignedIn">Stay signed in</mat-checkbox>
-        <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
-            Login
-        </button>
-    </form>
-</ng-template>
-<ng-template [ngIf]="useSsoLogin && (isLoggedOut$ | async)">
-    <wave-sidenav-header>Login</wave-sidenav-header>
-    <div class="container">
-        <button mat-raised-button type="button" (click)="jwtNature40Login()">
-            <mat-icon svgIcon="nature40:icon"></mat-icon>
-            Continue with LOEWE Nature 4.0 Single Sign On
-        </button>
-    </div>
-</ng-template>
-<ng-template [ngIf]="isLoading$ | async">
-    <mat-spinner></mat-spinner>
-</ng-template>
-<ng-template [ngIf]="isLoggedIn$ | async">
-    <wave-sidenav-header>User Info</wave-sidenav-header>
-    <div fxLayout="row" class="container">
-        <div class="label">
-            <p>Username</p>
-            <p>Real Name</p>
-            <p>E-Mail</p>
+<ng-container [ngSwitch]="formStatus$ | async">
+    <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
+        <wave-sidenav-header>Login</wave-sidenav-header>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <mat-form-field>
+                <input matInput type="text" placeholder="Username" formControlName="username">
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="password" placeholder="Password" formControlName="password">
+            </mat-form-field>
+            <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
+            <mat-checkbox formControlName="staySignedIn">Stay signed in</mat-checkbox>
+            <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
+                Login
+            </button>
+        </form>
+    </ng-template>
+    <ng-template [ngSwitchCase]="FormStatus.Loading">
+        <mat-spinner></mat-spinner>
+    </ng-template>
+    <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
+        <wave-sidenav-header>User Info</wave-sidenav-header>
+        <div fxLayout="row" class="container">
+            <div class="label">
+                <p>Username</p>
+                <p>Real Name</p>
+                <p>E-Mail</p>
+            </div>
+            <div>
+                <p>{{(user | async).name}}</p>
+                <p>{{(user | async).realName}}</p>
+                <p>{{(user | async).email}}</p>
+            </div>
         </div>
-        <div>
-            <p>{{(user | async).name}}</p>
-            <p>{{(user | async).realName}}</p>
-            <p>{{(user | async).email}}</p>
+        <div fxLayout="row" class="container">
+            <button mat-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
         </div>
-    </div>
-    <div fxLayout="row" class="container">
-        <button mat-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
-    </div>
-</ng-template>
+    </ng-template>
+</ng-container>
