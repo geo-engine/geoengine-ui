@@ -22,7 +22,7 @@ enum FormStatus {
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    readonly useSsoLogin = ['Nature40'].includes(this.config.PROJECT);
+    readonly useSsoLogin = false; // ['Nature40'].includes(this.config.PROJECT); TODO: REMOVE
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     isLoggedIn$: Observable<boolean>;
@@ -39,7 +39,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 private userService: UserService,
                 private notificationService: NotificationService) {
         this.loginForm = this.formBuilder.group({
-            loginAuthority: [this.config.PROJECT === 'GFBio' ? 'gfbio' : 'system', Validators.required],
             username: ['', Validators.compose([
                 Validators.required,
                 WaveValidators.keyword([this.config.USER.GUEST.NAME]),
@@ -77,29 +76,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
     login() {
         this.formStatus$.next(FormStatus.Loading);
 
-        let loginRequest: Observable<boolean>;
-
-        switch (this.loginForm.controls['loginAuthority'].value.toLowerCase()) {
-            case 'gfbio':
-                loginRequest = this.userService.gfbioLogin({
-                    user: this.loginForm.controls['username'].value,
-                    password: this.loginForm.controls['password'].value,
-                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
-                });
-
-                break;
-            case 'system':
-            /* falls through */
-            default:
-                loginRequest = this.userService.login({
-                    user: this.loginForm.controls['username'].value,
-                    password: this.loginForm.controls['password'].value,
-                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
-                });
-                break;
-        }
-
-        loginRequest.subscribe(
+        this.userService.login({
+            user: this.loginForm.controls['username'].value,
+            password: this.loginForm.controls['password'].value,
+            staySignedIn: this.loginForm.controls['staySignedIn'].value,
+        }).subscribe(
             valid => {
                 if (valid) {
                     this.invalidCredentials$.next(false);

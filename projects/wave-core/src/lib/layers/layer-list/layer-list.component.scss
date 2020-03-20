@@ -81,7 +81,7 @@
     width: 100%;
 }
 
-.logo {
+::ng-deep .logo {
     text-align: center;
 
     @media (max-width: 1480px) {

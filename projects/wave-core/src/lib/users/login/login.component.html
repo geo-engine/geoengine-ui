@@ -1,10 +1,6 @@
 <ng-template [ngIf]="!useSsoLogin && (isLoggedOut$ | async)">
     <wave-sidenav-header>Login</wave-sidenav-header>
     <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <mat-button-toggle-group *waveIfGfbio formControlName="loginAuthority" fxLayout="row">
-            <mat-button-toggle value="system" fxFlex>System</mat-button-toggle>
-            <mat-button-toggle value="gfbio" fxFlex><img src="assets/logo_gfbio.png" alt="GFBio"></mat-button-toggle>
-        </mat-button-toggle-group>
         <mat-card class="info" *ngIf="loginForm.controls.loginAuthority.value === 'gfbio'">
             In case you are using the new GFBio Single Sign On, please login via <a href="https://www.gfbio.org">www.gfbio.org</a>.
             You can still login with your legacy GFBio account.
