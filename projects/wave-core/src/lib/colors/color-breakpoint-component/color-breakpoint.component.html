@@ -16,10 +16,24 @@
         >
     </mat-form-field>
 
-    <mat-form-field fxFlex>
-        <input matInput [type]="inputType" [disabled]="disabledAttribute" [placeholder]="attributePlaceholder"
-               [ngModel]="colorBreakpoint?.value"
-               (ngModelChange)="updateValue($event)">
-    </mat-form-field>
+    <ng-container
+        *ngIf="disabledAttribute; then textAttribute; else inputAttribute">
+    </ng-container>
+
+    <ng-template #textAttribute>
+        <div fxFlex>
+            {{colorBreakpoint?.value}}
+        </div>
+    </ng-template>
+
+    <ng-template #inputAttribute>
+        <mat-form-field fxFlex>
+            <input matInput [type]="inputType" [disabled]="disabledAttribute" [placeholder]="attributePlaceholder"
+                   [ngModel]="colorBreakpoint?.value"
+                   (ngModelChange)="updateValue($event)">
+        </mat-form-field>
+    </ng-template>
 
 </div>
+
+

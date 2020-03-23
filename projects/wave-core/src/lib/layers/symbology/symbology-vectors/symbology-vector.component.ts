@@ -261,6 +261,18 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         }
     }
 
+    get fillColorAttributePlaceholder(): string {
+        return (this.fillByAttribute) ? 'Default Fill Color' : 'Fill Color';
+    }
+
+    get strokeColorAttributePlaceholder(): string {
+        return (this.strokeByAttribute) ? 'Default Stroke Color' : 'Stroke Color';
+    }
+
+    get radiusAttributePlaceholder(): string {
+        return (this.radiusByAttribute || this.isClusteredPointSymbology) ? 'Default Radius' : 'Radius';
+    }
+
     get isClusteredPointSymbology(): boolean {
         if (this.symbology instanceof PointSymbology) {
             return this.symbology.clustered;

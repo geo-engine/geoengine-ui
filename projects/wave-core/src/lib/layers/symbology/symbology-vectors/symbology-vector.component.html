@@ -22,7 +22,7 @@
                 </tr>
                 <tr *ngIf="symbology.describesPointsWithRadius()">
                     <td>
-                        <span>Radius</span>
+                        <span>{{radiusAttributePlaceholder}}</span>
                     </td>
                     <td>
                         <mat-slider #slr thumbLabel min="0" max="10" step="1" [value]="$any(symbology).radius"
@@ -40,11 +40,11 @@
 
             <div>
                 <wave-color-breakpoint *ngIf="symbology.describesElementFill()" [ngModel]="symbology.fillColorBreakpoint"
-                                       attributePlaceholder="Fill color" disabledAttribute="true"
+                                       [attributePlaceholder]="fillColorAttributePlaceholder" disabledAttribute="true"
                                        (ngModelChange)="updateFill($event)">
                 </wave-color-breakpoint>
                 <wave-color-breakpoint *ngIf="symbology.describesElementStroke()" [ngModel]="symbology.strokeColorBreakpoint"
-                                       attributePlaceholder="Stroke color"
+                                       [attributePlaceholder]="strokeColorAttributePlaceholder"
                                        disabledAttribute="true"
                                        (ngModelChange)="updateStroke($event)">
                 </wave-color-breakpoint>
@@ -180,7 +180,7 @@
                 </mat-form-field>
             </div>
             <div>
-                <button mat-raised-button (click)="setRadiusAttributeForClustering()" [disabled]="!isClusteredPointSymbology">Set Clustering
+                <button mat-raised-button (click)="setRadiusAttributeForClustering()" *ngIf="isClusteredPointSymbology">Set Clustering
                     Default
                 </button>
             </div>
@@ -225,7 +225,7 @@
                 </mat-form-field>
             </div>
             <div>
-                <button mat-raised-button (click)="setTextAttributeForClustering()" [disabled]="!isClusteredPointSymbology">Set Clustering
+                <button mat-raised-button (click)="setTextAttributeForClustering()" *ngIf="isClusteredPointSymbology">Set Clustering
                     Default
                 </button>
             </div>
