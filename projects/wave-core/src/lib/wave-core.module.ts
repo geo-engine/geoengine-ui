@@ -378,6 +378,7 @@ const MATERIAL_MODULES = [
         ...MATERIAL_MODULES,
         FlexLayoutModule,
         /* library exports */
+        GbifOperatorComponent,
         GroupedAbcdBasketResultComponent,
         HelpComponent,
         LayerListComponent,

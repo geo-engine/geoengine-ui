@@ -1,5 +1,4 @@
-
-import {Subscription, combineLatest as observableCombineLatest} from 'rxjs';
+import {Subscription, combineLatest} from 'rxjs';
 import {
     Component,
     OnInit,
@@ -17,6 +16,7 @@ import {
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
+import {map} from 'rxjs/operators';
 
 @Component({
     selector: 'wave-sidenav-container',
@@ -26,7 +26,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild('target', { read: ViewContainerRef, static: true })
+    @ViewChild('target', {read: ViewContainerRef, static: true})
     target: ViewContainerRef;
 
     @ViewChildren('searchElements', {read: ViewContainerRef})
@@ -34,7 +34,9 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     searchTerm: string;
 
-    componentRef: ComponentRef<Component>;
+    componentRef: ComponentRef<any>;
+
+    private currentSidenavConfig: SidenavConfig;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -52,24 +54,24 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     ngAfterViewInit() {
         this.subscriptions.push(
-            observableCombineLatest(
-                    this.sidenavRef.getSearchComponentStream(),
-                    this.searchElements.changes,
-                    (elements, searchElementsQuery) => [elements, searchElementsQuery.first]
-                )
-                .subscribe(([elements, searchElements]: [Array<ElementRef>, ViewContainerRef]) => {
-                    if (searchElements) {
-                        searchElements.clear();
-                    }
-                    if (elements && searchElements) {
-                        const parent = searchElements.element.nativeElement;
-                        const nodes = elements.map(e => e.nativeElement);
+            combineLatest([
+                this.sidenavRef.getSearchComponentStream(),
+                this.searchElements.changes,
+            ]).pipe(
+                map(([elements, searchElementsQuery]) => [elements, searchElementsQuery.first]),
+            ).subscribe(([elements, searchElements]: [Array<ElementRef>, ViewContainerRef]) => {
+                if (searchElements) {
+                    searchElements.clear();
+                }
+                if (elements && searchElements) {
+                    const parent = searchElements.element.nativeElement;
+                    const nodes = elements.map(e => e.nativeElement);
 
-                        for (let i = 0; i < nodes.length; i++) {
-                            this.renderer.appendChild(parent, nodes[i]);
-                        }
+                    for (const node of nodes) {
+                        this.renderer.appendChild(parent, node);
                     }
-                })
+                }
+            })
         );
     }
 
@@ -84,7 +86,17 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         }
 
         this.sidenavRef.setTitle(undefined);
-        this.sidenavRef.setBackButtonComponent(sidenavConfig ? sidenavConfig.parent : undefined);
+
+        if (!sidenavConfig) {
+            this.sidenavRef.setBackButtonComponent(undefined);
+        } else if (sidenavConfig.parent) {
+            this.sidenavRef.setBackButtonComponent(sidenavConfig.parent);
+        } else if (sidenavConfig.keepParent) {
+            this.sidenavRef.setBackButtonComponent(this.currentSidenavConfig);
+        } else {
+            this.sidenavRef.setBackButtonComponent(undefined);
+        }
+
         this.sidenavRef.removeSearch();
         this.searchTerm = '';
 
@@ -93,7 +105,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             this.componentRef.destroy();
         }
         if (this.target && sidenavConfig && sidenavConfig.component) {
-            let componentFactory = this.componentFactoryResolver.resolveComponentFactory(sidenavConfig.component);
+            const componentFactory = this.componentFactoryResolver.resolveComponentFactory(sidenavConfig.component);
             this.componentRef = this.target.createComponent(componentFactory);
 
             if (sidenavConfig.config) {
@@ -106,6 +118,8 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
             setTimeout(() => this.componentRef.changeDetectorRef.markForCheck());
         }
+
+        this.currentSidenavConfig = sidenavConfig;
     }
 
     close() {
@@ -113,7 +127,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     back() {
-        this.layoutService.setSidenavContentComponent({component: this.sidenavRef.getBackButtonComponent()});
+        this.layoutService.setSidenavContentComponent(this.sidenavRef.getBackButtonComponent());
     }
 
 }

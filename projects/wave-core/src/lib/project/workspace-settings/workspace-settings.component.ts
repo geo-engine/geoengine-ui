@@ -13,13 +13,10 @@ import {SaveProjectAsComponent} from '../save-project-as/save-project-as.compone
 })
 export class WorkspaceSettingsComponent implements OnInit {
 
-    // make available
-    Self = WorkspaceSettingsComponent;
-    ChangeProjectionComponent = ChangeProjectionComponent;
-    NewProjectComponent = NewProjectComponent;
-    LoadProjectComponent = LoadProjectComponent;
-    SaveProjectAsComponent = SaveProjectAsComponent;
-    //
+    readonly ChangeProjectionComponent = ChangeProjectionComponent;
+    readonly NewProjectComponent = NewProjectComponent;
+    readonly LoadProjectComponent = LoadProjectComponent;
+    readonly SaveProjectAsComponent = SaveProjectAsComponent;
 
     constructor(public layoutService: LayoutService) {
     }

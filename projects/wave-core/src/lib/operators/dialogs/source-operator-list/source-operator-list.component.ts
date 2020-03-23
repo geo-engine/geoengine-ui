@@ -1,55 +1,119 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {GbifOperatorComponent} from '../gbif-operator/gbif-operator.component';
-import {GFBioSourceType} from '../../types/gfbio-source-type.model';
-import {LayoutService} from '../../../layout.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {DataRepositoryComponent} from '../data-repository/data-repository.component';
 import {RasterSourceType} from '../../types/raster-source-type.model';
-import {AbcdRepositoryComponent} from '../abcd-repository/abcd-repository.component';
-import {ABCDSourceType} from '../../types/abcd-source-type.model';
 import {CsvSourceType} from '../../types/csv-source-type.model';
-import {GfbioBasketsComponent} from '../baskets/gfbio-baskets.component';
 import {FeaturedbSourceListComponent} from '../featuredb-source-list/featuredb-source-list.component';
+import {UserService} from '../../../users/user.service';
+import {Subscription} from 'rxjs';
 import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from '../country-polygon-selection/country-polygon-selection.component';
-import {Nature40CatalogComponent} from '../nature40-catalog/nature40-catalog.component';
-import {ChronicleDbSourceComponent} from '../chronicle-db-source/chronicle-db-source.component';
+
+export interface SourceOperatorListButton {
+    name: string;
+    description: string;
+    icon?: string;
+    iconSrc?: string;
+    sidenavConfig: SidenavConfig | undefined;
+    onlyIfLoggedIn?: boolean;
+    onlyIfLoggedOut?: boolean;
+}
 
 @Component({
     selector: 'wave-source-operator-list',
     templateUrl: './source-operator-list.component.html',
     styleUrls: ['./source-operator-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SourceOperatorListComponent implements OnInit {
-    // make available
-    SourceOperatorListComponent = SourceOperatorListComponent;
+export class SourceOperatorListComponent implements OnInit, OnDestroy {
 
-    DataRepositoryComponent = DataRepositoryComponent;
-    RasterSourceType = RasterSourceType;
+    @Input() buttons!: Array<SourceOperatorListButton>;
 
-    readonly Nature40CatalogComponent = Nature40CatalogComponent;
+    public isUserLoggedIn = false;
 
-    AbcdRepositoryComponent = AbcdRepositoryComponent;
-    ABCDSourceType = ABCDSourceType;
+    private guestUserStreamSubscription: Subscription;
 
-    FeaturedbSourceListComponent = FeaturedbSourceListComponent;
-    CsvSourceType = CsvSourceType;
-
-    GfbioBasketsComponent = GfbioBasketsComponent;
-
-    GbifOperatorComponent = GbifOperatorComponent;
-    GFBioSourceType = GFBioSourceType;
-
-    DrawFeaturesComponent = OlDrawFeaturesComponent;
-    PolygonSelectionComponent = CountryPolygonSelectionComponent;
-
-    ChronicleDbSourceComponent = ChronicleDbSourceComponent;
-    //
-
-    constructor(public layoutService: LayoutService) {
+    constructor(private changeDetectorRef: ChangeDetectorRef,
+                private layoutService: LayoutService,
+                private userService: UserService) {
     }
 
     ngOnInit() {
+        this.guestUserStreamSubscription = this.userService.isGuestUserStream().subscribe(isGuest => {
+            this.isUserLoggedIn = !isGuest;
+            this.changeDetectorRef.markForCheck();
+        });
     }
 
+    ngOnDestroy() {
+        if (this.guestUserStreamSubscription) {
+            this.guestUserStreamSubscription.unsubscribe();
+        }
+    }
+
+    isShowable(onlyIfLoggedIn?: boolean, onlyIfLoggedOut?: boolean): boolean {
+        if (onlyIfLoggedIn && onlyIfLoggedOut) {
+            return false;
+        } else if (onlyIfLoggedIn) {
+            return this.isUserLoggedIn;
+        } else if (onlyIfLoggedOut) {
+            return !this.isUserLoggedIn;
+        } else {
+            return true;
+        }
+    }
+
+    setComponent(sidenavConfig: SidenavConfig) {
+        if (!sidenavConfig) {
+            return;
+        }
+
+        this.layoutService.setSidenavContentComponent(sidenavConfig);
+    }
+
+    static createDataRepositoryButton(): SourceOperatorListButton {
+        return {
+            name: 'Data Repository',
+            description: 'Generic data repository',
+            iconSrc: RasterSourceType.ICON_URL,
+            sidenavConfig: {component: DataRepositoryComponent, keepParent: true},
+        };
+    }
+
+    static createDrawFeaturesButton(): SourceOperatorListButton {
+        return {
+            name: 'Draw Features',
+            description: 'Draw features on the map',
+            icon: 'create',
+            sidenavConfig: {component: OlDrawFeaturesComponent, keepParent: true},
+        };
+    }
+
+    static createCustomFeaturesButtons(): [SourceOperatorListButton, SourceOperatorListButton] {
+        return [
+            {
+                name: 'Custom Features',
+                description: 'Add and use custom vector features like CSV',
+                iconSrc: CsvSourceType.ICON_URL,
+                sidenavConfig: {component: FeaturedbSourceListComponent, keepParent: true},
+                onlyIfLoggedIn: true,
+            },
+            {
+                name: 'Custom Features',
+                description: 'Log in to use custom vector data from, e.g., CSV files',
+                iconSrc: CsvSourceType.ICON_URL,
+                sidenavConfig: undefined,
+                onlyIfLoggedOut: true,
+            },
+        ];
+    }
+
+    static createCountryPolygonsButton(): SourceOperatorListButton {
+        return {
+            name: 'Country Selection',
+            description: 'Select country borders',
+            icon: 'location_on',
+            sidenavConfig: {component: CountryPolygonSelectionComponent, keepParent: true},
+        };
+    }
 }

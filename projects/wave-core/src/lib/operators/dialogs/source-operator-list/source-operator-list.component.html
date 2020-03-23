@@ -1,83 +1,13 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 <mat-nav-list>
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: DataRepositoryComponent, parent: SourceOperatorListComponent})"
-    >
-        <img mat-list-icon [src]="RasterSourceType.ICON_URL" alt="Data Repository">
-        <h4 mat-line>Data Repository</h4>
-        <p mat-line>Generic Data Repository</p>
-    </mat-list-item>
-    <mat-list-item *waveIfNature40LoggedIn
-                   (click)="layoutService.setSidenavContentComponent({component: Nature40CatalogComponent, parent: SourceOperatorListComponent})">
-        <img mat-list-icon [src]="RasterSourceType.ICON_URL" alt="Nature 4.0 Catalog">
-        <h4 mat-line>Nature 4.0 Catalog</h4>
-        <p mat-line>All the Nature 4.0 data</p>
-    </mat-list-item>
-    <mat-list-item *waveIfNature40AndGuest class="disabled">
-        <img mat-list-icon [src]="RasterSourceType.ICON_URL" alt="Nature 4.0 Catalog">
-        <h4 mat-line>Nature 4.0 Catalog</h4>
-        <p mat-line>Log in to see the Nature 4.0 data</p>
-    </mat-list-item>
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: AbcdRepositoryComponent, parent: SourceOperatorListComponent})"
-        *waveIfGfbio
-    >
-        <img mat-list-icon [src]="ABCDSourceType.ICON_URL" [alt]="ABCDSourceType.NAME">
-        <h4 mat-line>ABCD Archives</h4>
-        <p mat-line>Lookup GFBio ABCD archives</p>
-    </mat-list-item>
-    <mat-list-item *waveIfGuest class="disabled">
-        <img mat-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
-        <h4 mat-line>Custom Features</h4>
-        <p mat-line>Log in to use custom vector data from e.g. CSV files</p>
-    </mat-list-item>
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: FeaturedbSourceListComponent, parent: SourceOperatorListComponent})"
-        *waveIfLoggedIn
-    >
-        <img mat-list-icon [src]="CsvSourceType.ICON_URL" [alt]="CsvSourceType.NAME">
-        <h4 mat-line>Custom Features</h4>
-        <p mat-line>Add and use custom vector features like CSV</p>
-    </mat-list-item>
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: GfbioBasketsComponent, parent: SourceOperatorListComponent})"
-        *waveIfGfbioLoggedIn
-    >
-        <mat-icon mat-list-icon>add_shopping_cart</mat-icon>
-        <h4 mat-line>GFBio Baskets</h4>
-        <p mat-line>Display the GFBio Search Results</p>
-    </mat-list-item>
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: GbifOperatorComponent, parent: SourceOperatorListComponent})"
-        *waveIfGfbio
-    >
-        <img mat-list-icon [src]="GFBioSourceType.ICON_URL" [alt]="GFBioSourceType.NAME">
-        <h4 mat-line>Species Occurrences</h4>
-        <p mat-line>Query data from GBIF</p>
-    </mat-list-item>
-
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: DrawFeaturesComponent, parent: SourceOperatorListComponent})"
-    >
-        <mat-icon mat-list-icon>create</mat-icon>
-        <h4 mat-line>Draw Features</h4>
-        <p mat-line>Draw features on the map</p>
-    </mat-list-item>
-
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: PolygonSelectionComponent, parent: SourceOperatorListComponent})"
-    >
-        <mat-icon mat-list-icon>location_on</mat-icon>
-        <h4 mat-line>Country Selection</h4>
-        <p mat-line>Select Country Borders</p>
-    </mat-list-item>
-
-    <mat-list-item
-        (click)="layoutService.setSidenavContentComponent({component: ChronicleDbSourceComponent, parent: SourceOperatorListComponent})"
-    >
-        <mat-icon mat-list-icon>location_on</mat-icon>
-        <h4 mat-line>ChronicleDB Source</h4>
-        <p mat-line>Select Sensor Data from Chronicle DB</p>
-    </mat-list-item>
-
+    <ng-template ngFor [ngForOf]="buttons" let-button>
+        <mat-list-item *ngIf="isShowable(button.onlyIfLoggedIn, button.onlyIfLoggedOut)"
+                       (click)="setComponent(button.sidenavConfig)"
+                       [ngClass]="{disabled : !button.sidenavConfig}">
+            <img *ngIf="button.iconSrc" mat-list-icon [src]="button.iconSrc" [alt]="button.name">
+            <mat-icon *ngIf="button.icon" mat-list-icon>{{button.icon}}</mat-icon>
+            <h4 mat-line>{{button.name}}</h4>
+            <p mat-line>{{button.description}}</p>
+        </mat-list-item>
+    </ng-template>
 </mat-nav-list>

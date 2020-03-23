@@ -25,9 +25,11 @@ export * from './lib/operators/dialogs/baskets/grouped-abcd-basket-result/groupe
 export * from './lib/operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 export * from './lib/operators/dialogs/baskets/pangaea.model';
 export * from './lib/operators/dialogs/draw-features/ol-draw-features.component';
+export * from './lib/operators/dialogs/gbif-operator/gbif-operator.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/source-operator-list/source-operator-list.component';
 export * from './lib/operators/operator.model';
+export * from './lib/operators/types/gfbio-source-type.model';
 export * from './lib/operators/projection.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/result-type.model';
