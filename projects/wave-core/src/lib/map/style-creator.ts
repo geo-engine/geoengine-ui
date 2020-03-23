@@ -129,7 +129,8 @@ export class StyleCreator {
                     stroke: new OlStyleStroke({
                         color: sym.strokeRGBA.rgbaTuple(),
                         width: sym.textStrokeWidth,
-                    })
+                    }),
+                    overflow: true,
                 });
 
                 const style = new OlStyle({
