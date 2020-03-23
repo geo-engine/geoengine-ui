@@ -16,7 +16,6 @@ export class BasketResultGroupByDatasetPipe implements PipeTransform {
 
                 const unit_type_title_id = BasketResultGroupByDatasetPipe.regex.exec(abcd.title);
                 const title = (unit_type_title_id && unit_type_title_id[3]) ? unit_type_title_id[3] : abcd.title;
-                // console.log('abcd', abcd, unit_type_title_id);
                 const unit = (unit_type_title_id && unit_type_title_id[4]) ? {
                     unitId: unit_type_title_id[4],
                     prefix: unit_type_title_id[1],
