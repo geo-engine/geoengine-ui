@@ -43,7 +43,7 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
-    OperatorListButtonGroups,
+    OperatorListButtonGroups, SidenavConfig,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -70,6 +70,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerDetailViewVisible$: Observable<boolean>;
 
     readonly navigationButtons = this.setupNavigation();
+    readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -184,7 +185,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}},
+                sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
                 tooltip: 'Add Data',
             },
@@ -215,6 +216,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                 tooltip: 'Help',
             },
         ];
+    }
+
+    private static setupAddDataConfig(): SidenavConfig {
+        return {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}};
     }
 
     private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {

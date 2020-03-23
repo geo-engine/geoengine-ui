@@ -18,6 +18,7 @@ import {ProjectService} from '../../project/project.service';
 import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
+import {SidenavConfig} from 'wave-core';
 
 @Component({
     selector: 'wave-layer-list',
@@ -28,6 +29,7 @@ import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-
 export class LayerListComponent implements OnDestroy {
 
     @Input() height: number;
+    @Input() addAFirstLayerSidenavConfig: SidenavConfig = {component: SourceOperatorListComponent};
 
     readonly layerListVisibility$: Observable<boolean>;
     readonly mapIsGrid$: Observable<boolean>;

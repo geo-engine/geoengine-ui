@@ -9,7 +9,9 @@
         <div></div> <!-- moves Time Interaction to center (cf. space-around @ flex) -->
     </div>
     <wave-navigation [buttons]="navigationButtons"></wave-navigation>
-    <wave-layer-list class="mat-elevation-z4" [height]="middleContainerHeight$ | async">
+    <wave-layer-list class="mat-elevation-z4"
+                     [height]="middleContainerHeight$ | async"
+                     [addAFirstLayerSidenavConfig]="addAFirstLayerConfig">
         <div class="logo">
             <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
             <span class="title">VAT</span>

@@ -47,10 +47,9 @@
         <div class="layer-list-box"
              *ngIf="(projectService.getLayerStream() | async)?.length === 0">
             <button mat-button class="no-layer"
-                    (click)="layoutService.setSidenavContentComponent({component: SourceOperatorListComponent})"
+                    (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"
                     matTooltip="Add New Data" matTooltipPosition="after"
-                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-            >
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP">
                 <mat-icon>add</mat-icon>
                 add a first layer
             </button>
