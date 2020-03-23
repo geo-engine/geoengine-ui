@@ -1,12 +1,13 @@
-import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest, partition} from 'rxjs';
-import {toArray, filter, map, tap, first, flatMap} from 'rxjs/operators';
+import {Observable, BehaviorSubject} from 'rxjs';
+import {map, tap, first} from 'rxjs/operators';
 
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    HostListener, Inject,
+    HostListener,
+    Inject,
     OnInit,
     ViewChild, ViewContainerRef
 } from '@angular/core';
@@ -17,7 +18,6 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {
     Layer,
     SidenavContainerComponent,
-    VectorLayer,
     MapContainerComponent,
     AbstractSymbology,
     LayerService,
@@ -35,18 +35,7 @@ import {
     VectorSymbology,
     LineSymbology,
     PlotListComponent,
-    SplashDialogComponent,
-    UnexpectedResultType,
-    IBasketPangaeaResult,
-    IBasketGroupedAbcdResult,
-    PangaeaBasketResultComponent,
-    GroupedAbcdBasketResultComponent,
-    Operator,
-    AbstractVectorSymbology,
-    BasketResult,
-    BasketAvailability,
     WorkflowParameterChoiceDialogComponent,
-    StorageStatus,
     NavigationButton,
     SourceOperatorListComponent,
     NavigationComponent,
@@ -57,11 +46,8 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
-    DEFAULT_MIXED_OPERATOR_DIALOGS,
-    DEFAULT_PLOT_OPERATOR_DIALOGS,
-    DEFAULT_RASTER_OPERATOR_DIALOGS,
-    DEFAULT_VECTOR_OPERATOR_DIALOGS,
     OperatorListButtonGroups,
+    SidenavConfig,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -88,6 +74,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerDetailViewVisible$: Observable<boolean>;
 
     readonly navigationButtons = this.setupNavigation();
+    readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -135,26 +122,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
-        switch (this.config.PROJECT) { // project-specific icons
-            case 'EUMETSAT':
-                break;
-            case 'GFBio':
-                break;
-            case 'GeoBon':
-                this.iconRegistry.addSvgIconInNamespace(
-                    'geobon',
-                    'logo',
-                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
-                );
-                break;
-            case 'Nature40':
-                this.iconRegistry.addSvgIconInNamespace(
-                    'nature40',
-                    'icon',
-                    this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/natur_40_logo.svg'),
-                );
-                break;
-        }
+        // TODO: migrate to geo bon app
+        // this.iconRegistry.addSvgIconInNamespace(
+        //     'geobon',
+        //     'logo',
+        //     this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
+        // );
+        // TODO: migrate to nature 40 app
+        // this.iconRegistry.addSvgIconInNamespace(
+        //     'nature40',
+        //     'icon',
+        //     this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/natur_40_logo.svg'),
+        // );
     }
 
     ngOnInit() {
@@ -187,13 +166,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         });
 
-        // show splash screen
-        if (this.config.PROJECT === 'GFBio' && this.userService.shouldShowIntroductoryPopup()) {
-            setTimeout(() => {
-                this.dialog.open(SplashDialogComponent, {});
-            });
-        }
-
         // notify window parent that this component is ready
         if (parent !== window) {
             parent.postMessage({
@@ -213,30 +185,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layoutService.setLayerDetailViewVisibility(true);
     }
 
-    @HostListener('window:message', ['$event.data'])
-    public handleMessage(message: { type: string }) {
-        switch (message.type) {
-            case 'TOKEN_LOGIN':
-                const tokenMessage = message as { type: string, token: string };
-                this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
-                    this.storageService.getStatus().pipe(
-                        filter(status => status === StorageStatus.OK),
-                        first()
-                    ).subscribe(() => {
-                        this.handleQueryParameters();
-                    });
-                });
-                break;
-            default:
-            // unhandled message
-        }
-    }
-
     private setupNavigation(): Array<NavigationButton> {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}},
+                sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
                 tooltip: 'Add Data',
             },
@@ -269,6 +222,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         ];
     }
 
+    private static setupAddDataConfig(): SidenavConfig {
+        return {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}};
+    }
+
     private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
         return [
             SourceOperatorListComponent.createDataRepositoryButton(),
@@ -286,10 +243,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static createOperatorListButtons(): OperatorListButtonGroups {
         return [
-            {name: 'Mixed', list: DEFAULT_MIXED_OPERATOR_DIALOGS},
-            {name: 'Plots', list: DEFAULT_PLOT_OPERATOR_DIALOGS},
-            {name: 'Raster', list: DEFAULT_RASTER_OPERATOR_DIALOGS},
-            {name: 'Vector', list: DEFAULT_VECTOR_OPERATOR_DIALOGS},
+            {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
+            {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
+            {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
+            {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
         ];
     }
 
@@ -327,35 +284,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.notificationService.error(`Invalid Workflow: »${error}«`);
                         }
                         break;
-                    case 'gfbioBasketId':
-                        try {
-                            const gfbioBasketId: number = JSON.parse(value);
-                            this.projectService.getProjectStream().pipe(
-                                first()
-                            ).subscribe(project => {
-                                this.gfbioBasketIdToLayers(gfbioBasketId)
-                                    .subscribe((importResult: BasketAvailability) => {
-                                            // show popup
-                                            this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-                                                data: {
-                                                    dialogTitle: 'GFBio Basket Import',
-                                                    sourceName: 'GFBio Basket',
-                                                    layers: importResult.availableLayers,
-                                                    nonAvailableNames: importResult.nonAvailableNames,
-                                                    numberOfLayersInProject: project.layers.length,
-                                                },
-                                            });
-                                        },
-                                        error => {
-                                            this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
-                                        },
-                                    );
-                            });
-                        } catch (error) {
-                            this.notificationService.error(`Invalid Workflow: »${error}«`);
-                        }
-                        break;
-                    case 'jws':
+                    case 'jws': // TODO: move to nature 40 app
                     case 'jwt':
                         this.nature40JwtLogin(parameter, value);
                         break;
@@ -380,95 +309,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             error => {
                 this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
             },
-        );
-    }
-
-    private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
-        const [availableEntries, nonAvailableEntries]: [Observable<BasketResult>, Observable<BasketResult>] =
-            partition(
-                this.mappingQueryService
-                    .getGFBioBasket(basketId)
-                    .pipe(
-                        flatMap(basket => observableFrom(basket.results)),
-                    ),
-                (basketResult: BasketResult) => basketResult.available,
-            );
-
-        const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries
-            .pipe(
-                flatMap(basketResult => this.gfbioBasketResultToLayer(basketResult)),
-                toArray(),
-            );
-
-        const nonAvailableNames: Observable<Array<string>> = nonAvailableEntries
-            .pipe(
-                map(basketResult => basketResult.title),
-                toArray(),
-            );
-
-        return combineLatest([availableLayers, nonAvailableNames])
-            .pipe(
-                map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
-                    return {
-                        availableLayers: layers,
-                        nonAvailableNames: names,
-                    } as BasketAvailability;
-                })
-            );
-    }
-
-    private gfbioBasketResultToLayer(result: BasketResult): Observable<VectorLayer<AbstractVectorSymbology>> {
-        let operator$: Observable<Operator>;
-        if (result.type === 'abcd_grouped') {
-            operator$ = this.userService
-                .getSourceSchemaAbcd().pipe(
-                    map(
-                        sourceSchema => GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
-                            result as IBasketGroupedAbcdResult,
-                            sourceSchema,
-                            true
-                        )
-                    )
-                );
-        } else if (result.type === 'pangaea') {
-            operator$ = observableOf(
-                PangaeaBasketResultComponent.createOperatorFromPangaeaData(result as IBasketPangaeaResult)
-            );
-        }
-
-        return operator$.pipe(
-            map(operator => {
-                let clustered = false;
-                let symbology;
-
-                switch (operator.resultType) {
-                    case ResultTypes.POINTS:
-                        symbology = PointSymbology.createClusterSymbology({
-                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                        });
-                        clustered = true;
-                        break;
-                    case ResultTypes.LINES:
-                        symbology = LineSymbology.createSymbology({
-                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                        });
-                        break;
-                    case ResultTypes.POLYGONS:
-                        symbology = VectorSymbology.createSymbology({
-                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                        });
-                        break;
-                    default:
-                        throw new UnexpectedResultType();
-                }
-
-                return new VectorLayer({
-                    name: result.title,
-                    operator,
-                    symbology,
-                    clustered,
-                });
-            })
         );
     }
 

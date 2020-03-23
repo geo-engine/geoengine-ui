@@ -1,7 +1,9 @@
-import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpClientModule} from '@angular/common/http';
+import {RouterModule} from '@angular/router';
 
-import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {
     Config,
@@ -17,19 +19,17 @@ import {
     UserService,
     WaveCoreModule,
 } from 'wave-core';
-import {HttpClientModule} from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppConfig} from './app-config.service';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
     ],
     imports: [
-        AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
         HttpClientModule,
+        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
     ],
     providers: [
@@ -51,7 +51,7 @@ import {AppConfig} from './app-config.service';
         StorageService,
         UserService,
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
 export class AppModule {
 }

@@ -1,18 +1,11 @@
-import {
-    BehaviorSubject, Observable, Subject, combineLatest, throwError as observableThrowError, EMPTY,
-    of as observableOf, ReplaySubject,
-} from 'rxjs';
-
+import {BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of as observableOf, ReplaySubject} from 'rxjs';
 import {catchError, map, tap, switchMap, mergeMap} from 'rxjs/operators';
+
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {Guest, User} from './user.model';
-
 import {MappingRequestParameters, ParametersType, RequestParameters} from '../queries/request-parameters.model';
-import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
-import {Basket} from '../operators/dialogs/baskets/gfbio-basket.model';
-
 import {
     MappingSource,
     SourceRasterLayerDescription,
@@ -20,7 +13,6 @@ import {
     MappingSourceResponse,
     MappingTransform, SourceVectorLayerDescription, ProvenanceInfo, MappingSourceRasterLayerDict, MappingSourceVectorLayerDict
 } from '../operators/dialogs/data-repository/mapping-source.model';
-import {CsvColumn, CsvFile} from '../operators/dialogs/baskets/csv.model';
 
 import {Unit} from '../operators/unit.model';
 import {Config} from '../config.service';
@@ -75,45 +67,23 @@ class LoginRequestParameters extends UserServiceRequestParameters {
     }
 }
 
-class GfbioServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
-        super({
-            service: 'gfbio',
-            request: config.request,
-            sessionToken: config.sessionToken,
-            parameters: config.parameters,
-        });
-    }
-}
-
-class GFBioPortalLoginRequestParameters extends RequestParameters {
-    constructor(config: { username: string, password: string }) {
-        super();
-        this.addAuthentication(config.username, config.password);
-    }
-}
-
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
  */
 @Injectable()
 export class UserService {
-    private readonly user$: BehaviorSubject<User>;
-    private readonly session$: BehaviorSubject<Session>;
+    protected readonly user$: BehaviorSubject<User>;
+    protected readonly session$: BehaviorSubject<Session>;
 
-    private readonly isGuestUser$: Observable<boolean>;
+    protected readonly isGuestUser$: Observable<boolean>;
 
-    private rasterSources$ = new BehaviorSubject<Array<MappingSource>>([]);
-    private rasterSourceError$ = new BehaviorSubject<boolean>(false);
-    private reloadRasterSources$ = new BehaviorSubject<void>(undefined);
+    protected rasterSources$ = new BehaviorSubject<Array<MappingSource>>([]);
+    protected rasterSourceError$ = new BehaviorSubject<boolean>(false);
+    protected reloadRasterSources$ = new BehaviorSubject<void>(undefined);
 
-    constructor(private config: Config,
-                private http: HttpClient,
-                private notificationService: NotificationService) {
+    constructor(protected readonly config: Config,
+                protected readonly http: HttpClient,
+                protected readonly notificationService: NotificationService) {
         this.session$ = new BehaviorSubject(
             this.loadSessionData()
         );
@@ -237,13 +207,13 @@ export class UserService {
             service: 'nature40',
             sessionToken: undefined,
             request: 'login',
-            parameters: {token: token},
+            parameters: {token},
         });
 
         return this.loginRequestToUserDetails(parameters);
     }
 
-    private loginRequestToUserDetails(parameters: MappingRequestParameters) {
+    protected loginRequestToUserDetails(parameters: MappingRequestParameters) {
         const subject = new Subject<boolean>();
 
         this.request<{ result: string | boolean, session: string }>(parameters).pipe(
@@ -389,7 +359,7 @@ export class UserService {
      * @param details.email     The E-Mail address
      */
     changeDetails(details: { realName: string, email: string }) {
-        let user = this.getUser();
+        const user = this.getUser();
         user.realName = details.realName;
         user.email = details.email;
 
@@ -414,146 +384,6 @@ export class UserService {
         return this.rasterSourceError$;
     }
 
-    /**
-     * Get as stream of CSV sources depending on the logged in user. TODO: should this be a service?
-     */
-    getCsvStream(): Observable<Array<CsvFile>> {
-        const csvSourcesUrl = './assets/csv-data-sources.json';
-
-        return this.http.get<Array<CsvFile>>(csvSourcesUrl);
-    }
-
-    /**
-     * Get the schema of a source operator. TODO: this should be replaced by a generic service call, which resolves the shema of a source.
-     */
-    getSourceSchemaAbcd(): Observable<Array<CsvColumn>> {
-        const jsonUrl = './assets/abcd-mandatory-fields.json';
-
-        return this.http.get<Array<CsvColumn>>(jsonUrl);
-    }
-
-    /**
-     * Get as stream of Abcd sources depending on the logged in user.
-     */
-    getAbcdArchivesStream(): Observable<Array<AbcdArchive>> {
-        interface AbcdResponse {
-            archives: Array<AbcdArchive>;
-            result: boolean;
-        }
-
-        return this.getSessionStream().pipe(switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'abcd',
-                sessionToken: session.sessionToken,
-            });
-            return this.request<AbcdResponse>(parameters).pipe(map(abcdResponse => abcdResponse.archives));
-        }));
-    }
-
-    /**
-     * Get as stream of GFBio baskets sources depending on the logged in user.
-     */
-    getGfbioBasketStream(): Observable<Array<Basket>> {
-        interface GfbioBasketResponse {
-            baskets: Array<Basket>;
-            result: boolean;
-        }
-
-        return this.getSessionStream().pipe(switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'baskets',
-                sessionToken: session.sessionToken,
-            });
-            return this.request<GfbioBasketResponse>(parameters).pipe(map(gfbioBasketResponse => gfbioBasketResponse.baskets));
-        }));
-    }
-
-    /**
-     * Get the GFBio login token from the portal.
-     * Get the GFBio login token from the portal.
-     */
-    getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
-        const parameters = new GFBioPortalLoginRequestParameters(credentials);
-
-        return this.http.get<string | { exception: string, message: string }>(
-            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
-            {headers: parameters.getHeaders()}
-        ).pipe(mergeMap(response => {
-            if (typeof response === 'string') {
-                return observableOf(response); // token
-            } else {
-                const result: { exception: string, message: string } = response;
-                return observableThrowError(result.message);
-            }
-        }));
-    }
-
-    /**
-     * Login using gfbio credentials. If it was successful, set a new user.
-     * @param credentials.user The user name.
-     * @param credentials.password The user's password.
-     * @returns `true` if the login was succesful, `false` otherwise.
-     */
-    gfbioLogin(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
-        if (!credentials.staySignedIn) {
-            credentials.staySignedIn = true;
-        }
-
-        const token$ = this.getGFBioToken({
-            username: credentials.user,
-            password: credentials.password,
-        });
-        return token$.pipe(mergeMap(token => {
-                const parameters = new MappingRequestParameters({
-                    service: 'gfbio',
-                    sessionToken: undefined,
-                    request: 'login',
-                    parameters: {token: token},
-                });
-                return this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-                    map(response => {
-                        const success = typeof response.result === 'boolean' && response.result === true;
-
-                        if (success) {
-                            this.session$.next({
-                                user: credentials.user,
-                                sessionToken: response.session,
-                                staySignedIn: credentials.staySignedIn,
-                                isExternallyConnected: true,
-                            });
-                        }
-
-                        return success;
-                    }));
-            }
-        ));
-    }
-
-    /**
-     * Login using the gfbio token. If it was successful, set a new user.
-     * @param token The user's token.
-     * @returns `true` if the login was succesful, `false` otherwise.
-     */
-    gfbioTokenLogin(token: string): Observable<boolean> {
-        const parameters = new MappingRequestParameters({
-            service: 'gfbio',
-            sessionToken: undefined,
-            request: 'login',
-            parameters: {token: token},
-        });
-
-        return this.loginRequestToUserDetails(parameters);
-    }
-
-    setIntroductoryPopup(show: boolean) {
-        localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
-    }
-
-    shouldShowIntroductoryPopup(): boolean {
-        const show = localStorage.getItem('showIntroductoryPopup');
-        return show === null || JSON.parse(show); // tslint:disable-line:no-null-keyword
-    }
-
     getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
         if (this.isGuestUser()) {
             return observableOf([]);
@@ -574,7 +404,7 @@ export class UserService {
             .request<FeatureDBListEntry>(
                 new FeatureDBServiceUploadParameters({
                     sessionToken: this.session$.getValue().sessionToken,
-                    name: name,
+                    name,
                     crs: operator.projection,
                     query: operator.toQueryJSON(),
                     type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
@@ -635,7 +465,7 @@ export class UserService {
         );
     }
 
-    private createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
+    protected createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
         return combineLatest(session$, reload$).pipe(
             map(([session, _]) => session),
             switchMap(session => {
@@ -650,18 +480,18 @@ export class UserService {
                         for (const sourceId in json.sourcelist) {
                             if (json.sourcelist.hasOwnProperty(sourceId)) {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
-                                const sourceProvenance: ProvenanceInfo = this.parseSourceProvenance(source);
+                                const sourceProvenance: ProvenanceInfo = UserService.parseSourceProvenance(source);
 
                                 const sourceChannels = (!source.channels) ? [] : source.channels.map(
                                     (channel, index) => {
-                                        return this.parseRasterChannel(channel, source, sourceProvenance, index);
+                                        return UserService.parseRasterChannel(channel, source, sourceProvenance, index);
                                     }
                                 );
 
                                 // vector data
                                 const sourceVectorLayer = (!source.layer) ? [] : source.layer.map(
                                     (layer, index) => {
-                                        return this.parseVectorLayer(layer, source, sourceProvenance, index);
+                                        return UserService.parseVectorLayer(layer, source, sourceProvenance, index);
                                     }
                                 );
 
@@ -684,11 +514,12 @@ export class UserService {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
-                    }),);
+                    }),
+                );
             }));
     }
 
-    private parseSourceProvenance(source: MappingSourceDict) {
+    protected static parseSourceProvenance(source: MappingSourceDict) {
         return {
             uri: (source.provenance) ? source.provenance.uri : '',
             citation: source.provenance ? source.provenance.citation : '',
@@ -696,7 +527,7 @@ export class UserService {
         };
     }
 
-    private parseVectorLayer(
+    protected static parseVectorLayer(
         layer: MappingSourceVectorLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
     ): SourceVectorLayerDescription {
         // TODO: can we  safely assume EPSG: 4326 here?
@@ -715,12 +546,12 @@ export class UserService {
             geometryType: layer.geometry_type || 'POINTS',
             textual: layer.textual || [],
             numeric: layer.numeric || [],
-            coords: coords,
-            provenance: provenance,
-        } as SourceVectorLayerDescription;
+            coords,
+            provenance,
+        };
     }
 
-    private parseRasterChannel(
+    protected static parseRasterChannel(
         channel: MappingSourceRasterLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
     ): SourceRasterLayerDescription {
         const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
@@ -752,9 +583,9 @@ export class UserService {
                 offset: channel.transform.offset,
                 scale: channel.transform.scale,
             } as MappingTransform,
-            coords: coords,
+            coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
-        } as SourceRasterLayerDescription;
+        };
     }
 
 }

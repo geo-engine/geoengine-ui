@@ -5,10 +5,6 @@ import {StorageService} from '../storage/storage.service';
 
 /**
  * A validator that validates a form group that contains min/max number fields.
- * @param controlMinName
- * @param controlMaxName
- * @param options
- * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
  */
 function minAndMax(controlMinName: string,
                    controlMaxName: string,
@@ -61,9 +57,6 @@ function minAndMax(controlMinName: string,
 
 /**
  * A validator that invokes the underlying one only if the condition holds.
- * @param validator
- * @param condition
- * @returns {(control:AbstractControl)=>{[p: string]: boolean}}
  */
 function conditionalValidator(validator: (control: AbstractControl) => { [key: string]: boolean },
                               condition: () => boolean) {
@@ -78,19 +71,15 @@ function conditionalValidator(validator: (control: AbstractControl) => { [key: s
 
 /**
  * Checks if keyword is a reserved keyword.
- * @param keywords
- * @returns {(control:AbstractControl)=>{keyword: boolean}}
  */
 function keywordValidator(keywords: Array<string>) {
     return (control: AbstractControl) => {
-        return keywords.indexOf(control.value) >= 0 ? {'keyword': true} : null;
+        return keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
     };
 }
 
 /**
  * Checks if the project name is unique.
- * @param storageService
- * @returns {(control:AbstractControl)=>Observable<{[p: string]: boolean}>}
  */
 function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
@@ -124,7 +113,7 @@ function notOnlyWhitespace(control: AbstractControl) {
     if (!text) {
         return null;
     }
-    return text.trim().length <= 0 ? {'onlyWhitespace': true} : null;
+    return text.trim().length <= 0 ? {onlyWhitespace: true} : null;
 }
 
 function isNumber(control: AbstractControl) {
@@ -137,17 +126,16 @@ function isFiniteNumber(value: any): boolean {
 }
 
 export const WaveValidators = {
-    conditionalValidator: conditionalValidator,
-    isNumber: isNumber,
+    conditionalValidator,
+    isNumber,
     keyword: keywordValidator,
-    minAndMax: minAndMax,
-    notOnlyWhitespace: notOnlyWhitespace,
+    minAndMax,
+    notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
 };
 
 /**
  * checks if a value is undefined or null
- * @param value
  */
 function nullOrUndefined(value: any) {
     return value === undefined || value === null;

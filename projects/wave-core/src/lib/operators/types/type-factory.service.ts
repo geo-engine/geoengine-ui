@@ -10,7 +10,6 @@ import {HistogramType, HistogramTypeDict} from './histogram-type.model';
 import {RScriptType, RScriptTypeDict} from './r-script-type.model';
 import {PointInPolygonFilterType, PointInPolygonFilterTypeDict} from './point-in-polygon-filter-type.model';
 import {WKTSourceType, WKTSourceTypeDict} from './wkt-source-type.model';
-import {ABCDSourceType, ABCDSourceTypeDict} from './abcd-source-type.model';
 import {
     MsgCo2CorrectionType,
     MsgPansharpenType,
@@ -24,7 +23,6 @@ import {
     MsgTemperatureType,
 } from './msg-types.model';
 import {CsvSourceType, CsvSourceTypeDict} from './csv-source-type.model';
-import {PangaeaSourceType, PangaeaSourceTypeDict} from './pangaea-source-type.model';
 import {ClassificationType, ClassificationTypeDict} from './classification-type.model';
 import {
     FeatureCollectionDBSourceType,
@@ -38,7 +36,6 @@ import {PieChartType, PieChartTypeDict} from './piechart-type.model';
 import {RasterizePolygonType, RasterizePolygonTypeDict} from './rasterize-polygon-type.model';
 import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model';
 import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
-import {TerminologyLookupType, TerminologyLookupTypeDict} from './terminology-lookup-type';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
 import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-source-type.model';
@@ -47,93 +44,179 @@ import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
 import {SpectralOverviewPlotType, SpectralOverviewPlotTypeDict} from './spectral-overview-plot-type.model';
 
+type Type = string;
+type Deserializer = (dict: OperatorTypeDict) => OperatorType;
+
 /**
  * A simple factory for de-serializing operator types.
  */
-export abstract class OperatorTypeFactory {
+export class OperatorTypeFactory {
+
+    protected static readonly typeDeserializers: Map<Type, Deserializer> = OperatorTypeFactory.defaultDeserializers();
+
+    protected static defaultDeserializers(): Map<Type, Deserializer> {
+        const typeDeserializers = new Map();
+
+        typeDeserializers.set(
+            NumericAttributeFilterType.TYPE,
+            dict => NumericAttributeFilterType.fromDict(dict as NumericAttributeFilterTypeDict),
+        );
+        typeDeserializers.set(
+            TextualAttributeFilterType.TYPE,
+            dict => TextualAttributeFilterType.fromDict(dict as TextualAttributeFilterTypeDict),
+        );
+        typeDeserializers.set(
+            RasterValueExtractionType.TYPE,
+            dict => RasterValueExtractionType.fromDict(dict as RasterValueExtractionTypeDict),
+        );
+        typeDeserializers.set(
+            ExpressionType.TYPE,
+            dict => ExpressionType.fromDict(dict as ExpressionTypeDict),
+        );
+        typeDeserializers.set(
+            ProjectionType.TYPE,
+            dict => ProjectionType.fromDict(dict as ProjectionTypeDict),
+        );
+        typeDeserializers.set(
+            GFBioSourceType.TYPE,
+            dict => GFBioSourceType.fromDict(dict as GFBioSourceTypeDict),
+        );
+        typeDeserializers.set(
+            RasterSourceType.TYPE,
+            dict => RasterSourceType.fromDict(dict as RasterSourceTypeDict),
+        );
+        typeDeserializers.set(
+            GdalSourceType.TYPE,
+            dict => GdalSourceType.fromDict(dict as GdalSourceTypeDict),
+        );
+        typeDeserializers.set(
+            OgrSourceType.TYPE,
+            dict => OgrSourceType.fromDict(dict as OgrSourceTypeDict),
+        );
+        typeDeserializers.set(
+            HistogramType.TYPE,
+            dict => HistogramType.fromDict(dict as HistogramTypeDict),
+        );
+        typeDeserializers.set(
+            RScriptType.TYPE,
+            dict => RScriptType.fromDict(dict as RScriptTypeDict),
+        );
+        typeDeserializers.set(
+            PointInPolygonFilterType.TYPE,
+            dict => PointInPolygonFilterType.fromDict(dict as PointInPolygonFilterTypeDict),
+        );
+        typeDeserializers.set(
+            WKTSourceType.TYPE,
+            dict => WKTSourceType.fromDict(dict as WKTSourceTypeDict),
+        );
+        typeDeserializers.set(
+            MsgRadianceType.TYPE,
+            dict => MsgRadianceType.fromDict(dict),
+        );
+        typeDeserializers.set(
+            MsgReflectanceType.TYPE,
+            dict => MsgReflectanceType.fromDict(dict as MsgReflectanceTypeDict),
+        );
+        typeDeserializers.set(
+            MsgSolarangleType.TYPE,
+            dict => MsgSolarangleType.fromDict(dict as MsgSolarangleTypeDict),
+        );
+        typeDeserializers.set(
+            MsgTemperatureType.TYPE,
+            dict => MsgTemperatureType.fromDict(dict),
+        );
+        typeDeserializers.set(
+            MsgPansharpenType.TYPE,
+            dict => MsgPansharpenType.fromDict(dict as MsgPansharpenTypeDict),
+        );
+        typeDeserializers.set(
+            MsgCo2CorrectionType.TYPE,
+            dict => MsgCo2CorrectionType.fromDict(dict),
+        );
+        typeDeserializers.set(
+            MsgSofosGccThermalThresholdType.TYPE,
+            dict => MsgSofosGccThermalThresholdType.fromDict(dict),
+        );
+        typeDeserializers.set(
+            CsvSourceType.TYPE,
+            dict => CsvSourceType.fromDict(dict as CsvSourceTypeDict),
+        );
+        typeDeserializers.set(
+            ClassificationType.TYPE,
+            dict => ClassificationType.fromDict(dict as ClassificationTypeDict),
+        );
+        typeDeserializers.set(
+            FeatureCollectionDBSourceType.TYPE,
+            dict => FeatureCollectionDBSourceType.fromDict(dict as FeatureCollectionDBSourceTypeDict),
+        );
+        typeDeserializers.set(
+            ScatterPlotType.TYPE,
+            dict => ScatterPlotType.fromDict(dict as ScatterPlotTypeDict),
+        );
+        typeDeserializers.set(
+            BoxPlotType.TYPE,
+            dict => BoxPlotType.fromDict(dict as BoxPlotTypeDict),
+        );
+        typeDeserializers.set(
+            PieChartType.TYPE,
+            dict => PieChartType.fromDict(dict as PieChartTypeDict),
+        );
+        typeDeserializers.set(
+            RasterizePolygonType.TYPE,
+            dict => RasterizePolygonType.fromDict(dict as RasterizePolygonTypeDict),
+        );
+        typeDeserializers.set(
+            HeatmapType.TYPE,
+            dict => HeatmapType.fromDict(dict as HeatmapTypeDict),
+        );
+        typeDeserializers.set(
+            SensorSourceType.TYPE,
+            dict => SensorSourceType.fromDict(dict as SensorSourceTypeDict),
+        );
+        typeDeserializers.set(
+            SpectralOverviewPlotType.TYPE,
+            dict => SpectralOverviewPlotType.fromDict(dict as SpectralOverviewPlotTypeDict),
+        );
+        typeDeserializers.set(
+            StatisticsType.TYPE,
+            dict => StatisticsType.fromDict(dict as StatisticsTypeDict),
+        );
+        typeDeserializers.set(
+            TimePlotType.TYPE,
+            dict => TimePlotType.fromDict(dict as TimePlotTypeDict),
+        );
+        typeDeserializers.set(
+            RgbaCompositeType.TYPE,
+            dict => RgbaCompositeType.fromDict(dict as RgbaCompositeTypeDict),
+        );
+        typeDeserializers.set(
+            ChronicleDBSourceType.TYPE,
+            dict => ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict),
+        );
+        typeDeserializers.set(
+            OgrRawSourceType.TYPE,
+            dict => OgrRawSourceType.fromDict(dict as OgrRawSourceTypeDict),
+        );
+
+        return typeDeserializers;
+    }
+
+    /**
+     * Add a new type deserializer (fromDict) to the factory
+     */
+    static addType(type: Type, fromDict: Deserializer) {
+        OperatorTypeFactory.typeDeserializers.set(type, fromDict);
+    }
+
     /**
      * Create operator type from serialized data.
      */
     static fromDict(dict: OperatorTypeDict): OperatorType {
-        switch (dict.operatorType) {
-            case NumericAttributeFilterType.TYPE:
-                return NumericAttributeFilterType.fromDict(dict as NumericAttributeFilterTypeDict);
-            case TextualAttributeFilterType.TYPE:
-                return TextualAttributeFilterType.fromDict(dict as TextualAttributeFilterTypeDict);
-            case RasterValueExtractionType.TYPE:
-                return RasterValueExtractionType.fromDict(dict as RasterValueExtractionTypeDict);
-            case ExpressionType.TYPE:
-                return ExpressionType.fromDict(dict as ExpressionTypeDict);
-            case ProjectionType.TYPE:
-                return ProjectionType.fromDict(dict as ProjectionTypeDict);
-            case GFBioSourceType.TYPE:
-                return GFBioSourceType.fromDict(dict as GFBioSourceTypeDict);
-            case RasterSourceType.TYPE:
-                return RasterSourceType.fromDict(dict as RasterSourceTypeDict);
-            case GdalSourceType.TYPE:
-                return GdalSourceType.fromDict(dict as GdalSourceTypeDict);
-            case OgrSourceType.TYPE:
-                return OgrSourceType.fromDict(dict as OgrSourceTypeDict);
-            case OgrRawSourceType.TYPE:
-                return OgrRawSourceType.fromDict(dict as OgrRawSourceTypeDict);
-            case HistogramType.TYPE:
-                return HistogramType.fromDict(dict as HistogramTypeDict);
-            case RScriptType.TYPE:
-                return RScriptType.fromDict(dict as RScriptTypeDict);
-            case PointInPolygonFilterType.TYPE:
-                return PointInPolygonFilterType.fromDict(dict as PointInPolygonFilterTypeDict);
-            case WKTSourceType.TYPE:
-                return WKTSourceType.fromDict(dict as WKTSourceTypeDict);
-            case MsgRadianceType.TYPE:
-                return MsgRadianceType.fromDict(dict);
-            case MsgReflectanceType.TYPE:
-                return MsgReflectanceType.fromDict(dict as MsgReflectanceTypeDict);
-            case MsgSolarangleType.TYPE:
-                return MsgSolarangleType.fromDict(dict as MsgSolarangleTypeDict);
-            case MsgTemperatureType.TYPE:
-                return MsgTemperatureType.fromDict(dict);
-            case MsgPansharpenType.TYPE:
-                return MsgPansharpenType.fromDict(dict as MsgPansharpenTypeDict);
-            case MsgCo2CorrectionType.TYPE:
-                return MsgCo2CorrectionType.fromDict(dict);
-            case MsgSofosGccThermalThresholdType.TYPE:
-                return MsgSofosGccThermalThresholdType.fromDict(dict);
-            case ABCDSourceType.TYPE:
-                return ABCDSourceType.fromDict(dict as ABCDSourceTypeDict);
-            case CsvSourceType.TYPE:
-                return CsvSourceType.fromDict(dict as CsvSourceTypeDict);
-            case ClassificationType.TYPE:
-                return ClassificationType.fromDict(dict as ClassificationTypeDict);
-            case PangaeaSourceType.TYPE:
-                return PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict);
-            case FeatureCollectionDBSourceType.TYPE:
-                return FeatureCollectionDBSourceType.fromDict(dict as FeatureCollectionDBSourceTypeDict);
-            case ScatterPlotType.TYPE:
-                return ScatterPlotType.fromDict(dict as ScatterPlotTypeDict);
-            case BoxPlotType.TYPE:
-                return BoxPlotType.fromDict(dict as BoxPlotTypeDict);
-            case PieChartType.TYPE:
-                return PieChartType.fromDict(dict as PieChartTypeDict);
-            case RasterizePolygonType.TYPE:
-                return RasterizePolygonType.fromDict(dict as RasterizePolygonTypeDict);
-            case HeatmapType.TYPE:
-                return HeatmapType.fromDict(dict as HeatmapTypeDict);
-            case SensorSourceType.TYPE:
-                return SensorSourceType.fromDict(dict as SensorSourceTypeDict);
-            case SpectralOverviewPlotType.TYPE:
-                return SpectralOverviewPlotType.fromDict(dict as SpectralOverviewPlotTypeDict);
-            case TerminologyLookupType.TYPE:
-                return TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict);
-            case ChronicleDBSourceType.TYPE:
-                return ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict);
-            case StatisticsType.TYPE:
-                return StatisticsType.fromDict(dict as StatisticsTypeDict);
-            case TimePlotType.TYPE:
-                return TimePlotType.fromDict(dict as TimePlotTypeDict);
-            case RgbaCompositeType.TYPE:
-                return RgbaCompositeType.fromDict(dict as RgbaCompositeTypeDict);
-            default:
-                throw Error('There is not factory method defined for this operator.');
+        const fromDict = OperatorTypeFactory.typeDeserializers.get(dict.operatorType);
+        if (fromDict) {
+            return fromDict(dict);
+        } else {
+            throw Error(`There is not factory method defined for operator »${dict.operatorType}«.`);
         }
     }
 }
