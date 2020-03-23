@@ -5,8 +5,8 @@ import {
     Operator,
     ResultTypes,
     VectorLayer,
-    ComplexPointSymbology,
-    ComplexVectorSymbology,
+    PointSymbology,
+    VectorSymbology,
     MappingQueryService,
     LayerService,
     RandomColorService,
@@ -38,13 +38,13 @@ export abstract class BasketResultComponent<T extends IBasketResult> {
 
         switch (operator.resultType) {
             case ResultTypes.POINTS:
-                symbology = ComplexPointSymbology.createClusterSymbology({
+                symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 clustered = true;
                 break;
             case ResultTypes.POLYGONS:
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
