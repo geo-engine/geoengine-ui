@@ -3,7 +3,7 @@ import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef}
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
-import {LayoutService} from '../../layout.service';
+import {LayoutService, SidenavConfig} from '../../layout.service';
 import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
@@ -18,7 +18,6 @@ import {ProjectService} from '../../project/project.service';
 import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
-import {SidenavConfig} from 'wave-core';
 
 @Component({
     selector: 'wave-layer-list',

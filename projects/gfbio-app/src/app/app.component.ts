@@ -52,7 +52,8 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
-    OperatorListButtonGroups, SidenavConfig,
+    OperatorListButtonGroups,
+    SidenavConfig,
 } from 'wave-core';
 
 import {AppConfig} from './app-config.service';

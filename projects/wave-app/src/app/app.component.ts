@@ -43,7 +43,8 @@ import {
     SourceOperatorListButton,
     GFBioSourceType,
     GbifOperatorComponent,
-    OperatorListButtonGroups, SidenavConfig,
+    OperatorListButtonGroups,
+    SidenavConfig,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
