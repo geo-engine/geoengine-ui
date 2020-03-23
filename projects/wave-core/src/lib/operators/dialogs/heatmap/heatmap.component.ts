@@ -5,7 +5,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractVectorSymbology, MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -15,8 +15,8 @@ import {HeatmapType} from '../../types/heatmap-type.model';
 import {Unit} from '../../unit.model';
 
 interface AttributeType {
-    name: string,
-    value: string,
+    name: string;
+    value: string;
 }
 
 /**
@@ -50,7 +50,7 @@ export class HeatmapOperatorComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.subscription = this.form.controls['pointLayer'].valueChanges.subscribe((pointLayer: VectorLayer<AbstractVectorSymbology>) => {
-            let attributes: Array<AttributeType> = [];
+            const attributes: Array<AttributeType> = [];
             pointLayer.operator.dataTypes.forEach((datatype, attribute) => {
                 if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                     attributes.push({
@@ -105,8 +105,8 @@ export class HeatmapOperatorComponent implements OnInit, OnDestroy {
 
         const operator = new Operator({
             operatorType: new HeatmapType({
-                attribute: attribute,
-                radius: radius,
+                attribute,
+                radius,
             }),
             resultType: ResultTypes.RASTER,
             projection: pointOperator.projection,
@@ -117,10 +117,10 @@ export class HeatmapOperatorComponent implements OnInit, OnDestroy {
         });
 
         this.projectService.addLayer(new RasterLayer({
-            name: name,
-            operator: operator,
-            symbology: new MappingColorizerRasterSymbology({
-                unit: unit,
+            name,
+            operator,
+            symbology: MappingRasterSymbology.createSymbology({
+                unit,
             }),
         }));
     }

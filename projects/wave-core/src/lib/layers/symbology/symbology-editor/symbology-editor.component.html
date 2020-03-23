@@ -13,17 +13,9 @@
      fxLayout="row"
      class="symbology no-drag">
 
-    <ng-template [ngSwitchCase]="ST.SIMPLE_POINT">
-        <wave-symbology-vector fxFlex="grow" [layer]="layer"
-                               (symbologyChanged)="update_symbology(layer, $event)">
-        </wave-symbology-vector>
-    </ng-template>
-
     <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
         <wave-symbology-vector fxFlex="grow"
                                class="no-drag" [layer]="layer"
-                               [editRadius]="false"
-                               [editStrokeWidth]="false"
                                (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
@@ -36,11 +28,10 @@
         </wave-symbology-vector>
     </ng-template>
 
-    <ng-template [ngSwitchCase]="ST.SIMPLE_VECTOR">
+
+    <ng-template [ngSwitchCase]="ST.COMPLEX_LINE">
         <wave-symbology-vector fxFlex="grow"
-                               [layer]="layer"
-                               class="no-drag"
-                               [editRadius]="false"
+                               class="no-drag" [layer]="layer"
                                (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
@@ -49,7 +40,6 @@
         <wave-symbology-vector fxFlex="grow"
                                [layer]="layer"
                                class="no-drag"
-                               [editRadius]="false"
                                (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>

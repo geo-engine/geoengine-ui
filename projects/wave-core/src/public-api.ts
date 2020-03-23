@@ -61,6 +61,8 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/ticker-interaction/ticker-interaction.component';
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/users/login/login.component';
+export * from './lib/layers/symbology/stroke-dash-select/stroke-dash-select.component';
+
 
 // Pipes
 export * from './lib/colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';

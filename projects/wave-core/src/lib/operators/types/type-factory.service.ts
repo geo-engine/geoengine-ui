@@ -37,6 +37,8 @@ import {RasterizePolygonType, RasterizePolygonTypeDict} from './rasterize-polygo
 import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model';
 import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
+import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
+import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-source-type.model';
 import {TimePlotType, TimePlotTypeDict} from './timeplot-type.model';
 import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
@@ -186,6 +188,14 @@ export class OperatorTypeFactory {
         typeDeserializers.set(
             RgbaCompositeType.TYPE,
             dict => RgbaCompositeType.fromDict(dict as RgbaCompositeTypeDict),
+        );
+        typeDeserializers.set(
+            ChronicleDBSourceType.TYPE,
+            dict => ChronicleDBSourceType.fromDict(dict as ChronicleDBSourceTypeDict),
+        );
+        typeDeserializers.set(
+            OgrRawSourceType.TYPE,
+            dict => OgrRawSourceType.fromDict(dict as OgrRawSourceTypeDict),
         );
 
         return typeDeserializers;

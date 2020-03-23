@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnChanges, SimpleChanges} from '@angular/core';
-import {MappingColorizerRasterSymbology} from '../../symbology/symbology.model';
+import {MappingRasterSymbology} from '../../symbology/symbology.model';
 import {RasterLegendComponent} from './raster-legend.component';
 import {Interpolation, interpolationToName, Unit} from '../../../operators/unit.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
@@ -10,7 +10,7 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
     styleUrls: ['mapping-raster-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MappingRasterLegendComponent<S extends MappingColorizerRasterSymbology>
+export class MappingRasterLegendComponent<S extends MappingRasterSymbology>
     extends RasterLegendComponent<S> implements OnChanges {
 
     numberPipeParameters = '1.0-0';

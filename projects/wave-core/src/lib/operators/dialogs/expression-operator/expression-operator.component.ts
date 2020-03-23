@@ -10,7 +10,7 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 import {RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 
@@ -53,7 +53,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             [unitOrCustomUnit]);
 
         this.outputUnits$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((rasterLayers: Array<RasterLayer<MappingColorizerRasterSymbology>>) => {
+            map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
                 return rasterLayers
                     .map(layer => layer.operator.getUnit(ExpressionOperatorComponent.RASTER_VALUE))
                     .filter(unit => unit !== this.UNITLESS_UNIT);
@@ -94,7 +94,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         });
 
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((rasterLayers: Array<RasterLayer<MappingColorizerRasterSymbology>>) => {
+            map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
                 const outputDataTypes = DataTypes.ALL_NUMERICS.map((dataType: DataType) => [dataType, '']) as Array<[DataType, string]>;
 
                 const rasterDataTypes = rasterLayers.map(layer =>
@@ -119,7 +119,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 const dataTypeControl = this.form.controls.dataType;
                 const currentDataType: DataType = dataTypeControl.value;
 
-                const rasterDataTypes = (this.form.controls.rasterLayers.value as Array<RasterLayer<MappingColorizerRasterSymbology>>)
+                const rasterDataTypes = (this.form.controls.rasterLayers.value as Array<RasterLayer<MappingRasterSymbology>>)
                     .map(layer => layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined)
                     .filter(layer => !!layer);
 
@@ -183,12 +183,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
         const operator = new Operator({
             operatorType: new ExpressionType({
-                expression: expression,
+                expression,
                 datatype: dataType,
-                unit: unit,
+                unit,
             }),
             resultType: ResultTypes.RASTER,
-            projection: projection,
+            projection,
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', dataType),
             units: new Map<string, Unit>().set('value', unit),
@@ -196,9 +196,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         });
 
         const layer = new RasterLayer({
-            name: name,
-            operator: operator,
-            symbology: new MappingColorizerRasterSymbology({unit: unit}),
+            name,
+            operator,
+            symbology: MappingRasterSymbology.createSymbology({unit}),
         });
         this.projectService.addLayer(layer);
 

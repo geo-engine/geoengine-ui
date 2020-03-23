@@ -1,5 +1,4 @@
 import {
-    BehaviorSubject,
     combineLatest as observableCombineLatest,
     Observable,
     Observer,
@@ -23,7 +22,7 @@ import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Layer, LayerChanges, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
-import {AbstractSymbology, AbstractVectorSymbology, RasterSymbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractVectorSymbology, AbstractRasterSymbology} from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
@@ -173,7 +172,7 @@ export class ProjectService {
             const oldTime = project.time;
             if (time && time.isValid() && !time.isSame(oldTime)) {
                 this.changeProjectConfig({
-                    time: time,
+                    time,
                 });
             }
         });
@@ -181,17 +180,17 @@ export class ProjectService {
 
     setTimeStepDuration(timeStepDuration: TimeStepDuration) {
         this.changeProjectConfig({
-            timeStepDuration: timeStepDuration,
+            timeStepDuration,
         });
     }
 
     setName(name: string) {
-        this.changeProjectConfig({name: name});
+        this.changeProjectConfig({name});
     }
 
     setProjection(projection: Projection) {
         this.changeProjectConfig({
-            projection: projection
+            projection
         });
     }
 
@@ -209,8 +208,6 @@ export class ProjectService {
 
     /**
      * Add a plot to the project.
-     * @param plot
-     * @param notify
      */
     addPlot(plot: Plot, notify = true): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
@@ -263,7 +260,6 @@ export class ProjectService {
 
     /**
      * Remove a plot from the project.
-     * @param plot
      */
     removePlot(plot: Plot): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
@@ -274,7 +270,7 @@ export class ProjectService {
             if (plotIndex >= 0) {
                 plots.splice(plotIndex, 1);
                 this.changeProjectConfig({
-                    plots: plots
+                    plots
                 }).subscribe(() => {
                     this.plotSubscriptions.get(plot).unsubscribe();
                     this.plotSubscriptions.delete(plot);
@@ -296,7 +292,6 @@ export class ProjectService {
 
     /**
      * Reload the data for the plot manually (e.g. on error).
-     * @param plot
      */
     reloadPlot(plot: Plot) {
         this.plotData$.get(plot).next(undefined); // send empty data
@@ -313,7 +308,6 @@ export class ProjectService {
 
     /**
      * Retrieve the plot models array as a stream.
-     * @returns {BehaviorSubject<Array<Plot>>}
      */
     getPlotStream(): Observable<Array<Plot>> {
         return this.project$.pipe(map(project => project.plots), distinctUntilChanged(),);
@@ -321,8 +315,6 @@ export class ProjectService {
 
     /**
      * Retrieve the data of the plot as a stream.
-     * @param plot
-     * @returns {ReplaySubject<PlotData>}
      */
     getPlotDataStream(plot: Plot): Observable<PlotData> {
         return this.plotData$.get(plot);
@@ -330,8 +322,6 @@ export class ProjectService {
 
     /**
      * Retrieve the plot status as a stream.
-     * @param plot
-     * @returns {ReplaySubject<LoadingState>}
      */
     getPlotDataStatusStream(plot: Plot): Observable<LoadingState> {
         return this.plotDataState$.get(plot);
@@ -364,7 +354,7 @@ export class ProjectService {
         });
 
         this.project$.pipe(first()).subscribe(project => {
-            let plots = project.plots;
+            const plots = project.plots;
             const plotIndex = plots.indexOf(plot);
             plots.splice(plotIndex, 1, newPlot);
 
@@ -385,8 +375,6 @@ export class ProjectService {
 
     /**
      * Add a plot to the project.
-     * @param layer
-     * @param notify
      */
     addLayer(layer: Layer<AbstractSymbology>, notify = true): Observable<void> {
         this.createLayerDataStreams(layer);
@@ -415,7 +403,6 @@ export class ProjectService {
 
     /**
      * Remove a plot from the project.
-     * @param layer
      */
     removeLayer(layer: Layer<AbstractSymbology>): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
@@ -433,7 +420,7 @@ export class ProjectService {
                 layers.splice(layerIndex, 1);
                 // console.log("REMOVE LAYER 2", removedLayers, layers);
                 this.changeProjectConfig({
-                    layers: layers
+                    layers
                 }).subscribe(() => {
                     this.layerDataSubscriptions.get(layer).unsubscribe();
                     this.layerDataSubscriptions.delete(layer);
@@ -490,7 +477,7 @@ export class ProjectService {
             case 'raster': {
                 this.layerDataSubscriptions.set(layer,
                     this.createRasterLayerDataSubscription(
-                        layer as RasterLayer<RasterSymbology>,
+                        layer as RasterLayer<AbstractRasterSymbology>,
                         (this.layerData$.get(layer) as Observer<RasterData>),
                         this.layerDataState$.get(layer)
                     )
@@ -513,7 +500,6 @@ export class ProjectService {
 
     /**
      * Reload everything for the layer manually (e.g. on error).
-     * @param layer
      */
     reloadLayer(layer: Layer<AbstractSymbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
@@ -537,14 +523,14 @@ export class ProjectService {
             case 'raster': {
                 this.layerDataSubscriptions.set(layer,
                     this.createRasterLayerDataSubscription(
-                        layer as RasterLayer<RasterSymbology>,
+                        layer as RasterLayer<AbstractRasterSymbology>,
                         (this.layerData$.get(layer) as Observer<RasterData>),
                         this.layerDataState$.get(layer)
                     )
                 );
                 this.layerSymbologyDataSubscriptions.set(layer,
                     this.createRasterLayerSymbologyDataSubscription(
-                        layer as RasterLayer<RasterSymbology>,
+                        layer as RasterLayer<AbstractRasterSymbology>,
                         this.layerSymbologyData$.get(layer) as Observer<DeprecatedMappingColorizerDoNotUse>,
                         this.layerSymbologyDataState$.get(layer)));
                 break;
@@ -573,7 +559,6 @@ export class ProjectService {
 
     /**
      * Retrieve the layer models array as a stream.
-     * @returns {BehaviorSubject<Array<Layer<AbstractSymbology>>>}
      */
     getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
         return this.project$.pipe(map(project => project.layers), distinctUntilChanged(),);
@@ -581,8 +566,6 @@ export class ProjectService {
 
     /**
      * Retrieve the data of the layer as a stream.
-     * @param layer
-     * @returns {ReplaySubject<LayerData<any>>}
      */
     getLayerDataStream(layer: Layer<AbstractSymbology>): Observable<LayerData<any>> {
         return this.layerData$.get(layer);
@@ -590,8 +573,6 @@ export class ProjectService {
 
     /**
      * Retrieve the layer data status as a stream.
-     * @param layer
-     * @returns {ReplaySubject<LoadingState>}
      */
     getLayerDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerDataState$.get(layer);
@@ -599,10 +580,8 @@ export class ProjectService {
 
     /**
      * Change the loading state of a raster layer
-     * @param layer
-     * @param state
      */
-    changeRasterLayerDataStatus(layer: Layer<RasterSymbology>, state: LoadingState) {
+    changeRasterLayerDataStatus(layer: Layer<AbstractRasterSymbology>, state: LoadingState) {
         if (layer.operator.resultType === ResultTypes.RASTER) {
             this.layerDataState$.get(layer).next(state);
         } else {
@@ -612,8 +591,6 @@ export class ProjectService {
 
     /**
      * Retrieve the symbology data of the layer as a stream.
-     * @param layer
-     * @returns {ReplaySubject<LayerData<any>>}
      */
     getLayerSymbologyDataStream(layer: Layer<AbstractSymbology>): Observable<DeprecatedMappingColorizerDoNotUse> {
         return this.layerSymbologyData$.get(layer);
@@ -621,8 +598,6 @@ export class ProjectService {
 
     /**
      * Retrieve the layer symbology data status as a stream.
-     * @param layer
-     * @returns {ReplaySubject<LoadingState>}
      */
     getLayerSymbologyDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerSymbologyDataState$.get(layer);
@@ -630,8 +605,6 @@ export class ProjectService {
 
     /**
      * Retrieve the provenance data of the layer as a stream.
-     * @param layer
-     * @returns {ReplaySubject<Array<Provenance>>}
      */
     getLayerProvenanceDataStream(layer: Layer<AbstractSymbology>): Observable<Array<Provenance>> {
         return this.layerProvenanceData$.get(layer);
@@ -639,8 +612,6 @@ export class ProjectService {
 
     /**
      * Retrieve the layer provenance status as a stream.
-     * @param layer
-     * @returns {ReplaySubject<LoadingState>}
      */
     getLayerProvenanceDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
         return this.layerProvenanceDataState$.get(layer);
@@ -658,7 +629,7 @@ export class ProjectService {
         const subject: Subject<void> = new ReplaySubject<void>(1);
 
         this.project$.pipe(first()).subscribe(project => {
-            let removeObservables = [];
+            const removeObservables = [];
 
             for (const layer of project.layers.slice(0)) {
                 removeObservables.push(this.removeLayer(layer));
@@ -684,12 +655,11 @@ export class ProjectService {
 
     /**
      * Sets the layers
-     * @param layers
      */
     setLayers(layers: Array<Layer<AbstractSymbology>>) {
         this.project$.pipe(first()).subscribe(project => {
             if (project.layers !== layers) {
-                this.changeProjectConfig({layers: layers});
+                this.changeProjectConfig({layers});
             }
         });
     }
@@ -697,16 +667,15 @@ export class ProjectService {
     /**
      * Changes the display name of a layer.
      * @param layer The layer to modify
-     * @param changes
      */
     changeLayer(layer: Layer<AbstractSymbology>, changes: LayerChanges<AbstractSymbology>) {
         // change mutably
         const validChanges = layer._changeUnderlyingData(changes);
 
         // FIXME: we don't use the mappig colorizer anymore
-        if (layer instanceof RasterLayer && layer.symbology instanceof RasterSymbology) {
+        if (layer instanceof RasterLayer && layer.symbology instanceof AbstractRasterSymbology) {
             const symbologyDataSybscription = this.createRasterLayerSymbologyDataSubscription(
-                layer as RasterLayer<RasterSymbology>,
+                layer as RasterLayer<AbstractRasterSymbology>,
                 this.layerSymbologyData$.get(layer),
                 this.layerSymbologyDataState$.get(layer),
             );
@@ -719,7 +688,7 @@ export class ProjectService {
         if (Object.keys(validChanges).length > 0) {
             this.getLayerStream().pipe(first()).subscribe(layers => {
                 this.changeProjectConfig({
-                    layers: layers,
+                    layers,
                 });
             });
 
@@ -777,17 +746,13 @@ export class ProjectService {
 
     /**
      * Create a subscription for plot data with loading state checks and error handling
-     * @param plot
-     * @param data$
-     * @param loadingState$
-     * @returns {Subscription}
      */
     private createPlotSubscription(plot: Plot, data$: Observer<PlotData>, loadingState$: Observer<LoadingState>): Subscription {
         const operatorType = plot.operator.operatorType;
         const operatorTypeMappingDict = operatorType.toMappingDict();
         const isRScriptPlot = operatorType.getMappingName() === 'r_script' && operatorTypeMappingDict['result'] === 'plot';
 
-        let observables: Array<Observable<any>> = [
+        const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.getProjectionStream(),
@@ -801,8 +766,8 @@ export class ProjectService {
             debounceTime(this.config.DELAYS.DEBOUNCE),
             tap(() => loadingState$.next(LoadingState.LOADING)),
             switchMap(([time, viewport, projection, sidenavWidth]) => {
-                let plotWidth = undefined;
-                let plotHeight = undefined;
+                let plotWidth;
+                let plotHeight;
 
                 if (isRScriptPlot) {
                     const margin = 2 * LayoutService.remInPx;
@@ -812,11 +777,11 @@ export class ProjectService {
 
                 return this.mappingQueryService.getPlotData({
                     operator: plot.operator,
-                    time: time,
+                    time,
                     extent: viewport.extent,
-                    projection: projection,
-                    plotWidth: plotWidth,
-                    plotHeight: plotHeight,
+                    projection,
+                    plotWidth,
+                    plotHeight,
                 });
             }),
             tap(
@@ -862,7 +827,7 @@ export class ProjectService {
         switch (layer.getLayerType()) {
             case 'raster':
                 layerDataSub = this.createRasterLayerDataSubscription(
-                    layer as RasterLayer<RasterSymbology>, layerData$, layerDataLoadingState$
+                    layer as RasterLayer<AbstractRasterSymbology>, layerData$, layerDataLoadingState$
                 );
                 break;
             case 'vector':
@@ -881,7 +846,7 @@ export class ProjectService {
         this.layerSymbologyData$.set(layer, symbologyData$);
 
         if (layer.getLayerType() === 'raster') {
-            const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<RasterSymbology>,
+            const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer as RasterLayer<AbstractRasterSymbology>,
                 symbologyData$,
                 symbologyDataLoadingState$
             );
@@ -927,12 +892,8 @@ export class ProjectService {
 
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-     * @param layer
-     * @param data$
-     * @param loadingState$
-     * @returns {Subscription}
      */
-    private createRasterLayerDataSubscription(layer: RasterLayer<RasterSymbology>, data$: Observer<RasterData>,
+    private createRasterLayerDataSubscription(layer: RasterLayer<AbstractRasterSymbology>, data$: Observer<RasterData>,
                                               loadingState$: Observer<LoadingState>): Subscription {
         return observableCombineLatest(
             this.getTimeStream(),
@@ -943,8 +904,8 @@ export class ProjectService {
                 return new RasterData(time, projection,
                     this.mappingQueryService.getWMSQueryUrl({
                         operator: layer.operator,
-                        time: time,
-                        projection: projection,
+                        time,
+                        projection,
                     })
                 );
             }),
@@ -968,10 +929,6 @@ export class ProjectService {
 
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-     * @param layer
-     * @param data$
-     * @param loadingState$
-     * @returns {Subscription}
      */
     private createVectorLayerDataSubscription(layer: VectorLayer<AbstractVectorSymbology>, data$: Observer<VectorData>,
                                               loadingState$: Observer<LoadingState>): Subscription {
@@ -988,11 +945,11 @@ export class ProjectService {
 
                 return this.mappingQueryService.getWFSData({
                     operator: layer.operator,
-                    time: time,
-                    projection: projection,
+                    time,
+                    projection,
                     clustered: layer.clustered, // TODO: is clustering a property of a layer or the symbology?
                     outputFormat: WFSOutputFormats.JSON,
-                    viewportSize: viewportSize
+                    viewportSize
                 }).pipe(map(x => VectorData.olParse(time, projection, requestExtent, x)));
             }),
             tap(
@@ -1010,10 +967,6 @@ export class ProjectService {
 
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-     * @param layer
-     * @param provenance$
-     * @param loadingState$
-     * @returns {Subscription}
      */
     private createLayerProvenanceSubscription(layer: Layer<AbstractSymbology>, provenance$: Observer<{}>,
                                               loadingState$: Observer<LoadingState>): Subscription {
@@ -1022,8 +975,8 @@ export class ProjectService {
             switchMap(([time, projection]) => {
                 return this.mappingQueryService.getProvenance({
                     operator: layer.operator,
-                    time: time,
-                    projection: projection,
+                    time,
+                    projection,
                     extent: projection.getExtent(),
                 });
             }),
@@ -1047,12 +1000,8 @@ export class ProjectService {
 
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-     * @param layer
-     * @param data$
-     * @param loadingState$
-     * @returns {Subscription}
      */
-    private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<RasterSymbology>,
+    private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<AbstractRasterSymbology>,
                                                        data$: Observer<DeprecatedMappingColorizerDoNotUse>,
                                                        loadingState$: Observer<LoadingState>): Subscription {
         return observableCombineLatest(

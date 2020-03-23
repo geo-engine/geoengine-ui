@@ -12,7 +12,7 @@ import {
     Unit,
     ResultTypes,
     Projections,
-    ComplexPointSymbology,
+    PointSymbology,
     VectorLayer,
     Operator,
 } from 'wave-core';
@@ -114,10 +114,10 @@ export class AbcdRepositoryComponent {
             });
 
             const clustered = true;
-            const layer = new VectorLayer<ComplexPointSymbology>({
+            const layer = new VectorLayer<PointSymbology>({
                 name: archive.dataset,
                 operator,
-                symbology: ComplexPointSymbology.createClusterSymbology({
+                symbology: PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 }),
                 // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({

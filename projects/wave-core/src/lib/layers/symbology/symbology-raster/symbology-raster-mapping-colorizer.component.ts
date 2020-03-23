@@ -9,7 +9,7 @@ import {
     OnDestroy, AfterViewInit, OnInit
 } from '@angular/core';
 
-import {MappingColorizerRasterSymbology} from '../symbology.model';
+import {MappingRasterSymbology} from '../symbology.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
@@ -36,10 +36,10 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 })
 export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
 
-    @Input() layer: RasterLayer<MappingColorizerRasterSymbology>;
-    @Output() symbologyChanged: EventEmitter<MappingColorizerRasterSymbology> = new EventEmitter<MappingColorizerRasterSymbology>();
+    @Input() layer: RasterLayer<MappingRasterSymbology>;
+    @Output() symbologyChanged: EventEmitter<MappingRasterSymbology> = new EventEmitter<MappingRasterSymbology>();
 
-    symbology: MappingColorizerRasterSymbology;
+    symbology: MappingRasterSymbology;
 
     layerMinValue: number | undefined = undefined;
     layerMaxValue: number | undefined = undefined;
@@ -119,7 +119,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (let propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'layer': {
                     if (changes['layer'].firstChange) {
@@ -185,7 +185,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                 operator: histogramOperator,
                 time: projectTime,
                 extent: viewport.extent,
-                projection: projection,
+                projection,
             }).subscribe(data => {
                 this.layerHistogramData$.next(data as HistogramData);
                 this.layerHistogramDataLoading$.next(false);

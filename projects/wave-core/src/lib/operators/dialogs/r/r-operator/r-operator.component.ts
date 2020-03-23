@@ -14,16 +14,17 @@ import {Unit} from '../../../unit.model';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {Plot} from '../../../../plots/plot.model';
 import {
-    RasterSymbology,
+    AbstractRasterSymbology,
     AbstractVectorSymbology,
     AbstractSymbology,
-    ComplexPointSymbology
+    PointSymbology, MappingRasterSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {MatDialog} from '@angular/material/dialog';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
 import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script-load.component';
 import {Config} from '../../../../config.service';
 import {WaveValidators} from '../../../../util/form.validators';
+
 
 @Component({
     selector: 'wave-r-operator',
@@ -94,7 +95,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 polygonOperators = vectorLayer.operator.getSources(ResultTypes.POLYGONS).toArray();
                 operatorType = vectorLayer.operator.operatorType as RScriptType;
             } else if (this.editable instanceof RasterLayer) {
-                const rasterLayer: RasterLayer<RasterSymbology> = this.editable as RasterLayer<RasterSymbology>;
+                const rasterLayer: RasterLayer<AbstractRasterSymbology> = this.editable as RasterLayer<AbstractRasterSymbology>;
                 name = rasterLayer.name;
                 resultType = rasterLayer.operator.resultType;
                 rasterOperators = rasterLayer.operator.getSources(ResultTypes.RASTER).toArray();
@@ -162,7 +163,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     }
 
     add(event: any) {
-        const rasterLayers: Array<RasterLayer<RasterSymbology>> = this.form.controls['rasterLayers'].value;
+        const rasterLayers: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['rasterLayers'].value;
         const pointLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['pointLayers'].value;
         const lineLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['lineLayers'].value;
         const polygonLayers: Array<VectorLayer<AbstractVectorSymbology>> = this.form.controls['polygonLayers'].value;
@@ -207,18 +208,18 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
         const operator = new Operator({
             operatorType: new RScriptType({
-                code: code,
-                resultType: resultType,
+                code,
+                resultType,
             }),
-            resultType: resultType,
-            projection: projection,
+            resultType,
+            projection,
             attributes: [], // TODO: user input?
             dataTypes: new Map<string, DataType>(), // TODO: user input?
             units: new Map<string, Unit>(), // TODO: user input?
-            rasterSources: rasterSources,
-            pointSources: pointSources,
-            lineSources: lineSources,
-            polygonSources: polygonSources
+            rasterSources,
+            pointSources,
+            lineSources,
+            polygonSources
         });
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
@@ -229,8 +230,8 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 case ResultTypes.POINTS:
                     layer = new VectorLayer({
                         name: outputName,
-                        operator: operator,
-                        symbology: ComplexPointSymbology.createSimpleSymbology({
+                        operator,
+                        symbology: PointSymbology.createSymbology({
                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                         }),
                         // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
@@ -242,9 +243,9 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
                 case ResultTypes.RASTER:
                     layer = new RasterLayer({
                         name: outputName,
-                        operator: operator,
+                        operator,
                         // TODO: read out of operator if specified
-                        symbology: new RasterSymbology({unit: Unit.defaultUnit}),
+                        symbology: MappingRasterSymbology.createSymbology({unit: Unit.defaultUnit}),
                         // provenance: provenance$,
                     });
                     break;
@@ -264,7 +265,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             // PLOT
             const plot = new Plot({
                 name: outputName,
-                operator: operator,
+                operator,
             });
 
             if (this.editable) {

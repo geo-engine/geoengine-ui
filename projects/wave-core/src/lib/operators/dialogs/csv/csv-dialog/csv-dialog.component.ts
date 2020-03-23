@@ -4,14 +4,12 @@ import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model
 import {Operator} from '../../../operator.model';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
-import {LayerService} from '../../../../layers/layer.service';
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology
+    PointSymbology,
+    VectorSymbology
 } from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
-import {MappingQueryService} from '../../../../queries/mapping-query.service';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {BehaviorSubject} from 'rxjs';
@@ -76,25 +74,26 @@ export class CsvDialogComponent implements OnInit {
         });
         const onError = this.csvProperties.layerProperties.controls['onError'].value;
         const columns = this.csvProperties.spatialProperties.controls['isWkt'].value ? {
-                x: columnX,
-                numeric: numericColumns,
-                textual: textualColumns,
-            } : {
-                x: columnX,
-                y: columnY,
-                numeric: numericColumns,
-                textual: textualColumns,
-            };
-        let parameters: CSVParameters = {
-            fieldSeparator: fieldSeparator,
-            geometry: geometry,
+            x: columnX,
+            numeric: numericColumns,
+            textual: textualColumns,
+        } : {
+            x: columnX,
+            y: columnY,
+            numeric: numericColumns,
+            textual: textualColumns,
+        };
+        const parameters: CSVParameters = {
+            fieldSeparator,
+            geometry,
             time: (time.indexOf('constant') < 0) ?
-                time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start', duration: number}) :
+                time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | { use: 'start', duration: number }) :
                 {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
             header: (this.csvProperties.dataProperties.controls['isHeaderRow'].value ? null : header),
-            columns: columns,
-            onError: onError,
+            columns,
+            onError,
         };
+
         // filter out geo columns
         function removeIfExists(array: Array<string>, name: string) {
             const index = array.indexOf(name);
@@ -145,7 +144,7 @@ export class CsvDialogComponent implements OnInit {
 
         const csvSourceType = new CsvSourceType({
             dataURI: 'data:text/plain,' + this.data.content,
-            parameters: parameters,
+            parameters,
         });
 
         const operator = new Operator({
@@ -174,12 +173,12 @@ export class CsvDialogComponent implements OnInit {
         let clustered: boolean;
 
         if (entry.operator.resultType === ResultTypes.POINTS) {
-            symbology = ComplexPointSymbology.createClusterSymbology({
+            symbology = PointSymbology.createClusterSymbology({
                 fillRGBA: color,
             });
             clustered = true;
         } else {
-            symbology = ComplexVectorSymbology.createSimpleSymbology({
+            symbology = VectorSymbology.createSymbology({
                 fillRGBA: color,
             });
             clustered = false;
@@ -188,22 +187,22 @@ export class CsvDialogComponent implements OnInit {
         const layer = new VectorLayer({
             name: entry.name,
             operator: entry.operator,
-            symbology: symbology,
+            symbology,
             // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
             //     operator: entry.operator,
             //     clustered: clustered,
             // }),
             // provenance: this.mappingQueryService.getProvenanceStream(entry.operator),
-            clustered: clustered,
+            clustered,
         });
         // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
     }
 
     openErrorDialog(error: HttpErrorResponse): void {
-        let errorDialogRef = this.errorDialog.open(CsvErrorDialogComponent, {
+        const errorDialogRef = this.errorDialog.open(CsvErrorDialogComponent, {
             width: '400px',
-            data: {error: error},
+            data: {error},
         });
         errorDialogRef.afterClosed().subscribe(result => {
             if (result) {

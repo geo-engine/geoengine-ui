@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {AbstractSymbology, SymbologyType} from '../symbology.model';
 import {Layer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
@@ -36,7 +36,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     }
 
     update_symbology(layer: Layer<AbstractSymbology>, symbology: AbstractSymbology) {
-        this.projectService.changeLayer(layer, {symbology: symbology});
+        this.projectService.changeLayer(layer, {symbology});
     }
 
     ngOnDestroy(): void {

@@ -12,7 +12,7 @@ import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {NotificationService} from '../../../notification.service';
 import {RasterLayer} from '../../../layers/layer.model';
-import {MappingColorizerRasterSymbology} from '../../../layers/symbology/symbology.model';
+import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {Map as ImmutableMap} from 'immutable';
 import {DataType, DataTypes} from '../../datatype.model';
 import {ResultTypes} from '../../result-type.model';
@@ -90,7 +90,7 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
     }
 
     private static createGdalSourceLayer(entry: Nature40CatalogEntry,
-                                         metadata: GdalSourceMetadata): RasterLayer<MappingColorizerRasterSymbology> {
+                                         metadata: GdalSourceMetadata): RasterLayer<MappingRasterSymbology> {
         for (const channel of metadata.channels) { // TODO: smart layer for other channels
             const datatype = DataTypes.fromCode(Nature40CatalogComponent.rsdbToMappingDataType(channel.datatype));
             const unit = Unit.fromMappingDict(channel.unit);
@@ -133,7 +133,7 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
             return new RasterLayer({
                 name: entry.title,
                 operator,
-                symbology: new MappingColorizerRasterSymbology({unit}),
+                symbology: MappingRasterSymbology.createSymbology({unit}),
             });
         }
     }

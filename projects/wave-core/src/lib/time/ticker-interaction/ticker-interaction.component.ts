@@ -3,7 +3,6 @@ import {first, map, mapTo, startWith, switchMap} from 'rxjs/operators';
 import {BehaviorSubject, merge, Observable, of, Subscription, timer} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {TimeStepDuration} from '../time.model';
-import {empty} from 'rxjs/internal/Observer';
 
 @Component({
     selector: 'wave-ticker-interaction',
@@ -30,7 +29,9 @@ export class TickerInteractionComponent implements OnInit, OnDestroy {
     );
 
     public countdown_percent$: Observable<number> = this.countup$.pipe(
-        map((x: number)  => ((this.countdownSeconds - (x * this.countdownSeconds  / (this.countdownSeconds - 1))) / this.countdownSeconds * 100 ))
+        map((x: number) => (
+            (this.countdownSeconds - (x * this.countdownSeconds / (this.countdownSeconds - 1))) / this.countdownSeconds * 100)
+        )
     );
 
     countdownSeconds = 10;
@@ -48,9 +49,11 @@ export class TickerInteractionComponent implements OnInit, OnDestroy {
         });
 
         this.timer$.subscribe(x => {
-            this.timeForward();
+            if (x) {
+                this.timeForward();
+            }
             console.log(x);
-        })
+        });
     }
 
     ngOnDestroy(): void {
@@ -59,7 +62,7 @@ export class TickerInteractionComponent implements OnInit, OnDestroy {
 
     timeForward() {
         this.projectService.getTimeStream().pipe(first()).subscribe(time => {
-            let nt = time.clone().add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
+            const nt = time.clone().add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(nt);
         });
     }

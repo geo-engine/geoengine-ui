@@ -12,9 +12,9 @@ import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
 import {
     AbstractVectorSymbology,
-    ComplexPointSymbology,
-    ComplexVectorSymbology,
-    MappingColorizerRasterSymbology
+    PointSymbology,
+    VectorSymbology,
+    MappingRasterSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {Interpolation, Unit} from '../../unit.model';
@@ -261,12 +261,12 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         let symbology: AbstractVectorSymbology;
         switch (source.resultType) {
             case ResultTypes.POINTS:
-                symbology = ComplexPointSymbology.createClusterSymbology({
+                symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
             case ResultTypes.POLYGONS:
-                symbology = ComplexVectorSymbology.createSimpleSymbology({
+                symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
                 });
                 break;
@@ -316,7 +316,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projectService.addLayer(new RasterLayer({
             name: `${layerName} (${source.name})`,
             operator: heatmapOperator,
-            symbology: new MappingColorizerRasterSymbology({
+            symbology: MappingRasterSymbology.createSymbology({
                 unit: countUnit,
             }),
         }));

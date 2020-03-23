@@ -7,7 +7,7 @@ import {UserService} from '../../../users/user.service';
 import {Operator} from '../../operator.model';
 import {VectorData, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {ComplexVectorSymbology} from '../../../layers/symbology/symbology.model';
+import {VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MatDialog} from '@angular/material/dialog';
 import {ProjectService} from '../../../project/project.service';
@@ -39,7 +39,7 @@ export class CountryPolygonSelectionComponent implements OnInit, OnDestroy {
     filteredEntries$ = new ReplaySubject<Array<CountryMapType>>(1);
 
     tableEntries: CountryDataSource;
-    displayedColumns: Array<String> = ['name', 'area'];
+    displayedColumns: Array<string> = ['name', 'area'];
 
     sourceIdColumn = 'NAME';
     sourceAreaColumn = 'AREA';
@@ -137,12 +137,12 @@ Sean Gilles did some clean up and made some enhancements.`,
         const dataTypes = new Map<string, DataType>();
         const attributes = new Array<string>();
 
-        for (let an of this.sourceParameters.columns.numeric) {
+        for (const an of this.sourceParameters.columns.numeric) {
             attributes.push(an);
             dataTypes.set(an, DataTypes.Float64); // TODO: get more accurate type
         }
 
-        for (let an of this.sourceParameters.columns.textual) {
+        for (const an of this.sourceParameters.columns.textual) {
             attributes.push(an);
             dataTypes.set(an, DataTypes.Alphanumeric); // TODO: get more accurate type
         }
@@ -151,8 +151,8 @@ Sean Gilles did some clean up and made some enhancements.`,
             operatorType: csvSourceType,
             resultType: ResultTypes.POLYGONS,
             projection: this.sourceProjection,
-            attributes: attributes,
-            dataTypes: dataTypes
+            attributes,
+            dataTypes
         });
 
         return op;
@@ -194,14 +194,14 @@ Sean Gilles did some clean up and made some enhancements.`,
     }
 
     addLayer(layerName: string, operator: Operator) {
-        let symbology = ComplexVectorSymbology.createSimpleSymbology({
+        const symbology = VectorSymbology.createSymbology({
             fillRGBA: this.randomColorService.getRandomColorRgba(),
         });
 
         const layer = new VectorLayer({
             name: layerName,
-            operator: operator,
-            symbology: symbology,
+            operator,
+            symbology,
         });
 
         this.projectService.addLayer(layer);

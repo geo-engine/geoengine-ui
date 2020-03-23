@@ -5,7 +5,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../../project/project.service';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
-import {AbstractSymbology, RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {ExpressionType} from '../../types/expression-type.model';
 
@@ -25,9 +25,9 @@ export class RasterMaskComponent {
 
     constructor(private projectService: ProjectService) {
         this.form = new FormGroup({
-            'input': new FormControl(undefined, [Validators.required]),
-            'mask': new FormControl(undefined, [Validators.required]),
-            'name': new FormControl('Masked Layer', [Validators.required]),
+            input: new FormControl(undefined, [Validators.required]),
+            mask: new FormControl(undefined, [Validators.required]),
+            name: new FormControl('Masked Layer', [Validators.required]),
         });
 
         this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
@@ -46,8 +46,8 @@ export class RasterMaskComponent {
     }
 
     add() {
-        const inputLayer: RasterLayer<RasterSymbology> = this.form.controls.input.value;
-        const maskLayer: RasterLayer<RasterSymbology> = this.form.controls.mask.value;
+        const inputLayer: RasterLayer<AbstractRasterSymbology> = this.form.controls.input.value;
+        const maskLayer: RasterLayer<AbstractRasterSymbology> = this.form.controls.mask.value;
         const name = this.form.controls.name.value as string;
 
         this.projectService.addLayer(new RasterLayer({

@@ -8,7 +8,7 @@ import {WaveValidators} from '../../../util/form.validators';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {AbstractVectorSymbology, RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, AbstractRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
 import {DataType} from '../../datatype.model';
@@ -49,19 +49,21 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
             name: ['Spectral Overview Plot', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
-        this.rasterChangeSubscription = this.form.controls.rasterLayer.valueChanges.subscribe((raster: RasterLayer<RasterSymbology>) => {
-            const isValidRaster = this.isValidRaster(raster);
+        this.rasterChangeSubscription = this.form.controls.rasterLayer.valueChanges.subscribe(
+            (raster: RasterLayer<AbstractRasterSymbology>) => {
+                const isValidRaster = this.isValidRaster(raster);
 
-            this.rasterHasNoChannelConfigForSatelliteSensors$.next(!isValidRaster);
-            this.form.controls.isValidRaster.setValue(isValidRaster);
+                this.rasterHasNoChannelConfigForSatelliteSensors$.next(!isValidRaster);
+                this.form.controls.isValidRaster.setValue(isValidRaster);
 
-            if (isValidRaster) {
-                this.parameterContainer = raster.operator.operatorTypeParameterOptions
-                    .getParameterOption(this.requiredParameterName) as DictParameterArray<GdalSourceChannelOptions>;
-            } else {
-                this.parameterContainer = undefined;
+                if (isValidRaster) {
+                    this.parameterContainer = raster.operator.operatorTypeParameterOptions
+                        .getParameterOption(this.requiredParameterName) as DictParameterArray<GdalSourceChannelOptions>;
+                } else {
+                    this.parameterContainer = undefined;
+                }
             }
-        });
+        );
 
         this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
 
@@ -74,7 +76,7 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
         this.rasterHasNoChannelConfigForSatelliteSensors$.complete();
     }
 
-    private isValidRaster(raster: RasterLayer<RasterSymbology>) {
+    private isValidRaster(raster: RasterLayer<AbstractRasterSymbology>) {
         const containsRequiredParameter = () => raster.operator.operatorTypeParameterOptions.getParameterNames()
             .some(name => name === this.requiredParameterName);
 
@@ -102,15 +104,15 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
 
     add() {
         const pointLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls.pointLayer.value;
-        const rasterLayer: RasterLayer<RasterSymbology> = this.form.controls.rasterLayer.value;
+        const rasterLayer: RasterLayer<AbstractRasterSymbology> = this.form.controls.rasterLayer.value;
         const plotName: string = this.form.controls.name.value;
 
-        let channelNames: Array<string> = [];
-        let rasterSources = [];
-        let dataTypes = new Map<string, DataType>();
-        let units = new Map<string, Unit>();
+        const channelNames: Array<string> = [];
+        const rasterSources = [];
+        const dataTypes = new Map<string, DataType>();
+        const units = new Map<string, Unit>();
 
-        let waveLenghts = [];
+        const waveLenghts = [];
 
         for (let tick = this.parameterContainer.firstTick; tick <= this.parameterContainer.lastTick; ++tick) {
             const channelName = this.parameterContainer.getDisplayValueForTick(tick);
@@ -169,7 +171,7 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
 }
 
 function keyValueDict<T>(key: string, value: T): { [index: string]: T } {
-    let dict = {};
+    const dict = {};
     dict[key] = value;
     return dict;
 }

@@ -123,7 +123,6 @@ import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reproj
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
-import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
@@ -156,6 +155,7 @@ import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.c
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 import {CommonModule} from '@angular/common';
+import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {HelpAboutComponent} from './help/about/help-about.component';
 import {HelpGeneralInformationComponent} from './help/general-information/help-general-information.component';
@@ -224,6 +224,8 @@ const WAVE_PIPES = [
         ColorizerEditorComponent,
         ColormapColorizerComponent,
         CountryPolygonSelectionComponent,
+        CountryPolygonSelectionComponent,
+        CssStringToRgbaPipe,
         CsvDialogComponent,
         CsvErrorDialogComponent,
         CsvPropertiesComponent,
@@ -304,7 +306,6 @@ const WAVE_PIPES = [
         RScriptSaveComponent,
         SaveProjectAsComponent,
         ScatterPlotComponent,
-        SensorSourceOperatorComponent,
         SidenavContainerComponent,
         SidenavHeaderComponent,
         SidenavSearchComponent,
@@ -331,6 +332,7 @@ const WAVE_PIPES = [
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
+        StrokeDashSelectComponent
     ],
     imports: [
         ColorPickerModule,
@@ -391,6 +393,7 @@ const WAVE_PIPES = [
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
+        StrokeDashSelectComponent,
     ],
 })
 export class WaveCoreModule {

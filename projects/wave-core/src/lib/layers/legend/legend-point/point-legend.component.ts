@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LegendComponent} from '../legend.component';
-import {ComplexPointSymbology} from '../../symbology/symbology.model';
+import {PointSymbology} from '../../symbology/symbology.model';
 
 @Component({
     selector: 'wave-point-legend',
     templateUrl: 'point-legend.component.html',
     styleUrls: ['point-legend.component.scss'],
+    // tslint:disable-next-line:no-inputs-metadata-property
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PointLegendComponent<S extends ComplexPointSymbology> extends LegendComponent<S> {
+export class PointLegendComponent<S extends PointSymbology> extends LegendComponent<S> {
 }
