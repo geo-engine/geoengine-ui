@@ -12,12 +12,14 @@ import {Feature as OlFeature} from 'ol';
 
 import {
     AbstractVectorSymbology,
-    PointSymbology,
-    VectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
     DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR,
     MAX_ALLOWED_POINT_RADIUS,
-    SymbologyType, MIN_ALLOWED_POINT_RADIUS, DEFAULT_POINT_RADIUS, MAX_ALLOWED_TEXT_LENGTH
+    MAX_ALLOWED_TEXT_LENGTH,
+    MIN_ALLOWED_POINT_RADIUS,
+    PointSymbology,
+    SymbologyType,
+    VectorSymbology
 } from '../layers/symbology/symbology.model';
 
 export class StyleCreator {
@@ -25,29 +27,49 @@ export class StyleCreator {
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
         switch (sym.getSymbologyType()) {
 
-            case SymbologyType.SIMPLE_LINE:
-                return StyleCreator.fromSimpleLineSymbology(sym);
-            case SymbologyType.SIMPLE_VECTOR:
-                return StyleCreator.fromSimpleVectorSymbology(sym);
-
             case SymbologyType.SIMPLE_POINT:
-                return StyleCreator.fromSimplePointSymbology(sym as PointSymbology);
-
-
+            case SymbologyType.CLUSTERED_POINT:
             case SymbologyType.COMPLEX_POINT:
                 return StyleCreator.fromComplexPointSymbology(sym as PointSymbology);
 
+            case SymbologyType.SIMPLE_LINE:
             case SymbologyType.COMPLEX_LINE:
                 return StyleCreator.fromComplexVectorSymbology(sym as VectorSymbology);
 
+            case SymbologyType.SIMPLE_VECTOR:
             case SymbologyType.COMPLEX_VECTOR:
                 return StyleCreator.fromComplexVectorSymbology(sym as VectorSymbology);
 
             default:
                 console.error('StyleCreator: unknown AbstractSymbology: ' + sym.getSymbologyType());
-                return StyleCreator.fromSimpleVectorSymbology(sym); // Lets pretend unknown symbology is a simple vector...
+                return StyleCreator.fromComplexVectorSymbology(sym as VectorSymbology); // VectorSymbology should handle all types
         }
 
+    }
+
+
+    static handleRadiusAttributeValue(radius: number | string, radiusScale: number = 1.0): number | undefined {
+        const numberRadius = (typeof radius === 'string') ? parseFloat(radius) : radius;
+        if (radius === undefined || radius === null) {
+            return undefined;
+        }
+        if (numberRadius > MAX_ALLOWED_POINT_RADIUS) {
+            return MAX_ALLOWED_POINT_RADIUS;
+        } else if (numberRadius < MIN_ALLOWED_POINT_RADIUS) {
+            return MIN_ALLOWED_POINT_RADIUS;
+        } else {
+            return Math.trunc(numberRadius * radiusScale);
+        }
+    }
+
+    static handleTextAttributeValue(text: string | number): string | number | undefined {
+        if (text === undefined || text === null) {
+            return undefined;
+        }
+        if (typeof text === 'string') {
+            return text.slice(0, MAX_ALLOWED_TEXT_LENGTH);
+        }
+        return text;
     }
 
     static createHighlightSymbology<S extends AbstractVectorSymbology>(sym: S): S {
@@ -55,29 +77,6 @@ export class StyleCreator {
         highlightSymbology.fillRGBA = DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR;
         highlightSymbology.strokeRGBA = DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR;
         return highlightSymbology;
-    }
-
-    static fromSimpleLineSymbology(sym: AbstractVectorSymbology): OlStyle {
-        return new OlStyle({
-            stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
-        });
-    }
-
-    static fromSimpleVectorSymbology(sym: AbstractVectorSymbology): OlStyle {
-        return new OlStyle({
-            fill: new OlStyleFill({color: sym.fillRGBA.rgbaTuple()}),
-            stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
-        });
-    }
-
-    static fromSimplePointSymbology(sym: PointSymbology): OlStyle {
-        return new OlStyle({
-            image: new OlStyleCircle({
-                radius: sym.radius,
-                fill: new OlStyleFill({color: sym.fillRGBA.rgbaTuple()}),
-                stroke: new OlStyleStroke({color: sym.strokeRGBA.rgbaTuple(), width: sym.strokeWidth}),
-            }),
-        });
     }
 
     static buildStyleKey(
@@ -145,30 +144,6 @@ export class StyleCreator {
         };
     }
 
-
-    static handleRadiusAttributeValue(radius: number | string, radiusScale: number = 1.0): number | undefined {
-        const numberRadius = (typeof radius === 'string') ? parseFloat(radius) : radius;
-        if (radius === undefined || radius === null) {
-            return undefined;
-        }
-        if (numberRadius > MAX_ALLOWED_POINT_RADIUS) {
-            return MAX_ALLOWED_POINT_RADIUS;
-        } else if (numberRadius < MIN_ALLOWED_POINT_RADIUS) {
-            return MIN_ALLOWED_POINT_RADIUS;
-        } else {
-            return Math.trunc(numberRadius * radiusScale);
-        }
-    }
-
-    static handleTextAttributeValue(text: string | number): string | number | undefined {
-        if (text === undefined || text === null) {
-            return undefined;
-        }
-        if (typeof text === 'string') {
-            return text.slice(0, MAX_ALLOWED_TEXT_LENGTH);
-        }
-        return text;
-    }
 
     static fromComplexPointSymbology(sym: PointSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
