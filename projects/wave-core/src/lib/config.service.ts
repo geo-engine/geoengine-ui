@@ -157,7 +157,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
-    }
+    },
 };
 
 /**

@@ -221,8 +221,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     updateRadius(event: MatSliderChange) {
 
         if (!(this.symbology instanceof PointSymbology)) {
-            console.error('SymbologyVectorComponent: cant change radius for non point symbology');
-            return;
+            throw new Error('SymbologyVectorComponent: cant change radius for non point symbology');
         }
         this.symbology.radius = event.value;
         if (this.symbology.radius < this.minRadius) {
