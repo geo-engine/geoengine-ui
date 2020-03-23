@@ -32,8 +32,6 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
-import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
 import {BoxPlotComponent} from './operators/dialogs/box-plot-operator/box-plot-operator.component';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 import {ChangeProjectionComponent} from './project/change-projection/change-projection.component';
@@ -51,25 +49,15 @@ import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.compo
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {FeaturedbSourceListComponent} from './operators/dialogs/featuredb-source-list/featuredb-source-list.component';
-import {FeedbackComponent} from './help/feedback/feedback.component';
+import {HelpFeedbackComponent} from './help/feedback/help-feedback.component';
 import {FileNamePipe} from './datatable/mediaview/filename.pipe';
 import {GbifOperatorComponent} from './operators/dialogs/gbif-operator/gbif-operator.component';
-import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.component';
-import {GFBioLogoComponent, IdessaLogoComponent, VatLogoComponent} from './logo.component';
-import {
-    GroupedAbcdBasketResultComponent
-} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
+import {VatLogoComponent} from './logo.component';
 import {HeatmapOperatorComponent} from './operators/dialogs/heatmap/heatmap.component';
 import {HelpComponent} from './help/help.component';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
 import {HistogramComponent} from './plots/histogram/histogram.component';
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
-import {IfEUMETSATDirective} from './util/directives/if-eumetsat.directive';
-import {IfGeoBonDirective} from './util/directives/if-geobon.directive';
-import {IfGfbioDirective} from './util/directives/if-gfbio.directive';
-import {IfGfbioLoggedInDirective} from './util/directives/if-gfbio-logged-in.directive';
-import {IfNature40LoggedInDirective} from './util/directives/if-nature40-logged-in.directive';
-import {IfNature40AndGuestDirective} from './util/directives/if-nature40-and-guest.directive';
 import {IfGuestDirective} from './util/directives/if-guest.directive';
 import {IfLoggedInDirective} from './util/directives/if-logged-in.directive';
 import {LayerExportComponent} from './layers/dialogs/layer-export/layer-export.component';
@@ -124,7 +112,6 @@ import {
     OlRasterLayerComponent,
 } from './map/map-layer.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
-import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
@@ -143,14 +130,11 @@ import {SmallTimeInteractionComponent} from './time/small-time-interaction/small
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {SourceOperatorListComponent} from './operators/dialogs/source-operator-list/source-operator-list.component';
-import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
-import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
 import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
 import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
 import {TableComponent} from './datatable/table/table.component';
-import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {TextualAttributeFilterOperatorComponent} from './operators/dialogs/textual-attribute-filter/textual-attribute-filter.component';
 import {TickerInteractionComponent} from './time/ticker-interaction/ticker-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
@@ -172,6 +156,16 @@ import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.c
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 import {CommonModule} from '@angular/common';
+import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {HelpAboutComponent} from './help/about/help-about.component';
+import {HelpGeneralInformationComponent} from './help/general-information/help-general-information.component';
+import {HelpQuickDemoComponent} from './help/quick-demo/help-quick-demo.component';
+import {HelpOverviewComponent} from './help/overview/help-overview.component';
+import {HelpAccountComponent} from './help/account/help-account.component';
+import {HelpDataComponent} from './help/data/help-data.component';
+import {HelpOperatorsComponent} from './help/operators/help-operators.component';
+import {HelpLineageComponent} from './help/lineage/help-lineage.component';
+import {HelpExportComponent} from './help/export/help-export.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -205,28 +199,34 @@ const MATERIAL_MODULES = [
     MatTooltipModule,
 ];
 
+const WAVE_PIPES = [
+    BreakpointToCssStringPipe,
+    ColormapNameToColorizerDataPipe,
+    CssStringToRgbaPipe,
+    FileNamePipe,
+    HighlightPipe,
+    MappingColorizerToGradientPipe,
+    NbspPipe,
+    NumericPipe,
+    RgbaToCssStringPipe,
+    SafeHtmlPipe,
+    SafeStylePipe,
+    TrimPipe,
+];
+
 @NgModule({
     declarations: [
-        AbcdRepositoryComponent,
-        BasketResultGroupByDatasetPipe,
+        ...WAVE_PIPES,
         BoxPlotComponent,
-        BoxPlotComponent,
-        BreakpointToCssStringPipe,
-        ChangeProjectionComponent,
         ChangeProjectionComponent,
         CodeEditorComponent,
         ColorBreakpointInputComponent,
         ColorizerEditorComponent,
         ColormapColorizerComponent,
-        ColormapNameToColorizerDataPipe,
         CountryPolygonSelectionComponent,
-        CountryPolygonSelectionComponent,
-        CssStringToRgbaPipe,
         CsvDialogComponent,
         CsvErrorDialogComponent,
         CsvPropertiesComponent,
-        CsvPropertiesComponent,
-        CsvTableComponent,
         CsvTableComponent,
         CsvUploadComponent,
         DataRepositoryComponent,
@@ -235,27 +235,23 @@ const MATERIAL_MODULES = [
         DialogSectionHeadingComponent,
         ExpressionOperatorComponent,
         FeaturedbSourceListComponent,
-        FeedbackComponent,
-        FeedbackComponent,
-        FileNamePipe,
         GbifOperatorComponent,
-        GfbioBasketsComponent,
-        GFBioLogoComponent,
-        GroupedAbcdBasketResultComponent,
         HeatmapOperatorComponent,
+        HelpAboutComponent,
+        HelpAccountComponent,
         HelpComponent,
-        HighlightPipe,
+        HelpDataComponent,
+        HelpExportComponent,
+        HelpFeedbackComponent,
+        HelpGeneralInformationComponent,
+        HelpLineageComponent,
+        HelpOperatorsComponent,
+        HelpOverviewComponent,
+        HelpQuickDemoComponent,
         HistogramComponent,
         HistogramOperatorComponent,
-        IdessaLogoComponent,
-        IfEUMETSATDirective,
-        IfGeoBonDirective,
-        IfGfbioDirective,
-        IfGfbioLoggedInDirective,
         IfGuestDirective,
         IfLoggedInDirective,
-        IfNature40AndGuestDirective,
-        IfNature40LoggedInDirective,
         LayerExportComponent,
         LayerListComponent,
         LayerListWorkflowParameterSliderComponent,
@@ -267,10 +263,8 @@ const MATERIAL_MODULES = [
         LegendComponent,
         LineageGraphComponent,
         LoadProjectComponent,
-        LoadProjectComponent,
         LoginComponent,
         MapContainerComponent,
-        MappingColorizerToGradientPipe,
         MappingDataSourceFilter,
         MappingRasterLegendComponent,
         MediaviewAudioComponent,
@@ -282,22 +276,15 @@ const MATERIAL_MODULES = [
         MultiLayerSelectionComponent,
         Nature40CatalogComponent,
         NavigationComponent,
-        NbspPipe,
-        NewProjectComponent,
         NewProjectComponent,
         NumericAttributeFilterOperatorComponent,
-        NumericPipe,
         OlDrawFeaturesComponent,
         OlLineLayerComponent,
         OlPointLayerComponent,
         OlPolygonLayerComponent,
         OlRasterLayerComponent,
         OperatorListComponent,
-        OperatorListComponent,
         OperatorOutputNameComponent,
-        OperatorOutputNameComponent,
-        PangaeaBasketResultComponent,
-        PieChartComponent,
         PieChartComponent,
         PlotDetailViewComponent,
         PlotListComponent,
@@ -311,52 +298,36 @@ const MATERIAL_MODULES = [
         RasterValueExtractionOperatorComponent,
         RenameLayerComponent,
         ReprojectionSelectionComponent,
-        ReprojectionSelectionComponent,
-        RgbaToCssStringPipe,
         RgbCompositeComponent,
         ROperatorComponent,
-        ROperatorComponent,
-        RScriptLoadComponent,
         RScriptLoadComponent,
         RScriptSaveComponent,
-        RScriptSaveComponent,
-        SafeHtmlPipe,
-        SafeStylePipe,
         SaveProjectAsComponent,
-        SaveProjectAsComponent,
-        ScatterPlotComponent,
         ScatterPlotComponent,
         SensorSourceOperatorComponent,
         SidenavContainerComponent,
         SidenavHeaderComponent,
         SidenavSearchComponent,
-        SidenavSearchComponent,
-        SidenavSearchRightDirective,
         SidenavSearchRightDirective,
         SmallTimeInteractionComponent,
         SourceDatasetComponent,
         SourceOperatorListComponent,
         SpectralOverviewPlotComponent,
-        SplashDialogComponent,
         StatisticsPlotComponent,
         SymbologyEditorComponent,
         SymbologyRasterComponent,
         SymbologyRasterMappingColorizerComponent,
         SymbologyVectorComponent,
         TableComponent,
-        TerminologyLookupOperatorComponent,
         TestIdComponentDirective,
         TextualAttributeFilterOperatorComponent,
         TickerInteractionComponent,
         TimeConfigComponent,
         TimeInputComponent,
-        TimeInputComponent,
         TimePlotComponent,
-        TrimPipe,
         VatLogoComponent,
         VectorLegendComponent,
         VectorSourceDatasetComponent,
-        WorkflowParameterChoiceDialogComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
@@ -375,13 +346,29 @@ const MATERIAL_MODULES = [
         /* re-exports */
         ...MATERIAL_MODULES,
         FlexLayoutModule,
+        ReactiveFormsModule,
         /* library exports */
+        ...WAVE_PIPES,
+        DialogHeaderComponent,
+        DialogHelpComponent,
+        DialogSectionHeadingComponent,
         GbifOperatorComponent,
-        GroupedAbcdBasketResultComponent,
+        HelpAboutComponent,
+        HelpAccountComponent,
         HelpComponent,
+        HelpDataComponent,
+        HelpExportComponent,
+        HelpFeedbackComponent,
+        HelpGeneralInformationComponent,
+        HelpLineageComponent,
+        HelpOperatorsComponent,
+        HelpOverviewComponent,
+        HelpQuickDemoComponent,
         LayerListComponent,
+        LayerSelectionComponent,
         LoginComponent,
         MapContainerComponent,
+        MultiLayerSelectionComponent,
         NavigationComponent,
         OlDrawFeaturesComponent,
         OlLineLayerComponent,
@@ -389,20 +376,22 @@ const MATERIAL_MODULES = [
         OlPolygonLayerComponent,
         OlRasterLayerComponent,
         OperatorListComponent,
-        PangaeaBasketResultComponent,
+        OperatorOutputNameComponent,
         PlotListComponent,
         ProvenanceListComponent,
+        ReprojectionSelectionComponent,
         SidenavContainerComponent,
+        SidenavHeaderComponent,
+        SidenavSearchComponent,
         SmallTimeInteractionComponent,
         SourceOperatorListComponent,
-        SplashDialogComponent,
         TableComponent,
         TickerInteractionComponent,
         TimeConfigComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
-    ]
+    ],
 })
 export class WaveCoreModule {
 }

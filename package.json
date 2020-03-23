@@ -7,6 +7,7 @@
         "start": "ng serve",
         "build": "ng build",
         "serve:app": "ng serve wave-app --proxy-config proxy.conf.json",
+        "serve:gfbio": "ng serve gfbio-app --proxy-config proxy.conf.json",
         "build-watch:core": "ng build wave-core --watch",
         "test": "ng test",
         "lint": "ng lint",

@@ -1,7 +1,8 @@
-import {BehaviorSubject, Observable} from 'rxjs';
-import {first, map} from 'rxjs/operators';
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators, FormControl} from '@angular/forms';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {FormGroup, Validators, FormControl} from '@angular/forms';
+
 import {Config} from '../../config.service';
 import {WaveValidators} from '../../util/form.validators';
 import {UserService} from '../user.service';
@@ -20,37 +21,31 @@ enum FormStatus {
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    readonly useSsoLogin = ['Nature40'].includes(this.config.PROJECT);
+    readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
-    isLoggedIn$: Observable<boolean>;
-    isLoggedOut$: Observable<boolean>;
-    isLoading$: Observable<boolean>;
 
     loginForm: FormGroup;
 
     user: Observable<User>;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
 
-    constructor(private formBuilder: FormBuilder,
-                private config: Config,
-                private userService: UserService,
-                private notificationService: NotificationService) {
-        this.loginForm = this.formBuilder.group({
-            loginAuthority: [this.config.PROJECT === 'GFBio' ? 'gfbio' : 'system', Validators.required],
-            username: ['', Validators.compose([
+    private formStatusSubscription: Subscription;
+
+    constructor(private readonly changeDetectorRef: ChangeDetectorRef,
+                private readonly config: Config,
+                private readonly userService: UserService,
+                private readonly notificationService: NotificationService) {
+        this.loginForm = new FormGroup({
+            username: new FormControl('', Validators.compose([
                 Validators.required,
                 WaveValidators.keyword([this.config.USER.GUEST.NAME]),
-            ])],
-            password: ['', Validators.required],
-            staySignedIn: [true, Validators.required],
+            ])),
+            password: new FormControl('', Validators.required),
+            staySignedIn: new FormControl(true, Validators.required),
         });
-
-        this.isLoggedIn$ = this.formStatus$.pipe(map(status => status === FormStatus.LoggedIn));
-        this.isLoggedOut$ = this.formStatus$.pipe(map(status => status === FormStatus.LoggedOut));
-        this.isLoading$ = this.formStatus$.pipe(map(status => status === FormStatus.Loading));
     }
 
     ngOnInit() {
@@ -67,39 +62,30 @@ export class LoginComponent implements OnInit, AfterViewInit {
             });
 
         this.user = this.userService.getUserStream();
+
+        // this essentially allows checking for the sidenav-header component on status changes
+        this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
     }
 
     ngAfterViewInit() {
         // do this once for observables
-        setTimeout(() => this.loginForm.updateValueAndValidity(), 0);
+        setTimeout(() => this.loginForm.updateValueAndValidity());
+    }
+
+    ngOnDestroy() {
+        if (this.formStatusSubscription) {
+            this.formStatusSubscription.unsubscribe();
+        }
     }
 
     login() {
         this.formStatus$.next(FormStatus.Loading);
 
-        let loginRequest: Observable<boolean>;
-
-        switch (this.loginForm.controls['loginAuthority'].value.toLowerCase()) {
-            case 'gfbio':
-                loginRequest = this.userService.gfbioLogin({
-                    user: this.loginForm.controls['username'].value,
-                    password: this.loginForm.controls['password'].value,
-                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
-                });
-
-                break;
-            case 'system':
-            /* falls through */
-            default:
-                loginRequest = this.userService.login({
-                    user: this.loginForm.controls['username'].value,
-                    password: this.loginForm.controls['password'].value,
-                    staySignedIn: this.loginForm.controls['staySignedIn'].value,
-                });
-                break;
-        }
-
-        loginRequest.subscribe(
+        this.userService.login({
+            user: this.loginForm.controls['username'].value,
+            password: this.loginForm.controls['password'].value,
+            staySignedIn: this.loginForm.controls['staySignedIn'].value,
+        }).subscribe(
             valid => {
                 if (valid) {
                     this.invalidCredentials$.next(false);
@@ -118,21 +104,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
         );
     }
 
-    jwtNature40Login() {
-        this.userService.getNature40JwtClientToken().pipe(first()).subscribe(({clientToken}: { clientToken }) => {
-            window.location.href = this.config.NATURE40.SSO_JWT_PROVIDER_URL + clientToken;
-        });
-    }
-
-
     logout() {
         this.formStatus$.next(FormStatus.Loading);
-        this.userService.guestLogin()
-            .subscribe(
-                () => {
-                    this.loginForm.controls['password'].setValue('');
-                    this.formStatus$.next(FormStatus.LoggedOut);
-                },
-                error => this.notificationService.error(`The backend is currently unavailable (${error})`));
+        this.userService.guestLogin().subscribe(
+            () => {
+                this.loginForm.controls['password'].setValue('');
+                this.formStatus$.next(FormStatus.LoggedOut);
+            },
+            error => this.notificationService.error(`The backend is currently unavailable (${error})`));
     }
 }

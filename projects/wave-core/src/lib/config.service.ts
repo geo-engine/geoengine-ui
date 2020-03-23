@@ -43,8 +43,6 @@ interface Delays {
     readonly GUEST_LOGIN_HINT: number;
 }
 
-type ProjectNameConfig = 'EUMETSAT' | 'GFBio' | 'GeoBon' | 'Nature40';
-
 interface Defaults {
     readonly PROJECT: {
         readonly NAME: string,
@@ -63,9 +61,6 @@ interface Map {
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
-interface Gfbio {
-    readonly LIFERAY_PORTAL_URL: string;
-}
 
 interface Nature40 {
     SSO_JWT_PROVIDER_URL: string;
@@ -79,11 +74,9 @@ export interface WaveConfigStructure {
     readonly DEBUG_MODE: DebugMode;
     readonly DEFAULTS: Defaults;
     readonly DELAYS: Delays;
-    readonly GFBIO: Gfbio;
     readonly MAP: Map;
     readonly MAPPING_URL: MappingUrlType;
     readonly NATURE40: Nature40;
-    readonly PROJECT: ProjectNameConfig;
     readonly TIME: Time;
     readonly USER: User;
     readonly WCS: Wcs;
@@ -113,9 +106,6 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
     },
-    GFBIO: {
-        LIFERAY_PORTAL_URL: 'https://dev.gfbio.org/',
-    },
     MAP: {
         BACKGROUND_LAYER: 'OSM',
         BACKGROUND_LAYER_URL: '',
@@ -128,7 +118,6 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     NATURE40: {
         SSO_JWT_PROVIDER_URL: 'http://vhrz669.hrz.uni-marburg.de/nature40/sso?jws=',
     },
-    PROJECT: 'GFBio',
     TIME: {
         ALLOW_RANGES: true,
     },
@@ -190,20 +179,12 @@ export class Config {
         return this.config.DELAYS;
     }
 
-    get PROJECT(): ProjectNameConfig {
-        return this.config.PROJECT;
-    }
-
     get DEFAULTS(): Defaults {
         return this.config.DEFAULTS;
     }
 
     get MAP(): Map {
         return this.config.MAP;
-    }
-
-    get GFBIO(): Gfbio {
-        return this.config.GFBIO;
     }
 
     get NATURE40(): Nature40 {

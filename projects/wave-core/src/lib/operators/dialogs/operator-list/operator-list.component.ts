@@ -45,115 +45,10 @@ export interface OperatorListType {
     description: string;
 }
 
-export const DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
-    {
-        component: RasterValueExtractionOperatorComponent,
-        type: RasterValueExtractionType,
-        description: 'Attach raster values to vector data',
-    },
-    {
-        component: RasterPolygonClipOperatorComponent,
-        type: {
-            NAME: 'Raster Polygon Clip',
-            ICON_URL: OperatorType.createIconDataUrl('Raster Polygon Clip'),
-        },
-        description: 'Clip a raster image via polygon boundaries',
-    },
-    {
-        component: ROperatorComponent,
-        type: RScriptType,
-        description: 'Execute an R script (experimental)'
-    }
-];
-
-export const DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
-    {
-        component: HistogramOperatorComponent,
-        type: HistogramType,
-        description: 'Create a histogram from vector or raster data',
-    },
-    {
-        component: PieChartComponent,
-        type: PieChartType,
-        description: 'Plot your data as a pie chart',
-    },
-    {
-        component: ScatterPlotComponent,
-        type: ScatterPlotType,
-        description: 'Scatter plot your data'
-    },
-    {
-        component: BoxPlotComponent,
-        type: BoxPlotType,
-        description: 'Box plot your data'
-    },
-    {
-        component: StatisticsPlotComponent,
-        type: StatisticsType,
-        description: 'Get statistics for any layer'
-    },
-    {
-        component: TimePlotComponent,
-        type: TimePlotType,
-        description: 'Plot time data'
-    }
-];
-
-export const DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
-    {
-        component: ExpressionOperatorComponent,
-        type: ExpressionType,
-        description: 'Calculate an expression on a raster',
-    },
-    {
-        component: RasterMaskComponent,
-        type: {
-            NAME: 'Raster Mask',
-            ICON_URL: OperatorType.createIconDataUrl('Raster Mask'),
-        },
-        description: 'Apply a mask to a raster',
-    },
-    {
-        component: RgbCompositeComponent,
-        type: RgbaCompositeType,
-        description: 'Create an RGB composite from a set of rasters',
-    }
-];
-
-export const DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [
-    {
-        component: NumericAttributeFilterOperatorComponent,
-        type: NumericAttributeFilterType,
-        description: 'Filter data via numeric range',
-    },
-    {
-        component: HeatmapOperatorComponent,
-        type: HeatmapType,
-        description: 'Create a heatmap for points',
-    },
-    {
-        component: PointInPolygonFilterOperatorComponent,
-        type: PointInPolygonFilterType,
-        description: 'Filter points that are enclosed by a polygon',
-    },
-    {
-        component: TextualAttributeFilterOperatorComponent,
-        type: TextualAttributeFilterType,
-        description: 'Filter data via text filter',
-    },
-];
-
 export type OperatorListButtonGroups = Array<{
     name: string;
     list: Array<OperatorListType>;
 }>;
-
-const DEFAULT_OPERATOR_DIALOGS: OperatorListButtonGroups = [
-    {name: 'Mixed', list: DEFAULT_MIXED_OPERATOR_DIALOGS},
-    {name: 'Plots', list: DEFAULT_PLOT_OPERATOR_DIALOGS},
-    {name: 'Raster', list: DEFAULT_RASTER_OPERATOR_DIALOGS},
-    {name: 'Vector', list: DEFAULT_VECTOR_OPERATOR_DIALOGS},
-];
 
 @Component({
     selector: 'wave-operator-list',
@@ -163,7 +58,110 @@ const DEFAULT_OPERATOR_DIALOGS: OperatorListButtonGroups = [
 })
 export class OperatorListComponent implements OnInit {
 
-    @Input() operators: OperatorListButtonGroups = DEFAULT_OPERATOR_DIALOGS;
+    static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: RasterValueExtractionOperatorComponent,
+            type: RasterValueExtractionType,
+            description: 'Attach raster values to vector data',
+        },
+        {
+            component: RasterPolygonClipOperatorComponent,
+            type: {
+                NAME: 'Raster Polygon Clip',
+                ICON_URL: OperatorType.createIconDataUrl('Raster Polygon Clip'),
+            },
+            description: 'Clip a raster image via polygon boundaries',
+        },
+        {
+            component: ROperatorComponent,
+            type: RScriptType,
+            description: 'Execute an R script (experimental)'
+        }
+    ];
+
+    static readonly DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: HistogramOperatorComponent,
+            type: HistogramType,
+            description: 'Create a histogram from vector or raster data',
+        },
+        {
+            component: PieChartComponent,
+            type: PieChartType,
+            description: 'Plot your data as a pie chart',
+        },
+        {
+            component: ScatterPlotComponent,
+            type: ScatterPlotType,
+            description: 'Scatter plot your data'
+        },
+        {
+            component: BoxPlotComponent,
+            type: BoxPlotType,
+            description: 'Box plot your data'
+        },
+        {
+            component: StatisticsPlotComponent,
+            type: StatisticsType,
+            description: 'Get statistics for any layer'
+        },
+        {
+            component: TimePlotComponent,
+            type: TimePlotType,
+            description: 'Plot time data'
+        }
+    ];
+
+    static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: ExpressionOperatorComponent,
+            type: ExpressionType,
+            description: 'Calculate an expression on a raster',
+        },
+        {
+            component: RasterMaskComponent,
+            type: {
+                NAME: 'Raster Mask',
+                ICON_URL: OperatorType.createIconDataUrl('Raster Mask'),
+            },
+            description: 'Apply a mask to a raster',
+        },
+        {
+            component: RgbCompositeComponent,
+            type: RgbaCompositeType,
+            description: 'Create an RGB composite from a set of rasters',
+        }
+    ];
+
+    static readonly DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: NumericAttributeFilterOperatorComponent,
+            type: NumericAttributeFilterType,
+            description: 'Filter data via numeric range',
+        },
+        {
+            component: HeatmapOperatorComponent,
+            type: HeatmapType,
+            description: 'Create a heatmap for points',
+        },
+        {
+            component: PointInPolygonFilterOperatorComponent,
+            type: PointInPolygonFilterType,
+            description: 'Filter points that are enclosed by a polygon',
+        },
+        {
+            component: TextualAttributeFilterOperatorComponent,
+            type: TextualAttributeFilterType,
+            description: 'Filter data via text filter',
+        },
+    ];
+
+    @Input() operators: OperatorListButtonGroups = [ // default operator set
+        {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
+        {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
+        {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
+        {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
+    ];
 
     operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
     searchString$ = new BehaviorSubject<string>('');

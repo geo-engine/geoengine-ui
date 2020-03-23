@@ -1,5 +1,9 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
-import {BasicColumns} from '../dialogs/baskets/csv.model';
+
+export interface BasicColumns {
+    numeric: Array<string>;
+    textual: Array<string>;
+}
 
 interface GFBioSourceTypeConfig {
     dataSource: string;
@@ -15,7 +19,7 @@ interface GFBioSourceTypeMappingDict extends OperatorTypeMappingDict {
     columns: BasicColumns;
 }
 
-export interface GFBioSourceTypeDict extends OperatorTypeDict  {
+export interface GFBioSourceTypeDict extends OperatorTypeDict {
     dataSource: string;
     level: string;
     term: string;
@@ -31,9 +35,17 @@ export class GFBioSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(GFBioSourceType._TYPE);
     private static _NAME = 'GFBio Source';
 
-    static get TYPE(): string { return GFBioSourceType._TYPE; }
-    static get ICON_URL(): string { return GFBioSourceType._ICON_URL; }
-    static get NAME(): string { return GFBioSourceType._NAME; }
+    static get TYPE(): string {
+        return GFBioSourceType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return GFBioSourceType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return GFBioSourceType._NAME;
+    }
 
     private dataSource: string;
     private level: string;

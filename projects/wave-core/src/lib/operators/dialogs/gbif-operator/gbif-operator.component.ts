@@ -7,7 +7,7 @@ import {Config} from '../../../config.service';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {OperatorType} from '../../operator-type.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
-import {GFBioSourceType} from '../../types/gfbio-source-type.model';
+import {BasicColumns, GFBioSourceType} from '../../types/gfbio-source-type.model';
 import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
 import {
@@ -17,7 +17,6 @@ import {
     MappingColorizerRasterSymbology
 } from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {BasicColumns} from '../baskets/csv.model';
 import {Interpolation, Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
 import {HttpClient} from '@angular/common/http';
@@ -64,7 +63,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    @ViewChild(MatAutocompleteTrigger, { static: true }) autoCompleteTrigger: MatAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger, {static: true}) autoCompleteTrigger: MatAutocompleteTrigger;
 
     mode$ = new BehaviorSubject(1);
     loading$ = new BehaviorSubject(false);
@@ -138,7 +137,8 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                         return observableOf([]);
                     }
                 }
-            ), );
+            ),
+        );
 
         // TODO: think about very unlikely race condition
         this.http
@@ -214,7 +214,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    add(event: any) {
+    add() {
         const layerName = this.form.controls['name'].value as string;
         const searchLevel = this.form.controls['searchLevel'].value as string;
         const searchTerm = this.form.controls['searchTerm'].value as string;
@@ -244,11 +244,11 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                 resultType: ResultTypes.POINTS
             };
 
-         this.addVectorLayer(source, layerName);
+            this.addVectorLayer(source, layerName);
         }
     }
 
-    addVectorLayer(source: {name: string, operatorType: OperatorType, resultType: ResultType}, layerName: string) {
+    addVectorLayer(source: { name: string, operatorType: OperatorType, resultType: ResultType }, layerName: string) {
         const operator = new Operator({
             operatorType: source.operatorType,
             resultType: source.resultType,
@@ -277,15 +277,15 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         const clustered = source.resultType === ResultTypes.POINTS;
         const layer = new VectorLayer({
             name: `${layerName} (${source.name})`,
-            operator: operator,
-            symbology: symbology,
-            clustered: clustered,
+            operator,
+            symbology,
+            clustered,
         });
 
         this.projectService.addLayer(layer);
     }
 
-    addRasterLayer(source: {name: string, operatorType: OperatorType, resultType: ResultType}, layerName: string, max: number) {
+    addRasterLayer(source: { name: string, operatorType: OperatorType, resultType: ResultType }, layerName: string, max: number) {
         const sourceOperator = new Operator({
             operatorType: source.operatorType,
             resultType: source.resultType,
@@ -297,7 +297,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             unit: '',
             interpolation: Interpolation.Continuous,
             min: 0,
-            max: max
+            max
         });
 
         const heatmapOperator = new Operator({
