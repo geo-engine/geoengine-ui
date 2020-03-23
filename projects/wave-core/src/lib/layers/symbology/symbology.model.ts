@@ -23,6 +23,12 @@ export const DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR: Color = Color.fromRgbaLike([
 export const DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR: Color = Color.fromRgbaLike([0, 153, 255, 1]);
 export const DEFAULT_VECTOR_HIGHLIGHT_TEXT_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
 export const DEFAULT_POINT_RADIUS = 5;
+export const DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE = '___radius';
+export const DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE = '___numberOfPoints';
+export const MIN_ALLOWED_POINT_RADIUS = 1;
+export const MAX_ALLOWED_POINT_RADIUS = 100;
+export const MAX_ALLOWED_TEXT_LENGTH = 25;
+
 /**
  * Serialization interface
  */
@@ -31,7 +37,8 @@ export interface SymbologyDict {
 }
 
 // tslint:disable-next-line: no-empty-interface
-export interface ISymbology {}
+export interface ISymbology {
+}
 
 export type StrokeDashStyle = Array<number>;
 
@@ -286,6 +293,14 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         this.strokeDashStyle = undefined;
     }
 
+    setTextAttribute(textAttribute: string) {
+        this.textAttribute = textAttribute;
+    }
+
+    unSetTextAttribute() {
+        this.textAttribute = undefined;
+    }
+
     toDict(): VectorSymbologyDict {
         return {
             symbologyType: SymbologyType[this.getSymbologyType()],
@@ -308,12 +323,14 @@ export interface PointSymbologyConfig extends VectorSymbologyConfig {
     radius?: number;
     radiusAttribute?: string;
     radiusFactor?: number;
+    clustered?: boolean;
 }
 
 interface PointSymbologyDict extends VectorSymbologyDict {
     radius: number;
     radiusAttribute: string;
     radiusFactor: number;
+    clustered: boolean;
 }
 
 export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
@@ -390,6 +407,7 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
     radiusAttribute: string = undefined;
     radiusFactor = 1.0;
     radius: number = DEFAULT_POINT_RADIUS;
+    clustered = false;
 
     protected constructor(config: PointSymbologyConfig) {
         super(config);
@@ -401,6 +419,7 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
         if (config.radiusAttribute) {
             this.radiusAttribute = config.radiusAttribute;
         }
+        this.clustered = (config.clustered) ? config.clustered : false;
         this.radiusFactor = (config.radiusFactor) ? config.radiusFactor : 1.0;
     }
 
@@ -408,9 +427,9 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
      * Creates a ComplexPointSymbology where radiusAttribute and textAttribute are set to the strings returned by Mappings cluster operator
      */
     static createClusterSymbology(config: PointSymbologyConfig): PointSymbology {
-        config['radiusAttribute'] = '___radius';
-        config['textAttribute'] = '___numberOfPoints';
-        config['clustered'] = true;
+        config.radiusAttribute = DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE;
+        config.textAttribute = DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE;
+        config.clustered = true;
 
         return PointSymbology.createSymbology(config);
     }
@@ -478,6 +497,7 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
             textAttribute: this.textAttribute,
             textColor: this.textColor.rgbaTuple(),
             textStrokeWidth: this.textStrokeWidth,
+            clustered: this.clustered,
         };
     }
 }

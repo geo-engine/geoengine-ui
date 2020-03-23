@@ -1,6 +1,13 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 
-import {PointSymbology, VectorSymbology, StrokeDashStyle, SymbologyType} from '../symbology.model';
+import {
+    PointSymbology,
+    VectorSymbology,
+    StrokeDashStyle,
+    SymbologyType,
+    DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE,
+    MAX_ALLOWED_POINT_RADIUS, MIN_ALLOWED_POINT_RADIUS, DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE, MAX_ALLOWED_TEXT_LENGTH
+} from '../symbology.model';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
@@ -23,12 +30,15 @@ interface Attribute {
 export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     static minStrokeWidth = 0;
-    static minRadius = 1;
 
     @Input() layer: VectorLayer<PointSymbology> | VectorLayer<VectorSymbology>;
     @Output() symbologyChanged = new EventEmitter<PointSymbology | VectorSymbology>();
 
-    symbology: PointSymbology | VectorSymbology;
+    readonly minRadius = MIN_ALLOWED_POINT_RADIUS;
+    readonly maxRadius = MAX_ALLOWED_POINT_RADIUS;
+    readonly maxTextChars = MAX_ALLOWED_TEXT_LENGTH;
+
+    symbology: VectorSymbology | PointSymbology;
 
     fillByAttribute = false;
     strokeByAttribute = false;
@@ -36,7 +46,10 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     strokeColorAttribute: Attribute;
     radiusAttribute: Attribute;
     radiusByAttribute: boolean;
+    textByAttribute: boolean;
+    textAttribute: Attribute;
     attributes: Array<Attribute>;
+    numericAttributes: Array<Attribute>;
 
     constructor() {
     }
@@ -70,9 +83,25 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         }
     }
 
+    setRadiusAttributeForClustering() {
+        const symbology = this.symbology as PointSymbology;
+        this.radiusByAttribute = false;
+        symbology.radiusFactor = 1.0;
+        symbology.clustered = true;
+        symbology.radiusAttribute = DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE;
+        this.update();
+    }
+
+    setTextAttributeForClustering() {
+        this.textByAttribute = false;
+        this.symbology.textAttribute = DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE;
+        this.update();
+    }
+
     updateFillColorizeByAttribute(event: MatSlideToggleChange) {
         this.fillByAttribute = event.checked;
         this.setFillColorizerAttribute();
+        this.update();
     }
 
     setStrokeColorizerAttribute() {
@@ -91,17 +120,16 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     updateStrokeColorizeByAttribute(event: MatSlideToggleChange) {
         this.strokeByAttribute = event.checked;
         this.setStrokeColorizerAttribute();
+        this.update();
     }
 
     setRadiusAttribute() {
-        console.log('setRadiusAttribute');
         if (this.symbology instanceof PointSymbology) {
-            console.log('setRadiusAttribute', 'instanceof');
             if (this.radiusByAttribute && this.radiusAttribute) {
                 this.symbology.setRadiusAttribute(this.radiusAttribute.name);
-                console.log('setRadiusAttribute', 'radiusAttribute', this.radiusAttribute.name);
             } else {
                 this.symbology.unSetRadiusAttribute();
+
             }
             this.update();
         }
@@ -112,24 +140,48 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         this.setRadiusAttribute();
     }
 
+    setTextAttribute() {
+        if (this.textByAttribute && this.textAttribute) {
+            this.symbology.setTextAttribute(this.textAttribute.name);
+        } else {
+            this.symbology.unSetTextAttribute();
+        }
+        this.update();
+    }
+
+    updateTextByAttribute(event: MatSlideToggleChange) {
+        this.textByAttribute = event.checked;
+        this.setTextAttribute();
+    }
+
     updateSymbologyFromLayer() {
         if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
             return;
         }
-        this.symbology = this.layer.symbology;
-        this.fillByAttribute = !!this.symbology.fillColorAttribute;
-        this.strokeByAttribute = !!this.symbology.strokeColorAttribute;
+        const symbology = this.layer.symbology;
+        this.symbology = symbology;
+        this.fillByAttribute = !!symbology.fillColorAttribute;
+        this.strokeByAttribute = !!symbology.strokeColorAttribute;
         this.gatherAttributes();
-        this.fillColorAttribute = this.attributes.find(x => x.name === this.symbology.fillColorAttribute);
-        this.strokeColorAttribute = this.attributes.find(x => x.name === this.symbology.strokeColorAttribute);
+        this.fillColorAttribute = this.attributes.find(x => x.name === symbology.fillColorAttribute);
+        this.fillByAttribute = !!this.fillColorAttribute;
+        this.strokeColorAttribute = this.attributes.find(x => x.name === symbology.strokeColorAttribute);
+        this.strokeByAttribute = !!this.strokeColorAttribute;
+        if (symbology instanceof PointSymbology) {
+            this.radiusAttribute = this.attributes.find(x => x.name === symbology.radiusAttribute);
+            this.radiusByAttribute = !!this.radiusAttribute;
+        }
+        this.textAttribute = this.attributes.find(x => x.name === symbology.textAttribute);
+        this.textByAttribute = !!this.textAttribute;
     }
 
     gatherAttributes() {
         const attributes: Array<Attribute> = [];
+        const numericAttributes: Array<Attribute> = [];
         this.layer.operator.dataTypes.forEach((datatype, attribute) => {
 
             if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
-                attributes.push({
+                numericAttributes.push({
                     name: attribute,
                     type: 'number',
                 });
@@ -140,7 +192,8 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
                 });
             }
         });
-        this.attributes = attributes;
+        this.numericAttributes = numericAttributes;
+        this.attributes = [...numericAttributes, ...attributes];
     }
 
     update() {
@@ -172,8 +225,11 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             return;
         }
         this.symbology.radius = event.value;
-        if (this.symbology.radius < SymbologyVectorComponent.minRadius) {
-            this.symbology.radius = SymbologyVectorComponent.minRadius;
+        if (this.symbology.radius < this.minRadius) {
+            this.symbology.radius = this.minRadius;
+        }
+        if (this.symbology.radius > this.maxRadius) {
+            this.symbology.radius = this.maxRadius;
         }
         this.update();
     }
@@ -204,6 +260,13 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             this.symbology.setOrUpdateStrokeColorizer(event);
             this.update();
         }
+    }
+
+    get isClusteredPointSymbology(): boolean {
+        if (this.symbology instanceof PointSymbology) {
+            return this.symbology.clustered;
+        }
+        return false;
     }
 
     get isPointSymbology(): boolean {

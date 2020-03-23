@@ -32,14 +32,11 @@
                     </td>
                 </tr>
             </table>
-            <mat-divider></mat-divider>
 
             <wave-stroke-dash-select *ngIf="symbology.describesElementStroke()"
                                      (ngModelChange)="updateStrokeDash($event)" [ngModel]="symbology.strokeDashStyle"
                                      [lines]="[[], [5, 5], [10, 10]]">
             </wave-stroke-dash-select>
-
-            <mat-divider></mat-divider>
 
             <div>
                 <wave-color-breakpoint *ngIf="symbology.describesElementFill()" [ngModel]="symbology.fillColorBreakpoint"
@@ -60,9 +57,12 @@
     <mat-expansion-panel *ngIf="symbology.describesElementFill()" expanded=true #fillColorByAttributePanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                <mat-icon>map</mat-icon>
+                <mat-icon>color_lens</mat-icon>
                 <span>Fill Color By Attribute</span>
             </mat-panel-title>
+            <mat-panel-description>
+                Define an attribute to color mapping to fill elements
+            </mat-panel-description>
         </mat-expansion-panel-header>
         <ng-template [ngIf]="fillColorByAttributePanel.expanded">
 
@@ -70,10 +70,12 @@
                 <mat-slide-toggle
                     [checked]="fillByAttribute"
                     (change)="updateFillColorizeByAttribute($event)">
-                    Fill Color By Attribute
+                    Enable Fill Color By Attribute
                 </mat-slide-toggle>
-
+            </div>
+            <div>
                 <mat-form-field>
+                    <mat-label>Fill Color Attribute</mat-label>
                     <mat-select placeholder="Attribute"
                                 [(ngModel)]="fillColorAttribute"
                                 (ngModelChange)="setFillColorizerAttribute()"
@@ -81,7 +83,7 @@
                         <mat-option
                             *ngFor="let attribute of attributes"
                             [value]="attribute"
-                        >{{attribute.name}}
+                        >{{attribute.name}} ({{attribute.type}})
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -90,7 +92,7 @@
             <div *ngIf="fillByAttribute && !!symbology.fillColorAttribute">
                 <wave-colorizer-editor [ngModel]="symbology.fillColorizer" (ngModelChange)="updateFillColorizer($event)"
                                        [attributePlaceholder]="fillColorAttribute?.name"
-                                       [inputType]="fillColorAttribute?.type"></wave-colorizer-editor>
+                                       [inputType]="fillColorAttribute?.type" [showTypeSelect]="false"></wave-colorizer-editor>
             </div>
 
         </ng-template>
@@ -99,9 +101,13 @@
     <mat-expansion-panel *ngIf="symbology.describesElementStroke()" expanded=true #strokeColorByAttributePanel>
         <mat-expansion-panel-header>
             <mat-panel-title>
-                <mat-icon>map</mat-icon>
+                <mat-icon>color_lens</mat-icon>
                 <span>Stroke Color By Attribute</span>
             </mat-panel-title>
+            <mat-panel-description>
+                Define an attribute to color mapping for the stroke of elements
+            </mat-panel-description>
+
         </mat-expansion-panel-header>
         <ng-template [ngIf]="strokeColorByAttributePanel.expanded">
 
@@ -109,11 +115,12 @@
                 <mat-slide-toggle
                     [checked]="strokeByAttribute"
                     (change)="updateStrokeColorizeByAttribute($event)">
-                    Stroke Color By Attribute
+                    Enable Stroke Color Attribute
                 </mat-slide-toggle>
             </div>
             <div>
                 <mat-form-field>
+                    <mat-label>Stroke Color Attribute</mat-label>
                     <mat-select placeholder="Attribute"
                                 [(ngModel)]="strokeColorAttribute"
                                 (ngModelChange)="setStrokeColorizerAttribute()"
@@ -121,7 +128,7 @@
                         <mat-option
                             *ngFor="let attribute of attributes"
                             [value]="attribute"
-                        >{{attribute.name}}
+                        >{{attribute.name}} ({{attribute.type}})
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -130,7 +137,97 @@
             <div *ngIf="strokeByAttribute && !!symbology.strokeColorAttribute">
                 <wave-colorizer-editor [ngModel]="symbology.strokeColorizer" (ngModelChange)="updateStrokeColorizer($event)"
                                        [attributePlaceholder]="strokeColorAttribute?.name"
-                                       [inputType]="strokeColorAttribute?.type"></wave-colorizer-editor>
+                                       [inputType]="strokeColorAttribute?.type" [showTypeSelect]="false"></wave-colorizer-editor>
+            </div>
+
+        </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="symbology.describesPointsWithRadius()" expanded=true #pointRadiusByAttributePanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>looks</mat-icon>
+                <span>Point Radius By Attribute</span>
+            </mat-panel-title>
+            <mat-panel-description>
+                Define an attribute to radius mapping for points
+            </mat-panel-description>
+
+        </mat-expansion-panel-header>
+        <ng-template [ngIf]="pointRadiusByAttributePanel.expanded">
+
+            <div>
+                <mat-slide-toggle
+                    [checked]="radiusByAttribute"
+                    (change)="updateRadiusByAttribute($event)">
+                    Enable Radius By Attribute
+                </mat-slide-toggle>
+            </div>
+            <div><i>Note: The radius is clipped to the range [{{minRadius}}, {{maxRadius}}].</i></div>
+            <div>
+                <mat-form-field>
+                    <mat-label>Radius Attribute</mat-label>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="radiusAttribute"
+                                (ngModelChange)="setRadiusAttribute()"
+                                [disabled]="!radiusByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of numericAttributes"
+                            [value]="attribute"
+                        >{{attribute.name}} ({{attribute.type}})
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div>
+                <button mat-raised-button (click)="setRadiusAttributeForClustering()" [disabled]="!isClusteredPointSymbology">Set Clustering
+                    Default
+                </button>
+            </div>
+
+        </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded=true #textByAttributePanel>
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                <mat-icon>looks</mat-icon>
+                <span>Text By Attribute</span>
+            </mat-panel-title>
+            <mat-panel-description>
+                Define an attribute to display as text
+            </mat-panel-description>
+
+        </mat-expansion-panel-header>
+        <ng-template [ngIf]="textByAttributePanel.expanded">
+
+            <div>
+                <mat-slide-toggle
+                    [checked]="textByAttribute"
+                    (change)="updateTextByAttribute($event)">
+                    Enable Text By Attribute
+                </mat-slide-toggle>
+            </div>
+            <div><i>Note: The text is truncated after {{maxTextChars}} characters.</i></div>
+            <div>
+                <mat-form-field>
+                    <mat-label>Text Attribute</mat-label>
+                    <mat-select placeholder="Attribute"
+                                [(ngModel)]="textAttribute"
+                                (ngModelChange)="setTextAttribute()"
+                                [disabled]="!textByAttribute">
+                        <mat-option
+                            *ngFor="let attribute of attributes"
+                            [value]="attribute"
+                        >{{attribute.name}} ({{attribute.type}})
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div>
+                <button mat-raised-button (click)="setTextAttributeForClustering()" [disabled]="!isClusteredPointSymbology">Set Clustering
+                    Default
+                </button>
             </div>
 
         </ng-template>

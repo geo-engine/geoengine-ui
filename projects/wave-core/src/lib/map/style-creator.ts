@@ -16,7 +16,8 @@ import {
     VectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
     DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR,
-    SymbologyType
+    MAX_ALLOWED_POINT_RADIUS,
+    SymbologyType, MIN_ALLOWED_POINT_RADIUS, DEFAULT_POINT_RADIUS, MAX_ALLOWED_TEXT_LENGTH
 } from '../layers/symbology/symbology.model';
 
 export class StyleCreator {
@@ -99,7 +100,9 @@ export class StyleCreator {
             const featureFillColorValue =
                 (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
-            const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
+            const featureTextValue = (sym.textAttribute) ? StyleCreator.handleTextAttributeValue(
+                feature.get(sym.textAttribute)
+            ) : undefined;
             const styleKey =
                 StyleCreator.buildStyleKey(featureFillColorValue, featureStrokeColorValue, featureTextValue, undefined);
 
@@ -141,6 +144,31 @@ export class StyleCreator {
         };
     }
 
+
+    static handleRadiusAttributeValue(radius: number | string, radiusScale: number = 1.0): number | undefined {
+        const numberRadius = (typeof radius === 'string') ? parseFloat(radius) : radius;
+        if (radius === undefined || radius === null) {
+            return undefined;
+        }
+        if (numberRadius > MAX_ALLOWED_POINT_RADIUS) {
+            return MAX_ALLOWED_POINT_RADIUS;
+        } else if (numberRadius < MIN_ALLOWED_POINT_RADIUS) {
+            return MIN_ALLOWED_POINT_RADIUS;
+        } else {
+            return Math.trunc(numberRadius * radiusScale);
+        }
+    }
+
+    static handleTextAttributeValue(text: string | number): string | number | undefined {
+        if (text === undefined || text === null) {
+            return undefined;
+        }
+        if (typeof text === 'string') {
+            return text.slice(0, MAX_ALLOWED_TEXT_LENGTH);
+        }
+        return text;
+    }
+
     static fromComplexPointSymbology(sym: PointSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
@@ -150,8 +178,13 @@ export class StyleCreator {
             const featureFillColorValue =
                 (sym.fillColorAttribute && sym.describesElementFill()) ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = (sym.strokeColorAttribute) ? feature.get(sym.strokeColorAttribute) : undefined;
-            const featureTextValue = (sym.textAttribute) ? feature.get(sym.textAttribute) : undefined;
-            const featureRadiusValue = (sym.radiusAttribute) ? feature.get(sym.radiusAttribute) : undefined;
+            const featureTextValue = (sym.textAttribute) ? StyleCreator.handleTextAttributeValue(
+                feature.get(sym.textAttribute)
+            ) : undefined;
+            const featureRadiusValue = (sym.radiusAttribute) ? StyleCreator.handleRadiusAttributeValue(
+                feature.get(sym.radiusAttribute)
+            ) : undefined;
+
             const styleKey = StyleCreator.buildStyleKey(
                 featureFillColorValue, featureStrokeColorValue, featureTextValue, featureRadiusValue
             );
@@ -170,7 +203,8 @@ export class StyleCreator {
                 if (sym.strokeDashStyle && sym.strokeDashStyle.length > 1) {
                     strokeStyle.setLineDash(sym.strokeDashStyle);
                 }
-                const radius = featureRadiusValue ? featureRadiusValue as number * sym.radiusFactor : sym.radius;
+
+                const radius = featureRadiusValue ? featureRadiusValue : sym.radius;
 
                 const imageStyle = new OlStyleCircle({
                     radius,
