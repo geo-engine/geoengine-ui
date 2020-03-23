@@ -123,7 +123,6 @@ import {ReprojectionSelectionComponent} from './operators/dialogs/helpers/reproj
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
-import {SensorSourceOperatorComponent} from './operators/dialogs/sensor-source-operator/sensor-source-operator.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
@@ -307,7 +306,6 @@ const WAVE_PIPES = [
         RScriptSaveComponent,
         SaveProjectAsComponent,
         ScatterPlotComponent,
-        SensorSourceOperatorComponent,
         SidenavContainerComponent,
         SidenavHeaderComponent,
         SidenavSearchComponent,

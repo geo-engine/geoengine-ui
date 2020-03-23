@@ -12,9 +12,6 @@
                 <h4 mat-line>{{(selectedOperator$ | async)?.operatorType}}</h4>
                 <p mat-line>{{(selectedOperator$ | async)?.resultType}}</p>
             </mat-list-item>
-            <mat-list-item *ngIf="isModifyableOperator() | async" fxFlex="0">
-                <button mat-stroked-button (click)="modifyAndDuplicate()">Modify and Duplicate</button>
-            </mat-list-item>
         </mat-list>
         <wave-dialog-section-heading>Parameters</wave-dialog-section-heading>
         <mat-list>

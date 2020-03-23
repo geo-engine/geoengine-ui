@@ -13,8 +13,6 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Operator} from '../../operators/operator.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
-import {ChronicleDBSourceType} from '../../operators/types/chronicle-db-source-type.model';
-import {ChronicleDbSourceComponent} from '../../operators/dialogs/chronicle-db-source/chronicle-db-source.component';
 
 const GRAPH_STYLE = {
     general: {
@@ -344,21 +342,4 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         };
     }
 
-    isModifyableOperator(): Observable<boolean> {
-        return this.selectedOperator$.pipe(
-            map(operator => operator.operatorType instanceof ChronicleDBSourceType)
-        );
-    }
-
-    modifyAndDuplicate() {
-        this.selectedOperator$.pipe(first()).subscribe(operator => {
-            this.layoutService.setSidenavContentComponent({
-                component: ChronicleDbSourceComponent,
-                config: {
-                    copyFrom: operator,
-                }
-            });
-            this.dialogRef.close();
-        });
-    }
 }
