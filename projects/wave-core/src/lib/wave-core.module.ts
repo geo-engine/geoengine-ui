@@ -99,7 +99,6 @@ import {MediaviewImageDialogComponent} from './datatable/mediaview/image-dialog/
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
-import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
 import {NavigationComponent} from './sidenav/navigation/navigation.component';
 import {NbspPipe, ProvenanceListComponent} from './provenance/provenance-list/provenance-list.component';
 import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
@@ -276,7 +275,6 @@ const WAVE_PIPES = [
         MediaviewPlaylistComponent,
         MediaviewVideoComponent,
         MultiLayerSelectionComponent,
-        Nature40CatalogComponent,
         NavigationComponent,
         NewProjectComponent,
         NumericAttributeFilterOperatorComponent,

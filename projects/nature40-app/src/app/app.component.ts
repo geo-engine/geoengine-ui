@@ -9,8 +9,7 @@ import {
     HostListener,
     Inject,
     OnInit,
-    ViewChild,
-    ViewContainerRef,
+    ViewChild, ViewContainerRef
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -53,9 +52,12 @@ import {
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
+import {Nature40UserService} from './users/nature40-user.service';
+import {LoginComponent} from './users/login/login.component';
+import {Nature40CatalogComponent} from './operators/dialogs/nature40-catalog/nature40-catalog.component';
 
 @Component({
-    selector: 'wave-app-root',
+    selector: 'wave-nature40-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,7 +90,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 readonly layoutService: LayoutService,
                 readonly projectService: ProjectService,
                 readonly vcRef: ViewContainerRef, // reference used by color picker
-                private userService: UserService,
+                @Inject(UserService) private readonly userService: Nature40UserService,
                 private storageService: StorageService,
                 private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MatDialog,
@@ -123,12 +125,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
-        // TODO: migrate to geo bon app
-        // this.iconRegistry.addSvgIconInNamespace(
-        //     'geobon',
-        //     'logo',
-        //     this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
-        // );
+        this.iconRegistry.addSvgIconInNamespace(
+            'nature40',
+            'icon',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/natur_40_logo.svg'),
+        );
     }
 
     ngOnInit() {
@@ -171,7 +172,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private setupNavigation(): Array<NavigationButton> {
         return [
-            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
+            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config, {component: LoginComponent}),
             {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
@@ -213,6 +214,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
         return [
             SourceOperatorListComponent.createDataRepositoryButton(),
+            {
+                name: 'Nature 4.0 Catalog',
+                description: 'Browse all the Nature 4.0 data',
+                icon: 'nature_people',
+                sidenavConfig: {component: Nature40CatalogComponent, keepParent: true},
+                onlyIfLoggedIn: true,
+            },
+            {
+                name: 'Nature 4.0 Catalog',
+                description: 'Log in to browse all the Nature 4.0 data',
+                icon: 'nature_people',
+                sidenavConfig: undefined,
+                onlyIfLoggedOut: true,
+            },
             SourceOperatorListComponent.createDrawFeaturesButton(),
             ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             {
@@ -268,11 +283,32 @@ export class AppComponent implements OnInit, AfterViewInit {
                             this.notificationService.error(`Invalid Workflow: »${error}«`);
                         }
                         break;
+                    case 'jws':
+                    case 'jwt':
+                        this.nature40JwtLogin(parameter, value);
+                        break;
                     default:
                         this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
                 }
             }
         });
+    }
+
+    private nature40JwtLogin(parameter: string, token: string) {
+        this.userService.nature40JwtTokenLogin(token).pipe(first()).subscribe(
+            success => {
+                if (success) {
+                    this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
+                } else {
+                    this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
+                    // log out, because mapping session exists, but JWT token has become invalid
+                    this.userService.guestLogin().pipe(first()).subscribe();
+                }
+            },
+            error => {
+                this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
+            },
+        );
     }
 
 }

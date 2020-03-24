@@ -34,7 +34,6 @@ import {ScatterPlotType, ScatterPlotTypeDict} from './scatterplot-type.model';
 import {BoxPlotType, BoxPlotTypeDict} from './boxplot-type.model';
 import {PieChartType, PieChartTypeDict} from './piechart-type.model';
 import {RasterizePolygonType, RasterizePolygonTypeDict} from './rasterize-polygon-type.model';
-import {SensorSourceType, SensorSourceTypeDict} from './sensor-source-type.model';
 import {HeatmapType, HeatmapTypeDict} from './heatmap-type.model';
 import {OgrSourceType, OgrSourceTypeDict} from './ogr-source-type.model';
 import {OgrRawSourceType, OgrRawSourceTypeDict} from './ogr-raw-source-type.model';
@@ -168,10 +167,6 @@ export class OperatorTypeFactory {
         typeDeserializers.set(
             HeatmapType.TYPE,
             dict => HeatmapType.fromDict(dict as HeatmapTypeDict),
-        );
-        typeDeserializers.set(
-            SensorSourceType.TYPE,
-            dict => SensorSourceType.fromDict(dict as SensorSourceTypeDict),
         );
         typeDeserializers.set(
             SpectralOverviewPlotType.TYPE,
