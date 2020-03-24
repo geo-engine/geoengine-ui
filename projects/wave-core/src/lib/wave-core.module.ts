@@ -126,7 +126,6 @@ import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
-import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SourceDatasetComponent} from './operators/dialogs/data-repository/raster/source-dataset.component';
 import {SourceOperatorListComponent} from './operators/dialogs/source-operator-list/source-operator-list.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
@@ -166,6 +165,7 @@ import {HelpDataComponent} from './help/data/help-data.component';
 import {HelpOperatorsComponent} from './help/operators/help-operators.component';
 import {HelpLineageComponent} from './help/lineage/help-lineage.component';
 import {HelpExportComponent} from './help/export/help-export.component';
+import {DictParameterArray} from './operators/operator-type-parameter-options.model';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -313,7 +313,6 @@ const WAVE_PIPES = [
         SmallTimeInteractionComponent,
         SourceDatasetComponent,
         SourceOperatorListComponent,
-        SpectralOverviewPlotComponent,
         StatisticsPlotComponent,
         SymbologyEditorComponent,
         SymbologyRasterComponent,

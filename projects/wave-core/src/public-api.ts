@@ -62,6 +62,8 @@ export * from './lib/time/ticker-interaction/ticker-interaction.component';
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/users/login/login.component';
 export * from './lib/layers/symbology/stroke-dash-select/stroke-dash-select.component';
+export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 
 
 // Pipes
@@ -95,6 +97,12 @@ export * from './lib/storage/providers/browser-storage-provider.model';
 export * from './lib/storage/providers/mapping-storage-provider.model';
 export * from './lib/storage/storage-provider.model';
 export * from './lib/users/user.model';
+export * from './lib/operators/types/histogram-type.model';
+export * from './lib/operators/types/statistics-type.model';
+export * from './lib/operators/operator-type-parameter-options.model';
+export * from './lib/operators/types/gdal-source-type.model';
+export * from './lib/operators/dialogs/data-repository/mapping-source.model';
+export * from './lib/operators/types/raster-value-extraction-type.model';
 
 // Misc
 export * from './lib/util/errors';
