@@ -93,6 +93,9 @@
                         ],
                         "styles": [
                             "projects/wave-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -228,6 +231,9 @@
                         ],
                         "styles": [
                             "projects/gfbio-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -363,6 +369,9 @@
                         ],
                         "styles": [
                             "projects/nature40-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -498,6 +507,9 @@
                         ],
                         "styles": [
                             "projects/dtt-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
