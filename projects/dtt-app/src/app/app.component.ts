@@ -145,18 +145,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.projectService.getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
-        // notify window parent that this component is ready
-        if (parent !== window) {
-            parent.postMessage({
-                type: 'STATUS',
-                status: 'READY',
-            }, '*');
-        } else {
+        // handle query parameters directly if it is not embedded and using an auto login
+        this.handleQueryParameters();
 
-            // handle query parameters directly if it is not embedded and using an auto login
-            this.handleQueryParameters();
-
-        }
     }
 
     private setupNavigation(): Array<NavigationButton> {
