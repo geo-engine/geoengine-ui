@@ -1,52 +1,56 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {first, filter} from 'rxjs/operators';
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
-import {ProjectService} from '../../project/project.service';
-import {LoadingState} from '../../project/loading-state.model';
+
 import {MatDialog} from '@angular/material/dialog';
-import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
-import {RScriptType} from '../../operators/types/r-script-type.model';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
+
 import {BoxPlotType} from '../../operators/types/boxplot-type.model';
-import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
-import {PieChartType} from '../../operators/types/piechart-type.model';
-import {TimePlotType} from '../../operators/types/timeplot-type.model';
 import {LayoutService} from '../../layout.service';
-import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
-import {Plot} from '../plot.model';
+import {LoadingState} from '../../project/loading-state.model';
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
+import {PieChartType} from '../../operators/types/piechart-type.model';
+import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
+import {Plot} from '../plot.model';
+import {ProjectService} from '../../project/project.service';
+import {ROperatorComponent} from '../../operators/dialogs/r/r-operator/r-operator.component';
+import {RScriptType} from '../../operators/types/r-script-type.model';
+import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
+import {TimePlotType} from '../../operators/types/timeplot-type.model';
 
 @Component({
     selector: 'wave-plot-list',
     templateUrl: './plot-list.component.html',
     styleUrls: ['./plot-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    // make available
-    RScriptType = RScriptType;
-    ScatterPlotType = ScatterPlotType;
-    PieChartType = PieChartType;
-    BoxPlotType = BoxPlotType;
-    TimePlotType = TimePlotType;
-    //
-    // to distinguish some r-script operators out of the editable ones.
-    editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME, this.TimePlotType.NAME];
-    LoadingState = LoadingState;
-    cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
-    private subsriptions: Array<Subscription> = [];
+    @Input() operatorsListConfig = {component: OperatorListComponent};
 
-    constructor(public projectService: ProjectService,
-                private layoutService: LayoutService,
-                public dialog: MatDialog,
-                private elementRef: ElementRef) {
+    readonly RScriptType = RScriptType;
+    readonly ScatterPlotType = ScatterPlotType;
+    readonly PieChartType = PieChartType;
+    readonly BoxPlotType = BoxPlotType;
+    readonly TimePlotType = TimePlotType;
+    readonly LoadingState = LoadingState;
+
+    // to distinguish some r-script operators out of the editable ones.
+    readonly editExceptions = [this.ScatterPlotType.NAME, this.PieChartType.NAME, this.BoxPlotType.NAME, this.TimePlotType.NAME];
+    readonly cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
+
+    private subscriptions: Array<Subscription> = [];
+
+    constructor(public readonly projectService: ProjectService,
+                public readonly dialog: MatDialog,
+                private readonly layoutService: LayoutService,
+                private readonly elementRef: ElementRef) {
     }
 
     ngOnInit() {
     }
 
     ngAfterViewInit() {
-        this.subsriptions.push(
+        this.subscriptions.push(
             this.projectService.getPlotStream().pipe(
                 filter(plots => plots.length > 0),
                 first(),
@@ -61,7 +65,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subsriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     editRPlot(plot: Plot) {
@@ -75,9 +79,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     goToOperatorsTab() {
-        this.layoutService.setSidenavContentComponent({
-            component: OperatorListComponent,
-        });
+        this.layoutService.setSidenavContentComponent(this.operatorsListConfig);
     }
 
     showFullscreen(plot: Plot) {
