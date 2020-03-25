@@ -11,6 +11,7 @@ p {
     color: var(--wave-foreground-secondary-text-color, grey);
 }
 
+
 .disabled {
     ::ng-deep .mat-list-item-content {
         cursor: auto;
@@ -23,4 +24,9 @@ p {
     img {
         filter: grayscale(100%);
     }
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
 }

@@ -1,5 +1,12 @@
 <wave-sidenav-header>Draw Features</wave-sidenav-header>
+<wave-dialog-help>
+    This is a tool for drawing new features by clicking on the map. Select the <i>Feature type</i> you want to draw (points, lines or
+    polygons) and click <i>Start</i>.
+    Click the <i>End</i> button if your finished or <i>Cancel</i> if you want to start all over. The new layer appears in the layer list on
+    the left.
+    <br>Note: In the layer's context menu you can change the layer name, edit the symbology and more.
 
+</wave-dialog-help>
 <mat-form-field>
     <mat-select placeholder="Feature type"
                 [value]="selectedFeatureType" (valueChange)="updateFeatureType($event)"

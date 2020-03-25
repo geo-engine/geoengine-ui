@@ -1,6 +1,18 @@
 <wave-sidenav-header>Histogram</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
     <div fxFlex class="container">
+        <wave-dialog-help>
+            This operator generates a <i>Histogram</i> based on a raster or vector data set (<i>Input</i>).
+            Select the <i>Range Type</i>, which can be the pixel values of a raster layer or the attribute values of vector data.
+            The histogram shows the occurrence number of values (y-axis) in a certain range on the x-axis.
+            This range is defined by the number of buckets, which means: If you choose a bucket number of 20, the
+            value range between min/max values is divided into 20 sections, each covering a value range of equal size. This is done
+            automatically, if you tick the box <i>Choose number of buckets automatically</i>. Edit the <i>Output Name</i> of the plot, if
+            desired
+            and click on <i>Create</i> to generate the plot.
+            <br> Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.
+        </wave-dialog-help>
+
         <wave-layer-selection
             [types]="ResultTypes.INPUT_TYPES"
             formControlName="layer"
