@@ -61,11 +61,6 @@ interface Map {
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
-
-interface Nature40 {
-    SSO_JWT_PROVIDER_URL: string;
-}
-
 interface Time {
     readonly ALLOW_RANGES: boolean;
 }
@@ -76,7 +71,6 @@ export interface WaveConfigStructure {
     readonly DELAYS: Delays;
     readonly MAP: Map;
     readonly MAPPING_URL: MappingUrlType;
-    readonly NATURE40: Nature40;
     readonly TIME: Time;
     readonly USER: User;
     readonly WCS: Wcs;
@@ -115,9 +109,6 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         REFRESH_LAYERS_ON_CHANGE: false,
     },
     MAPPING_URL: '/cgi-bin/mapping_cgi',
-    NATURE40: {
-        SSO_JWT_PROVIDER_URL: 'http://vhrz669.hrz.uni-marburg.de/nature40/sso?jws=',
-    },
     TIME: {
         ALLOW_RANGES: true,
     },
@@ -185,10 +176,6 @@ export class Config {
 
     get MAP(): Map {
         return this.config.MAP;
-    }
-
-    get NATURE40(): Nature40 {
-        return this.config.NATURE40;
     }
 
     get TIME(): Time {
