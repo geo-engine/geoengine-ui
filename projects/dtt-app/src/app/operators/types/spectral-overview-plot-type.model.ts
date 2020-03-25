@@ -1,7 +1,5 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
+import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict, ResultTypes, Unit, UnitDict} from 'wave-core';
 
-import {ResultTypes} from '../result-type.model';
-import {Unit, UnitDict} from '../unit.model';
 
 interface SpectralOverviewPlotTypeMappingDict extends OperatorTypeMappingDict {
     source: string;

@@ -57,7 +57,7 @@ export class LayoutService {
 
     private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
 
-    constructor(private config: Config) {
+    constructor(protected config: Config) {
         this.setupSidenavWidthStream();
     }
 

@@ -41,7 +41,6 @@ import {ChronicleDBSourceType, ChronicleDBSourceTypeDict} from './chronicle-db-s
 import {TimePlotType, TimePlotTypeDict} from './timeplot-type.model';
 import {StatisticsType, StatisticsTypeDict} from './statistics-type.model';
 import {RgbaCompositeType, RgbaCompositeTypeDict} from './rgba-composite-type.model';
-import {SpectralOverviewPlotType, SpectralOverviewPlotTypeDict} from './spectral-overview-plot-type.model';
 
 type Type = string;
 type Deserializer = (dict: OperatorTypeDict) => OperatorType;
@@ -167,10 +166,6 @@ export class OperatorTypeFactory {
         typeDeserializers.set(
             HeatmapType.TYPE,
             dict => HeatmapType.fromDict(dict as HeatmapTypeDict),
-        );
-        typeDeserializers.set(
-            SpectralOverviewPlotType.TYPE,
-            dict => SpectralOverviewPlotType.fromDict(dict as SpectralOverviewPlotTypeDict),
         );
         typeDeserializers.set(
             StatisticsType.TYPE,
