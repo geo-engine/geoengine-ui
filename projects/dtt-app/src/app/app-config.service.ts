@@ -13,10 +13,11 @@ interface AppConfigStructure extends WaveConfigStructure {
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
-    COMPONENTS: {
-        PLAYBACK: {
-            AVAILABLE: false,
-        }
+    MAP: {
+        REFRESH_LAYERS_ON_CHANGE: false,
+    },
+    TIME: {
+        ALLOW_RANGES: false,
     },
 }) as AppConfigStructure;
 
