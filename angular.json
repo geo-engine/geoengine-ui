@@ -11,7 +11,7 @@
                     "inlineStyle": false,
                     "inlineTemplate": false,
                     "prefix": "wave",
-                    "styleext": "scss"
+                    "style": "scss"
                 },
                 "@schematics/angular:directive": {
                     "prefix": "wave"
@@ -63,7 +63,7 @@
                     "inlineStyle": false,
                     "inlineTemplate": false,
                     "prefix": "wave-app",
-                    "styleext": "scss"
+                    "style": "scss"
                 },
                 "@schematics/angular:directive": {
                     "prefix": "wave-app"
@@ -117,8 +117,8 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "2mb",
-                                    "maximumError": "5mb"
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",
@@ -198,10 +198,10 @@
                     "inlineStyle": false,
                     "inlineTemplate": false,
                     "prefix": "wave-gfbio",
-                    "styleext": "scss"
+                    "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "wave-gfbio"
                 }
             },
             "root": "projects/gfbio-app",
@@ -252,8 +252,8 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "2mb",
-                                    "maximumError": "5mb"
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",
@@ -325,6 +325,141 @@
                 }
             }
         },
+        "nature40-app": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "wave-nature40",
+                    "style": "scss"
+                },
+                "@schematics/angular:directive": {
+                    "prefix": "wave-nature40"
+                }
+            },
+            "root": "projects/nature40-app",
+            "sourceRoot": "projects/nature40-app/src",
+            "prefix": "wave-nature40",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/nature40-app",
+                        "index": "projects/nature40-app/src/index.html",
+                        "main": "projects/nature40-app/src/main.ts",
+                        "polyfills": "projects/nature40-app/src/polyfills.ts",
+                        "tsConfig": "projects/nature40-app/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "projects/nature40-app/src/favicon.ico",
+                            "projects/nature40-app/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/wave-core/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/nature40-app/src/styles.scss",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/nature40-app/src/environments/environment.ts",
+                                    "with": "projects/nature40-app/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "nature40-app:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "nature40-app:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "nature40-app:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/nature40-app/src/test.ts",
+                        "polyfills": "projects/nature40-app/src/polyfills.ts",
+                        "tsConfig": "projects/nature40-app/tsconfig.spec.json",
+                        "karmaConfig": "projects/nature40-app/karma.conf.js",
+                        "assets": [
+                            "projects/nature40-app/src/favicon.ico",
+                            "projects/nature40-app/src/assets"
+                        ],
+                        "styles": [
+                            "projects/nature40-app/src/styles.scss"
+                        ],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "projects/nature40-app/tsconfig.app.json",
+                            "projects/nature40-app/tsconfig.spec.json",
+                            "projects/nature40-app/e2e/tsconfig.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/nature40-app/e2e/protractor.conf.js",
+                        "devServerTarget": "nature40-app:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "nature40-app:serve:production"
+                        }
+                    }
+                }
+            }
+        },
         "dtt-app": {
             "projectType": "application",
             "schematics": {
@@ -387,8 +522,8 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "2mb",
-                                    "maximumError": "5mb"
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
                                 },
                                 {
                                     "type": "anyComponentStyle",

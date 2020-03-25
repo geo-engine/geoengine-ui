@@ -65,7 +65,6 @@ export * from './lib/layers/symbology/stroke-dash-select/stroke-dash-select.comp
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 
-
 // Pipes
 export * from './lib/colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 export * from './lib/datatable/mediaview/filename.pipe';
@@ -88,10 +87,14 @@ export * from './lib/operators/operator-type.model';
 export * from './lib/operators/operator.model';
 export * from './lib/operators/projection.model';
 export * from './lib/operators/result-type.model';
+export * from './lib/operators/types/gdal-source-type.model';
 export * from './lib/operators/types/gfbio-source-type.model';
+export * from './lib/operators/types/ogr-source-type.model';
+export * from './lib/operators/types/raster-source-type.model';
 export * from './lib/operators/unit.model';
 export * from './lib/plots/plot.model';
 export * from './lib/project/project.model';
+export * from './lib/provenance/provenance.model';
 export * from './lib/queries/request-parameters.model';
 export * from './lib/storage/providers/browser-storage-provider.model';
 export * from './lib/storage/providers/mapping-storage-provider.model';

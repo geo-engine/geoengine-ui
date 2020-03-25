@@ -1,24 +1,33 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {Nature40CatalogEntry, UserService} from '../../../users/user.service';
-import {RasterSourceType} from '../../types/raster-source-type.model';
-import {OgrSourceType} from '../../types/ogr-source-type.model';
-import {MappingRequestParameters} from '../../../queries/request-parameters.model';
+import {ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Config} from '../../../config.service';
+
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {first, flatMap, map} from 'rxjs/operators';
-import {Unit, UnitMappingDict} from '../../unit.model';
-import {Operator} from '../../operator.model';
-import {ProjectService} from '../../../project/project.service';
-import {NotificationService} from '../../../notification.service';
-import {RasterLayer} from '../../../layers/layer.model';
-import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
+
 import {Map as ImmutableMap} from 'immutable';
-import {DataType, DataTypes} from '../../datatype.model';
-import {ResultTypes} from '../../result-type.model';
-import {Projections} from '../../projection.model';
-import {GdalSourceType} from '../../types/gdal-source-type.model';
-import {Provenance} from '../../../provenance/provenance.model';
+
+import {
+    RasterSourceType,
+    OgrSourceType,
+    MappingRequestParameters,
+    Config,
+    Unit,
+    UnitMappingDict,
+    Operator,
+    ProjectService,
+    NotificationService,
+    RasterLayer,
+    MappingRasterSymbology,
+    DataType,
+    DataTypes,
+    ResultTypes,
+    Projections,
+    GdalSourceType,
+    Provenance, UserService,
+} from 'wave-core';
+
+import {Nature40CatalogEntry, Nature40UserService} from '../../../users/nature40-user.service';
+import {AppConfig} from '../../../app-config.service';
 
 @Component({
     selector: 'wave-nature40-catalog',
@@ -33,11 +42,11 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
     readonly catalog$: Observable<Map<string, Array<Nature40CatalogEntry>>>;
     isResolving = new Map<Nature40CatalogEntry, BehaviorSubject<boolean>>();
 
-    constructor(private userService: UserService,
-                private projectService: ProjectService,
-                private notificationService: NotificationService,
-                private http: HttpClient,
-                private config: Config) {
+    constructor(@Inject(Config) private readonly config: AppConfig,
+                @Inject(UserService) private readonly userService: Nature40UserService,
+                private readonly projectService: ProjectService,
+                private readonly notificationService: NotificationService,
+                private readonly http: HttpClient) {
         this.catalog$ = this.userService.getNature40Catalog();
     }
 
