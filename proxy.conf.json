@@ -1,6 +1,6 @@
 {
     "/cgi-bin/*": {
-        "target": "http://dbsvm.mathematik.uni-marburg.de:32800/",
+        "target": "https://sng107.sng.uni-frankfurt.de/dev/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"
