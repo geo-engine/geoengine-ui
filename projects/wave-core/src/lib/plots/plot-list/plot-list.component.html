@@ -13,10 +13,8 @@
     <mat-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.LOADING">
         <mat-spinner></mat-spinner>
     </mat-card-content>
-    <mat-card-content
-        *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
-        [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type"
-    >
+    <mat-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
+                      [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type">
         <ng-template ngSwitchCase="text">
             <pre [style.maxHeight.px]="cardWidth$ | async">{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
         </ng-template>
@@ -24,12 +22,10 @@
             <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" alt="{{plot.name}}">
         </ng-template>
         <ng-template ngSwitchCase="histogram">
-            <wave-histogram
-                *ngIf="cardWidth$ | async"
-                [data]="(projectService.getPlotDataStream(plot) | async)"
-                [interactable]="false"
-                [autoResize]="true"
-            ></wave-histogram>
+            <wave-histogram *ngIf="cardWidth$ | async"
+                            [data]="projectService.getPlotDataStream(plot) | async"
+                            [interactable]="false"
+                            [autoResize]="true"></wave-histogram>
         </ng-template>
         <ng-template ngSwitchCase="layer_statistics">
             <wave-layer-statistics-view [data]="(projectService.getPlotDataStream(plot) | async)?.data"></wave-layer-statistics-view>
@@ -42,25 +38,30 @@
         </ng-template>
     </mat-card-content>
     <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
-        <button mat-button (click)="showFullscreen(plot)"><mat-icon>fullscreen</mat-icon></button>
+        <button mat-button (click)="showFullscreen(plot)">
+            <mat-icon>fullscreen</mat-icon>
+        </button>
         <span fxFlex></span>
         <button
             *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE && editExceptions.indexOf(plot.operator.operatorType.toString()) < 0"
-            mat-button (click)="editRPlot(plot)"
-        >
+            mat-button (click)="editRPlot(plot)">
             <mat-icon>mode_edit</mat-icon>
         </button>
-        <button mat-button (click)="projectService.removePlot(plot)"><mat-icon>delete</mat-icon></button>
+        <button mat-button (click)="projectService.removePlot(plot)">
+            <mat-icon>delete</mat-icon>
+        </button>
     </mat-card-actions>
     <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.ERROR" fxLayout="row">
-        <button mat-button (click)="projectService.reloadPlot(plot)" class="error"><mat-icon>replay</mat-icon></button>
+        <button mat-button (click)="projectService.reloadPlot(plot)" class="error">
+            <mat-icon>replay</mat-icon>
+        </button>
         <span fxFlex></span>
-        <button
-            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
-            mat-button (click)="editRPlot(plot)"
-        >
+        <button *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
+                mat-button (click)="editRPlot(plot)">
             <mat-icon>mode_edit</mat-icon>
         </button>
-        <button mat-button (click)="projectService.removePlot(plot)"><mat-icon>delete</mat-icon></button>
+        <button mat-button (click)="projectService.removePlot(plot)">
+            <mat-icon>delete</mat-icon>
+        </button>
     </mat-card-actions>
 </mat-card>

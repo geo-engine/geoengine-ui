@@ -179,13 +179,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 tooltip: 'Add Data',
             },
             {
-                sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
+                sidenavConfig: AppComponent.setupOperatorListConfig(),
                 icon: '',
                 svgIcon: 'cogs',
                 tooltip: 'Operators',
             },
             {
-                sidenavConfig: {component: PlotListComponent},
+                sidenavConfig: {component: PlotListComponent, config: {operatorsListConfig: AppComponent.setupOperatorListConfig()}},
                 icon: 'equalizer',
                 tooltip: 'Plots',
             },
@@ -209,6 +209,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static setupAddDataConfig(): SidenavConfig {
         return {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}};
+    }
+
+    private static setupOperatorListConfig(): SidenavConfig {
+        return {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}};
     }
 
     private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
