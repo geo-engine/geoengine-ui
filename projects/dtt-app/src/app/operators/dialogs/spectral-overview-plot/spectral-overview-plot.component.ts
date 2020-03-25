@@ -1,24 +1,28 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {ResultTypes} from '../../result-type.model';
-import {Operator} from '../../operator.model';
-import {Plot} from '../../../plots/plot.model';
-import {ProjectService} from '../../../project/project.service';
-import {WaveValidators} from '../../../util/form.validators';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {AbstractVectorSymbology, AbstractRasterSymbology} from '../../../layers/symbology/symbology.model';
-import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
+import {
+    AbstractRasterSymbology,
+    AbstractVectorSymbology,
+    DataType,
+    Operator,
+    Plot,
+    ProjectService,
+    RasterLayer,
+    ResultTypes,
+    Unit,
+    VectorLayer,
+    WaveValidators,
+    DictParameterArray,
+    GdalSourceChannelOptions,
+    MappingSatelliteSensorRasterMethodology,
+    RasterValueExtractionType,
+} from 'wave-core';
 import {SpectralOverviewPlotType} from '../../types/spectral-overview-plot-type.model';
-import {DataType} from '../../datatype.model';
-import {Unit} from '../../unit.model';
-import {GdalSourceChannelOptions} from '../../types/gdal-source-type.model';
-import {DictParameterArray} from '../../operator-type-parameter-options.model';
-import {MappingSatelliteSensorRasterMethodology} from '../data-repository/mapping-source.model';
 
 @Component({
-    selector: 'wave-time-plot-operator',
+    selector: 'wave-dtt-spectral-plot-operator',
     templateUrl: './spectral-overview-plot.component.html',
     styleUrls: ['./spectral-overview-plot.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

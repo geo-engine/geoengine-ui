@@ -1,0 +1,8 @@
+{
+    "MAP": {
+        "REFRESH_LAYERS_ON_CHANGE": false
+    },
+    "TIME": {
+        "ALLOW_RANGES": false
+    }
+}

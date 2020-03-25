@@ -1,0 +1,41 @@
+wave-navigation {
+    z-index: 10;
+}
+
+wave-layer-list {
+    position: absolute;
+    z-index: 2;
+    width: 16vw;
+    min-width: 200px;
+    left: 0;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.87);
+    border-bottom-right-radius: 2px;
+}
+
+.time-container {
+    position: absolute;
+    left: 16vw;
+    right: 16vw;
+
+    wave-ticker-interaction, wave-small-time-interaction, wave-zoom-handles {
+        background-color: rgba(255, 255, 255, 0.87);
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        z-index: 3;
+    }
+}
+
+
+:host ::ng-deep .mat-sidenav-content {
+    overflow: hidden;
+}
+
+.top-container {
+    z-index: 1;
+}
+
+.mid-container {
+    z-index: 0;
+    position: relative;
+}
