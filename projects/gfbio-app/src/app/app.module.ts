@@ -36,7 +36,7 @@ import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {GFBioMappingQueryService} from './queries/mapping-query.service';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
-import { HelpComponent } from './help/help.component';
+import {HelpComponent} from './help/help.component';
 
 @NgModule({
     declarations: [
@@ -55,7 +55,7 @@ import { HelpComponent } from './help/help.component';
         BrowserAnimationsModule,
         BrowserModule,
         HttpClientModule,
-        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
+        RouterModule.forRoot([{path: '**', component: AppComponent},], {useHash: true, initialNavigation: 'disabled'}),
         WaveCoreModule,
     ],
     providers: [

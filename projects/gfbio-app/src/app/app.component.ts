@@ -11,7 +11,7 @@ import {
     ViewChild, ViewContainerRef
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -77,6 +77,7 @@ import {ABCDSourceType} from './operators/types/abcd-source-type.model';
 import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.component';
 import {SplashDialogComponent} from './dialogs/splash-dialog/splash-dialog.component';
 import {HelpComponent} from './help/help.component';
+import {Location} from '@angular/common';
 
 @Component({
     selector: 'wave-gfbio-root',
@@ -120,6 +121,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 private readonly randomColorService: RandomColorService,
                 @Inject(MappingQueryService) private readonly mappingQueryService: GFBioMappingQueryService,
                 private readonly activatedRoute: ActivatedRoute,
+                private readonly router: Router,
+                private readonly location: Location,
                 private readonly notificationService: NotificationService,
                 private readonly mapService: MapService,
                 private readonly sanitizer: DomSanitizer) {
@@ -328,67 +331,88 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private handleQueryParameters() {
-        this.activatedRoute.queryParams.subscribe(p => {
-            for (const parameter of Object.keys(p)) {
-                const value = p[parameter];
-                switch (parameter) {
-                    case 'workflow':
-                        try {
-                            const newLayer = Layer.fromDict(JSON.parse(value));
-                            this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-                                if (project.layers.length > 0) {
-                                    // show popup
-                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-                                        data: {
-                                            dialogTitle: 'Workflow URL Parameter',
-                                            sourceName: 'URL parameter',
-                                            layers: [newLayer],
-                                            nonAvailableNames: [],
-                                            numberOfLayersInProject: project.layers.length,
-                                        }
-                                    });
-                                } else {
-                                    // just add the layer if the layer array is empty
-                                    this.projectService.addLayer(newLayer);
-                                }
-                            });
-                        } catch (error) {
-                            this.notificationService.error(`Invalid Workflow: »${error}«`);
-                        }
-                        break;
-                    case 'gfbioBasketId':
-                        try {
-                            const gfbioBasketId: number = JSON.parse(value);
-                            this.projectService.getProjectStream().pipe(
-                                first()
-                            ).subscribe(project => {
-                                this.gfbioBasketIdToLayers(gfbioBasketId)
-                                    .subscribe((importResult: BasketAvailability) => {
-                                            // show popup
-                                            this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-                                                data: {
-                                                    dialogTitle: 'GFBio Basket Import',
-                                                    sourceName: 'GFBio Basket',
-                                                    layers: importResult.availableLayers,
-                                                    nonAvailableNames: importResult.nonAvailableNames,
-                                                    numberOfLayersInProject: project.layers.length,
-                                                },
-                                            });
-                                        },
-                                        error => {
-                                            this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
-                                        },
-                                    );
-                            });
-                        } catch (error) {
-                            this.notificationService.error(`Invalid Workflow: »${error}«`);
-                        }
-                        break;
-                    default:
-                        this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
-                }
+        // If the GFBio SSO sends a link with `#access_token=…` without starting query params with a `?`,
+        // it can be necessary to redirect the request to `/#/?access_token=…`.
+        // This prevents Angular routing from cropping the access token from the URL and use proper routing.
+        // This could be removed once the GFBio SSO sends proper redirects.
+        const location_path = this.location.path(true);
+        if (location_path.startsWith('access_token=')) {
+            this.location.go('/', location_path);
+        }
+
+        // Since `initialNavigation=false` in the app module, we have to start it here.
+        this.router.initialNavigation();
+
+        this.activatedRoute.queryParamMap.subscribe(params => {
+            if (params.has('access_token') && params.get('token_type') === 'Bearer' && params.has('expires_in')) {
+                this.handleOpenIdConnectAccessToken(params.get('access_token'), parseInt(params.get('expires_in'), 10));
+            } else if (params.has('workflow')) {
+                this.handleWorkflow(params.get('workflow'));
+            } else if (params.has('gfbioBasketId')) {
+                this.handleGFBioBasketId(params.get('gfbioBasketId'));
+            } else if (params.keys.length) { // FALLBACK - must be last branch
+                this.notificationService.error(`Unknown URL parameters »${params.keys.join(', ')}«`);
             }
         });
+    }
+
+    private handleOpenIdConnectAccessToken(accessToken: string, expiresIn: number) {
+        // TODO: implement
+        console.log('handleOpenIdConnectAccessToken', 'accessToken', accessToken, 'expiresIn', expiresIn);
+    }
+
+    private handleWorkflow(workflow: string) {
+        try {
+            const newLayer = Layer.fromDict(JSON.parse(workflow));
+            this.projectService.getProjectStream().pipe(first()).subscribe(project => {
+                if (project.layers.length > 0) {
+                    // show popup
+                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                        data: {
+                            dialogTitle: 'Workflow URL Parameter',
+                            sourceName: 'URL parameter',
+                            layers: [newLayer],
+                            nonAvailableNames: [],
+                            numberOfLayersInProject: project.layers.length,
+                        }
+                    });
+                } else {
+                    // just add the layer if the layer array is empty
+                    this.projectService.addLayer(newLayer);
+                }
+            });
+        } catch (error) {
+            this.notificationService.error(`Invalid Workflow: »${error}«`);
+        }
+    }
+
+    private handleGFBioBasketId(gfbioBasketIdString: string) {
+        try {
+            const gfbioBasketId: number = JSON.parse(gfbioBasketIdString);
+            this.projectService.getProjectStream().pipe(
+                first()
+            ).subscribe(project => {
+                this.gfbioBasketIdToLayers(gfbioBasketId)
+                    .subscribe((importResult: BasketAvailability) => {
+                            // show popup
+                            this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                                data: {
+                                    dialogTitle: 'GFBio Basket Import',
+                                    sourceName: 'GFBio Basket',
+                                    layers: importResult.availableLayers,
+                                    nonAvailableNames: importResult.nonAvailableNames,
+                                    numberOfLayersInProject: project.layers.length,
+                                },
+                            });
+                        },
+                        error => {
+                            this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
+                        },
+                    );
+            });
+        } catch (error) {
+            this.notificationService.error(`Invalid GFBio Basket Id: »${error}«`);
+        }
     }
 
     private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
