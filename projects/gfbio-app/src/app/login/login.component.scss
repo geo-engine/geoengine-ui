@@ -1,26 +1,6 @@
-form {
-    padding: 1rem;
-}
-
-mat-button-toggle-group {
-    margin-bottom: 1rem;
-}
-
-mat-button-toggle {
-    text-align: center;
-}
-
-mat-button-toggle img {
-    height: 1rem;
-}
-
-mat-form-field {
-    width: 100% !important;
-}
-
-mat-checkbox {
+:host {
     display: block;
-    margin-bottom: 1rem;
+    padding: 1rem;
 }
 
 mat-spinner {
@@ -29,28 +9,21 @@ mat-spinner {
     margin: 1rem auto;
 }
 
-.error {
-    color: var(--wave-warn-color, red);
-}
-
-.container {
-    margin: 1rem;
-}
-
-mat-form-field {
-    width: 100%;
-}
-
 button {
     margin-top: 1rem;
     width: 100%;
+
+    &.sso-button {
+        height: 4rem;
+
+        img {
+            max-height: 50%;
+            margin-right: 0.5rem;
+        }
+    }
 }
 
 .label {
     color: var(--wave-foreground-secondary-text-color, grey);
     margin-right: 1rem;
-}
-
-mat-card.info {
-    background-color: var(--wave-accent-color, grey);
 }
