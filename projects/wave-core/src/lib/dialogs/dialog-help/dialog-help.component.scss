@@ -9,3 +9,9 @@ mat-panel-title {
 mat-icon {
     flex-grow: 0;
 }
+
+.help-content ::ng-deep {
+    div, p {
+        text-align: justify;
+    }
+}
