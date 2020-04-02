@@ -1,15 +1,22 @@
+:host {
+    display: block;
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
 mat-list-item {
     cursor: pointer;
 }
 
-img {
+::ng-deep .mat-list-item-content img {
     width: 100%;
     height: 100%;
 }
 
-p {
+::ng-deep .mat-list-item-content p {
     color: var(--wave-foreground-secondary-text-color, grey);
 }
+
 
 .disabled {
     ::ng-deep .mat-list-item-content {
