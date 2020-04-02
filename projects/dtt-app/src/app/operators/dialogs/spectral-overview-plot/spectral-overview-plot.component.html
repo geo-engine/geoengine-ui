@@ -1,17 +1,23 @@
 <wave-sidenav-header>Spectral Overview Plot</wave-sidenav-header>
 
 <wave-dialog-help class="container">
-    The <i>Spectral Overview Plot</i> operator provides spectral information when working with raster data containing more than one
-    channel e.g. Sentinel satellite data products.
-    To generate a Spectral Overview Plot, select an <i>Input Raster</i> with multiple channels and an <i>Input Point</i>> feature
-    layer, which defines the points of interest.
-    Optionally edit the <i>Output Name</i> for the plot and then hit <i>Create</i>. The plot is shown in the Plot-category of the
-    sidebar on the right.
-    It provides an overview of the pixel values at the locations of the points (represented as colored line graphs, legend) for all
-    channels (channels are represented by corresponding Wave Lengths on the x-axis) of the raster layer.
-    The plots change dynamically with the map view.
-    Therefore, the number of graphs shown in the plot depend on the number of points, that are visible in the field of view of the
-    map.
+    <p>
+        The <i>Spectral Overview Plot</i> operator provides spectral information when working with raster data containing more than one
+        channel, e.g., Sentinel satellite data products.
+        To generate a Spectral Overview Plot, select an <i>Input Raster</i> with multiple channels and an <i>Input Point</i> feature
+        layer, which defines the points of interest.
+        Optionally, edit the <i>Output Name</i> for the plot and then hit <i>Create</i>.
+    </p>
+    <p>
+        The plot is shown in the plot-category of the sidebar on the right.
+        It provides an overview of the pixel values at the locations of the points (represented as colored line graphs in the legend) for
+        all
+        channels of the raster layer.
+        Channels are represented by corresponding wave lengths on the x-axis.
+        The plots change dynamically with the map view.
+        Therefore, the number of graphs shown in the plot depends on the number of points that are visible in the field of view of the
+        map.
+    </p>
 </wave-dialog-help>
 
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" class="mat-typography">

@@ -48,7 +48,7 @@ export type ColormapNames = MplColormapName | MorelandColormapName | ScientificC
 export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES,
     ...GENERIC_COLORMAP_NAMES];
 
-export type ColormapStepScale = 'linear' | 'log' | 'power_05' | 'power_2';
+export type ColormapStepScale = 'linear' | 'log' | 'square root' | 'square';
 
 export interface BoundedColormapStepScale {
     stepScaleName: ColormapStepScale;
@@ -59,8 +59,8 @@ export interface BoundedColormapStepScale {
 export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> = [
     {stepScaleName: 'linear'},
     {stepScaleName: 'log', requiresValueAbove: 0},
-    {stepScaleName: 'power_05', requiresValueBelow: 5000},
-    {stepScaleName: 'power_2', requiresValueBelow: 5000}
+    {stepScaleName: 'square root', requiresValueBelow: 5000},
+    {stepScaleName: 'square', requiresValueBelow: 5000}
 ];
 
 export abstract class Colormap {
@@ -147,9 +147,9 @@ export abstract class Colormap {
                 return Colormap.linearNormInverse(stepFractions, min, max);
             case 'log':
                 return Colormap.logNormInverse(stepFractions, min, max);
-            case 'power_05':
+            case 'square root':
                 return Colormap.powerNormInverse(stepFractions, min, max, 0.5);
-            case 'power_2' :
+            case 'square' :
                 return Colormap.powerNormInverse(stepFractions, min, max, 2);
 
         }
@@ -176,7 +176,7 @@ export abstract class Colormap {
         const colormapValues = Colormap.calculateStepScales(stepScale, colormapStepFractions, min, max);
         const breakpoints = Colormap.createColormapColorizerBreakpoints(colormap, colormapStepFractions, colormapValues);
         return new ColorizerData({
-            breakpoints: breakpoints,
+            breakpoints,
             type: stepScale === 'log' ? 'logarithmic' : 'gradient',
         });
     }
@@ -206,7 +206,7 @@ export abstract class Colormap {
             const colorMapValue = colormap[colormapIndex];
             const color = Color.fromRgbaLike(Colormap.colormapColorToRgb(colorMapValue), false);
             breakpoints[i] = {
-                value: value,
+                value,
                 rgba: color
             };
         }
