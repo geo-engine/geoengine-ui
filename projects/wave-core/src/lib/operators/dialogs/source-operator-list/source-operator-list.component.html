@@ -1,17 +1,17 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
-<div class="container">
-    <wave-dialog-help>
-        <p>
-            The Vat system supports very different types of data: raster and vector data. Rasters consist of many pixels, and each pixel
-            contains a value for the particular location, e.g. the mean temperature.
-            Vector data are collections of features with attributes, e.g. a set of occurrences of pumas and the time of the observation.
-        </p>
-        <p>
-            In this section you can select one of several data sources.
-            Each data set is added to the map as a new layer which you can further process with operators.
-        </p>
-    </wave-dialog-help>
-</div>
+
+<wave-dialog-help>
+    <p>
+        The Vat system supports very different types of data: raster and vector data. Rasters consist of many pixels, and each pixel
+        contains a value for the particular location, e.g. the mean temperature.
+        Vector data are collections of features with attributes, e.g. a set of occurrences of pumas and the time of the observation.
+    </p>
+    <p>
+        In this section you can select one of several data sources.
+        Each data set is added to the map as a new layer which you can further process with operators.
+    </p>
+</wave-dialog-help>
+
 <div class="operator-list">
     <mat-nav-list>
         <ng-template ngFor [ngForOf]="buttons" let-button>
