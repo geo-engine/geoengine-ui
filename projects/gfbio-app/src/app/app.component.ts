@@ -356,9 +356,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private handleOpenIdConnectAccessToken(accessToken: string, expiresIn: number) {
-        // TODO: implement
-        console.log('handleOpenIdConnectAccessToken', 'accessToken', accessToken, 'expiresIn', expiresIn);
+    private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number) {
+        this.userService.oidcLogin(accessToken);
     }
 
     private handleWorkflow(workflow: string) {
