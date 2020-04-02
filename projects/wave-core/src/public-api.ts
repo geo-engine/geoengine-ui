@@ -99,6 +99,7 @@ export * from './lib/queries/request-parameters.model';
 export * from './lib/storage/providers/browser-storage-provider.model';
 export * from './lib/storage/providers/mapping-storage-provider.model';
 export * from './lib/storage/storage-provider.model';
+export * from './lib/time/time.model';
 export * from './lib/users/user.model';
 export * from './lib/operators/types/histogram-type.model';
 export * from './lib/operators/types/statistics-type.model';
