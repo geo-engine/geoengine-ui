@@ -25,11 +25,13 @@ import {SpectralOverviewPlotType, SpectralOverviewPlotTypeDict} from './operator
 import {DttLayoutService} from './layout.service';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { TimestampSliderComponent } from './timestamp-slider/timestamp-slider.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        SpectralOverviewPlotComponent
+        SpectralOverviewPlotComponent,
+        TimestampSliderComponent
     ],
     imports: [
         BrowserAnimationsModule,

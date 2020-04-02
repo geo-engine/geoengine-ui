@@ -1,0 +1,29 @@
+.container {
+    width: 100%;
+    padding: 2px 2px;
+}
+
+mat-slider {
+    width: 100%;
+    margin: 0 1rem;
+
+    &.cdk-focused ::ng-deep {
+        .mat-slider-thumb-label {
+            transform: translate(0, 48px) rotate(225deg) !important;
+            border-radius: 50% 50% 0 !important;
+            background-color: var(--wave-accent-color) !important;
+        }
+
+        .mat-slider-thumb {
+            transform: scale(0) !important;
+            background-color: var(--wave-accent-color) !important;
+        }
+
+        .mat-slider-thumb-label-text {
+            opacity: 1 !important;
+            transform: rotate(135deg) !important;
+            background-color: var(--wave-accent-color);
+            border-radius: 20%;
+        }
+    }
+}
