@@ -1,4 +1,4 @@
-<div class="container" fxLayout="row" fxLayoutAlign="space-between center" >
+<div class="container" fxLayout="row" fxLayoutAlign="space-between center">
     <button mat-icon-button (click)="timeBackwards()"
             matTooltip="Backwards {{timeStepDuration.durationAmount}} {{timeStepDuration.durationUnit}}">
         <mat-icon>navigate_before</mat-icon>
@@ -11,12 +11,4 @@
             matTooltip="Forward {{timeStepDuration.durationAmount}} {{timeStepDuration.durationUnit}}">
         <mat-icon>navigate_next</mat-icon>
     </button>
-    <!--
-    <button mat-icon-button *ngIf="!timeIsPlaying" (click)="timePlay()" disabled>
-        <mat-icon>play_arrow</mat-icon>
-    </button>
-    <button mat-icon-button *ngIf="timeIsPlaying" (click)="timeStop()" disabled>
-        <mat-icon>stop</mat-icon>
-    </button>
-    -->
 </div>

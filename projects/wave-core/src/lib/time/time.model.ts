@@ -1,16 +1,5 @@
 import {DurationInputArg1, DurationInputArg2, Moment, MomentInput, utc} from 'moment';
 
-export interface SimpleMoment {
-    year: number;
-    month: number;
-    day: number;
-    hour: number;
-    minute: number;
-    second: number;
-    millisecond: number;
-}
-
-
 export type TimeType = 'TimePoint' | 'TimeInterval' | 'TimeComplex';
 
 export interface TimeDict {
@@ -55,6 +44,8 @@ export interface Time {
     isValid(): boolean;
 
     asRequestString(): string;
+
+    toString(): string;
 }
 
 export interface TimePointDict extends TimeDict {
@@ -115,6 +106,10 @@ export class TimePoint implements Time {
 
     asRequestString(): string {
         return this.getStart().toISOString();
+    }
+
+    toString(): string {
+        return this.getStart().format('DD.MM.YYYY HH:mm:ss');
     }
 }
 
@@ -214,8 +209,10 @@ export class TimeInterval implements Time {
             + ((this.getStart().isSame(this.getEnd()))
                 ? this.getEnd().add(1, 'millisecond').toISOString() : this.getEnd().toISOString());
     }
-}
 
-export class TimeComplex {
-
+    toString(): string {
+        const start = this.getStart().format('DD.MM.YYYY HH:mm:ss');
+        const end = this.getEnd().format('DD.MM.YYYY HH:mm:ss');
+        return `${start} - ${end}`;
+    }
 }

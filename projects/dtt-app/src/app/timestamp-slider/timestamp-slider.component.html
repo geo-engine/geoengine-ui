@@ -1,11 +1,10 @@
 <div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
-    <span>{{minDisplay | async}}</span>
     <mat-slider mat-discrete thumbLabel="true"
                 [min]="min"
-                [max]="max | async"
+                [max]="max"
                 [step]="step"
                 [tickInterval]="tickInterval"
                 [displayWith]="thumbLabelDisplay()"
                 (change)="setTime($event)"></mat-slider>
-    <span>{{maxDisplay | async}}</span>
+    <span>{{currentTimestamp | async}}</span>
 </div>

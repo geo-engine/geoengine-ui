@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MatSliderChange} from '@angular/material/slider';
 
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
 
 import {defaultFormat as momentDefaultFormat, DurationInputArg2, Moment, normalizeUnits} from 'moment';
 
-import {Config, ProjectService, TimeInterval, TimePoint, TimeStepDuration} from 'wave-core';
+import {Config, ProjectService, Time, TimeInterval, TimePoint, TimeStepDuration} from 'wave-core';
 
 import {UseCaseService} from '../use-case/use-case.service';
 import {AppConfig} from '../app-config.service';
@@ -20,12 +19,12 @@ import {AppConfig} from '../app-config.service';
 export class TimestampSliderComponent implements OnInit, OnDestroy {
 
     readonly min = 0;
-    readonly max = new BehaviorSubject(1);
     readonly step = 1;
     readonly tickInterval = 1;
 
-    readonly minDisplay: Observable<string>;
-    readonly maxDisplay: Observable<string>;
+    readonly currentTimestamp: Observable<Time>;
+
+    public max = 1;
 
     private useCaseTimeSubscription: Subscription;
 
@@ -35,17 +34,12 @@ export class TimestampSliderComponent implements OnInit, OnDestroy {
                 private readonly changeDetectorRef: ChangeDetectorRef) {
         this.useCaseTimeSubscription = this.useCaseService.timeConfigStream.subscribe(({limits, step}) => {
             // this way min always stays `0` and step always stays `1`
-            this.max.next(calculateNumberOfTicks(limits, step));
+            this.max = calculateNumberOfTicks(limits, step);
 
             setTimeout(() => this.changeDetectorRef.detectChanges());
         });
 
-        this.minDisplay = this.useCaseService.timeConfigStream.pipe(
-            map(({limits, step}) => displayTimestamp(limits.getStart(), step.durationUnit)),
-        );
-        this.maxDisplay = this.useCaseService.timeConfigStream.pipe(
-            map(({limits, step}) => displayTimestamp(limits.getEnd(), step.durationUnit)),
-        );
+        this.currentTimestamp = this.projectService.getTimeStream();
     }
 
     ngOnInit() {
