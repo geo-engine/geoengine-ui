@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest, partition} from 'rxjs';
-import {toArray, filter, map, tap, first, flatMap} from 'rxjs/operators';
+import {toArray, map, tap, first, flatMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -42,7 +42,6 @@ import {
     Operator,
     AbstractVectorSymbology,
     WorkflowParameterChoiceDialogComponent,
-    StorageStatus,
     NavigationButton,
     SourceOperatorListComponent,
     NavigationComponent,
@@ -205,25 +204,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTabIndex(index: number) {
         this.layoutService.setLayerDetailViewTabIndex(index);
         this.layoutService.setLayerDetailViewVisibility(true);
-    }
-
-    @HostListener('window:message', ['$event.data'])
-    public handleMessage(message: { type: string }) {
-        switch (message.type) {
-            case 'TOKEN_LOGIN':
-                const tokenMessage = message as { type: string, token: string };
-                this.userService.gfbioTokenLogin(tokenMessage.token).subscribe(() => {
-                    this.storageService.getStatus().pipe(
-                        filter(status => status === StorageStatus.OK),
-                        first()
-                    ).subscribe(() => {
-                        this.handleQueryParameters();
-                    });
-                });
-                break;
-            default:
-            // unhandled message
-        }
     }
 
     private setupNavigation(): Array<NavigationButton> {
