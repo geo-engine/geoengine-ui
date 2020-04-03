@@ -64,7 +64,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         // redirect current app to SSO page
         const url = this.config.GFBIO.SSO.URL;
         const client_id = this.config.GFBIO.SSO.CLIENT_ID;
-        window.location.href = `${url}?client_id=${client_id}&response_type=token&scope=openid email id`;
+        const scope = this.config.GFBIO.SSO.SCOPE;
+        window.location.href = `${url}?client_id=${client_id}&response_type=token&scope=${scope}`;
     }
 
     logout() {
