@@ -60,6 +60,8 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
             {
                 ignoreElements: element => element.classList.contains('cdk-overlay-container'), // ignore overlay, i.e., this dialog
                 logging: false,
+                allowTaint: true,
+                useCORS: true,
             },
         )).pipe(
             first(),
