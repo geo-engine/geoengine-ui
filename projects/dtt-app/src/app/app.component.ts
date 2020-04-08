@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
+
 import {
     Layer,
     SidenavContainerComponent,
@@ -46,6 +47,7 @@ import {
     StatisticsType,
     HistogramType
 } from 'wave-core';
+
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
@@ -53,6 +55,7 @@ import {DttLayoutService} from './layout.service';
 
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SpectralOverviewPlotType} from './operators/types/spectral-overview-plot-type.model';
+import {TwitterScreenshotShareComponent} from './twitter-screenshot-share/twitter-screenshot-share.component';
 
 @Component({
     selector: 'wave-dtt-root',
@@ -268,4 +271,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
+    twitter() {
+        this.dialog.open(TwitterScreenshotShareComponent);
+    }
 }
