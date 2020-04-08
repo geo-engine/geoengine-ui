@@ -116,6 +116,7 @@ export class ResultTypeCollection {
                 return this.LINES;
             case this.POLYGONS.getCode():
             case 'multi surface':
+            case 'multi polygon':
                 return this.POLYGONS;
             case this.PLOT.getCode():
                 return this.PLOT;
