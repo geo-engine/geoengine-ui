@@ -122,6 +122,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
+        // social media
+        this.iconRegistry.addSvgIconInNamespace(
+            'social-media',
+            'twitter',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/Twitter_Logo_WhiteOnImage.svg'),
+        );
     }
 
     ngOnInit() {

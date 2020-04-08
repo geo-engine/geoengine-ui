@@ -1,0 +1,35 @@
+button.screenshot {
+    margin-left: 1rem;
+}
+
+img.screenshot, p {
+    width: 25vw;
+    min-width: 600px;
+}
+
+mat-spinner.screenshot {
+    margin: 0 auto;
+}
+
+mat-form-field {
+    width: 100%;
+    min-height: 3rem;
+}
+
+p.info {
+    padding: 1rem;
+    background-color: var(--wave-background-hover-color);
+}
+
+img.twitter {
+    width: 2rem;
+    height: 2rem;
+}
+
+span {
+    color: var(--wave-foreground-secondary-text-color);
+
+    &.error {
+        color: var(--wave-warn-color);
+    }
+}
