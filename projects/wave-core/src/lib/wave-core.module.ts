@@ -164,7 +164,6 @@ import {HelpDataComponent} from './help/data/help-data.component';
 import {HelpOperatorsComponent} from './help/operators/help-operators.component';
 import {HelpLineageComponent} from './help/lineage/help-lineage.component';
 import {HelpExportComponent} from './help/export/help-export.component';
-import {DictParameterArray} from './operators/operator-type-parameter-options.model';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -383,14 +382,16 @@ const WAVE_PIPES = [
         SidenavHeaderComponent,
         SidenavSearchComponent,
         SmallTimeInteractionComponent,
+        SourceDatasetComponent,
         SourceOperatorListComponent,
+        StrokeDashSelectComponent,
         TableComponent,
         TickerInteractionComponent,
         TimeConfigComponent,
+        VectorSourceDatasetComponent,
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
-        StrokeDashSelectComponent,
     ],
 })
 export class WaveCoreModule {

@@ -1,0 +1,15 @@
+<wave-sidenav-header>Use Case</wave-sidenav-header>
+
+<h2>{{useCase.name}}</h2>
+
+<div class="description" [innerHTML]="useCase.description | waveSafeHtml"></div>
+
+<mat-list>
+    <ng-template ngFor let-source [ngForOf]="useCase.datasets">
+        <wave-vector-source-dataset *ngIf="source.operator === 'ogr_source'; else rasterDataset" [dataset]="source">
+        </wave-vector-source-dataset>
+        <ng-template #rasterDataset>
+            <wave-source-dataset [dataset]="source"></wave-source-dataset>
+        </ng-template>
+    </ng-template>
+</mat-list>

@@ -53,6 +53,7 @@ import {DttLayoutService} from './layout.service';
 
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SpectralOverviewPlotType} from './operators/types/spectral-overview-plot-type.model';
+import {UseCaseListComponent} from './use-case/use-case-list/use-case-list.component';
 
 @Component({
     selector: 'wave-dtt-root',
@@ -152,6 +153,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static setupNavigation(): Array<NavigationButton> {
         return [
+            {
+                sidenavConfig: {component: UseCaseListComponent},
+                icon: 'games',
+                tooltip: 'Use Cases',
+            },
             {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',

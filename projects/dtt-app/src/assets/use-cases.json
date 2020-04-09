@@ -1,0 +1,51 @@
+[
+    {
+        "name": "Test A",
+        "shortDescription": "Short A",
+        "description": "<strong>Muy importante</strong>",
+        "timeLimits": {
+            "type": "TimeInterval",
+            "start": "2019-06-01",
+            "end": "2019-06-30"
+        },
+        "timeStep": {
+            "durationAmount": 3,
+            "durationUnit": "days"
+        },
+        "boundingBox": [
+            -180.0,
+            -90.0,
+            180.0,
+            90.0
+        ],
+        "datasets": [
+            "msg_eu_scaled_int",
+            "sentinel-3_olci_level-2_water_product",
+            "eu_msg_claas2_cma"
+        ]
+    },
+    {
+        "name": "Test B",
+        "shortDescription": "This is a short description text for Test B",
+        "description": "<p>This is an image</p><p><img src=\"assets/vat_logo.svg\" alt=\"VAT Logo\"></p>",
+        "timeLimits": {
+            "type": "TimeInterval",
+            "start": "2020-01-01",
+            "end": "2020-12-31"
+        },
+        "timeStep": {
+            "durationAmount": 1,
+            "durationUnit": "month"
+        },
+        "boundingBox": [
+            6.2535504,
+            47.9908656,
+            14.1637066,
+            53.9310503
+        ],
+        "datasets": [
+            "ETOPO1",
+            "osm_highway_motorway_simple"
+        ]
+    }
+]
