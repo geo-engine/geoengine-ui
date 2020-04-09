@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {first, flatMap, map, skipUntil, skipWhile} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, ReplaySubject} from 'rxjs';
+import {first, map, skipWhile} from 'rxjs/operators';
 
 import moment from 'moment/src/moment';
 
