@@ -16,6 +16,7 @@ import {RandomColorService} from '../../../../util/services/random-color.service
 import {OgrSourceType} from '../../../types/ogr-source-type.model';
 import {ResultTypes} from '../../../result-type.model';
 import {WHITE} from '../../../../colors/color';
+import {NotificationService} from '../../../../notification.service';
 
 @Component({
     selector: 'wave-vector-source-dataset',
@@ -39,6 +40,7 @@ export class VectorSourceDatasetComponent implements OnInit {
     constructor(
         private projectService: ProjectService,
         private randomColorService: RandomColorService,
+        private notificationService: NotificationService,
     ) {
 
     }
@@ -124,14 +126,24 @@ export class VectorSourceDatasetComponent implements OnInit {
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
      */
     createOgrSourceOperator(layer: SourceVectorLayerDescription): Operator {
-        const sourceDataType = ResultTypes.fromCode(layer.geometryType); // TODO: move this to the user service?
-        let sourceProjection: Projection;
-        if (layer.coords.crs) {
-            sourceProjection = Projections.fromCode(layer.coords.crs);
-        } else {
-            throw new Error('No projection or EPSG code defined in [' + this.dataset.name + ']. channel.id: ' + layer.id);
+
+        if (!layer.geometryType) {
+            this.notificationService.error(
+                'No geometry type defined in [' + this.dataset.name + '] assuming "POINTS". (channel.id: ' + layer.id + ')'
+            );
+            layer.geometryType = 'POINTS';
         }
 
+        const sourceDataType = ResultTypes.fromCode(layer.geometryType);
+
+        if (!layer.coords || !layer.coords.crs) {
+            this.notificationService.error(
+                'No projection or EPSG code defined in [' + this.dataset.name + '] assuming EPSG:4326. (channel.id: ' + layer.id + ')'
+            );
+            layer.coords = {crs: 'EPSG:4326'};
+        }
+
+        const sourceProjection = Projections.fromCode(layer.coords.crs);
         const dataTypes = new Map<string, DataType>();
         layer.numeric.forEach((x) => dataTypes.set(x, DataTypes.Float32));
         layer.textual.forEach((x) => dataTypes.set(x, DataTypes.Alphanumeric));

@@ -1,18 +1,37 @@
 <wave-sidenav-header>Spectral Overview Plot</wave-sidenav-header>
+
+<wave-dialog-help class="container">
+    <p>
+        The <i>Spectral Overview Plot</i> operator provides spectral information when working with raster data containing more than one
+        channel, e.g., Sentinel satellite data products.
+        To generate a Spectral Overview Plot, select an <i>Input Raster</i> with multiple channels and an <i>Input Point</i> feature
+        layer, which defines the points of interest.
+        Optionally, edit the <i>Output Name</i> for the plot and then hit <i>Create</i>.
+    </p>
+    <p>
+        The plot is shown in the plot-category of the sidebar on the right.
+        It provides an overview of the pixel values at the locations of the points (represented as colored line graphs in the legend) for
+        all
+        channels of the raster layer.
+        Channels are represented by corresponding wave lengths on the x-axis.
+        The plots change dynamically with the map view.
+        Therefore, the number of graphs shown in the plot depends on the number of points that are visible in the field of view of the
+        map.
+    </p>
+</wave-dialog-help>
+
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" class="mat-typography">
-    <div class="container">
-        <wave-layer-selection [types]="rasterLayerTypes" formControlName="rasterLayer"></wave-layer-selection>
-        <mat-error *ngIf="rasterHasNoChannelConfigForSatelliteSensors$ | async">
-            This raster does not have multiple channels with wave length metadata.
+    <wave-layer-selection [types]="rasterLayerTypes" formControlName="rasterLayer"></wave-layer-selection>
+    <mat-error *ngIf="rasterHasNoChannelConfigForSatelliteSensors$ | async">
+        This raster does not have multiple channels with wave length metadata.
+    </mat-error>
+    <wave-layer-selection [types]="pointLayerTypes" formControlName="pointLayer"></wave-layer-selection>
+    <wave-operator-output-name formControlName="name"
+                               [suggestion]="'Spectral Overview Plot of ' + (form.controls.rasterLayer.valueChanges | async)?.name">
+        <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+            The name must be non-empty.
         </mat-error>
-        <wave-layer-selection [types]="pointLayerTypes" formControlName="pointLayer"></wave-layer-selection>
-        <wave-operator-output-name formControlName="name"
-                                   [suggestion]="'Spectral Overview Plot of ' + (form.controls.rasterLayer.valueChanges | async)?.name">
-            <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
-                The name must be non-empty.
-            </mat-error>
-        </wave-operator-output-name>
-    </div>
+    </wave-operator-output-name>
     <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="formIsInvalid$ | async">
             Create

@@ -463,9 +463,7 @@ export class UserService {
     protected static parseVectorLayer(
         layer: MappingSourceVectorLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
     ): SourceVectorLayerDescription {
-        // TODO: can we  safely assume EPSG: 4326 here?
-        const coords = layer.coords || source.coords || {crs: 'EPSG:4326'};
-
+        const coords = layer.coords || source.coords;
         const provenance: ProvenanceInfo = (layer.provenance) ? {
             uri: (source.provenance) ? source.provenance.uri : '',
             citation: source.provenance ? source.provenance.citation : '',
@@ -476,7 +474,7 @@ export class UserService {
             id: layer.id || layer.name,
             name: layer.title || layer.name || 'Layer #' + index,
             title: layer.title || layer.name || 'Layer #' + index,
-            geometryType: layer.geometry_type || 'POINTS',
+            geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
             coords,
