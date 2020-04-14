@@ -132,11 +132,22 @@ export class UseCaseService {
         this.useCase = useCase;
 
         if (useCase) {
-            this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
+            combineLatest([
+                this.projectService.getTimeStream(),
+                this.projectService.getProjectionStream(),
+            ]).pipe(first()).subscribe(([currentTime, projection]) => {
                 this.timeConfig.next({
                     limits: useCase.timeLimits,
                     step: useCase.timeStep,
                 });
+
+                const currentTimeInRange = () => currentTime.getStart().isBetween(
+                    useCase.timeLimits.getStart(), useCase.timeLimits.getEnd(), undefined, '[)'
+                );
+                if (useCase.timeLimits.getStart().isSame(useCase.timeLimits.getEnd()) || !currentTimeInRange()) {
+                    // set time to first point in range
+                    this.projectService.setTime(new TimePoint(useCase.timeLimits.getStart()));
+                }
 
                 const bboxInWgs84 = useCase.boundingBox;
                 const bboxInCurrentProjection = transformExtent(

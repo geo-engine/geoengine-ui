@@ -74,7 +74,7 @@ function calculateNumberOfTicks(timeLimits: TimeInterval, timeStep: TimeStepDura
     // TODO: round, clip?
     const numberOfTicks = differenceInUnit / durationNumber;
 
-    return Math.max(numberOfTicks, 1);
+    return Math.max(numberOfTicks, 0);
 }
 
 function calculateTimestamp(timeLimits: TimeInterval, timeStep: TimeStepDuration, tick: number): Moment {
