@@ -2,14 +2,12 @@ import {distinctUntilChanged} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {Injectable} from '@angular/core';
-import {Extent as OlExtent} from 'ol'
+import {Extent as OlExtent} from 'ol';
 import {containsExtent as olExtentContainsExtent, getIntersection as olExtentGetIntersection} from 'ol/extent';
 import {GeometryType as OlGeometryType} from 'ol/geom';
 import {Vector as OlSourceVector} from 'ol/source';
 
 import {MapContainerComponent} from './map-container/map-container.component';
-import {AbstractSymbology} from '../layers/symbology/symbology.model';
-import {Layer} from '../layers/layer.model';
 
 export interface ViewportSize {
     extent: Extent;
@@ -17,7 +15,7 @@ export interface ViewportSize {
     maxExtent?: [number, number, number, number];
 }
 
-type Extent = [number, number, number, number] | OlExtent;
+export type Extent = [number, number, number, number] | OlExtent;
 
 @Injectable()
 export class MapService {
@@ -91,6 +89,10 @@ export class MapService {
 
     getViewportSizeStream(): Observable<ViewportSize> {
         return this.viewportSize$.pipe(distinctUntilChanged());
+    }
+
+    zoomTo(boundingBox: Extent) {
+        this.mapComponent.zoomTo(boundingBox);
     }
 }
 

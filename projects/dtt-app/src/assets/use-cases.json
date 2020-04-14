@@ -1,0 +1,53 @@
+[
+    {
+        "name": "Sentinel-3 Ocean Land Colour Instrument (OLCI)",
+        "shortDescription": "This example uses the optical bands of Sentinel-3 OLCI to detect Sargassum seaweed following Hu's Floating Algae Index (FAI)",
+        "description": "<p>\n<strong>Overview</strong><br>\nThis example uses the optical bands of Sentinel-3 OLCI to detect Sargassum seaweed following Hu's Floating Algae Index (FAI).\n</p>\n<p>\n<strong>Outcome</strong><br>\nYou are able to visualise/understand the way in which the multiple bands from OLCI are used to answer a specific scientific question, in this case floating algae detection.\n</p>\n<ol>\n    <li>Load a chlorophyl layer</li>\n    <li>Create a point on the map and create a <em>spectral overview plot</em></li>\n    <li>Create an <em>enhanced colour (Red-Green-Blue) Rayleigh corrected OLCI RGB image</em> by selecting the following channels <em>Oa10</em>, <em>Oa06</em> and <em>Oa04</em></li>\n    <li>Look again at the <em>spectral overview plot</em> and take a closer look at the peaks near infrared</li>\n    <li>Look again at the <em>spectral overview plot</em> and take a closer look at the peaks near infrared</li>\n    <li>Create an RGB layer to <em>highlight FAI</em> by selecting the following channels <em>Oa08</em>, <em>Oa10</em> and <em>Oa21</em></li>\n</ol>\n",
+        "timeLimits": {
+            "type": "TimeInterval",
+            "start": "2019-07-03",
+            "end": "2019-07-03"
+        },
+        "timeStep": {
+            "durationAmount": 1,
+            "durationUnit": "days"
+        },
+        "boundingBox": [
+            -69.7549375,
+            6.7916622,
+            -51.0122617,
+            21.7354683
+        ],
+        "datasets": [
+            "dtt_sentinel-3_olci_level-2_reflectance"
+        ]
+    },
+    {
+        "name": "Test",
+        "shortDescription": "This is a short description text for Test B",
+        "description": "<p>This is an image</p><p><img src=\"assets/vat_logo.svg\" alt=\"VAT Logo\"></p>",
+        "timeLimits": {
+            "type": "TimeInterval",
+            "start": "2020-01-01",
+            "end": "2020-12-31"
+        },
+        "timeStep": {
+            "durationAmount": 1,
+            "durationUnit": "month"
+        },
+        "boundingBox": [
+            6.2535504,
+            47.9908656,
+            14.1637066,
+            53.9310503
+        ],
+        "datasets": [
+            "dtt_sentinel-3_olci_level-2_reflectance",
+            "dtt_sentinel-3_olci_level-2_reflectance_err",
+            "dtt_sentinel-3_olci_level-2_atmospheric_temperature_profile_pressure_level",
+            "msg_eu_scaled_int",
+            "sentinel-3_olci_level-2_water_product",
+            "ETOPO1"
+        ]
+    }
+]
