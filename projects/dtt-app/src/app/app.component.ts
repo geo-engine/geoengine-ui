@@ -46,6 +46,7 @@ import {
     StatisticsType,
     HistogramType
 } from 'wave-core';
+
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
@@ -53,6 +54,7 @@ import {DttLayoutService} from './layout.service';
 
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SpectralOverviewPlotType} from './operators/types/spectral-overview-plot-type.model';
+import {TwitterScreenshotShareComponent} from './twitter-screenshot-share/twitter-screenshot-share.component';
 import {UseCaseListComponent} from './use-case/use-case-list/use-case-list.component';
 
 @Component({
@@ -123,6 +125,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
 
+        // social media
+        this.iconRegistry.addSvgIconInNamespace(
+            'social-media',
+            'twitter',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/Twitter_Logo_WhiteOnImage.svg'),
+        );
     }
 
     ngOnInit() {
@@ -268,4 +276,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
+    twitter() {
+        this.dialog.open(TwitterScreenshotShareComponent);
+    }
 }

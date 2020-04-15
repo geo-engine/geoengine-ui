@@ -15,6 +15,13 @@
             <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
             <span class="title">DTT</span>
         </div>
+        <div class="menu-buttons">
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="twitter()">
+                <mat-icon svgIcon="social-media:twitter" class="twitter-gray"></mat-icon>
+                <span>Twitter</span>
+            </button>
+        </div>
     </wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
