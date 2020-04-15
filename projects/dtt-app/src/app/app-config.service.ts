@@ -3,6 +3,7 @@ import {mergeDeep} from 'immutable';
 import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG} from 'wave-core';
 
 interface DTT {
+    readonly TWITTER_APP_KEY: string;
     readonly USE_CASE_FILE: string;
 }
 
@@ -18,6 +19,7 @@ const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
         ALLOW_RANGES: false,
     },
     DTT: {
+        TWITTER_APP_KEY: 'hMxotEImo11IaafMdzTUMDY5R',
         USE_CASE_FILE: 'assets/use-cases.json',
     }
 }) as AppConfigStructure;
