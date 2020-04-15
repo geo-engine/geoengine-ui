@@ -30,6 +30,7 @@ import { TimestampSliderComponent } from './timestamp-slider/timestamp-slider.co
 import { UseCaseListComponent } from './use-case/use-case-list/use-case-list.component';
 import { UseCaseDetailsComponent } from './use-case/use-case-details/use-case-details.component';
 import { UseCaseResetDialogComponent } from './use-case/use-case-reset-dialog/use-case-reset-dialog.component';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
     declarations: [
@@ -40,6 +41,7 @@ import { UseCaseResetDialogComponent } from './use-case/use-case-reset-dialog/us
         UseCaseListComponent,
         UseCaseDetailsComponent,
         UseCaseResetDialogComponent,
+        AboutComponent,
     ],
     imports: [
         BrowserAnimationsModule,
