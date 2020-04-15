@@ -69,6 +69,7 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
                 const imageType = 'image/png';
                 const dataUrl = canvas.toDataURL(imageType);
                 return new Observable(subscriber => {
+                    // TODO: store as promise to reduce acknowledged loading time
                     canvas.toBlob(
                         blob => {
                             subscriber.next([dataUrl, blob]);
@@ -102,7 +103,7 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
 
         from(twitter.login({
             display: 'popup',
-            scope: 'share',
+            scope: ['publish'],
         })).pipe(
             flatMap(() => twitter.api('me/share', 'POST', {
                 message: this.message.value,
