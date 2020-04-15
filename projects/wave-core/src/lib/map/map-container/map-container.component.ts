@@ -52,7 +52,7 @@ import {AbstractVectorSymbology, AbstractSymbology} from '../../layers/symbology
 import {Layer} from '../../layers/layer.model';
 import {LayerService} from '../../layers/layer.service';
 import {ProjectService} from '../../project/project.service';
-import {MapService} from '../map.service';
+import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {StyleCreator} from '../style-creator';
 import {LayoutService} from '../../layout.service';
@@ -82,7 +82,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     // display a grid of maps or all layers on a single map
     @Input() grid = true; // TODO: false;
 
-    @ViewChild(MatGridList, { read: ElementRef, static: true }) gridListElement !: ElementRef;
+    @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement !: ElementRef;
     @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers !: QueryList<ElementRef>;
 
     @ContentChildren(MapLayerComponent) mapLayersRaw !: QueryList<MapLayer>;
@@ -153,7 +153,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        for (let propName in changes) {
+        for (const propName in changes) {
             if (propName === 'grid') {
                 this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
             }
@@ -177,6 +177,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (this.view.getZoom() > MIN_ZOOM_LEVEL) {
             this.view.adjustZoom(-1);
         }
+    }
+
+    zoomTo(boundingBox: Extent) {
+        this.view.fit(boundingBox, {
+            nearest: true,
+            maxZoom: MAX_ZOOM_LEVEL,
+        });
     }
 
     public startDrawInteraction(drawType: OlGeometryType) {
@@ -336,7 +343,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         this.subscriptions.push(
             this.layerService.getSelectedFeaturesStream().subscribe(selectedFeatures => {
-                let newSelection = new OlCollection<OlFeature>();
+                const newSelection = new OlCollection<OlFeature>();
                 this.userSelect.getFeatures().forEach(feature => {
                     if (selectedFeatures.remove && selectedFeatures.remove.contains(feature.getId())) {
                         newSelection.push(feature);
@@ -606,5 +613,4 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 throw Error('Unknown Background Layer Name');
         }
     }
-
 }

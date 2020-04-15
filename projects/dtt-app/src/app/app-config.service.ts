@@ -3,10 +3,10 @@ import {mergeDeep} from 'immutable';
 import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG} from 'wave-core';
 
 interface DTT {
-    TWITTER_APP_KEY: string;
+    readonly TWITTER_APP_KEY: string;
+    readonly USE_CASE_FILE: string;
 }
 
-// tslint:disable-next-line:no-empty-interface
 interface AppConfigStructure extends WaveConfigStructure {
     DTT: DTT;
 }
@@ -20,6 +20,7 @@ const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
     },
     DTT: {
         TWITTER_APP_KEY: 'hMxotEImo11IaafMdzTUMDY5R',
+        USE_CASE_FILE: 'assets/use-cases.json',
     }
 }) as AppConfigStructure;
 

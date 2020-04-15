@@ -26,12 +26,20 @@ import {DttLayoutService} from './layout.service';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { TwitterScreenshotShareComponent } from './twitter-screenshot-share/twitter-screenshot-share.component';
+import { TimestampSliderComponent } from './timestamp-slider/timestamp-slider.component';
+import { UseCaseListComponent } from './use-case/use-case-list/use-case-list.component';
+import { UseCaseDetailsComponent } from './use-case/use-case-details/use-case-details.component';
+import { UseCaseResetDialogComponent } from './use-case/use-case-reset-dialog/use-case-reset-dialog.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         SpectralOverviewPlotComponent,
-        TwitterScreenshotShareComponent
+        TimestampSliderComponent,
+        TwitterScreenshotShareComponent,
+        UseCaseListComponent,
+        UseCaseDetailsComponent,
+        UseCaseResetDialogComponent,
     ],
     imports: [
         BrowserAnimationsModule,

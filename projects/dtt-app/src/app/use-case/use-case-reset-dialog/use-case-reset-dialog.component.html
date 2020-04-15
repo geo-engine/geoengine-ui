@@ -1,0 +1,9 @@
+<wave-dialog-header>Close Use Case</wave-dialog-header>
+<div mat-dialog-content>
+    <p>Do you really want to close the current use case?</p>
+    <p>In this case, we will reset all current progress, i.e., layers and plots.</p>
+</div>
+<div mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="false">No Thanks</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Ok</button>
+</div>

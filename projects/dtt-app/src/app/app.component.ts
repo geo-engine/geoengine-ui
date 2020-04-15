@@ -15,7 +15,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
-
 import {
     Layer,
     SidenavContainerComponent,
@@ -56,6 +55,7 @@ import {DttLayoutService} from './layout.service';
 import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overview-plot/spectral-overview-plot.component';
 import {SpectralOverviewPlotType} from './operators/types/spectral-overview-plot-type.model';
 import {TwitterScreenshotShareComponent} from './twitter-screenshot-share/twitter-screenshot-share.component';
+import {UseCaseListComponent} from './use-case/use-case-list/use-case-list.component';
 
 @Component({
     selector: 'wave-dtt-root',
@@ -161,6 +161,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static setupNavigation(): Array<NavigationButton> {
         return [
+            {
+                sidenavConfig: {component: UseCaseListComponent},
+                icon: 'games',
+                tooltip: 'Use Cases',
+            },
             {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
