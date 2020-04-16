@@ -214,7 +214,6 @@ export class ProjectionCollection {
     protected constructor() {
         this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N];
         this.registerProj4Projections();
-        console.log(this);
     }
 
     fromCode(json: string) {
