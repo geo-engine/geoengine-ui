@@ -37,7 +37,6 @@ import {
     SourceOperatorListComponent,
     OperatorListComponent,
     TimeConfigComponent,
-    HelpComponent,
     SourceOperatorListButton,
     OperatorListButtonGroups,
     SidenavConfig,
@@ -56,6 +55,7 @@ import {SpectralOverviewPlotComponent} from './operators/dialogs/spectral-overvi
 import {SpectralOverviewPlotType} from './operators/types/spectral-overview-plot-type.model';
 import {TwitterScreenshotShareComponent} from './twitter-screenshot-share/twitter-screenshot-share.component';
 import {UseCaseListComponent} from './use-case/use-case-list/use-case-list.component';
+import {AboutComponent} from './about/about.component';
 
 @Component({
     selector: 'wave-dtt-root',
@@ -188,9 +188,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 tooltip: 'Time',
             },
             {
-                sidenavConfig: {component: HelpComponent},
+                sidenavConfig: {component: AboutComponent},
                 icon: 'help',
-                tooltip: 'Help',
+                tooltip: 'About',
             },
         ];
     }

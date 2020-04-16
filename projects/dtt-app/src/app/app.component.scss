@@ -43,3 +43,21 @@ wave-layer-list {
 .twitter-gray ::ng-deep .st1 {
     fill: currentColor;
 }
+
+.logo {
+    mat-icon {
+        margin-right: .25rem;
+
+        ::ng-deep svg > g > :nth-child(2) {
+            fill: var(--wave-primary-color);
+        }
+    }
+
+    .subtitle {
+        display: inline-block;
+        position: relative;
+        top: 0.75rem;
+        margin-left: -2rem;
+        opacity: 83%;
+    }
+}

@@ -15,7 +15,7 @@
             padding: 0;
             color: whitesmoke;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            background: #335AA3;
+            background: var(--wave-primary-color);
         }
 
         h1 {
@@ -27,15 +27,26 @@
             margin: 30vh 0 0 0;
         }
 
-        h1 span {
-            background: url('assets/vat_logo.svg') right no-repeat;
-            background-size: 18vh 18vh;
+        h1 object {
+            color: var(--wave-primary-color);
             height: calc(18vh - 1px);
             width: calc(18vh - 1px);
             border: 1px solid whitesmoke;
             border-radius: 18vh;
             display: inline-block;
             filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.24));
+            margin-right: -1vw;
+        }
+
+        h1 small {
+            font-family: Roboto, 'Helvetica Neue', sans-serif;
+            font-size: 5vh;
+
+            display: inline-block;
+            position: relative;
+            top: 5vh;
+            margin-left: -15vw;
+            opacity: 83%;
         }
 
         div {
@@ -73,12 +84,29 @@
             animation-delay: 0.4s;
         }
     </style>
-    <h1><span class="logo"></span>VAT</h1>
+    <h1>
+        <object id="logo" data="assets/vat_logo.svg" type="image/svg+xml" onload="onLogoLoad()"></object>
+        DTT
+        <small class="subtitle">powered by VAT</small>
+    </h1>
     <div class="dots">
         <span>&middot;</span>
         <span>&middot;</span>
         <span>&middot;</span>
     </div>
+    <script>
+        function onLogoLoad() {
+            const color = "#00205b";
+
+            const svg = document.getElementById("logo").getSVGDocument();
+            const svgBackground = svg.getElementsByTagName("g")[1];
+            svgBackground.setAttribute("fill", color);
+            const svgClogs = svg.getElementsByTagName("g")[2];
+            svgClogs.setAttribute("stroke", color);
+            const svgEllipse = svg.getElementsByTagName("ellipse")[0];
+            svgEllipse.setAttribute("stroke", color);
+        }
+    </script>
 </wave-dtt-root>
 </body>
 </html>
