@@ -26,6 +26,7 @@
             "ol/layer/Tile": "OlLayerTile",
             "ol/layer/Vector": "OlLayerVector",
             "ol/proj": "proj",
+            "ol/proj/proj4": "olproj4",
             "ol/source": "source",
             "ol/source/ImageStatic": "OlImageStatic",
             "ol/source/OSM": "OlSourceOSM",
@@ -36,7 +37,8 @@
             "ol/style/Fill": "OlStyleFill",
             "ol/style/Stroke": "OlStyleStroke",
             "ol/style/Style": "OlStyleStyle",
-            "papaparse": "papaparse"
+            "papaparse": "papaparse",
+            "proj4": "proj4"
         }
     },
     "assets": [
