@@ -1,19 +1,15 @@
 import {get as olGetProjection, addProjection as olAddProjection, Projection as OlProjection} from 'ol/proj';
+import {register as olProj4Register} from 'ol/proj/proj4';
+import proj4 from 'proj4';
 
 /**
  * A wrapper class around a projection string.
  */
 export abstract class Projection {
-    /**
-     * @returns {string} x coordinate name
-     */
     get xCoordinateName(): string {
         return 'x';
     }
 
-    /**
-     * @returns {string} y coordinate name
-     */
     get yCoordinateName(): string {
         return 'y';
     }
@@ -52,6 +48,10 @@ export abstract class Projection {
      * @return the crs uri.
      */
     abstract getCrsURI(): string;
+
+    getProj4String(): string | undefined {
+        return undefined;
+    }
 }
 
 export class WebMercator extends Projection {
@@ -117,18 +117,8 @@ export class UTM32N extends Projection {
         return 'http://www.opengis.net/def/crs/EPSG/0/32632';
     }
 
-    private registerProjection() {
-
-        if (!UTM32N.isProjectionRegistered) {
-            olAddProjection(new OlProjection({
-                code: this.getCode(),
-                extent: this.getExtent(),
-                units: 'm'
-            }));
-
-            UTM32N.isProjectionRegistered = true;
-        }
-
+    getProj4String(): string | undefined {
+        return '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs';
     }
 }
 
@@ -151,18 +141,8 @@ export class ETRS89UTM32N extends Projection {
         return 'http://www.opengis.net/def/crs/EPSG/0/25832';
     }
 
-    private registerProjection() {
-
-        if (!ETRS89UTM32N.isProjectionRegistered) {
-            olAddProjection(new OlProjection({
-                code: this.getCode(),
-                extent: this.getExtent(),
-                units: 'm'
-            }));
-
-            ETRS89UTM32N.isProjectionRegistered = true;
-        }
-
+    getProj4String(): string | undefined {
+        return '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
     }
 }
 
@@ -189,7 +169,7 @@ export class GEOS extends Projection {
     }
 
     getOpenlayersProjection() {
-        let projection = olGetProjection(this.getCode());
+        const projection = olGetProjection(this.getCode());
         projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
     }
@@ -233,6 +213,8 @@ export class ProjectionCollection {
 
     protected constructor() {
         this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N];
+        this.registerProj4Projections();
+        console.log(this);
     }
 
     fromCode(json: string) {
@@ -251,6 +233,16 @@ export class ProjectionCollection {
                 return this.ETRS89UTM32N;
             default:
                 throw new Error('Invalid Projection String');
+        }
+    }
+
+    private registerProj4Projections() {
+        const proj4DefStrings: Array<[string, string]> = this.ALL_PROJECTIONS.filter(p => !!p.getProj4String()).map(
+            p => [p.getCode(), p.getProj4String()]
+        );
+        if (!!proj4DefStrings && proj4DefStrings.length > 0) {
+            proj4.defs(proj4DefStrings);
+            olProj4Register(proj4);
         }
     }
 }
