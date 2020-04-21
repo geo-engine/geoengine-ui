@@ -72,8 +72,12 @@ export class SpectralOverviewPlotType extends OperatorType {
                 #
                 df <- data.frame(wave_length = wave_lengths, value = values, marker = markers);
                 #
-                plot = ggplot(df, aes(wave_length, value)) + geom_line(aes(colour = marker));
-                plot = plot + labs(x = "Wave Length in nm", y = ${unit_label}, colour = "Marker");
+                x_axis_markers <- data.frame(wave_length = wave_lengths, value = -Inf);
+                #
+                plot = ggplot(df, aes(wave_length, value)) +
+                    geom_line(aes(colour = marker)) +
+                    geom_point(data = x_axis_markers, colour = "black", shape = 3, size = 3) +
+                    labs(x = "Wave Length in nm", y = ${unit_label}, colour = "Marker")
                 #
                 print(plot);
             } else {
