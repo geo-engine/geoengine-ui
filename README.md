@@ -21,7 +21,7 @@ sudo apt-get install -y nodejs
 ```
 rm -rf node_modules package-lock.json
 npm install
-npm run build-production
+npm run build-prod:core && npm run build-prod:wave
 ```
 You can find the output in the `dist` directory.
 
