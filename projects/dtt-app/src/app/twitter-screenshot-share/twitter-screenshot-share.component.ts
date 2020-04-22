@@ -60,20 +60,17 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
             {
                 ignoreElements: element => element.classList.contains('cdk-overlay-container'), // ignore overlay, i.e., this dialog
                 logging: false,
-                allowTaint: true,
                 foreignObjectRendering: true,
-                useCORS: true,
-                onclone: async document => {
+                onclone: document => {
                     // TODO: stop rendering all `mat-icon`s individually once `foreignObjectRendering` is bug-free
 
                     const matIcons = Array.from(document.getElementsByTagName('mat-icon'))
                         .filter(matIcon => matIcon.childElementCount <= 0);
 
                     for (const matIcon of matIcons) {
-                        const canvas = await html2canvas(matIcon as HTMLElement, {
-                            foreignObjectRendering: false,
-                            logging: false,
-                        });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = matIcon.clientWidth;
+                        canvas.height = matIcon.clientHeight;
 
                         matIcon.replaceWith(canvas);
                     }
