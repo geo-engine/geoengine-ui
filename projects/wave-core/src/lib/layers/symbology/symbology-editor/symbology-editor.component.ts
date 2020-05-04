@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/cor
 import {AbstractSymbology, SymbologyType} from '../symbology.model';
 import {Layer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
-import {ReplaySubject, Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {Config} from '../../../config.service';
 
@@ -25,18 +25,18 @@ export class SymbologyEditorComponent implements OnDestroy {
     @Input() layer: Layer<AbstractSymbology> = undefined;
     validLayers: Array<Layer<AbstractSymbology>> = undefined;
     private subscriptions: Array<Subscription> = [];
-    private layerChanges = new ReplaySubject<[Layer<AbstractSymbology>, AbstractSymbology]>(1);
+    private layerChanges = new Subject<[Layer<AbstractSymbology>, AbstractSymbology]>();
 
     constructor(
         private config: Config,
         public projectService: ProjectService
     ) {
-        const sub1 = this.projectService.getLayerStream().subscribe(projectLayers => this.validLayers = projectLayers);
-        this.subscriptions.push(sub1);
-        const sub2 = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(
+        const layerStreamSubscription = this.projectService.getLayerStream().subscribe(projectLayers => this.validLayers = projectLayers);
+        this.subscriptions.push(layerStreamSubscription);
+        const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(
             ([layer, symbology]) => this.projectService.changeLayer(layer, {symbology})
         );
-        this.subscriptions.push(sub2);
+        this.subscriptions.push(layerChangesSubscription);
     }
 
     get isValidLayer(): boolean {

@@ -21,7 +21,7 @@ export interface MappingRasterColorizerDict {
     breakpoints: Array<IMappingRasterColorizerBreakpoint>;
     type?: ColorizerType;
     nodata?: IMappingRasterColorizerBreakpoint;
-    overflow?: IMappingRasterColorizerBreakpoint;
+    default?: IMappingRasterColorizerBreakpoint;
 }
 
 export class ColorizerData implements IColorizerData {
@@ -128,10 +128,6 @@ export class ColorizerData implements IColorizerData {
 
     /**
      * Get a (new) breakpoint for a value.
-     * TODO: this is prob. not very correct...
-     * @param {BreakPointValue} value
-     * @param {boolean} interpolate
-     * @returns {ColorBreakpoint | undefined}
      */
     getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
 
