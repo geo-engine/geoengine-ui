@@ -74,21 +74,21 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     }
 
     updateOverflowColor(event: ColorBreakpoint) {
-        if (event && !event.equals(this.symbology.overflowColor)) {
+        if (event) {
             this.symbology.overflowColor = event;
             this.update();
         }
     }
 
     updateNoDataColor(event: ColorBreakpoint) {
-        if (event && !event.equals(this.symbology.noDataColor)) {
+        if (event) {
             this.symbology.noDataColor = event;
             this.update();
         }
     }
 
     updateColorizer(event: ColorizerData) {
-        if (event && !event.equals(this.symbology.colorizer)) {
+        if (event) {
             this.symbology.colorizer = event;
             this.update();
         }

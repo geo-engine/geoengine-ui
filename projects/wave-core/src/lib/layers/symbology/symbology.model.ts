@@ -626,7 +626,7 @@ export class MappingRasterSymbology extends AbstractRasterSymbology
         const mcbs: MappingRasterColorizerDict = {
             type: this.colorizer.type,
             nodata: this.noDataColor.asMappingRasterColorizerBreakpoint(),
-            overflow: this.overflowColor.asMappingRasterColorizerBreakpoint(),
+            default: this.overflowColor.asMappingRasterColorizerBreakpoint(),
             breakpoints: this.colorizer.breakpoints.map(br => br.asMappingRasterColorizerBreakpoint())
         };
         return JSON.stringify(mcbs);
