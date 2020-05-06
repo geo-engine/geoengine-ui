@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {MapService} from '../../../map/map.service';
-import {WKT as OlFormatWKT} from 'ol/format';
+import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {Vector as OlVectorSource} from 'ol/source';
 import OlGeometryType from 'ol/geom/GeometryType';
 import {Projections, Projection} from '../../projection.model';
@@ -15,10 +15,13 @@ import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
 import {ProjectService} from '../../../project/project.service';
-import {WKTSourceType} from '../../types/wkt-source-type.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {NotificationService} from '../../../notification.service';
 import {Subscription} from 'rxjs';
+import {OgrRawSourceType} from '../../types/ogr-raw-source-type.model';
+import {DataTypes} from '../../datatype.model';
+import {Map as ImmutableMap} from 'immutable';
+import {Unit} from '../../unit.model';
 
 @Component({
     selector: 'wave-ol-draw-features',
@@ -34,7 +37,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
     olGeometryType: OlGeometryType;
 
     isDrawingActive = false;
-    olFeatureWriter = new OlFormatWKT();
+    olFeatureWriter = new OlFormatGeoJson();
 
     featureLayerName = 'new feature layer';
 
@@ -120,25 +123,37 @@ export class OlDrawFeaturesComponent implements OnDestroy {
                 throw new UnexpectedResultType();
         }
 
-        let wkt = this.olFeatureWriter.writeFeatures(olSource.getFeatures(), {
+        resultSymbology.setTextAttribute('id');
+
+        const geoJson = this.olFeatureWriter.writeFeaturesObject(olSource.getFeatures(), {
             featureProjection: this.mapProjection.getCode(),
             dataProjection: Projections.WGS_84.getCode()
         });
 
-        // handle layers with only one input
-        if (olSource.getFeatures().length === 1) {
-            wkt = 'GEOMETRYCOLLECTION(' + wkt + ')';
+        // add `id` attribute to each feature
+        for (let i = 0; i < geoJson.features.length; ++i) {
+            geoJson.features[i].properties = {id: i + 1};
         }
 
-        const sourceType = new WKTSourceType({
-            wkt,
-            type: this.selectedFeatureType,
+        const dataUrl = `data:text/json,${encodeURIComponent(JSON.stringify(geoJson))}`;
+
+        const sourceType = new OgrRawSourceType({
+            filename: dataUrl,
+            time: 'none',
+            columns: {
+                numeric: ['id'],
+                textual: [],
+            },
+            on_error: 'abort',
         });
 
         const operator = new Operator({
             operatorType: sourceType,
             resultType: this.selectedFeatureType,
             projection: Projections.WGS_84,
+            attributes: ['id'],
+            dataTypes: ImmutableMap({id: DataTypes.UInt32}),
+            units: ImmutableMap({id: Unit.defaultUnit}),
         });
 
         const layer = new VectorLayer({
