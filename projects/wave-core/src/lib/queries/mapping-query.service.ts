@@ -56,14 +56,14 @@ export class MappingQueryService {
      * @param config.plotHeight [IMAGE ONLY] height for image plot request
      * @returns the query url
      */
-    getPlotQueryUrl(config: {
+    getPlotQueryRequestParameters(config: {
         operator: Operator,
         time: Time,
         extent: Extent,
         projection: Projection,
         plotWidth?: number,
         plotHeight?: number,
-    }): string {
+    }): MappingRequestParameters {
         // plot request with temporal information
         const request = new MappingRequestParameters({
             service: 'plot',
@@ -130,7 +130,7 @@ export class MappingQueryService {
             request.setParameter('query', encodeURIComponent(operator.toQueryJSON()));
         }
 
-        return this.config.MAPPING_URL + '?' + request.toMessageBody();
+        return request;
     }
 
     /**
@@ -145,7 +145,12 @@ export class MappingQueryService {
         plotWidth?: number,
         plotHeight?: number,
     }): Observable<PlotData> {
-        return this.http.get<PlotData>(this.getPlotQueryUrl(config));
+        const request = this.getPlotQueryRequestParameters(config);
+        return this.http.post<PlotData>(
+            this.config.MAPPING_URL,
+            request.toMessageBody(false),
+            {headers: request.getHeaders()},
+        );
     }
 
     /**

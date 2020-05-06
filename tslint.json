@@ -4,8 +4,15 @@
         "codelyzer"
     ],
     "rules": {
+        "align": {
+            "options": [
+                "parameters",
+                "statements"
+            ]
+        },
         "array-type": false,
         "arrow-parens": false,
+        "arrow-return-shorthand": true,
         "class-name": true,
         "comment-format": [
             true,
@@ -98,7 +105,6 @@
         "no-switch-case-fall-through": true,
         "no-trailing-whitespace": true,
         "no-unused-expression": true,
-        "no-use-before-declare": true,
         "no-var-keyword": true,
         "no-var-requires": false,
         "object-literal-key-quotes": [
@@ -123,6 +129,15 @@
             true,
             "always"
         ],
+        "space-before-function-paren": {
+            "options": {
+                "anonymous": "never",
+                "asyncArrow": "always",
+                "constructor": "never",
+                "method": "never",
+                "named": "never"
+            }
+        },
         "template-banana-in-box": true,
         "template-no-negated-async": true,
         "templates-use-public": true,
