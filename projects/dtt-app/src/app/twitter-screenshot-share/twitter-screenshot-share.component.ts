@@ -58,23 +58,24 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
         from(html2canvas(
             document.body, // use whole document
             {
-                ignoreElements: element => element.classList.contains('cdk-overlay-container'), // ignore overlay, i.e., this dialog
+                ignoreElements: element => {
+                    // ignore overlay, i.e., this dialog
+                    if (element.classList.contains('cdk-overlay-container')) {
+                        return true;
+                    }
+
+                    // stop rendering all `mat-icon`s without SVG children
+                    // TODO: allow once `foreignObjectRendering` is bug-free
+                    if (element.tagName === 'MAT-ICON' && element.childElementCount <= 0) {
+                        return true;
+                    }
+
+                    if (['wave-zoom-handles', 'wave-navigation'].includes(element.tagName.toLowerCase())) {
+                        return true;
+                    }
+                },
                 logging: false,
                 foreignObjectRendering: true,
-                onclone: document => {
-                    // TODO: stop rendering all `mat-icon`s individually once `foreignObjectRendering` is bug-free
-
-                    const matIcons = Array.from(document.getElementsByTagName('mat-icon'))
-                        .filter(matIcon => matIcon.childElementCount <= 0);
-
-                    for (const matIcon of matIcons) {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = matIcon.clientWidth;
-                        canvas.height = matIcon.clientHeight;
-
-                        matIcon.replaceWith(canvas);
-                    }
-                }
             },
         )).pipe(
             first(),
