@@ -5,7 +5,7 @@
 
 <ng-template #parameterSlider>
     <div>{{parameterDisplayString}}: {{parameterDisplayValue}}</div>
-    <mat-slider [min]="sliderRangeStart" [max]="sliderRangeStop" [step]="sliderRangeStep" [(value)]="sliderValue"
+    <mat-slider [min]="sliderRangeStart" [max]="sliderRangeStop" [step]="sliderRangeStep" [(value)]="sliderValue" [tickInterval]="1"
                 (change)="update($event)">
     </mat-slider>
 </ng-template>
