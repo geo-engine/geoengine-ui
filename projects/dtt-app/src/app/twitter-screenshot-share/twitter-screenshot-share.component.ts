@@ -104,7 +104,9 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
             },
             () => {
                 this.imageLoading.next(false);
-            });
+                setTimeout(() => this.changeDetectorRef.detectChanges());
+            }
+        );
     }
 
     tweet() {
@@ -133,6 +135,7 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
                 this.sendNotification = `Unable to send message via Twitter: »${error}«`;
                 this.sendNotificationStatus.next(SendNotificationStatus.ERROR);
             },
+            () => setTimeout(() => this.changeDetectorRef.detectChanges()),
         );
     }
 
