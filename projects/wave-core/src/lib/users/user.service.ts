@@ -431,7 +431,7 @@ export class UserService {
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
                                     source: sourceId,
-                                    name: (source.name) ? source.name : sourceId,
+                                    name: source.dataset_name ? source.dataset_name : (source.name ? source.name : sourceId),
                                     rasterLayer: sourceChannels,
                                     vectorLayer: sourceVectorLayer,
                                     provenance: sourceProvenance,

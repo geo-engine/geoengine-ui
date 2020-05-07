@@ -64,7 +64,8 @@ export interface MappingSource {
 
 export interface MappingSourceDict {
     operator?: string;
-    name: string;
+    name?: string;
+    dataset_name?: string;
     descriptionText?: string;
     imgUrl?: string;
     tags?: string[];
@@ -90,8 +91,8 @@ export interface MappingSourceRasterLayerDict {
     nodata: number;
     name?: string;
     unit?: UnitMappingDict;
-    methodology?: MappingRasterMethodology,
-        colorizer?: MappingRasterColorizerDict;
+    methodology?: MappingRasterMethodology;
+    colorizer?: MappingRasterColorizerDict;
     transform?: {
         unit?: UnitMappingDict,
         datatype: string,
