@@ -1,6 +1,13 @@
 {
-    "name": "wave-core",
+    "name": "@umr-dbs/wave-core",
     "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/umr-dbs/wave.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
     "peerDependencies": {
         "@angular/cdk": "~9.2.2",
         "@angular/common": "^9.1.4",
