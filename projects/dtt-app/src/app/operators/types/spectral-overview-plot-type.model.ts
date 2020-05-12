@@ -9,12 +9,14 @@ interface SpectralOverviewPlotTypeMappingDict extends OperatorTypeMappingDict {
 export interface SpectralOverviewPlotTypeDict extends OperatorTypeDict {
     instruments: Array<string>;
     waveLenghts: Array<number>;
+    idAttribute?: string;
     unit: UnitDict;
 }
 
 interface SpectralOverviewPlotTypeConfig {
     instruments: Array<string>;
     waveLenghts: Array<number>;
+    idAttribute?: string;
     unit: Unit;
 }
 
@@ -26,12 +28,14 @@ export class SpectralOverviewPlotType extends OperatorType {
     private readonly code: string;
     private readonly instruments: Array<string>;
     private readonly waveLenghts: Array<number>;
+    private readonly idAttribute: string | undefined;
     private readonly unit: Unit;
 
     static fromDict(dict: SpectralOverviewPlotTypeDict): SpectralOverviewPlotType {
         return new SpectralOverviewPlotType({
             instruments: dict.instruments,
             waveLenghts: dict.waveLenghts,
+            idAttribute: dict.idAttribute,
             unit: Unit.fromDict(dict.unit),
         });
     }
@@ -41,6 +45,7 @@ export class SpectralOverviewPlotType extends OperatorType {
 
         this.instruments = config.instruments;
         this.waveLenghts = config.waveLenghts;
+        this.idAttribute = config.idAttribute;
         this.unit = config.unit;
 
         const instrument_columns = 'c(' + this.instruments.map(text => JSON.stringify(text)).join(', ') + ')';
@@ -67,7 +72,8 @@ export class SpectralOverviewPlotType extends OperatorType {
                 #
                 for (i in 1:number_of_series) {
                     values <- c(values, as.numeric(pivot[i, 1:series_length]));
-                    markers <- c(markers, rep(toString(i), series_length));
+                    marker <- ${this.idAttribute ? `toString(points@data[['${this.idAttribute}']][[i]])` : 'toString(i)'};
+                    markers <- c(markers, rep(marker, series_length));
                 }
                 #
                 df <- data.frame(wave_length = wave_lengths, value = values, marker = markers);
@@ -117,6 +123,7 @@ export class SpectralOverviewPlotType extends OperatorType {
         return {
             operatorType: SpectralOverviewPlotType.TYPE,
             instruments: this.instruments,
+            idAttribute: this.idAttribute,
             waveLenghts: this.waveLenghts,
             unit: this.unit.toDict(),
         };

@@ -87,7 +87,7 @@ export interface OgrRawSourceTypeDict extends OperatorTypeDict {
  * The raster source type.
  */
 export class OgrRawSourceType extends OperatorType {
-    private static _TYPE = 'ogr_raw_source_with_time';
+    private static _TYPE = 'ogr_raw_source';
     private static _ICON_URL = OperatorType.createIconDataUrl(OgrRawSourceType._TYPE);
     private static _NAME = 'GDAL OGR Raw Source';
 

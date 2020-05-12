@@ -149,7 +149,7 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
             projection: pointLayer.operator.projection,
             pointSources: [pointLayer.operator],
             rasterSources,
-            attributes: channelNames,
+            attributes: pointLayer.operator.attributes.concat(channelNames),
             dataTypes,
             units,
         });
@@ -158,6 +158,8 @@ export class SpectralOverviewPlotComponent implements OnInit, OnDestroy {
             operatorType: new SpectralOverviewPlotType({
                 instruments: channelNames,
                 waveLenghts,
+                // TODO: create selection box for a user choice of a id attribute
+                idAttribute: rasterValueExtraction.attributes.contains('id') ? 'id' : undefined,
                 unit: units.values().next().value, // use unit of first raster
             }),
             resultType: ResultTypes.PLOT,
