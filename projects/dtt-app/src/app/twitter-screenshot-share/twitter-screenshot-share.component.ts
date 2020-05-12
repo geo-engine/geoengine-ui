@@ -58,10 +58,24 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
         from(html2canvas(
             document.body, // use whole document
             {
-                ignoreElements: element => element.classList.contains('cdk-overlay-container'), // ignore overlay, i.e., this dialog
+                ignoreElements: element => {
+                    // ignore overlay, i.e., this dialog
+                    if (element.classList.contains('cdk-overlay-container')) {
+                        return true;
+                    }
+
+                    // stop rendering all `mat-icon`s without SVG children
+                    // TODO: allow once `foreignObjectRendering` is bug-free
+                    if (element.tagName === 'MAT-ICON' && element.childElementCount <= 0) {
+                        return true;
+                    }
+
+                    if (['wave-zoom-handles', 'wave-navigation'].includes(element.tagName.toLowerCase())) {
+                        return true;
+                    }
+                },
                 logging: false,
-                allowTaint: true,
-                useCORS: true,
+                foreignObjectRendering: true,
             },
         )).pipe(
             first(),
@@ -90,7 +104,9 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
             },
             () => {
                 this.imageLoading.next(false);
-            });
+                setTimeout(() => this.changeDetectorRef.detectChanges());
+            }
+        );
     }
 
     tweet() {
@@ -119,6 +135,7 @@ export class TwitterScreenshotShareComponent implements OnInit, AfterViewInit {
                 this.sendNotification = `Unable to send message via Twitter: »${error}«`;
                 this.sendNotificationStatus.next(SendNotificationStatus.ERROR);
             },
+            () => setTimeout(() => this.changeDetectorRef.detectChanges()),
         );
     }
 
