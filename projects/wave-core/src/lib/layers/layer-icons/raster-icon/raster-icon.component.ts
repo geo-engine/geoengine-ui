@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
-import {IColorizerData} from '../colors/colorizer-data.model';
-import {Color} from '../colors/color';
+import {IColorizerData} from '../../../colors/colorizer-data.model';
+import {Color} from '../../../colors/color';
 
 interface Cell {
     xStart: number;

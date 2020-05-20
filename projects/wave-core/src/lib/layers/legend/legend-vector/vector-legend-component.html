@@ -1,22 +1,35 @@
 <div fxLayout="column">
     <div fxLayout="row" fxLayoutAlign="start center">
-        <mat-icon mat-list-icon [svgIcon]='symbology.symbologyIconName'
-                  [style.stroke-width.px]='symbology?.strokeWidth'
-                  [style.stroke]='symbology?.strokeRGBA.rgbaCssString()'
-                  [style.fill]='symbology?.fillRGBA.rgbaCssString()'
-                  [style.stroke-dasharray]='$any(symbology)?.strokeDashStyle'
-        ></mat-icon>
-        <span>Default color</span>
+        <mat-icon>
+            <ng-container [ngSwitch]="symbology.symbologyType">
+                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="symbology"></wave-point-icon>
+                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="symbology"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="symbology"></wave-polygon-icon>
+            </ng-container>
+        </mat-icon>
+        <span fxFlex>Default color</span>
     </div>
 
-    <div *ngFor='let brk of $any(symbology)?.breakpoints' fxLayoutAlign="start center">
-        <mat-icon mat-list-icon [svgIcon]='symbology.symbologyIconName'
-                  [style.stroke-width.px]='symbology.strokeWidth'
-                  [style.stroke]='symbology.strokeRGBA.rgbaCssString()'
-                  [style.fill]='brk.rgba.rgbaCssString()'
-                  [style.stroke-dasharray]='$any(symbology)?.strokeDashStyle'
-        ></mat-icon>
-        <span fxFlex>{{brk.value}}</span>
+    <div *ngFor="let iv of fillStyles" fxLayoutAlign="start center">
+        <mat-icon mat-list-icon>
+            <ng-container [ngSwitch]="symbology.symbologyType">
+                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>
+                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="iv.icon"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="iv.icon"></wave-polygon-icon>
+            </ng-container>
+        </mat-icon>
+        <span fxFlex>{{iv.value}}</span>
+    </div>
+
+    <div *ngFor="let iv of strokeStyles" fxLayoutAlign="start center">
+        <mat-icon mat-list-icon>
+            <ng-container [ngSwitch]="symbology.symbologyType">
+                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>
+                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="iv.icon"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="iv.icon"></wave-polygon-icon>
+            </ng-container>
+        </mat-icon>
+        <span fxFlex>{{iv.value}}</span>
     </div>
 
 </div>

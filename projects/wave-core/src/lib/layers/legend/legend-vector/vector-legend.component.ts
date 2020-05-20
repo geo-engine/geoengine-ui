@@ -1,13 +1,79 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {LegendComponent} from '../legend.component';
-import {AbstractVectorSymbology} from '../../symbology/symbology.model';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {SymbologyType, VectorSymbology} from '../../symbology/symbology.model';
+import {TRANSPARENT} from '../../../colors/color';
+
+import {PolygonIconStyle} from '../../layer-icons/polygon-icon/polygon-icon.component';
+import {PointIconStyle} from '../../layer-icons/point-icon/point-icon.component';
+import {LineIconStyle} from '../../layer-icons/line-icon/line-icon.component';
+
+interface IconValue {
+    icon: PointIconStyle | LineIconStyle | PolygonIconStyle;
+    value: string | number;
+}
 
 @Component({
     selector: 'wave-vector-legend',
     templateUrl: 'vector-legend-component.html',
     styleUrls: ['vector-legend.component.scss'],
-    inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VectorLegendComponent<S extends AbstractVectorSymbology> extends LegendComponent<S> {
+export class VectorLegendComponent<S extends VectorSymbology> implements OnChanges {
+
+    readonly ST = SymbologyType;
+
+    @Input()
+    symbology: S;
+    fillStyles: Array<IconValue> = [];
+    strokeStyles: Array<IconValue> = [];
+
+    constructor() {
+        this.updateStyles();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        this.updateStyles();
+    }
+
+    private updateStyles() {
+        this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
+        this.strokeStyles = VectorLegendComponent.strokeColorIconValue(this.symbology);
+    }
+
+
+    static fillColorIconValue(vectorSymbology: VectorSymbology): Array<IconValue> {
+        if (!vectorSymbology || !vectorSymbology.fillColorizer || !vectorSymbology.fillColorizer.breakpoints) {
+            return [];
+        }
+
+        return vectorSymbology.fillColorizer.breakpoints.map(b => {
+            return {
+                icon: {
+                    strokeWidth: vectorSymbology.strokeWidth,
+                    strokeDashStyle: (vectorSymbology.strokeDashStyle) ? vectorSymbology.strokeDashStyle : [],
+                    strokeRGBA: TRANSPARENT,
+                    fillRGBA: b.rgba,
+                },
+                value: b.value
+            };
+        });
+    }
+
+    static strokeColorIconValue(vectorSymbology: VectorSymbology): Array<IconValue> {
+        if (!vectorSymbology || !vectorSymbology.strokeColorizer || !vectorSymbology.strokeColorizer.breakpoints) {
+            return [];
+        }
+
+        return vectorSymbology.strokeColorizer.breakpoints.map(b => {
+            return {
+                icon: {
+                    strokeWidth: vectorSymbology.strokeWidth,
+                    strokeDashStyle: (vectorSymbology.strokeDashStyle) ? vectorSymbology.strokeDashStyle : [],
+                    strokeRGBA: b.rgba,
+                    fillRGBA: TRANSPARENT,
+                },
+                value: b.value
+            };
+        });
+    }
+
 }
