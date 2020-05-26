@@ -22,8 +22,13 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
     readonly ST = SymbologyType;
 
     @Input()
+    showDefaultStyle = true;
+
+    @Input()
     symbology: S;
+    fillColorAttribute: string | undefined;
     fillStyles: Array<IconValue> = [];
+    strokeColorAttribute: string | undefined;
     strokeStyles: Array<IconValue> = [];
 
     constructor() {
@@ -35,7 +40,9 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
     }
 
     private updateStyles() {
+        this.fillColorAttribute = (this.symbology && this.symbology.fillColorAttribute) ? this.symbology.fillColorAttribute : undefined;
         this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
+        this.strokeColorAttribute = (this.symbology && this.symbology.strokeColorAttribute) ? this.symbology.strokeColorAttribute : undefined;
         this.strokeStyles = VectorLegendComponent.strokeColorIconValue(this.symbology);
     }
 

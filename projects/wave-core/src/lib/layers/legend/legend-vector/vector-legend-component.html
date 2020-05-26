@@ -1,5 +1,5 @@
 <div fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="start center">
+    <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngIf="showDefaultStyle">
         <mat-icon>
             <ng-container [ngSwitch]="symbology.symbologyType">
                 <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="symbology"></wave-point-icon>
@@ -9,8 +9,11 @@
         </mat-icon>
         <span fxFlex>Default color</span>
     </div>
-
-    <div *ngFor="let iv of fillStyles" fxLayoutAlign="start center">
+    <div fxLayoutAlign="start center" class="segment segment_head">
+        <!--<span>Fill color for </span>-->
+        {{fillColorAttribute}}
+    </div>
+    <div *ngFor="let iv of fillStyles" fxLayoutAlign="start center" class="segment">
         <mat-icon mat-list-icon>
             <ng-container [ngSwitch]="symbology.symbologyType">
                 <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>
@@ -20,8 +23,11 @@
         </mat-icon>
         <span fxFlex>{{iv.value}}</span>
     </div>
-
-    <div *ngFor="let iv of strokeStyles" fxLayoutAlign="start center">
+    <div fxLayoutAlign="start center" class="segment segment_head">
+        <!--<span>Stroke color for </span>-->
+        {{strokeColorAttribute}}
+    </div>
+    <div *ngFor="let iv of strokeStyles" fxLayoutAlign="start center" class="segment">
         <mat-icon mat-list-icon>
             <ng-container [ngSwitch]="symbology.symbologyType">
                 <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>

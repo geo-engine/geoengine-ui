@@ -82,7 +82,7 @@ export class LayerListComponent implements OnDestroy {
         return this.projectService.getLayerChangesStream(layer).pipe(
             startWith(layer),
             filter((lc) => !!lc.symbology),
-            map((c) => layer.symbology)
+            map(() => layer.symbology)
         );
     }
 
