@@ -2,15 +2,13 @@ import {Observable, Subscription} from 'rxjs';
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
 import {LayoutService, SidenavConfig} from '../../layout.service';
-import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
+import {SymbologyType, AbstractSymbology, VectorSymbology} from '../symbology/symbology.model';
 import {RenameLayerComponent} from '../dialogs/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {LayerService} from '../layer.service';
 import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
-import {DomSanitizer} from '@angular/platform-browser';
 import {SourceOperatorListComponent} from '../../operators/dialogs/source-operator-list/source-operator-list.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {LayerExportComponent} from '../dialogs/layer-export/layer-export.component';
@@ -18,6 +16,7 @@ import {ProjectService} from '../../project/project.service';
 import {LayerShareComponent} from '../dialogs/layer-share/layer-share.component';
 import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
+import {filter, map, startWith} from 'rxjs/operators';
 
 @Component({
     selector: 'wave-layer-list',
@@ -52,26 +51,15 @@ export class LayerListComponent implements OnDestroy {
                 public projectService: ProjectService,
                 public layerService: LayerService,
                 public mapService: MapService,
-                private iconRegistry: MatIconRegistry,
-                private sanitizer: DomSanitizer,
                 public config: Config,
                 public changeDetectorRef: ChangeDetectorRef) {
-        iconRegistry.addSvgIconInNamespace('symbology', 'polygon',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/polygon_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology', 'line',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/line_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology', 'point',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/point_24.svg'));
-        iconRegistry.addSvgIconInNamespace('symbology', 'grid4',
-            sanitizer.bypassSecurityTrustResourceUrl('assets/icons/grid4_24.svg'));
-
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
         this.subscriptions.push(this.projectService.getLayerStream().subscribe(layerList => {
             if (layerList !== this.layerList) {
                 this.layerList = layerList;
-                this.changeDetectorRef.markForCheck();
             }
+            this.changeDetectorRef.markForCheck();
         }));
 
         this.mapIsGrid$ = this.mapService.isGrid$;
@@ -88,6 +76,18 @@ export class LayerListComponent implements OnDestroy {
 
     toggleLayer(layer: Layer<AbstractSymbology>) {
         this.projectService.toggleSymbology(layer);
+    }
+
+    getLayerSymbologyStream<T extends AbstractSymbology>(layer: Layer<T>): Observable<T> {
+        return this.projectService.getLayerChangesStream(layer).pipe(
+            startWith(layer),
+            filter((lc) => !!lc.symbology),
+            map(() => layer.symbology)
+        );
+    }
+
+    vectorLayerCast(layer: Layer<AbstractSymbology>): Layer<VectorSymbology> {
+        return layer as Layer<VectorSymbology>;
     }
 
     showChannelParameterSlider(layer: Layer<AbstractSymbology>): boolean {

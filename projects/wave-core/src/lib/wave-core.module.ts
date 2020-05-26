@@ -83,7 +83,6 @@ import {
 } from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 import {LayerShareComponent} from './layers/dialogs/layer-share/layer-share.component';
 import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
-import {PointLegendComponent} from './layers/legend/legend-point/point-legend.component';
 import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LegendComponent} from './layers/legend/legend.component';
@@ -114,7 +113,7 @@ import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
-import {RasterIconComponent} from './raster-icon/raster-icon.component';
+import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
 import {RasterPolygonClipOperatorComponent} from './operators/dialogs/raster-polygon-clip/raster-polygon-clip.component';
 import {RasterValueExtractionOperatorComponent} from './operators/dialogs/raster-value-extraction/raster-value-extraction.component';
 import {RenameLayerComponent} from './layers/dialogs/rename-layer.component';
@@ -164,6 +163,9 @@ import {HelpDataComponent} from './help/data/help-data.component';
 import {HelpOperatorsComponent} from './help/operators/help-operators.component';
 import {HelpLineageComponent} from './help/lineage/help-lineage.component';
 import {HelpExportComponent} from './help/export/help-export.component';
+import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
+import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
+import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -288,7 +290,6 @@ const WAVE_PIPES = [
         PlotDetailViewComponent,
         PlotListComponent,
         PointInPolygonFilterOperatorComponent,
-        PointLegendComponent,
         ProvenanceListComponent,
         RasterIconComponent,
         RasterLegendComponent,
@@ -328,7 +329,10 @@ const WAVE_PIPES = [
         WorkflowParameterChoiceDialogComponent,
         WorkspaceSettingsComponent,
         ZoomHandlesComponent,
-        StrokeDashSelectComponent
+        StrokeDashSelectComponent,
+        PointIconComponent,
+        LineIconComponent,
+        PolygonIconComponent,
     ],
     imports: [
         ColorPickerModule,
