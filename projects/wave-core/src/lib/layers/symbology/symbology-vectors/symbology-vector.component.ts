@@ -72,14 +72,14 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     setFillColorizerAttribute() {
         if (this.fillByAttribute && this.fillColorAttribute) {
-            this.symbology.setFillColorAttribute(this.fillColorAttribute.name);
+            this.symbology.setFillColorAndAttribute(this.fillColorAttribute.name);
             this.symbology.fillColorizer.clear();
             this.symbology.fillColorizer.addBreakpoint({
                 rgba: this.symbology.fillRGBA,
                 value: (this.fillColorAttribute.type === 'number') ? 0 : '',
             });
         } else {
-            this.symbology.unSetFillColorAttribute();
+            this.symbology.clearFillColorAndAttribute();
         }
     }
 
@@ -106,14 +106,14 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     setStrokeColorizerAttribute() {
         if (this.strokeByAttribute && this.strokeColorAttribute) {
-            this.symbology.setStrokeColorAttribute(this.strokeColorAttribute.name);
+            this.symbology.setStrokeColorAndAttribute(this.strokeColorAttribute.name);
             this.symbology.strokeColorizer.clear();
             this.symbology.strokeColorizer.addBreakpoint({
                 rgba: this.symbology.strokeRGBA,
                 value: (this.strokeColorAttribute.type === 'number') ? 0 : '',
             });
         } else {
-            this.symbology.unSetStrokeColorAttribute();
+            this.symbology.clearStrokeColorAndAttribute();
         }
     }
 
@@ -126,9 +126,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     setRadiusAttribute() {
         if (this.symbology instanceof PointSymbology) {
             if (this.radiusByAttribute && this.radiusAttribute) {
-                this.symbology.setRadiusAttribute(this.radiusAttribute.name);
+                this.symbology.setRadiusAttributeAndFactor(this.radiusAttribute.name);
             } else {
-                this.symbology.unSetRadiusAttribute();
+                this.symbology.clearRadiusAttribute();
 
             }
             this.update();
@@ -142,9 +142,9 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     setTextAttribute() {
         if (this.textByAttribute && this.textAttribute) {
-            this.symbology.setTextAttribute(this.textAttribute.name);
+            this.symbology.textAttribute = this.textAttribute.name;
         } else {
-            this.symbology.unSetTextAttribute();
+            this.symbology.clearTextAttribute();
         }
         this.update();
     }
@@ -213,7 +213,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     updateStrokeDash(sds: StrokeDashStyle) {
         if (!!sds && sds !== this.symbology.strokeDashStyle) {
-            this.symbology.setStrokeDashStyle(sds);
+            this.symbology.strokeDashStyle = sds;
             this.update();
         }
     }
@@ -235,14 +235,14 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     updateFill(fill: ColorBreakpoint) {
         if (fill && fill !== this.symbology.fillColorBreakpoint) {
-            this.symbology.setFillColorBreakpoint(fill);
+            this.symbology.fillColorBreakpoint = fill;
             this.update();
         }
     }
 
     updateStroke(stroke: ColorBreakpoint) {
         if (stroke && stroke !== this.symbology.strokeColorBreakpoint) {
-            this.symbology.setStrokeColorBreakpoint(stroke);
+            this.symbology.strokeColorBreakpoint = stroke;
             this.update();
         }
     }

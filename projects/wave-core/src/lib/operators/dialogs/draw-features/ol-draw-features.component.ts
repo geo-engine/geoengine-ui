@@ -123,7 +123,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
                 throw new UnexpectedResultType();
         }
 
-        resultSymbology.setTextAttribute('id');
+        resultSymbology.textAttribute = 'id';
 
         const geoJson = this.olFeatureWriter.writeFeaturesObject(olSource.getFeatures(), {
             featureProjection: this.mapProjection.getCode(),
