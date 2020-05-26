@@ -28,6 +28,9 @@ import {Config} from '../../../config.service';
 import {MatSliderChange} from '@angular/material/slider';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
+/**
+ * The symbology editor component for raster data which is colorized by the mapping backend.
+ */
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',
     templateUrl: 'symbology-raster-mapping-colorizer.component.html',
@@ -41,10 +44,15 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
 
     symbology: MappingRasterSymbology;
 
+    // The min value used for color table generation
     layerMinValue: number | undefined = undefined;
+    // The max value used for color table generation
     layerMaxValue: number | undefined = undefined;
+    // A subject with the histogram data of the current layer view
     layerHistogramData$: ReplaySubject<HistogramData> = new ReplaySubject(1);
+    // Subject indicating if the histogram is still processing
     layerHistogramDataLoading$ = new BehaviorSubject(false);
+    // Histogram auto reload enabled / disabled
     layerHistogramAutoReloadEnabled = true;
     private layerHistogramDataSubscription: Subscription = undefined;
 
@@ -56,52 +64,79 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     ) {
     }
 
+    /**
+     * Set the max value to use for color table generation
+     */
     updateLayerMinValue(min: number) {
         if (this.layerMinValue !== min) {
             this.layerMinValue = min;
         }
     }
 
+    /**
+     * Set the max value to use for color table generation
+     */
     updateLayerMaxValue(max: number) {
         if (this.layerMaxValue !== max) {
             this.layerMaxValue = max;
         }
     }
 
+    /**
+     * Set the opacity value from a slider change event
+     */
     updateOpacity(event: MatSliderChange) {
         this.symbology.opacity = (event.value === undefined || event.value === 0) ? 0 : event.value / 100;
         this.update();
     }
 
-    updateOverflowColor(event: ColorBreakpoint) {
-        if (event) {
-            this.symbology.overflowColor = event;
+    /**
+     * Set the overflow color
+     */
+    updateOverflowColor(colorBreakpoint: ColorBreakpoint) {
+        if (colorBreakpoint) {
+            this.symbology.overflowColor = colorBreakpoint;
             this.update();
         }
     }
 
-    updateNoDataColor(event: ColorBreakpoint) {
-        if (event) {
-            this.symbology.noDataColor = event;
+    /**
+     * Set the no data color
+     */
+    updateNoDataColor(colorBreakpoint: ColorBreakpoint) {
+        if (colorBreakpoint) {
+            this.symbology.noDataColor = colorBreakpoint;
             this.update();
         }
     }
 
-    updateColorizer(event: ColorizerData) {
-        if (event) {
-            this.symbology.colorizer = event;
+    /**
+     * Set the symbology colorizer
+     */
+    updateColorizer(colorizerData: ColorizerData) {
+        if (colorizerData) {
+            this.symbology.colorizer = colorizerData;
             this.update();
         }
     }
 
+    /**
+     * Access the current colorizer min value. May be undefined.
+     */
     get colorizerMinValue(): number | undefined {
         return this.symbology.colorizer.firstBreakpoint.value as number;
     }
 
+    /**
+     * Access the current colorizer max value. May be undefined.
+     */
     get colorizerMaxValue(): number | undefined {
         return this.symbology.colorizer.lastBreakpoint.value as number;
     }
 
+    /**
+     * Sets the current (working) symbology to the one of the current layer.
+     */
     updateSymbologyFromLayer() {
         if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
             return;
@@ -109,12 +144,23 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         this.symbology = this.layer.symbology;
     }
 
+    /**
+     * Sets the layer min/max values from the colorizer.
+     */
     updateLayerMinMaxFromColorizer() {
         this.updateLayerMaxValue(this.colorizerMinValue);
         this.updateLayerMaxValue(this.colorizerMaxValue);
     }
 
-    update() {
+    /**
+     * Update the histogram auto reload setting.
+     * @param event contains a checked: boolean value.
+     */
+    updateHistogramAutoReload(event: MatSlideToggleChange) {
+        this.layerHistogramAutoReloadEnabled = event.checked;
+    }
+
+    private update() {
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
@@ -151,11 +197,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         this.layerHistogramDataSubscription.unsubscribe();
     }
 
-    updateHistogramAutoReload(event: MatSlideToggleChange) {
-        this.layerHistogramAutoReloadEnabled = event.checked;
-    }
-
-    reinitializeLayerHistogramDataSubscription() {
+    private reinitializeLayerHistogramDataSubscription() {
         if (this.layerHistogramDataSubscription) {
             this.layerHistogramDataSubscription.unsubscribe();
         }

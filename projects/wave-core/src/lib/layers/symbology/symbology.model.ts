@@ -4,12 +4,15 @@ import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../c
 import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
 import {Colormap} from '../../colors/colormaps/colormap.model';
 
+/**
+ * List of the symbology types used in WAVE
+ */
 export enum SymbologyType {
-    RASTER,
-    SIMPLE_POINT,
-    CLUSTERED_POINT,
-    SIMPLE_LINE,
-    SIMPLE_VECTOR,
+    RASTER, // UNUSED
+    SIMPLE_POINT, // DEPRECATED
+    CLUSTERED_POINT, // DEPRECATED
+    SIMPLE_LINE, // DEPRECATED
+    SIMPLE_VECTOR, // DEPRECATED
     MAPPING_COLORIZER_RASTER,
     ICON_POINT, // RESERVED
     COMPLEX_POINT,
@@ -17,6 +20,7 @@ export enum SymbologyType {
     COMPLEX_LINE
 }
 
+// List of constants used by layer symbology.
 export const DEFAULT_VECTOR_STROKE_COLOR: Color = Color.fromRgbaLike([0, 0, 0, 1]);
 export const DEFAULT_VECTOR_FILL_COLOR: Color = Color.fromRgbaLike([255, 0, 0, 1]);
 export const DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
@@ -42,9 +46,14 @@ export interface ISymbology {
 
 export type StrokeDashStyle = Array<number>;
 
-// TODO: Clean up...
+/**
+ * The abstract symbology class with common methods.
+ */
 export abstract class AbstractSymbology implements ISymbology {
 
+    /**
+     * Deserialization logic to generate *Symbology from SymbologyDict.
+     */
     static fromDict(
         dict: SymbologyDict
     ): AbstractSymbology {
@@ -91,6 +100,9 @@ export abstract class AbstractSymbology implements ISymbology {
     abstract toDict(): SymbologyDict;
 }
 
+/**
+ * Configuration interface with optional fields for VectorSymbology.
+ */
 export interface VectorSymbologyConfig extends ISymbology {
     fillRGBA?: RgbaLike;
     strokeRGBA?: RgbaLike;
@@ -105,6 +117,9 @@ export interface VectorSymbologyConfig extends ISymbology {
     textStrokeWidth?: number;
 }
 
+/**
+ * Serialzation interface for VectorSymbology.
+ */
 interface VectorSymbologyDict extends SymbologyDict {
     fillRGBA: RgbaTuple;
     strokeRGBA: RgbaTuple;
@@ -119,24 +134,41 @@ interface VectorSymbologyDict extends SymbologyDict {
     textStrokeWidth: number;
 }
 
+/**
+ * The abstract VectorSymbology class.
+ */
 export abstract class AbstractVectorSymbology extends AbstractSymbology {
-    _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
-    _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'});
-    strokeWidth = 1;
+    private _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
+    private _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint(
+        {rgba: DEFAULT_VECTOR_STROKE_COLOR, value: 'Default stroke color'}
+    );
 
+    // common vector symbology fill
     fillColorizer: ColorizerData;
     fillColorAttribute: string = undefined;
+    // common vector symbology stroke
+    strokeWidth = 1;
     strokeColorizer: ColorizerData;
     strokeColorAttribute: string = undefined;
     strokeDashStyle: StrokeDashStyle = undefined;
+    // common vector symbology text attribute
     textAttribute: string = undefined;
     textColor: Color = undefined;
     textStrokeWidth: number = undefined;
 
+    /**
+     * Returns true if the symbology describes filled objects.
+     */
     abstract describesElementFill(): boolean;
 
+    /**
+     * Returns true if the symbology describes elements with stroke.
+     */
     abstract describesElementStroke(): boolean;
 
+    /**
+     * Returns true if the symbology describes points with radius.
+     */
     abstract describesPointsWithRadius(): boolean;
 
     public get symbologyIconName(): string {
