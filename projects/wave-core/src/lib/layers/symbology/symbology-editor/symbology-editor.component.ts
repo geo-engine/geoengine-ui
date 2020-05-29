@@ -53,7 +53,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     }
 
     /**
-     * indicates if the current layer is a valid layer.
+     * Indicates if the current layer is a valid layer
      */
     get isValidLayer(): boolean {
         return !!this.layer && !!this.layer.symbology && !!this.validLayers.find(x => x === this.layer);
