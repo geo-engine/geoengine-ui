@@ -23,6 +23,9 @@ import {DataTypes} from '../../datatype.model';
 import {Map as ImmutableMap} from 'immutable';
 import {Unit} from '../../unit.model';
 
+/**
+ * The feature draw component. Together with the MapService it allows to add new fueatures by drawing them on the map.
+ */
 @Component({
     selector: 'wave-ol-draw-features',
     templateUrl: './ol-draw-features.component.html',
@@ -32,16 +35,22 @@ import {Unit} from '../../unit.model';
 
 export class OlDrawFeaturesComponent implements OnDestroy {
 
+    // the list of supported feature types
     featureTypes = [ResultTypes.POLYGONS, ResultTypes.POINTS, ResultTypes.LINES];
+    // the current feature type
     selectedFeatureType: ResultType;
+    // the corresponding open layers geometry type
     olGeometryType: OlGeometryType;
 
     isDrawingActive = false;
+    // the open layers feature writer - we use GeoJson
     olFeatureWriter = new OlFormatGeoJson();
 
     featureLayerName = 'new feature layer';
 
+    // the projection of the map
     mapProjection: Projection;
+    // a subscription providing the map projection and updates if it changes
     mapProjectionSubscription: Subscription;
 
     constructor(

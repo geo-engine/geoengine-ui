@@ -2,6 +2,9 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChan
 import {StrokeDashStyle} from '../../symbology/symbology.model';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 
+/**
+ * A simple interface to specify the style of a point icon
+ */
 export interface PointIconStyle {
     strokeWidth: number;
     strokeDashStyle: StrokeDashStyle;
@@ -9,6 +12,9 @@ export interface PointIconStyle {
     fillRGBA: Color;
 }
 
+/**
+ * The point icon component
+ */
 @Component({
     selector: 'wave-point-icon',
     templateUrl: './point-icon.component.svg',
@@ -17,9 +23,9 @@ export interface PointIconStyle {
 })
 export class PointIconComponent implements OnInit, OnChanges {
 
+    // the style to use for the icon
     @Input()
     iconStyle: PointIconStyle;
-
     strokeWidth = 2;
     strokeDashArray: Array<number> = [];
     strokeColor = BLACK.rgbaCssString();

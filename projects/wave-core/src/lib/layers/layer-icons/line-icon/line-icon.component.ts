@@ -2,12 +2,18 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, OnChan
 import {StrokeDashStyle} from '../../symbology/symbology.model';
 import {BLACK, Color} from '../../../colors/color';
 
+/**
+ * A simple interface to specify the style of a line icon.
+ */
 export interface LineIconStyle {
     strokeWidth: number;
     strokeDashStyle: StrokeDashStyle;
     strokeRGBA: Color;
 }
 
+/**
+ * The line icon component
+ */
 @Component({
     selector: 'wave-line-icon',
     templateUrl: './line-icon.component.svg',
@@ -16,6 +22,7 @@ export interface LineIconStyle {
 })
 export class LineIconComponent implements OnInit, OnChanges {
 
+    // the style to use for the icon
     @Input()
     iconStyle: LineIconStyle;
     strokeWidth = 2;
