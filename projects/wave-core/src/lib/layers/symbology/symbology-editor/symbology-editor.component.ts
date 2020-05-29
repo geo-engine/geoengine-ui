@@ -8,7 +8,7 @@ import {Config} from '../../../config.service';
 
 /**
  * The symbology editor component takes a Layer as input and provides multiple ways to change its symbology.
- * Changes are send to the ProjectService.
+ * Changes are sent to the ProjectService.
  */
 @Component({
     selector: 'wave-symbology-editor',
