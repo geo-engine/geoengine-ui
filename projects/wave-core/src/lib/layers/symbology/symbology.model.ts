@@ -52,7 +52,7 @@ export type StrokeDashStyle = Array<number>;
 export abstract class AbstractSymbology implements ISymbology {
 
     /**
-     * Deserialization logic to generate *Symbology from SymbologyDict.
+     * Deserialization logic to generate any Symbology from SymbologyDict.
      */
     static fromDict(
         dict: SymbologyDict
