@@ -434,7 +434,7 @@ export class VectorSymbology extends AbstractVectorSymbology implements VectorSy
 }
 
 /**
- * The PointSymbology class.
+ * A class that contains properties for drawing points
  */
 export class PointSymbology extends AbstractVectorSymbology implements PointSymbologyConfig {
 
