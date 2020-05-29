@@ -29,7 +29,7 @@ import {MatSliderChange} from '@angular/material/slider';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 /**
- * The symbology editor component for raster data which is colorized by the mapping backend.
+ * The symbology editor component for raster data, which is colorized by the mapping backend
  */
 @Component({
     selector: 'wave-symbology-raster-mapping-colorizer',

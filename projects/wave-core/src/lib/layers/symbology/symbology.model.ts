@@ -52,7 +52,7 @@ export type StrokeDashStyle = Array<number>;
 export abstract class AbstractSymbology implements ISymbology {
 
     /**
-     * Deserialization logic to generate *Symbology from SymbologyDict.
+     * Deserialization logic to generate any Symbology from SymbologyDict.
      */
     static fromDict(
         dict: SymbologyDict
@@ -359,7 +359,7 @@ interface PointSymbologyDict extends VectorSymbologyDict {
 }
 
 /**
- * The LineSymbology class.
+ * A class that contains properties for drawing lines
  */
 export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
     protected constructor(config: VectorSymbologyConfig) {
@@ -396,7 +396,7 @@ export class LineSymbology extends AbstractVectorSymbology implements VectorSymb
 }
 
 /**
- * The VectorSymbology class.
+ * A class that contains properties for drawing vectors such as polygons
  */
 export class VectorSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
 
@@ -434,7 +434,7 @@ export class VectorSymbology extends AbstractVectorSymbology implements VectorSy
 }
 
 /**
- * The PointSymbology class.
+ * A class that contains properties for drawing points
  */
 export class PointSymbology extends AbstractVectorSymbology implements PointSymbologyConfig {
 

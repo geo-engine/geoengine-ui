@@ -8,7 +8,7 @@ import {Config} from '../../../config.service';
 
 /**
  * The symbology editor component takes a Layer as input and provides multiple ways to change its symbology.
- * Changes are send to the ProjectService.
+ * Changes are sent to the ProjectService.
  */
 @Component({
     selector: 'wave-symbology-editor',
@@ -53,7 +53,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     }
 
     /**
-     * indicates if the current layer is a valid layer.
+     * Indicates if the current layer is a valid layer
      */
     get isValidLayer(): boolean {
         return !!this.layer && !!this.layer.symbology && !!this.validLayers.find(x => x === this.layer);
