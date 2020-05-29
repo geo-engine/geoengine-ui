@@ -396,7 +396,7 @@ export class LineSymbology extends AbstractVectorSymbology implements VectorSymb
 }
 
 /**
- * The VectorSymbology class.
+ * A class that contains properties for drawing vectors such as polygons
  */
 export class VectorSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
 
