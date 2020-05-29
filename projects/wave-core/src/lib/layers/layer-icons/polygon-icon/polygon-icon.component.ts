@@ -2,6 +2,9 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, OnChan
 import {StrokeDashStyle} from '../../symbology/symbology.model';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 
+/**
+ * A simple interface to specify the style of a polygon icon
+ */
 export interface PolygonIconStyle {
     strokeWidth: number;
     strokeDashStyle: StrokeDashStyle;
@@ -9,6 +12,9 @@ export interface PolygonIconStyle {
     fillRGBA: Color;
 }
 
+/**
+ * The polygon icon component
+ */
 @Component({
     selector: 'wave-polygon-icon',
     templateUrl: './polygon-icon.component.svg',
@@ -17,9 +23,9 @@ export interface PolygonIconStyle {
 })
 export class PolygonIconComponent implements OnInit, OnChanges {
 
+    // the style to use for the icon
     @Input()
     iconStyle: PolygonIconStyle;
-
     strokeWidth = 2;
     strokeDashArray: Array<number> = [];
     strokeColor = BLACK.rgbaCssString();

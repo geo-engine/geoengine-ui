@@ -18,6 +18,9 @@ import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {filter, map, startWith} from 'rxjs/operators';
 
+/**
+ * The layer list component displays active layers, legends and other controlls.
+ */
 @Component({
     selector: 'wave-layer-list',
     templateUrl: './layer-list.component.html',
@@ -26,14 +29,33 @@ import {filter, map, startWith} from 'rxjs/operators';
 })
 export class LayerListComponent implements OnDestroy {
 
+    /**
+     * The desired height of the list
+     */
     @Input() height: number;
+
+    /**
+     * The empty list shows a button to trigger the generation of a first layer.
+     * This sidenav config is called to present a date listing or a similar dialog in the sidenav.
+     */
     @Input() addAFirstLayerSidenavConfig: SidenavConfig = {component: SourceOperatorListComponent};
 
+    /**
+     * sends if the layerlist should be visible
+     */
     readonly layerListVisibility$: Observable<boolean>;
+
+    /**
+     * sends if the map should be a grid (or else a single map)
+     */
     readonly mapIsGrid$: Observable<boolean>;
+
+    /**
+     * The list of layers displayed in the layer list
+     */
     layerList: Array<Layer<AbstractSymbology>> = [];
 
-    // make visible in template
+    // make ENUMS and classes visible in the template
     readonly LayoutService = LayoutService;
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
@@ -44,8 +66,12 @@ export class LayerListComponent implements OnDestroy {
     readonly SourceOperatorListComponent = SourceOperatorListComponent;
     readonly SymbologyEditorComponent = SymbologyEditorComponent;
 
+    // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
 
+    /**
+     * The component constructor. It injects angular and wave services.
+     */
     constructor(public dialog: MatDialog,
                 public layoutService: LayoutService,
                 public projectService: ProjectService,
@@ -69,15 +95,24 @@ export class LayerListComponent implements OnDestroy {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
 
+    /**
+     * the drop method is used by the dran and drop feature of the list
+     */
     drop(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.layerList, event.previousIndex, event.currentIndex);
         this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
     }
 
+    /**
+     * select a layer
+     */
     toggleLayer(layer: Layer<AbstractSymbology>) {
         this.projectService.toggleSymbology(layer);
     }
 
+    /**
+     * method to get the symbology stream of a layer. This is used by the icons and legend components.
+     */
     getLayerSymbologyStream<T extends AbstractSymbology>(layer: Layer<T>): Observable<T> {
         return this.projectService.getLayerChangesStream(layer).pipe(
             startWith(layer),
@@ -86,6 +121,9 @@ export class LayerListComponent implements OnDestroy {
         );
     }
 
+    /**
+     * helper method to cast AbstractSymbology to VectorSymbology
+     */
     vectorLayerCast(layer: Layer<AbstractSymbology>): Layer<VectorSymbology> {
         return layer as Layer<VectorSymbology>;
     }

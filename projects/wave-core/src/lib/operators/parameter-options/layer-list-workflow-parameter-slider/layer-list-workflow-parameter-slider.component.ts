@@ -5,6 +5,10 @@ import {AbstractParameterContainer, ParameterContainerType, ParameterName} from 
 import {ProjectService} from '../../../project/project.service';
 import {ParameterValue} from '../../operator-type.model';
 
+/**
+ * A component which allows to change operator parameters using a slider.
+ * Inputs are the layer, the parameter name and a display name for the parameter.
+ */
 @Component({
     selector: 'wave-layer-list-workflow-parameter-slider',
     templateUrl: 'layer-list-workflow-parameter-slider.component.html',
@@ -13,16 +17,29 @@ import {ParameterValue} from '../../operator-type.model';
 })
 export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbology> implements OnChanges, OnInit {
 
+    /**
+     * The layer which is updated
+     */
     @Input() layer: Layer<L>;
+    /**
+     * The layer parameter to update
+     */
     @Input() parameterName: ParameterName;
+    /**
+     * The layer parameter display name
+     */
     @Input() parameterDisplayName = undefined;
 
+    // The changes by slider concept requires a range (start, stop, step) of parameters.
     sliderRangeStart = 0;
     sliderRangeStop = 0;
     sliderRangeStep = 1;
+    // The current slider value
     sliderValue = 0;
 
+    // the parameter option provider
     parameterOptionContainer: ParameterContainerType;
+    // the selected parameter option value
     parameterValue: ParameterValue;
 
     constructor(
@@ -61,7 +78,7 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
         return !!this.parameterOptionContainer && this.parameterOptionContainer.hasTicks();
     }
 
-    updateParameterOptions() {
+    private updateParameterOptions() {
         if (this.layer && this.layer.operator && this.layer.operator.operatorType && this.layer.operator.operatorTypeParameterOptions) {
             const currentParameterValue = this.layer.operator.operatorType.getParameterValue(this.parameterName);
             const currentParameterOptionContainer = this.layer.operator.operatorTypeParameterOptions.getParameterOption(this.parameterName);
@@ -75,14 +92,25 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
         }
     }
 
+    /**
+     * The main update method of the component is called from the template when the slider changes.
+     */
     update(event: any) {
+        // to update an operator, a dict with type options is generated.
         const operatorTypeOptions = {};
+
+        // set the parameterName entry to the value of the current slider tick.
         operatorTypeOptions[this.parameterName] = this.parameterOptionContainer.getValueForTick(this.sliderValue);
+
+        // clone the operatorType (this is the mapping operator) and apply the modifications from the options dict.
         const operatorTypeClone = this.layer.operator.operatorType.cloneWithModifications(operatorTypeOptions);
+
+        // clone the operator with the new operator type supplied as modification.
         const operatorClone = this.layer.operator.cloneWithModifications({
             operatorType: operatorTypeClone
         });
 
+        // clone the layer with the new operator as modification.
         const layerCloneOptions = {
             operator: operatorClone
         };
@@ -91,6 +119,7 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
             layerCloneOptions['name'] = this.parameterOptionContainer.getDisplayValueForTick(this.sliderValue);
         }
 
+        // submitt the changes to the project service.
         this.projectService.changeLayer(this.layer, layerCloneOptions);
     }
 

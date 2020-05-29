@@ -2,6 +2,9 @@ import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChan
 import {IColorizerData} from '../../../colors/colorizer-data.model';
 import {Color} from '../../../colors/color';
 
+/**
+ * a simple interface to model a cell in the raster icon
+ */
 interface Cell {
     xStart: number;
     yStart: number;
@@ -10,6 +13,9 @@ interface Cell {
     colorString: string;
 }
 
+/**
+ * The raster icon component displays colored cells to visualize the raster style
+ */
 @Component({
     selector: 'wave-raster-icon',
     templateUrl: './raster-icon.component.svg',
@@ -18,20 +24,20 @@ interface Cell {
 })
 export class RasterIconComponent implements OnInit, OnChanges {
 
+    // number of cells in x and y direction
     @Input() xCells: number;
     @Input() yCells: number;
+    // the raster style used to color the icon
     @Input() colorizer: IColorizerData;
 
+    /**
+     * the array of generated (colored and positioned) cells.
+     */
     cells: Array<Cell>;
-    cellSpace = 24; // This is the number of pixels used for the icon
-
-    constructor() {
-    }
-
-    cell(x: number, y: number): Cell {
-        const idx = this.xCells * y + x;
-        return this.cells[idx];
-    }
+    /**
+     * This is the number of pixels used for the icon
+     */
+    cellSpace = 24;
 
     ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         this.generateCells(this.xCells, this.yCells);
@@ -41,6 +47,9 @@ export class RasterIconComponent implements OnInit, OnChanges {
         this.generateCells(this.xCells, this.yCells);
     }
 
+    /**
+     * generates an array of cell descriptors which are used by the template
+     */
     generateCells(xCells: number, yCells: number) {
         this.cells = new Array<Cell>(xCells * yCells);
         for (let y = 0; y < this.yCells; y++) {
@@ -57,7 +66,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
         }
     }
 
-    cellColor(x: number, y: number): Color {
+    private cellColor(x: number, y: number): Color {
 
         const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
         if (!validSymbology) {
