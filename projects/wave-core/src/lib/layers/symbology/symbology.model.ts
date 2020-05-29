@@ -359,7 +359,7 @@ interface PointSymbologyDict extends VectorSymbologyDict {
 }
 
 /**
- * The LineSymbology class.
+ * A class that contains properties for drawing lines
  */
 export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
     protected constructor(config: VectorSymbologyConfig) {
