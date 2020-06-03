@@ -47,6 +47,9 @@ interface Slider {
     position: number;
 }
 
+/**
+ * This component displays a histogram plot response as a d3 graph.
+ */
 @Component({
     selector: 'wave-histogram',
     templateUrl: `histogram.component.html`,
@@ -55,24 +58,76 @@ interface Slider {
 })
 export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
     @ViewChild('svg', {static: true}) svgRef: ElementRef;
+
+    /**
+     * The histogram data from the backend response
+     */
     @Input() data: HistogramData;
+
+    /**
+     * The height of the plot
+     */
     @Input() height: number;
+
+    /**
+     * The width of the plot
+     */
     @Input() width: number;
+
+    /**
+     * A scaling factor for width and height
+     */
     @Input() viewBoxRatio = 1;
+
+    /**
+     * If set to true, users can select an interval within the histogram
+     */
     @Input() selectable = false;
+
+    /**
+     * If set to true, users can zoom and pan within the graph
+     */
     @Input() interactable = false;
+
+    /**
+     * If set to true, the component will call its event emitter upfront
+     */
     @Input() emmitInitialDataMinMax = false;
+
+    /**
+     * If set to true, the component will react on resize events of the browser and redraw automatically.
+     */
     @Input() autoResize = false;
+
+    /**
+     * Specify the minimum of the selection interval
+     */
     @Input() minRange: number = undefined;
+
+    /**
+     * Emit events when the user selection (min) changes
+     */
     @Output() minRangeChange = new EventEmitter<number>();
+
+    /**
+     * Specify the maximum of the selection interval
+     */
     @Input() maxRange: number = undefined;
+
+    /**
+     * Emit events when the user selection (max) changes
+     */
     @Output() maxRangeChange = new EventEmitter<number>();
+
     private leftSlider: Slider;
     private rightSlider: Slider;
     private xAxis: d3.Axis<d3.AxisDomain>;
     private maxWidth: number;
     private windowEventSubscription: Subscription;
 
+    /**
+     * DI for services
+     */
     constructor(private elementRef: ElementRef,
                 private config: Config) {
     }
@@ -512,6 +567,9 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 }
 
+/**
+ * Restrict a value to the interval [min, max]
+ */
 function clamp(value: number, min: number, max: number): number {
     if (value <= min) {
         return min;
