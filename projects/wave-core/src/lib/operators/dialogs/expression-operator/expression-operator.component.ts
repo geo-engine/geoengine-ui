@@ -14,7 +14,9 @@ import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model'
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 
-
+/**
+ * This dialog allows calculations on (one or more) raster layers.
+ */
 @Component({
     selector: 'wave-expression-operator',
     templateUrl: './expression-operator.component.html',
@@ -35,6 +37,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
     unitSubscription: Subscription;
 
+    /**
+     * DI of services and setup of observables for the template
+     */
     constructor(private projectService: ProjectService) {
         this.form = new FormGroup({
                 rasterLayers: new FormControl(undefined, [Validators.required]),
@@ -151,6 +156,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         this.unitSubscription.unsubscribe();
     }
 
+    /**
+     * Uses the user input and creates a new expression operator.
+     * The resulting layer is added to the map.
+     */
     add() {
         const name: string = this.form.controls['name'].value;
         const dataType: DataType = this.form.controls['dataType'].value;
@@ -206,7 +215,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
 }
 
-
+/**
+ * This is a validator function that checks whether a fields contains either a valid existing unit
+ * or a new (custom) unit.
+ */
 function unitOrCustomUnit(group: FormGroup): ValidationErrors | null {
     const unit: Unit = group.controls.unit.value;
     if (unit instanceof Unit) {

@@ -1,4 +1,3 @@
-
 import {Subscription, ReplaySubject, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
@@ -14,10 +13,16 @@ import {Unit} from '../../unit.model';
 import {Plot} from '../../../plots/plot.model';
 import {ProjectService} from '../../../project/project.service';
 
+/**
+ * Checks whether the layer is a vector layer (points, lines, polygons).
+ */
 function isVectorLayer(layer: Layer<AbstractSymbology>): boolean {
     return layer ? ResultTypes.VECTOR_TYPES.indexOf(layer.operator.resultType) >= 0 : false;
 }
 
+/**
+ * This dialog allows creating a histogram plot of a layer's values.
+ */
 @Component({
     selector: 'wave-histogram-operator',
     templateUrl: './histogram-operator.component.html',
@@ -37,6 +42,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
     private subscriptions: Array<Subscription> = [];
 
+    /**
+     * DI for services
+     */
     constructor(private projectService: ProjectService,
                 private formBuilder: FormBuilder) {
     }
@@ -76,7 +84,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     } else {
                         return [];
                     }
-                }), )
+                }),)
                 .subscribe(this.attributes$)
         );
 
@@ -99,14 +107,18 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
+    /**
+     * Uses the user input to create a histogram plot.
+     * The plot is added to the plot view.
+     */
     add(event: any) {
         const inputOperator = (this.form.controls['layer'].value as Layer<AbstractSymbology>).operator;
 
         const attributeName = this.form.controls['attribute'].value as string;
 
-        let range: {min: number, max: number} | string = this.form.controls['rangeType'].value as string;
+        let range: { min: number, max: number } | string = this.form.controls['rangeType'].value as string;
         if (range === 'custom') {
-            range = this.form.controls['range'].value as {min: number, max: number};
+            range = this.form.controls['range'].value as { min: number, max: number };
         }
 
         let buckets: number = undefined;
