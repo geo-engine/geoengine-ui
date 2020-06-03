@@ -9,6 +9,12 @@ import {Subscription} from 'rxjs';
 import {OlDrawFeaturesComponent} from '../draw-features/ol-draw-features.component';
 import {CountryPolygonSelectionComponent} from '../country-polygon-selection/country-polygon-selection.component';
 
+/**
+ * These settings specify source list buttons.
+ *
+ * You can either specify a icon (name) from the icon library or an image source.
+ * Only `onlyIfLoggedIn` or `onlyIfLoggedOut` should be specified to see the button.
+ */
 export interface SourceOperatorListButton {
     name: string;
     description: string;
@@ -19,6 +25,9 @@ export interface SourceOperatorListButton {
     onlyIfLoggedOut?: boolean;
 }
 
+/**
+ * This component provides a list of data source dialogs to add data.
+ */
 @Component({
     selector: 'wave-source-operator-list',
     templateUrl: './source-operator-list.component.html',
@@ -27,12 +36,18 @@ export interface SourceOperatorListButton {
 })
 export class SourceOperatorListComponent implements OnInit, OnDestroy {
 
+    /**
+     * A list of data source dialogs to display
+     */
     @Input() buttons!: Array<SourceOperatorListButton>;
 
     public isUserLoggedIn = false;
 
     private guestUserStreamSubscription: Subscription;
 
+    /**
+     * DI for services
+     */
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private layoutService: LayoutService,
                 private userService: UserService) {
@@ -51,6 +66,10 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Checks with respect to the current user and the settings
+     * whether the component can be displayed to the user
+     */
     isShowable(onlyIfLoggedIn?: boolean, onlyIfLoggedOut?: boolean): boolean {
         if (onlyIfLoggedIn && onlyIfLoggedOut) {
             return false;
@@ -63,6 +82,9 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Load a selected component into the sidenav
+     */
     setComponent(sidenavConfig: SidenavConfig) {
         if (!sidenavConfig) {
             return;
@@ -71,6 +93,9 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
+    /**
+     * Default for a data repository entry.
+     */
     static createDataRepositoryButton(): SourceOperatorListButton {
         return {
             name: 'Data Repository',
@@ -80,6 +105,9 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         };
     }
 
+    /**
+     * Default for a draw features entry.
+     */
     static createDrawFeaturesButton(): SourceOperatorListButton {
         return {
             name: 'Draw Features',
@@ -89,6 +117,9 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         };
     }
 
+    /**
+     * Default for a custom features entry.
+     */
     static createCustomFeaturesButtons(): [SourceOperatorListButton, SourceOperatorListButton] {
         return [
             {
@@ -108,6 +139,9 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
         ];
     }
 
+    /**
+     * Default for a country polygon selection entry.
+     */
     static createCountryPolygonsButton(): SourceOperatorListButton {
         return {
             name: 'Country Selection',

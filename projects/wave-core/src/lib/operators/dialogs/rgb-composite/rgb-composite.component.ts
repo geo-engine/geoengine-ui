@@ -18,6 +18,9 @@ import {StatisticsType} from '../../types/statistics-type.model';
 import {LayoutService} from '../../../layout.service';
 import {WaveValidators} from '../../../util/form.validators';
 
+/**
+ * This dialog allows users to create an RGB composite out of multiple raster layers.
+ */
 @Component({
     selector: 'wave-create-rgb-composite',
     templateUrl: './rgb-composite.component.html',
@@ -36,6 +39,9 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
 
     private inputLayersubscriptions: Subscription;
 
+    /**
+     * DI for several dependent services
+     */
     constructor(private projectService: ProjectService,
                 private notificationService: NotificationService,
                 private mappingQueryService: MappingQueryService) {
@@ -91,6 +97,9 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Creates an RGB layer out of the user input and adds it to the map
+     */
     add() {
         const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
         const operators = inputs.map(layer => layer.operator);
@@ -148,6 +157,10 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         }));
     }
 
+    /**
+     * Creates on-the-fly a statistics operator for the raster and pastes the result to the
+     * min/max input fields of the dialog
+     */
     calculateRasterStats() {
         this.isRasterStatsLoading$.next(true);
 
@@ -188,6 +201,10 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Retrieves the min/max information of the units of the raster layers and
+     * pastes the result to the min/max input fields of the dialog
+     */
     retrieveRasterStatsFromUnit() {
         const operators: Array<Operator> = this.form.controls['inputLayers'].value.map(layer => layer.operator);
 
@@ -199,6 +216,11 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
     }
 }
 
+/**
+ * The result type of the raster statistics (plot) operator
+ *
+ * The results of tht rasters are returned in the same order of the query
+ */
 interface RasterStatisticsType {
     data: {
         rasters: Array<{

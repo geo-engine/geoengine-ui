@@ -1,5 +1,10 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
+/**
+ * Each red, green and blue layer needs a minimum and maximum values
+ * to scale the color intensity in between. A scale between 0 and 1
+ * allows for further emphasis on colors.
+ */
 interface RgbaCompositeTypeConfig {
     rasterRedMin: number,
     rasterRedMax: number,

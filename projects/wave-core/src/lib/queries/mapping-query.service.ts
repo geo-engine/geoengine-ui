@@ -22,6 +22,9 @@ import {Time, TimePoint} from '../time/time.model';
 import {Config} from '../config.service';
 import {TemporalAggregationType} from '../operators/types/temporal-aggregation-type';
 
+/**
+ * This service encapsulate queries to the operator engine of MAPPING.
+ */
 @Injectable()
 export class MappingQueryService {
     /**
@@ -328,6 +331,10 @@ export class MappingQueryService {
         return this.config.MAPPING_URL + '?' + parameters.toMessageBody(true);
     }
 
+    /**
+     * Get a MAPPING url for the WCS request.
+     * @returns the query url
+     */
     getWCSQueryUrl(config: {
         operator: Operator,
         time: Time,
@@ -363,6 +370,10 @@ export class MappingQueryService {
         return this.config.MAPPING_URL + '?' + parameters.toMessageBody();
     }
 
+    /**
+     * Get a colorizer from MAPPING for a raster operator.
+     * @deprecated
+     */
     getColorizer(operator: Operator,
                  time: Time,
                  projection: Projection): Observable<DeprecatedMappingColorizerDoNotUse> {
@@ -397,6 +408,10 @@ export class MappingQueryService {
             }));
     }
 
+    /**
+     * Return provenance information for an operator.
+     * The other parameters match the regular query.
+     */
     getProvenance(config: {
         operator: Operator,
         time: Time,
@@ -447,6 +462,9 @@ export class MappingQueryService {
             ).toPromise();
     }
 
+    /**
+     * Get autocomplete results from MAPPING for GBIF queries.
+     */
     getGBIFAutoCompleteResults(level: string, term: string): Promise<Array<string>> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
@@ -464,6 +482,9 @@ export class MappingQueryService {
         return this.http.get<{ speciesNames: Array<string> }>(queryUrl).toPromise().then(response => response.speciesNames);
     }
 
+    /**
+     * Retrieves the number of results (upfront) for GBIF queries.
+     */
     getGBIFDataSourceCounts(level: string, term: string): Promise<Array<{ name: string, count: number }>> {
         const parameters = new MappingRequestParameters({
             service: 'gfbio',
