@@ -79,12 +79,17 @@ const MAX_ZOOM_LEVEL = 28;
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
 
-    // display a grid of maps or all layers on a single map
+    /**
+     * display a grid of maps or all layers on a single map
+     */
     @Input() grid = true; // TODO: false;
 
     @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement !: ElementRef;
     @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers !: QueryList<ElementRef>;
 
+    /**
+     * These are the layers from the layer list (as dom elements in the template)
+     */
     @ContentChildren(MapLayerComponent) mapLayersRaw !: QueryList<MapLayer>;
     mapLayers: Array<MapLayer> = []; // filtered
 
@@ -109,6 +114,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private subscriptions: Array<Subscription> = [];
 
+    /**
+     * Create the component and inject several dependencies via DI.
+     */
     constructor(private config: Config,
                 private changeDetectorRef: ChangeDetectorRef,
                 private mapService: MapService,
@@ -167,18 +175,27 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         setTimeout(() => this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection)));
     }
 
+    /**
+     * Increases the zoom level if it is not larger than the maximum zoom level
+     */
     zoomIn() {
         if (this.view.getZoom() < MAX_ZOOM_LEVEL) {
             this.view.adjustZoom(1);
         }
     }
 
+    /**
+     * Decreases the zoom level if it is not smaller than the minimum zoom level
+     */
     zoomOut() {
         if (this.view.getZoom() > MIN_ZOOM_LEVEL) {
             this.view.adjustZoom(-1);
         }
     }
 
+    /**
+     * Zoom to and focus a bounding box
+     */
     zoomTo(boundingBox: Extent) {
         this.view.fit(boundingBox, {
             nearest: true,
@@ -186,6 +203,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
+    /**
+     * Enable user input (hand drawn) for the map
+     */
     public startDrawInteraction(drawType: OlGeometryType) {
         if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
@@ -197,10 +217,16 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.reattachDrawInteractions();
     }
 
+    /**
+     * Indicator if the map currently has a source for user input (hand drawn)
+     */
     public isDrawInteractionAttached(): boolean {
         return !!this.drawInteractionSource;
     }
 
+    /**
+     * Disable user input (hand drawn) for the map and return the result
+     */
     public endDrawInteraction(): OlSourceVector {
         if (!this.isDrawInteractionAttached()) {
             console.error('no interaction or layer active!');
@@ -263,6 +289,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
     }
 
+    /**
+     * Force a redraw for each map layer
+     */
     public layerForcesRedraw() {
         this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
     }

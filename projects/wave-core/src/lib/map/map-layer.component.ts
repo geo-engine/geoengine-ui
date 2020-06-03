@@ -16,13 +16,7 @@ import {Time} from '../time/time.model';
 import {Projection} from '../operators/projection.model';
 
 /**
- * The `ol-layer` component represents a single layer object of openLayer 3.
- *
- * # Input Variables
- * * layerType
- * * url
- * * params
- * * style
+ * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
@@ -31,22 +25,42 @@ export abstract class MapLayerComponent<OL extends OlLayer,
     S extends AbstractSymbology,
     L extends Layer<S>> {
 
+    /**
+     * A raster or vector layer
+     */
     @Input() layer: L;
+
+    /**
+     * Event emitter that forces a redraw of the map.
+     * Must be connected to the map component.
+     */
     @Output() mapRedraw = new EventEmitter();
 
     protected source: OS;
     protected _mapLayer: OL;
 
+    /**
+     * Setup of DI
+     */
     protected constructor(protected projectService: ProjectService) {
     }
 
+    /**
+     * Return the open layers layer element that displays our layer type
+     */
     get mapLayer(): OL {
         return this._mapLayer;
     }
 
+    /**
+     * Return the extent of the layer in map units
+     */
     abstract getExtent(): [number, number, number, number];
 }
 
+/**
+ * The vector layer abstraction for a map layer
+ */
 export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
     OlVectorSource,
     AbstractVectorSymbology,
@@ -104,6 +118,9 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
     }
 }
 
+/**
+ * This component reflects a point layer on the map
+ */
 @Component({
     selector: 'wave-ol-point-layer',
     template: '',
@@ -116,6 +133,9 @@ export class OlPointLayerComponent extends OlVectorLayerComponent implements OnI
     }
 }
 
+/**
+ * This component reflects a point line on the map
+ */
 @Component({
     selector: 'wave-ol-line-layer',
     template: '',
@@ -128,6 +148,9 @@ export class OlLineLayerComponent extends OlVectorLayerComponent implements OnIn
     }
 }
 
+/**
+ * This component reflects a polygon layer on the map
+ */
 @Component({
     selector: 'wave-ol-polygon-layer',
     template: '',
@@ -140,6 +163,9 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent implements O
     }
 }
 
+/**
+ * This component reflects a raster layer on the map
+ */
 @Component({
     selector: 'wave-ol-raster-layer',
     template: '',
