@@ -2,7 +2,9 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {IColorizerData} from '../colorizer-data.model';
 import {Colormap, ColormapNames, ColormapStepScale} from '../colormaps/colormap.model';
 
-
+/**
+ * A pipe to transform a colormap into a colorizer data.
+ */
 @Pipe({name: 'waveColormapNameToColorizerData'})
 export class ColormapNameToColorizerDataPipe implements PipeTransform {
 

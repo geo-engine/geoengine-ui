@@ -21,6 +21,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {valueRelation, WaveValidators} from '../../util/form.validators';
 import {Subscription} from 'rxjs';
 
+/**
+ * The ColormapColorizerComponent is the main ui to generate ColorizerData from colormaps.
+ */
 @Component({
     selector: 'wave-colormap-colorizer',
     templateUrl: 'colormap-colorizer.component.html',
@@ -29,19 +32,56 @@ import {Subscription} from 'rxjs';
 })
 export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges {
 
+    /**
+     * Emmits new ColorizerData instances generated from user input.
+     */
     @Output() colormapColorizerData = new EventEmitter<ColorizerData>();
+
+    /**
+     * Number of breakpoints used in the ColorizerData.
+     */
     @Input() defaultNumberOfSteps = 16;
+
+    /**
+     * Max allowed number of breakpoints in the ColorizerData.
+     */
     @Input() maxColormapSteps = 16;
+
+    /**
+     * Sets the min value used for ColorizerData generation.
+     */
     @Input() minValue = 0;
+
+    /**
+     * Sets the max value used for ColorizerData generation.
+     */
     @Input() maxValue = 1;
+
+    /**
+     * Sends the min value selected in the ui.
+     */
     @Output() minValueChange = new EventEmitter<number>();
+
+    /**
+     * Sends the max value selected in the ui.
+     */
     @Output() maxValueChange = new EventEmitter<number>();
 
+    // make colormap names and step scales available to the tamplate.
     readonly colormapNames = COLORMAP_NAMES;
     readonly boundedColormapStepScales = COLORMAP_STEP_SCALES_WITH_BOUNDS;
+
+    /**
+     * The form control used in the template.
+     */
     form: FormGroup;
+
+    /**
+     * The local (wip) ColorizerData.
+     */
     colorizerData: ColorizerData = Colormap.createColorizerDataWithName(this.colormapNames[0], 0, 1);
-    subscriptions: Array<Subscription> = [];
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
@@ -73,6 +113,9 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         );
     }
 
+    /**
+     * Replace the min and max values.
+     */
     patchMinMaxValues(min: number, max: number) {
 
         const patchConfig: { min?: number, max?: number } = {};
@@ -90,7 +133,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         this.form.controls.bounds.patchValue(patchConfig);
     }
 
-    checkValidConfig() {
+    private checkValidConfig() {
         const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
@@ -115,11 +158,15 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         return true;
     }
 
+    /**
+     * Clears the local colorizer data.
+     */
     removeColorizerData() {
         this.colorizerData = undefined;
     }
 
-    updateColorizerData() {
+
+    private updateColorizerData() {
         if (!this.checkValidConfig()) {
             this.colorizerData = undefined;
             return;
@@ -138,6 +185,9 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         this.colorizerData = colorizerData;
     }
 
+    /**
+     * Apply a new colortable to the colorizer data.
+     */
     applyNewColorTable(_: any) {
         if (this.colorizerData) {
             this.colormapColorizerData.emit(this.colorizerData);
@@ -174,7 +224,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (let propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'minValue':
                 case 'maxValue': {

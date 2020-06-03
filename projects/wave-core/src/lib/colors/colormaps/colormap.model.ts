@@ -43,19 +43,39 @@ import {
 } from './scientific-colormaps/scientific-colormaps';
 import {colormap_rainbow_data, GENERIC_COLORMAP_NAMES, GenericColormapName} from './generic-colormaps';
 
+/**
+ * Type for ColormapData / a wrapper for RGB values.
+ */
 export type ColormapData = Array<[number, number, number]>;
+
+/**
+ * All allowed colormap names.
+ */
 export type ColormapNames = MplColormapName | MorelandColormapName | ScientificColormapName | GenericColormapName;
+
+/**
+ * A list of all colormap names.
+ */
 export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES,
     ...GENERIC_COLORMAP_NAMES];
 
+/**
+ * The colormap step scaling methods.
+ */
 export type ColormapStepScale = 'linear' | 'log' | 'square root' | 'square';
 
+/**
+ * An interface for bounded step scales. E.g. log is only possible for values >= 1.
+ */
 export interface BoundedColormapStepScale {
     stepScaleName: ColormapStepScale;
     requiresValueAbove?: number;
     requiresValueBelow?: number;
 }
 
+/**
+ * A list of all step scales with possible bounds.
+ */
 export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> = [
     {stepScaleName: 'linear'},
     {stepScaleName: 'log', requiresValueAbove: 0},
@@ -63,8 +83,14 @@ export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> =
     {stepScaleName: 'square', requiresValueBelow: 5000}
 ];
 
+/**
+ * Abstract class for common colormap functions.
+ */
 export abstract class Colormap {
 
+    /**
+     * Resolves the colormap data for a colormap name.
+     */
     static getColormapForName(colormapName: ColormapNames): ColormapData {
 
         switch (colormapName) {

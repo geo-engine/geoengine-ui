@@ -5,7 +5,15 @@
  * They are licensed under the CC0 license.
  */
 
+
+ /**
+  * The colormap names.
+  */
 export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
+
+/**
+ * The list of available colormap names.
+ */
 export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
 
 
