@@ -2,6 +2,9 @@ import {Unit, UnitMappingDict} from '../../unit.model';
 import {MappingRasterColorizerDict} from '../../../colors/colorizer-data.model';
 import {IColorizerData} from '../../../colors/colorizer-data.model';
 
+/**
+ * An interface for transformation of raster layer values.
+ */
 export interface MappingTransform {
   datatype: string;
   offset: number;
@@ -9,12 +12,18 @@ export interface MappingTransform {
   unit: Unit;
 }
 
+/**
+ * An interface for the provenance data provided by MAPPING.
+ */
 export interface ProvenanceInfo {
     uri: string;
     license: string;
     citation: string;
 }
 
+/**
+ * An interface for raster layers provided by MAPPING.
+ */
 export interface SourceRasterLayerDescription {
     name: string;
     id: number;
@@ -36,6 +45,9 @@ export interface SourceRasterLayerDescription {
     provenance: ProvenanceInfo;
 }
 
+/**
+ * An interface for vector layers provided by MAPPING.
+ */
 export interface SourceVectorLayerDescription {
     name: string;
     id: number | string;
@@ -50,6 +62,9 @@ export interface SourceVectorLayerDescription {
     provenance: ProvenanceInfo;
 }
 
+/**
+ * An interface for a MAPPING source and the provided data.
+ */
 export interface MappingSource {
     operator: string;
     source: string;
@@ -62,6 +77,9 @@ export interface MappingSource {
     provenance: ProvenanceInfo;
 }
 
+/**
+ * An interface for sources as provided by MAPPING.
+ */
 export interface MappingSourceDict {
     operator?: string;
     name?: string;
@@ -86,6 +104,9 @@ export interface MappingSourceDict {
     layer?: [MappingSourceVectorLayerDict];
 }
 
+/**
+ * An interface for raster sources as provided by MAPPING.
+ */
 export interface MappingSourceRasterLayerDict {
     datatype: string;
     nodata: number;
@@ -112,6 +133,9 @@ export interface MappingSourceRasterLayerDict {
     };
 }
 
+/**
+ * An interface for vector sources as provided by MAPPING.
+ */
 export interface MappingSourceVectorLayerDict {
     id?: number | string;
     name: string;
@@ -132,15 +156,23 @@ export interface MappingSourceVectorLayerDict {
     };
 }
 
-
+/**
+ * An interface for MAPPING responses when requesting sources.
+ */
 export interface MappingSourceResponse {
     sourcelist: {[index: string]: MappingSourceDict};
 }
 
+/**
+ * An interface for raster methodology description.
+ */
 export interface MappingRasterMethodology {
     type: 'SATELLITE_SENSOR';
 }
 
+/**
+ * An interface providing information for satellite sensor data.
+ */
 export interface MappingSatelliteSensorRasterMethodology extends MappingRasterMethodology {
     central_wave_length_nm: number;
 }

@@ -17,6 +17,9 @@ export interface OperatorTypeDict {
     operatorType: string;
 }
 
+/**
+ * Interface required for complex operator parameter options.
+ */
 export interface OptionsDict {
     displayValue: string;
 }
@@ -94,7 +97,6 @@ export abstract class OperatorType {
 
     /**
      * Get the DisplayValue of a parameter
-     * @param parameterName
      */
     public getParameterDisplayValue(parameterName: string): string | undefined {
         const parameterValue = this.getParameterValue(parameterName);

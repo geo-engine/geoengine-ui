@@ -10,16 +10,23 @@ import {
 import {GdalSourceType} from '../types/gdal-source-type.model';
 import {OptionsDict} from '../operator-type.model';
 
+/**
+ * Dictionary for serializing the operator type.
+ */
 export interface GdalSourceParameterOptionsConfig extends OperatorTypeParameterOptionsConfig {
     channelConfig: DictParameterArrayConfig<GdalSourceChannelOptions>;
 }
 
+/**
+ * Interface required for complex operator parameter options.
+ * GdalSource requires an interface with channelNumber parameter.
+ */
 export interface GdalSourceChannelOptions extends OptionsDict {
     channelNumber: number;
 }
 
 /**
- * The raster source type.
+ * GDAL source operator parameter options.
  */
 export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
 

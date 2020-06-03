@@ -9,7 +9,6 @@ import {
 
 import {Feature as OlFeature} from 'ol';
 
-
 import {
     AbstractVectorSymbology,
     DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR,
@@ -22,8 +21,14 @@ import {
     VectorSymbology
 } from '../layers/symbology/symbology.model';
 
+/**
+ * The StyleCreator genreates OpenLayers styles from a layers Symbology.
+ */
 export class StyleCreator {
 
+    /**
+     * Generate a style from a vector layer symbology.
+     */
     public static fromVectorSymbology(sym: AbstractVectorSymbology): OlStyleFunction | OlStyle {
         switch (sym.getSymbologyType()) {
 
@@ -47,7 +52,9 @@ export class StyleCreator {
 
     }
 
-
+    /**
+     * Handles radius attribute values and converts them to valid radius.
+     */
     static handleRadiusAttributeValue(radius: number | string, radiusScale: number = 1.0): number | undefined {
         const numberRadius = (typeof radius === 'string') ? parseFloat(radius) : radius;
         if (radius === undefined || radius === null) {
@@ -62,6 +69,9 @@ export class StyleCreator {
         }
     }
 
+    /**
+     * Handles text attribute values and converts them to a string or number for display.
+     */
     static handleTextAttributeValue(text: string | number): string | number | undefined {
         if (text === undefined || text === null) {
             return undefined;
@@ -72,6 +82,9 @@ export class StyleCreator {
         return text;
     }
 
+    /**
+     * Warps a Symbology into a highlighted Symbology.
+     */
     static createHighlightSymbology<S extends AbstractVectorSymbology>(sym: S): S {
         const highlightSymbology: S = sym.clone() as S;
         highlightSymbology.fillRGBA = DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR;
@@ -79,6 +92,9 @@ export class StyleCreator {
         return highlightSymbology;
     }
 
+    /**
+     * Generate a style key (string) for a feature.
+     */
     static buildStyleKey(
         featureFillColorValue: string | number | undefined,
         featureStrokeColorValue: string | number | undefined,
@@ -90,6 +106,9 @@ export class StyleCreator {
             + `${featureTextValue}${VALUE_SEPARATOR_SYMBOL}${featureRadiusValue}`;
     }
 
+    /**
+     * Generate an OpenLayers style function for vector layers.
+     */
     static fromComplexVectorSymbology(sym: VectorSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
@@ -144,7 +163,9 @@ export class StyleCreator {
         };
     }
 
-
+    /**
+     * Generate an OpenLayers style function for point layers.
+     */
     static fromComplexPointSymbology(sym: PointSymbology): OlStyleFunction {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: { [key: string]: OlStyle } = {};
