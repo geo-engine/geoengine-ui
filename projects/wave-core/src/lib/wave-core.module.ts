@@ -368,6 +368,7 @@ const WAVE_PIPES = [
         HelpQuickDemoComponent,
         LayerListComponent,
         LayerSelectionComponent,
+        LayerListWorkflowParameterSliderComponent,
         LoginComponent,
         MapContainerComponent,
         MultiLayerSelectionComponent,
