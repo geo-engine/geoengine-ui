@@ -54,6 +54,7 @@ export * from './lib/operators/dialogs/histogram-operator/histogram-operator.com
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/source-operator-list/source-operator-list.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 export * from './lib/project/workspace-settings/workspace-settings.component';
