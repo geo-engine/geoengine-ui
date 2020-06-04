@@ -36,6 +36,8 @@ export * from './lib/help/operators/help-operators.component';
 export * from './lib/help/overview/help-overview.component';
 export * from './lib/help/quick-demo/help-quick-demo.component';
 export * from './lib/layers/layer-list/layer-list.component';
+export * from './lib/layers/legend/legend-raster/mapping-raster-legend.component';
+export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/symbology/stroke-dash-select/stroke-dash-select.component';
 export * from './lib/layers/symbology/symbology-raster/symbology-raster.component';
 export * from './lib/layers/symbology/symbology-vectors/symbology-vector.component';
