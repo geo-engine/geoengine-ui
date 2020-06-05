@@ -9,7 +9,7 @@ import {Color} from '../../colors/color';
 export class MappingColorizerToGradientPipe implements PipeTransform {
 
     /**
-     * Transform r,g,b,a values into a css string.
+     * Transform red, green, blue, and alpha values into a css string.
      */
     static rgbaString(r: number, g: number, b: number, a?: number): string {
         const alpha = (!!a) ? (a / 255.0) : 1.0;
