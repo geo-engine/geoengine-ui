@@ -9,7 +9,7 @@
  */
 
 /**
- * The colormap names.
+ * The color map names.
  */
  export type ScientificColormapName = 'ARCON' | 'BAMAKO' | 'BATLOW' | 'BERLIN' | 'BILBAO' | 'BROC' | 'BROCO'
     | 'BUDA' | 'CORC' | 'CORCO' | 'DAVOS' | 'DEVON' | 'GRAYC' | 'HAWAII' | 'IMOLA' | 'LAJOLLA' | 'LAPAZ'
