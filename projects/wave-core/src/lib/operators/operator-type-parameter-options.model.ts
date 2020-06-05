@@ -294,7 +294,7 @@ export class StringParameterArray extends AbstractParameterContainer<string> {
 }
 
 /**
- * An interface for numberic range parameters.
+ * An interface for numeric range parameters.
  */
 export class NumberParameterRange extends AbstractParameterContainer<number> {
     /**
