@@ -132,7 +132,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     /**
-     * Adds a breakpoint at the end of the list.
+     * Adds a breakpoint to the end of the list.
      */
     addBreakpoint(brk: ColorBreakpointDict) {
         this.breakpoints.push(new ColorBreakpoint(brk));
