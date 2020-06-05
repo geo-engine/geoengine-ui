@@ -13,7 +13,7 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 
 /**
- * The ColorizerEditorComponent is the main ui for editing ColorizerData / ColorBreakpoints
+ * The ColorizerEditorComponent is the main dialog for editing ColorizerData / ColorBreakpoints
  */
 @Component({
     selector: 'wave-colorizer-editor',
