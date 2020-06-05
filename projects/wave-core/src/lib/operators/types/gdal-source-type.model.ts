@@ -62,12 +62,17 @@ export class GdalSourceType extends OperatorType {
                     return {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
-                        file_name: channelDict.file_name,
+                        file_name: channelDict.file_name ? channelDict.file_name : undefined,
+                        path: channelDict.path ? channelDict.path : undefined,
                         unit: Unit.fromDict(channelDict.unit),
+                        netcdf_subdataset: channelDict.netcdf_subdataset ? channelDict.netcdf_subdataset : undefined,
                     };
                 }) : undefined,
+                file_name: dict.gdal_params.file_name ? dict.gdal_params.file_name : undefined,
+                path: dict.gdal_params.path ? dict.gdal_params.path : undefined,
                 coords: dict.gdal_params.coords,
                 provenance: dict.gdal_params.provenance,
+                netcdf_subdataset: dict.gdal_params.netcdf_subdataset ? dict.gdal_params.netcdf_subdataset : undefined,
             } : undefined,
             sourcename: dict.sourcename,
             transform: dict.transform,
@@ -122,10 +127,15 @@ export class GdalSourceType extends OperatorType {
                     return {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
-                        file_name: channelDict.file_name,
+                        file_name: channelDict.file_name ? channelDict.file_name : undefined,
+                        path: channelDict.path ? channelDict.path : undefined,
                         unit: channelDict.unit.toMappingDict(),
+                        netcdf_subdataset: channelDict.netcdf_subdataset ? channelDict.netcdf_subdataset : undefined,
                     };
                 }) : undefined,
+                file_name: this.gdalParams.file_name ? this.gdalParams.file_name : undefined,
+                path: this.gdalParams.path ? this.gdalParams.path : undefined,
+                netcdf_subdataset: this.gdalParams.netcdf_subdataset ? this.gdalParams.netcdf_subdataset : undefined,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
             } : undefined,
@@ -143,11 +153,15 @@ export class GdalSourceType extends OperatorType {
                     return {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
-                        file_name: channelDict.file_name,
+                        file_name: channelDict.file_name ? channelDict.file_name : undefined,
+                        path: channelDict.path ? channelDict.path : undefined,
                         unit: channelDict.unit.toDict(),
                         netcdf_subdataset: channelDict.netcdf_subdataset ? channelDict.netcdf_subdataset : undefined,
                     };
                 }) : undefined,
+                file_name: this.gdalParams.file_name ? this.gdalParams.file_name : undefined,
+                path: this.gdalParams.path ? this.gdalParams.path : undefined,
+                netcdf_subdataset: this.gdalParams.netcdf_subdataset ? this.gdalParams.netcdf_subdataset : undefined,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
             } : undefined,
@@ -159,6 +173,7 @@ export class GdalSourceType extends OperatorType {
             channelConfig: options && options.channelConfig ? options.channelConfig : this.channelConfig,
             sourcename: this.sourcename,
             transform: this.transform,
+            gdal_params: this.gdalParams ? this.gdalParams : undefined,
         });
     }
 
@@ -169,10 +184,14 @@ export interface GdalParamsType {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: Unit;
         netcdf_subdataset?: string;
     }>;
+    netcdf_subdataset?: string;
+    file_name?: string;
+    path?: string;
     coords: {
         crs: string;
     };
@@ -187,10 +206,14 @@ export interface GdalParamsTypeDict {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: UnitDict;
         netcdf_subdataset?: string;
     }>;
+    netcdf_subdataset?: string;
+    file_name?: string;
+    path?: string;
     coords: {
         crs: string;
     };
@@ -205,9 +228,14 @@ export interface GdalParamsTypeMappingDict {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: UnitMappingDict;
+        netcdf_subdataset?: string;
     }>;
+    file_name?: string;
+    netcdf_subdataset?: string;
+    path?: string;
     coords: {
         crs: string;
     };
