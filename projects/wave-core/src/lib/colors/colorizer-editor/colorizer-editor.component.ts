@@ -123,7 +123,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     /**
-     * Add a new breakpoint a tposition i. Clones the next breakpoint if possible.
+     * Add a new breakpoint at position i. Clones the next breakpoint if possible.
      */
     addBreakpointAt(i: number) {
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
