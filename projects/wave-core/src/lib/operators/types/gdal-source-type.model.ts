@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
-import {MappingRasterMethodology} from '../dialogs/data-repository/mapping-source.model';
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
+import { GdalSourceChannelOptions } from '../parameter-options/gdal-source-parameter-options.model';
 
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
@@ -8,12 +8,6 @@ interface GdalSourceTypeConfig {
     sourcename: string;
     transform: boolean;
     gdal_params?: GdalParamsType;
-}
-
-export interface GdalSourceChannelOptions {
-    displayValue: string;
-    channelNumber: number;
-    methodology?: MappingRasterMethodology;
 }
 
 export interface GdalSourceTypeCloneOptions {
