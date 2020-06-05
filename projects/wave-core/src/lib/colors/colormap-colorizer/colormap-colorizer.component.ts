@@ -22,7 +22,7 @@ import {valueRelation, WaveValidators} from '../../util/form.validators';
 import {Subscription} from 'rxjs';
 
 /**
- * The ColormapColorizerComponent is the main ui to generate ColorizerData from colormaps.
+ * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
  */
 @Component({
     selector: 'wave-colormap-colorizer',
@@ -77,7 +77,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     form: FormGroup;
 
     /**
-     * The local (wip) ColorizerData.
+     * The local (work-in-progress) ColorizerData.
      */
     colorizerData: ColorizerData = Colormap.createColorizerDataWithName(this.colormapNames[0], 0, 1);
 
@@ -186,7 +186,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Apply a new colortable to the colorizer data.
+     * Apply a new color table to the colorizer data.
      */
     applyNewColorTable(_: any) {
         if (this.colorizerData) {

@@ -49,18 +49,18 @@ import {colormap_rainbow_data, GENERIC_COLORMAP_NAMES, GenericColormapName} from
 export type ColormapData = Array<[number, number, number]>;
 
 /**
- * All allowed colormap names.
+ * All allowed `Colormap` names.
  */
 export type ColormapNames = MplColormapName | MorelandColormapName | ScientificColormapName | GenericColormapName;
 
 /**
- * A list of all colormap names.
+ * A list of all `Colormap` names.
  */
 export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES,
     ...GENERIC_COLORMAP_NAMES];
 
 /**
- * The colormap step scaling methods.
+ * The `Colormap` step scaling methods.
  */
 export type ColormapStepScale = 'linear' | 'log' | 'square root' | 'square';
 
@@ -84,12 +84,12 @@ export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> =
 ];
 
 /**
- * Abstract class for common colormap functions.
+ * Abstract class for common `Colormap` functions.
  */
 export abstract class Colormap {
 
     /**
-     * Resolves the colormap data for a colormap name.
+     * Resolves the `Colormap` data for a `Colormap` name.
      */
     static getColormapForName(colormapName: ColormapNames): ColormapData {
 

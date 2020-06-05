@@ -6,17 +6,17 @@ import {ColormapNames} from './colormap.model';
  */
 
 /**
- * The colormap name.
+ * The color map name.
  */
 export type MorelandColormapName = 'COOLWARM';
 
 /**
- * The list of available colormap names.
+ * The list of available color map names.
  */
 export const MORELAND_COLORMAP_NAMES: Array<MorelandColormapName> = ['COOLWARM'];
 
 /**
- * The coolwarm colormap.
+ * The coolwarm color map.
  */
 export const coolwarm_data: Array<[number, number, number]> = [
     [0.2298057, 0.298717966, 0.753683153],

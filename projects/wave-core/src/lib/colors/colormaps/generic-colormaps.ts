@@ -1,15 +1,15 @@
 /**
- * The colormap name.
+ * The color map name.
  */
 export type GenericColormapName = 'RAINBOW';
 
 /**
- * The list of available colormap names.
+ * The list of available color map names.
  */
 export const GENERIC_COLORMAP_NAMES: Array<GenericColormapName> = ['RAINBOW'];
 
 /**
- * The rainbow colormap.
+ * The rainbow color map.
  */
 export const colormap_rainbow_data: Array<[number, number, number]> =
     [[0.0, 0.0, 0.5],
