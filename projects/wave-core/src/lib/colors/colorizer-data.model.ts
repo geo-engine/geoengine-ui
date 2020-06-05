@@ -232,7 +232,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     /**
-     * Checks id the list of breakpoints is empty.
+     * Checks if the list of breakpoints is empty.
      */
     isEmpty(): boolean {
         return !this.breakpoints || this.breakpoints.length === 0;
