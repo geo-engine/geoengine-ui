@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
-import { GdalSourceChannelOptions } from '../parameter-options/gdal-source-parameter-options.model';
+import {GdalSourceChannelOptions} from '../parameter-options/gdal-source-parameter-options.model';
 
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
@@ -145,6 +145,7 @@ export class GdalSourceType extends OperatorType {
                         datatype: channelDict.datatype,
                         file_name: channelDict.file_name,
                         unit: channelDict.unit.toDict(),
+                        netcdf_subdataset: channelDict.netcdf_subdataset ? channelDict.netcdf_subdataset : undefined,
                     };
                 }) : undefined,
                 coords: this.gdalParams.coords,
@@ -170,6 +171,7 @@ export interface GdalParamsType {
         datatype: string;
         file_name: string;
         unit: Unit;
+        netcdf_subdataset?: string;
     }>;
     coords: {
         crs: string;
@@ -187,6 +189,7 @@ export interface GdalParamsTypeDict {
         datatype: string;
         file_name: string;
         unit: UnitDict;
+        netcdf_subdataset?: string;
     }>;
     coords: {
         crs: string;
