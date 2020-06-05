@@ -79,7 +79,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     }
 
     /**
-     * Compares the ColorBreakpoint with another one.
+     * Tests a ColorBreakpoint for equality with another one.
      */
     equals(other: ColorBreakpoint): boolean {
         return other && this.rgba.equals(other.rgba) && this.value === other.value;
