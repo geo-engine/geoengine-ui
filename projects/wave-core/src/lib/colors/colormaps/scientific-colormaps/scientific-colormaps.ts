@@ -16,7 +16,7 @@
     | 'LISBON' | 'NUUK' | 'OLERON' | 'OSLO' | 'ROMA' | 'ROMAO' | 'TOFINO' | 'TOKYO' | 'TURKU' | 'VIK' | 'VIKO';
 
 /**
- * The list of available colormap names.
+ * The list of available color map names.
  */
  export const SCIENTIFIC_COLORMAP_NAMES: Array<ScientificColormapName> = ['ARCON', 'BAMAKO', 'BATLOW', 'BERLIN', 'BILBAO', 'BROC',
     'BROCO', 'BUDA', 'CORC', 'CORCO', 'DAVOS', 'DEVON', 'GRAYC', 'HAWAII', 'IMOLA', 'LAJOLLA', 'LAPAZ',
