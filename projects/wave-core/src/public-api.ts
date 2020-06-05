@@ -97,6 +97,7 @@ export * from './lib/operators/types/gfbio-source-type.model';
 export * from './lib/operators/types/ogr-source-type.model';
 export * from './lib/operators/types/raster-source-type.model';
 export * from './lib/operators/unit.model';
+export * from './lib/operators/parameter-options/gdal-source-parameter-options.model';
 export * from './lib/plots/plot.model';
 export * from './lib/project/project.model';
 export * from './lib/provenance/provenance.model';
