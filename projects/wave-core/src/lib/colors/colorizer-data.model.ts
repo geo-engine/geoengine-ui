@@ -3,7 +3,6 @@ import {Color} from './color';
 
 /**
  * DEPRECATED
- * TODO: remove
  */
 export interface DeprecatedMappingColorizerDoNotUse {
     interpolation: string;
