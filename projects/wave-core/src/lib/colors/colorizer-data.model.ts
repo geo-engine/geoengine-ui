@@ -239,7 +239,7 @@ export class ColorizerData implements IColorizerData {
     }
 
     /**
-     * Update the tyoe of the ColorizerData.
+     * Update the type of the ColorizerData.
      */
     updateType(type: ColorizerType): boolean {
         if (type && (!this.type || type !== this.type)) {
