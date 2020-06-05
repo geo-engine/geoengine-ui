@@ -86,7 +86,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     }
 
     /**
-     * Transforms the ColorBreakpoint into a representation understood by Mappings colorizer.
+     * Transforms the ColorBreakpoint into a representation understood by Mapping's colorizer.
      */
     asMappingRasterColorizerBreakpoint(): IMappingRasterColorizerBreakpoint {
         return {
