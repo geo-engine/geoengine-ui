@@ -1,6 +1,6 @@
 <tbody class="legend">
 
-<ng-template [ngIf]="symbology.isUnknown()">
+<ng-template [ngIf]="symbology.isUnitUnknown()">
     <tr>
         <td>Interpolation</td>
         <td>{{interpolationToName(symbology?.unit?.interpolation)}}</td>
@@ -15,7 +15,7 @@
     </tr>
 </ng-template>
 
-<ng-template [ngIf]="!symbology.isUnknown()">
+<ng-template [ngIf]="!symbology.isUnitUnknown()">
     <tr *ngFor="let breakpoint of symbology.colorizer.breakpoints; let isFirst = first">
         <ng-template [ngIf]="symbology.isContinuous()">
             <td class="gradient"
