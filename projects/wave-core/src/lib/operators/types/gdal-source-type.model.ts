@@ -1,6 +1,6 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
-import { GdalSourceChannelOptions } from '../parameter-options/gdal-source-parameter-options.model';
+import {GdalSourceChannelOptions} from '../parameter-options/gdal-source-parameter-options.model';
 
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
@@ -63,11 +63,16 @@ export class GdalSourceType extends OperatorType {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
                         file_name: channelDict.file_name,
+                        path: channelDict.path,
                         unit: Unit.fromDict(channelDict.unit),
+                        netcdf_subdataset: channelDict.netcdf_subdataset,
                     };
                 }) : undefined,
+                file_name: dict.gdal_params.file_name,
+                path: dict.gdal_params.path,
                 coords: dict.gdal_params.coords,
                 provenance: dict.gdal_params.provenance,
+                netcdf_subdataset: dict.gdal_params.netcdf_subdataset,
             } : undefined,
             sourcename: dict.sourcename,
             transform: dict.transform,
@@ -123,9 +128,14 @@ export class GdalSourceType extends OperatorType {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
                         file_name: channelDict.file_name,
+                        path: channelDict.path,
                         unit: channelDict.unit.toMappingDict(),
+                        netcdf_subdataset: channelDict.netcdf_subdataset,
                     };
                 }) : undefined,
+                file_name: this.gdalParams.file_name,
+                path: this.gdalParams.path,
+                netcdf_subdataset: this.gdalParams.netcdf_subdataset,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
             } : undefined,
@@ -144,9 +154,14 @@ export class GdalSourceType extends OperatorType {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
                         file_name: channelDict.file_name,
+                        path: channelDict.path,
                         unit: channelDict.unit.toDict(),
+                        netcdf_subdataset: channelDict.netcdf_subdataset,
                     };
                 }) : undefined,
+                file_name: this.gdalParams.file_name,
+                path: this.gdalParams.path,
+                netcdf_subdataset: this.gdalParams.netcdf_subdataset,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
             } : undefined,
@@ -158,6 +173,7 @@ export class GdalSourceType extends OperatorType {
             channelConfig: options && options.channelConfig ? options.channelConfig : this.channelConfig,
             sourcename: this.sourcename,
             transform: this.transform,
+            gdal_params: this.gdalParams ? this.gdalParams : undefined,
         });
     }
 
@@ -168,9 +184,14 @@ export interface GdalParamsType {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: Unit;
+        netcdf_subdataset?: string;
     }>;
+    netcdf_subdataset?: string;
+    file_name?: string;
+    path?: string;
     coords: {
         crs: string;
     };
@@ -185,9 +206,14 @@ export interface GdalParamsTypeDict {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: UnitDict;
+        netcdf_subdataset?: string;
     }>;
+    netcdf_subdataset?: string;
+    file_name?: string;
+    path?: string;
     coords: {
         crs: string;
     };
@@ -202,9 +228,14 @@ export interface GdalParamsTypeMappingDict {
     channels: Array<{
         channel: number;
         datatype: string;
-        file_name: string;
+        file_name?: string;
+        path?: string;
         unit: UnitMappingDict;
+        netcdf_subdataset?: string;
     }>;
+    file_name?: string;
+    netcdf_subdataset?: string;
+    path?: string;
     coords: {
         crs: string;
     };
