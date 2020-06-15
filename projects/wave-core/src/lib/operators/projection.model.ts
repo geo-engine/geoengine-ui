@@ -99,7 +99,6 @@ export class WGS84 extends Projection {
 }
 
 export class UTM32N extends Projection {
-    private static isProjectionRegistered = false;
 
     getCode(): string {
         return 'EPSG:32632';
@@ -123,7 +122,6 @@ export class UTM32N extends Projection {
 }
 
 export class ETRS89UTM32N extends Projection {
-    private static isProjectionRegistered = false;
 
     getCode(): string {
         return 'EPSG:25832';
@@ -198,7 +196,6 @@ export class GEOS extends Projection {
 }
 
 export class ETRS89LAEA extends Projection {
-    private static isProjectionRegistered = false;
 
     getCode(): string {
         return 'EPSG:3035';
@@ -217,7 +214,7 @@ export class ETRS89LAEA extends Projection {
     }
 
     getProj4String(): string | undefined {
-        return '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs ';
+        return '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs';
     }
 }
 
