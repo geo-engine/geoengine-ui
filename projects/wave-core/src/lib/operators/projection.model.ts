@@ -197,6 +197,30 @@ export class GEOS extends Projection {
     }
 }
 
+export class ETRS89LAEA extends Projection {
+    private static isProjectionRegistered = false;
+
+    getCode(): string {
+        return 'EPSG:3035';
+    }
+
+    getName(): string {
+        return 'ETRS89-LAEA';
+    }
+
+    getExtent(): [number, number, number, number] {
+        return [2426378.0132, 1528101.2618, 6293974.6215, 5446513.5222];
+    }
+
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/3035';
+    }
+
+    getProj4String(): string | undefined {
+        return '+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs ';
+    }
+}
+
 export class ProjectionCollection {
     static readonly INSTANCE = new ProjectionCollection();
 
@@ -205,6 +229,7 @@ export class ProjectionCollection {
     GEOS: Projection = new GEOS();
     UTM32N: Projection = new UTM32N();
     ETRS89UTM32N: Projection = new ETRS89UTM32N();
+    ERTS89LAEA: Projection = new ETRS89LAEA();
 
     // required to support already stored layers
     OLD_GEOS_CODE = 'EPSG:40453';
@@ -212,7 +237,7 @@ export class ProjectionCollection {
     ALL_PROJECTIONS: Array<Projection>;
 
     protected constructor() {
-        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N];
+        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N, this.ERTS89LAEA];
         this.registerProj4Projections();
     }
 
@@ -230,6 +255,8 @@ export class ProjectionCollection {
                 return this.UTM32N;
             case this.ETRS89UTM32N.getCode():
                 return this.ETRS89UTM32N;
+            case this.ERTS89LAEA.getCode():
+                return this.ERTS89LAEA;
             default:
                 throw new Error('Invalid Projection String');
         }
