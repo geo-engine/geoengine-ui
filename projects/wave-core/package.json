@@ -1,6 +1,6 @@
 {
     "name": "@umr-dbs/wave-core",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "repository": {
         "type": "git",
         "url": "git://github.com/umr-dbs/wave.git"
