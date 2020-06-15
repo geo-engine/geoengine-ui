@@ -123,7 +123,10 @@ export class GdalSourceType extends OperatorType {
             channel: this.channelConfig.channelNumber,
             transform: this.transform,
             gdal_params: this.gdalParams ? {
-                channels: this.gdalParams.channels ? this.gdalParams.channels.map(channelDict => {
+                channels: this.gdalParams.channels ? this.gdalParams.channels.map((channelDict, i) => {
+                    if (this.channelConfig.channelNumber !== i) {
+                        return undefined;
+                    }
                     return {
                         channel: channelDict.channel,
                         datatype: channelDict.datatype,
