@@ -169,7 +169,7 @@ export class MappingQueryService {
         projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: ViewportSize,
-        clustered?: boolean
+        clusteredOption?: ClusteredOption,
     }): MappingRequestParameters {
         const projectedOperator = config.operator.getProjectedOperator(config.projection);
 
@@ -187,8 +187,9 @@ export class MappingQueryService {
                 outputFormat: config.outputFormat.getFormat(),
             },
         });
-        if (config.clustered) {
-            parameters.setParameter('clustered', config.clustered);
+        if (config.clusteredOption) {
+            parameters.setParameter('clustered', true);
+            parameters.setParameter('clustered_min_radius', config.clusteredOption.minRadius);
         } else {
             parameters.setParameter('clustered', false);
         }
@@ -227,7 +228,7 @@ export class MappingQueryService {
         projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: ViewportSize,
-        clustered?: boolean
+        clusteredOption?: ClusteredOption,
     }): string {
         return this.config.MAPPING_URL + '?' + this.getWFSQueryParameters(config).toMessageBody();
     }
@@ -248,7 +249,7 @@ export class MappingQueryService {
         projection: Projection,
         outputFormat: WFSOutputFormat,
         viewportSize?: ViewportSize,
-        clustered: boolean
+        clusteredOption?: ClusteredOption,
     }): Observable<string> {
         const requestParameters = this.getWFSQueryParameters(config);
         return this.http.post<string>(
@@ -484,4 +485,11 @@ export class MappingQueryService {
             .then(response => response.dataSources);
     }
 
+}
+
+/**
+ * Options for clustered points
+ */
+interface ClusteredOption {
+    minRadius: number;
 }
