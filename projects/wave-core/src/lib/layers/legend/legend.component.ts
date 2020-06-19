@@ -4,6 +4,9 @@ import {
     AbstractSymbology
 } from '../symbology/symbology.model';
 
+/**
+ * A simple legend component.
+ */
 @Component({
     selector: 'wave-legendary',
     templateUrl: 'legend.component.html',

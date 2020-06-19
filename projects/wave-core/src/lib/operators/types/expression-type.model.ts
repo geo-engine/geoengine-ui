@@ -3,6 +3,10 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operat
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
 import {DataType, DataTypes} from '../datatype.model';
 
+/**
+ * The expression specifies calculations between the rasters.
+ * There must be a valid data type and unit for the resulting raster.
+ */
 interface ExpressionTypeConfig {
     expression: string;
     datatype: DataType;
@@ -15,7 +19,7 @@ interface ExpressionTypeMappingDict extends OperatorTypeMappingDict {
     unit: UnitMappingDict;
 }
 
-export interface ExpressionTypeDict extends OperatorTypeDict  {
+export interface ExpressionTypeDict extends OperatorTypeDict {
     expression: string;
     datatype: string;
     unit: UnitDict;
@@ -29,9 +33,17 @@ export class ExpressionType extends OperatorType {
     private static _ICON_URL = 'assets/operator-type-icons/expression.png';
     private static _NAME = 'Expression';
 
-    static get TYPE(): string { return ExpressionType._TYPE; }
-    static get ICON_URL(): string { return ExpressionType._ICON_URL; }
-    static get NAME(): string { return ExpressionType._NAME; }
+    static get TYPE(): string {
+        return ExpressionType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return ExpressionType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return ExpressionType._NAME;
+    }
 
     private expression: string;
     private datatype: DataType;

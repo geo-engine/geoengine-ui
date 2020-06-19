@@ -18,6 +18,13 @@ import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {map} from 'rxjs/operators';
 
+/**
+ * This is a container component that encapsulates sidenav components, dialogs, etc. and
+ * provides common functionality, e.g. a search component and back buttons.
+ *
+ * The functionality can be triggered by using specific components,
+ * e.g., `SidenavHeaderComponent` or `SidenavSearchComponent`.
+ */
 @Component({
     selector: 'wave-sidenav-container',
     templateUrl: './sidenav-container.component.html',
@@ -40,6 +47,9 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     private subscriptions: Array<Subscription> = [];
 
+    /**
+     * DI for services
+     */
     constructor(private componentFactoryResolver: ComponentFactoryResolver,
                 public sidenavRef: SidenavRef,
                 public layoutService: LayoutService,
@@ -79,6 +89,11 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
+    /**
+     * Loads a component into the sidenav
+     * and sets up functionality, for instance, the back button
+     * and the search config
+     */
     load(sidenavConfig: SidenavConfig) {
         if (this.componentRef) {
             this.target.clear();
@@ -122,10 +137,16 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         this.currentSidenavConfig = sidenavConfig;
     }
 
+    /**
+     * Close the sidenav
+     */
     close() {
         this.layoutService.setSidenavContentComponent(undefined);
     }
 
+    /**
+     * Return (load) to the component specified in `backButtonComponent$` of each component config
+     */
     back() {
         this.layoutService.setSidenavContentComponent(this.sidenavRef.getBackButtonComponent());
     }

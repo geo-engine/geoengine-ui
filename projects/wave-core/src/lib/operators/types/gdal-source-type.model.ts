@@ -1,19 +1,29 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
 import {GdalSourceChannelOptions} from '../parameter-options/gdal-source-parameter-options.model';
+import { MappingRasterMethodology } from '../dialogs/data-repository/mapping-source.model';
 
+/**
+ * The interface for gdal source requests
+ */
 interface GdalSourceTypeConfig {
     channel?: number; // required for old configs
-    channelConfig: GdalSourceChannelOptions;
+    channelConfig: GdalSourceChannelOptions; // FIXME: this should be the interface from gdal-source-parameter-options!
     sourcename: string;
     transform: boolean;
     gdal_params?: GdalParamsType;
 }
 
+/**
+ * Options allowed to replace when cloning.
+ */
 export interface GdalSourceTypeCloneOptions {
     channelConfig: GdalSourceChannelOptions;
 }
 
+/**
+ * Representation send to mapping when requesting gdal source data.
+ */
 interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
     channel: number;
     sourcename: string;
@@ -21,6 +31,9 @@ interface GdalSourceTypeMappingDict extends OperatorTypeMappingDict {
     gdal_params?: GdalParamsTypeMappingDict;
 }
 
+/**
+ * Serianlization interface.
+ */
 export interface GdalSourceTypeDict extends OperatorTypeDict {
     channelConfig: GdalSourceChannelOptions;
     sourcename: string;
@@ -29,7 +42,7 @@ export interface GdalSourceTypeDict extends OperatorTypeDict {
 }
 
 /**
- * The raster source type.
+ * The gdal raster source type.
  */
 export class GdalSourceType extends OperatorType {
     private static _TYPE = 'gdal_source';
@@ -53,6 +66,9 @@ export class GdalSourceType extends OperatorType {
     private transform: boolean;
     private gdalParams: GdalParamsType = undefined;
 
+    /**
+     * Deserialization
+     */
     static fromDict(dict: GdalSourceTypeDict): GdalSourceType {
         return new GdalSourceType({
             channel: dict['channel'], // old configs
@@ -183,6 +199,9 @@ export class GdalSourceType extends OperatorType {
 }
 
 
+/**
+ * This interface allows to specify all gedal source params (replaces json file in MAPPING).
+ */
 export interface GdalParamsType {
     channels: Array<{
         channel: number;
@@ -205,6 +224,9 @@ export interface GdalParamsType {
     };
 }
 
+/**
+ * Serialization for GdalParamsType.
+ */
 export interface GdalParamsTypeDict {
     channels: Array<{
         channel: number;
@@ -227,6 +249,9 @@ export interface GdalParamsTypeDict {
     };
 }
 
+/**
+ * Serialization of GdalParamsType for mapping.
+ */
 export interface GdalParamsTypeMappingDict {
     channels: Array<{
         channel: number;

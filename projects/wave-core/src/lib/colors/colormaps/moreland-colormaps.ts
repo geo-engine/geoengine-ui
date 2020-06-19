@@ -3,12 +3,21 @@ import {ColormapNames} from './colormap.model';
 /**
  * This color maps are from CoolWarmFloat33.csv of "Diverging Color Maps for Scientific Visualization" by Kenneth Moreland
  * on <http://www.kennethmoreland.com/color-maps/>
- **/
+ */
 
+/**
+ * The color map name.
+ */
 export type MorelandColormapName = 'COOLWARM';
+
+/**
+ * The list of available color map names.
+ */
 export const MORELAND_COLORMAP_NAMES: Array<MorelandColormapName> = ['COOLWARM'];
 
-
+/**
+ * The coolwarm color map.
+ */
 export const coolwarm_data: Array<[number, number, number]> = [
     [0.2298057, 0.298717966, 0.753683153],
     [0.26623388, 0.353094838, 0.801466763],

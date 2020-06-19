@@ -17,6 +17,9 @@ import {RScriptType} from '../../operators/types/r-script-type.model';
 import {ScatterPlotType} from '../../operators/types/scatterplot-type.model';
 import {TimePlotType} from '../../operators/types/timeplot-type.model';
 
+/**
+ * This component lists all current plots.
+ */
 @Component({
     selector: 'wave-plot-list',
     templateUrl: './plot-list.component.html',
@@ -25,6 +28,9 @@ import {TimePlotType} from '../../operators/types/timeplot-type.model';
 })
 export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
+    /**
+     * If the list is empty, show the following button.
+     */
     @Input() operatorsListConfig = {component: OperatorListComponent};
 
     readonly RScriptType = RScriptType;
@@ -40,6 +46,9 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
+    /**
+     * DI for services
+     */
     constructor(public readonly projectService: ProjectService,
                 public readonly dialog: MatDialog,
                 private readonly layoutService: LayoutService,
@@ -68,6 +77,9 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
+    /**
+     * If the plot is an RScript type, open the operator dialog for editing the source code.
+     */
     editRPlot(plot: Plot) {
         this.layoutService.setSidenavContentComponent({
             component: ROperatorComponent,
@@ -78,10 +90,16 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    /**
+     * Loads the component in `operatorsListConfig` into the sidenav
+     */
     goToOperatorsTab() {
         this.layoutService.setSidenavContentComponent(this.operatorsListConfig);
     }
 
+    /**
+     * Show a plot as a fullscreen modal dialog
+     */
     showFullscreen(plot: Plot) {
         this.dialog.open(
             PlotDetailViewComponent,

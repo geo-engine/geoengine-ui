@@ -12,6 +12,11 @@ export interface HistogramTypeDict extends OperatorTypeDict {
     buckets?: number;
 }
 
+/**
+ * The histogram is defined for one attribute of the input layer.
+ * The range and buckets specify the resulting histogram.
+ * If no number of buckets is specified, it uses suitable defaults.
+ */
 interface HistogramTypeConfig {
     attribute: string;
     range: { min: number, max: number } | string;
@@ -26,9 +31,17 @@ export class HistogramType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(HistogramType._TYPE);
     private static _NAME = 'Histogram';
 
-    static get TYPE(): string { return HistogramType._TYPE; }
-    static get ICON_URL(): string { return HistogramType._ICON_URL; }
-    static get NAME(): string { return HistogramType._NAME; }
+    static get TYPE(): string {
+        return HistogramType._TYPE;
+    }
+
+    static get ICON_URL(): string {
+        return HistogramType._ICON_URL;
+    }
+
+    static get NAME(): string {
+        return HistogramType._NAME;
+    }
 
     private attribute: string;
     private range: { min: number, max: number } | string;

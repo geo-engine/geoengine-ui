@@ -4,6 +4,9 @@ import {AbstractRasterSymbology} from '../symbology.model';
 import {MatSliderChange} from '@angular/material/slider';
 import {Layer} from '../../layer.model';
 
+/**
+ * A simple raster symbology component.
+ */
 @Component({
     selector: 'wave-symbology-raster',
     templateUrl: 'symbology-raster.component.html',

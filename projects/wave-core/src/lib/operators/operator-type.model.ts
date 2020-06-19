@@ -3,12 +3,14 @@
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeCloneOptions {
+} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for querying the server.
  */
-export interface OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeMappingDict {
+} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.
@@ -17,6 +19,10 @@ export interface OperatorTypeDict {
     operatorType: string;
 }
 
+/**
+ * Interface required for complex operator parameter options.
+ * It represents display values of type options.
+ */
 export interface OptionsDict {
     displayValue: string;
 }
@@ -31,6 +37,11 @@ export type ParameterValue = number | string | OptionsDict;
  */
 export abstract class OperatorType {
 
+    /**
+     * Each operator type must have a method that returns
+     * an icon as a data uri image. This provides a default
+     * out of the operator name.
+     */
     public static createIconDataUrl(iconName: string) {
         // TODO: replace with proper icons
         // from `http://stackoverflow.com/questions/3426404/
@@ -94,7 +105,6 @@ export abstract class OperatorType {
 
     /**
      * Get the DisplayValue of a parameter
-     * @param parameterName
      */
     public getParameterDisplayValue(parameterName: string): string | undefined {
         const parameterValue = this.getParameterValue(parameterName);

@@ -6,15 +6,23 @@
  *      Geosci. Model Dev., 11, 2541-2562, doi:10.5194/gmd-11-2541-2018
  *
  * See 'The Scientific Colour Maps' MIT license and copyright in scientific-colormaps.license
- **/
-export type ScientificColormapName = 'ARCON' | 'BAMAKO' | 'BATLOW' | 'BERLIN' | 'BILBAO' | 'BROC' | 'BROCO'
+ */
+
+/**
+ * The color map names.
+ */
+ export type ScientificColormapName = 'ARCON' | 'BAMAKO' | 'BATLOW' | 'BERLIN' | 'BILBAO' | 'BROC' | 'BROCO'
     | 'BUDA' | 'CORC' | 'CORCO' | 'DAVOS' | 'DEVON' | 'GRAYC' | 'HAWAII' | 'IMOLA' | 'LAJOLLA' | 'LAPAZ'
     | 'LISBON' | 'NUUK' | 'OLERON' | 'OSLO' | 'ROMA' | 'ROMAO' | 'TOFINO' | 'TOKYO' | 'TURKU' | 'VIK' | 'VIKO';
-export const SCIENTIFIC_COLORMAP_NAMES: Array<ScientificColormapName> = ['ARCON', 'BAMAKO', 'BATLOW', 'BERLIN', 'BILBAO', 'BROC',
+
+/**
+ * The list of available color map names.
+ */
+ export const SCIENTIFIC_COLORMAP_NAMES: Array<ScientificColormapName> = ['ARCON', 'BAMAKO', 'BATLOW', 'BERLIN', 'BILBAO', 'BROC',
     'BROCO', 'BUDA', 'CORC', 'CORCO', 'DAVOS', 'DEVON', 'GRAYC', 'HAWAII', 'IMOLA', 'LAJOLLA', 'LAPAZ',
     'LISBON', 'NUUK', 'OLERON', 'OSLO', 'ROMA', 'ROMAO', 'TOFINO', 'TOKYO', 'TURKU', 'VIK', 'VIKO'];
 
-export const colormap_batlow_data: Array<[number, number, number]> = [
+ export const colormap_batlow_data: Array<[number, number, number]> = [
     [0.0051932, 0.098238, 0.34984],
     [0.0090652, 0.10449, 0.35093],
     [0.012963, 0.11078, 0.35199],
@@ -272,7 +280,7 @@ export const colormap_batlow_data: Array<[number, number, number]> = [
     [0.98205, 0.79723, 0.97207],
     [0.98135, 0.80041, 0.98127]];
 
-export const colormap_arcon_data: Array<[number, number, number]> =
+ export const colormap_arcon_data: Array<[number, number, number]> =
     [[0.18063, 0.12992, 0.30024],
         [0.18461, 0.13336, 0.30378],
         [0.18859, 0.13683, 0.30733],
@@ -530,7 +538,7 @@ export const colormap_arcon_data: Array<[number, number, number]> =
         [0.89895, 0.89604, 0.93727],
         [0.90047, 0.90012, 0.94005]];
 
-export const colormap_bamako_data: Array<[number, number, number]> =
+ export const colormap_bamako_data: Array<[number, number, number]> =
     [[0.0011753, 0.25004, 0.3],
         [0.0039003, 0.25157, 0.29861],
         [0.006602, 0.25305, 0.29722],
@@ -788,7 +796,7 @@ export const colormap_bamako_data: Array<[number, number, number]> =
         [0.99658, 0.89648, 0.5932],
         [0.9999, 0.89988, 0.59995]];
 
-export const colormap_berlin_data: Array<[number, number, number]> =
+ export const colormap_berlin_data: Array<[number, number, number]> =
     [[0.62108, 0.69018, 0.99951],
         [0.61216, 0.68923, 0.99537],
         [0.6032, 0.68825, 0.99124],
@@ -1046,7 +1054,7 @@ export const colormap_berlin_data: Array<[number, number, number]> =
         [0.99145, 0.67194, 0.67022],
         [0.99987, 0.68007, 0.67995]];
 
-export const colormap_bilbao_data: Array<[number, number, number]> =
+ export const colormap_bilbao_data: Array<[number, number, number]> =
     [[1, 1, 0.99991],
         [0.99488, 0.99486, 0.99473],
         [0.98976, 0.98973, 0.98957],
@@ -1304,7 +1312,7 @@ export const colormap_bilbao_data: Array<[number, number, number]> =
         [0.30498, 0.0058132, 0.011559],
         [0.30038, 0.0018649, 0.005395]];
 
-export const colormap_broc_data: Array<[number, number, number]> =
+ export const colormap_broc_data: Array<[number, number, number]> =
     [[0.17081, 0.10027, 0.29985],
         [0.17075, 0.10634, 0.30558],
         [0.17061, 0.11229, 0.3113],
@@ -1562,7 +1570,7 @@ export const colormap_broc_data: Array<[number, number, number]> =
         [0.15554, 0.15649, 0.0080014],
         [0.15005, 0.15056, 0.0019303]];
 
-export const colormap_broco_data: Array<[number, number, number]> =
+ export const colormap_broco_data: Array<[number, number, number]> =
     [[0.21429, 0.18467, 0.21821],
         [0.21369, 0.18469, 0.22245],
         [0.21315, 0.18487, 0.22685],
@@ -1820,7 +1828,7 @@ export const colormap_broco_data: Array<[number, number, number]> =
         [0.21564, 0.18513, 0.21018],
         [0.21492, 0.18482, 0.21413]];
 
-export const colormap_buda_data: Array<[number, number, number]> =
+ export const colormap_buda_data: Array<[number, number, number]> =
     [[0.70015, 0.0027445, 0.70061],
         [0.70019, 0.010833, 0.69719],
         [0.70023, 0.019196, 0.69378],
@@ -2078,7 +2086,7 @@ export const colormap_buda_data: Array<[number, number, number]> =
         [0.99542, 0.99522, 0.40026],
         [1, 1, 0.4002]];
 
-export const colormap_corc_data: Array<[number, number, number]> =
+ export const colormap_corc_data: Array<[number, number, number]> =
     [[0.171, 0.10033, 0.29984],
         [0.1711, 0.10619, 0.30533],
         [0.17113, 0.11194, 0.31082],
@@ -2336,7 +2344,7 @@ export const colormap_corc_data: Array<[number, number, number]> =
         [0.2605, 0.30495, 0.014165],
         [0.26058, 0.30036, 0.0098945]];
 
-export const colormap_corco_data: Array<[number, number, number]> =
+ export const colormap_corco_data: Array<[number, number, number]> =
     [[0.24651, 0.24352, 0.2292],
         [0.24607, 0.24243, 0.23232],
         [0.24564, 0.24145, 0.23554],
@@ -2594,7 +2602,7 @@ export const colormap_corco_data: Array<[number, number, number]> =
         [0.24741, 0.24598, 0.22326],
         [0.24696, 0.2447, 0.2262]];
 
-export const colormap_davos_data: Array<[number, number, number]> =
+ export const colormap_davos_data: Array<[number, number, number]> =
     [[0, 0.019685, 0.29201],
         [0, 0.027123, 0.29748],
         [0, 0.034324, 0.30295],
@@ -2852,7 +2860,7 @@ export const colormap_davos_data: Array<[number, number, number]> =
         [0.99673, 0.99675, 0.9922],
         [0.99752, 0.99776, 0.99799]];
 
-export const colormap_devon_data: Array<[number, number, number]> =
+ export const colormap_devon_data: Array<[number, number, number]> =
     [[0.17103, 0.1004, 0.29978],
         [0.17087, 0.10414, 0.30337],
         [0.17068, 0.10786, 0.30699],
@@ -3110,7 +3118,7 @@ export const colormap_devon_data: Array<[number, number, number]> =
         [0.99662, 0.99634, 0.99929],
         [0.99992, 0.99997, 0.99995]];
 
-export const colormap_grayc_data: Array<[number, number, number]> =
+ export const colormap_grayc_data: Array<[number, number, number]> =
     [[1, 1, 1],
         [0.99554, 0.99554, 0.99554],
         [0.99109, 0.99109, 0.99109],
@@ -3368,7 +3376,7 @@ export const colormap_grayc_data: Array<[number, number, number]> =
         [0.0055636, 0.0055636, 0.0055636],
         [9.8794e-07, 9.8901e-07, 9.8874e-07]];
 
-export const colormap_hawaii_data: Array<[number, number, number]> =
+ export const colormap_hawaii_data: Array<[number, number, number]> =
     [[0.55054, 0.006842, 0.45198],
         [0.55149, 0.015367, 0.44797],
         [0.55243, 0.023795, 0.444],
@@ -3626,7 +3634,7 @@ export const colormap_hawaii_data: Array<[number, number, number]> =
         [0.69306, 0.94866, 0.9908],
         [0.70378, 0.94898, 0.99377]];
 
-export const colormap_imola_data: Array<[number, number, number]> =
+ export const colormap_imola_data: Array<[number, number, number]> =
     [[0.10144, 0.20011, 0.70019],
         [0.10328, 0.20301, 0.69881],
         [0.10496, 0.2059, 0.69742],
@@ -3884,7 +3892,7 @@ export const colormap_imola_data: Array<[number, number, number]> =
         [0.9918, 0.99724, 0.40012],
         [1, 0.99999, 0.40009]];
 
-export const colormap_lajolla_data: Array<[number, number, number]> =
+ export const colormap_lajolla_data: Array<[number, number, number]> =
     [[0.99983, 0.99974, 0.79991],
         [0.99953, 0.99725, 0.79292],
         [0.99921, 0.99476, 0.78593],
@@ -4142,7 +4150,7 @@ export const colormap_lajolla_data: Array<[number, number, number]> =
         [0.10549, 0.10296, 0.0076238],
         [0.10023, 0.10091, 0.0037913]];
 
-export const colormap_lapaz_data: Array<[number, number, number]> =
+ export const colormap_lapaz_data: Array<[number, number, number]> =
     [[0.10352, 0.047787, 0.39353],
         [0.10489, 0.053521, 0.39674],
         [0.10638, 0.059148, 0.39996],
@@ -4400,7 +4408,7 @@ export const colormap_lapaz_data: Array<[number, number, number]> =
         [0.99624, 0.94581, 0.94437],
         [0.99706, 0.94979, 0.95121]];
 
-export const colormap_lisbon_data: Array<[number, number, number]> =
+ export const colormap_lisbon_data: Array<[number, number, number]> =
     [[0.90019, 0.89986, 0.99991],
         [0.88957, 0.8921, 0.9936],
         [0.87895, 0.88435, 0.9873],
@@ -4658,7 +4666,7 @@ export const colormap_lisbon_data: Array<[number, number, number]> =
         [0.9923, 0.99138, 0.83948],
         [0.99987, 1, 0.84999]];
 
-export const colormap_nuuk_data: Array<[number, number, number]> =
+ export const colormap_nuuk_data: Array<[number, number, number]> =
     [[0.018013, 0.35076, 0.55062],
         [0.025926, 0.35177, 0.54917],
         [0.033826, 0.35281, 0.54772],
@@ -4916,7 +4924,7 @@ export const colormap_nuuk_data: Array<[number, number, number]> =
         [0.99259, 0.99243, 0.69335],
         [0.99624, 0.99617, 0.69898]];
 
-export const colormap_oleron_data: Array<[number, number, number]> =
+ export const colormap_oleron_data: Array<[number, number, number]> =
     [[0.10105, 0.15003, 0.35027],
         [0.10721, 0.15579, 0.35609],
         [0.11329, 0.16159, 0.36192],
@@ -5174,7 +5182,7 @@ export const colormap_oleron_data: Array<[number, number, number]> =
         [0.98942, 0.98369, 0.8909],
         [0.99049, 0.9902, 0.90023]];
 
-export const colormap_oslo_data: Array<[number, number, number]> = [[0.0036704, 0.0050824, 0.0024536],
+ export const colormap_oslo_data: Array<[number, number, number]> = [[0.0036704, 0.0050824, 0.0024536],
     [0.0056626, 0.0093944, 0.010695],
     [0.0076737, 0.0139, 0.019154],
     [0.0097079, 0.018228, 0.027418],
@@ -5431,7 +5439,7 @@ export const colormap_oslo_data: Array<[number, number, number]> = [[0.0036704, 
     [0.99372, 0.99407, 0.99429],
     [0.9998, 1, 0.99996]];
 
-export const colormap_roma_data: Array<[number, number, number]> =
+ export const colormap_roma_data: Array<[number, number, number]> =
     [[0.49684, 0.099626, 0],
         [0.50141, 0.11159, 0.0038271],
         [0.50595, 0.12281, 0.0075362],
@@ -5689,7 +5697,7 @@ export const colormap_roma_data: Array<[number, number, number]> =
         [0.10761, 0.20611, 0.60255],
         [0.1037, 0.20006, 0.59999]];
 
-export const colormap_romao_data: Array<[number, number, number]> =
+ export const colormap_romao_data: Array<[number, number, number]> =
     [[0.45137, 0.22346, 0.34187],
         [0.45418, 0.22244, 0.3361],
         [0.45696, 0.22158, 0.33043],
@@ -5947,7 +5955,7 @@ export const colormap_romao_data: Array<[number, number, number]> =
         [0.44571, 0.22596, 0.35366],
         [0.44855, 0.2246, 0.34773]];
 
-export const colormap_tofino_data: Array<[number, number, number]> =
+ export const colormap_tofino_data: Array<[number, number, number]> =
     [[0.87044, 0.84978, 0.99992],
         [0.85983, 0.84232, 0.99532],
         [0.84923, 0.83488, 0.99073],
@@ -6205,7 +6213,7 @@ export const colormap_tofino_data: Array<[number, number, number]> =
         [0.8483, 0.89396, 0.60363],
         [0.86003, 0.90003, 0.60976]];
 
-export const colormap_tokyo_data: Array<[number, number, number]> =
+ export const colormap_tokyo_data: Array<[number, number, number]> =
     [[0.10387, 0.056805, 0.20243],
         [0.10975, 0.059104, 0.20564],
         [0.11566, 0.061046, 0.20884],
@@ -6463,7 +6471,7 @@ export const colormap_tokyo_data: Array<[number, number, number]> =
         [0.99222, 0.99658, 0.84535],
         [0.99708, 0.99733, 0.84887]];
 
-export const colormap_turku_data: Array<[number, number, number]> =
+ export const colormap_turku_data: Array<[number, number, number]> =
     [[6.3216e-05, 5.1671e-06, 3.583e-05],
         [0.0072897, 0.0072041, 0.006548],
         [0.01471, 0.014597, 0.013245],
@@ -6721,7 +6729,7 @@ export const colormap_turku_data: Array<[number, number, number]> =
         [1, 0.89746, 0.89609],
         [1, 0.90174, 0.90067]];
 
-export const colormap_vik_data: Array<[number, number, number]> =
+ export const colormap_vik_data: Array<[number, number, number]> =
     [[0.0013282, 0.069836, 0.37953],
         [0.0023664, 0.076475, 0.38352],
         [0.0033042, 0.083083, 0.38749],
@@ -6979,7 +6987,7 @@ export const colormap_vik_data: Array<[number, number, number]> =
         [0.35679, 0.0040345, 0.030327],
         [0.35042, 6.1141e-05, 0.030499]];
 
-export const colormap_viko_data: Array<[number, number, number]> =
+ export const colormap_viko_data: Array<[number, number, number]> =
     [[0.30979, 0.1009, 0.23843],
         [0.30692, 0.10306, 0.24318],
         [0.30406, 0.10526, 0.24805],

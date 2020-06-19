@@ -12,6 +12,9 @@ import {ColorizerData, ColorizerType} from '../colorizer-data.model';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 
+/**
+ * The ColorizerEditorComponent is the main dialog for editing ColorizerData / ColorBreakpoints
+ */
 @Component({
     selector: 'wave-colorizer-editor',
     templateUrl: 'colorizer-editor.component.html',
@@ -23,7 +26,7 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
 })
 export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges {
 
-    _colorizer: ColorizerData = undefined;
+    private _colorizer: ColorizerData = undefined;
     onTouched: () => void;
     onChange: (_: ColorizerData) => void = undefined;
 
@@ -38,19 +41,49 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         }
     }
 
+    /**
+     * Toggles the colorizer type selector. Default = true.
+     */
     @Input() showTypeSelect = true;
-    @Input() showNameHintColumn = false;
-    @Input() disabledAttribute: false;
-    @Input() disabledColor: false;
-    @Input() inputType: 'number' | 'string' = 'number';
-    @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder: 'color';
 
+    /**
+     * Toggles the name hinting column. Default = false.
+     */
+    @Input() showNameHintColumn = false;
+
+    /**
+     * Switches the attribute input to disabled. Default = false;
+     */
+    @Input() disabledAttribute = false;
+
+    /**
+     * Switches the color input to disabled. Default = false;
+     */
+    @Input() disabledColor = false;
+
+    /**
+     * The data type of the attribute input. Default = number.
+     */
+    @Input() inputType: 'number' | 'string' = 'number';
+
+    /**
+     * The attribute input placeholder string.
+     */
+    @Input() attributePlaceholder = 'attribute';
+
+    /**
+     * the color input placeholder string.
+     */
+    @Input() colorPlaceholder = 'color';
+
+    /**
+     * The constructor.
+     */
     constructor(private changeDetectorRef: ChangeDetectorRef) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        for (let propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
@@ -66,6 +99,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         }
     }
 
+    /**
+     * Update the colorizer type of the colorizer data.
+     */
     updateType(type: ColorizerType) {
         if (type && this._colorizer) {
             const diff = this._colorizer.updateType(type);
@@ -75,6 +111,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         }
     }
 
+    /**
+     * Update the breakpoint in the colorizer data at position i.
+     */
     updateBreakpointAt(i: number, brk: ColorBreakpoint) {
         // TODO: check if this is valid
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
@@ -83,6 +122,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         }
     }
 
+    /**
+     * Add a new breakpoint at position i. Clones the next breakpoint if possible.
+     */
     addBreakpointAt(i: number) {
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
             this._colorizer.addBreakpointAt(i,
@@ -94,6 +136,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         this.notify();
     }
 
+    /**
+     * Removes the breakpoint at position i.
+     */
     removeBreakpointAt(i: number) {
         if (this._colorizer && this._colorizer.breakpoints.length > i ) {
             this._colorizer.removeBreakpointAt(i);
@@ -101,6 +146,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
         }
     }
 
+    /**
+     * Sends the wip colorizer to a registred reciever.
+     */
     notify() {
         if (this.onChange && this._colorizer) {
             this.onChange(this._colorizer.clone());

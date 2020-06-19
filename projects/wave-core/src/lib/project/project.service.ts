@@ -32,6 +32,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
 import {DeprecatedMappingColorizerDoNotUse} from '../colors/colorizer-data.model';
 
+/***
+ * The ProjectService is the main housekeeping component of WAVE.
+ * All layers, plots, and provenance are registered with the ProjectService.
+ */
 @Injectable()
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
@@ -80,6 +84,9 @@ export class ProjectService {
         this.layerChanges$ = new Map();
     }
 
+    /**
+     * Generate a default Project with values from the config file.
+     */
     createDefaultProject(): Project {
         let timeStepDuration: TimeStepDuration;
         switch (this.config.DEFAULTS.PROJECT.TIMESTEP) {
@@ -113,10 +120,16 @@ export class ProjectService {
         });
     }
 
+    /**
+     * Get a stream of Projects. This way compments can react to new Projects.
+     */
     getProjectStream(): Observable<Project> {
         return this.project$;
     }
 
+    /**
+     * Set a new Project. The ProjectService will clear all layer, plots, and provenance.
+     */
     setProject(project: Project) {
         // console.log("`setProject`");
 
@@ -167,6 +180,9 @@ export class ProjectService {
         this.project$.next(project);
     }
 
+    /**
+     * Set the time of the current project.
+     */
     setTime(time: Time) {
         this.project$.pipe(first()).subscribe(project => {
             const oldTime = project.time;
@@ -178,32 +194,50 @@ export class ProjectService {
         });
     }
 
+    /**
+     * Set a ttime duration for the current project.
+     */
     setTimeStepDuration(timeStepDuration: TimeStepDuration) {
         this.changeProjectConfig({
             timeStepDuration,
         });
     }
 
+    /**
+     * Set the name of the current Project.
+     */
     setName(name: string) {
         this.changeProjectConfig({name});
     }
 
+    /**
+     * Set the projection used by the current project.
+     */
     setProjection(projection: Projection) {
         this.changeProjectConfig({
             projection
         });
     }
 
+    /**
+     * Get a stream of the projects projection.
+     */
     getProjectionStream(): Observable<Projection> {
-        return this.project$.pipe(map(project => project.projection), distinctUntilChanged(),);
+        return this.project$.pipe(map(project => project.projection), distinctUntilChanged(), );
     }
 
+    /**
+     * Get a stream of the projects time.
+     */
     getTimeStream(): Observable<Time> {
-        return this.project$.pipe(map(project => project.time), distinctUntilChanged(),);
+        return this.project$.pipe(map(project => project.time), distinctUntilChanged(), );
     }
 
+    /**
+     * Get a stream of the projects time step size.
+     */
     getTimeStepDurationStream(): Observable<TimeStepDuration> {
-        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged(),);
+        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged(), );
     }
 
     /**
@@ -233,6 +267,9 @@ export class ProjectService {
         return subject.asObservable();
     }
 
+    /**
+     * Replace a Plot with another one.
+     */
     replacePlot(oldPlot: Plot, newPlot: Plot, notify = true): Observable<void> {
         const subject: Subject<void> = new ReplaySubject<void>(1);
 
@@ -310,7 +347,7 @@ export class ProjectService {
      * Retrieve the plot models array as a stream.
      */
     getPlotStream(): Observable<Array<Plot>> {
-        return this.project$.pipe(map(project => project.plots), distinctUntilChanged(),);
+        return this.project$.pipe(map(project => project.plots), distinctUntilChanged(), );
     }
 
     /**
@@ -338,6 +375,9 @@ export class ProjectService {
         });
     }
 
+    /**
+     * Get a stream which is triggered when a new plot is generated.
+     */
     getNewPlotStream(): Observable<void> {
         return this.newPlot$;
     }
@@ -465,6 +505,9 @@ export class ProjectService {
         return subject.asObservable();
     }
 
+    /**
+     * Reload the data of a layer.
+     */
     reloadLayerData(layer: Layer<AbstractSymbology>) {
         this.layerData$.get(layer).next(undefined); // send empty data
 
@@ -561,7 +604,7 @@ export class ProjectService {
      * Retrieve the layer models array as a stream.
      */
     getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
-        return this.project$.pipe(map(project => project.layers), distinctUntilChanged(),);
+        return this.project$.pipe(map(project => project.layers), distinctUntilChanged(), );
     }
 
     /**
@@ -649,6 +692,9 @@ export class ProjectService {
         return subject.asObservable();
     }
 
+    /**
+     * Get the stream of new layers.
+     */
     getNewLayerStream(): Observable<Layer<AbstractSymbology>> {
         return this.newLayer$;
     }
@@ -697,6 +743,9 @@ export class ProjectService {
         }
     }
 
+    /**
+     * Get a stream of LayerChanges for a specified layer.
+     */
     getLayerChangesStream(layer: Layer<AbstractSymbology>): Observable<LayerChanges<AbstractSymbology>> {
         return this.layerChanges$.get(layer);
     }
@@ -709,6 +758,9 @@ export class ProjectService {
         this.changeLayer(layer, {expanded: !layer.expanded});
     }
 
+    /**
+     * Toggle layer symbology edit.
+     */
     toggleEditSymbology(layer: Layer<AbstractSymbology>) {
         this.changeLayer(layer, {editSymbology: !layer.editSymbology});
     }
@@ -790,7 +842,7 @@ export class ProjectService {
                     this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ),)
+            ), )
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -885,7 +937,7 @@ export class ProjectService {
                 return LoadingState.OK;
             }), catchError(err => {
                 return observableOf(LoadingState.ERROR);
-            }),);
+            }), );
 
         this.layerCombinedState$.set(layer, combinedState$);
     }
@@ -920,7 +972,7 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ),)
+            ), )
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -966,7 +1018,7 @@ export class ProjectService {
                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ),)
+            ), )
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error
@@ -999,7 +1051,7 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ),)
+            ), )
             .subscribe(
                 data => provenance$.next(data),
                 error => error // ignore error
@@ -1029,8 +1081,8 @@ export class ProjectService {
                             loadingState$.next(LoadingState.ERROR);
                         }
                         return observableOf({interpolation: 'unknown', breakpoints: []});
-                    }),);
-            }),)
+                    }), );
+            }), )
             .subscribe(
                 data => data$.next(data),
                 error => error // ignore error

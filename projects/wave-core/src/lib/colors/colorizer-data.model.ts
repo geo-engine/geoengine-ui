@@ -10,13 +10,22 @@ export interface DeprecatedMappingColorizerDoNotUse {
     result?: string | number;
 }
 
+/**
+ * The colorizer types supported by Mapping.
+ */
 export type ColorizerType = 'gradient' | 'logarithmic' | 'palette' | 'rgba_composite';
 
+/**
+ * An interface for the data representing a colorizer.
+ */
 export interface IColorizerData {
     breakpoints: Array<ColorBreakpointDict>;
     type?: ColorizerType;
 }
 
+/**
+ * The interface for colorizers supported by Mapping.
+ */
 export interface MappingRasterColorizerDict {
     breakpoints: Array<IMappingRasterColorizerBreakpoint>;
     type?: ColorizerType;
@@ -24,10 +33,16 @@ export interface MappingRasterColorizerDict {
     default?: IMappingRasterColorizerBreakpoint;
 }
 
+/**
+ * The information within ColorizerData allows colorization of vector and raster data.
+ */
 export class ColorizerData implements IColorizerData {
     breakpoints: Array<ColorBreakpoint>;
     type: ColorizerType;
 
+    /**
+     * Generate a new gray scale colorizer for values between min and max.
+     */
     static grayScaleColorizer(minMax: { min: number, max: number }): ColorizerData {
 
         const saveMin = (minMax.min) ? minMax.min : -1000;
@@ -70,6 +85,9 @@ export class ColorizerData implements IColorizerData {
         });
     }
 
+    /**
+     * Deserialization for IColorizerData into ColorizerData.
+     */
     static fromDict(dict: IColorizerData): ColorizerData {
         if (!dict) { // return some default value in case of empty deserialization
             return ColorizerData.grayScaleColorizer({
@@ -81,6 +99,9 @@ export class ColorizerData implements IColorizerData {
         return new ColorizerData(dict);
     }
 
+    /**
+     * Generates an instance of ColorizerData without any breakpoints.
+     */
     static empty(): ColorizerData {
         return new ColorizerData({
             breakpoints: [],
@@ -88,31 +109,52 @@ export class ColorizerData implements IColorizerData {
         });
     }
 
+    /**
+     * Check if an instance of (I)ColorizerData is valid.
+     */
     static is_valid(colorizerData: IColorizerData) {
         return colorizerData.breakpoints.length >= 2;
     }
 
+    /**
+     * The constructor for ColorizerData.
+     */
     constructor(config: IColorizerData) {
         this.breakpoints = (config.breakpoints) ? config.breakpoints.map(br => new ColorBreakpoint(br)) : [];
         this.type = (config.type) ? config.type : 'gradient';
     }
 
+    /**
+     * Removes all breakpoints.
+     */
     clear() {
         this.breakpoints = [];
     }
 
+    /**
+     * Adds a breakpoint to the end of the list.
+     */
     addBreakpoint(brk: ColorBreakpointDict) {
         this.breakpoints.push(new ColorBreakpoint(brk));
     }
 
+    /**
+     * Adds a breakpoint at position i in the list.
+     */
     addBreakpointAt(i: number, brk: ColorBreakpoint) {
         this.breakpoints.splice(i, 0, brk);
     }
 
+    /**
+     * Removes the breakpoint at position i in the list.
+     */
     removeBreakpointAt(i: number) {
         this.breakpoints.splice(i, 1);
     }
 
+    /**
+     * Updates the ColorBreakpoint at position i.
+     */
     updateBreakpointAt(i: number, brk: ColorBreakpoint): boolean {
         const equal = this.getBreakpointAt(i).equals(brk);
         if (brk && !equal) {
@@ -122,6 +164,9 @@ export class ColorizerData implements IColorizerData {
         return false;
     }
 
+    /**
+     * Returns the ColorBreakpoint at position i.
+     */
     getBreakpointAt(i: number): ColorBreakpoint {
         return this.breakpoints[i];
     }
@@ -186,10 +231,16 @@ export class ColorizerData implements IColorizerData {
         return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[this.breakpoints.length - 1];
     }
 
+    /**
+     * Checks if the list of breakpoints is empty.
+     */
     isEmpty(): boolean {
         return !this.breakpoints || this.breakpoints.length === 0;
     }
 
+    /**
+     * Update the type of the ColorizerData.
+     */
     updateType(type: ColorizerType): boolean {
         if (type && (!this.type || type !== this.type)) {
             this.type = type;
@@ -198,11 +249,16 @@ export class ColorizerData implements IColorizerData {
         return false;
     }
 
-
+    /**
+     * Returns a clone of the ColorizerData.
+     */
     clone(): ColorizerData {
         return new ColorizerData(this.toDict() as IColorizerData);
     }
 
+    /**
+     * Compares this ColorizerData with another one.
+     */
     equals(other: ColorizerData): boolean {
         if (!other || this.breakpoints.length !== other.breakpoints.length || this.type !== other.type) {
             return false;
@@ -217,6 +273,9 @@ export class ColorizerData implements IColorizerData {
         return true;
     }
 
+    /**
+     * Transforms ColorizerData into an interface object.
+     */
     toDict(): IColorizerData {
         return {
             breakpoints: this.breakpoints.map(br => br.toDict()),
@@ -224,6 +283,9 @@ export class ColorizerData implements IColorizerData {
         };
     }
 
+    /**
+     * Generates a ColorizerData instance from a MappingColorizer.
+     */
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
 
         return new ColorizerData({

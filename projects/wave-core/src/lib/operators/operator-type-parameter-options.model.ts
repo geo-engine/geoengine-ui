@@ -48,22 +48,47 @@ export enum TickType {
     CONTINUOUS
 }
 
+/**
+ * Parameter option container provide the valid inputs for operator parematers.
+ * This is abstracted by ticks which are either in a numberic space or an enumeration of predefined values.
+ */
 export abstract class AbstractParameterContainer<T> {
 
+    /**
+     * Get the parameter type.
+     */
     abstract get parameterType(): ParameterOptionType;
 
+    /**
+     * Get the tick type, which indicates how to step through options.
+     */
     abstract get tickType(): TickType;
 
+    /**
+     * Get a display value for a tick.
+     */
     abstract getDisplayValueForTick(tick: number): string | undefined;
 
+    /**
+     * Check if a value is in this option container.
+     */
     containsValue(value: T): boolean {
         return !!(this.getTickForValue(value));
     }
 
+    /**
+     * Get the value for a tick.
+     */
     abstract getValueForTick(tick: number): T | undefined;
 
+    /**
+     * Get the tick for a value.
+     */
     abstract getTickForValue(value: T): number | undefined;
 
+    /**
+     * Check if a tick is valid.
+     */
     isValidTick(tick: number): boolean {
 
         if (tick < this.firstTick || tick > this.lastTick) {
@@ -75,23 +100,41 @@ export abstract class AbstractParameterContainer<T> {
         return true;
     }
 
+    /**
+     * Get the first possible tick.
+     */
     abstract get firstTick(): number;
 
+    /**
+     * Get the last possible tick.
+     */
     abstract get lastTick(): number;
 
+    /**
+     * Get the tick step size. Default = 1.
+     */
     get tickStepSize(): number {
         return 1;
     }
 
+    /**
+     * Check if the container has ticks.
+     */
     hasTicks() {
         return this.firstTick < this.lastTick;
     }
 
+    /**
+     * Generate an empty parameter option container.
+     */
     static getEmptyOption(): EmptyParameterContainer {
         return EMPTY_OPTION;
     }
 }
 
+/**
+ * An empty parameter option container.
+ */
 export class EmptyParameterContainer extends AbstractParameterContainer<number | string> {
 
     constructor() {
@@ -128,9 +171,19 @@ export class EmptyParameterContainer extends AbstractParameterContainer<number |
 
 }
 
+/**
+ * Singleton empty option container.
+ */
 const EMPTY_OPTION = new EmptyParameterContainer();
 
+/**
+ * A parameter option container for numerical parameters.
+ */
 export class NumberParameterArray extends AbstractParameterContainer<number> {
+
+    /**
+     * The list of all valid options.
+     */
     options: Array<number>;
 
     constructor(config: NumberParameterArrayConfig) {
@@ -186,7 +239,13 @@ export class NumberParameterArray extends AbstractParameterContainer<number> {
 
 }
 
+/**
+ * A parameter option container for string parameters.
+ */
 export class StringParameterArray extends AbstractParameterContainer<string> {
+    /**
+     * The list of all valid options.
+     */
     options: Array<string>;
 
     constructor(config: StringParameterArrayConfig) {
@@ -234,9 +293,21 @@ export class StringParameterArray extends AbstractParameterContainer<string> {
     }
 }
 
+/**
+ * An interface for numeric range parameters.
+ */
 export class NumberParameterRange extends AbstractParameterContainer<number> {
+    /**
+     * Range start.
+     */
     start: number;
+    /**
+     * Range end.
+     */
     stop: number;
+    /**
+     * Range step size.
+     */
     step = 1;
 
     constructor(config: NumberParameterRangeConfig) {
@@ -295,7 +366,14 @@ export class NumberParameterRange extends AbstractParameterContainer<number> {
     }
 }
 
+/**
+ * An interface for complex parameter options.
+ * The type of the option type is generic but has to implement OptionsDict.
+ */
 export class DictParameterArray<T extends OptionsDict> extends AbstractParameterContainer<T> {
+    /**
+     * List of all valid options.
+     */
     options: Array<T>;
 
     constructor(config: DictParameterArrayConfig<T>) {
@@ -373,6 +451,9 @@ export abstract class OperatorTypeParameterOptions {
      */
     abstract toDict(): OperatorTypeParameterOptionsConfig;
 
+    /**
+     * Get the parameter option type for a parameter name.
+     */
     public getParameterOption(parameterName: ParameterName): ParameterContainerType {
         const res: [ParameterName, ParameterContainerType] = this.getParameterOptions().find(
             ([pN, _]) => pN === parameterName
@@ -384,10 +465,19 @@ export abstract class OperatorTypeParameterOptions {
         return pOption;
     }
 
+    /**
+     * Get the parameter options as array of tuples [ParameterName, ParameterContainerType].
+     */
     public abstract getParameterOptions(): Array<[ParameterName, ParameterContainerType]>;
 
+    /**
+     * Get the parameter options as array of tuples [ParameterName, ParameterOptionType].
+     */
     public abstract getParametersTypes(): Array<[ParameterName, ParameterOptionType]>;
 
+    /**
+     * Get a list of all parameter names.
+     */
     public getParameterNames(): Array<ParameterName> {
         return this.getParametersTypes().map(([n, _]) => n);
     }

@@ -4,6 +4,9 @@ import {RasterLegendComponent} from './raster-legend.component';
 import {Interpolation, interpolationToName, Unit} from '../../../operators/unit.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 
+/**
+ * The raster legend component.
+ */
 @Component({
     selector: 'wave-mapping-raster-legend',
     templateUrl: 'mapping-raster-legend.component.html',
@@ -13,8 +16,14 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 export class MappingRasterLegendComponent<S extends MappingRasterSymbology>
     extends RasterLegendComponent<S> implements OnChanges {
 
+    /**
+     * Parameters to use with the number pipe in the template.
+     */
     numberPipeParameters = '1.0-0';
 
+    /**
+     * Get a string representation of a Unit.
+     */
     unitToString(unit: Unit): string {
         if (unit instanceof Unit && unit.unit !== Unit.defaultUnit.unit) {
             return unit.unit;
@@ -23,6 +32,9 @@ export class MappingRasterLegendComponent<S extends MappingRasterSymbology>
         }
     }
 
+    /**
+     * Get the name of an interpolation.
+     */
     interpolationToName(interpolation: Interpolation): string {
         return interpolationToName(interpolation);
     }

@@ -8,6 +8,13 @@ import {LoginComponent} from '../../users/login/login.component';
 import {Config} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
 
+/**
+ * Button config for the sidenav navigation
+ *
+ * The icon can be a name or an svg image.
+ * Furthermore, there is the option to define observables that specify icon as well as color
+ * upon user-defined events.
+ */
 export interface NavigationButton {
     sidenavConfig: SidenavConfig;
     icon: string;
@@ -18,6 +25,9 @@ export interface NavigationButton {
     tooltipObservable?: Observable<string>;
 }
 
+/**
+ * This component lists all buttons for the sidenav navigation.
+ */
 @Component({
     selector: 'wave-navigation',
     templateUrl: './navigation.component.html',
@@ -26,11 +36,17 @@ export interface NavigationButton {
 })
 export class NavigationComponent implements OnInit, OnDestroy {
 
+    /**
+     * The navigation shows this array of buttons.
+     */
     @Input() buttons: Array<NavigationButton>;
 
     private sidenavConfig: SidenavConfig;
     private sidenavConfigSubscription: Subscription;
 
+    /**
+     * DI for services
+     */
     constructor(private layoutService: LayoutService,
                 private sidenavRef: SidenavRef,
                 private changeDetectorRef: ChangeDetectorRef) {
@@ -49,10 +65,16 @@ export class NavigationComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Load a component into the sidenav
+     */
     setComponent(sidenavConfig: SidenavConfig) {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
+    /**
+     * Map the sidenavConfig to a theme palette color for the button
+     */
     buttonColor(sidenavConfig: SidenavConfig): ThemePalette {
         if (!sidenavConfig || !this.sidenavConfig) {
             return undefined;
@@ -67,6 +89,9 @@ export class NavigationComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * Default constructor for a login button in the navigation.
+     */
     static createLoginButton(userService: UserService,
                              layoutService: LayoutService,
                              config: Config,

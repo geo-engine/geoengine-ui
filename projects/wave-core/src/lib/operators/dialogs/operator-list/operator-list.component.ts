@@ -39,17 +39,31 @@ import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
 
+/**
+ * This type encapsulates…
+ *  * a component to select,
+ *  * a type to display (name and icon) and
+ *  * a short description text.
+ */
 export interface OperatorListType {
     component: Type<any>;
     type: { NAME: string, ICON_URL: string };
     description: string;
 }
 
+/**
+ * This types groups operator list types
+ */
 export type OperatorListButtonGroups = Array<{
     name: string;
     list: Array<OperatorListType>;
 }>;
 
+/**
+ * This component provides a list of operator dialogs to choose from.
+ *
+ * It provides a set of default operators but they can be overridden.
+ */
 @Component({
     selector: 'wave-operator-list',
     templateUrl: './operator-list.component.html',
@@ -156,6 +170,9 @@ export class OperatorListComponent implements OnInit {
         },
     ];
 
+    /**
+     * Specify (optionally) a custom set of operator groups and list entries (buttons)
+     */
     @Input() operators: OperatorListButtonGroups = [ // default operator set
         {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
         {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
@@ -166,6 +183,9 @@ export class OperatorListComponent implements OnInit {
     operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
     searchString$ = new BehaviorSubject<string>('');
 
+    /**
+     * DI of services
+     */
     constructor(private layoutService: LayoutService) {
     }
 
@@ -208,6 +228,9 @@ export class OperatorListComponent implements OnInit {
         );
     }
 
+    /**
+     * Load a selected dialog into the sidenav
+     */
     load(component: Type<any>) {
         this.layoutService.setSidenavContentComponent({component, keepParent: true});
     }
