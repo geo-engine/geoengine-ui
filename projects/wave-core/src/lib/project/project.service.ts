@@ -22,7 +22,7 @@ import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Layer, LayerChanges, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
-import {AbstractSymbology, AbstractVectorSymbology, AbstractRasterSymbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology, AbstractVectorSymbology, AbstractRasterSymbology, PointSymbology} from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
@@ -995,11 +995,19 @@ export class ProjectService {
             switchMap(([time, [projection, viewportSize]]) => {
                 const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
+                let clusteredOption;
+                // TODO: is clustering a property of a layer or the symbology?
+                if (layer.clustered && layer.symbology instanceof PointSymbology) {
+                    clusteredOption = {
+                        minRadius: layer.symbology.radius,
+                    };
+                }
+
                 return this.mappingQueryService.getWFSData({
                     operator: layer.operator,
                     time,
                     projection,
-                    clustered: layer.clustered, // TODO: is clustering a property of a layer or the symbology?
+                    clusteredOption,
                     outputFormat: WFSOutputFormats.JSON,
                     viewportSize
                 }).pipe(map(x => VectorData.olParse(time, projection, requestExtent, x)));

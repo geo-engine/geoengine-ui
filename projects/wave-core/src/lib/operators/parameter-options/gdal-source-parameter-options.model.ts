@@ -9,6 +9,7 @@ import {
 
 import {GdalSourceType} from '../types/gdal-source-type.model';
 import {OptionsDict} from '../operator-type.model';
+import { MappingRasterMethodology } from '../dialogs/data-repository/mapping-source.model';
 
 /**
  * Dictionary for serializing the operator type.
@@ -23,6 +24,7 @@ export interface GdalSourceParameterOptionsConfig extends OperatorTypeParameterO
  */
 export interface GdalSourceChannelOptions extends OptionsDict {
     channelNumber: number;
+    methodology?: MappingRasterMethodology;
 }
 
 /**
