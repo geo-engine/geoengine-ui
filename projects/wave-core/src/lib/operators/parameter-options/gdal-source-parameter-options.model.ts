@@ -9,7 +9,7 @@ import {
 
 import {GdalSourceType} from '../types/gdal-source-type.model';
 import {OptionsDict} from '../operator-type.model';
-import { MappingRasterMethodology } from '../dialogs/data-repository/mapping-source.model';
+import {MappingRasterMethodology} from '../dialogs/data-repository/mapping-source.model';
 
 /**
  * Dictionary for serializing the operator type.

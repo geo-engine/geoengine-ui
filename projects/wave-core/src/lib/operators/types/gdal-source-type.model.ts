@@ -1,6 +1,7 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
 import {GdalSourceChannelOptions} from '../parameter-options/gdal-source-parameter-options.model';
+import { MappingRasterMethodology } from '../dialogs/data-repository/mapping-source.model';
 
 /**
  * The interface for gdal source requests
@@ -14,12 +15,10 @@ interface GdalSourceTypeConfig {
 }
 
 /**
- * Options for "channel" parameter.
+ * Options allowed to replace when cloning.
  */
-export interface GdalSourceChannelOptions {
-    displayValue: string;
-    channelNumber: number;
-    methodology?: MappingRasterMethodology;
+export interface GdalSourceTypeCloneOptions {
+    channelConfig: GdalSourceChannelOptions;
 }
 
 /**
