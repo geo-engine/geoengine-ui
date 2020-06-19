@@ -1,4 +1,3 @@
-
 import {combineLatest as observableCombineLatest, ReplaySubject, Subscription, BehaviorSubject, Observable} from 'rxjs';
 import {tap, mergeMap, map} from 'rxjs/operators';
 
@@ -20,7 +19,7 @@ import {
     TextualAttributeFilterType
 } from '../../types/textual-attribute-filter-type.model';
 import {DataSource} from '@angular/cdk/table';
-import { DataType, DataTypes } from '../../datatype.model';
+import {DataType, DataTypes} from '../../datatype.model';
 
 function nameComparator(a: string, b: string): number {
     const stripped = (s: string): string => s.replace(' ', '');
@@ -105,19 +104,19 @@ Sean Gilles did some clean up and made some enhancements.`,
         this.sourceOperator = this.createCsvSourceOperator();
 
         this.subscription = observableCombineLatest(
-                this.getOperatorDataStream().pipe(map(
-                    vectorData => {
-                        // console.log('vectorData', vectorData);
-                        const data = vectorData.data.map(olFeature => olFeature.getProperties() as { [k: string]: any });
-                        // console.log('mapped', data);
-                        return data;
-                    }
-                )),
-                this.searchString$.pipe(map(searchString => searchString.toLowerCase())),
-                (entries, searchString) => entries
-                    .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
-                    .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
-            ).pipe(
+            this.getOperatorDataStream().pipe(map(
+                vectorData => {
+                    // console.log('vectorData', vectorData);
+                    const data = vectorData.data.map(olFeature => olFeature.getProperties() as { [k: string]: any });
+                    // console.log('mapped', data);
+                    return data;
+                }
+            )),
+            this.searchString$.pipe(map(searchString => searchString.toLowerCase())),
+            (entries, searchString) => entries
+                .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
+                .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
+        ).pipe(
             tap(() => this.isLoading$.next(false)))
             .subscribe(entries => this.filteredEntries$.next(entries));
 
@@ -163,7 +162,7 @@ Sean Gilles did some clean up and made some enhancements.`,
             return this.mappingQueryService.getWFSData({
                 operator: this.sourceOperator,
                 projection: this.sourceProjection,
-                clustered: false,
+                clusteredOption: undefined,
                 outputFormat: WFSOutputFormats.JSON,
                 viewportSize: {
                     extent: this.sourceProjection.getExtent(),

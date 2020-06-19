@@ -26,7 +26,7 @@ export const DEFAULT_VECTOR_FILL_COLOR: Color = Color.fromRgbaLike([255, 0, 0, 1
 export const DEFAULT_VECTOR_HIGHLIGHT_STROKE_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
 export const DEFAULT_VECTOR_HIGHLIGHT_FILL_COLOR: Color = Color.fromRgbaLike([0, 153, 255, 1]);
 export const DEFAULT_VECTOR_HIGHLIGHT_TEXT_COLOR: Color = Color.fromRgbaLike([255, 255, 255, 1]);
-export const DEFAULT_POINT_RADIUS = 5;
+export const DEFAULT_POINT_RADIUS = 8;
 export const DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE = '___radius';
 export const DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE = '___numberOfPoints';
 export const MIN_ALLOWED_POINT_RADIUS = 1;
@@ -317,7 +317,6 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         this.textColor = config.textColor ? Color.fromRgbaLike(config.textColor) : WHITE;
         this.textStrokeWidth = config.textStrokeWidth ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
     }
-
 
 
     toDict(): VectorSymbologyDict {
