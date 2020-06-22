@@ -89,6 +89,9 @@ export class GdalSourceType extends OperatorType {
                 coords: dict.gdal_params.coords,
                 provenance: dict.gdal_params.provenance,
                 netcdf_subdataset: dict.gdal_params.netcdf_subdataset,
+                time_start: dict.gdal_params.time_start,
+                time_end: dict.gdal_params.time_end,
+                channel_start_time_list: dict.gdal_params.channel_start_time_list,
             } : undefined,
             sourcename: dict.sourcename,
             transform: dict.transform,
@@ -157,6 +160,9 @@ export class GdalSourceType extends OperatorType {
                 netcdf_subdataset: this.gdalParams.netcdf_subdataset,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
+                time_start: this.gdalParams.time_start,
+                time_end: this.gdalParams.time_end,
+                channel_start_time_list: this.gdalParams.channel_start_time_list,
             } : undefined,
         };
     }
@@ -183,6 +189,9 @@ export class GdalSourceType extends OperatorType {
                 netcdf_subdataset: this.gdalParams.netcdf_subdataset,
                 coords: this.gdalParams.coords,
                 provenance: this.gdalParams.provenance,
+                time_start: this.gdalParams.time_start,
+                time_end: this.gdalParams.time_end,
+                channel_start_time_list: this.gdalParams.channel_start_time_list,
             } : undefined,
         };
     }
@@ -217,6 +226,9 @@ export interface GdalParamsType {
     coords: {
         crs: string;
     };
+    channel_start_time_list?: Array<string>;
+    time_start?: string;
+    time_end?: string;
     provenance: {
         citation: string,
         license: string,
@@ -242,6 +254,9 @@ export interface GdalParamsTypeDict {
     coords: {
         crs: string;
     };
+    channel_start_time_list?: Array<string>;
+    time_start?: string;
+    time_end?: string;
     provenance: {
         citation: string,
         license: string,
@@ -267,6 +282,9 @@ export interface GdalParamsTypeMappingDict {
     coords: {
         crs: string;
     };
+    channel_start_time_list?: Array<string>;
+    time_start?: string;
+    time_end?: string;
     provenance: {
         citation: string,
         license: string,
