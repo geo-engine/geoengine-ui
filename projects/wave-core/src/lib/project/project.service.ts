@@ -22,7 +22,7 @@ import {LoadingState} from './loading-state.model';
 import {MappingQueryService} from '../queries/mapping-query.service';
 import {NotificationService} from '../notification.service';
 import {Layer, LayerChanges, LayerData, RasterData, RasterLayer, VectorData, VectorLayer} from '../layers/layer.model';
-import {AbstractSymbology, AbstractVectorSymbology, AbstractRasterSymbology, PointSymbology} from '../layers/symbology/symbology.model';
+import {AbstractRasterSymbology, AbstractSymbology, AbstractVectorSymbology, PointSymbology} from '../layers/symbology/symbology.model';
 import {Provenance} from '../provenance/provenance.model';
 import {MapService} from '../map/map.service';
 import {WFSOutputFormats} from '../queries/output-formats/wfs-output-format.model';
@@ -223,21 +223,21 @@ export class ProjectService {
      * Get a stream of the projects projection.
      */
     getProjectionStream(): Observable<Projection> {
-        return this.project$.pipe(map(project => project.projection), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.projection), distinctUntilChanged());
     }
 
     /**
      * Get a stream of the projects time.
      */
     getTimeStream(): Observable<Time> {
-        return this.project$.pipe(map(project => project.time), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.time), distinctUntilChanged());
     }
 
     /**
      * Get a stream of the projects time step size.
      */
     getTimeStepDurationStream(): Observable<TimeStepDuration> {
-        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged());
     }
 
     /**
@@ -347,7 +347,7 @@ export class ProjectService {
      * Retrieve the plot models array as a stream.
      */
     getPlotStream(): Observable<Array<Plot>> {
-        return this.project$.pipe(map(project => project.plots), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.plots), distinctUntilChanged());
     }
 
     /**
@@ -604,7 +604,7 @@ export class ProjectService {
      * Retrieve the layer models array as a stream.
      */
     getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
-        return this.project$.pipe(map(project => project.layers), distinctUntilChanged(), );
+        return this.project$.pipe(map(project => project.layers), distinctUntilChanged());
     }
 
     /**
@@ -661,8 +661,7 @@ export class ProjectService {
     }
 
     getLayerCombinedStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
-        const state = this.layerCombinedState$.get(layer);
-        return state;
+        return this.layerCombinedState$.get(layer);
     }
 
     /**
@@ -713,6 +712,7 @@ export class ProjectService {
     /**
      * Changes the display name of a layer.
      * @param layer The layer to modify
+     * @param changes A set of changes to apply to the layer
      */
     changeLayer(layer: Layer<AbstractSymbology>, changes: LayerChanges<AbstractSymbology>) {
         // change mutably
@@ -842,11 +842,11 @@ export class ProjectService {
                     this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ), )
-            .subscribe(
-                data => data$.next(data),
-                error => error // ignore error
-            );
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
     }
 
     private createPlotDataStreams(plot: Plot) {
@@ -915,10 +915,11 @@ export class ProjectService {
         this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
         this.layerProvenanceData$.set(layer, provenanceData$);
 
-        const combinedState$ = observableCombineLatest(
+        const combinedState$ = observableCombineLatest([
             this.layerSymbologyDataState$.get(layer),
             this.layerDataState$.get(layer),
-            this.layerProvenanceDataState$.get(layer)).pipe(
+            this.layerProvenanceDataState$.get(layer),
+        ]).pipe(
             map(([sym, data, prov]) => {
                 // console.log("combinedLayerState", sym, data, prov);
 
@@ -935,9 +936,11 @@ export class ProjectService {
                 }
 
                 return LoadingState.OK;
-            }), catchError(err => {
+            }),
+            catchError(err => {
                 return observableOf(LoadingState.ERROR);
-            }), );
+            }),
+        );
 
         this.layerCombinedState$.set(layer, combinedState$);
     }
@@ -947,10 +950,10 @@ export class ProjectService {
      */
     private createRasterLayerDataSubscription(layer: RasterLayer<AbstractRasterSymbology>, data$: Observer<RasterData>,
                                               loadingState$: Observer<LoadingState>): Subscription {
-        return observableCombineLatest(
+        return observableCombineLatest([
             this.getTimeStream(),
             this.getProjectionStream(),
-        ).pipe(
+        ]).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),
             map(([time, projection]) => {
                 return new RasterData(time, projection,
@@ -972,11 +975,11 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ), )
-            .subscribe(
-                data => data$.next(data),
-                error => error // ignore error
-            );
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
     }
 
     /**
@@ -984,13 +987,15 @@ export class ProjectService {
      */
     private createVectorLayerDataSubscription(layer: VectorLayer<AbstractVectorSymbology>, data$: Observer<VectorData>,
                                               loadingState$: Observer<LoadingState>): Subscription {
-        return observableCombineLatest(
+        return observableCombineLatest([
             this.getTimeStream(),
-            observableCombineLatest(
+            observableCombineLatest([
                 this.getProjectionStream(),
                 this.mapService.getViewportSizeStream()
-            ).pipe(debounceTime(this.config.DELAYS.DEBOUNCE))
-        ).pipe(
+            ]).pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE)
+            ),
+        ]).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),
             switchMap(([time, [projection, viewportSize]]) => {
                 const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
@@ -1018,11 +1023,11 @@ export class ProjectService {
                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
                     loadingState$.next(LoadingState.ERROR);
                 }
-            ), )
-            .subscribe(
-                data => data$.next(data),
-                error => error // ignore error
-            );
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
     }
 
     /**
@@ -1030,7 +1035,10 @@ export class ProjectService {
      */
     private createLayerProvenanceSubscription(layer: Layer<AbstractSymbology>, provenance$: Observer<{}>,
                                               loadingState$: Observer<LoadingState>): Subscription {
-        return observableCombineLatest(this.getTimeStream(), this.getProjectionStream()).pipe(
+        return observableCombineLatest([
+            this.getTimeStream(),
+            this.getProjectionStream(),
+        ]).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),
             switchMap(([time, projection]) => {
                 return this.mappingQueryService.getProvenance({
@@ -1051,11 +1059,11 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                     }
                 }
-            ), )
-            .subscribe(
-                data => provenance$.next(data),
-                error => error // ignore error
-            );
+            ),
+        ).subscribe(
+            data => provenance$.next(data),
+            error => error // ignore error
+        );
     }
 
     /**
@@ -1064,10 +1072,10 @@ export class ProjectService {
     private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<AbstractRasterSymbology>,
                                                        data$: Observer<DeprecatedMappingColorizerDoNotUse>,
                                                        loadingState$: Observer<LoadingState>): Subscription {
-        return observableCombineLatest(
+        return observableCombineLatest([
             this.getTimeStream(),
             this.getProjectionStream(),
-        ).pipe(
+        ]).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),
             switchMap(([time, projection]) => {
                 return this.mappingQueryService.getColorizer(layer.operator, time, projection).pipe(
@@ -1081,12 +1089,13 @@ export class ProjectService {
                             loadingState$.next(LoadingState.ERROR);
                         }
                         return observableOf({interpolation: 'unknown', breakpoints: []});
-                    }), );
-            }), )
-            .subscribe(
-                data => data$.next(data),
-                error => error // ignore error
-            );
+                    }),
+                );
+            }),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
     }
 
     private createLayerChangesStream(layer: Layer<AbstractSymbology>) {
