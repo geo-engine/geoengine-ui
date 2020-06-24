@@ -964,7 +964,7 @@ export class ProjectService {
             tap(
                 () => loadingState$.next(LoadingState.OK),
                 (reason: HttpErrorResponse) => {
-                    if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                    if (ProjectService.isNoRasterForGivenTimeException(reason)) {
                         this.notificationService.error(`${layer.name}: No Raster for the given Time`);
                         loadingState$.next(LoadingState.NODATAFORGIVENTIME);
                     } else {
@@ -1043,7 +1043,7 @@ export class ProjectService {
             tap(
                 () => loadingState$.next(LoadingState.OK),
                 (reason: HttpErrorResponse) => {
-                    if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                    if (ProjectService.isNoRasterForGivenTimeException(reason)) {
                         this.notificationService.error(`${layer.name}: No Raster for the given Time`);
                         loadingState$.next(LoadingState.NODATAFORGIVENTIME);
                     } else {
@@ -1073,7 +1073,7 @@ export class ProjectService {
                 return this.mappingQueryService.getColorizer(layer.operator, time, projection).pipe(
                     tap(() => loadingState$.next(LoadingState.OK)),
                     catchError((reason: HttpErrorResponse) => {
-                        if (typeof reason.error === 'string' && reason.error.indexOf('NoRasterForGivenTimeException') >= 0) {
+                        if (ProjectService.isNoRasterForGivenTimeException(reason)) {
                             this.notificationService.error(`${layer.name}: No Raster for the given Time`);
                             loadingState$.next(LoadingState.NODATAFORGIVENTIME);
                         } else {
@@ -1094,5 +1094,13 @@ export class ProjectService {
             throw new Error('Layer changes stream already registered');
         }
         this.layerChanges$.set(layer, new ReplaySubject<LayerChanges<AbstractSymbology>>(1));
+    }
+
+    private static isNoRasterForGivenTimeException(response: HttpErrorResponse): boolean {
+        if (!response.error || !response.error.nested_exception) {
+            return false;
+        }
+        const nested_exception: { message: string, type: string } = response.error.nested_exception;
+        return nested_exception.message.indexOf('NoRasterForGivenTimeException') >= 0;
     }
 }
