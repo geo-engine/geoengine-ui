@@ -116,6 +116,7 @@ export * from './lib/operators/types/raster-value-extraction-type.model';
 export * from './lib/operators/types/numeric-attribute-filter-type.model';
 export * from './lib/operators/types/textual-attribute-filter-type.model';
 export * from './lib/operators/types/expression-type.model';
+export * from './lib/colors/colormaps/colormap.model';
 
 // Misc
 export * from './lib/util/errors';
