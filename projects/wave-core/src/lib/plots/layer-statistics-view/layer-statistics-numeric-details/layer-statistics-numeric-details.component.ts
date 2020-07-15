@@ -1,5 +1,13 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {NumericStatisticsData} from '../layer-statistics-view.component';
+
+export interface NumericStatisticsData {
+    count: number;
+    nan_count: number;
+    min: number;
+    max: number;
+    mean: number;
+    stddev: number;
+}
 
 @Component({
     selector: 'wave-layer-statistics-numeric-details',
