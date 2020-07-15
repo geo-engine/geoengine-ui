@@ -1,4 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {NumericStatisticsData} from './layer-statistics-numeric-details/layer-statistics-numeric-details.component';
+import {TextualStatisticsData} from './layer-statistics-textual-details/layer-statistics-textual-details.component';
 
 interface LayerStatisticsData {
     rasters?: Array<NumericStatisticsData>;
@@ -9,21 +11,6 @@ interface LayerStatisticsData {
 
 interface FeatureData {
     [name: string]: NumericStatisticsData | TextualStatisticsData;
-}
-
-export interface NumericStatisticsData {
-    count: number;
-    nan_count: number;
-    min: number;
-    max: number;
-    mean: number;
-    stddev: number;
-}
-
-export interface TextualStatisticsData {
-    count: number;
-    distinct_values: number;
-    value_counts: Array<[string, number]>;
 }
 
 @Component({
