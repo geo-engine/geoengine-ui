@@ -1,5 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {TextualStatisticsData} from '../layer-statistics-view.component';
+
+export interface TextualStatisticsData {
+    count: number;
+    distinct_values: number;
+    value_counts: Array<[string, number]>;
+}
 
 @Component({
     selector: 'wave-layer-statistics-textual-details',
