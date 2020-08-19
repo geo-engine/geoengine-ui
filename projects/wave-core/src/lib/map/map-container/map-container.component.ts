@@ -631,6 +631,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     },
                     wrapX: false,
                     projection: projection.getCode(),
+                    crossOrigin: 'anonymous',
                 });
             case 'XYZ':
                 return new XYZ({
