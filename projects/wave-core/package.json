@@ -9,11 +9,11 @@
         "registry": "https://npm.pkg.github.com/"
     },
     "peerDependencies": {
-        "@angular/cdk": "~9.2.2",
+        "@angular/cdk": "~10.2.4",
         "@angular/common": "^10.1.5",
         "@angular/core": "^10.1.5",
         "@angular/forms": "~10.1.5",
-        "@angular/material": "~9.2.2",
+        "@angular/material": "~10.2.4",
         "codemirror": "~5.58.1",
         "d3": "~5.16.0",
         "dagre": "~0.8.5",
