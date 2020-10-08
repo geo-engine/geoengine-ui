@@ -66,6 +66,7 @@ export class LayoutService {
             const outer = document.createElement('div');
             outer.style.visibility = 'hidden';
             outer.style.width = '100px';
+            // @ts-ignore
             outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
 
             document.body.appendChild(outer);

@@ -18,11 +18,11 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
      * Starting with `1`.
      */
     toLetters: (num: number) => {
-        let mod = num % 26;
+        const mod = num % 26;
         let pow = num / 26 | 0; // tslint:disable-line:no-bitwise
         // noinspection CommaExpressionJS
-        let out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
-        return pow ? this.toLetters(pow) + out : out;
+        const out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
+        return pow ? LetterNumberConverter.toLetters(pow) + out : out;
     },
 
     /**
@@ -31,7 +31,7 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
      */
     fromLetters: (str: string) => {
         let out = 0;
-        let len = str.length;
+        const len = str.length;
         let pos = len;
         while (--pos > -1) {
             out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - 1 - pos);
@@ -68,7 +68,6 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
     /**
      * The initial amount of elements to select.
-     * @type {number}
      */
     @Input() initialAmount = 1;
 
@@ -110,7 +109,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         let minMaxInitialChanged = false;
         let initialChange = false;
 
-        for (let propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) { // tslint:disable-line:forin
             switch (propName) {
                 case 'initialAmount':
                     initialChange = changes[propName].isFirstChange();
