@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import moment from 'moment/src/moment';
+import * as moment from 'moment';
 
 import {MappingRequestParameters, MappingQueryService, UserService, Config} from 'wave-core';
 

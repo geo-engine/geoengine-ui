@@ -5,7 +5,7 @@ import {tap, mergeMap, catchError} from 'rxjs/operators';
 
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy} from '@angular/core';
 
-import moment from 'moment/src/moment';
+import * as moment from 'moment';
 
 import {MappingQueryService, NotificationService} from 'wave-core';
 
