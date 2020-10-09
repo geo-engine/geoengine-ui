@@ -292,7 +292,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
             .append('g')
             .classed('bar', true)
             .attr('transform', (d, i) => {
-                let xPos = i * barWidth;
+                const xPos = i * barWidth;
                 return `translate(${xPos},0)`;
             });
 
@@ -302,7 +302,7 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
             })
             .attr('width', (barWidth > 1) ? (barWidth - 1) : barWidth)
             .attr('transform', (d, _i) => {
-                let yTrans = y(d);
+                const yTrans = y(d);
                 return `translate(0,${yTrans})`;
             });
 
@@ -446,9 +446,8 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
     private zoomed(svg: d3.Selection<SVGElement, any, any, any>,
                    container: d3.Selection<SVGElement, any, any, any>,
                    xAxis: d3.Axis<d3.AxisDomain>
-    ): () => void {
-        return () => {
-            const zoomEvent = d3.event as d3.D3ZoomEvent<any, any>;
+    ): (zoomEvent: d3.D3ZoomEvent<any, any>) => void {
+        return (zoomEvent) => {
             container.attr(
                 'transform',
                 `translate(${zoomEvent.transform.x},0)scale(${zoomEvent.transform.k},1)`
@@ -463,9 +462,9 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
                          _height: number,
                          width: number,
                          leftSlider: Slider,
-                         rightSlider: Slider): () => void {
-        return () => {
-            this.zoomed(svg, container, xAxis)();
+                         rightSlider: Slider): (zoomEvent: d3.D3ZoomEvent<any, any>) => void {
+        return (zoomEvent) => {
+            this.zoomed(svg, container, xAxis)(zoomEvent);
 
             // set left slider
             const leftPointerPosition = clamp(xAxis.scale()(leftSlider.position), 0, width);
@@ -488,12 +487,11 @@ export class HistogramComponent implements AfterViewInit, OnChanges, OnDestroy {
                      rightSlider: Slider,
                      width: number,
                      isLeft: boolean): d3.DragBehavior<any, any, any> {
-        return d3.drag().on('drag', () => {
+        return d3.drag().on('drag', (dragEvent: d3.D3DragEvent<any, any, any>) => {
             const minX = this.data.metadata.min;
             const maxX = this.data.metadata.max;
             const bins = this.data.metadata.numberOfBuckets;
 
-            const dragEvent = d3.event as d3.D3DragEvent<any, any, any>;
             const eventX = dragEvent.x;
 
             let lowerbound: number;

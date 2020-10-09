@@ -61,6 +61,7 @@ export abstract class MapLayerComponent<OL extends OlLayer,
 /**
  * The vector layer abstraction for a map layer
  */
+@Directive()
 export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
     OlVectorSource,
     AbstractVectorSymbology,

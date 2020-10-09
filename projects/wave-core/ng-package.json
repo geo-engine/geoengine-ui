@@ -9,7 +9,6 @@
             "dagre-d3": "dagreD3",
             "immutable": "immutable",
             "moment": "moment",
-            "moment/src/moment": "moment",
             "ngx-color-picker": "ngxColorPicker",
             "ol/Collection": "OlCollection",
             "ol/Map": "OlMap",
