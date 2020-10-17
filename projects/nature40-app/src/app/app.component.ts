@@ -329,7 +329,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         let stored_extent: [number, number, number, number] = JSON.parse(localStorage.getItem(storage_key));
 
         if (!stored_extent) {
-            stored_extent = [8.66, 50.82, 8.69, 50.84]; // default to Uniwald
+            stored_extent = this.config.NATURE40.DEFAULT_VIEW_BBOX;
         }
 
         this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
