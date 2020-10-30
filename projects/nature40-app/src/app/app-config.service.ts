@@ -4,6 +4,7 @@ import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG} from 'wave-core';
 
 interface Nature40 {
     SSO_JWT_PROVIDER_URL: string;
+    DEFAULT_VIEW_BBOX: [number, number, number, number];
 }
 
 interface AppConfigStructure extends WaveConfigStructure {
@@ -13,6 +14,7 @@ interface AppConfigStructure extends WaveConfigStructure {
 const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
     NATURE40: {
         SSO_JWT_PROVIDER_URL: 'http://vhrz669.hrz.uni-marburg.de/nature40/sso?jws=',
+        DEFAULT_VIEW_BBOX: [8.66, 50.82, 8.69, 50.84], // default to Uniwald
     },
 }) as AppConfigStructure;
 
