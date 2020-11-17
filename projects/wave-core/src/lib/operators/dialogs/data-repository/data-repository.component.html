@@ -18,13 +18,12 @@
     </mat-menu>
     -->
 </wave-sidenav-search>
-
 <mat-list *ngIf="(sources | async).length > 0; else noSources">
     <ng-template ngFor let-source [ngForOf]="sources | async | waveMappingDataSourceFilter:searchTerm">
-        <wave-vector-source-dataset *ngIf="source.operator === 'ogr_source'; else rasterDataset" [dataset]="source">
+        <wave-vector-source-dataset *ngIf="source.operator === 'ogr_source'; else rasterDataset" [dataset]="source" [searchTerm]=searchTerm>
         </wave-vector-source-dataset>
         <ng-template #rasterDataset>
-            <wave-source-dataset [dataset]="source"></wave-source-dataset>
+            <wave-source-dataset [dataset]="source" [searchTerm]=searchTerm></wave-source-dataset>
         </ng-template>
     </ng-template>
 </mat-list>

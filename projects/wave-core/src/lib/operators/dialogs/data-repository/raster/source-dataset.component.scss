@@ -30,6 +30,9 @@ mat-list-item {
 .mat-cell {
     font-size: 12px;
 }
+:host ::ng-deep  .highlight {
+    color: var(--wave-accent-color, grey);
+}
 
 // Element that overlays the button to show focus and hover effects.
 .mat-row:hover {

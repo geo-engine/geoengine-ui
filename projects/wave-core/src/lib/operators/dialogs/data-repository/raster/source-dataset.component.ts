@@ -29,8 +29,8 @@ import {Colormap} from '../../../../colors/colormaps/colormap.model';
 export class SourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
-
-    searchTerm: string; // TODO: this was needed to get prod build working...
+    @Input() searchTerm: string;
+    // searchTerm: string; // TODO: this was needed to get prod build working...
     _useRawData = false;
     _showPreview = false;
     _showDescription = false;

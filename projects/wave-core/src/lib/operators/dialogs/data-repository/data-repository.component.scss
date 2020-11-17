@@ -16,6 +16,10 @@ mat-list-item ::ng-deep .highlight {
     color: var(--wave-accent-color, grey);
     text-decoration: underline;
 }
+.highlight {
+    color: var(--wave-accent-color, grey);
+    text-decoration: underline;
+}
 
 mat-list-item ::ng-deep .mat-list-item-content {
     height: auto !important;
