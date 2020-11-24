@@ -29,7 +29,6 @@
                 <mat-header-cell *matHeaderCellDef>Channel</mat-header-cell>
                 <mat-cell *matCellDef="let channel">
                     <span bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
-                    <!--{{channel.name}}-->
                 </mat-cell>
             </ng-container>
 

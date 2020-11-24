@@ -1,19 +1,22 @@
-import { PipeTransform, Pipe } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({name: 'waveHighlightPipe'})
-
 export class HighlightPipe implements PipeTransform {
-    transform(text: string, search): string {
-        if (search && text) {
-            let pattern = search.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-            pattern = pattern.split(' ').filter((t) => {
-                return t.length > 0;
-            }).join('|');
-            const regex = new RegExp(pattern, 'gi');
 
-            return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
-        } else {
-            return text;
+    // TODO: replace <span> with a <higlight> component?
+    transform(text: string, term: string): string {
+
+        let rexp;
+        if (term) {
+            try {
+                rexp = new RegExp('(' + term + ')', 'gi');
+            } catch (e) {
+                // TODO: what to do?
+            }
+            if (rexp) {
+                text = text.replace(rexp, '<span class="highlight">$1</span>');
+            }
         }
+        return text;
     }
 }
