@@ -1,5 +1,7 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {Observable, BehaviorSubject, fromEvent} from 'rxjs';
 import {map, tap, first} from 'rxjs/operators';
+
+import {transformExtent} from 'ol/proj';
 
 import {
     AfterViewInit,
@@ -31,9 +33,6 @@ import {
     MapService,
     Config,
     ResultTypes,
-    PointSymbology,
-    VectorSymbology,
-    LineSymbology,
     PlotListComponent,
     WorkflowParameterChoiceDialogComponent,
     NavigationButton,
@@ -48,6 +47,7 @@ import {
     GbifOperatorComponent,
     OperatorListButtonGroups,
     SidenavConfig,
+    Projections,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -113,6 +113,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
+
+        this.setupInitialZoom();
     }
 
     private registerIcons() {
@@ -313,6 +315,42 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
             },
         );
+    }
+
+    /**
+     * This handler stores the user viewport extent on leaving the app and retrieves it the next time.
+     * The data is stored in local storage, s.th. it is not reflected using multiple browsers.
+     * If there is no extent stored it uses the *Uniwald* extent as a starting point.
+     */
+    private setupInitialZoom() {
+        const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
+        const storage_key = `${PATH_PREFIX}_zoom_extent`;
+
+        let stored_extent: [number, number, number, number] = JSON.parse(localStorage.getItem(storage_key));
+
+        if (!stored_extent) {
+            stored_extent = this.config.NATURE40.DEFAULT_VIEW_BBOX;
+        }
+
+        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
+            const projectedExtent = transformExtent(
+                stored_extent,
+                Projections.WGS_84.getOpenlayersProjection(),
+                projection.getOpenlayersProjection(),
+            );
+            this.mapService.zoomTo(projectedExtent);
+        });
+
+        fromEvent(window, 'beforeunload').subscribe(() => { // store extent when leaving the site
+            this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
+                const wgs84_extent: [number, number, number, number] = transformExtent(
+                    this.mapService.getViewportSize().extent,
+                    projection.getOpenlayersProjection(),
+                    Projections.WGS_84.getOpenlayersProjection(),
+                );
+                localStorage.setItem(storage_key, JSON.stringify(wgs84_extent));
+            });
+        });
     }
 
 }
