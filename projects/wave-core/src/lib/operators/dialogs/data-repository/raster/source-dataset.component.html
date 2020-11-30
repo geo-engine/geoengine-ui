@@ -28,7 +28,7 @@
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef>Channel</mat-header-cell>
                 <mat-cell *matCellDef="let channel">
-                    {{channel.name}}
+                    <span bind-innerHtml="channel.name | waveHighlightPipe:searchTerm | waveSafeHtml"></span>
                 </mat-cell>
             </ng-container>
 
