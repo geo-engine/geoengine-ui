@@ -43,6 +43,8 @@ export interface SourceRasterLayerDescription {
         size: number[],
     };
     provenance: ProvenanceInfo;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -60,6 +62,8 @@ export interface SourceVectorLayerDescription {
     };
     colorizer?: IColorizerData;
     provenance: ProvenanceInfo;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -75,6 +79,8 @@ export interface MappingSource {
     imgUrl?: string;
     tags?: Array<string>;
     provenance: ProvenanceInfo;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -102,6 +108,8 @@ export interface MappingSourceDict {
     };
     channels?: [MappingSourceRasterLayerDict];
     layer?: [MappingSourceVectorLayerDict];
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -131,6 +139,8 @@ export interface MappingSourceRasterLayerDict {
         license: string,
         citation: string,
     };
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -154,6 +164,8 @@ export interface MappingSourceVectorLayerDict {
         license: string,
         citation: string,
     };
+    time_start?: string;
+    time_end?: string;
 }
 
 /**

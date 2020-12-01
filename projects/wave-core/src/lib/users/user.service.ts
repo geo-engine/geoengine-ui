@@ -438,6 +438,8 @@ export class UserService {
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
+                                    time_start: source.time_start,
+                                    time_end: source.time_end,
                                 });
                             }
                         }
@@ -477,6 +479,8 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
+            time_start: layer.time_start || '',
+            time_end: layer.time_end || '',
             coords,
             provenance,
         };
@@ -516,6 +520,8 @@ export class UserService {
             } as MappingTransform,
             coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
+            time_start: channel.time_start || '',
+            time_end: channel.time_end || '',
         };
     }
 

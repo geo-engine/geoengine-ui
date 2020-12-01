@@ -34,7 +34,7 @@ export class SourceDatasetComponent implements OnInit {
     _showPreview = false;
     _showDescription = false;
     _channelSource: ChannelDataSource;
-    _displayedColumns = ['name', 'measurement'];
+    _displayedColumns = ['name', 'measurement', 'start', 'end'];
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.

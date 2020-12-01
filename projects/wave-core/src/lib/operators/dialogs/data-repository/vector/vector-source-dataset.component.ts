@@ -33,7 +33,7 @@ export class VectorSourceDatasetComponent implements OnInit {
     _showPreview = false;
     _showDescription = false;
     _tableSource: LayerTableDataSource;
-    _displayedColumns  = ['title'];
+    _displayedColumns  = ['title', 'start', 'end'];
 
 
     constructor(

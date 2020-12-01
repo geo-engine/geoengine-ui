@@ -16,11 +16,15 @@
     </mat-chip-list>
 
     <mat-list>
+        <mat-list-item *ngIf="dataset?.time_start || dataset?.time_end">
+            <p><b>Interval:</b> {{dataset?.time_start|  date:'MM/dd/yyyy'}} - {{dataset?.time_end|  date:'MM/dd/yyyy'}}</p>
+        </mat-list-item>
         <mat-list-item>
             <mat-icon matListIcon>open_in_new</mat-icon>
             <p class="dataset-uri"><a [href]="dataset?.provenance?.uri" target="_blank">{{dataset?.provenance?.uri}}</a></p>
         </mat-list-item>
     </mat-list>
+
 
     <ng-template [ngIf]="true || !isSingleLayerDataset()">
         <mat-table #table [dataSource]="channelDataSource">
@@ -38,6 +42,21 @@
                     {{valid_unit(channel)}}
                 </mat-cell>
             </ng-container>
+
+            <ng-container matColumnDef="start">
+                <mat-header-cell *matHeaderCellDef>Start</mat-header-cell>
+                <mat-cell *matCellDef="let channel">
+                    {{channel.time_start|  date:'MM/dd/yyyy'}}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="end">
+                <mat-header-cell *matHeaderCellDef>End</mat-header-cell>
+                <mat-cell *matCellDef="let channel">
+                    {{channel.time_end|  date:'MM/dd/yyyy'}}
+                </mat-cell>
+            </ng-container>
+
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let channel; columns: displayedColumns;" (click)="simple_add(channel)"></mat-row>
