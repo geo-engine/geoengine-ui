@@ -12,16 +12,16 @@ export class MappingDataSourceFilter implements PipeTransform {
             return [];
         }
 
-        let resultSources: Array<MappingSource> = [];
-        for (let source of items) {
+        const resultSources: Array<MappingSource> = [];
+        for (const source of items) {
             if (source.name && source.name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
               resultSources.push(source);
             } else {
-              let resultChannels = source.rasterLayer.filter(
+              const resultChannels = source.rasterLayer.filter(
                   c => c.name.toLowerCase().indexOf(term.toLowerCase()) >= 0
               );
               if (resultChannels.length > 0) {
-                let s = Object.assign({}, source);
+                const s = Object.assign({}, source);
                 s.rasterLayer = resultChannels;
                 resultSources.push(s);
               }

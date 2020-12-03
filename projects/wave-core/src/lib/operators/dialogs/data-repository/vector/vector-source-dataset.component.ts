@@ -28,8 +28,7 @@ import {NotificationService} from '../../../../notification.service';
 export class VectorSourceDatasetComponent implements OnInit {
 
     @Input() dataset: MappingSource;
-
-    searchTerm: string; // TODO: this was needed to get prod build working...
+    @Input() searchTerm: string;
     _useRawData = false;
     _showPreview = false;
     _showDescription = false;
