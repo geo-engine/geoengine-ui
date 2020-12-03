@@ -80,6 +80,17 @@ export class GFBioUserService extends UserService {
         return super.loginRequestToUserDetails(parameters);
     }
 
+    /**
+     * Redirect current app to SSO page
+     */
+    redirectToOidcProvider(payload?: string) {
+        const url = this.config.GFBIO.SSO.URL;
+        const client_id = this.config.GFBIO.SSO.CLIENT_ID;
+        const scope = this.config.GFBIO.SSO.SCOPE;
+        const state = payload ? `&state=${encodeURIComponent(payload)}` : '';
+        window.location.href = `${url}?client_id=${client_id}&response_type=token&scope=${scope}${state}`;
+    }
+
     setIntroductoryPopup(show: boolean) {
         localStorage.setItem('showIntroductoryPopup', JSON.stringify(show));
     }

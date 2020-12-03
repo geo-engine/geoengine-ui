@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, of as observableOf, from as observableFrom, combineLatest, partition} from 'rxjs';
-import {toArray, map, tap, first, flatMap} from 'rxjs/operators';
+import {toArray, map, tap, first, mergeMap, filter} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -325,7 +325,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.activatedRoute.queryParamMap.subscribe(params => {
             if (params.has('access_token') && params.get('token_type') === 'Bearer' && params.has('expires_in')) {
-                this.handleOpenIdConnectAccessToken(params.get('access_token'), parseInt(params.get('expires_in'), 10));
+                this.handleOpenIdConnectAccessToken(
+                    params.get('access_token'),
+                    parseInt(params.get('expires_in'), 10),
+                    params.get('state'),
+                );
             } else if (params.has('workflow')) {
                 this.handleWorkflow(params.get('workflow'));
             } else if (params.has('gfbioBasketId')) {
@@ -336,8 +340,14 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number) {
-        this.userService.oidcLogin(accessToken);
+    private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number, state: string) {
+        state = decodeURIComponent(state);
+
+        this.userService.oidcLogin(accessToken).pipe(
+            filter(success => success),
+        ).subscribe(() => {
+            this.router.navigateByUrl('?' + state);
+        });
     }
 
     private handleWorkflow(workflow: string) {
@@ -366,6 +376,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private handleGFBioBasketId(gfbioBasketIdString: string) {
+        if (this.userService.isGuestUser()) {
+            this.userService.redirectToOidcProvider(`gfbioBasketId=${gfbioBasketIdString}`);
+        }
+
         try {
             const gfbioBasketId: number = JSON.parse(gfbioBasketIdString);
             this.projectService.getProjectStream().pipe(
@@ -400,14 +414,14 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.mappingQueryService
                     .getGFBioBasket(basketId)
                     .pipe(
-                        flatMap(basket => observableFrom(basket.results)),
+                        mergeMap(basket => observableFrom(basket.results)),
                     ),
                 (basketResult: BasketResult) => basketResult.available,
             );
 
         const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries
             .pipe(
-                flatMap(basketResult => this.gfbioBasketResultToLayer(basketResult)),
+                mergeMap(basketResult => this.gfbioBasketResultToLayer(basketResult)),
                 toArray(),
             );
 
