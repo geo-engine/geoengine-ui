@@ -340,13 +340,14 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number, state: string) {
-        state = decodeURIComponent(state);
-
+    private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number, state: string | null) {
         this.userService.oidcLogin(accessToken).pipe(
             filter(success => success),
         ).subscribe(() => {
-            this.router.navigateByUrl('?' + state);
+            if (state) {
+                state = decodeURIComponent(state);
+                this.router.navigateByUrl('?' + state);
+            }
         });
     }
 
