@@ -12,6 +12,9 @@
     </mat-card-content>
 
     <mat-list>
+        <mat-list-item *ngIf="dataset?.time_start || dataset?.time_end">
+            <p><b>Time validity:</b> {{dataset?.time_start.toString()}} - {{dataset?.time_end.toString()}}</p>
+        </mat-list-item>
         <mat-list-item>
             <mat-icon matListIcon>open_in_new</mat-icon>
             <p class="dataset-uri"><a [href]="dataset?.provenance?.uri" target="_blank">{{dataset?.provenance?.uri}}</a></p>
@@ -27,6 +30,22 @@
                     {{layer.title}}
                 </mat-cell>
             </ng-container>
+
+            <ng-container matColumnDef="start">
+                <mat-header-cell *matHeaderCellDef>Start</mat-header-cell>
+                <mat-cell *matCellDef="let layer">
+                    {{layer.time_start}}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="end">
+                <mat-header-cell *matHeaderCellDef>End</mat-header-cell>
+                <mat-cell *matCellDef="let layer">
+                    {{layer.time_end}}
+                </mat-cell>
+            </ng-container>
+
+
 
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let layer; columns: displayedColumns;" (click)="add(layer)"></mat-row>
