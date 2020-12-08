@@ -1,10 +1,10 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {Observable, of, throwError} from 'rxjs';
-import {map, mergeMap, switchMap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
 
-import {Config, MappingRequestParameters, NotificationService, ParametersType, RequestParameters, UserService} from 'wave-core';
+import {Config, MappingRequestParameters, NotificationService, ParametersType, UserService} from 'wave-core';
 
 import {AppConfig} from '../app-config.service';
 import {AbcdArchive} from '../operators/dialogs/abcd-repository/abcd.model';
@@ -66,81 +66,29 @@ export class GFBioUserService extends UserService {
     }
 
     /**
-     * Get the GFBio login token from the portal.
-     * Get the GFBio login token from the portal.
-     */
-    getGFBioToken(credentials: { username: string, password: string }): Observable<string> {
-        const parameters = new GFBioPortalLoginRequestParameters(credentials);
-
-        return this.http.get<string | { exception: string, message: string }>(
-            this.config.GFBIO.LIFERAY_PORTAL_URL + 'api/jsonws/GFBioProject-portlet.basket/get-token',
-            {headers: parameters.getHeaders()}
-        ).pipe(
-            mergeMap(response => {
-                if (typeof response === 'string') {
-                    return of(response); // token
-                } else {
-                    return throwError(response.message);
-                }
-            }),
-        );
-    }
-
-    /**
-     * Login using gfbio credentials. If it was successful, set a new user.
-     * @param credentials.user The user name.
-     * @param credentials.password The user's password.
+     * Login using an OpenId Connect access token
+     *
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    gfbioLogin(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
-        if (!credentials.staySignedIn) {
-            credentials.staySignedIn = true;
-        }
-
-        const token$ = this.getGFBioToken({
-            username: credentials.user,
-            password: credentials.password,
-        });
-        return token$.pipe(mergeMap(token => {
-                const parameters = new MappingRequestParameters({
-                    service: 'gfbio',
-                    sessionToken: undefined,
-                    request: 'login',
-                    parameters: {token},
-                });
-                return this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-                    map(response => {
-                        const success = typeof response.result === 'boolean' && response.result === true;
-
-                        if (success) {
-                            this.session$.next({
-                                user: credentials.user,
-                                sessionToken: response.session,
-                                staySignedIn: credentials.staySignedIn,
-                                isExternallyConnected: true,
-                            });
-                        }
-
-                        return success;
-                    }));
-            }
-        ));
-    }
-
-    /**
-     * Login using the gfbio token. If it was successful, set a new user.
-     * @param token The user's token.
-     * @returns `true` if the login was succesful, `false` otherwise.
-     */
-    gfbioTokenLogin(token: string): Observable<boolean> {
-        const parameters = new MappingRequestParameters({
-            service: 'gfbio',
+    oidcLogin(accessToken: string): Observable<boolean> {
+        const parameters = new OidcServiceRequestParameters({
             sessionToken: undefined,
             request: 'login',
-            parameters: {token},
+            parameters: {access_token: accessToken},
         });
 
         return super.loginRequestToUserDetails(parameters);
+    }
+
+    /**
+     * Redirect current app to SSO page
+     */
+    redirectToOidcProvider(payload?: string) {
+        const url = this.config.GFBIO.SSO.URL;
+        const client_id = this.config.GFBIO.SSO.CLIENT_ID;
+        const scope = this.config.GFBIO.SSO.SCOPE;
+        const state = payload ? `&state=${encodeURIComponent(payload)}` : '';
+        window.location.href = `${url}?client_id=${client_id}&response_type=token&scope=${scope}${state}`;
     }
 
     setIntroductoryPopup(show: boolean) {
@@ -169,9 +117,17 @@ class GfbioServiceRequestParameters extends MappingRequestParameters {
     }
 }
 
-class GFBioPortalLoginRequestParameters extends RequestParameters {
-    constructor(config: { username: string, password: string }) {
-        super();
-        super.addAuthentication(config.username, config.password);
+class OidcServiceRequestParameters extends MappingRequestParameters {
+    constructor(config: {
+        request: string,
+        sessionToken: string,
+        parameters?: ParametersType
+    }) {
+        super({
+            service: 'oidc',
+            request: config.request,
+            sessionToken: config.sessionToken,
+            parameters: config.parameters,
+        });
     }
 }
