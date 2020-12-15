@@ -210,7 +210,7 @@ export class UserService {
                                 this.session$.next({
                                     user: user.name,
                                     sessionToken: response.session,
-                                    staySignedIn: false,
+                                    staySignedIn: true,
                                     isExternallyConnected: true,
                                 });
                             }),
