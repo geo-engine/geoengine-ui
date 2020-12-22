@@ -1,5 +1,5 @@
 import {Observable, of as observableOf} from 'rxjs';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {MappingSource, SourceRasterLayerDescription, MappingTransform} from '../mapping-source.model';
 import {Unit} from '../../../unit.model';
 import {RasterSourceType} from '../../../types/raster-source-type.model';
@@ -34,7 +34,7 @@ export class SourceDatasetComponent implements OnInit {
     _showPreview = false;
     _showDescription = false;
     _channelSource: ChannelDataSource;
-    _displayedColumns = ['name', 'measurement', 'start', 'end'];
+    _displayedColumns = ['name', 'measurement'] ;
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
@@ -65,7 +65,53 @@ export class SourceDatasetComponent implements OnInit {
     ngOnInit(): void {
         this._channelSource = new ChannelDataSource(this.dataset.rasterLayer);
     }
+    ngOnChanges(changes: SimpleChanges) {
+        for (const key in changes){
+            switch(key){
+                case 'dataset': {
+                    /* if (this.dataset.time_start){
+                        if(!this._displayedColumns.includes('start')){
+                            this._displayedColumns.push('start');
+                        }
+                    }
+                    if (this.dataset.time_end){
+                        if(!this._displayedColumns.includes('end')){
+                            this._displayedColumns.push('end');
+                        }
+                    }
+                    */
+                    this.dataset.rasterLayer.forEach((element) => {
+                        console.log(42);
+                        console.log("ELEMENT| " + element);
+                        for (const sourceVar in element){
+                            console.log("SOURCE VAR| " + sourceVar);
+                            switch(sourceVar){
+                                case'time_start':{
+                                    if (element.time_start){
+                                        console.log("TIME START " + element.time_start);
+                                        console.log("ADD Start Column");
+                                        this._displayedColumns.push('start');
+                                    }
+                                }
+                                case 'time_end':{
+                                    if (element.time_end){
+                                        console.log("TIME END " + element.time_end);
+                                        if(!this._displayedColumns.includes('end')){
+                                            this._displayedColumns.push('end');
+                                        }
+                                    }
+                                }
+                            }
 
+
+                        }
+                    });
+
+
+                }
+            }
+        }
+    }
     valid_colorizer(channel: SourceRasterLayerDescription): IColorizerData {
         if (channel.colorizer) {
             return channel.colorizer;
