@@ -1,5 +1,5 @@
 import {of as observableOf, Observable} from 'rxjs';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {MappingSource, SourceVectorLayerDescription} from '../mapping-source.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
@@ -95,6 +95,36 @@ export class VectorSourceDatasetComponent implements OnInit {
             clustered,
         });
         this.projectService.addLayer(l);
+    }
+    ngOnChanges(changes: SimpleChanges) {
+        for (const key in changes) {
+            switch (key) {
+                case 'dataset': {
+                    this.dataset.vectorLayer.forEach((element) => {
+                        for (const sourceVar in element) {
+                            if (element.hasOwnProperty(sourceVar)) {
+                                if (sourceVar === 'time_start') {
+                                    if (element.time_start) {
+                                        if (!this._displayedColumns.includes('start')) {
+                                            this._displayedColumns.push('start');
+                                        }
+                                    }
+                                }
+                                if (sourceVar === 'time_end') {
+                                    if (element.time_end) {
+                                        if (!this._displayedColumns.includes('end')) {
+                                            this._displayedColumns.push('end');
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+
+                }
+            }
+        }
     }
 
     get layers(): Array<SourceVectorLayerDescription> {

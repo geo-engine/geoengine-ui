@@ -66,47 +66,55 @@ export class SourceDatasetComponent implements OnInit {
         this._channelSource = new ChannelDataSource(this.dataset.rasterLayer);
     }
     ngOnChanges(changes: SimpleChanges) {
-        for (const key in changes){
-            switch(key){
+        for (const key in changes) {
+            switch (key) {
                 case 'dataset': {
-                    /* if (this.dataset.time_start){
-                        if(!this._displayedColumns.includes('start')){
-                            this._displayedColumns.push('start');
-                        }
-                    }
-                    if (this.dataset.time_end){
-                        if(!this._displayedColumns.includes('end')){
-                            this._displayedColumns.push('end');
-                        }
-                    }
-                    */
+                    let globalDatasetMin = this.dataset.time_start;
+                    let globalDatasetMax = this.dataset.time_end;
                     this.dataset.rasterLayer.forEach((element) => {
-                        console.log(42);
-                        console.log("ELEMENT| " + element);
-                        for (const sourceVar in element){
-                            console.log("SOURCE VAR| " + sourceVar);
-                            switch(sourceVar){
-                                case'time_start':{
-                                    if (element.time_start){
-                                        console.log("TIME START " + element.time_start);
-                                        console.log("ADD Start Column");
-                                        this._displayedColumns.push('start');
-                                    }
-                                }
-                                case 'time_end':{
-                                    if (element.time_end){
-                                        console.log("TIME END " + element.time_end);
-                                        if(!this._displayedColumns.includes('end')){
-                                            this._displayedColumns.push('end');
+                        for (const sourceVar in element) {
+                            if (element.hasOwnProperty(sourceVar)) {
+                                if (sourceVar === 'time_start') {
+                                    if (element.time_start) {
+                                        if (!this._displayedColumns.includes('start')) {
+                                            this._displayedColumns.push('start');
+                                        }
+                                        if (element.time_start < globalDatasetMin) {
+                                            globalDatasetMin = element.time_start;
                                         }
                                     }
                                 }
+                                if (sourceVar === 'time_end') {
+                                    if (element.time_end) {
+                                        if (!this._displayedColumns.includes('end')) {
+                                            this._displayedColumns.push('end');
+                                        }
+                                    }
+                                    if (element.time_end > globalDatasetMax) {
+                                        globalDatasetMax = element.time_end;
+                                    }
+                                }
                             }
-
-
                         }
                     });
-
+                    this.dataset.rasterLayer.forEach((layer) => {
+                        for (const sourceVar in layer) {
+                            if (layer.hasOwnProperty(sourceVar)) {
+                                if (sourceVar === 'time_start') {
+                                    if (!layer.time_start) {
+                                        layer.time_start = globalDatasetMin;
+                                    }
+                                    console.log(layer.time_start);
+                                }
+                                if (sourceVar === 'time_end') {
+                                    if (!layer.time_end) {
+                                        layer.time_end = globalDatasetMin;
+                                    }
+                                    console.log(layer.time_end);
+                                }
+                            }
+                        }
+                    });
 
                 }
             }
