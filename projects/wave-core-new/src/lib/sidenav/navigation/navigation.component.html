@@ -1,0 +1,8 @@
+<div>
+    <button mat-raised-button *ngFor="let button of buttons"
+            [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
+            (click)="setComponent(button.sidenavConfig)"
+            [matTooltip]="button.tooltipObservable ? (button.tooltipObservable | async) : button.tooltip" matTooltipPosition="before">
+        <mat-icon [svgIcon]="button.svgIcon">{{button.iconObservable ? (button.iconObservable | async) : button.icon}}</mat-icon>
+    </button>
+</div>
