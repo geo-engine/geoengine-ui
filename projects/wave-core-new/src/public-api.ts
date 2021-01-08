@@ -50,6 +50,7 @@ export * from './lib/operators/spatial-reference.model';
 export * from './lib/operators/unit.model';
 export * from './lib/time/time.model';
 export * from './lib/users/user.model';
+export * from './lib/users/session.model';
 
 // Misc
 export * from './lib/util/errors';
