@@ -270,4 +270,4 @@ export class ProjectionCollection {
     }
 }
 
-export const Projections = ProjectionCollection.INSTANCE; // tslint:disable-line:variable-name
+export const SpatialReferences = ProjectionCollection.INSTANCE; // tslint:disable-line:variable-name

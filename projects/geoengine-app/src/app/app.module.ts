@@ -10,7 +10,7 @@ import {
     // LayerService,
     LayoutService,
     // MappingQueryService,
-    // MapService,
+    MapService,
     NotificationService,
     ProjectService,
     RandomColorService,
@@ -20,10 +20,12 @@ import {
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
+import { MockLayersComponent } from './mock-layers/mock-layers.component';
 
 @NgModule({
     declarations: [
         AppComponent,
+        MockLayersComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -43,7 +45,7 @@ import {AppConfig} from './app-config.service';
         // LayerService,
         LayoutService,
         // MappingQueryService,
-        // MapService,
+        MapService,
         NotificationService,
         ProjectService,
         RandomColorService,

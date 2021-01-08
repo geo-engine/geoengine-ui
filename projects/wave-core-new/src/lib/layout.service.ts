@@ -300,11 +300,11 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return combineLatest(
+        return combineLatest([
             this.layerDetailViewHeightPercentage$,
             totalAvailableHeight$,
-            this.layerDetailViewVisible$
-        ).pipe(
+            this.layerDetailViewVisible$,
+        ]).pipe(
             map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
                 return LayoutService.calculateMapHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,

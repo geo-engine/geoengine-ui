@@ -630,9 +630,8 @@ export class MappingRasterSymbology extends AbstractRasterSymbology
         return new MappingRasterSymbology(config);
     }
 
-    protected constructor(config: IColorizerRasterSymbology) {
+    constructor(config: IColorizerRasterSymbology) {
         super(config);
-        // TODO: this default colorizer fails if the unit has `undefined` min and max values
         this.colorizer = (config.colorizer) ? new ColorizerData(config.colorizer)
             : Colormap.createColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
         this.noDataColor = (config.noDataColor) ? new ColorBreakpoint(config.noDataColor)

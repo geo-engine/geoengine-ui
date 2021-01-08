@@ -19,28 +19,28 @@
     <!--        </div>-->
     <!--    </wave-layer-list>-->
 
-    <!--    <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">-->
-    <!--        <wave-map-container #map [grid]="mapIsGrid$ | async">-->
-    <!--            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async">-->
-    <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POINTS">-->
-    <!--                    <wave-ol-point-layer [layer]="layer"-->
-    <!--                                         (mapRedraw)="map.layerForcesRedraw()"></wave-ol-point-layer>-->
-    <!--                </ng-template>-->
-    <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.LINES">-->
-    <!--                    <wave-ol-line-layer [layer]="layer"-->
-    <!--                                        (mapRedraw)="map.layerForcesRedraw()"></wave-ol-line-layer>-->
-    <!--                </ng-template>-->
-    <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">-->
-    <!--                    <wave-ol-polygon-layer [layer]="layer"-->
-    <!--                                           (mapRedraw)="map.layerForcesRedraw()"></wave-ol-polygon-layer>-->
-    <!--                </ng-template>-->
-    <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.RASTER">-->
-    <!--                    <wave-ol-raster-layer [layer]="layer"-->
-    <!--                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-raster-layer>-->
-    <!--                </ng-template>-->
-    <!--            </ng-template>-->
-    <!--        </wave-map-container>-->
-    <!--    </div>-->
+    <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
+        <wave-map-container #map [grid]="mapIsGrid$ | async">
+            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async">
+                <ng-template [ngIf]="layer.layerType === 'vector'">
+                    <wave-ol-point-layer [layer]="layer"
+                                         (mapRedraw)="map.layerForcesRedraw()"></wave-ol-point-layer>
+                </ng-template>
+                <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.LINES">-->
+                <!--                    <wave-ol-line-layer [layer]="layer"-->
+                <!--                                        (mapRedraw)="map.layerForcesRedraw()"></wave-ol-line-layer>-->
+                <!--                </ng-template>-->
+                <!--                <ng-template [ngIf]="layer.operator.resultType === ResultTypes.POLYGONS">-->
+                <!--                    <wave-ol-polygon-layer [layer]="layer"-->
+                <!--                                           (mapRedraw)="map.layerForcesRedraw()"></wave-ol-polygon-layer>-->
+                <!--                </ng-template>-->
+                <ng-template [ngIf]="layer.layerType === 'raster'">
+                    <wave-ol-raster-layer [layer]="layer"
+                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-raster-layer>
+                </ng-template>
+            </ng-template>
+        </wave-map-container>
+    </div>
     <!--    <div class="bottom-container mat-elevation-z4"-->
     <!--         [ngClass]="{small: !(layerDetailViewVisible$ | async)}"-->
     <!--         [style.height.px]="bottomContainerHeight$ | async">-->

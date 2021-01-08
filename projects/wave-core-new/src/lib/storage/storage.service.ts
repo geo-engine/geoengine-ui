@@ -2,11 +2,11 @@ import {
     BehaviorSubject,
     combineLatest,
     fromEvent,
-    Observable,
+    Observable, of,
     Subject,
     Subscription
 } from 'rxjs';
-import {debounceTime, filter, first, map, skip, tap} from 'rxjs/operators';
+import {debounceTime, filter, first, flatMap, map, mergeMap, skip, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -105,11 +105,23 @@ export class StorageService {
     }
 
     protected loadProject(projectId?: UUID): Observable<Project> {
-        return null; // TODO: implement
+        return this.userService.getSessionStream().pipe(
+            first(),
+            mergeMap(session => {
+                projectId = projectId ? projectId : session.lastProjectId;
+
+                if (!projectId) {
+                    return this.projectService.createDefaultProject();
+                }
+
+                return this.backend.loadProject(projectId, session.sessionToken).pipe(map(Project.fromDict));
+            }),
+        );
     }
 
     protected loadLayoutSettings(): Observable<LayoutDict> {
-        return null; // TODO: implement
+        // TODO: implement
+        return of(undefined);
     }
 
     protected saveLayoutSettings(layout: LayoutDict): Observable<{}> {
@@ -144,14 +156,20 @@ export class StorageService {
         ).subscribe(() => this.storageStatus$.next(StorageStatus.OK));
 
         // load workspace
-        this.loadProject().subscribe(initialProject => {
-            const newProject = initialProject ? initialProject : this.projectService.createDefaultProject();
-
-            this.projectService.setProject(newProject);
+        this.loadProject().pipe(
+            mergeMap(project => {
+                if (project) {
+                    return of(project);
+                } else {
+                    return this.projectService.createDefaultProject();
+                }
+            }),
+        ).subscribe(initialProject => {
+            this.projectService.setProject(initialProject);
 
             // setup storage
             this.projectSubscription = this.projectService.getProjectStream().pipe(
-                filter(project => project !== newProject), // skip saving the previously loaded project
+                filter(project => project !== initialProject), // skip saving the previously loaded project
                 tap(project => {
                     // save pending change
                     this.pendingProject = project;

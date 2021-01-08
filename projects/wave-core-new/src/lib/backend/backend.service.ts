@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
 import {
     CreateProjectResponseDict, LayerDict, ProjectDict, ProjectFilterDict,
-    ProjectListingDict, ProjectOrderByDict, ProjectPermissionDict,
+    ProjectListingDict, ProjectOrderByDict, ProjectPermissionDict, RegisterWorkflowResultDict,
     RegistrationDict,
     SessionDict, STRectangleDict,
     UUID
@@ -14,6 +14,8 @@ import {
     providedIn: 'root'
 })
 export class BackendService {
+
+    readonly wmsUrl = `${this.config.API_URL}/wms`;
 
     constructor(protected readonly http: HttpClient,
                 protected readonly config: Config) {
@@ -54,11 +56,9 @@ export class BackendService {
 
     createProject(
         request: {
-            request: {
-                name: string,
-                description: string,
-                bounds: STRectangleDict,
-            }
+            name: string,
+            description: string,
+            bounds: STRectangleDict,
         },
         sessionId: UUID): Observable<CreateProjectResponseDict> {
         return this.http.post<CreateProjectResponseDict>(this.config.API_URL + '/project', request, {
@@ -74,8 +74,8 @@ export class BackendService {
             layers?: Array<LayerDict>,
             bounds?: STRectangleDict,
         },
-        sessionId: UUID): Observable<{}> {
-        return this.http.patch<{}>(`${this.config.API_URL}/project/${request.id}`, request, {
+        sessionId: UUID): Observable<void> {
+        return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -110,6 +110,20 @@ export class BackendService {
             body: request,
             headers: BackendService.authorizationHeader(sessionId),
         });
+    }
+
+    registerWorkflow(workflow: { [key: string]: any }, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
+        return this.http.post<RegisterWorkflowResultDict>(this.config.API_URL + '/workflow', workflow, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    setSessionProject(projectId: UUID, sessionId: UUID): Observable<void> {
+        const response = new Subject<void>();
+        this.http.post<void>(`${this.config.API_URL}/session/project/${projectId}`, null, {
+            headers: BackendService.authorizationHeader(sessionId),
+        }).subscribe(response);
+        return response;
     }
 
     private static authorizationHeader(sessionId: UUID): HttpHeaders {

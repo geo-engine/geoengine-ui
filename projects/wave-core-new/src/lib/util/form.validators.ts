@@ -84,7 +84,7 @@ function keywordValidator(keywords: Array<string>) {
 function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
 
-        return Observable.create((observer: Observer<{ [key: string]: boolean }>) => {
+        return new Observable((observer: Observer<{ [key: string]: boolean }>) => {
             storageService.projectExists(control.value as string).pipe(
                 map(projectExists => {
                     const errors: {

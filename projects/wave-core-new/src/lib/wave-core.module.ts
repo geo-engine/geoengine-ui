@@ -52,6 +52,14 @@ import {
     SidenavSearchComponent,
     SidenavSearchRightDirective
 } from './sidenav/sidenav-search/sidenav-search.component';
+import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
+import {MapContainerComponent} from './map/map-container/map-container.component';
+import {
+    OlLineLayerComponent,
+    OlPointLayerComponent,
+    OlPolygonLayerComponent,
+    OlRasterLayerComponent,
+} from './map/map-layer.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -100,12 +108,18 @@ const WAVE_COMPONENTS = [
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     LoginComponent,
+    MapContainerComponent,
+    NavigationComponent,
+    OlPointLayerComponent,
+    OlLineLayerComponent,
+    OlPolygonLayerComponent,
+    OlRasterLayerComponent,
     SidenavContainerComponent,
     SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
     VatLogoComponent,
-    NavigationComponent,
+    ZoomHandlesComponent,
 ];
 
 @NgModule({

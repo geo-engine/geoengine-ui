@@ -29,10 +29,15 @@ import {
     SidenavConfig,
     NavigationButton,
     NavigationComponent,
+    ResultTypes,
+    MapService,
+    MapContainerComponent,
+    RasterLayer,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
+import {MockLayersComponent} from './mock-layers/mock-layers.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -41,13 +46,13 @@ import {AppConfig} from './app-config.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    // @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
+    @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
     @ViewChild(MatTabGroup, {static: true}) bottomTabs: MatTabGroup;
 
     @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
 
-    // readonly ResultTypes = ResultTypes;
+    readonly ResultTypes = ResultTypes;
     readonly LayoutService = LayoutService;
 
     readonly layersReverse$: Observable<Array<Layer>>;
@@ -77,7 +82,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 // private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
-                // private mapService: MapService,
+                private mapService: MapService,
                 private sanitizer: DomSanitizer) {
         this.registerIcons();
 
@@ -85,9 +90,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.storageService.toString(); // just register
 
-        // this.layersReverse$ = this.projectService.getLayerStream().pipe(
-        //     map(layers => layers.slice(0).reverse())
-        // );
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(
+            map(layers => layers.slice(0).reverse())
+        );
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
@@ -112,12 +117,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        // this.mapService.registerMapComponent(this.mapComponent);
-        // this.mapIsGrid$ = this.mapService.isGrid$;
+        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapIsGrid$ = this.mapService.isGrid$;
 
-        // this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
-        //     tap(() => this.mapComponent.resize()),
-        // );
+        // TODO: remove if table is back
+        this.layoutService.setLayerDetailViewVisibility(false);
+
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
+            tap(() => this.mapComponent.resize()),
+        );
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
@@ -152,6 +160,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     private setupNavigation(): Array<NavigationButton> {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
+            {
+                sidenavConfig: {component: MockLayersComponent},
+                icon: 'add',
+                tooltip: 'Mock Data',
+            }
             // {
             //     sidenavConfig: AppComponent.setupAddDataConfig(),
             //     icon: 'add',

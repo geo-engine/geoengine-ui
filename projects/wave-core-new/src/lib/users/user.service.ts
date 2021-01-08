@@ -9,7 +9,7 @@ import {Session, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {ErrorDict, SessionDict} from '../backend/backend.model';
+import {ErrorDict, SessionDict, UUID} from '../backend/backend.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -47,6 +47,13 @@ export class UserService {
      */
     getSessionStream(): Observable<Session> {
         return this.session$;
+    }
+
+    getSessionTokenForRequest(): Observable<UUID> {
+        return this.session$.pipe(
+            first(),
+            map(session => session.sessionToken),
+        );
     }
 
     isGuestUserStream(): Observable<boolean> {

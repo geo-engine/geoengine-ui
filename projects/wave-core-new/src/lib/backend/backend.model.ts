@@ -86,12 +86,12 @@ export interface ProjectVersion {
 
 export interface ColorizerDict {
     LinearGradient?: {
-        breakpoints: Array<number>,
+        breakpoints: Array<BreakpointDict>,
         no_data_color: RgbaColor,
         default_color: RgbaColor,
     };
     LogarithmicGradient?: {
-        breakpoints: Array<number>,
+        breakpoints: Array<BreakpointDict>,
         no_data_color: RgbaColor,
         default_color: RgbaColor,
     };
@@ -105,10 +105,15 @@ export interface ColorizerDict {
 export type RgbaColor = [number, number, number, number];
 
 export interface LayerInfoDict {
-    raster?: {
+    Raster?: {
         colorizer: ColorizerDict,
     };
-    vector?: {};
+    Vector?: {};
+}
+
+export interface BreakpointDict {
+    value: number;
+    color: RgbaColor;
 }
 
 export interface ErrorDict {
@@ -118,4 +123,8 @@ export interface ErrorDict {
 
 export interface ToDict<T> {
     toDict(): T;
+}
+
+export interface RegisterWorkflowResultDict {
+    id: UUID;
 }

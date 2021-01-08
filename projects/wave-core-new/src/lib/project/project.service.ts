@@ -1,17 +1,17 @@
 import {
-    combineLatest as observableCombineLatest,
+    combineLatest,
     Observable,
     Observer,
-    of as observableOf,
+    of,
     ReplaySubject,
     Subject,
     Subscription
 } from 'rxjs';
 
-import {catchError, debounceTime, distinctUntilChanged, first, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 
-import {SpatialReference, Projections} from '../operators/projection.model';
+import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
 
 import {Project} from './project.model';
 
@@ -21,6 +21,12 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
+import {Layer, LayerChanges, RasterLayer} from '../layers/layer.model';
+import {BackendService} from '../backend/backend.service';
+import {STRectangleDict, UUID} from '../backend/backend.model';
+import {UserService} from '../users/user.service';
+import {LayerData, RasterData} from '../layers/layer-data.model';
+import {extentToBboxDict} from '../util/conversions';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -30,20 +36,21 @@ import {LayoutService} from '../layout.service';
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
 
-    // private layerData$: Map<Layer<AbstractSymbology>, ReplaySubject<LayerData<any>>>;
-    // private layerDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
-    // private layerDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
-    // private layerSymbologyData$: Map<Layer<AbstractSymbology>, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
-    // private layerSymbologyDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
-    // private layerSymbologyDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
-    // private layerProvenanceData$: Map<Layer<AbstractSymbology>, ReplaySubject<Array<Provenance>>>;
-    // private layerProvenanceDataState$: Map<Layer<AbstractSymbology>, ReplaySubject<LoadingState>>;
-    // private layerProvenanceDataSubscriptions: Map<Layer<AbstractSymbology>, Subscription>;
-    // private layerCombinedState$: Map<Layer<AbstractSymbology>, Observable<LoadingState>>;
-    // private layerChanges$: Map<Layer<AbstractSymbology>, ReplaySubject<LayerChanges<AbstractSymbology>>>;
-    //
+    private layerData$ = new Map<Layer, ReplaySubject<LayerData<any>>>();
+    private layerDataState$ = new Map<Layer, ReplaySubject<LoadingState>>();
+    private layerDataSubscriptions = new Map<Layer, Subscription>();
+
+    // private layerSymbologyData$: Map<Layer, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
+    // private layerSymbologyDataState$: Map<Layer, ReplaySubject<LoadingState>>;
+    // private layerSymbologyDataSubscriptions: Map<Layer, Subscription>;
+    // private layerProvenanceData$: Map<Layer, ReplaySubject<Array<Provenance>>>;
+    // private layerProvenanceDataState$: Map<Layer, ReplaySubject<LoadingState>>;
+    // private layerProvenanceDataSubscriptions: Map<Layer, Subscription>;
+    // private layerCombinedState$: Map<Layer, Observable<LoadingState>>;
+    private layerChanges$ = new Map<Layer, ReplaySubject<LayerChanges>>();
+
     // private newLayer$: Subject<Layer<AbstractSymbology>>;
-    //
+
     // private plotData$: Map<Plot, ReplaySubject<PlotData>>;
     // private plotDataState$: Map<Plot, ReplaySubject<LoadingState>>;
     // private plotSubscriptions: Map<Plot, Subscription>;
@@ -51,10 +58,12 @@ export class ProjectService {
 
     constructor(private config: Config,
                 private notificationService: NotificationService,
-                // private mappingQueryService: MappingQueryService,
-                // private mapService: MapService,
-                // private layerService: LayerService,
-                private layoutService: LayoutService) {
+                // protected mappingQueryService: MappingQueryService,
+                // protected mapService: MapService,
+                // protected layerService: LayerService,
+                protected backend: BackendService,
+                protected userService: UserService,
+                protected layoutService: LayoutService) {
         // this.plotData$ = new Map();
         // this.plotDataState$ = new Map();
         // this.plotSubscriptions = new Map();
@@ -77,40 +86,52 @@ export class ProjectService {
     /**
      * Generate a default Project with values from the config file.
      */
-    // TODO: call server and get project
-    createDefaultProject(): Project {
-        let timeStepDuration: TimeStepDuration;
+    createDefaultProject(): Observable<Project> {
+        const name = this.config.DEFAULTS.PROJECT.NAME;
+        const spatialReference = SpatialReferences.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION);
+        const layers = [];
+        const time = new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME);
+        const timeStepDuration = this.getDefaultTimeStep();
+
+        return this.userService.getSessionTokenForRequest().pipe(
+            // TODO: solidify default project creation
+            mergeMap(sessionToken => this.backend.createProject({
+                name,
+                description: 'default project',
+                bounds: {
+                    bounding_box: extentToBboxDict(spatialReference.getExtent()),
+                    spatial_reference: spatialReference.getCode(),
+                    time_interval: time.toDict(),
+                },
+            }, sessionToken)),
+            map(({id}) => new Project({
+                id,
+                name,
+                spatialReference,
+                layers,
+                time,
+                timeStepDuration,
+            })),
+        );
+    }
+
+    private getDefaultTimeStep(): TimeStepDuration {
         switch (this.config.DEFAULTS.PROJECT.TIMESTEP) {
             case '15 minutes':
-                timeStepDuration = {durationAmount: 15, durationUnit: 'minutes'};
-                break;
+                return {durationAmount: 15, durationUnit: 'minutes'};
             case '1 hour' :
-                timeStepDuration = {durationAmount: 1, durationUnit: 'hour'};
-                break;
+                return {durationAmount: 1, durationUnit: 'hour'};
             case '1 day':
-                timeStepDuration = {durationAmount: 1, durationUnit: 'day'};
-                break;
+                return {durationAmount: 1, durationUnit: 'day'};
             case '1 month':
-                timeStepDuration = {durationAmount: 1, durationUnit: 'month'};
-                break;
+                return {durationAmount: 1, durationUnit: 'month'};
             case '6 months':
-                timeStepDuration = {durationAmount: 6, durationUnit: 'months'};
-                break;
+                return {durationAmount: 6, durationUnit: 'months'};
             case '1 year':
-                timeStepDuration = {durationAmount: 1, durationUnit: 'year'};
-                break;
+                return {durationAmount: 1, durationUnit: 'year'};
             default:
-                timeStepDuration = {durationAmount: 1, durationUnit: 'month'};
+                return {durationAmount: 1, durationUnit: 'month'};
         }
-
-        return new Project({
-            id: '',
-            name: this.config.DEFAULTS.PROJECT.NAME,
-            projection: Projections.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION),
-            layers: [],
-            time: new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME),
-            timeStepDuration,
-        });
     }
 
     /**
@@ -125,12 +146,12 @@ export class ProjectService {
      */
     setProject(project: Project) {
         // clear layer data
-        // this.layerData$.forEach(subject => subject.complete());
-        // this.layerData$.clear();
-        // this.layerDataState$.forEach(subject => subject.complete());
-        // this.layerDataState$.clear();
-        // this.layerDataSubscriptions.forEach(subscription => subscription.unsubscribe());
-        // this.layerDataSubscriptions.clear();
+        this.layerData$.forEach(subject => subject.complete());
+        this.layerData$.clear();
+        this.layerDataState$.forEach(subject => subject.complete());
+        this.layerDataState$.clear();
+        this.layerDataSubscriptions.forEach(subscription => subscription.unsubscribe());
+        this.layerDataSubscriptions.clear();
         // this.layerProvenanceData$.forEach(subject => subject.complete());
         // this.layerProvenanceData$.clear();
         // this.layerProvenanceDataState$.forEach(subject => subject.complete());
@@ -144,12 +165,12 @@ export class ProjectService {
         // this.layerSymbologyDataSubscriptions.forEach(subscription => subscription.unsubscribe());
         // this.layerSymbologyDataSubscriptions.clear();
         // this.layerCombinedState$.clear();
-        //
-        // // clears all layer changes subscriptions, but completes them first
-        // this.layerChanges$.forEach(subject => subject.complete());
-        // this.layerChanges$.clear();
-        //
-        // // clear plot data
+
+        // clears all layer changes subscriptions, but completes them first
+        this.layerChanges$.forEach(subject => subject.complete());
+        this.layerChanges$.clear();
+
+        // clear plot data
         // this.plotData$.forEach(subject => subject.complete());
         // this.plotData$.clear();
         // this.plotDataState$.forEach(subject => subject.complete());
@@ -161,14 +182,22 @@ export class ProjectService {
         // for (const plot of project.plots) {
         //     this.createPlotDataStreams(plot);
         // }
-        //
-        // // add layer streams
-        // for (const layer of project.layers) {
-        //     this.createLayerDataStreams(layer);
-        //     this.createLayerChangesStream(layer);
-        // }
+
+        // add layer streams
+        for (const layer of project.layers) {
+            this.createLayerDataStreams(layer);
+            this.createLayerChangesStream(layer);
+        }
 
         this.project$.next(project);
+
+        // TODO: remove log
+        console.log('store project', project.id);
+
+        // store current project in session
+        this.userService.getSessionTokenForRequest().subscribe(
+            sessionToken => this.backend.setSessionProject(project.id, sessionToken)
+        );
     }
 
     /**
@@ -187,7 +216,7 @@ export class ProjectService {
     }
 
     /**
-     * Set a ttime duration for the current project.
+     * Set a time duration for the current project.
      */
     setTimeStepDuration(timeStepDuration: TimeStepDuration) {
         // TODO: server communication
@@ -408,34 +437,68 @@ export class ProjectService {
     //     });
     // }
 
-    // /**
-    //  * Add a plot to the project.
-    //  */
-    // addLayer(layer: Layer<AbstractSymbology>, notify = true): Observable<void> {
-    //     this.createLayerDataStreams(layer);
-    //     this.createLayerChangesStream(layer);
-    //
-    //     const subject: Subject<void> = new ReplaySubject<void>(1);
-    //
-    //     this.project$.pipe(first()).subscribe(project => {
-    //         const currentLayers = project.layers;
-    //         this.changeProjectConfig({
-    //             layers: [layer, ...currentLayers]
-    //         }).subscribe(() => {
-    //             if (notify) {
-    //                 this.newLayer$.next(layer);
-    //             }
-    //
-    //             // console.log("ADD LAYER", layer, this);
-    //
-    //             subject.next();
-    //             subject.complete();
-    //         });
-    //     });
-    //
-    //     return subject.asObservable();
-    // }
-    //
+    registerWorkflow(workflow: { [key: string]: any }): Observable<UUID> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap(session => this.backend.registerWorkflow(workflow, session.sessionToken)),
+            map(response => response.id),
+        );
+    }
+
+    /**
+     * Add a a new layer to the project.
+     */
+    addLayer(layer: Layer, notify = true): Observable<void> {
+        this.createLayerDataStreams(layer);
+        this.createLayerChangesStream(layer);
+
+        const subject = new Subject<void>();
+
+        combineLatest([
+            this.userService.getSessionStream().pipe(
+                first(),
+                map(session => session.sessionToken),
+            ),
+            this.project$.pipe(first()),
+        ]).pipe(
+            mergeMap(([sessionToken, project]) => this.backend.updateProject({
+                id: project.id,
+                layers: [
+                    layer.toDict(),
+                    ...project.layers.map(l => l.toDict()),
+                ],
+            }, sessionToken).pipe(
+                map(() => project)
+            )),
+            mergeMap(project => this.changeProjectConfig({
+                layers: [layer, ...project.layers]
+            }))
+        ).subscribe(
+            () => subject.next(),
+            error => subject.error(error),
+            () => subject.complete()
+        );
+
+        // const subject: Subject<void> = new ReplaySubject<void>(1);
+        //
+        // this.project$.pipe(first()).subscribe(project => {
+        //     const currentLayers = project.layers;
+        //     this.changeProjectConfig({
+        //         layers: [layer, ...currentLayers]
+        //     }).subscribe(() => {
+        //         if (notify) {
+        //             this.newLayer$.next(layer);
+        //         }
+        //
+        //         // console.log("ADD LAYER", layer, this);
+        //
+        //         subject.next();
+        //         subject.complete();
+        //     });
+        // });
+
+        return subject.asObservable();
+    }
+
     // /**
     //  * Remove a plot from the project.
     //  */
@@ -594,39 +657,39 @@ export class ProjectService {
     //         )
     //     );
     // }
-    //
-    // /**
-    //  * Retrieve the layer models array as a stream.
-    //  */
-    // getLayerStream(): Observable<Array<Layer<AbstractSymbology>>> {
-    //     return this.project$.pipe(map(project => project.layers), distinctUntilChanged());
-    // }
-    //
-    // /**
-    //  * Retrieve the data of the layer as a stream.
-    //  */
-    // getLayerDataStream(layer: Layer<AbstractSymbology>): Observable<LayerData<any>> {
-    //     return this.layerData$.get(layer);
-    // }
-    //
-    // /**
-    //  * Retrieve the layer data status as a stream.
-    //  */
-    // getLayerDataStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
-    //     return this.layerDataState$.get(layer);
-    // }
-    //
-    // /**
-    //  * Change the loading state of a raster layer
-    //  */
-    // changeRasterLayerDataStatus(layer: Layer<AbstractRasterSymbology>, state: LoadingState) {
-    //     if (layer.operator.resultType === ResultTypes.RASTER) {
-    //         this.layerDataState$.get(layer).next(state);
-    //     } else {
-    //         throw Error('It is only allowed to change the state of a raster layer');
-    //     }
-    // }
-    //
+
+    /**
+     * Retrieve the layer models array as a stream.
+     */
+    getLayerStream(): Observable<Array<Layer>> {
+        return this.project$.pipe(map(project => project.layers), distinctUntilChanged());
+    }
+
+    /**
+     * Retrieve the data of the layer as a stream.
+     */
+    getLayerDataStream(layer: Layer): Observable<any> {
+        return this.layerData$.get(layer);
+    }
+
+    /**
+     * Retrieve the layer data status as a stream.
+     */
+    getLayerDataStatusStream(layer: Layer): Observable<LoadingState> {
+        return this.layerDataState$.get(layer);
+    }
+
+    /**
+     * Change the loading state of a raster layer
+     */
+    changeRasterLayerDataStatus(layer: Layer, state: LoadingState) {
+        if (layer.layerType === 'raster') {
+            this.layerDataState$.get(layer).next(state);
+        } else {
+            throw Error('It is only allowed to change the state of a raster layer');
+        }
+    }
+
     // /**
     //  * Retrieve the symbology data of the layer as a stream.
     //  */
@@ -737,14 +800,14 @@ export class ProjectService {
     //         this.layerChanges$.get(layer).next(validChanges);
     //     }
     // }
-    //
-    // /**
-    //  * Get a stream of LayerChanges for a specified layer.
-    //  */
-    // getLayerChangesStream(layer: Layer<AbstractSymbology>): Observable<LayerChanges<AbstractSymbology>> {
-    //     return this.layerChanges$.get(layer);
-    // }
-    //
+
+    /**
+     * Get a stream of LayerChanges for a specified layer.
+     */
+    getLayerChangesStream(layer: Layer): Observable<any> {
+        return this.layerChanges$.get(layer);
+    }
+
     // /**
     //  * Toggle the layer (extension).
     //  * @param layer The layer to modify
@@ -759,38 +822,40 @@ export class ProjectService {
     // toggleEditSymbology(layer: Layer<AbstractSymbology>) {
     //     this.changeLayer(layer, {editSymbology: !layer.editSymbology});
     // }
-    //
-    // private changeProjectConfig(config: {
-    //     name?: string,
-    //     projection?: SpatialReference,
-    //     time?: Time,
-    //     plots?: Array<Plot>,
-    //     layers?: Array<Layer<AbstractSymbology>>,
-    //     timeStepDuration?: TimeStepDuration,
-    // }): Observable<void> {
-    //     // console.log('Project::ProjectService.changeProjectConfig', config);
-    //
-    //     const subject: Subject<void> = new ReplaySubject<void>(1);
-    //
-    //     this.project$.pipe(first()).subscribe(
-    //         project => {
-    //             this.project$.next(new Project({
-    //                 name: config.name ? config.name : project.name,
-    //                 projection: config.projection ? config.projection : project.projection,
-    //                 time: config.time ? config.time : project.time,
-    //                 plots: config.plots ? config.plots : project.plots,
-    //                 layers: config.layers ? config.layers : project.layers,
-    //                 timeStepDuration: config.timeStepDuration ? config.timeStepDuration : project.timeStepDuration,
-    //             }));
-    //             subject.next();
-    //             subject.complete();
-    //         },
-    //         error => subject.error(error)
-    //     );
-    //
-    //     return subject.asObservable();
-    // }
-    //
+
+    private changeProjectConfig(config: {
+        id?: UUID,
+        name?: string,
+        spatialReference?: SpatialReference,
+        time?: Time,
+        plots?: Array<any>,
+        layers?: Array<Layer>,
+        timeStepDuration?: TimeStepDuration,
+    }): Observable<void> {
+        // console.log('Project::ProjectService.changeProjectConfig', config);
+
+        const subject: Subject<void> = new ReplaySubject<void>(1);
+
+        this.project$.pipe(first()).subscribe(
+            project => {
+                this.project$.next(new Project({
+                    id: config.id ? config.id : project.id,
+                    name: config.name ? config.name : project.name,
+                    spatialReference: config.spatialReference ? config.spatialReference : project.spatialReference,
+                    time: config.time ? config.time : project.time,
+                    plots: config.plots ? config.plots : project.plots,
+                    layers: config.layers ? config.layers : project.layers,
+                    timeStepDuration: config.timeStepDuration ? config.timeStepDuration : project.timeStepDuration,
+                }));
+                subject.next();
+                subject.complete();
+            },
+            error => subject.error(error)
+        );
+
+        return subject.asObservable();
+    }
+
     // /**
     //  * Create a subscription for plot data with loading state checks and error handling
     //  */
@@ -865,119 +930,121 @@ export class ProjectService {
     //     this.plotSubscriptions.get(plot).unsubscribe();
     //     this.plotSubscriptions.delete(plot);
     // }
-    //
-    // private createLayerDataStreams(layer: Layer<AbstractSymbology>) {
-    //     // each layer has data. The type depends on the layer type
-    //     const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-    //     const layerData$ = new ReplaySubject<LayerData<any>>(1);
-    //     let layerDataSub: Subscription;
-    //     switch (layer.getLayerType()) {
-    //         case 'raster':
-    //             layerDataSub = this.createRasterLayerDataSubscription(
-    //                 layer as RasterLayer<AbstractRasterSymbology>, layerData$, layerDataLoadingState$
-    //             );
-    //             break;
-    //         case 'vector':
-    //             layerDataSub = this.createVectorLayerDataSubscription(
-    //                 layer as VectorLayer<AbstractVectorSymbology>, layerData$, layerDataLoadingState$
-    //             );
-    //             break;
-    //     }
-    //     this.layerDataSubscriptions.set(layer, layerDataSub);
-    //     this.layerDataState$.set(layer, layerDataLoadingState$);
-    //     this.layerData$.set(layer, layerData$);
-    //
-    //     const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-    //     const symbologyData$ = new ReplaySubject<DeprecatedMappingColorizerDoNotUse>(1);
-    //     this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
-    //     this.layerSymbologyData$.set(layer, symbologyData$);
-    //
-    //     if (layer.getLayerType() === 'raster') {
-    //         const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer
-    //         as RasterLayer<AbstractRasterSymbology>,
-    //             symbologyData$,
-    //             symbologyDataLoadingState$
-    //         );
-    //         this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSubscription);
-    //     } else {
-    //         symbologyDataLoadingState$.next(LoadingState.OK);
-    //     }
-    //
-    //     // each layer has provenance...
-    //     const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-    //     const provenanceData$ = new ReplaySubject<Array<Provenance>>(1);
-    //     const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
-    //     this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
-    //     this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
-    //     this.layerProvenanceData$.set(layer, provenanceData$);
-    //
-    //     const combinedState$ = observableCombineLatest([
-    //         this.layerSymbologyDataState$.get(layer),
-    //         this.layerDataState$.get(layer),
-    //         this.layerProvenanceDataState$.get(layer),
-    //     ]).pipe(
-    //         map(([sym, data, prov]) => {
-    //             // console.log("combinedLayerState", sym, data, prov);
-    //
-    //             if (sym === LoadingState.LOADING || data === LoadingState.LOADING /*|| prov === LoadingState.LOADING*/) {
-    //                 return LoadingState.LOADING;
-    //             }
-    //
-    //             if (sym === LoadingState.ERROR || data === LoadingState.ERROR /*|| prov === LoadingState.ERROR*/) {
-    //                 return LoadingState.ERROR;
-    //             }
-    //
-    //             if (sym === LoadingState.NODATAFORGIVENTIME || data === LoadingState.NODATAFORGIVENTIME) {
-    //                 return LoadingState.NODATAFORGIVENTIME;
-    //             }
-    //
-    //             return LoadingState.OK;
-    //         }),
-    //         catchError(err => {
-    //             return observableOf(LoadingState.ERROR);
-    //         }),
-    //     );
-    //
-    //     this.layerCombinedState$.set(layer, combinedState$);
-    // }
-    //
-    // /**
-    //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-    //  */
-    // private createRasterLayerDataSubscription(layer: RasterLayer<AbstractRasterSymbology>, data$: Observer<RasterData>,
-    //                                           loadingState$: Observer<LoadingState>): Subscription {
-    //     return observableCombineLatest([
-    //         this.getTimeStream(),
-    //         this.getProjectionStream(),
-    //     ]).pipe(
-    //         tap(() => loadingState$.next(LoadingState.LOADING)),
-    //         map(([time, projection]) => {
-    //             return new RasterData(time, projection,
-    //                 this.mappingQueryService.getWMSQueryUrl({
-    //                     operator: layer.operator,
-    //                     time,
-    //                     projection,
-    //                 })
-    //             );
-    //         }),
-    //         tap(
-    //             () => loadingState$.next(LoadingState.OK),
-    //             (reason: HttpErrorResponse) => {
-    //                 if (ProjectService.isNoRasterForGivenTimeException(reason)) {
-    //                     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
-    //                     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
-    //                 } else {
-    //                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-    //                     loadingState$.next(LoadingState.ERROR);
-    //                 }
-    //             }
-    //         ),
-    //     ).subscribe(
-    //         data => data$.next(data),
-    //         error => error // ignore error
-    //     );
-    // }
-    //
+
+    private createLayerDataStreams(layer: Layer) {
+        // each layer has data. The type depends on the layer type
+        const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const layerData$ = new ReplaySubject<LayerData<any>>(1);
+        let layerDataSub: Subscription;
+        switch (layer.layerType) {
+            case 'raster':
+                layerDataSub = this.createRasterLayerDataSubscription(
+                    layer as RasterLayer, layerData$, layerDataLoadingState$
+                );
+                break;
+            case 'vector':
+                // TODO: implement
+                // layerDataSub = this.createVectorLayerDataSubscription(
+                //     layer as VectorLayer<AbstractVectorSymbology>, layerData$, layerDataLoadingState$
+                // );
+                break;
+        }
+        this.layerDataSubscriptions.set(layer, layerDataSub);
+        this.layerDataState$.set(layer, layerDataLoadingState$);
+        this.layerData$.set(layer, layerData$);
+
+        // const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        // const symbologyData$ = new ReplaySubject<DeprecatedMappingColorizerDoNotUse>(1);
+        // this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
+        // this.layerSymbologyData$.set(layer, symbologyData$);
+
+        // if (layer.getLayerType() === 'raster') {
+        //     const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer
+        //     as RasterLayer<AbstractRasterSymbology>,
+        //         symbologyData$,
+        //         symbologyDataLoadingState$
+        //     );
+        //     this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSubscription);
+        // } else {
+        //     symbologyDataLoadingState$.next(LoadingState.OK);
+        // }
+
+        // each layer has provenance...
+        // const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        // const provenanceData$ = new ReplaySubject<Array<Provenance>>(1);
+        // const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
+        // this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
+        // this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
+        // this.layerProvenanceData$.set(layer, provenanceData$);
+        //
+        // const combinedState$ = observableCombineLatest([
+        //     this.layerSymbologyDataState$.get(layer),
+        //     this.layerDataState$.get(layer),
+        //     this.layerProvenanceDataState$.get(layer),
+        // ]).pipe(
+        //     map(([sym, data, prov]) => {
+        //         // console.log("combinedLayerState", sym, data, prov);
+        //
+        //         if (sym === LoadingState.LOADING || data === LoadingState.LOADING /*|| prov === LoadingState.LOADING*/) {
+        //             return LoadingState.LOADING;
+        //         }
+        //
+        //         if (sym === LoadingState.ERROR || data === LoadingState.ERROR /*|| prov === LoadingState.ERROR*/) {
+        //             return LoadingState.ERROR;
+        //         }
+        //
+        //         if (sym === LoadingState.NODATAFORGIVENTIME || data === LoadingState.NODATAFORGIVENTIME) {
+        //             return LoadingState.NODATAFORGIVENTIME;
+        //         }
+        //
+        //         return LoadingState.OK;
+        //     }),
+        //     catchError(err => {
+        //         return observableOf(LoadingState.ERROR);
+        //     }),
+        // );
+        //
+        // this.layerCombinedState$.set(layer, combinedState$);
+    }
+
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     */
+    private createRasterLayerDataSubscription(layer: RasterLayer, data$: Observer<RasterData>,
+                                              loadingState$: Observer<LoadingState>): Subscription {
+        return combineLatest([
+            this.getTimeStream(),
+            this.getProjectionStream(),
+        ]).pipe(
+            tap(() => loadingState$.next(LoadingState.LOADING)),
+            map(([time, projection]) => new RasterData(
+                time,
+                projection,
+                // this.mappingQueryService.getWMSQueryUrl({
+                //     operator: layer.operator,
+                //     time,
+                //     projection,
+                // })
+                this.backend.wmsUrl,
+            )),
+            tap(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: HttpErrorResponse) => {
+                    // if (ProjectService.isNoRasterForGivenTimeException(reason)) {
+                    //     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
+                    //     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
+                    // } else {
+                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                    // }
+                }
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
+    }
+
     // /**
     //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
     //  */
@@ -1093,14 +1160,15 @@ export class ProjectService {
     //         error => error // ignore error
     //     );
     // }
-    //
-    // private createLayerChangesStream(layer: Layer<AbstractSymbology>) {
-    //     if (this.layerChanges$.get(layer)) {
-    //         throw new Error('Layer changes stream already registered');
-    //     }
-    //     this.layerChanges$.set(layer, new ReplaySubject<LayerChanges<AbstractSymbology>>(1));
-    // }
-    //
+
+    private createLayerChangesStream(layer: Layer) {
+        if (this.layerChanges$.get(layer)) {
+            throw new Error('Layer changes stream already registered');
+        }
+        // TODO: remove buffer from changes stream?
+        this.layerChanges$.set(layer, new ReplaySubject<LayerChanges>(1));
+    }
+
     // private static isNoRasterForGivenTimeException(response: HttpErrorResponse): boolean {
     //     if (!response.error || !response.error.nested_exception) {
     //         return false;

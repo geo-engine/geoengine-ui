@@ -16,9 +16,13 @@ export class Time implements ToDict<TimeIntervalDict> {
         return new Time(dict.start, dict.end);
     }
 
-    constructor(start: MomentInput, end: MomentInput) {
+    constructor(start: MomentInput, end?: MomentInput) {
         this._start = utc(start);
-        this._end = utc(end);
+        if (end) {
+            this._end = utc(end);
+        } else {
+            this._end = this._start.clone();
+        }
     }
 
     toDict(): TimeIntervalDict {
