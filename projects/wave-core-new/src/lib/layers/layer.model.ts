@@ -1,5 +1,5 @@
 import {LayerDict, UUID, ToDict, ColorizerDict, RgbaColor} from '../backend/backend.model';
-import {AbstractSymbology, MappingRasterSymbology, VectorSymbology} from './symbology/symbology.model';
+import {AbstractSymbology, MappingRasterSymbology, VectorSymbology, PointSymbology} from './symbology/symbology.model';
 import {Unit} from '../operators/unit.model';
 
 export type LayerType = 'raster' | 'vector';
@@ -64,7 +64,11 @@ export class VectorLayer extends Layer {
         return new VectorLayer({
             name: dict.name,
             workflowId: dict.workflow,
-            symbology: undefined, // TODO: get from meta data
+            symbology: PointSymbology.createSymbology({
+                fillRGBA: [255, 0, 0], // red
+                radius: 10,
+                clustered: false,
+            }) as any as VectorSymbology, // TODO: get symbology from meta data
         });
     }
 

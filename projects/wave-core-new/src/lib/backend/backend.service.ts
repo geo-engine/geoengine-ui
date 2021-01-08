@@ -1,14 +1,16 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
 import {
+    BBoxDict,
     CreateProjectResponseDict, LayerDict, ProjectDict, ProjectFilterDict,
     ProjectListingDict, ProjectOrderByDict, ProjectPermissionDict, RegisterWorkflowResultDict,
     RegistrationDict,
-    SessionDict, STRectangleDict,
+    SessionDict, STRectangleDict, STRefString, TimeIntervalDict,
     UUID
 } from './backend.model';
+import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 
 @Injectable({
     providedIn: 'root'
@@ -126,8 +128,70 @@ export class BackendService {
         return response;
     }
 
+    wfsGetFeature(request: {
+                      typeNames: string,
+                      bbox: BBoxDict,
+                      time?: TimeIntervalDict,
+                      srsName?: STRefString,
+                      namespaces?: string,
+                      count?: number,
+                      sortBy?: string
+                      resultType?: string
+                      filter?: string
+                      propertyName?: string,
+                  },
+                  sessionId: UUID): Observable<any> {
+        const params = new NullDiscardingHttpParams();
+
+        params.set('service', 'WFS');
+        params.set('version', '2.0.0');
+        params.set('request', 'GetFeature');
+        params.set('outputFormat', 'application/json');
+
+        params.set('typeNames', request.typeNames);
+        params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
+        params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
+        params.set('srsName', request.srsName);
+
+        // these probably do not work yet
+        params.set('namespaces', request.namespaces);
+        params.setMapped('count', request.count, Number.toString);
+        params.set('sortBy', request.sortBy);
+        params.set('resultType', request.resultType);
+        params.set('filter', request.filter);
+        params.set('propertyName', request.propertyName);
+
+        return this.http.get<any>(this.config.API_URL + '/wfs', {
+            headers: BackendService.authorizationHeader(sessionId),
+            params: params.httpParams,
+        });
+    }
+
     private static authorizationHeader(sessionId: UUID): HttpHeaders {
         return new HttpHeaders()
             .set('Authorization', `Bearer ${sessionId}`);
+    }
+}
+
+/**
+ * A wrapper around `HttpParams` that automatically discards operations with empty values.
+ */
+class NullDiscardingHttpParams {
+    httpParams: HttpParams = new HttpParams();
+
+    set(param: string, value: string) {
+        if (!value) {
+            return;
+        }
+
+        this.httpParams = this.httpParams.set(param, value);
+    }
+
+    setMapped<V>(param: string, value: V, transform: (V) => string) {
+        if (!value) {
+            return;
+        }
+
+        this.httpParams = this.httpParams.set(param, transform(value));
     }
 }
