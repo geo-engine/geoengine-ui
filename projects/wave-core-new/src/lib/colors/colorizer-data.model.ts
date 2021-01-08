@@ -2,15 +2,6 @@ import {BreakPointValue, ColorBreakpoint, ColorBreakpointDict, IMappingRasterCol
 import {Color} from './color';
 
 /**
- * DEPRECATED
- */
-export interface DeprecatedMappingColorizerDoNotUse {
-    interpolation: string;
-    breakpoints: Array<[number, string, string]>;
-    result?: string | number;
-}
-
-/**
  * The colorizer types supported by Mapping.
  */
 export type ColorizerType = 'gradient' | 'logarithmic' | 'palette' | 'rgba_composite';
