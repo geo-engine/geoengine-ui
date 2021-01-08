@@ -2,6 +2,7 @@ import {get as olGetProjection, addProjection as olAddProjection, Projection as 
 import {register as olProj4Register} from 'ol/proj/proj4';
 import proj4 from 'proj4';
 
+// TODO: rework handling of `SpatialReference`s by retrieving details from the backend.
 /**
  * A wrapper class around a projection string.
  */
