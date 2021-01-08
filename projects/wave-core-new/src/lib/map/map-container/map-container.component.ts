@@ -412,7 +412,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             return;
         }
 
-        let map;
+        let map: OlMap;
         if (!this.selectedOlLayer) {
             map = undefined;
         } else if (this.maps.length === 1) { // mono map, no choice
