@@ -6,11 +6,9 @@ import {
     Subject,
     Subscription
 } from 'rxjs';
-import {debounceTime, filter, first, flatMap, map, mergeMap, skip, tap} from 'rxjs/operators';
+import {debounceTime, filter, first, map, mergeMap, skip, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
-
-import {RScript} from './storage.model';
 
 import {LayoutDict, LayoutService} from '../layout.service';
 import {ProjectService} from '../project/project.service';
@@ -81,18 +79,6 @@ export class StorageService {
     }
 
     loadProjectByName(name: string) {
-        return null; // TODO: implement
-    }
-
-    saveRScript(name: string, script: RScript): Observable<void> {
-        return null; // TODO: implement
-    }
-
-    loadRScriptByName(name: string): Observable<RScript> {
-        return null; // TODO: implement
-    }
-
-    getRScripts(): Observable<Array<string>> {
         return null; // TODO: implement
     }
 
