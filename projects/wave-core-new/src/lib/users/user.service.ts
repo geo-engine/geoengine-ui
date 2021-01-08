@@ -5,11 +5,12 @@ import {Injectable} from '@angular/core';
 
 import {utc} from 'moment';
 
-import {Session, User} from './user.model';
+import {User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
 import {ErrorDict, SessionDict, UUID} from '../backend/backend.model';
+import {Session} from './session.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 

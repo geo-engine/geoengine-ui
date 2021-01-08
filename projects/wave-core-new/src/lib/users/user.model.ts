@@ -1,9 +1,6 @@
 /**
  * This class represents a geo engine user.
  */
-import {STRectangleDict, UUID} from '../backend/backend.model';
-import {Moment} from 'moment';
-
 export class User {
     id: string;
 
@@ -27,10 +24,3 @@ export class User {
     }
 }
 
-export interface Session {
-    sessionToken: string;
-    user: User;
-    validUntil: Moment; // TODO: custom time point?
-    lastProjectId?: UUID;
-    lastView?: STRectangleDict;
-}
