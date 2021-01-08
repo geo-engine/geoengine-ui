@@ -31,12 +31,12 @@ export class SymbologyEditorComponent implements OnDestroy {
     /**
      * input to submit the layer with the symbology to edit
      */
-    @Input() layer: Layer<AbstractSymbology> = undefined;
+    @Input() layer: Layer = undefined;
 
     // The list with all valid layers, required for the layer selection.
-    validLayers: Array<Layer<AbstractSymbology>> = undefined;
+    validLayers: Array<Layer> = undefined;
     private subscriptions: Array<Subscription> = [];
-    private layerChanges = new Subject<[Layer<AbstractSymbology>, AbstractSymbology]>();
+    private layerChanges = new Subject<[Layer, AbstractSymbology]>();
 
     constructor(
         private config: Config,
@@ -62,7 +62,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     /**
      * Submit a layer and the desired symbology to update the layer accordingly.
      */
-    update_symbology(layer: Layer<AbstractSymbology>, symbology: AbstractSymbology) {
+    update_symbology(layer: Layer, symbology: AbstractSymbology) {
         this.layerChanges.next([layer, symbology]);
     }
 

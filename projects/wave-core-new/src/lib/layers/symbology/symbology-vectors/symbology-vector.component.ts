@@ -41,7 +41,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * The vector layer for which the symbology is currently edited
      */
-    @Input() layer: VectorLayer<PointSymbology> | VectorLayer<VectorSymbology>;
+    @Input() layer: VectorLayer;
     /**
      * The event emitter propagating the changed symbology
      */

@@ -39,7 +39,7 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 })
 export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
 
-    @Input() layer: RasterLayer<MappingRasterSymbology>;
+    @Input() layer: RasterLayer;
     @Output() symbologyChanged: EventEmitter<MappingRasterSymbology> = new EventEmitter<MappingRasterSymbology>();
 
     symbology: MappingRasterSymbology;
