@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {MappingRasterSymbology, ProjectService, RasterLayer, Unit} from 'wave-core';
+import {MappingRasterSymbology, ProjectService, RasterLayer, Unit, VectorLayer, PointSymbology} from 'wave-core';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -45,5 +45,42 @@ export class MockLayersComponent implements OnInit {
                 }));
             })
         ).subscribe(() => console.log('added raster'));
+    }
+
+    addPoints() {
+        const workflow = {
+            type: 'Vector',
+            operator: {
+                type: 'MockPointSource',
+                params: {
+                    points: [{
+                        x: 0.0,
+                        y: 0.0
+                    }, {
+                        // Marburg
+                        x: 8.7667933,
+                        y: 50.8021728
+                    }, {
+                        // Cologne
+                        x: 6.9602786,
+                        y: 50.937531
+                    }]
+                }
+            }
+        };
+
+        this.projectService.registerWorkflow(workflow).pipe(
+            mergeMap(workflowId => {
+                return this.projectService.addLayer(new VectorLayer({
+                    workflowId,
+                    name: 'Two cities and (0, 0)',
+                    symbology: PointSymbology.createSymbology({
+                        fillRGBA: [255, 0, 0], // red
+                        radius: 10,
+                        clustered: false,
+                    }),
+                }));
+            })
+        ).subscribe(() => console.log('added points'));
     }
 }

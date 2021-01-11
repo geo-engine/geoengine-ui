@@ -2,13 +2,12 @@ import {
     combineLatest,
     Observable,
     Observer,
-    of,
     ReplaySubject,
     Subject,
     Subscription
 } from 'rxjs';
 
-import {catchError, debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
@@ -21,12 +20,13 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
-import {Layer, LayerChanges, RasterLayer} from '../layers/layer.model';
+import {Layer, LayerChanges, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {STRectangleDict, UUID} from '../backend/backend.model';
+import {UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
-import {LayerData, RasterData} from '../layers/layer-data.model';
+import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
+import {MapService} from '../map/map.service';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -36,7 +36,7 @@ import {extentToBboxDict} from '../util/conversions';
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
 
-    private layerData$ = new Map<Layer, ReplaySubject<LayerData<any>>>();
+    private layerData$ = new Map<Layer, ReplaySubject<LayerData>>();
     private layerDataState$ = new Map<Layer, ReplaySubject<LoadingState>>();
     private layerDataSubscriptions = new Map<Layer, Subscription>();
 
@@ -59,7 +59,7 @@ export class ProjectService {
     constructor(private config: Config,
                 private notificationService: NotificationService,
                 // protected mappingQueryService: MappingQueryService,
-                // protected mapService: MapService,
+                protected mapService: MapService,
                 // protected layerService: LayerService,
                 protected backend: BackendService,
                 protected userService: UserService,
@@ -68,7 +68,7 @@ export class ProjectService {
         // this.plotDataState$ = new Map();
         // this.plotSubscriptions = new Map();
         // this.newPlot$ = new Subject<void>();
-        //
+
         // this.layerData$ = new Map();
         // this.layerDataState$ = new Map();
         // this.layerDataSubscriptions = new Map();
@@ -934,7 +934,7 @@ export class ProjectService {
     private createLayerDataStreams(layer: Layer) {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-        const layerData$ = new ReplaySubject<LayerData<any>>(1);
+        const layerData$ = new ReplaySubject<LayerData>(1);
         let layerDataSub: Subscription;
         switch (layer.layerType) {
             case 'raster':
@@ -943,10 +943,9 @@ export class ProjectService {
                 );
                 break;
             case 'vector':
-                // TODO: implement
-                // layerDataSub = this.createVectorLayerDataSubscription(
-                //     layer as VectorLayer<AbstractVectorSymbology>, layerData$, layerDataLoadingState$
-                // );
+                layerDataSub = this.createVectorLayerDataSubscription(
+                    layer as VectorLayer, layerData$, layerDataLoadingState$
+                );
                 break;
         }
         this.layerDataSubscriptions.set(layer, layerDataSub);
@@ -1045,54 +1044,65 @@ export class ProjectService {
         );
     }
 
-    // /**
-    //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-    //  */
-    // private createVectorLayerDataSubscription(layer: VectorLayer<AbstractVectorSymbology>, data$: Observer<VectorData>,
-    //                                           loadingState$: Observer<LoadingState>): Subscription {
-    //     return observableCombineLatest([
-    //         this.getTimeStream(),
-    //         observableCombineLatest([
-    //             this.getProjectionStream(),
-    //             this.mapService.getViewportSizeStream()
-    //         ]).pipe(
-    //             debounceTime(this.config.DELAYS.DEBOUNCE)
-    //         ),
-    //     ]).pipe(
-    //         tap(() => loadingState$.next(LoadingState.LOADING)),
-    //         switchMap(([time, [projection, viewportSize]]) => {
-    //             const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
-    //
-    //             let clusteredOption;
-    //             // TODO: is clustering a property of a layer or the symbology?
-    //             if (layer.clustered && layer.symbology instanceof PointSymbology) {
-    //                 clusteredOption = {
-    //                     minRadius: layer.symbology.radius,
-    //                 };
-    //             }
-    //
-    //             return this.mappingQueryService.getWFSData({
-    //                 operator: layer.operator,
-    //                 time,
-    //                 projection,
-    //                 clusteredOption,
-    //                 outputFormat: WFSOutputFormats.JSON,
-    //                 viewportSize
-    //             }).pipe(map(x => VectorData.olParse(time, projection, requestExtent, x)));
-    //         }),
-    //         tap(
-    //             () => loadingState$.next(LoadingState.OK),
-    //             (reason: Response) => {
-    //                 this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-    //                 loadingState$.next(LoadingState.ERROR);
-    //             }
-    //         ),
-    //     ).subscribe(
-    //         data => data$.next(data),
-    //         error => error // ignore error
-    //     );
-    // }
-    //
+    /**
+     * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
+     */
+    private createVectorLayerDataSubscription(layer: VectorLayer,
+                                              data$: Observer<VectorData>,
+                                              loadingState$: Observer<LoadingState>): Subscription {
+        return combineLatest([
+            this.getTimeStream(),
+            combineLatest([
+                this.getProjectionStream(),
+                this.mapService.getViewportSizeStream()
+            ]).pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE)
+            ),
+            this.userService.getSessionTokenForRequest(),
+        ]).pipe(
+            tap(() => loadingState$.next(LoadingState.LOADING)),
+            switchMap(([time, [projection, viewportSize], sessionToken]) => {
+                const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
+
+                // let clusteredOption;
+                // TODO: is clustering a property of a layer or the symbology?
+                // if (layer.clustered && layer.symbology instanceof PointSymbology) {
+                //     clusteredOption = {
+                //         minRadius: layer.symbology.radius,
+                //     };
+                // }
+
+                return this.backend.wfsGetFeature({
+                    typeNames: `registry:${layer.workflowId}`,
+                    bbox: extentToBboxDict(viewportSize.extent),
+                    time: time.toDict(),
+                    srsName: projection.getCode(),
+                }, sessionToken).pipe(
+                    map(x => VectorData.olParse(time, projection, requestExtent, x))
+                );
+
+                // return this.mappingQueryService.getWFSData({
+                //     operator: layer.operator,
+                //     time,
+                //     projection,
+                //     clusteredOption,
+                //     outputFormat: WFSOutputFormats.JSON,
+                //     viewportSize
+                // }).pipe(map(x => VectorData.olParse(time, projection, requestExtent, x)));
+            }),
+            tap(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${layer.name}: ${reason}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
+    }
+
     // /**
     //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
     //  */
