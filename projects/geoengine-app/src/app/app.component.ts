@@ -100,20 +100,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private registerIcons() {
         this.iconRegistry.addSvgIconInNamespace(
-            'vat',
+            'geoengine',
             'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine.svg'),
         );
 
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
-
-        // TODO: migrate to geo bon app
-        // this.iconRegistry.addSvgIconInNamespace(
-        //     'geobon',
-        //     'logo',
-        //     this.sanitizer.bypassSecurityTrustResourceUrl('assets/geobon-logo.svg'),
-        // );
     }
 
     ngOnInit() {

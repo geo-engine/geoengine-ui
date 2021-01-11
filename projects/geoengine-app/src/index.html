@@ -15,7 +15,7 @@
             padding: 0;
             color: whitesmoke;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            background: #335AA3;
+            background: #388e3c;
         }
 
         h1 {
@@ -27,15 +27,9 @@
             margin: 30vh 0 0 0;
         }
 
-        h1 span {
-            background: url('assets/vat_logo.svg') right no-repeat;
-            background-size: 18vh 18vh;
-            height: calc(18vh - 1px);
-            width: calc(18vh - 1px);
-            border: 1px solid whitesmoke;
-            border-radius: 18vh;
-            display: inline-block;
-            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.24));
+        h1 img {
+            height: 100%;
+            filter: grayscale(100%) brightness(100) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.24));
         }
 
         div {
@@ -73,7 +67,9 @@
             animation-delay: 0.4s;
         }
     </style>
-    <h1><span class="logo"></span>VAT</h1>
+    <h1>
+        <img src="assets/geoengine.svg" alt="Geo Engine">
+    </h1>
     <div class="dots">
         <span>&middot;</span>
         <span>&middot;</span>

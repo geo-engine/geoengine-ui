@@ -13,11 +13,12 @@
     <!--    <wave-layer-list class="mat-elevation-z4"-->
     <!--                     [height]="middleContainerHeight$ | async"-->
     <!--                     [addAFirstLayerSidenavConfig]="addAFirstLayerConfig">-->
-    <!--        <div class="logo">-->
-    <!--            <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>-->
-    <!--            <span class="title">VAT</span>-->
-    <!--        </div>-->
-    <!--    </wave-layer-list>-->
+    <wave-layer-list class="mat-elevation-z4"
+                     [height]="middleContainerHeight$ | async">
+        <div class="logo">
+            <mat-icon mat-list-izcon svgIcon="geoengine:logo" aria-label="Geo Engine"></mat-icon>
+        </div>
+    </wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
         <wave-map-container #map [grid]="mapIsGrid$ | async">

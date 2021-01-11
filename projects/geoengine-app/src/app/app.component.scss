@@ -13,6 +13,17 @@ wave-layer-list {
     border-bottom-right-radius: 2px;
 }
 
+wave-layer-list .logo .mat-icon {
+    width: 100%;
+    height: 100%;
+    filter: grayscale(100%) brightness(100);
+
+    ::ng-deep svg {
+        border: none;
+        border-radius: unset;
+    }
+}
+
 .time-container {
     position: absolute;
     left: 16vw;
