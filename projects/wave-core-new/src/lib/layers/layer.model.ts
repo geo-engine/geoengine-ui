@@ -5,12 +5,14 @@ import {Unit} from '../operators/unit.model';
 export type LayerType = 'raster' | 'vector';
 
 export abstract class Layer implements ToDict<LayerDict> {
-    protected _name: string;
+    protected static nextLayerId = 0;
+    readonly id: number;
+
+    readonly name: string;
     readonly workflowId: UUID;
 
-    // TODO: move to layer service
-    protected _isVisible = true;
-    protected _isLegendVisible = false;
+    readonly isVisible: boolean;
+    readonly isLegendVisible: boolean;
 
     readonly symbology: AbstractSymbology;
 
@@ -30,25 +32,24 @@ export abstract class Layer implements ToDict<LayerDict> {
     }
 
     protected constructor(config: {
+        id?: number,
         name: string,
         workflowId: string,
+        isVisible: boolean,
+        isLegendVisible: boolean,
         symbology: AbstractSymbology,
     }) {
-        this._name = config.name;
+        if (typeof config.id === 'number') {
+            this.id = config.id;
+        } else {
+            this.id = Layer.nextLayerId++;
+        }
+
+        this.name = config.name;
         this.workflowId = config.workflowId;
+        this.isVisible = config.isVisible;
+        this.isLegendVisible = config.isLegendVisible;
         this.symbology = config.symbology;
-    }
-
-    get name(): string {
-        return this._name;
-    }
-
-    get isVisible(): boolean {
-        return this._isVisible;
-    }
-
-    get isLegendVisible(): boolean {
-        return this._isLegendVisible;
     }
 
     abstract get layerType(): LayerType;
@@ -64,17 +65,22 @@ export class VectorLayer extends Layer {
         return new VectorLayer({
             name: dict.name,
             workflowId: dict.workflow,
+            isLegendVisible: false,  // TODO: get from separate store
+            isVisible: true,
             symbology: PointSymbology.createSymbology({
                 fillRGBA: [255, 0, 0], // red
                 radius: 10,
                 clustered: false,
-            }) as any as VectorSymbology, // TODO: get symbology from meta data
+            }) as any as VectorSymbology // TODO: get symbology from meta data
         });
     }
 
     constructor(config: {
-        workflowId: string,
+        id?: number,
         name: string,
+        workflowId: string,
+        isVisible: boolean,
+        isLegendVisible: boolean,
         symbology: VectorSymbology,
     }) {
         super(config);
@@ -86,7 +92,7 @@ export class VectorLayer extends Layer {
 
     toDict(): LayerDict {
         return {
-            name: this._name,
+            name: this.name,
             workflow: this.workflowId,
             info: {
                 Vector: {},
@@ -146,14 +152,19 @@ export class RasterLayer extends Layer {
 
         return new RasterLayer({
             name: dict.name,
+            isLegendVisible: false, // TODO: get from separate store
+            isVisible: true,
             workflowId: dict.workflow,
-            symbology,
+            symbology
         });
     }
 
     constructor(config: {
-        workflowId: string,
+        id?: number,
         name: string,
+        workflowId: string,
+        isVisible: boolean,
+        isLegendVisible: boolean,
         symbology: MappingRasterSymbology,
     }) {
         super(config);
@@ -194,7 +205,7 @@ export class RasterLayer extends Layer {
         }
 
         return {
-            name: this._name,
+            name: this.name,
             workflow: this.workflowId,
             info: {
                 Raster: {

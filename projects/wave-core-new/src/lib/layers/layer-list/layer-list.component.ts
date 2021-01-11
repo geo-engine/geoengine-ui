@@ -95,8 +95,7 @@ export class LayerListComponent implements OnDestroy {
      */
     drop(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.layerList, event.previousIndex, event.currentIndex);
-        // TODO: re-implement
-        // this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
+        this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
     }
 
     /**

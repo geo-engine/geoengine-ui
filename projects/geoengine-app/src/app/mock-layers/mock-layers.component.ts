@@ -42,6 +42,8 @@ export class MockLayersComponent implements OnInit {
                             interpolation: Unit.defaultUnit.interpolation,
                         }),
                     }),
+                    isLegendVisible: false,
+                    isVisible: false,
                 }));
             })
         ).subscribe(() => console.log('added raster'));
@@ -79,6 +81,8 @@ export class MockLayersComponent implements OnInit {
                         radius: 10,
                         clustered: false,
                     }),
+                    isLegendVisible: false,
+                    isVisible: true,
                 }));
             })
         ).subscribe(() => console.log('added points'));

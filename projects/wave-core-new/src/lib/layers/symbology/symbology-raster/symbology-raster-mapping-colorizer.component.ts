@@ -220,7 +220,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
             ),
             this.projectService.getLayerChangesStream(this.layer).pipe(
                 startWith({operator: true}),
-                filter(c => c.operator !== undefined),
+                // filter(c => c.operator !== undefined), // TODO: refactor
                 map(_ => this.buildHistogramOperator())
             ),
         ]).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {

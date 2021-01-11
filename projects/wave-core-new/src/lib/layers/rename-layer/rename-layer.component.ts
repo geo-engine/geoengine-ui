@@ -36,11 +36,16 @@ export class RenameLayerComponent implements OnInit {
      */
     save() {
         const layerName = this.form.controls['layerName'].value;
-        if (layerName !== this.layer.name) {
-            // TODO: call rename layer method
-            // this.projectService.changeLayer(this.layer, {name: layerName});
+        if (layerName === this.layer.name) {
+            return;
         }
-        this.dialogRef.close();
+
+        this.projectService.changeLayerMetadata(this.layer, {name: layerName}).subscribe(
+            () => this.dialogRef.close(),
+            error => {
+                // TODO: handle error
+            },
+        );
     }
 
 }

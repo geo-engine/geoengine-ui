@@ -20,13 +20,14 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
-import {Layer, LayerChanges, RasterLayer, VectorLayer} from '../layers/layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
+import {AbstractSymbology, MappingRasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -36,9 +37,10 @@ import {MapService} from '../map/map.service';
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
 
-    private layerData$ = new Map<Layer, ReplaySubject<LayerData>>();
-    private layerDataState$ = new Map<Layer, ReplaySubject<LoadingState>>();
-    private layerDataSubscriptions = new Map<Layer, Subscription>();
+    private layerData$ = new Map<number, ReplaySubject<LayerData>>();
+    private layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
+    private layerDataSubscriptions = new Map<number, Subscription>();
+    private layers = new Map<number, ReplaySubject<Layer>>();
 
     // private layerSymbologyData$: Map<Layer, ReplaySubject<DeprecatedMappingColorizerDoNotUse>>;
     // private layerSymbologyDataState$: Map<Layer, ReplaySubject<LoadingState>>;
@@ -47,7 +49,6 @@ export class ProjectService {
     // private layerProvenanceDataState$: Map<Layer, ReplaySubject<LoadingState>>;
     // private layerProvenanceDataSubscriptions: Map<Layer, Subscription>;
     // private layerCombinedState$: Map<Layer, Observable<LoadingState>>;
-    private layerChanges$ = new Map<Layer, ReplaySubject<LayerChanges>>();
 
     // private newLayer$: Subject<Layer<AbstractSymbology>>;
 
@@ -167,8 +168,8 @@ export class ProjectService {
         // this.layerCombinedState$.clear();
 
         // clears all layer changes subscriptions, but completes them first
-        this.layerChanges$.forEach(subject => subject.complete());
-        this.layerChanges$.clear();
+        this.layers.forEach(subject => subject.complete());
+        this.layers.clear();
 
         // clear plot data
         // this.plotData$.forEach(subject => subject.complete());
@@ -669,14 +670,14 @@ export class ProjectService {
      * Retrieve the data of the layer as a stream.
      */
     getLayerDataStream(layer: Layer): Observable<any> {
-        return this.layerData$.get(layer);
+        return this.layerData$.get(layer.id);
     }
 
     /**
      * Retrieve the layer data status as a stream.
      */
     getLayerDataStatusStream(layer: Layer): Observable<LoadingState> {
-        return this.layerDataState$.get(layer);
+        return this.layerDataState$.get(layer.id);
     }
 
     /**
@@ -684,7 +685,7 @@ export class ProjectService {
      */
     changeRasterLayerDataStatus(layer: Layer, state: LoadingState) {
         if (layer.layerType === 'raster') {
-            this.layerDataState$.get(layer).next(state);
+            this.layerDataState$.get(layer.id).next(state);
         } else {
             throw Error('It is only allowed to change the state of a raster layer');
         }
@@ -755,18 +756,18 @@ export class ProjectService {
     // getNewLayerStream(): Observable<Layer<AbstractSymbology>> {
     //     return this.newLayer$;
     // }
-    //
-    // /**
-    //  * Sets the layers
-    //  */
-    // setLayers(layers: Array<Layer<AbstractSymbology>>) {
-    //     this.project$.pipe(first()).subscribe(project => {
-    //         if (project.layers !== layers) {
-    //             this.changeProjectConfig({layers});
-    //         }
-    //     });
-    // }
-    //
+
+    /**
+     * Sets the layers
+     */
+    setLayers(layers: Array<Layer>) {
+        this.project$.pipe(first()).subscribe(project => {
+            if (project.layers !== layers) {
+                this.changeProjectConfig({layers});
+            }
+        });
+    }
+
     // /**
     //  * Changes the display name of a layer.
     //  * @param layer The layer to modify
@@ -801,11 +802,90 @@ export class ProjectService {
     //     }
     // }
 
+    changeLayerMetadata(layer: Layer, changes: {
+        name?: string,
+        workflowId?: UUID,
+        symbology?: AbstractSymbology,
+    }): Observable<void> {
+        const subject = new Subject<void>();
+
+        if (Object.keys(changes).length === 0) {
+            subject.next();
+            subject.complete();
+            return subject;
+        }
+
+        combineLatest([
+            this.userService.getSessionTokenForRequest(),
+            this.project$,
+        ]).pipe(
+            first(),
+            mergeMap(([sessionToken, project]) => {
+                let newLayer: Layer;
+
+                if (layer instanceof VectorLayer) {
+                    newLayer = new VectorLayer({
+                        id: layer.id,
+                        name: changes.name || layer.name,
+                        workflowId: changes.workflowId || layer.workflowId,
+                        isVisible: layer.isVisible,
+                        isLegendVisible: layer.isLegendVisible,
+                        symbology: changes.symbology as VectorSymbology || layer.symbology,
+                    });
+                } else if (layer instanceof RasterLayer) {
+                    newLayer = new RasterLayer({
+                        id: layer.id,
+                        name: changes.name || layer.name,
+                        workflowId: changes.workflowId || layer.workflowId,
+                        isVisible: layer.isVisible,
+                        isLegendVisible: layer.isLegendVisible,
+                        symbology: changes.symbology as MappingRasterSymbology || layer.symbology,
+                    });
+                } else {
+                    throw new Error('unknown layer type');
+                }
+
+                const newLayers = project.layers.map(oldLayer => {
+                    if (oldLayer.id === newLayer.id) {
+                        return newLayer;
+                    } else {
+                        return oldLayer;
+                    }
+                });
+
+                return this.backend.updateProject({
+                    id: project.id,
+                    layers: newLayers.map(l => l.toDict()),
+                }, sessionToken).pipe(
+                    tap(() => {
+                        this.layers.get(newLayer.id).next(newLayer);
+                        // TODO: call `changeProjectConfig`
+                        this.project$.next(new Project({
+                            id: project.id,
+                            name: project.name,
+                            spatialReference: project.spatialReference,
+                            time: project.time,
+                            plots: project.plots,
+                            layers: newLayers,
+                            timeStepDuration: project.timeStepDuration,
+                        }));
+                    })
+                );
+            }),
+        ).subscribe(
+            () => subject.next(),
+            error => subject.error(error),
+            () => subject.complete(),
+        );
+
+        return subject;
+    }
+
     /**
      * Get a stream of LayerChanges for a specified layer.
      */
-    getLayerChangesStream(layer: Layer): Observable<any> {
-        return this.layerChanges$.get(layer);
+    getLayerChangesStream(layer: Layer): Observable<Layer> {
+        return this.layers.get(layer.id);
     }
 
     // /**
@@ -948,9 +1028,9 @@ export class ProjectService {
                 );
                 break;
         }
-        this.layerDataSubscriptions.set(layer, layerDataSub);
-        this.layerDataState$.set(layer, layerDataLoadingState$);
-        this.layerData$.set(layer, layerData$);
+        this.layerDataSubscriptions.set(layer.id, layerDataSub);
+        this.layerDataState$.set(layer.id, layerDataLoadingState$);
+        this.layerData$.set(layer.id, layerData$);
 
         // const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
         // const symbologyData$ = new ReplaySubject<DeprecatedMappingColorizerDoNotUse>(1);
@@ -1172,11 +1252,10 @@ export class ProjectService {
     // }
 
     private createLayerChangesStream(layer: Layer) {
-        if (this.layerChanges$.get(layer)) {
+        if (this.layers.get(layer.id)) {
             throw new Error('Layer changes stream already registered');
         }
-        // TODO: remove buffer from changes stream?
-        this.layerChanges$.set(layer, new ReplaySubject<LayerChanges>(1));
+        this.layers.set(layer.id, new ReplaySubject<Layer>(1));
     }
 
     // private static isNoRasterForGivenTimeException(response: HttpErrorResponse): boolean {
