@@ -1,0 +1,9 @@
+<mat-form-field>
+    <mat-label>Stroke Dash Select</mat-label>
+    <mat-select [(ngModel)]="strokeDashStyle">
+        <mat-option *ngFor="let line of lines" [value]="line">
+            {{dashStyleName(line)}}
+            <span [innerHTML]="generateViewImage(line)"></span>
+        </mat-option>
+    </mat-select>
+</mat-form-field>
