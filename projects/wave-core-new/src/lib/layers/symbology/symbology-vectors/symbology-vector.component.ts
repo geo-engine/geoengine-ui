@@ -12,7 +12,6 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {VectorLayer} from '../../layer.model';
-import {DataTypes} from '../../../operators/datatype.model';
 import {ColorizerData} from '../../../colors/colorizer-data.model';
 
 /**
@@ -226,20 +225,21 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     private gatherAttributes() {
         const attributes: Array<Attribute> = [];
         const numericAttributes: Array<Attribute> = [];
-        this.layer.operator.dataTypes.forEach((datatype, attribute) => {
-
-            if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
-                numericAttributes.push({
-                    name: attribute,
-                    type: 'number',
-                });
-            } else {
-                attributes.push({
-                    name: attribute,
-                    type: 'text',
-                });
-            }
-        });
+        // TODO: refactor
+        // this.layer.operator.dataTypes.forEach((datatype, attribute) => {
+        //
+        //     if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
+        //         numericAttributes.push({
+        //             name: attribute,
+        //             type: 'number',
+        //         });
+        //     } else {
+        //         attributes.push({
+        //             name: attribute,
+        //             type: 'text',
+        //         });
+        //     }
+        // });
         this.numericAttributes = numericAttributes;
         this.attributes = [...numericAttributes, ...attributes];
     }

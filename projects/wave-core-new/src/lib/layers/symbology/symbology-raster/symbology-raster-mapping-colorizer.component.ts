@@ -14,19 +14,23 @@ import {ColorizerData} from '../../../colors/colorizer-data.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
 import {BehaviorSubject, combineLatest, ReplaySubject, Subscription} from 'rxjs';
-import {HistogramData} from '../../../plots/histogram/histogram.component';
 import {ProjectService} from '../../../project/project.service';
-import {Operator} from '../../../operators/operator.model';
-import {HistogramType} from '../../../operators/types/histogram-type.model';
-import {DataType} from '../../../operators/datatype.model';
 import {Unit} from '../../../operators/unit.model';
 import {debounceTime, filter, map, startWith} from 'rxjs/operators';
 import {ResultTypes} from '../../../operators/result-type.model';
-import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {MapService} from '../../../map/map.service';
 import {Config} from '../../../config.service';
 import {MatSliderChange} from '@angular/material/slider';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+
+// TODO: use correct types
+// tslint:disable-next-line:no-empty-interface
+interface HistogramData {
+}
+
+// tslint:disable-next-line:no-empty-interface
+interface Operator {
+}
 
 /**
  * The symbology editor component for raster data, which is colorized by the mapping backend
@@ -58,7 +62,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
 
     constructor(
         public projectService: ProjectService,
-        public mappingQueryService: MappingQueryService,
+        // public mappingQueryService: MappingQueryService,
         public mapService: MapService,
         public config: Config
     ) {
@@ -223,31 +227,35 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
             this.layerHistogramData$.next(undefined);
             this.layerHistogramDataLoading$.next(true);
 
-            this.mappingQueryService.getPlotData({
-                operator: histogramOperator,
-                time: projectTime,
-                extent: viewport.extent,
-                projection,
-            }).subscribe(data => {
-                this.layerHistogramData$.next(data as HistogramData);
-                this.layerHistogramDataLoading$.next(false);
-            });
+            // TODO: use plot
+            // this.mappingQueryService.getPlotData({
+            //     operator: histogramOperator,
+            //     time: projectTime,
+            //     extent: viewport.extent,
+            //     projection,
+            // }).subscribe(data => {
+            //     this.layerHistogramData$.next(data as HistogramData);
+            //     this.layerHistogramDataLoading$.next(false);
+            // });
         });
         this.layerHistogramDataSubscription = sub;
     }
 
     private buildHistogramOperator(): Operator {
-        return new Operator({
-            operatorType: new HistogramType({
-                attribute: 'value',
-                range: 'data',
-            }),
-            resultType: ResultTypes.PLOT,
-            projection: this.layer.operator.projection,
-            attributes: [],
-            dataTypes: new Map<string, DataType>(),
-            units: new Map<string, Unit>(),
-            rasterSources: [this.layer.operator],
-        });
+        // TODO: build operator
+        // return new Operator({
+        //     operatorType: new HistogramType({
+        //         attribute: 'value',
+        //         range: 'data',
+        //     }),
+        //     resultType: ResultTypes.PLOT,
+        //     projection: this.layer.operator.projection,
+        //     attributes: [],
+        //     dataTypes: new Map<string, DataType>(),
+        //     units: new Map<string, Unit>(),
+        //     rasterSources: [this.layer.operator],
+        // });
+
+        return {};
     }
 }

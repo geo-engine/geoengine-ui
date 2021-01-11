@@ -43,16 +43,17 @@
         <ng-template [ngIf]="colormapPanel.expanded">
             <div class="histogram">
                 <mat-progress-spinner mode="indeterminate" *ngIf="layerHistogramDataLoading$ | async"></mat-progress-spinner>
-                <wave-histogram
-                    *ngIf="layerHistogramData$ | async" [data]="layerHistogramData$ | async"
-                    [selectable]="true" [interactable]="false"
-                    [minRange]="layerMinValue"
-                    [maxRange]="layerMaxValue"
-                    (minRangeChange)="updateLayerMinValue($event)"
-                    (maxRangeChange)="updateLayerMaxValue($event)"
-                    [emmitInitialDataMinMax]="false"
-                    [autoResize]="true"
-                ></wave-histogram>
+                <!-- TODO re-integrate histogram -->
+                <!--                <wave-histogram-->
+                <!--                    *ngIf="layerHistogramData$ | async" [data]="layerHistogramData$ | async"-->
+                <!--                    [selectable]="true" [interactable]="false"-->
+                <!--                    [minRange]="layerMinValue"-->
+                <!--                    [maxRange]="layerMaxValue"-->
+                <!--                    (minRangeChange)="updateLayerMinValue($event)"-->
+                <!--                    (maxRangeChange)="updateLayerMaxValue($event)"-->
+                <!--                    [emmitInitialDataMinMax]="false"-->
+                <!--                    [autoResize]="true"-->
+                <!--                ></wave-histogram>-->
             </div>
             <div>
                 <mat-slide-toggle

@@ -60,6 +60,26 @@ import {
     OlPolygonLayerComponent,
     OlRasterLayerComponent,
 } from './map/map-layer.component';
+import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
+import {LegendComponent} from './layers/legend/legend.component';
+import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
+import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
+import {LayerListComponent} from './layers/layer-list/layer-list.component';
+import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
+import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
+import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
+import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
+import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
+import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
+import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
+import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
+import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
+import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
+import {SafeStylePipe} from './util/pipes/safe-style.pipe';
+import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -95,30 +115,50 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
+    ColormapNameToColorizerDataPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
     RgbaToCssStringPipe,
     SafeHtmlPipe,
+    SafeStylePipe,
     TrimPipe,
 ];
 
 const WAVE_COMPONENTS = [
+    ColorBreakpointInputComponent,
+    ColormapColorizerComponent,
+    ColorizerEditorComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    LayerListComponent,
+    LegendComponent,
+    LineIconComponent,
     LoginComponent,
     MapContainerComponent,
+    MappingRasterLegendComponent,
     NavigationComponent,
-    OlPointLayerComponent,
     OlLineLayerComponent,
+    OlPointLayerComponent,
     OlPolygonLayerComponent,
     OlRasterLayerComponent,
+    PointIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
+    RasterLegendComponent,
+    RenameLayerComponent,
     SidenavContainerComponent,
     SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
+    StrokeDashSelectComponent,
+    SymbologyEditorComponent,
+    SymbologyVectorComponent,
+    SymbologyRasterComponent,
+    SymbologyRasterMappingColorizerComponent,
     VatLogoComponent,
+    VectorLegendComponent,
     ZoomHandlesComponent,
 ];
 
