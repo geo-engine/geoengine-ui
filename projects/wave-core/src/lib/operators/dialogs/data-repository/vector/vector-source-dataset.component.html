@@ -15,7 +15,7 @@
         <mat-list-item *ngIf="dataset?.time_start || dataset?.time_end">
             <p><b>Time validity:</b> {{dataset?.time_start.toString()}} - {{dataset?.time_end.toString()}}</p>
         </mat-list-item>
-        <mat-list-item>
+        <mat-list-item *ngIf="dataset?.provenance?.uri">
             <mat-icon matListIcon>open_in_new</mat-icon>
             <p class="dataset-uri"><a [href]="dataset?.provenance?.uri" target="_blank">{{dataset?.provenance?.uri}}</a></p>
         </mat-list-item>
