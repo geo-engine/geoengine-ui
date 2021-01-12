@@ -109,8 +109,8 @@ export interface MappingSourceDict {
     };
     channels?: [MappingSourceRasterLayerDict];
     layer?: [MappingSourceVectorLayerDict];
-    time_start?: Time;
-    time_end?: Time;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -140,8 +140,8 @@ export interface MappingSourceRasterLayerDict {
         license: string,
         citation: string,
     };
-    time_start?: Time;
-    time_end?: Time;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -165,8 +165,8 @@ export interface MappingSourceVectorLayerDict {
         license: string,
         citation: string,
     };
-    time_start?: Time;
-    time_end?: Time;
+    time_start?: string;
+    time_end?: string;
 }
 
 /**

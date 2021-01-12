@@ -68,6 +68,8 @@ export class SourceDatasetComponent implements OnInit {
     ngOnChanges(changes: SimpleChanges) {
         for (const key in changes) {
             switch (key) {
+                // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
+                // Also find a global Start/End (Min/Max) for the whole dataset
                 case 'dataset': {
                     let globalDatasetMin = this.dataset.time_start;
                     let globalDatasetMax = this.dataset.time_end;
@@ -75,7 +77,7 @@ export class SourceDatasetComponent implements OnInit {
                         for (const sourceVar in element) {
                             if (element.hasOwnProperty(sourceVar)) {
                                 if (sourceVar === 'time_start') {
-                                    if (element.time_start) {
+                                    if (element.time_start.isValid()) {
                                         if (!this._displayedColumns.includes('start')) {
                                             this._displayedColumns.push('start');
                                         }
@@ -85,36 +87,38 @@ export class SourceDatasetComponent implements OnInit {
                                     }
                                 }
                                 if (sourceVar === 'time_end') {
-                                    if (element.time_end) {
+                                    if (element.time_end.isValid()) {
                                         if (!this._displayedColumns.includes('end')) {
                                             this._displayedColumns.push('end');
                                         }
-                                    }
-                                    if (element.time_end > globalDatasetMax) {
-                                        globalDatasetMax = element.time_end;
+                                        if (element.time_end > globalDatasetMax) {
+                                            globalDatasetMax = element.time_end;
+                                        }
                                     }
                                 }
                             }
                         }
                     });
-                    this.dataset.rasterLayer.forEach((layer) => {
-                        for (const sourceVar in layer) {
-                            if (layer.hasOwnProperty(sourceVar)) {
+                    // Fill in the global Min/Max for rows without Start/End
+                    this.dataset.rasterLayer.forEach((element) => {
+                        for (const sourceVar in element) {
+                            if (element.hasOwnProperty(sourceVar)) {
                                 if (sourceVar === 'time_start') {
-                                    if (!layer.time_start) {
-                                        layer.time_start = globalDatasetMin;
+                                    if (!element.time_start.isValid()) {
+                                        element.time_start = globalDatasetMin;
                                     }
-                                    console.log(layer.time_start);
                                 }
                                 if (sourceVar === 'time_end') {
-                                    if (!layer.time_end) {
-                                        layer.time_end = globalDatasetMin;
+                                    if (!element.time_end.isValid()) {
+                                        element.time_end = globalDatasetMax;
                                     }
-                                    console.log(layer.time_end);
                                 }
                             }
                         }
                     });
+                    // Update the global Min/Max in the whole dataset
+                    this.dataset.time_start = globalDatasetMin;
+                    this.dataset.time_end = globalDatasetMax;
 
                 }
             }

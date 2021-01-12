@@ -96,31 +96,61 @@ export class VectorSourceDatasetComponent implements OnInit {
         });
         this.projectService.addLayer(l);
     }
+    // maybe refactor the following methods with central methods for finding min/max etc.
     ngOnChanges(changes: SimpleChanges) {
         for (const key in changes) {
             switch (key) {
+                // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
+                // Also find a global Start/End (Min/Max) for the whole dataset.
                 case 'dataset': {
+                    let globalDatasetMin = this.dataset.time_start;
+                    let globalDatasetMax = this.dataset.time_end;
                     this.dataset.vectorLayer.forEach((element) => {
                         for (const sourceVar in element) {
                             if (element.hasOwnProperty(sourceVar)) {
                                 if (sourceVar === 'time_start') {
-                                    if (element.time_start) {
+                                    if (element.time_start.isValid()) {
                                         if (!this._displayedColumns.includes('start')) {
                                             this._displayedColumns.push('start');
+                                        }
+                                        if (element.time_start < globalDatasetMin) {
+                                            globalDatasetMin = element.time_start;
                                         }
                                     }
                                 }
                                 if (sourceVar === 'time_end') {
-                                    if (element.time_end) {
+                                    if (element.time_end.isValid()) {
                                         if (!this._displayedColumns.includes('end')) {
                                             this._displayedColumns.push('end');
+                                        }
+                                        if (element.time_end > globalDatasetMax) {
+                                            globalDatasetMax = element.time_end;
                                         }
                                     }
                                 }
                             }
                         }
                     });
-
+                    // Fill in the global Min/Max for rows without Start/End
+                    this.dataset.vectorLayer.forEach((element) => {
+                        for (const sourceVar in element) {
+                            if (element.hasOwnProperty(sourceVar)) {
+                                if (sourceVar === 'time_start') {
+                                    if (!element.time_start.isValid()) {
+                                        element.time_start = globalDatasetMin;
+                                    }
+                                }
+                                if (sourceVar === 'time_end') {
+                                    if (!element.time_end.isValid()) {
+                                        element.time_end = globalDatasetMax;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    // Update the global Min/Max in the whole dataset
+                    this.dataset.time_start = globalDatasetMin;
+                    this.dataset.time_end = globalDatasetMax;
 
                 }
             }
