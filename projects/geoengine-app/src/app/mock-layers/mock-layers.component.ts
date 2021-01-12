@@ -43,7 +43,7 @@ export class MockLayersComponent implements OnInit {
                         }),
                     }),
                     isLegendVisible: false,
-                    isVisible: false,
+                    isVisible: true,
                 }));
             })
         ).subscribe(() => console.log('added raster'));

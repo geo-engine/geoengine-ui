@@ -6,6 +6,9 @@ export type LayerType = 'raster' | 'vector';
 
 export abstract class Layer implements ToDict<LayerDict> {
     protected static nextLayerId = 0;
+
+    abstract readonly layerType: LayerType;
+
     readonly id: number;
 
     readonly name: string;
@@ -39,11 +42,7 @@ export abstract class Layer implements ToDict<LayerDict> {
         isLegendVisible: boolean,
         symbology: AbstractSymbology,
     }) {
-        if (typeof config.id === 'number') {
-            this.id = config.id;
-        } else {
-            this.id = Layer.nextLayerId++;
-        }
+        this.id = config.id ?? Layer.nextLayerId++;
 
         this.name = config.name;
         this.workflowId = config.workflowId;
@@ -52,12 +51,21 @@ export abstract class Layer implements ToDict<LayerDict> {
         this.symbology = config.symbology;
     }
 
-    abstract get layerType(): LayerType;
+    // TODO: remove method, here?
+    abstract updateFields(changes: {
+        id?: number,
+        name?: string,
+        workflowId?: string,
+        isVisible?: boolean,
+        isLegendVisible?: boolean,
+        symbology?: AbstractSymbology,
+    }): Layer;
 
     abstract toDict(): LayerDict;
 }
 
 export class VectorLayer extends Layer {
+    readonly layerType = 'vector';
 
     readonly symbology: VectorSymbology;
 
@@ -86,10 +94,6 @@ export class VectorLayer extends Layer {
         super(config);
     }
 
-    get layerType(): LayerType {
-        return 'vector';
-    }
-
     toDict(): LayerDict {
         return {
             name: this.name,
@@ -99,9 +103,28 @@ export class VectorLayer extends Layer {
             },
         };
     }
+
+    updateFields(changes: {
+        id?: number,
+        name?: string,
+        workflowId?: string,
+        isVisible?: boolean,
+        isLegendVisible?: boolean,
+        symbology?: VectorSymbology,
+    }): VectorLayer {
+        return new VectorLayer({
+            id: changes.id ?? this.id,
+            name: changes.name ?? this.name,
+            workflowId: changes.workflowId ?? this.workflowId,
+            isVisible: changes.isVisible ?? this.isVisible,
+            isLegendVisible: changes.isLegendVisible ?? this.isLegendVisible,
+            symbology: changes.symbology ?? this.symbology,
+        });
+    }
 }
 
 export class RasterLayer extends Layer {
+    readonly layerType = 'raster';
 
     readonly symbology: MappingRasterSymbology;
 
@@ -170,8 +193,22 @@ export class RasterLayer extends Layer {
         super(config);
     }
 
-    get layerType(): LayerType {
-        return 'raster';
+    updateFields(changes: {
+        id?: number,
+        name?: string,
+        workflowId?: string,
+        isVisible?: boolean,
+        isLegendVisible?: boolean,
+        symbology?: MappingRasterSymbology,
+    }): RasterLayer {
+        return new RasterLayer({
+            id: changes.id ?? this.id,
+            name: changes.name ?? this.name,
+            workflowId: changes.workflowId ?? this.workflowId,
+            isVisible: changes.isVisible ?? this.isVisible,
+            isLegendVisible: changes.isLegendVisible ?? this.isLegendVisible,
+            symbology: changes.symbology ?? this.symbology,
+        });
     }
 
     toDict(): LayerDict {
@@ -214,6 +251,7 @@ export class RasterLayer extends Layer {
             },
         };
     }
+
 }
 
 export interface LayerChanges {

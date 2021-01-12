@@ -27,7 +27,7 @@ import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
-import {AbstractSymbology, MappingRasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
+import {AbstractSymbology} from '../layers/symbology/symbology.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -140,6 +140,13 @@ export class ProjectService {
      */
     getProjectStream(): Observable<Project> {
         return this.project$;
+    }
+
+    /**
+     * Get the current project and no further updates, e.g. for requests.
+     */
+    getProjectOnce(): Observable<Project> {
+        return this.project$.pipe(first());
     }
 
     /**
@@ -815,63 +822,11 @@ export class ProjectService {
             return subject;
         }
 
-        combineLatest([
-            this.userService.getSessionTokenForRequest(),
-            this.project$,
-        ]).pipe(
-            first(),
-            mergeMap(([sessionToken, project]) => {
-                let newLayer: Layer;
+        layer = layer.updateFields(changes);
 
-                if (layer instanceof VectorLayer) {
-                    newLayer = new VectorLayer({
-                        id: layer.id,
-                        name: changes.name || layer.name,
-                        workflowId: changes.workflowId || layer.workflowId,
-                        isVisible: layer.isVisible,
-                        isLegendVisible: layer.isLegendVisible,
-                        symbology: changes.symbology as VectorSymbology || layer.symbology,
-                    });
-                } else if (layer instanceof RasterLayer) {
-                    newLayer = new RasterLayer({
-                        id: layer.id,
-                        name: changes.name || layer.name,
-                        workflowId: changes.workflowId || layer.workflowId,
-                        isVisible: layer.isVisible,
-                        isLegendVisible: layer.isLegendVisible,
-                        symbology: changes.symbology as MappingRasterSymbology || layer.symbology,
-                    });
-                } else {
-                    throw new Error('unknown layer type');
-                }
-
-                const newLayers = project.layers.map(oldLayer => {
-                    if (oldLayer.id === newLayer.id) {
-                        return newLayer;
-                    } else {
-                        return oldLayer;
-                    }
-                });
-
-                return this.backend.updateProject({
-                    id: project.id,
-                    layers: newLayers.map(l => l.toDict()),
-                }, sessionToken).pipe(
-                    tap(() => {
-                        this.layers.get(newLayer.id).next(newLayer);
-                        // TODO: call `changeProjectConfig`
-                        this.project$.next(new Project({
-                            id: project.id,
-                            name: project.name,
-                            spatialReference: project.spatialReference,
-                            time: project.time,
-                            plots: project.plots,
-                            layers: newLayers,
-                            timeStepDuration: project.timeStepDuration,
-                        }));
-                    })
-                );
-            }),
+        this.getProjectOnce().pipe(
+            map(project => project.layers.map(l => (l.id === layer.id) ? layer : l)),
+            mergeMap(layers => this.changeProjectConfig({layers})),
         ).subscribe(
             () => subject.next(),
             error => subject.error(error),
@@ -903,7 +858,7 @@ export class ProjectService {
     //     this.changeLayer(layer, {editSymbology: !layer.editSymbology});
     // }
 
-    private changeProjectConfig(config: {
+    private changeProjectConfig(changes: {
         id?: UUID,
         name?: string,
         spatialReference?: SpatialReference,
@@ -912,25 +867,38 @@ export class ProjectService {
         layers?: Array<Layer>,
         timeStepDuration?: TimeStepDuration,
     }): Observable<void> {
-        // console.log('Project::ProjectService.changeProjectConfig', config);
-
         const subject: Subject<void> = new ReplaySubject<void>(1);
 
-        this.project$.pipe(first()).subscribe(
-            project => {
-                this.project$.next(new Project({
-                    id: config.id ? config.id : project.id,
-                    name: config.name ? config.name : project.name,
-                    spatialReference: config.spatialReference ? config.spatialReference : project.spatialReference,
-                    time: config.time ? config.time : project.time,
-                    plots: config.plots ? config.plots : project.plots,
-                    layers: config.layers ? config.layers : project.layers,
-                    timeStepDuration: config.timeStepDuration ? config.timeStepDuration : project.timeStepDuration,
-                }));
+        // don't request the server if there are no changes
+        if (Object.keys(changes).length === 0) {
+            subject.next();
+            subject.complete();
+            return subject.asObservable();
+        }
+
+        let project: Project;
+
+        combineLatest([
+            this.getProjectOnce(),
+            this.userService.getSessionTokenForRequest(),
+        ]).pipe(
+            mergeMap(([oldProject, sessionToken]) => {
+                project = oldProject.updateFields(changes);
+                return this.backend.updateProject({
+                    id: project.id,
+                    name: changes.name,
+                    layers: changes.layers.map(layer => layer.toDict()),
+                    // TODO: bounds: changes.bounds,
+                    // TODO: description: changes.description,
+                }, sessionToken);
+            }),
+        ).subscribe(
+            () => {
+                this.project$.next(project);
                 subject.next();
-                subject.complete();
             },
-            error => subject.error(error)
+            error => subject.error(error),
+            () => subject.complete(),
         );
 
         return subject.asObservable();

@@ -46,6 +46,26 @@ export class Project implements ToDict<ProjectDict> {
         this._timeStepDuration = config.timeStepDuration;
     }
 
+    updateFields(changes: {
+        id?: UUID;
+        name?: string;
+        spatialReference?: SpatialReference;
+        time?: Time;
+        plots?: Array<any>;
+        layers?: Array<Layer>;
+        timeStepDuration?: TimeStepDuration;
+    }): Project {
+        return new Project({
+            id: changes.id ?? this.id,
+            name: changes.name ?? this.name,
+            spatialReference: changes.spatialReference ?? this.spatialReference,
+            time: changes.time ?? this.time,
+            plots: changes.plots ?? this.plots,
+            layers: changes.layers ?? this.layers,
+            timeStepDuration: changes.timeStepDuration ?? this.timeStepDuration,
+        });
+    }
+
     get time(): Time {
         return this._time;
     }
