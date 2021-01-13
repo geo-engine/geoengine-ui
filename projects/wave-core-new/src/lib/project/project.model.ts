@@ -1,7 +1,7 @@
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
 import {Time, TimeStepDuration} from '../time/time.model';
 import {Layer} from '../layers/layer.model';
-import {UUID, ToDict, ProjectDict} from '../backend/backend.model';
+import {UUID, ToDict, ProjectDict, STRectangleDict} from '../backend/backend.model';
 
 export class Project implements ToDict<ProjectDict> {
     readonly id: UUID;
@@ -87,28 +87,32 @@ export class Project implements ToDict<ProjectDict> {
     }
 
     toDict(): ProjectDict {
-        const bbox = this._spatialReference.getExtent(); // TODO: allow tighter bbox
-
         return {
             id: this.id,
             name: this.name,
             description: this.description,
             version: undefined, // TODO: get rid of version?
-            bounds: {
-                spatial_reference: this._spatialReference.getCode(),
-                time_interval: this._time.toDict(),
-                bounding_box: {
-                    lower_left_coordinate: {
-                        x: bbox[0],
-                        y: bbox[1],
-                    },
-                    upper_right_coordinate: {
-                        x: bbox[2],
-                        y: bbox[3],
-                    },
+            bounds: this.toBoundsDict(),
+            layers: this._layers.map(layer => layer.toDict()),
+        };
+    }
+
+    toBoundsDict(): STRectangleDict {
+        const bbox = this._spatialReference.getExtent(); // TODO: allow tighter bbox
+
+        return {
+            spatial_reference: this._spatialReference.getCode(),
+            time_interval: this._time.toDict(),
+            bounding_box: {
+                lower_left_coordinate: {
+                    x: bbox[0],
+                    y: bbox[1],
+                },
+                upper_right_coordinate: {
+                    x: bbox[2],
+                    y: bbox[3],
                 },
             },
-            layers: this._layers.map(layer => layer.toDict()),
         };
     }
 

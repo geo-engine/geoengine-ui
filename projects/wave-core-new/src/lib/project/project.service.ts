@@ -151,7 +151,8 @@ export class ProjectService {
      * Set the time of the current project.
      */
     setTime(time: Time): Observable<void> {
-        return this.getProjectOnce().pipe(
+        const subject = new Subject<void>();
+        this.getProjectOnce().pipe(
             map(project => project.time),
             mergeMap(oldTime => {
                 if (time && time.isValid() && !time.isSame(oldTime)) {
@@ -159,8 +160,13 @@ export class ProjectService {
                 } else {
                     return of<void>();
                 }
-            })
+            }),
+        ).subscribe(
+            () => subject.next(),
+            error => subject.error(error),
+            () => subject.complete(),
         );
+        return subject.asObservable();
     }
 
     /**
@@ -199,6 +205,10 @@ export class ProjectService {
      */
     getTimeStream(): Observable<Time> {
         return this.project$.pipe(map(project => project.time), distinctUntilChanged());
+    }
+
+    getTimeOnce(): Observable<Time> {
+        return this.project$.pipe(first(), map(project => project.time));
     }
 
     /**
@@ -394,8 +404,6 @@ export class ProjectService {
         this.getProjectOnce()
             .pipe(
                 mergeMap(project => {
-                    this.removeLayerSubscriptions(layer);
-
                     const layers = project.layers.filter(l => l.id !== layer.id);
 
                     if (project.layers.length === layers.length) {
@@ -407,7 +415,10 @@ export class ProjectService {
                 }),
             )
             .subscribe(
-                () => subject.next(),
+                () => {
+                    this.removeLayerSubscriptions(layer);
+                    subject.next();
+                },
                 error => subject.error(error),
                 () => subject.complete(),
             );
@@ -528,7 +539,7 @@ export class ProjectService {
         layers?: Array<Layer>,
         timeStepDuration?: TimeStepDuration,
     }): Observable<void> {
-        const subject: Subject<void> = new ReplaySubject<void>(1);
+        const subject = new Subject<void>();
 
         // don't request the server if there are no changes
         if (Object.keys(changes).length === 0) {
@@ -545,11 +556,13 @@ export class ProjectService {
         ]).pipe(
             mergeMap(([oldProject, sessionToken]) => {
                 project = oldProject.updateFields(changes);
+
                 return this.backend.updateProject({
                     id: project.id,
                     name: changes.name,
-                    layers: changes.layers.map(layer => layer.toDict()),
-                    // TODO: bounds: changes.bounds,
+                    layers: changes.layers ? project.layers.map(layer => layer.toDict()) : undefined,
+                    // TODO: add bbox
+                    bounds: (changes.time || changes.spatialReference) ? project.toBoundsDict() : undefined,
                     // TODO: description: changes.description,
                 }, sessionToken);
             }),

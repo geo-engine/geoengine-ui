@@ -9,19 +9,19 @@ export interface TimeStepDuration {
 }
 
 export class Time implements ToDict<TimeIntervalDict> {
-    _start: Moment;
-    _end: Moment;
+    readonly start: Moment;
+    readonly end: Moment;
 
     static fromDict(dict: TimeIntervalDict): Time {
         return new Time(dict.start, dict.end);
     }
 
     constructor(start: MomentInput, end?: MomentInput) {
-        this._start = utc(start);
+        this.start = utc(start);
         if (end) {
-            this._end = utc(end);
+            this.end = utc(end);
         } else {
-            this._end = this._start.clone();
+            this.end = this.start.clone();
         }
     }
 
@@ -40,25 +40,17 @@ export class Time implements ToDict<TimeIntervalDict> {
         }
     }
 
-    get start(): Moment {
-        return this._start;
-    }
-
-    get end(): Moment {
-        return this._end;
-    }
-
     add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {
         return new Time(
-            this.start.add(durationAmount, durationUnit),
-            this.end.add(durationAmount, durationUnit)
+            this.start.clone().add(durationAmount, durationUnit),
+            this.end.clone().add(durationAmount, durationUnit),
         );
     }
 
     subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {
         return new Time(
-            this.start.subtract(durationAmount, durationUnit),
-            this.end.subtract(durationAmount, durationUnit)
+            this.start.clone().subtract(durationAmount, durationUnit),
+            this.end.clone().subtract(durationAmount, durationUnit),
         );
     }
 

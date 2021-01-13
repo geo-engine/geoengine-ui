@@ -80,6 +80,9 @@ import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbo
 import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
+import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
+import {TimeConfigComponent} from './time/time-config/time-config.component';
+import {TimeInputComponent} from './time/time-input/time-input.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -152,11 +155,14 @@ const WAVE_COMPONENTS = [
     SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
+    SmallTimeInteractionComponent,
     StrokeDashSelectComponent,
     SymbologyEditorComponent,
     SymbologyVectorComponent,
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
+    TimeConfigComponent,
+    TimeInputComponent,
     VatLogoComponent,
     VectorLegendComponent,
     ZoomHandlesComponent,
