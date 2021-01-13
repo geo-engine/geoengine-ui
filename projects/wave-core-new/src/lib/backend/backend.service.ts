@@ -75,6 +75,7 @@ export class BackendService {
             description?: string,
             layers?: Array<LayerDict>,
             bounds?: STRectangleDict,
+            // TODO: add data visibility and legend visibility
         },
         sessionId: UUID): Observable<void> {
         return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {

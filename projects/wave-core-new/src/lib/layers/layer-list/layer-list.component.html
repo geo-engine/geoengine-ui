@@ -70,16 +70,16 @@
                 >
                     <mat-menu #layerMenu="matMenu">
 
-                        <!--                                    <button mat-menu-item *ngIf="layer.isVisible"-->
-                        <!--                                            (click)="projectService.changeLayer(layer, {visible: false})">-->
-                        <!--                                        <mat-icon>visibility_off</mat-icon>-->
-                        <!--                                        <span>Hide Layer</span>-->
-                        <!--                                    </button>-->
-                        <!--                                    <button mat-menu-item *ngIf="!layer.visible"-->
-                        <!--                                            (click)="projectService.changeLayer(layer, {visible: true})">-->
-                        <!--                                        <mat-icon>visibility</mat-icon>-->
-                        <!--                                        <span>Show Layer</span>-->
-                        <!--                                    </button>-->
+                        <button mat-menu-item *ngIf="layer.isVisible"
+                                (click)="projectService.changeLayer(layer, {isVisible: false})">
+                            <mat-icon>visibility_off</mat-icon>
+                            <span>Hide Layer</span>
+                        </button>
+                        <button mat-menu-item *ngIf="!layer.isVisible"
+                                (click)="projectService.changeLayer(layer, {isVisible: true})">
+                            <mat-icon>visibility</mat-icon>
+                            <span>Show Layer</span>
+                        </button>
 
                         <!--                                    <button mat-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">-->
                         <!--                                        <mat-icon>expand_more</mat-icon>-->

@@ -481,10 +481,12 @@ export class ProjectService {
         });
     }
 
-    changeLayerMetadata(layer: Layer, changes: {
+    changeLayer(layer: Layer, changes: {
         name?: string,
         workflowId?: UUID,
         symbology?: AbstractSymbology,
+        isVisible?: boolean,
+        isLegendVisible?: boolean,
     }): Observable<void> {
         const subject = new Subject<void>();
 
