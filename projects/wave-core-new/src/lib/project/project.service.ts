@@ -1,7 +1,7 @@
 import {
     combineLatest,
     Observable,
-    Observer,
+    Observer, of,
     ReplaySubject,
     Subject,
     Subscription
@@ -508,70 +508,6 @@ export class ProjectService {
     }
 
     // /**
-    //  * Remove a plot from the project.
-    //  */
-    // removeLayer(layer: Layer<AbstractSymbology>): Observable<void> {
-    //     const subject: Subject<void> = new ReplaySubject<void>(1);
-    //
-    //     if (this.layerService.getSelectedLayer() === layer) {
-    //         this.layerService.setSelectedLayer(undefined);
-    //     }
-    //
-    //     this.project$.pipe(first()).subscribe(project => {
-    //         // const layers = Array.fromRgbaLike(this.getProject().layers);
-    //         const layers = [...project.layers];
-    //         const layerIndex = layers.indexOf(layer);
-    //         // console.log("REMOVE LAYER", layer, layers, layerIndex);
-    //         if (layerIndex >= 0) {
-    //             layers.splice(layerIndex, 1);
-    //             // console.log("REMOVE LAYER 2", removedLayers, layers);
-    //             this.changeProjectConfig({
-    //                 layers
-    //             }).subscribe(() => {
-    //                 this.layerDataSubscriptions.get(layer).unsubscribe();
-    //                 this.layerDataSubscriptions.delete(layer);
-    //                 this.layerDataState$.get(layer).complete();
-    //                 this.layerDataState$.delete(layer);
-    //                 this.layerData$.get(layer).complete();
-    //                 this.layerData$.delete(layer);
-    //
-    //                 this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
-    //                 this.layerProvenanceDataSubscriptions.delete(layer);
-    //                 this.layerProvenanceDataState$.get(layer).complete();
-    //                 this.layerProvenanceDataState$.delete(layer);
-    //                 this.layerProvenanceData$.get(layer).complete();
-    //                 this.layerProvenanceData$.delete(layer);
-    //
-    //                 const symbologyDataSubscription = this.layerSymbologyDataSubscriptions.get(layer);
-    //                 if (symbologyDataSubscription) {
-    //                     symbologyDataSubscription.unsubscribe();
-    //                 }
-    //                 this.layerSymbologyDataSubscriptions.delete(layer);
-    //                 const symbologyDataState = this.layerSymbologyDataState$.get(layer);
-    //                 if (symbologyDataState) {
-    //                     symbologyDataState.complete();
-    //                 }
-    //                 this.layerSymbologyDataState$.delete(layer);
-    //                 const lsd = this.layerSymbologyData$.get(layer);
-    //                 if (lsd) {
-    //                     lsd.complete();
-    //                 }
-    //                 this.layerSymbologyData$.delete(layer);
-    //                 this.layerCombinedState$.delete(layer);
-    //
-    //                 subject.next();
-    //                 subject.complete();
-    //             });
-    //         }
-    //     });
-    //
-    //     this.layerChanges$.get(layer).complete();
-    //     this.layerChanges$.delete(layer);
-    //
-    //     return subject.asObservable();
-    // }
-    //
-    // /**
     //  * Reload the data of a layer.
     //  */
     // reloadLayerData(layer: Layer<AbstractSymbology>) {
@@ -729,34 +665,83 @@ export class ProjectService {
     // getLayerCombinedStatusStream(layer: Layer<AbstractSymbology>): Observable<LoadingState> {
     //     return this.layerCombinedState$.get(layer);
     // }
-    //
-    // /**
-    //  * Remove all layers from a project.
-    //  */
-    // clearLayers(): Observable<void> {
-    //     const subject: Subject<void> = new ReplaySubject<void>(1);
-    //
-    //     this.project$.pipe(first()).subscribe(project => {
-    //         const removeObservables = [];
-    //
-    //         for (const layer of project.layers.slice(0)) {
-    //             removeObservables.push(this.removeLayer(layer));
-    //         }
-    //
-    //         observableCombineLatest(removeObservables).pipe(
-    //             first())
-    //             .subscribe(
-    //                 () => {
-    //                     subject.next();
-    //                     subject.complete();
-    //                 },
-    //                 error => subject.error(error)
-    //             );
-    //     });
-    //
-    //     return subject.asObservable();
-    // }
-    //
+
+    /**
+     * Removes a layer from the current project.
+     */
+    removeLayer(layer: Layer): Observable<void> {
+        const subject = new Subject<void>();
+
+        // TODO: un-select selected layer
+
+        this.getProjectOnce()
+            .pipe(
+                mergeMap(project => {
+                    this.removeLayerSubscriptions(layer);
+
+                    const layers = project.layers.filter(l => l.id !== layer.id);
+
+                    if (project.layers.length === layers.length) {
+                        // nothing filtered, so no request
+                        return of();
+                    }
+
+                    return this.changeProjectConfig({layers});
+                }),
+            )
+            .subscribe(
+                () => subject.next(),
+                error => subject.error(error),
+                () => subject.complete(),
+            );
+
+        return subject.asObservable();
+    }
+
+    /**
+     * Remove all layers from the current project.
+     */
+    clearLayers(): Observable<void> {
+        const subject = new Subject<void>();
+
+        let removedLayers: Array<Layer>;
+
+        this.getProjectOnce()
+            .pipe(
+                mergeMap(project => {
+                    removedLayers = project.layers;
+
+                    return this.changeProjectConfig({
+                        layers: [],
+                    });
+                }),
+            )
+            .subscribe(
+                () => {
+                    removedLayers.forEach(layer => this.removeLayerSubscriptions(layer));
+                    subject.next();
+                },
+                error => subject.error(error),
+                () => subject.complete(),
+            );
+
+        return subject.asObservable();
+    }
+
+    protected removeLayerSubscriptions(layer: Layer) {
+        // subjects
+        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
+            subjectMap.get(layer.id).complete();
+            subjectMap.delete(layer.id);
+        }
+
+        // subscriptions
+        for (const subscriptionMap of [this.layerDataSubscriptions]) {
+            subscriptionMap.get(layer.id).unsubscribe();
+            subscriptionMap.delete(layer.id);
+        }
+    }
+
     // /**
     //  * Get the stream of new layers.
     //  */
