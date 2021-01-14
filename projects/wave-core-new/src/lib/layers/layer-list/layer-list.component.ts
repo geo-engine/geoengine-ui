@@ -101,9 +101,8 @@ export class LayerListComponent implements OnDestroy {
     /**
      * select a layer
      */
-    toggleLayer(layer: Layer) {
-        // TODO: toggle symbology
-        // this.projectService.toggleSymbology(layer);
+    toggleLegend(layer: Layer) {
+        this.projectService.toggleLegend(layer);
     }
 
     /**

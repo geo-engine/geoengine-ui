@@ -440,7 +440,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private redrawLayers(projection: SpatialReference) {
-        this.mapLayers = this.mapLayersRaw.filter(mapLayer => mapLayer.layer.isVisible);
+        this.mapLayers = this.mapLayersRaw.filter(mapLayer => mapLayer.isVisible);
 
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();

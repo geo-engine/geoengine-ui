@@ -48,18 +48,10 @@ import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {NavigationComponent} from './sidenav/navigation/navigation.component';
-import {
-    SidenavSearchComponent,
-    SidenavSearchRightDirective
-} from './sidenav/sidenav-search/sidenav-search.component';
+import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
 import {MapContainerComponent} from './map/map-container/map-container.component';
-import {
-    OlLineLayerComponent,
-    OlPointLayerComponent,
-    OlPolygonLayerComponent,
-    OlRasterLayerComponent,
-} from './map/map-layer.component';
+import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.component';
 import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
 import {LegendComponent} from './layers/legend/legend.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
@@ -142,9 +134,7 @@ const WAVE_COMPONENTS = [
     MapContainerComponent,
     MappingRasterLegendComponent,
     NavigationComponent,
-    OlLineLayerComponent,
-    OlPointLayerComponent,
-    OlPolygonLayerComponent,
+    OlVectorLayerComponent,
     OlRasterLayerComponent,
     PointIconComponent,
     PolygonIconComponent,

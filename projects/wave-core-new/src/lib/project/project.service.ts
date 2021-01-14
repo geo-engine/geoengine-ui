@@ -20,7 +20,7 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
-import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
+import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
@@ -371,21 +371,21 @@ export class ProjectService {
     /**
      * Retrieve the data of the layer as a stream.
      */
-    getLayerDataStream(layer: Layer): Observable<any> {
+    getLayerDataStream(layer: HasLayerId): Observable<any> {
         return this.layerData$.get(layer.id);
     }
 
     /**
      * Retrieve the layer data status as a stream.
      */
-    getLayerDataStatusStream(layer: Layer): Observable<LoadingState> {
+    getLayerDataStatusStream(layer: HasLayerId): Observable<LoadingState> {
         return this.layerDataState$.get(layer.id);
     }
 
     /**
      * Change the loading state of a raster layer
      */
-    changeRasterLayerDataStatus(layer: Layer, state: LoadingState) {
+    changeRasterLayerDataStatus(layer: HasLayerId & HasLayerType, state: LoadingState) {
         if (layer.layerType === 'raster') {
             this.layerDataState$.get(layer.id).next(state);
         } else {
@@ -517,20 +517,12 @@ export class ProjectService {
         return this.layers.get(layer.id);
     }
 
-    // /**
-    //  * Toggle the layer (extension).
-    //  * @param layer The layer to modify
-    //  */
-    // toggleSymbology(layer: Layer<AbstractSymbology>) {
-    //     this.changeLayer(layer, {expanded: !layer.expanded});
-    // }
-    //
-    // /**
-    //  * Toggle layer symbology edit.
-    //  */
-    // toggleEditSymbology(layer: Layer<AbstractSymbology>) {
-    //     this.changeLayer(layer, {editSymbology: !layer.editSymbology});
-    // }
+    /**
+     * Toggle the layer's legend visibility.
+     */
+    toggleLegend(layer: Layer): Observable<void> {
+        return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
+    }
 
     private changeProjectConfig(changes: {
         id?: UUID,

@@ -261,4 +261,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     });
     // }
 
+    idFromLayer(index: number, layer: Layer): number {
+        return layer.id;
+    }
+
 }

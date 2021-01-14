@@ -81,14 +81,16 @@
                             <span>Show Layer</span>
                         </button>
 
-                        <!--                                    <button mat-menu-item *ngIf="!layer.expanded" (click)="toggleLayer(layer)">-->
-                        <!--                                        <mat-icon>expand_more</mat-icon>-->
-                        <!--                                        <span>Show Legend</span>-->
-                        <!--                                    </button>-->
-                        <!--                                    <button mat-menu-item *ngIf="layer.expanded" (click)="toggleLayer(layer)">-->
-                        <!--                                        <mat-icon>expand_less</mat-icon>-->
-                        <!--                                        <span>Hide Legend</span>-->
-                        <!--                                    </button>-->
+                        <button mat-menu-item *ngIf="!layer.isLegendVisible" (click)="toggleLegend(layer)">
+                            <mat-icon>expand_more</mat-icon>
+                            <span>Show Legend</span>
+                        </button>
+                        <button mat-menu-item *ngIf="layer.isLegendVisible" (click)="toggleLegend(layer)">
+                            <mat-icon>expand_less</mat-icon>
+                            <span>Hide Legend</span>
+                        </button>
+
+                        <!-- TODO: re-implement -->
                         <!--                                    <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: { layer: layer }})">-->
                         <!--                                        <mat-icon>merge_type</mat-icon>-->
                         <!--                                        <span>Lineage</span>-->
@@ -130,7 +132,7 @@
                             <!-- TODO: getLayerCombinedStatusStream -->
                             <button mat-icon-button
                                     *ngIf="(projectService.getLayerDataStatusStream(layer)| async) !== LoadingState.ERROR"
-                                    (click)="toggleLayer(layer)"
+                                    (click)="toggleLegend(layer)"
                                     matTooltip="{{layer.isLegendVisible ? 'Hide' : 'Show'}} Legend" matTooltipPosition="after"
                                     [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
                             >
@@ -219,7 +221,7 @@
                             <wave-legendary *ngSwitchDefault fxFlex="grow" [symbology]="layer.symbology">
                             </wave-legendary>
 
-                            <button mat-icon-button (click)="toggleLayer(layer)">
+                            <button mat-icon-button (click)="toggleLegend(layer)">
                                 <mat-icon>expand_less</mat-icon>
                             </button>
 
@@ -254,3 +256,4 @@
         </div>
 
     </div>
+</div>

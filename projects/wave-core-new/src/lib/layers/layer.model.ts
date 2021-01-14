@@ -4,7 +4,7 @@ import {Unit} from '../operators/unit.model';
 
 export type LayerType = 'raster' | 'vector';
 
-export abstract class Layer implements ToDict<LayerDict> {
+export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDict> {
     protected static nextLayerId = 0;
 
     abstract readonly layerType: LayerType;
@@ -254,9 +254,10 @@ export class RasterLayer extends Layer {
 
 }
 
-export interface LayerChanges {
-    name?: string;
-    symbology?: AbstractSymbology;
-    isVisible?: boolean;
-    isLegendVisible?: boolean;
+export interface HasLayerId {
+    readonly id: number;
+}
+
+export interface HasLayerType {
+    readonly layerType: LayerType;
 }
