@@ -121,21 +121,19 @@
                     <div class="list-element-inner-container layer-list-element" fxLayout="column" fxLayoutAlign="space-between none">
                         <div fxLayout="row" fxLayoutAlign="space-between center">
 
-                            <!-- TODO: re-implement -->
-                            <!--                        <button mat-icon-button class="mat-warn error-button" aria-label="Reload"-->
-                            <!--                                *ngIf="(projectService.getLayerCombinedStatusStream(layer)| async) === LoadingState.ERROR"-->
-                            <!--                                (click)="projectService.reloadLayer(layer)"-->
-                            <!--                        >-->
-                            <!--                            <mat-icon>replay</mat-icon>-->
-                            <!--                        </button>-->
-
                             <!-- TODO: getLayerCombinedStatusStream -->
+
+                            <button mat-icon-button class="mat-warn error-button" aria-label="Reload"
+                                    *ngIf="(projectService.getLayerDataStatusStream(layer)| async) === LoadingState.ERROR"
+                                    (click)="projectService.reloadLayer(layer)">
+                                <mat-icon>replay</mat-icon>
+                            </button>
+
                             <button mat-icon-button
                                     *ngIf="(projectService.getLayerDataStatusStream(layer)| async) !== LoadingState.ERROR"
                                     (click)="toggleLegend(layer)"
                                     matTooltip="{{layer.isLegendVisible ? 'Hide' : 'Show'}} Legend" matTooltipPosition="after"
-                                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-                            >
+                                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP">
                                 <ng-template [ngIf]="!layer.isVisible">
                                     <mat-icon mat-list-icon>visibility_off</mat-icon>
                                 </ng-template>

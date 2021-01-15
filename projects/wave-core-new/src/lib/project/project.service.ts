@@ -266,100 +266,77 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    // /**
-    //  * Reload the data of a layer.
-    //  */
-    // reloadLayerData(layer: Layer<AbstractSymbology>) {
-    //     this.layerData$.get(layer).next(undefined); // send empty data
-    //
-    //     if (this.layerDataSubscriptions.has(layer)) {
-    //         this.layerDataSubscriptions.get(layer).unsubscribe();
-    //         this.layerDataSubscriptions.delete(layer);
-    //     }
-    //
-    //     switch (layer.getLayerType()) {
-    //         case 'raster': {
-    //             this.layerDataSubscriptions.set(layer,
-    //                 this.createRasterLayerDataSubscription(
-    //                     layer as RasterLayer<AbstractRasterSymbology>,
-    //                     (this.layerData$.get(layer) as Observer<RasterData>),
-    //                     this.layerDataState$.get(layer)
-    //                 )
-    //             );
-    //             break;
-    //         }
-    //         case 'vector': {
-    //             this.layerDataSubscriptions.set(layer,
-    //                 this.createVectorLayerDataSubscription(
-    //                     layer as VectorLayer<AbstractVectorSymbology>,
-    //                     (this.layerData$.get(layer) as Observer<VectorData>),
-    //                     this.layerDataState$.get(layer)
-    //                 )
-    //             );
-    //             break;
-    //         }
-    //
-    //     }
-    // }
-    //
-    // /**
-    //  * Reload everything for the layer manually (e.g. on error).
-    //  */
-    // reloadLayer(layer: Layer<AbstractSymbology>) {
-    //     this.layerData$.get(layer).next(undefined); // send empty data
-    //
-    //     if (this.layerDataSubscriptions.has(layer)) {
-    //         this.layerDataSubscriptions.get(layer).unsubscribe();
-    //         this.layerDataSubscriptions.delete(layer);
-    //     }
-    //
-    //     if (this.layerProvenanceDataSubscriptions.has(layer)) {
-    //         this.layerProvenanceDataSubscriptions.get(layer).unsubscribe();
-    //         this.layerProvenanceDataSubscriptions.delete(layer);
-    //     }
-    //
-    //     if (this.layerSymbologyDataSubscriptions.has(layer)) {
-    //         this.layerSymbologyDataSubscriptions.get(layer).unsubscribe();
-    //         this.layerSymbologyDataSubscriptions.delete(layer);
-    //     }
-    //
-    //     switch (layer.getLayerType()) {
-    //         case 'raster': {
-    //             this.layerDataSubscriptions.set(layer,
-    //                 this.createRasterLayerDataSubscription(
-    //                     layer as RasterLayer<AbstractRasterSymbology>,
-    //                     (this.layerData$.get(layer) as Observer<RasterData>),
-    //                     this.layerDataState$.get(layer)
-    //                 )
-    //             );
-    //             this.layerSymbologyDataSubscriptions.set(layer,
-    //                 this.createRasterLayerSymbologyDataSubscription(
-    //                     layer as RasterLayer<AbstractRasterSymbology>,
-    //                     this.layerSymbologyData$.get(layer) as Observer<DeprecatedMappingColorizerDoNotUse>,
-    //                     this.layerSymbologyDataState$.get(layer)));
-    //             break;
-    //         }
-    //         case 'vector': {
-    //             this.layerDataSubscriptions.set(layer,
-    //                 this.createVectorLayerDataSubscription(
-    //                     layer as VectorLayer<AbstractVectorSymbology>,
-    //                     (this.layerData$.get(layer) as Observer<VectorData>),
-    //                     this.layerDataState$.get(layer)
-    //                 )
-    //             );
-    //             break;
-    //         }
-    //
-    //     }
-    //
-    //     this.layerProvenanceDataSubscriptions.set(layer,
-    //         this.createLayerProvenanceSubscription(
-    //             layer,
-    //             this.layerProvenanceData$.get(layer),
-    //             this.layerProvenanceDataState$.get(layer)
-    //         )
-    //     );
-    // }
+    /**
+     * Reload the data of a layer.
+     */
+    reloadLayerData(layer: Layer) {
+        this.layerData$.get(layer.id).next(undefined); // send empty data
+
+        if (this.layerDataSubscriptions.has(layer.id)) {
+            this.layerDataSubscriptions.get(layer.id).unsubscribe();
+            this.layerDataSubscriptions.delete(layer.id);
+        }
+
+        switch (layer.layerType) {
+            case 'raster': {
+                this.layerDataSubscriptions.set(layer.id,
+                    this.createRasterLayerDataSubscription(
+                        layer as RasterLayer,
+                        (this.layerData$.get(layer.id) as Observer<RasterData>),
+                        this.layerDataState$.get(layer.id)
+                    )
+                );
+                break;
+            }
+            case 'vector': {
+                this.layerDataSubscriptions.set(layer.id,
+                    this.createVectorLayerDataSubscription(
+                        layer as VectorLayer,
+                        (this.layerData$.get(layer.id) as Observer<VectorData>),
+                        this.layerDataState$.get(layer.id)
+                    )
+                );
+                break;
+            }
+
+        }
+    }
+
+    /**
+     * Reload everything for the layer manually (e.g. on error).
+     */
+    reloadLayer(layer: Layer) {
+        this.layerData$.get(layer.id).next(undefined); // send empty data
+
+        if (this.layerDataSubscriptions.has(layer.id)) {
+            this.layerDataSubscriptions.get(layer.id).unsubscribe();
+            this.layerDataSubscriptions.delete(layer.id);
+        }
+
+        switch (layer.layerType) {
+            case 'raster': {
+                this.layerDataSubscriptions.set(layer.id,
+                    this.createRasterLayerDataSubscription(
+                        layer as RasterLayer,
+                        (this.layerData$.get(layer.id) as Observer<RasterData>),
+                        this.layerDataState$.get(layer.id)
+                    )
+                );
+                break;
+            }
+            case 'vector': {
+                this.layerDataSubscriptions.set(layer.id,
+                    this.createVectorLayerDataSubscription(
+                        layer as VectorLayer,
+                        (this.layerData$.get(layer.id) as Observer<VectorData>),
+                        this.layerDataState$.get(layer.id)
+                    )
+                );
+                break;
+            }
+
+        }
+    }
 
     /**
      * Retrieve the layer models array as a stream.
