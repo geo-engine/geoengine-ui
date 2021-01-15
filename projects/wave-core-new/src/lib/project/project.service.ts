@@ -22,7 +22,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {UUID} from '../backend/backend.model';
+import {LayerDict, UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
@@ -173,10 +173,7 @@ export class ProjectService {
      * Set a time duration for the current project.
      */
     setTimeStepDuration(timeStepDuration: TimeStepDuration) {
-        // TODO: server communication
-        // this.changeProjectConfig({
-        //     timeStepDuration,
-        // });
+        this.changeProjectConfig({timeStepDuration});
     }
 
     /**
@@ -501,6 +498,21 @@ export class ProjectService {
         return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
     }
 
+    private static optimizeLayerUpdates(oldLayers: Array<Layer>, newLayers: Array<Layer>): Array<LayerDict | 'none' | 'delete'> {
+        if (newLayers.length === (oldLayers.length + 1)) {
+            // layer addition optimization
+
+            return [
+                newLayers[0].toDict(),
+                ...oldLayers.map((oldLayer, i) => oldLayer.equals(newLayers[i + 1]) ? 'none' : newLayers[i + 1].toDict()),
+            ];
+        }
+
+        return newLayers.map((layer, i) => layer.equals(oldLayers[i]) ? 'none' : layer.toDict());
+
+        // TODO: optimize deletions, etc.
+    }
+
     private changeProjectConfig(changes: {
         id?: UUID,
         name?: string,
@@ -531,10 +543,11 @@ export class ProjectService {
                 return this.backend.updateProject({
                     id: project.id,
                     name: changes.name,
-                    layers: changes.layers ? project.layers.map(layer => layer.toDict()) : undefined,
+                    layers: changes.layers ? ProjectService.optimizeLayerUpdates(oldProject.layers, project.layers) : undefined,
                     // TODO: add bbox
                     bounds: (changes.time || changes.spatialReference) ? project.toBoundsDict() : undefined,
                     // TODO: description: changes.description,
+                    // TODO: time step duration
                 }, sessionToken);
             }),
         ).subscribe(

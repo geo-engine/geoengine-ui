@@ -73,7 +73,7 @@ export class BackendService {
             id: UUID,
             name?: string,
             description?: string,
-            layers?: Array<LayerDict>,
+            layers?: Array<LayerDict | 'none' | 'delete'>,
             bounds?: STRectangleDict,
             // TODO: add data visibility and legend visibility
         },

@@ -61,6 +61,8 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
         symbology?: AbstractSymbology,
     }): Layer;
 
+    abstract equals(other: Layer): boolean;
+
     abstract toDict(): LayerDict;
 }
 
@@ -121,6 +123,20 @@ export class VectorLayer extends Layer {
             symbology: changes.symbology ?? this.symbology,
         });
     }
+
+    equals(other: Layer): boolean {
+        if (!(other instanceof VectorLayer)) {
+            return false;
+        }
+
+        return this.id === other.id
+            && this.name === other.name
+            && this.workflowId === other.workflowId
+            && this.isVisible === other.isVisible
+            && this.isLegendVisible === other.isLegendVisible
+            && this.symbology === other.symbology;
+    }
+
 }
 
 export class RasterLayer extends Layer {
@@ -209,6 +225,19 @@ export class RasterLayer extends Layer {
             isLegendVisible: changes.isLegendVisible ?? this.isLegendVisible,
             symbology: changes.symbology ?? this.symbology,
         });
+    }
+
+    equals(other: Layer): boolean {
+        if (!(other instanceof RasterLayer)) {
+            return false;
+        }
+
+        return this.id === other.id
+            && this.name === other.name
+            && this.workflowId === other.workflowId
+            && this.isVisible === other.isVisible
+            && this.isLegendVisible === other.isLegendVisible
+            && this.symbology === other.symbology;
     }
 
     toDict(): LayerDict {
