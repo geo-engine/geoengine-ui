@@ -212,7 +212,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         const sub = combineLatest([
             combineLatest([
                 this.projectService.getTimeStream(),
-                this.projectService.getProjectionStream(),
+                this.projectService.getSpatialReferenceStream(),
                 this.mapService.getViewportSizeStream()
             ]).pipe(
                 filter(_ => this.layerHistogramAutoReloadEnabled),

@@ -56,28 +56,48 @@ export class ProjectService {
     createDefaultProject(): Observable<Project> {
         const name = this.config.DEFAULTS.PROJECT.NAME;
         const spatialReference = SpatialReferences.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION);
-        const layers = [];
         const time = new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME);
         const timeStepDuration = this.getDefaultTimeStep();
 
+        // TODO: solidify default project creation
+
+        return this.createProject({
+            name,
+            description: 'Default project',
+            spatialReference,
+            time,
+            timeStepDuration,
+        });
+    }
+
+    /**
+     * Generate a default Project with values from the config file.
+     */
+    createProject(config: {
+        name: string,
+        description: string,
+        spatialReference: SpatialReference,
+        time: Time,
+        timeStepDuration: TimeStepDuration,
+    }): Observable<Project> {
         return this.userService.getSessionTokenForRequest().pipe(
-            // TODO: solidify default project creation
             mergeMap(sessionToken => this.backend.createProject({
-                name,
-                description: 'default project',
+                name: config.name,
+                description: config.description,
                 bounds: {
-                    bounding_box: extentToBboxDict(spatialReference.getExtent()),
-                    spatial_reference: spatialReference.getCode(),
-                    time_interval: time.toDict(),
+                    bounding_box: extentToBboxDict(config.spatialReference.getExtent()),
+                    spatial_reference: config.spatialReference.getCode(),
+                    time_interval: config.time.toDict(),
                 },
+                // TODO: add timeStepDuration
             }, sessionToken)),
             map(({id}) => new Project({
                 id,
-                name,
-                spatialReference,
-                layers,
-                time,
-                timeStepDuration,
+                name: config.name,
+                spatialReference: config.spatialReference,
+                layers: [],
+                time: config.time,
+                timeStepDuration: config.timeStepDuration,
             })),
         );
     }
@@ -193,7 +213,7 @@ export class ProjectService {
     /**
      * Get a stream of the projects projection.
      */
-    getProjectionStream(): Observable<SpatialReference> {
+    getSpatialReferenceStream(): Observable<SpatialReference> {
         return this.project$.pipe(map(project => project.spatialReference), distinctUntilChanged());
     }
 
@@ -644,7 +664,7 @@ export class ProjectService {
                                               loadingState$: Observer<LoadingState>): Subscription {
         return combineLatest([
             this.getTimeStream(),
-            this.getProjectionStream(),
+            this.getSpatialReferenceStream(),
         ]).pipe(
             tap(() => loadingState$.next(LoadingState.LOADING)),
             map(([time, projection]) => new RasterData(
@@ -684,7 +704,7 @@ export class ProjectService {
         return combineLatest([
             this.getTimeStream(),
             combineLatest([
-                this.getProjectionStream(),
+                this.getSpatialReferenceStream(),
                 this.mapService.getViewportSizeStream()
             ]).pipe(
                 debounceTime(this.config.DELAYS.DEBOUNCE)

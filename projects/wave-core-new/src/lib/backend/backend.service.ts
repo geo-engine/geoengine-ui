@@ -106,11 +106,18 @@ export class BackendService {
             filter: ProjectFilterDict,
             order: ProjectOrderByDict,
             offset: number,
-            limit: number
+            limit: number,
         },
         sessionId: UUID): Observable<Array<ProjectListingDict>> {
-        return this.http.request<Array<ProjectListingDict>>('get', this.config.API_URL + '/project', {
-            body: request,
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('permissions', request.permissions, JSON.stringify);
+        params.setMapped('filter', request.filter, JSON.stringify);
+        params.set('order', request.order);
+        params.setMapped('offset', request.offset, JSON.stringify);
+        params.setMapped('limit', request.limit, JSON.stringify);
+
+        return this.http.get<Array<ProjectListingDict>>(this.config.API_URL + '/projects', {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -156,7 +163,7 @@ export class BackendService {
 
         // these probably do not work yet
         params.set('namespaces', request.namespaces);
-        params.setMapped('count', request.count, Number.toString);
+        params.setMapped('count', request.count, JSON.stringify);
         params.set('sortBy', request.sortBy);
         params.set('resultType', request.resultType);
         params.set('filter', request.filter);
