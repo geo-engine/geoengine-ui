@@ -303,36 +303,7 @@ export class ProjectService {
      * Reload everything for the layer manually (e.g. on error).
      */
     reloadLayer(layer: Layer) {
-        this.layerData$.get(layer.id).next(undefined); // send empty data
-
-        if (this.layerDataSubscriptions.has(layer.id)) {
-            this.layerDataSubscriptions.get(layer.id).unsubscribe();
-            this.layerDataSubscriptions.delete(layer.id);
-        }
-
-        switch (layer.layerType) {
-            case 'raster': {
-                this.layerDataSubscriptions.set(layer.id,
-                    this.createRasterLayerDataSubscription(
-                        layer as RasterLayer,
-                        (this.layerData$.get(layer.id) as Observer<RasterData>),
-                        this.layerDataState$.get(layer.id)
-                    )
-                );
-                break;
-            }
-            case 'vector': {
-                this.layerDataSubscriptions.set(layer.id,
-                    this.createVectorLayerDataSubscription(
-                        layer as VectorLayer,
-                        (this.layerData$.get(layer.id) as Observer<VectorData>),
-                        this.layerDataState$.get(layer.id)
-                    )
-                );
-                break;
-            }
-
-        }
+        this.reloadLayerData(layer);
     }
 
     /**
