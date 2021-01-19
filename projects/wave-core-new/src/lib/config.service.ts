@@ -74,7 +74,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
-            TIME: '2000-06-06T12:00:00.000Z',
+            TIME: '2014-04-01T12:00:00.000Z',
             TIMESTEP: '1 month',
             PROJECTION: 'EPSG:3857',
         },

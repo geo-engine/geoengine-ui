@@ -1,0 +1,53 @@
+<wave-sidenav-header>Time Config</wave-sidenav-header>
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title><h3>Display Time Configuration</h3></mat-card-title>
+        <mat-card-subtitle>Use this to specify a time selection for the current data.</mat-card-subtitle>
+    </mat-card-header>
+
+    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime()">
+        <h4 *ngIf="config.TIME.ALLOW_RANGES">Start</h4>
+
+        <wave-time-input formControlName="start"></wave-time-input>
+
+        <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
+            <h4 fxLayout="row" fxLayoutAlign="space-between center">
+                End
+                <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint">same as start</mat-slide-toggle>
+            </h4>
+
+            <wave-time-input formControlName="end" [disabled]="timeAsPoint.checked"></wave-time-input>
+        </ng-template>
+
+
+        <div class="actions" fxLayout="row" fxLayoutAlign="end">
+            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
+            <button mat-raised-button (click)="reset()">
+                Reset
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">
+                Apply
+            </button>
+        </div>
+    </form>
+</mat-card>
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title><h3>Time Step Configuration</h3></mat-card-title>
+        <mat-card-subtitle>Use this to specify a time step for the time component on top of the map.</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-form-field>
+        <mat-select placeholder="Time step"
+                    [ngModel]="timeStepDuration$ | async" (ngModelChange)="updateTimeStepDuration($event)"
+                    [compareWith]="timeStepComparator"
+        >
+            <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
+                {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+</mat-card>

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {AbstractSymbology, SymbologyType} from '../symbology.model';
-import {Layer} from '../../layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../../layer.model';
 import {ProjectService} from '../../../project/project.service';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -47,7 +47,10 @@ export class SymbologyEditorComponent implements OnDestroy {
         this.subscriptions.push(layerStreamSubscription);
         // This subscription sends layer / symbology changes to the project service.
         const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(
-            ([layer, symbology]) => this.projectService.changeLayer(layer, {symbology})
+            ([layer, symbology]) => {
+                // TODO: call change layer
+                // this.projectService.changeLayer(layer, {symbology})
+            }
         );
         this.subscriptions.push(layerChangesSubscription);
     }
@@ -68,5 +71,13 @@ export class SymbologyEditorComponent implements OnDestroy {
 
     ngOnDestroy(): void {
         this.subscriptions.forEach(x => x.unsubscribe());
+    }
+
+    asVectorLayer(layer: Layer): VectorLayer {
+        return layer as VectorLayer;
+    }
+
+    asRasterLayer(layer: Layer): RasterLayer {
+        return layer as RasterLayer;
     }
 }

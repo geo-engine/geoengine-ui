@@ -48,18 +48,33 @@ import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
 import {NavigationComponent} from './sidenav/navigation/navigation.component';
-import {
-    SidenavSearchComponent,
-    SidenavSearchRightDirective
-} from './sidenav/sidenav-search/sidenav-search.component';
+import {SidenavSearchComponent, SidenavSearchRightDirective} from './sidenav/sidenav-search/sidenav-search.component';
 import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
 import {MapContainerComponent} from './map/map-container/map-container.component';
-import {
-    OlLineLayerComponent,
-    OlPointLayerComponent,
-    OlPolygonLayerComponent,
-    OlRasterLayerComponent,
-} from './map/map-layer.component';
+import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.component';
+import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
+import {LegendComponent} from './layers/legend/legend.component';
+import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
+import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
+import {LayerListComponent} from './layers/layer-list/layer-list.component';
+import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
+import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
+import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
+import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
+import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
+import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
+import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
+import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
+import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
+import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
+import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
+import {SafeStylePipe} from './util/pipes/safe-style.pipe';
+import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
+import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
+import {TimeConfigComponent} from './time/time-config/time-config.component';
+import {TimeInputComponent} from './time/time-input/time-input.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -95,30 +110,51 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
+    ColormapNameToColorizerDataPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
     RgbaToCssStringPipe,
     SafeHtmlPipe,
+    SafeStylePipe,
     TrimPipe,
 ];
 
 const WAVE_COMPONENTS = [
+    ColorBreakpointInputComponent,
+    ColormapColorizerComponent,
+    ColorizerEditorComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    LayerListComponent,
+    LegendComponent,
+    LineIconComponent,
     LoginComponent,
     MapContainerComponent,
+    MappingRasterLegendComponent,
     NavigationComponent,
-    OlPointLayerComponent,
-    OlLineLayerComponent,
-    OlPolygonLayerComponent,
+    OlVectorLayerComponent,
     OlRasterLayerComponent,
+    PointIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
+    RasterLegendComponent,
+    RenameLayerComponent,
     SidenavContainerComponent,
     SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
+    SmallTimeInteractionComponent,
+    StrokeDashSelectComponent,
+    SymbologyEditorComponent,
+    SymbologyVectorComponent,
+    SymbologyRasterComponent,
+    SymbologyRasterMappingColorizerComponent,
+    TimeConfigComponent,
+    TimeInputComponent,
     VatLogoComponent,
+    VectorLegendComponent,
     ZoomHandlesComponent,
 ];
 
