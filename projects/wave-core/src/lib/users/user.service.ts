@@ -480,8 +480,8 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
-            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : new TimePoint('') ,
-            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : new TimePoint('') ,
+            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : undefined ,
+            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : undefined ,
             coords,
             provenance,
         };
@@ -521,8 +521,8 @@ export class UserService {
             } as MappingTransform,
             coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
-            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : new TimePoint('') ,
-            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : new TimePoint('') ,
+            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : undefined ,
+            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : undefined ,
         };
     }
 

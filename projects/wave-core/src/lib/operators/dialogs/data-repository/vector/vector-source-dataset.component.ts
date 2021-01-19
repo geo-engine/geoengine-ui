@@ -25,7 +25,7 @@ import {NotificationService} from '../../../../notification.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class VectorSourceDatasetComponent implements OnInit , OnChanges  {
+export class VectorSourceDatasetComponent implements OnInit, OnChanges {
 
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
@@ -106,47 +106,31 @@ export class VectorSourceDatasetComponent implements OnInit , OnChanges  {
                     case 'dataset': {
                         let globalDatasetMin = this.dataset.time_start;
                         let globalDatasetMax = this.dataset.time_end;
-                        this.dataset.vectorLayer.forEach((element) => {
-                            for (const sourceVar in element) {
-                                if (element.hasOwnProperty(sourceVar)) {
-                                    if (sourceVar === 'time_start') {
-                                        if (element.time_start.isValid()) {
-                                            if (!this._displayedColumns.includes('start')) {
-                                                this._displayedColumns.push('start');
-                                            }
-                                            if (element.time_start < globalDatasetMin) {
-                                                globalDatasetMin = element.time_start;
-                                            }
-                                        }
-                                    }
-                                    if (sourceVar === 'time_end') {
-                                        if (element.time_end.isValid()) {
-                                            if (!this._displayedColumns.includes('end')) {
-                                                this._displayedColumns.push('end');
-                                            }
-                                            if (element.time_end > globalDatasetMax) {
-                                                globalDatasetMax = element.time_end;
-                                            }
-                                        }
-                                    }
+                        this.dataset.rasterLayer.forEach((element) => {
+                            if (element.time_start.isValid()) {
+                                if (!this._displayedColumns.includes('start')) {
+                                    this._displayedColumns.push('start');
+                                }
+                                if (element.time_start < globalDatasetMin) {
+                                    globalDatasetMin = element.time_start;
+                                }
+                            }
+                            if (element.time_end.isValid()) {
+                                if (!this._displayedColumns.includes('end')) {
+                                    this._displayedColumns.push('end');
+                                }
+                                if (element.time_end > globalDatasetMax) {
+                                    globalDatasetMax = element.time_end;
                                 }
                             }
                         });
                         // Fill in the global Min/Max for rows without Start/End
-                        this.dataset.vectorLayer.forEach((element) => {
-                            for (const sourceVar in element) {
-                                if (element.hasOwnProperty(sourceVar)) {
-                                    if (sourceVar === 'time_start') {
-                                        if (!element.time_start.isValid()) {
-                                            element.time_start = globalDatasetMin;
-                                        }
-                                    }
-                                    if (sourceVar === 'time_end') {
-                                        if (!element.time_end.isValid()) {
-                                            element.time_end = globalDatasetMax;
-                                        }
-                                    }
-                                }
+                        this.dataset.rasterLayer.forEach((element) => {
+                            if (!element.time_start) {
+                                element.time_start = globalDatasetMin;
+                            }
+                            if (!element.time_end) {
+                                element.time_end = globalDatasetMax;
                             }
                         });
                         // Update the global Min/Max in the whole dataset

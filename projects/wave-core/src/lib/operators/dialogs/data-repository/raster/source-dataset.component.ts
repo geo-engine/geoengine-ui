@@ -26,7 +26,7 @@ import {Colormap} from '../../../../colors/colormaps/colormap.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class SourceDatasetComponent implements OnInit , OnChanges {
+export class SourceDatasetComponent implements OnInit, OnChanges {
 
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
@@ -34,7 +34,7 @@ export class SourceDatasetComponent implements OnInit , OnChanges {
     _showPreview = false;
     _showDescription = false;
     _channelSource: ChannelDataSource;
-    _displayedColumns = ['name', 'measurement'] ;
+    _displayedColumns = ['name', 'measurement'];
 
     /**
      * Transform the values of a colorizer to match the transformation of the raster transformation.
@@ -75,51 +75,35 @@ export class SourceDatasetComponent implements OnInit , OnChanges {
                         let globalDatasetMin = this.dataset.time_start;
                         let globalDatasetMax = this.dataset.time_end;
                         this.dataset.rasterLayer.forEach((element) => {
-                            for (const sourceVar in element) {
-                                if (element.hasOwnProperty(sourceVar)) {
-                                    if (sourceVar === 'time_start') {
-                                        if (element.time_start.isValid()) {
-                                            if (!this._displayedColumns.includes('start')) {
-                                                this._displayedColumns.push('start');
-                                            }
-                                            if (element.time_start < globalDatasetMin) {
-                                                globalDatasetMin = element.time_start;
-                                            }
-                                        }
-                                    }
-                                    if (sourceVar === 'time_end') {
-                                        if (element.time_end.isValid()) {
-                                            if (!this._displayedColumns.includes('end')) {
-                                                this._displayedColumns.push('end');
-                                            }
-                                            if (element.time_end > globalDatasetMax) {
-                                                globalDatasetMax = element.time_end;
-                                            }
-                                        }
-                                    }
+                            if (element.time_start) {
+                                if (!this._displayedColumns.includes('start')) {
+                                    this._displayedColumns.push('start');
+                                }
+                                if (element.time_start < globalDatasetMin) {
+                                    globalDatasetMin = element.time_start;
+                                }
+                            }
+                            if (element.time_end) {
+                                if (!this._displayedColumns.includes('end')) {
+                                    this._displayedColumns.push('end');
+                                }
+                                if (element.time_end > globalDatasetMax) {
+                                    globalDatasetMax = element.time_end;
                                 }
                             }
                         });
                         // Fill in the global Min/Max for rows without Start/End
                         this.dataset.rasterLayer.forEach((element) => {
-                            for (const sourceVar in element) {
-                                if (element.hasOwnProperty(sourceVar)) {
-                                    if (sourceVar === 'time_start') {
-                                        if (!element.time_start.isValid()) {
-                                            element.time_start = globalDatasetMin;
-                                        }
-                                    }
-                                    if (sourceVar === 'time_end') {
-                                        if (!element.time_end.isValid()) {
-                                            element.time_end = globalDatasetMax;
-                                        }
-                                    }
-                                }
+                            if (!element.time_start) {
+                                element.time_start = globalDatasetMin;
+                            }
+                            if (!element.time_end) {
+                                element.time_end = globalDatasetMax;
                             }
                         });
                         // Update the global Min/Max in the whole dataset
-                        this.dataset.time_start = globalDatasetMin;
-                        this.dataset.time_end = globalDatasetMax;
+                        // this.dataset.time_start = globalDatasetMin;
+                        // this.dataset.time_end = globalDatasetMax;
 
                     }
                 }
