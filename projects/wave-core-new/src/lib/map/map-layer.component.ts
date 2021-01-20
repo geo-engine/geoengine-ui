@@ -42,7 +42,6 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource,
     @Input() workflow: UUID;
     @Input() symbology: AbstractSymbology;
 
-    // TODO: just use the map service
     /**
      * Event emitter that forces a redraw of the map.
      * Must be connected to the map component.
