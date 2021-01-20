@@ -1,5 +1,5 @@
 <wave-sidenav-header>Save As</wave-sidenav-header>
-<ng-template [ngIf]="!(created$ | async)">
+<ng-template [ngIf]="(created$ | async) === false">
     <p>Rename the current project.</p>
     <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save()">
         <div fxLayout="row">

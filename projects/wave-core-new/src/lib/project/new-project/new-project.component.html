@@ -1,5 +1,5 @@
 <wave-sidenav-header>New Project</wave-sidenav-header>
-<ng-template [ngIf]="!(created$ | async)">
+<ng-template [ngIf]="(created$ | async) === false">
     <p>
         Create a new, blank project.
     </p>
