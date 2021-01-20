@@ -489,7 +489,7 @@ export class ProjectService {
         return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
     }
 
-    private static optimizeLayerUpdates(oldLayers: Array<Layer>, newLayers: Array<Layer>): Array<LayerDict | 'none' | 'delete'> {
+    protected static optimizeLayerUpdates(oldLayers: Array<Layer>, newLayers: Array<Layer>): Array<LayerDict | 'none' | 'delete'> {
         if (newLayers.length === (oldLayers.length + 1)) {
             // layer addition optimization
 
@@ -504,7 +504,7 @@ export class ProjectService {
         // TODO: optimize deletions, etc.
     }
 
-    private changeProjectConfig(changes: {
+    protected changeProjectConfig(changes: {
         id?: UUID,
         name?: string,
         spatialReference?: SpatialReference,
@@ -573,59 +573,6 @@ export class ProjectService {
         this.layerDataSubscriptions.set(layer.id, layerDataSub);
         this.layerDataState$.set(layer.id, layerDataLoadingState$);
         this.layerData$.set(layer.id, layerData$);
-
-        // const symbologyDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-        // const symbologyData$ = new ReplaySubject<DeprecatedMappingColorizerDoNotUse>(1);
-        // this.layerSymbologyDataState$.set(layer, symbologyDataLoadingState$);
-        // this.layerSymbologyData$.set(layer, symbologyData$);
-
-        // if (layer.getLayerType() === 'raster') {
-        //     const symbologyDataSubscription = this.createRasterLayerSymbologyDataSubscription(layer
-        //     as RasterLayer<AbstractRasterSymbology>,
-        //         symbologyData$,
-        //         symbologyDataLoadingState$
-        //     );
-        //     this.layerSymbologyDataSubscriptions.set(layer, symbologyDataSubscription);
-        // } else {
-        //     symbologyDataLoadingState$.next(LoadingState.OK);
-        // }
-
-        // each layer has provenance...
-        // const provenanceDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-        // const provenanceData$ = new ReplaySubject<Array<Provenance>>(1);
-        // const provenanceSub = this.createLayerProvenanceSubscription(layer, provenanceData$, provenanceDataLoadingState$);
-        // this.layerProvenanceDataSubscriptions.set(layer, provenanceSub);
-        // this.layerProvenanceDataState$.set(layer, provenanceDataLoadingState$);
-        // this.layerProvenanceData$.set(layer, provenanceData$);
-        //
-        // const combinedState$ = observableCombineLatest([
-        //     this.layerSymbologyDataState$.get(layer),
-        //     this.layerDataState$.get(layer),
-        //     this.layerProvenanceDataState$.get(layer),
-        // ]).pipe(
-        //     map(([sym, data, prov]) => {
-        //         // console.log("combinedLayerState", sym, data, prov);
-        //
-        //         if (sym === LoadingState.LOADING || data === LoadingState.LOADING /*|| prov === LoadingState.LOADING*/) {
-        //             return LoadingState.LOADING;
-        //         }
-        //
-        //         if (sym === LoadingState.ERROR || data === LoadingState.ERROR /*|| prov === LoadingState.ERROR*/) {
-        //             return LoadingState.ERROR;
-        //         }
-        //
-        //         if (sym === LoadingState.NODATAFORGIVENTIME || data === LoadingState.NODATAFORGIVENTIME) {
-        //             return LoadingState.NODATAFORGIVENTIME;
-        //         }
-        //
-        //         return LoadingState.OK;
-        //     }),
-        //     catchError(err => {
-        //         return observableOf(LoadingState.ERROR);
-        //     }),
-        // );
-        //
-        // this.layerCombinedState$.set(layer, combinedState$);
     }
 
     /**
@@ -717,74 +664,6 @@ export class ProjectService {
         );
     }
 
-    // /**
-    //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-    //  */
-    // private createLayerProvenanceSubscription(layer: Layer<AbstractSymbology>, provenance$: Observer<{}>,
-    //                                           loadingState$: Observer<LoadingState>): Subscription {
-    //     return observableCombineLatest([
-    //         this.getTimeStream(),
-    //         this.getProjectionStream(),
-    //     ]).pipe(
-    //         tap(() => loadingState$.next(LoadingState.LOADING)),
-    //         switchMap(([time, projection]) => {
-    //             return this.mappingQueryService.getProvenance({
-    //                 operator: layer.operator,
-    //                 time,
-    //                 projection,
-    //                 extent: projection.getExtent(),
-    //             });
-    //         }),
-    //         tap(
-    //             () => loadingState$.next(LoadingState.OK),
-    //             (reason: HttpErrorResponse) => {
-    //                 if (ProjectService.isNoRasterForGivenTimeException(reason)) {
-    //                     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
-    //                     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
-    //                 } else {
-    //                     this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-    //                     loadingState$.next(LoadingState.ERROR);
-    //                 }
-    //             }
-    //         ),
-    //     ).subscribe(
-    //         data => provenance$.next(data),
-    //         error => error // ignore error
-    //     );
-    // }
-    //
-    // /**
-    //  * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
-    //  */
-    // private createRasterLayerSymbologyDataSubscription(layer: RasterLayer<AbstractRasterSymbology>,
-    //                                                    data$: Observer<DeprecatedMappingColorizerDoNotUse>,
-    //                                                    loadingState$: Observer<LoadingState>): Subscription {
-    //     return observableCombineLatest([
-    //         this.getTimeStream(),
-    //         this.getProjectionStream(),
-    //     ]).pipe(
-    //         tap(() => loadingState$.next(LoadingState.LOADING)),
-    //         switchMap(([time, projection]) => {
-    //             return this.mappingQueryService.getColorizer(layer.operator, time, projection).pipe(
-    //                 tap(() => loadingState$.next(LoadingState.OK)),
-    //                 catchError((reason: HttpErrorResponse) => {
-    //                     if (ProjectService.isNoRasterForGivenTimeException(reason)) {
-    //                         this.notificationService.error(`${layer.name}: No Raster for the given Time`);
-    //                         loadingState$.next(LoadingState.NODATAFORGIVENTIME);
-    //                     } else {
-    //                         this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-    //                         loadingState$.next(LoadingState.ERROR);
-    //                     }
-    //                     return observableOf({interpolation: 'unknown', breakpoints: []});
-    //                 }),
-    //             );
-    //         }),
-    //     ).subscribe(
-    //         data => data$.next(data),
-    //         error => error // ignore error
-    //     );
-    // }
-
     private createLayerChangesStream(layer: Layer) {
         if (this.layers.get(layer.id)) {
             throw new Error('Layer changes stream already registered');
@@ -799,4 +678,28 @@ export class ProjectService {
     //     const nested_exception: { message: string, type: string } = response.error.nested_exception;
     //     return nested_exception.message.indexOf('NoRasterForGivenTimeException') >= 0;
     // }
+
+    loadAndSetProject(projectId: UUID): Observable<Project> {
+        const result = this.userService.getSessionTokenForRequest().pipe(
+            mergeMap(sessionToken => this.backend.loadProject(projectId, sessionToken)),
+            map(Project.fromDict),
+            tap(project => this.setProject(project)),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
+    }
+
+    /**
+     * Subscribes to the observable and consumes it completely.
+     * Returns a new observable to listen to the values.
+     */
+    protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
+        const subject = new Subject<T>();
+        observable.subscribe(
+            value => subject.next(value),
+            error => subject.error(error),
+            () => subject.complete(),
+        );
+        return subject.asObservable();
+    }
 }

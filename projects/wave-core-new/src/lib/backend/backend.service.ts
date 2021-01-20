@@ -111,7 +111,7 @@ export class BackendService {
         sessionId: UUID): Observable<Array<ProjectListingDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('permissions', request.permissions, JSON.stringify);
-        params.setMapped('filter', request.filter, JSON.stringify);
+        params.setMapped('filter', request.filter, filter => filter === 'None' ? 'None' : JSON.stringify(filter));
         params.set('order', request.order);
         params.setMapped('offset', request.offset, JSON.stringify);
         params.setMapped('limit', request.limit, JSON.stringify);
@@ -188,7 +188,7 @@ class NullDiscardingHttpParams {
     httpParams: HttpParams = new HttpParams();
 
     set(param: string, value: string) {
-        if (!value) {
+        if (value === undefined || value === null) {
             return;
         }
 
@@ -196,7 +196,7 @@ class NullDiscardingHttpParams {
     }
 
     setMapped<V>(param: string, value: V, transform: (V) => string) {
-        if (!value) {
+        if (value === undefined || value === null) {
             return;
         }
 

@@ -94,8 +94,11 @@ export class LayerListComponent implements OnDestroy {
      * the drop method is used by the dran and drop feature of the list
      */
     drop(event: CdkDragDrop<string[]>) {
-        moveItemInArray(this.layerList, event.previousIndex, event.currentIndex);
-        this.projectService.setLayers([...this.layerList]); // send a copy to keep the list private
+        const layerList = this.layerList.slice(); // make a copy to not modify the current list
+        moveItemInArray(layerList, event.previousIndex, event.currentIndex);
+
+        this.layerList = layerList; // change in advance to remove flickering
+        this.projectService.setLayers(layerList);
     }
 
     /**

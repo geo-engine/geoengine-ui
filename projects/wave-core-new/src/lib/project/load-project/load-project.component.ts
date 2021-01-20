@@ -73,7 +73,7 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
                 filter: 'None', // TODO: add filter search
                 order: 'DateAsc', // TODO: provide options
                 offset: 0,
-                limit: 100, // TODO: paginate
+                limit: 20, // TODO: paginate
             }, sessionToken)),
             map(projectListingDicts => projectListingDicts.map(projectListingDict => {
                 return {
@@ -94,11 +94,12 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     load() {
         const newProjectId: string = this.form.controls['projectId'].value;
-        this.storageService.loadProjectByName(newProjectId);
-        this.currentProjectId = newProjectId;
-        setTimeout(() => this.form.controls['projectId'].updateValueAndValidity({emitEvent: true}));
+        this.projectService.loadAndSetProject(newProjectId).subscribe(project => {
+            this.currentProjectId = newProjectId;
+            setTimeout(() => this.form.controls['projectId'].updateValueAndValidity({emitEvent: true}));
 
-        this.notificationService.info(`Switched to project »${newProjectId}«`);
+            this.notificationService.info(`Switched to project »${project.name}«`);
+        });
     }
 
 }
