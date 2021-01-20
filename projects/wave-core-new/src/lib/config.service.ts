@@ -76,7 +76,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
             NAME: 'Default',
             TIME: '2014-04-01T12:00:00.000Z',
             TIMESTEP: '1 month',
-            PROJECTION: 'EPSG:3857',
+            PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
     },
     DELAYS: {
