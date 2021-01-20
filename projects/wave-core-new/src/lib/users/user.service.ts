@@ -98,6 +98,10 @@ export class UserService {
         return result.asObservable();
     }
 
+    getSessionOnce(): Observable<Session> {
+        return this.session$.pipe(first());
+    }
+
     /**
      * Login using user credentials. If it was successful, set a new user.
      * @param session.user The user name.

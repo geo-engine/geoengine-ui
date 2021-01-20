@@ -2,13 +2,9 @@ import {BehaviorSubject} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {StorageService} from '../../storage/storage.service';
 import {ProjectService} from '../project.service';
-import {Project} from '../project.model';
 import {NotificationService} from '../../notification.service';
-import {WaveValidators} from '../../util/form.validators';
 import {SpatialReferences} from '../../operators/spatial-reference.model';
-import {Config} from '../../config.service';
 
 @Component({
     selector: 'wave-new-project',
@@ -25,7 +21,6 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
     created$ = new BehaviorSubject(false);
 
     constructor(protected formBuilder: FormBuilder,
-                protected storageService: StorageService,
                 protected projectService: ProjectService,
                 protected notificationService: NotificationService) {
     }

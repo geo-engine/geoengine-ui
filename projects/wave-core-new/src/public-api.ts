@@ -13,7 +13,6 @@ export * from './lib/map/map.service';
 export * from './lib/notification.service';
 export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
-export * from './lib/storage/storage.service';
 export * from './lib/users/user.service';
 export * from './lib/util/services/random-color.service';
 

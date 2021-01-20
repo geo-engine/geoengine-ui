@@ -2,7 +2,6 @@ import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {StorageService} from '../../storage/storage.service';
 import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn} from '@angular/forms';
 import {NotificationService} from '../../notification.service';
 import {BackendService} from '../../backend/backend.service';
@@ -47,7 +46,6 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
     constructor(protected projectService: ProjectService,
                 protected backend: BackendService,
                 protected userService: UserService,
-                protected storageService: StorageService,
                 protected notificationService: NotificationService,
                 protected formBuilder: FormBuilder) {
     }

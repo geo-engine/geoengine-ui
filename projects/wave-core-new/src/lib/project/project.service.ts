@@ -48,6 +48,15 @@ export class ProjectService {
                 protected backend: BackendService,
                 protected userService: UserService,
                 protected layoutService: LayoutService) {
+        this.userService.getSessionOnce().pipe(
+            mergeMap(session => {
+                if (session.lastProjectId) {
+                    return this.backend.loadProject(session.lastProjectId, session.sessionToken).pipe(map(Project.fromDict));
+                } else {
+                    return this.createDefaultProject();
+                }
+            })
+        ).subscribe(project => this.setProject(project));
     }
 
     /**

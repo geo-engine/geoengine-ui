@@ -1,7 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
-import {StorageService} from '../storage/storage.service';
 
 /**
  * A validator that validates a form group that contains min/max number fields.
@@ -81,7 +80,7 @@ function keywordValidator(keywords: Array<string>) {
 /**
  * Checks if the project name is unique.
  */
-function uniqueProjectNameValidator(storageService: StorageService): AsyncValidatorFn {
+function uniqueProjectNameValidator(storageService: { projectExists(string): Observable<boolean> }): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
 
         return new Observable((observer: Observer<{ [key: string]: boolean }>) => {
