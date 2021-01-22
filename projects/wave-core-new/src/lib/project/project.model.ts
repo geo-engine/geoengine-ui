@@ -20,6 +20,7 @@ export class Project implements ToDict<ProjectDict> {
         return new Project({
             id: dict.id,
             name: dict.name,
+            description: dict.description,
             spatialReference: SpatialReferences.fromCode(dict.bounds.spatial_reference),
             time: Time.fromDict(dict.bounds.time_interval),
             plots: [], // TODO: fill if available
@@ -31,6 +32,7 @@ export class Project implements ToDict<ProjectDict> {
     constructor(config: {
         id: UUID;
         name: string;
+        description: string;
         spatialReference: SpatialReference;
         time: Time;
         plots?: Array<any>;
@@ -39,6 +41,7 @@ export class Project implements ToDict<ProjectDict> {
     }) {
         this.id = config.id;
         this.name = config.name;
+        this.description = config.description;
         this._spatialReference = config.spatialReference;
         this._time = config.time;
         this._plots = config.plots ? config.plots : [];
@@ -49,6 +52,7 @@ export class Project implements ToDict<ProjectDict> {
     updateFields(changes: {
         id?: UUID;
         name?: string;
+        description?: string;
         spatialReference?: SpatialReference;
         time?: Time;
         plots?: Array<any>;
@@ -58,6 +62,7 @@ export class Project implements ToDict<ProjectDict> {
         return new Project({
             id: changes.id ?? this.id,
             name: changes.name ?? this.name,
+            description: changes.description ?? this.description,
             spatialReference: changes.spatialReference ?? this.spatialReference,
             time: changes.time ?? this.time,
             plots: changes.plots ?? this.plots,

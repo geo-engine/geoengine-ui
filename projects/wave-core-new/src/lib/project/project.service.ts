@@ -103,6 +103,7 @@ export class ProjectService {
             map(({id}) => new Project({
                 id,
                 name: config.name,
+                description: config.description,
                 spatialReference: config.spatialReference,
                 layers: [],
                 time: config.time,
@@ -128,6 +129,37 @@ export class ProjectService {
             default:
                 return {durationAmount: 1, durationUnit: 'month'};
         }
+    }
+
+    cloneProject(newName: string): Observable<Project> {
+        return this.getProjectOnce().pipe(
+            mergeMap(project => combineLatest([
+                of(project),
+                this.createProject({
+                    name: newName,
+                    description: project.description,
+                    spatialReference: project.spatialReference,
+                    time: project.time,
+                    timeStepDuration: project.timeStepDuration,
+                }),
+            ])),
+            mergeMap(([oldProject, newPartialProject]) => combineLatest([
+                of(newPartialProject.updateFields({
+                    layers: oldProject.layers,
+                    plots: oldProject.plots,
+                })),
+                this.userService.getSessionTokenForRequest(),
+            ])),
+            mergeMap(([project, sessionToken]) => combineLatest([
+                of(project),
+                this.backend.updateProject({
+                    id: project.id,
+                    layers: project.layers.map(layer => layer.toDict()),
+                    // TODO: plots
+                }, sessionToken)
+            ])),
+            map(([project, _]) => project),
+        );
     }
 
     /**

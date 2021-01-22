@@ -2,15 +2,24 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
+import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
-    CreateProjectResponseDict, LayerDict, ProjectDict, ProjectFilterDict,
-    ProjectListingDict, ProjectOrderByDict, ProjectPermissionDict, RegisterWorkflowResultDict,
+    CreateProjectResponseDict,
+    LayerDict,
+    ProjectDict,
+    ProjectFilterDict,
+    ProjectListingDict,
+    ProjectOrderByDict,
+    ProjectPermissionDict,
+    RegisterWorkflowResultDict,
     RegistrationDict,
-    SessionDict, STRectangleDict, STRefString, TimeIntervalDict,
+    SessionDict,
+    STRectangleDict,
+    STRefString,
+    TimeIntervalDict,
     UUID
 } from './backend.model';
-import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 
 @Injectable({
     providedIn: 'root'
@@ -63,6 +72,7 @@ export class BackendService {
             bounds: STRectangleDict,
         },
         sessionId: UUID): Observable<CreateProjectResponseDict> {
+        console.log('create', request); // TODO: remove log
         return this.http.post<CreateProjectResponseDict>(this.config.API_URL + '/project', request, {
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -75,7 +85,6 @@ export class BackendService {
             description?: string,
             layers?: Array<LayerDict | 'none' | 'delete'>,
             bounds?: STRectangleDict,
-            // TODO: add data visibility and legend visibility
         },
         sessionId: UUID): Observable<void> {
         return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {
