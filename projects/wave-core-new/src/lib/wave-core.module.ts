@@ -75,6 +75,13 @@ import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/color
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
+import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
+import {ChangeSpatialReferenceComponent} from './project/change-spatial-reference/change-spatial-reference.component';
+import {IfGuestDirective} from './util/directives/if-guest.directive';
+import {IfLoggedInDirective} from './util/directives/if-logged-in.directive';
+import {NewProjectComponent} from './project/new-project/new-project.component';
+import {LoadProjectComponent} from './project/load-project/load-project.component';
+import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -121,26 +128,32 @@ const WAVE_PIPES = [
 ];
 
 const WAVE_COMPONENTS = [
+    ChangeSpatialReferenceComponent,
     ColorBreakpointInputComponent,
-    ColormapColorizerComponent,
     ColorizerEditorComponent,
+    ColormapColorizerComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    IfGuestDirective,
+    IfLoggedInDirective,
     LayerListComponent,
     LegendComponent,
     LineIconComponent,
+    LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
     MappingRasterLegendComponent,
     NavigationComponent,
-    OlVectorLayerComponent,
+    NewProjectComponent,
     OlRasterLayerComponent,
+    OlVectorLayerComponent,
     PointIconComponent,
     PolygonIconComponent,
     RasterIconComponent,
     RasterLegendComponent,
     RenameLayerComponent,
+    SaveProjectAsComponent,
     SidenavContainerComponent,
     SidenavHeaderComponent,
     SidenavSearchComponent,
@@ -148,13 +161,14 @@ const WAVE_COMPONENTS = [
     SmallTimeInteractionComponent,
     StrokeDashSelectComponent,
     SymbologyEditorComponent,
-    SymbologyVectorComponent,
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
+    SymbologyVectorComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,
     VectorLegendComponent,
+    WorkspaceSettingsComponent,
     ZoomHandlesComponent,
 ];
 

@@ -33,6 +33,7 @@ import {
     MapService,
     MapContainerComponent,
     RasterLayer,
+    WorkspaceSettingsComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -157,7 +158,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 sidenavConfig: {component: MockLayersComponent},
                 icon: 'add',
                 tooltip: 'Mock Data',
-            }
+            },
             // {
             //     sidenavConfig: AppComponent.setupAddDataConfig(),
             //     icon: 'add',
@@ -179,11 +180,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             //     icon: 'access_time',
             //     tooltip: 'Time',
             // },
-            // {
-            //     sidenavConfig: {component: WorkspaceSettingsComponent},
-            //     icon: 'settings',
-            //     tooltip: 'Workspace',
-            // },
+            {
+                sidenavConfig: {component: WorkspaceSettingsComponent},
+                icon: 'settings',
+                tooltip: 'Workspace',
+            },
             // {
             //     sidenavConfig: {component: HelpComponent},
             //     icon: 'help',

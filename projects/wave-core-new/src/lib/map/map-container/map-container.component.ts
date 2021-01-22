@@ -97,7 +97,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     numberOfColumns = 1;
     rowHeight = 'fit';
 
-    private projection$: Observable<SpatialReference> = this.projectService.getProjectionStream();
+    private projection$: Observable<SpatialReference> = this.projectService.getSpatialReferenceStream();
 
     private maps: Array<OlMap>;
     private view: OlView;

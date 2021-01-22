@@ -19,8 +19,8 @@ export * from './lib/util/services/random-color.service';
 
 // Components
 export * from './lib/colors/color-breakpoint-component/color-breakpoint.component';
-export * from './lib/colors/colormap-colorizer/colormap-colorizer.component';
 export * from './lib/colors/colorizer-editor/colorizer-editor.component';
+export * from './lib/colors/colormap-colorizer/colormap-colorizer.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
@@ -43,6 +43,11 @@ export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
+export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
+export * from './lib/project/load-project/load-project.component';
+export * from './lib/project/new-project/new-project.component';
+export * from './lib/project/save-project-as/save-project-as.component';
+export * from './lib/project/workspace-settings/workspace-settings.component';
 export * from './lib/sidenav/navigation/navigation.component';
 export * from './lib/sidenav/sidenav-container/sidenav-container.component';
 export * from './lib/sidenav/sidenav-header/sidenav-header.component';
@@ -75,5 +80,7 @@ export * from './lib/users/user.model';
 export * from './lib/users/session.model';
 
 // Misc
+export * from './lib/util/directives/if-guest.directive';
+export * from './lib/util/directives/if-logged-in.directive';
 export * from './lib/util/errors';
 export * from './lib/util/form.validators';

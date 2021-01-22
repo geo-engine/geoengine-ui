@@ -2,15 +2,24 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
+import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
-    CreateProjectResponseDict, LayerDict, ProjectDict, ProjectFilterDict,
-    ProjectListingDict, ProjectOrderByDict, ProjectPermissionDict, RegisterWorkflowResultDict,
+    CreateProjectResponseDict,
+    LayerDict,
+    ProjectDict,
+    ProjectFilterDict,
+    ProjectListingDict,
+    ProjectOrderByDict,
+    ProjectPermissionDict,
+    RegisterWorkflowResultDict,
     RegistrationDict,
-    SessionDict, STRectangleDict, STRefString, TimeIntervalDict,
+    SessionDict,
+    STRectangleDict,
+    STRefString,
+    TimeIntervalDict,
     UUID
 } from './backend.model';
-import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 
 @Injectable({
     providedIn: 'root'
@@ -75,7 +84,6 @@ export class BackendService {
             description?: string,
             layers?: Array<LayerDict | 'none' | 'delete'>,
             bounds?: STRectangleDict,
-            // TODO: add data visibility and legend visibility
         },
         sessionId: UUID): Observable<void> {
         return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {
@@ -106,11 +114,18 @@ export class BackendService {
             filter: ProjectFilterDict,
             order: ProjectOrderByDict,
             offset: number,
-            limit: number
+            limit: number,
         },
         sessionId: UUID): Observable<Array<ProjectListingDict>> {
-        return this.http.request<Array<ProjectListingDict>>('get', this.config.API_URL + '/project', {
-            body: request,
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('permissions', request.permissions, JSON.stringify);
+        params.setMapped('filter', request.filter, filter => filter === 'None' ? 'None' : JSON.stringify(filter));
+        params.set('order', request.order);
+        params.setMapped('offset', request.offset, JSON.stringify);
+        params.setMapped('limit', request.limit, JSON.stringify);
+
+        return this.http.get<Array<ProjectListingDict>>(this.config.API_URL + '/projects', {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -156,7 +171,7 @@ export class BackendService {
 
         // these probably do not work yet
         params.set('namespaces', request.namespaces);
-        params.setMapped('count', request.count, Number.toString);
+        params.setMapped('count', request.count, JSON.stringify);
         params.set('sortBy', request.sortBy);
         params.set('resultType', request.resultType);
         params.set('filter', request.filter);
@@ -181,7 +196,7 @@ class NullDiscardingHttpParams {
     httpParams: HttpParams = new HttpParams();
 
     set(param: string, value: string) {
-        if (!value) {
+        if (value === undefined || value === null) {
             return;
         }
 
@@ -189,7 +204,7 @@ class NullDiscardingHttpParams {
     }
 
     setMapped<V>(param: string, value: V, transform: (V) => string) {
-        if (!value) {
+        if (value === undefined || value === null) {
             return;
         }
 
