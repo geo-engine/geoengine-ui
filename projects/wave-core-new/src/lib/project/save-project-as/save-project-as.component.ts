@@ -46,13 +46,14 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
     /**
      * Save project under new name.
      *
-     * TODO: allow optionally to clone project
      */
     save() {
         const projectName: string = this.form.controls['name'].value;
-        this.projectService.setName(projectName).subscribe(() => {
+
+        this.projectService.cloneProject(projectName).subscribe(project => {
+            this.projectService.setProject(project);
             this.created$.next(true);
-            this.notificationService.info(`Renamed project to »${projectName}«`);
+            this.notificationService.info(`Saved project to »${project.name}« and switched to it`);
         });
     }
 

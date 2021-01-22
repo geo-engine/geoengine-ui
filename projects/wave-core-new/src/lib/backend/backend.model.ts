@@ -76,6 +76,10 @@ export interface LayerDict {
     workflow: UUID;
     name: string;
     info: LayerInfoDict;
+    visibility: {
+        data: boolean,
+        legend: boolean,
+    };
 }
 
 export interface ProjectVersion {

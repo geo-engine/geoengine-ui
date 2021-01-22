@@ -75,8 +75,8 @@ export class VectorLayer extends Layer {
         return new VectorLayer({
             name: dict.name,
             workflowId: dict.workflow,
-            isLegendVisible: false,  // TODO: get from separate store
-            isVisible: true,
+            isLegendVisible: dict.visibility.legend,
+            isVisible: dict.visibility.data,
             symbology: PointSymbology.createSymbology({
                 fillRGBA: [255, 0, 0], // red
                 radius: 10,
@@ -103,6 +103,10 @@ export class VectorLayer extends Layer {
             info: {
                 Vector: {},
             },
+            visibility: {
+                data: this.isVisible,
+                legend: this.isLegendVisible,
+            }
         };
     }
 
@@ -191,8 +195,8 @@ export class RasterLayer extends Layer {
 
         return new RasterLayer({
             name: dict.name,
-            isLegendVisible: false, // TODO: get from separate store
-            isVisible: true,
+            isLegendVisible: dict.visibility.legend,
+            isVisible: dict.visibility.data,
             workflowId: dict.workflow,
             symbology
         });
@@ -278,6 +282,10 @@ export class RasterLayer extends Layer {
                     colorizer: colorizerDict,
                 },
             },
+            visibility: {
+                data: this.isVisible,
+                legend: this.isLegendVisible,
+            }
         };
     }
 
