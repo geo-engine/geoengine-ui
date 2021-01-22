@@ -72,7 +72,6 @@ export class BackendService {
             bounds: STRectangleDict,
         },
         sessionId: UUID): Observable<CreateProjectResponseDict> {
-        console.log('create', request); // TODO: remove log
         return this.http.post<CreateProjectResponseDict>(this.config.API_URL + '/project', request, {
             headers: BackendService.authorizationHeader(sessionId),
         });
