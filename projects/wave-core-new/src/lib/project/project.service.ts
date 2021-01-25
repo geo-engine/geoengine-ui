@@ -1,19 +1,10 @@
-import {
-    combineLatest,
-    Observable,
-    Observer, of,
-    ReplaySubject,
-    Subject,
-    Subscription
-} from 'rxjs';
-
+import {combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+
 import {Injectable} from '@angular/core';
 
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
-
 import {Project} from './project.model';
-
 import {Time, TimeStepDuration} from '../time/time.model';
 import {Config} from '../config.service';
 import {LoadingState} from './loading-state.model';
@@ -28,6 +19,7 @@ import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
 import {AbstractSymbology} from '../layers/symbology/symbology.model';
+import {Session} from '../users/session.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -48,6 +40,51 @@ export class ProjectService {
                 protected backend: BackendService,
                 protected userService: UserService,
                 protected layoutService: LayoutService) {
+        // set the starting project upon login
+        this.userService.getSessionStream().pipe(
+            mergeMap(session => this.loadMostRecentProject(session)),
+        ).subscribe(
+            project => this.setProject(project),
+        );
+    }
+
+    protected loadMostRecentProject(session: Session): Observable<Project> {
+        let projectIdLookup: Observable<UUID | undefined>;
+
+        if (session.lastProjectId) {
+            // use the project id from the session
+            projectIdLookup = of(session.lastProjectId);
+        } else {
+            // try to find the least recently used project id
+            projectIdLookup = this.backend.listProjects(
+                {
+                    permissions: ['Owner'],
+                    filter: 'None',
+                    order: 'DateDesc',
+                    offset: 0,
+                    limit: 1,
+                },
+                session.sessionToken,
+            ).pipe(
+                map(listings => {
+                    if (listings.length > 0) {
+                        return listings[0].id;
+                    } else {
+                        return undefined;
+                    }
+                }),
+            );
+        }
+
+        return projectIdLookup.pipe(
+            mergeMap(projectId => {
+                if (projectId) {
+                    return this.backend.loadProject(projectId, session.sessionToken).pipe(map(Project.fromDict));
+                } else {
+                    return this.createDefaultProject();
+                }
+            }),
+        );
     }
 
     /**

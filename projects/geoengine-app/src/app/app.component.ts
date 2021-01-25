@@ -21,7 +21,6 @@ import {
     SidenavContainerComponent,
     LayoutService,
     UserService,
-    StorageService,
     RandomColorService,
     NotificationService,
     Config,
@@ -75,12 +74,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                 readonly projectService: ProjectService,
                 readonly vcRef: ViewContainerRef, // reference used by color picker
                 private userService: UserService,
-                private storageService: StorageService,
                 private changeDetectorRef: ChangeDetectorRef,
                 private dialog: MatDialog,
                 private iconRegistry: MatIconRegistry,
                 private randomColorService: RandomColorService,
-                // private mappingQueryService: MappingQueryService,
                 private activatedRoute: ActivatedRoute,
                 private notificationService: NotificationService,
                 private mapService: MapService,
@@ -88,8 +85,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.registerIcons();
 
         vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
-
-        this.storageService.toString(); // just register
 
         this.layersReverse$ = this.projectService.getLayerStream().pipe(
             map(layers => layers.slice(0).reverse())

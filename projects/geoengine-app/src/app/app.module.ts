@@ -7,20 +7,17 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
     Config,
-    // LayerService,
     LayoutService,
-    // MappingQueryService,
     MapService,
     NotificationService,
     ProjectService,
     RandomColorService,
-    StorageService,
     SidenavRef,
     UserService,
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
-import { MockLayersComponent } from './mock-layers/mock-layers.component';
+import {MockLayersComponent} from './mock-layers/mock-layers.component';
 
 @NgModule({
     declarations: [
@@ -42,15 +39,12 @@ import { MockLayersComponent } from './mock-layers/mock-layers.component';
             deps: [Config],
             multi: true,
         },
-        // LayerService,
         LayoutService,
-        // MappingQueryService,
         MapService,
         NotificationService,
         ProjectService,
         RandomColorService,
         SidenavRef,
-        StorageService,
         UserService,
     ],
     bootstrap: [AppComponent],
