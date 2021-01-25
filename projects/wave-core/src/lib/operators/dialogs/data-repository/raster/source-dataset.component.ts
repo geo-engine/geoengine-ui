@@ -70,41 +70,19 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
             if (changes.hasOwnProperty(key)) {
                 switch (key) {
                     // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
-                    // Also find a global Start/End (Min/Max) for the whole dataset
                     case 'dataset': {
-                        let globalDatasetMin = this.dataset.time_start;
-                        let globalDatasetMax = this.dataset.time_end;
                         this.dataset.rasterLayer.forEach((element) => {
                             if (element.time_start) {
                                 if (!this._displayedColumns.includes('start')) {
                                     this._displayedColumns.push('start');
-                                }
-                                if (element.time_start < globalDatasetMin) {
-                                    globalDatasetMin = element.time_start;
                                 }
                             }
                             if (element.time_end) {
                                 if (!this._displayedColumns.includes('end')) {
                                     this._displayedColumns.push('end');
                                 }
-                                if (element.time_end > globalDatasetMax) {
-                                    globalDatasetMax = element.time_end;
-                                }
                             }
                         });
-                        // Fill in the global Min/Max for rows without Start/End
-                        this.dataset.rasterLayer.forEach((element) => {
-                            if (!element.time_start) {
-                                element.time_start = globalDatasetMin;
-                            }
-                            if (!element.time_end) {
-                                element.time_end = globalDatasetMax;
-                            }
-                        });
-                        // Update the global Min/Max in the whole dataset
-                        // this.dataset.time_start = globalDatasetMin;
-                        // this.dataset.time_end = globalDatasetMax;
-
                     }
                 }
             }
