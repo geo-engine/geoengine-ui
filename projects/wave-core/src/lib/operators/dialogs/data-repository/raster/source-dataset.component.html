@@ -17,7 +17,7 @@
 
     <mat-list>
         <mat-list-item *ngIf="dataset?.time_start || dataset?.time_end">
-            <p><b>Time validity:</b> {{dataset?.time_start.toString()}} - {{dataset?.time_end.toString()}}</p>
+            <p><b>Time validity:</b> {{dataset?.time_start}} - {{dataset?.time_end}}</p>
         </mat-list-item>
         <mat-list-item>
             <mat-icon matListIcon>open_in_new</mat-icon>
