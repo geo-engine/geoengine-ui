@@ -55,6 +55,10 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
+export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
+export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
+export * from './lib/operators/dialogs/operator-list/operator-list.component';
+export * from './lib/operators/dialogs/expression-operator/expression-operator.component';
 
 // Pipes
 export * from './lib/colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
@@ -77,6 +81,9 @@ export * from './lib/operators/unit.model';
 export * from './lib/time/time.model';
 export * from './lib/users/user.model';
 export * from './lib/users/session.model';
+export * from './lib/operators/operator-type.model';
+export * from './lib/operators/operator-type-parameter-options.model';
+export * from './lib/operators/types/expression-type.model';
 
 // Misc
 export * from './lib/util/directives/if-guest.directive';

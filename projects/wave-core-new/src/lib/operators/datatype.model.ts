@@ -30,7 +30,7 @@ class Byte extends DataType {
     }
 
     getCode(): string {
-        return 'Byte';
+        return 'U8';
     }
 
     getMin(): number {
@@ -48,7 +48,7 @@ class Int16 extends DataType {
     }
 
     getCode(): string {
-        return 'Int16';
+        return 'I16';
     }
 
     getMin(): number {
@@ -66,7 +66,7 @@ class UInt16 extends DataType {
     }
 
     getCode(): string {
-        return 'UInt16';
+        return 'U16';
     }
 
     getMin(): number {
@@ -84,7 +84,7 @@ class Int32 extends DataType {
     }
 
     getCode(): string {
-        return 'Int32';
+        return 'I32';
     }
 
     getMin(): number {
@@ -102,7 +102,7 @@ class UInt32 extends DataType {
     }
 
     getCode(): string {
-        return 'UInt32';
+        return 'U32';
     }
 
     getMin(): number {
@@ -120,7 +120,7 @@ class Float32 extends DataType {
     }
 
     getCode(): string {
-        return 'Float32';
+        return 'F32';
     }
 
     getMin(): number {
@@ -138,7 +138,7 @@ class Float64 extends DataType {
     }
 
     getCode(): string {
-        return 'Float64';
+        return 'F64';
     }
 
     getMin(): number {

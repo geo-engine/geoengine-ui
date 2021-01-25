@@ -33,6 +33,8 @@ import {
     MapContainerComponent,
     RasterLayer,
     WorkspaceSettingsComponent,
+    OperatorListComponent,
+    OperatorListButtonGroups,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -159,12 +161,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             //     icon: 'add',
             //     tooltip: 'Add Data',
             // },
-            // {
-            //     sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
-            //     icon: '',
-            //     svgIcon: 'cogs',
-            //     tooltip: 'Operators',
-            // },
+            {
+                sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
+                icon: '',
+                svgIcon: 'cogs',
+                tooltip: 'Operators',
+            },
             // {
             //     sidenavConfig: {component: PlotListComponent},
             //     icon: 'equalizer',
@@ -207,14 +209,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     ];
     // }
 
-    // private static createOperatorListButtons(): OperatorListButtonGroups {
-    //     return [
-    //         {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
-    //         {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
-    //         {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
-    //         {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
-    //     ];
-    // }
+    private static createOperatorListButtons(): OperatorListButtonGroups {
+        return [
+            {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
+            {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
+            {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
+            {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
+        ];
+    }
 
     @HostListener('window:resize')
     private windowHeight() {
