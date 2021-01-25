@@ -103,12 +103,12 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
                     // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
                     case 'dataset': {
                         this.dataset.rasterLayer.forEach((element) => {
-                            if (element.time_start.isValid()) {
+                            if (element.time_start) {
                                 if (!this._displayedColumns.includes('start')) {
                                     this._displayedColumns.push('start');
                                 }
                             }
-                            if (element.time_end.isValid()) {
+                            if (element.time_end) {
                                 if (!this._displayedColumns.includes('end')) {
                                     this._displayedColumns.push('end');
                                 }
