@@ -30,6 +30,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     form: FormGroup;
 
     outputDataTypes$: Observable<Array<[DataType, string]>>;
+    // TODO: reincorporate unit
     // outputUnits$: Observable<Array<Unit>>;
     // outputUnitIsCustom$: Observable<boolean>;
 
@@ -43,6 +44,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 rasterLayers: new FormControl(undefined, [Validators.required]),
                 expression: new FormControl('1 * A', Validators.compose([Validators.required, Validators.pattern('.*A.*')])),
                 dataType: new FormControl(undefined, [Validators.required]),
+                // TODO: add unit related inputs
                 // minValue: new FormControl(0, Validators.compose([WaveValidators.isNumber])),
                 // maxValue: new FormControl(0, Validators.compose([WaveValidators.isNumber])),
                 // unit: new FormControl(undefined, [Validators.required]),
@@ -56,6 +58,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             // [unitOrCustomUnit]);
         );
 
+        // TODO: add unit related inputs
         // this.outputUnits$ = this.form.controls.rasterLayers.valueChanges.pipe(
         //     map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
         //         return rasterLayers
@@ -97,6 +100,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         //     }
         // });
 
+        // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer>) => {
                 const outputDataTypes = DataTypes.ALL_NUMERICS.map((dataType: DataType) => [dataType, '']) as Array<[DataType, string]>;
@@ -165,6 +169,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const dataType: DataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers = this.form.controls['rasterLayers'].value;
+        // TODO: incoroprate unit related info
         // const projection = this.form.controls['projection'].value;
         // const minValue =  this.form.controls['minValue'].value;
         // const maxValue =  this.form.controls['maxValue'].value;
@@ -192,20 +197,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
         // console.log(rasterLayers);
         const unit = Unit.defaultUnit;
-        // const operator = new Operator({
-        //     operatorType: new ExpressionType({
-        //         expression,
-        //         datatype: dataType,
-        //         unit, // TODO
-        //     }),
-        //     resultType: ResultTypes.RASTER,
-        //     // projection,
-        //     attributes: ['value'],
-        //     dataTypes: new Map<string, DataType>().set('value', dataType),
-        //     units: new Map<string, Unit>().set('value', unit),
-        //     rasterSources: rasterLayers.map(l => l.operator), // TODO: project
-        // });
 
+        // TODO: add projection operator
         zip(
             this.projectService.getWorkflow(rasterLayers[0].workflowId),
             this.projectService.getWorkflow(rasterLayers[1].workflowId)
@@ -255,6 +248,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
 }
 
+// TODO: validate units once its integrated again
 // /**
 //  * This is a validator function that checks whether a fields contains either a valid existing unit
 //  * or a new (custom) unit.
