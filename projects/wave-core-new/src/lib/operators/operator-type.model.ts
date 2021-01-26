@@ -7,12 +7,6 @@ export interface OperatorTypeCloneOptions {
 } // tslint:disable-line:no-empty-interface
 
 /**
- * Dictionary for querying the server.
- */
-export interface OperatorTypeMappingDict {
-} // tslint:disable-line:no-empty-interface
-
-/**
  * Dictionary for serializing the operator type.
  */
 export interface OperatorTypeDict {
@@ -72,11 +66,6 @@ export abstract class OperatorType {
     }
 
     /**
-     * Get the server-side name of the type.
-     */
-    abstract getMappingName(): string;
-
-    /**
      * Human-readable type name.
      */
     abstract toString(): string;
@@ -85,11 +74,6 @@ export abstract class OperatorType {
      * Serialize the operator type.
      */
     abstract toDict(): OperatorTypeDict;
-
-    /**
-     * Create query parameter.
-     */
-    abstract toMappingDict(): OperatorTypeMappingDict;
 
     /**
      * Icon respresentation of the operator.

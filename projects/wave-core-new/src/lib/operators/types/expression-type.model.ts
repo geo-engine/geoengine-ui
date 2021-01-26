@@ -1,6 +1,6 @@
-import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
+import {OperatorType, OperatorTypeDict} from '../operator-type.model';
 
-import {Unit, UnitDict, UnitMappingDict} from '../unit.model';
+import {Unit, UnitDict} from '../unit.model';
 import {DataType, DataTypes} from '../datatype.model';
 
 /**
@@ -11,12 +11,6 @@ interface ExpressionTypeConfig {
     expression: string;
     datatype: DataType;
     unit: Unit;
-}
-
-interface ExpressionTypeMappingDict extends OperatorTypeMappingDict {
-    expression: string;
-    datatype: string;
-    unit: UnitMappingDict;
 }
 
 export interface ExpressionTypeDict extends OperatorTypeDict {
@@ -64,10 +58,6 @@ export class ExpressionType extends OperatorType {
         });
     }
 
-    getMappingName(): string {
-        return ExpressionType.TYPE;
-    }
-
     getIconUrl(): string {
         return ExpressionType.ICON_URL;
     }
@@ -82,14 +72,6 @@ export class ExpressionType extends OperatorType {
             ['datatype', this.datatype.toString()],
             ['unit', this.unit.toString()],
         ];
-    }
-
-    toMappingDict(): ExpressionTypeMappingDict {
-        return {
-            expression: this.expression,
-            datatype: this.datatype.getCode(),
-            unit: this.unit.toMappingDict(),
-        };
     }
 
     toDict(): ExpressionTypeDict {
