@@ -42,6 +42,10 @@ export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
+export * from './lib/operators/dialogs/expression-operator/expression-operator.component';
+export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
+export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
+export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';
 export * from './lib/project/new-project/new-project.component';
@@ -55,10 +59,6 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
-export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
-export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
-export * from './lib/operators/dialogs/operator-list/operator-list.component';
-export * from './lib/operators/dialogs/expression-operator/expression-operator.component';
 
 // Pipes
 export * from './lib/colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
