@@ -6,7 +6,6 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
-// import {AbstractSymbology} from '../../../../layers/symbology/symbology.model';
 
 
 /**
