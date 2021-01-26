@@ -439,8 +439,8 @@ export class UserService {
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
-                                    time_start: new TimePoint(source.time_start),
-                                    time_end: new TimePoint(source.time_end),
+                                    time_start: !!source.time_start ? new TimePoint(source.time_start) : undefined ,
+                                    time_end: !!source.time_end ? new TimePoint(source.time_end) : undefined,
                                 });
                             }
                         }

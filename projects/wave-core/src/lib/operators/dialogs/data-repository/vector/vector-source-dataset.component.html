@@ -12,7 +12,7 @@
     </mat-card-content>
 
     <mat-list>
-        <mat-list-item *ngIf="dataset?.time_start || dataset?.time_end">
+        <mat-list-item *ngIf="(dataset.time_start !== undefined && dataset.time_end !== undefined)">
             <p><b>Time validity:</b> {{dataset?.time_start}} - {{dataset?.time_end}}</p>
         </mat-list-item>
         <mat-list-item>
