@@ -1,5 +1,5 @@
 import {of as observableOf, Observable} from 'rxjs';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MappingSource, SourceVectorLayerDescription} from '../mapping-source.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
@@ -25,7 +25,7 @@ import {NotificationService} from '../../../../notification.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class VectorSourceDatasetComponent implements OnInit {
+export class VectorSourceDatasetComponent implements OnInit, OnChanges {
 
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
@@ -95,6 +95,29 @@ export class VectorSourceDatasetComponent implements OnInit {
             clustered,
         });
         this.projectService.addLayer(l);
+    }
+    ngOnChanges(changes: SimpleChanges) {
+        for (const key in changes) {
+            if (changes.hasOwnProperty(key)) {
+                switch (key) {
+                    // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
+                    case 'dataset': {
+                        this.dataset.rasterLayer.forEach((element) => {
+                            if (element.time_start) {
+                                if (!this._displayedColumns.includes('start')) {
+                                    this._displayedColumns.push('start');
+                                }
+                            }
+                            if (element.time_end) {
+                                if (!this._displayedColumns.includes('end')) {
+                                    this._displayedColumns.push('end');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
     }
 
     get layers(): Array<SourceVectorLayerDescription> {

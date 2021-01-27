@@ -26,6 +26,7 @@ import {
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
 import {ColorizerData} from '../colors/colorizer-data.model';
+import {TimePoint} from '../time/time.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -438,6 +439,8 @@ export class UserService {
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
+                                    time_start: !!source.time_start ? new TimePoint(source.time_start) : undefined ,
+                                    time_end: !!source.time_end ? new TimePoint(source.time_end) : undefined,
                                 });
                             }
                         }
@@ -477,6 +480,8 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
+            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : undefined ,
+            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : undefined ,
             coords,
             provenance,
         };
@@ -516,6 +521,8 @@ export class UserService {
             } as MappingTransform,
             coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
+            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : undefined ,
+            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : undefined ,
         };
     }
 

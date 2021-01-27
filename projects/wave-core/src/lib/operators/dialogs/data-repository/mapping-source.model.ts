@@ -1,6 +1,7 @@
 import {Unit, UnitMappingDict} from '../../unit.model';
 import {MappingRasterColorizerDict} from '../../../colors/colorizer-data.model';
 import {IColorizerData} from '../../../colors/colorizer-data.model';
+import {Time} from '../../../time/time.model';
 
 /**
  * An interface for transformation of raster layer values.
@@ -43,6 +44,8 @@ export interface SourceRasterLayerDescription {
         size: number[],
     };
     provenance: ProvenanceInfo;
+    time_start?: Time;
+    time_end?: Time;
 }
 
 /**
@@ -60,6 +63,8 @@ export interface SourceVectorLayerDescription {
     };
     colorizer?: IColorizerData;
     provenance: ProvenanceInfo;
+    time_start?: Time;
+    time_end?: Time;
 }
 
 /**
@@ -75,6 +80,8 @@ export interface MappingSource {
     imgUrl?: string;
     tags?: Array<string>;
     provenance: ProvenanceInfo;
+    time_start?: Time;
+    time_end?: Time;
 }
 
 /**
@@ -102,6 +109,8 @@ export interface MappingSourceDict {
     };
     channels?: [MappingSourceRasterLayerDict];
     layer?: [MappingSourceVectorLayerDict];
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -131,6 +140,8 @@ export interface MappingSourceRasterLayerDict {
         license: string,
         citation: string,
     };
+    time_start?: string;
+    time_end?: string;
 }
 
 /**
@@ -154,6 +165,8 @@ export interface MappingSourceVectorLayerDict {
         license: string,
         citation: string,
     };
+    time_start?: string;
+    time_end?: string;
 }
 
 /**

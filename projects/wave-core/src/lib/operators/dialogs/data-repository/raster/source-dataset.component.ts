@@ -1,5 +1,5 @@
 import {Observable, of as observableOf} from 'rxjs';
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MappingSource, SourceRasterLayerDescription, MappingTransform} from '../mapping-source.model';
 import {Unit} from '../../../unit.model';
 import {RasterSourceType} from '../../../types/raster-source-type.model';
@@ -26,7 +26,7 @@ import {Colormap} from '../../../../colors/colormaps/colormap.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class SourceDatasetComponent implements OnInit {
+export class SourceDatasetComponent implements OnInit, OnChanges {
 
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
@@ -65,7 +65,29 @@ export class SourceDatasetComponent implements OnInit {
     ngOnInit(): void {
         this._channelSource = new ChannelDataSource(this.dataset.rasterLayer);
     }
-
+    ngOnChanges(changes: SimpleChanges) {
+        for (const key in changes) {
+            if (changes.hasOwnProperty(key)) {
+                switch (key) {
+                    // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
+                    case 'dataset': {
+                        this.dataset.rasterLayer.forEach((element) => {
+                            if (element.time_start) {
+                                if (!this._displayedColumns.includes('start')) {
+                                    this._displayedColumns.push('start');
+                                }
+                            }
+                            if (element.time_end) {
+                                if (!this._displayedColumns.includes('end')) {
+                                    this._displayedColumns.push('end');
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
     valid_colorizer(channel: SourceRasterLayerDescription): IColorizerData {
         if (channel.colorizer) {
             return channel.colorizer;
