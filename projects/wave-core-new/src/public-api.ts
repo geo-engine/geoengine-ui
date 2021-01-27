@@ -82,7 +82,6 @@ export * from './lib/time/time.model';
 export * from './lib/users/user.model';
 export * from './lib/users/session.model';
 export * from './lib/operators/operator-type.model';
-export * from './lib/operators/operator-type-parameter-options.model';
 export * from './lib/operators/types/expression-type.model';
 
 // Misc
