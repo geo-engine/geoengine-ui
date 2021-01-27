@@ -140,5 +140,11 @@ export interface WorkflowDict {
 
 export interface OperatorDict {
     type: string;
-    params: { [key: string]: any};
+    params: Params;
+}
+
+type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTypes };
+
+interface Params {
+    [key: string]: ParamTypes;
 }
