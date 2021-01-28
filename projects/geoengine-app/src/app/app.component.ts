@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine.svg'),
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
         );
 
         // used for navigation
