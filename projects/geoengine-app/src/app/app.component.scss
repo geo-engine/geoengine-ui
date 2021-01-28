@@ -16,8 +16,6 @@ wave-layer-list {
 wave-layer-list .logo .mat-icon {
     width: 100%;
 
-    filter: grayscale(100%) brightness(100);
-
     ::ng-deep svg {
         border: none;
         border-radius: unset;
