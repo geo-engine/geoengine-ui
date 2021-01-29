@@ -132,3 +132,19 @@ export interface ToDict<T> {
 export interface RegisterWorkflowResultDict {
     id: UUID;
 }
+
+export interface WorkflowDict {
+    type: 'Vector' | 'Raster';
+    operator: OperatorDict;
+}
+
+export interface OperatorDict {
+    type: string;
+    params: Params;
+}
+
+type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTypes };
+
+interface Params {
+    [key: string]: ParamTypes;
+}

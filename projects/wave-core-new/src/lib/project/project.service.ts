@@ -13,7 +13,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {LayerDict, UUID} from '../backend/backend.model';
+import {LayerDict, UUID, WorkflowDict} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
@@ -309,6 +309,12 @@ export class ProjectService {
             mergeMap(session => this.backend.registerWorkflow(workflow, session.sessionToken)),
             map(response => response.id),
         );
+    }
+
+    getWorkflow(workflowId: UUID): Observable<WorkflowDict> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap(session => this.backend.getWorkflow(workflowId, session.sessionToken),
+        ));
     }
 
     /**

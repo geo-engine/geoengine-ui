@@ -18,7 +18,8 @@ import {
     STRectangleDict,
     STRefString,
     TimeIntervalDict,
-    UUID
+    UUID,
+    WorkflowDict
 } from './backend.model';
 
 @Injectable({
@@ -132,6 +133,12 @@ export class BackendService {
 
     registerWorkflow(workflow: { [key: string]: any }, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
         return this.http.post<RegisterWorkflowResultDict>(this.config.API_URL + '/workflow', workflow, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getWorkflow(workflowId: UUID, sessionId: UUID): Observable<WorkflowDict> {
+        return this.http.get<WorkflowDict>(this.config.API_URL + `/workflow/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
