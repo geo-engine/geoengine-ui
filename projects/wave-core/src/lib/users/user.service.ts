@@ -27,6 +27,7 @@ import {
 import {NotificationService} from '../notification.service';
 import {ColorizerData} from '../colors/colorizer-data.model';
 import {TimePoint} from '../time/time.model';
+import {element} from 'protractor';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -428,7 +429,32 @@ export class UserService {
                                         return UserService.parseVectorLayer(layer, source, sourceProvenance, index);
                                     }
                                 );
-
+                                let globalDatasetMinValidity = new TimePoint (source.time_start);
+                                let globalDatasetMaxValidity = new TimePoint (source.time_end);
+                                sourceChannels.forEach((channelElement) => {
+                                    if (channelElement.time_start) {
+                                        if (channelElement.time_start.getStart() < globalDatasetMinValidity.getStart()) {
+                                            globalDatasetMinValidity = channelElement.time_start;
+                                        }
+                                    }
+                                    if (channelElement.time_end) {
+                                        if (channelElement.time_end.getStart() > globalDatasetMaxValidity.getStart()) {
+                                            globalDatasetMaxValidity = channelElement.time_end;
+                                        }
+                                    }
+                                });
+                                sourceVectorLayer.forEach((layerElement) => {
+                                    if (layerElement.time_start) {
+                                        if (layerElement.time_start.getStart() < globalDatasetMinValidity.getStart()) {
+                                            globalDatasetMinValidity = layerElement.time_start;
+                                        }
+                                    }
+                                    if (layerElement.time_end) {
+                                        if (layerElement.time_end.getStart() > globalDatasetMaxValidity.getStart()) {
+                                            globalDatasetMaxValidity = layerElement.time_end;
+                                        }
+                                    }
+                                });
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
                                     source: sourceId,
@@ -439,8 +465,8 @@ export class UserService {
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
-                                    time_start: !!source.time_start ? new TimePoint(source.time_start) : undefined ,
-                                    time_end: !!source.time_end ? new TimePoint(source.time_end) : undefined,
+                                    time_start: !!source.time_start ? globalDatasetMinValidity : undefined ,
+                                    time_end: !!source.time_end ? globalDatasetMaxValidity : undefined,
                                 });
                             }
                         }
@@ -454,7 +480,6 @@ export class UserService {
                 );
             }));
     }
-
     protected static parseSourceProvenance(source: MappingSourceDict) {
         return {
             uri: (source.provenance) ? source.provenance.uri : '',
@@ -480,8 +505,8 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
-            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : undefined ,
-            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : undefined ,
+            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : new TimePoint (source.time_start) ,
+            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : new TimePoint (source.time_end) ,
             coords,
             provenance,
         };
@@ -521,8 +546,8 @@ export class UserService {
             } as MappingTransform,
             coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
-            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : undefined ,
-            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : undefined ,
+            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : new TimePoint (source.time_start) ,
+            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : new TimePoint (source.time_end),
         };
     }
 
