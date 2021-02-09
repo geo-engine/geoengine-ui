@@ -113,6 +113,11 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
                                     this._displayedColumns.push('end');
                                 }
                             }
+                            // get start and end in the right order
+                            if (this._displayedColumns[2] === 'end' && this._displayedColumns[3] === 'start') {
+                                this._displayedColumns[2] = 'start';
+                                this._displayedColumns[3] = 'end';
+                            }
                         });
                     }
                 }

@@ -75,13 +75,17 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
                             if (element.time_start && this.dataset.time_start && !(this.dataset.time_start.isSame(element.time_start))) {
                                 if (!this._displayedColumns.includes('start')) {
                                     this._displayedColumns.push('start');
-                                    console.log(this.dataset.time_start);
                                 }
                             }
                             if (element.time_end && this.dataset.time_end && !(this.dataset.time_end.isSame(element.time_end))) {
                                 if (!this._displayedColumns.includes('end')) {
                                     this._displayedColumns.push('end');
                                 }
+                            }
+                            // get start and end in the right order
+                            if (this._displayedColumns[2] === 'end' && this._displayedColumns[3] === 'start') {
+                                this._displayedColumns[2] = 'start';
+                                this._displayedColumns[3] = 'end';
                             }
                         });
                     }
