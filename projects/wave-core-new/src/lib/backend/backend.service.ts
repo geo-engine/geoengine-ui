@@ -18,6 +18,7 @@ import {
     STRectangleDict,
     STRefString,
     TimeIntervalDict,
+    TimeStepDict,
     UUID,
     WorkflowDict
 } from './backend.model';
@@ -71,6 +72,7 @@ export class BackendService {
             name: string,
             description: string,
             bounds: STRectangleDict,
+            time_step: TimeStepDict,
         },
         sessionId: UUID): Observable<CreateProjectResponseDict> {
         return this.http.post<CreateProjectResponseDict>(this.config.API_URL + '/project', request, {
@@ -85,6 +87,7 @@ export class BackendService {
             description?: string,
             layers?: Array<LayerDict | 'none' | 'delete'>,
             bounds?: STRectangleDict,
+            time_step?: TimeStepDict,
         },
         sessionId: UUID): Observable<void> {
         return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {
