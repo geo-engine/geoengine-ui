@@ -1,11 +1,78 @@
 import {DurationInputArg1, DurationInputArg2, Moment, MomentInput, utc} from 'moment';
-import {TimeIntervalDict, ToDict} from '../backend/backend.model';
+import {TimeIntervalDict, TimeStepDict, TimeStepGranularityDict, ToDict} from '../backend/backend.model';
 
 export type TimeType = 'TimePoint' | 'TimeInterval';
 
+type TimeStepDurationType = 'millisecond' | 'milliseconds' |
+    'second' | 'seconds' |
+    'minute' | 'minutes' |
+    'hour' | 'hours' |
+    'day' | 'days' |
+    'month' | 'months' |
+    'year' | 'years';
+
 export interface TimeStepDuration {
-    durationAmount: DurationInputArg1;
-    durationUnit: DurationInputArg2;
+    durationAmount: number;
+    durationUnit: TimeStepDurationType;
+}
+
+export function timeStepDurationToTimeStepDict(duration: TimeStepDuration): TimeStepDict {
+    function mapGranularity(durationUnit: TimeStepDurationType): TimeStepGranularityDict {
+        switch (durationUnit) {
+            case 'millisecond':
+            case 'milliseconds':
+                return 'Millis';
+            case 'second':
+            case 'seconds':
+                return 'Seconds';
+            case 'minute':
+            case 'minutes':
+                return 'Minutes';
+            case 'hour':
+            case 'hours':
+                return 'Hours';
+            case 'day':
+            case 'days':
+                return 'Days';
+            case 'month':
+            case 'months':
+                return 'Months';
+            case 'year':
+            case 'years':
+                return 'Years';
+        }
+    }
+
+    return {
+        step: duration.durationAmount,
+        granularity: mapGranularity(duration.durationUnit),
+    };
+}
+
+export function timeStepDictTotimeStepDuration(timeStepDict: TimeStepDict): TimeStepDuration {
+    function mapGranularity(granularity: TimeStepGranularityDict, plural: boolean): TimeStepDurationType {
+        switch (granularity) {
+            case 'Millis':
+                return plural ? 'milliseconds' : 'millisecond';
+            case 'Seconds':
+                return plural ? 'seconds' : 'second';
+            case 'Minutes':
+                return plural ? 'minutes' : 'minute';
+            case 'Hours':
+                return plural ? 'hours' : 'hour';
+            case 'Days':
+                return plural ? 'days' : 'day';
+            case 'Months':
+                return plural ? 'months' : 'month';
+            case 'Years':
+                return plural ? 'years' : 'year';
+        }
+    }
+
+    return {
+        durationAmount: timeStepDict.step,
+        durationUnit: mapGranularity(timeStepDict.granularity, timeStepDict.step > 1),
+    };
 }
 
 export class Time implements ToDict<TimeIntervalDict> {

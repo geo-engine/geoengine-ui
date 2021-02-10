@@ -1,5 +1,5 @@
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
-import {Time, TimeStepDuration} from '../time/time.model';
+import {Time, timeStepDictTotimeStepDuration, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
 import {Layer} from '../layers/layer.model';
 import {UUID, ToDict, ProjectDict, STRectangleDict} from '../backend/backend.model';
 
@@ -25,7 +25,7 @@ export class Project implements ToDict<ProjectDict> {
             time: Time.fromDict(dict.bounds.time_interval),
             plots: [], // TODO: fill if available
             layers: dict.layers.map(Layer.fromDict),
-            timeStepDuration: {durationAmount: 1, durationUnit: 'months'}, // TODO: read from dict
+            timeStepDuration: timeStepDictTotimeStepDuration(dict.time_step),
         });
     }
 
@@ -99,6 +99,7 @@ export class Project implements ToDict<ProjectDict> {
             version: undefined, // TODO: get rid of version?
             bounds: this.toBoundsDict(),
             layers: this._layers.map(layer => layer.toDict()),
+            time_step: timeStepDurationToTimeStepDict(this.timeStepDuration),
         };
     }
 

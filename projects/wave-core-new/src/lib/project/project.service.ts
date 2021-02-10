@@ -5,7 +5,7 @@ import {Injectable} from '@angular/core';
 
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
 import {Project} from './project.model';
-import {Time, TimeStepDuration} from '../time/time.model';
+import {Time, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
 import {Config} from '../config.service';
 import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
@@ -126,7 +126,7 @@ export class ProjectService {
                     spatial_reference: config.spatialReference.getCode(),
                     time_interval: config.time.toDict(),
                 },
-                // TODO: add timeStepDuration
+                time_step: timeStepDurationToTimeStepDict(config.timeStepDuration),
             }, sessionToken)),
             map(({id}) => new Project({
                 id,
@@ -314,7 +314,7 @@ export class ProjectService {
     getWorkflow(workflowId: UUID): Observable<WorkflowDict> {
         return this.userService.getSessionStream().pipe(
             mergeMap(session => this.backend.getWorkflow(workflowId, session.sessionToken),
-        ));
+            ));
     }
 
     /**
@@ -613,7 +613,7 @@ export class ProjectService {
                     // TODO: add bbox
                     bounds: (changes.time || changes.spatialReference) ? project.toBoundsDict() : undefined,
                     // TODO: description: changes.description,
-                    // TODO: time step duration
+                    time_step: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
                 }, sessionToken);
             }),
         ).subscribe(

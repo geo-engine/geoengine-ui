@@ -70,6 +70,7 @@ export interface ProjectDict {
     description: string;
     layers: Array<LayerDict>;
     bounds: STRectangleDict;
+    time_step: TimeStepDict;
 }
 
 export interface LayerDict {
@@ -148,3 +149,16 @@ type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTy
 interface Params {
     [key: string]: ParamTypes;
 }
+
+export interface TimeStepDict {
+    step: number;
+    granularity: TimeStepGranularityDict;
+}
+
+export type TimeStepGranularityDict = 'Millis' |
+    'Seconds' |
+    'Minutes' |
+    'Hours' |
+    'Days' |
+    'Months' |
+    'Years';
