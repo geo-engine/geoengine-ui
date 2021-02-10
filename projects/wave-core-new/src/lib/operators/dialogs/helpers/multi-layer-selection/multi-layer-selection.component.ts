@@ -122,18 +122,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                         this.layers.pipe(first()).subscribe(layers => {
                             this.filteredLayers.next(
                                 layers.filter((layer: Layer) => {
-                                    // return this.types.indexOf(layer.operator.resultType) >= 0;
-                                    // TODO: filter by type of layer when it has one
-                                    return true;
+                                    return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
                                 })
                             );
                         });
                     } else if (this.layers instanceof Array) {
                         this.filteredLayers.next(
                             this.layers.filter((layer: Layer) => {
-                                // return this.types.indexOf(layer.operator.resultType) >= 0;
-                                // TODO: filter by type of layer when it has one
-                                return true;
+                                return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
                             })
                         );
                     }

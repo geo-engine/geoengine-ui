@@ -157,7 +157,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.unitSubscription.unsubscribe();
+        // TODO: incorporate unit again
+        // this.unitSubscription.unsubscribe();
     }
 
     /**
