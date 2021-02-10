@@ -35,6 +35,7 @@ import {
     WorkspaceSettingsComponent,
     OperatorListComponent,
     OperatorListButtonGroups,
+    TimeConfigComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -172,11 +173,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             //     icon: 'equalizer',
             //     tooltip: 'Plots',
             // },
-            // {
-            //     sidenavConfig: {component: TimeConfigComponent},
-            //     icon: 'access_time',
-            //     tooltip: 'Time',
-            // },
+            {
+                sidenavConfig: {component: TimeConfigComponent},
+                icon: 'access_time',
+                tooltip: 'Time',
+            },
             {
                 sidenavConfig: {component: WorkspaceSettingsComponent},
                 icon: 'settings',
