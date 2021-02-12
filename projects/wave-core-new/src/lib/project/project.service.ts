@@ -42,6 +42,7 @@ export class ProjectService {
     private layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
     private layerDataSubscriptions = new Map<number, Subscription>();
     private layers = new Map<number, ReplaySubject<Layer>>();
+    private newLayer$ = new Subject<void>();
 
     private plotData$ = new Map<number, ReplaySubject<any>>();
     private plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
@@ -344,65 +345,38 @@ export class ProjectService {
         this.createLayerDataStreams(layer);
         this.createLayerChangesStream(layer);
 
-        const subject = new Subject<void>();
-
-        combineLatest([
-            this.userService.getSessionStream().pipe(
-                first(),
-                map(session => session.sessionToken),
-            ),
-            this.project$.pipe(first()),
-        ]).pipe(
-            mergeMap(([sessionToken, project]) => this.backend.updateProject({
-                id: project.id,
-                layers: [
-                    layer.toDict(),
-                    ...project.layers.map(l => l.toDict()),
-                ],
-            }, sessionToken).pipe(
-                map(() => project)
-            )),
-            mergeMap(project => this.changeProjectConfig({
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => this.changeProjectConfig({
                 layers: [layer, ...project.layers]
-            }))
-        ).subscribe(
-            () => subject.next(),
-            error => subject.error(error),
-            () => subject.complete()
+            })),
+            tap(() => {
+                if (notify) {
+                    this.newLayer$.next();
+                }
+            }),
         );
 
-        //         if (notify) {
-        //             this.newLayer$.next(layer);
-        //         }
-
-        return subject.asObservable();
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
      * Add a plot to the project.
      */
     addPlot(plot: Plot, notify = true): Observable<void> {
-        const subject: Subject<void> = new ReplaySubject<void>(1);
+        this.createPlotDataStreams(plot);
 
-        this.project$.pipe(first()).subscribe(
-            project => {
-                this.createPlotDataStreams(plot);
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => this.changeProjectConfig({
+                plots: [plot, ...project.plots]
+            })),
+            tap(() => {
+                if (notify) {
+                    this.newPlot$.next();
+                }
+            }),
+        );
 
-                const currentPlots = project.plots;
-                this.changeProjectConfig({
-                    plots: [plot, ...currentPlots]
-                }).subscribe(() => {
-                    if (notify) {
-                        this.newPlot$.next();
-                    }
-
-                    subject.next();
-                    subject.complete();
-                });
-            },
-            error => subject.error(error));
-
-        return subject.asObservable();
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
@@ -565,6 +539,13 @@ export class ProjectService {
      */
     getNewPlotStream(): Observable<void> {
         return this.newPlot$;
+    }
+
+    /**
+     * Notification stream of newly added layers
+     */
+    getNewLayerStream(): Observable<void> {
+        return this.newLayer$;
     }
 
     /**
@@ -739,15 +720,6 @@ export class ProjectService {
 
     protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & { equals(other: Content): boolean },
         ContentDict>(oldLayers: Array<Content>, newLayers: Array<Content>): Array<ContentDict | 'none' | 'delete'> {
-        if (newLayers.length === (oldLayers.length + 1)) {
-            // layer addition optimization
-
-            return [
-                newLayers[0].toDict(),
-                ...oldLayers.map((oldLayer, i) => oldLayer.equals(newLayers[i + 1]) ? 'none' : newLayers[i + 1].toDict()),
-            ];
-        }
-
         return newLayers.map((layer, i) => layer.equals(oldLayers[i]) ? 'none' : layer.toDict());
 
         // TODO: optimize deletions, etc.
