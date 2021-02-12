@@ -68,6 +68,6 @@ export class DataSetComponent implements OnInit {
                     }));
                 }
             })
-        ).subscribe(() => console.log('added raster'));
+        ).subscribe();
     }
 }
