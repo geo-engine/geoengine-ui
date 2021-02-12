@@ -200,7 +200,7 @@ export class BackendService {
     }
 
     // TODO: turn into paginated data source
-    getDataSetStream(sessionId: UUID): Observable<Array<DataSet>> {
+    getDataSets(sessionId: UUID): Observable<Array<DataSet>> {
         const params = new NullDiscardingHttpParams();
         params.set('order', 'NameAsc');
         params.set('offset', '0');

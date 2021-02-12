@@ -13,7 +13,7 @@ export class DataSetService {
     constructor(private backend: BackendService, private userService: UserService) {
     }
 
-    getDataSetsStream(): Observable<Array<DataSet>> {
-        return this.userService.getSessionStream().pipe(mergeMap(session => this.backend.getDataSetStream(session.sessionToken)));
+    getDataSets(): Observable<Array<DataSet>> {
+        return this.userService.getSessionStream().pipe(mergeMap(session => this.backend.getDataSets(session.sessionToken)));
     }
 }

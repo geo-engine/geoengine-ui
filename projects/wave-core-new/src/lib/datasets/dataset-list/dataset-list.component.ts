@@ -17,7 +17,7 @@ export class DatasetListComponent implements OnInit {
 
     constructor(public dataSetService: DataSetService
     ) {
-        this.datasets = this.dataSetService.getDataSetsStream();
+        this.datasets = this.dataSetService.getDataSets();
     }
 
     ngOnInit(): void {
