@@ -2,7 +2,7 @@ import {Observable, Subscription} from 'rxjs';
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
-import {LayoutService} from '../../layout.service';
+import {LayoutService, SidenavConfig} from '../../layout.service';
 import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
 import {RenameLayerComponent} from '../rename-layer/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
@@ -12,6 +12,7 @@ import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {filter, map, startWith} from 'rxjs/operators';
+import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -33,7 +34,7 @@ export class LayerListComponent implements OnDestroy {
      * The empty list shows a button to trigger the generation of a first layer.
      * This sidenav config is called to present a date listing or a similar dialog in the sidenav.
      */
-    // @Input() addAFirstLayerSidenavConfig: SidenavConfig = {component: SourceOperatorListComponent};
+    @Input() addAFirstLayerSidenavConfig: SidenavConfig = {component: AddDataComponent};
 
     /**
      * sends if the layerlist should be visible

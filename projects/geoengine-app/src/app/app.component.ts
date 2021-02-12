@@ -65,7 +65,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerDetailViewVisible$: Observable<boolean>;
 
     readonly navigationButtons = this.setupNavigation();
-    // readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
+    readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -155,11 +155,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: MockLayersComponent},
-                icon: 'add',
-                tooltip: 'Mock Data',
-            },
-            {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
                 tooltip: 'Add Data',
@@ -200,6 +195,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     private static createAddDataListButtons(): Array<AddDataListButton> {
         return [
             AddDataComponent.createDataSetListButton(),
+            {
+                name: 'Mock data',
+                description: 'Mock data sets',
+                iconSrc: AddDataComponent.createIconDataUrl('mock'),
+                sidenavConfig: {component: MockLayersComponent, keepParent: true},
+            }
             // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             // {
