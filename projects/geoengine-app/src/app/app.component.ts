@@ -17,6 +17,8 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
+    AddDataComponent,
+    AddDataListButton,
     Layer,
     SidenavContainerComponent,
     LayoutService,
@@ -157,11 +159,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 icon: 'add',
                 tooltip: 'Mock Data',
             },
-            // {
-            //     sidenavConfig: AppComponent.setupAddDataConfig(),
-            //     icon: 'add',
-            //     tooltip: 'Add Data',
-            // },
+            {
+                sidenavConfig: AppComponent.setupAddDataConfig(),
+                icon: 'add',
+                tooltip: 'Add Data',
+            },
             {
                 sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
                 icon: '',
@@ -191,24 +193,24 @@ export class AppComponent implements OnInit, AfterViewInit {
         ];
     }
 
-    // private static setupAddDataConfig(): SidenavConfig {
-    //     return {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}};
-    // }
+    private static setupAddDataConfig(): SidenavConfig {
+        return {component: AddDataComponent, config: {buttons: AppComponent.createAddDataListButtons()}};
+    }
 
-    // private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
-    //     return [
-    //         SourceOperatorListComponent.createDataRepositoryButton(),
-    //         SourceOperatorListComponent.createDrawFeaturesButton(),
-    //         ...SourceOperatorListComponent.createCustomFeaturesButtons(),
-    //         {
-    //             name: 'Species Occurrences',
-    //             description: 'Query data from GBIF',
-    //             iconSrc: GFBioSourceType.ICON_URL,
-    //             sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
-    //         },
-    //         SourceOperatorListComponent.createCountryPolygonsButton(),
-    //     ];
-    // }
+    private static createAddDataListButtons(): Array<AddDataListButton> {
+        return [
+            AddDataComponent.createDataSetListButton(),
+            // SourceOperatorListComponent.createDrawFeaturesButton(),
+            // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
+            // {
+            //     name: 'Species Occurrences',
+            //     description: 'Query data from GBIF',
+            //     iconSrc: GFBioSourceType.ICON_URL,
+            //     sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
+            // },
+            // SourceOperatorListComponent.createCountryPolygonsButton(),
+        ];
+    }
 
     private static createOperatorListButtons(): OperatorListButtonGroups {
         return [

@@ -22,6 +22,7 @@ import {
     UUID,
     WorkflowDict
 } from './backend.model';
+import {DataSet} from '../datasets/dataset.model';
 
 @Injectable({
     providedIn: 'root'
@@ -196,6 +197,19 @@ export class BackendService {
     private static authorizationHeader(sessionId: UUID): HttpHeaders {
         return new HttpHeaders()
             .set('Authorization', `Bearer ${sessionId}`);
+    }
+
+    // TODO: turn into paginated data source
+    getDataSetStream(sessionId: UUID): Observable<Array<DataSet>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', 'NameAsc');
+        params.set('offset', '0');
+        params.set('limit', '20');
+
+        return this.http.get<Array<DataSet>>(this.config.API_URL + '/datasets', {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
     }
 }
 

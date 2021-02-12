@@ -1,0 +1,13 @@
+<wave-sidenav-header>Add Data</wave-sidenav-header>
+
+<mat-nav-list>
+    <ng-template ngFor [ngForOf]="buttons" let-button>
+        <mat-list-item (click)="setComponent(button.sidenavConfig)"
+                       [ngClass]="{disabled : !button.sidenavConfig}">
+            <img *ngIf="button.iconSrc" mat-list-icon [src]="button.iconSrc" [alt]="button.name">
+            <mat-icon *ngIf="button.icon" mat-list-icon>{{button.icon}}</mat-icon>
+            <h4 mat-line>{{button.name}}</h4>
+            <p mat-line>{{button.description}}</p>
+        </mat-list-item>
+    </ng-template>
+</mat-nav-list>
