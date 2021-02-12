@@ -1,5 +1,6 @@
 import {UUID} from '../backend/backend.model';
 import {SpatialReference} from '../operators/spatial-reference.model';
+import {DataType} from '../operators/datatype.model';
 
 export interface DataSet {
     id: InternalDataSetId; // TODO: support all Id types
@@ -15,12 +16,12 @@ export interface InternalDataSetId {
 
 export interface ResultDescriptor {
     Vector?: {
-        data_type: 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+        data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
         spatial_reference: SpatialReference;
         columns: { [key: string]: string}
     };
     Raster?: {
-        data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+        data_type: DataType;
         spatial_reference: SpatialReference;
     };
 }
