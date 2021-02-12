@@ -47,6 +47,7 @@ export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/plots/plot-detail-view/plot-detail-view.component';
 export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';

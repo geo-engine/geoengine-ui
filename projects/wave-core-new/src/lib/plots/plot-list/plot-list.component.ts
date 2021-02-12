@@ -3,11 +3,13 @@ import {filter, first} from 'rxjs/operators';
 
 import {MatDialog} from '@angular/material/dialog';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
+
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {Plot} from '../plot.model';
 import {LoadingState} from '../../project/loading-state.model';
+import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 
 
 /**
@@ -71,16 +73,15 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * Show a plot as a fullscreen modal dialog
      */
-    showFullscreen(_plot: Plot) {
-        // TODO: implement
-        // this.dialog.open(
-        //     PlotDetailViewComponent,
-        //     {
-        //         data: plot,
-        //         maxHeight: '100vh',
-        //         maxWidth: '100vw',
-        //     },
-        // );
+    showFullscreen(plot: Plot) {
+        this.dialog.open(
+            PlotDetailViewComponent,
+            {
+                data: plot,
+                maxHeight: '100vh',
+                maxWidth: '100vw',
+            },
+        );
     }
 
     idOfPlot(plot: Plot): number {

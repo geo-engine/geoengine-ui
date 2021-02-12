@@ -1,0 +1,16 @@
+<wave-dialog-header>{{plot.name}}</wave-dialog-header>
+<mat-dialog-content [ngSwitch]="plot.plotType">
+    <ng-template ngSwitchCase="text">
+        <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+    </ng-template>
+    <ng-template ngSwitchCase="png">
+        <img [src]="plotData$ | async" [alt]="plot.name">
+        <mat-progress-bar mode="indeterminate" *ngIf="plotLoading$ | async"></mat-progress-bar>
+    </ng-template>
+    <ng-template ngSwitchCase="JSON">
+        <pre>{{plotData$ | async | json}}</pre>
+    </ng-template>
+    <ng-template ngSwitchDefault>
+        <pre>{{plotData$ | async}}</pre>
+    </ng-template>
+</mat-dialog-content>
