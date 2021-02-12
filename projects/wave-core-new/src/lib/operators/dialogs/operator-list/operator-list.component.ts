@@ -121,7 +121,7 @@ export class OperatorListComponent implements OnInit {
                 NAME: 'Basic Statistics',
                 ICON_URL: OperatorType.createIconDataUrl('Basic Statistics'),
             },
-            description: 'Get statistics for any layer'
+            description: 'Get statistics for raster layer'
         },
         //     {
         //         component: TimePlotComponent,
