@@ -5,6 +5,7 @@ import {MappingRasterSymbology, PointSymbology} from '../../layers/symbology/sym
 import {Unit} from '../../operators/unit.model';
 import {ProjectService} from '../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
+import {RandomColorService} from '../../util/services/random-color.service';
 
 @Component({
     selector: 'wave-dataset',
@@ -16,7 +17,7 @@ export class DataSetComponent implements OnInit {
 
     @Input() dataset: DataSet;
 
-    constructor(private projectService: ProjectService) {
+    constructor(private projectService: ProjectService, private randomColorService: RandomColorService) {
     }
 
     ngOnInit(): void {
@@ -58,7 +59,7 @@ export class DataSetComponent implements OnInit {
                         workflowId,
                         name: this.dataset.name,
                         symbology: PointSymbology.createSymbology({
-                            fillRGBA: [255, 0, 0], // red
+                            fillRGBA: this.randomColorService.getRandomColorRgba(),
                             radius: 10,
                             clustered: false,
                         }),
