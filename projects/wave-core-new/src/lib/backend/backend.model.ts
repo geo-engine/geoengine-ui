@@ -69,6 +69,7 @@ export interface ProjectDict {
     name: string;
     description: string;
     layers: Array<LayerDict>;
+    plots: Array<PlotDict>;
     bounds: STRectangleDict;
     time_step: TimeStepDict;
 }
@@ -81,6 +82,11 @@ export interface LayerDict {
         data: boolean,
         legend: boolean,
     };
+}
+
+export interface PlotDict {
+    workflow: UUID;
+    name: string;
 }
 
 export interface ProjectVersion {
@@ -135,7 +141,7 @@ export interface RegisterWorkflowResultDict {
 }
 
 export interface WorkflowDict {
-    type: 'Vector' | 'Raster';
+    type: 'Vector' | 'Raster' | 'Plot';
     operator: OperatorDict;
 }
 

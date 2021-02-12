@@ -34,7 +34,8 @@ import {ExpressionType} from '../../types/expression-type.model';
 // import {TimePlotType} from '../../types/timeplot-type.model';
 // import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 // import {StatisticsType} from '../../types/statistics-type.model';
-// import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
+import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
+import {OperatorType} from '../../operator-type.model';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -94,36 +95,39 @@ export class OperatorListComponent implements OnInit {
     ];
 
     static readonly DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
-    //     {
-    //         component: HistogramOperatorComponent,
-    //         type: HistogramType,
-    //         description: 'Create a histogram from vector or raster data',
-    //     },
-    //     {
-    //         component: PieChartComponent,
-    //         type: PieChartType,
-    //         description: 'Plot your data as a pie chart',
-    //     },
-    //     {
-    //         component: ScatterPlotComponent,
-    //         type: ScatterPlotType,
-    //         description: 'Scatter plot your data'
-    //     },
-    //     {
-    //         component: BoxPlotComponent,
-    //         type: BoxPlotType,
-    //         description: 'Box plot your data'
-    //     },
-    //     {
-    //         component: StatisticsPlotComponent,
-    //         type: StatisticsType,
-    //         description: 'Get statistics for any layer'
-    //     },
-    //     {
-    //         component: TimePlotComponent,
-    //         type: TimePlotType,
-    //         description: 'Plot time data'
-    //     }
+        //     {
+        //         component: HistogramOperatorComponent,
+        //         type: HistogramType,
+        //         description: 'Create a histogram from vector or raster data',
+        //     },
+        //     {
+        //         component: PieChartComponent,
+        //         type: PieChartType,
+        //         description: 'Plot your data as a pie chart',
+        //     },
+        //     {
+        //         component: ScatterPlotComponent,
+        //         type: ScatterPlotType,
+        //         description: 'Scatter plot your data'
+        //     },
+        //     {
+        //         component: BoxPlotComponent,
+        //         type: BoxPlotType,
+        //         description: 'Box plot your data'
+        //     },
+        {
+            component: StatisticsPlotComponent,
+            type: {
+                NAME: 'Basic Statistics',
+                ICON_URL: OperatorType.createIconDataUrl('Basic Statistics'),
+            },
+            description: 'Get statistics for any layer'
+        },
+        //     {
+        //         component: TimePlotComponent,
+        //         type: TimePlotType,
+        //         description: 'Plot time data'
+        //     }
     ];
 
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [

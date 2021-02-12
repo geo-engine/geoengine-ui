@@ -46,6 +46,8 @@ export * from './lib/operators/dialogs/expression-operator/expression-operator.c
 export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
+export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';
 export * from './lib/project/new-project/new-project.component';
@@ -78,6 +80,7 @@ export * from './lib/layers/symbology/symbology.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/spatial-reference.model';
 export * from './lib/operators/unit.model';
+export * from './lib/plots/plot.model';
 export * from './lib/time/time.model';
 export * from './lib/users/user.model';
 export * from './lib/users/session.model';

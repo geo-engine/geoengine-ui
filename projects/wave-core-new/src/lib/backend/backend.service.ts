@@ -6,7 +6,7 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
-    LayerDict,
+    LayerDict, PlotDict,
     ProjectDict,
     ProjectFilterDict,
     ProjectListingDict,
@@ -22,6 +22,7 @@ import {
     UUID,
     WorkflowDict
 } from './backend.model';
+import {Params} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -86,6 +87,7 @@ export class BackendService {
             name?: string,
             description?: string,
             layers?: Array<LayerDict | 'none' | 'delete'>,
+            plots?: Array<PlotDict | 'none' | 'delete'>,
             bounds?: STRectangleDict,
             time_step?: TimeStepDict,
         },
@@ -188,6 +190,27 @@ export class BackendService {
         params.set('propertyName', request.propertyName);
 
         return this.http.get<any>(this.config.API_URL + '/wfs', {
+            headers: BackendService.authorizationHeader(sessionId),
+            params: params.httpParams,
+        });
+    }
+
+    getPlot(
+        workflowId: UUID,
+        request: {
+            bbox: BBoxDict,
+            time: TimeIntervalDict,
+            spatial_resolution: [number, number],
+        },
+        sessionId: UUID,
+    ): Observable<Params | Uint8Array> {
+        const params = new NullDiscardingHttpParams();
+
+        params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
+        params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
+        params.setMapped('spatial_resolution', request.spatial_resolution, resolution => resolution.join(','));
+
+        return this.http.get<Params | Uint8Array>(this.config.API_URL + `/plot/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });

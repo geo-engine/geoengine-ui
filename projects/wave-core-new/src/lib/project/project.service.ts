@@ -1,4 +1,12 @@
-import {combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {
+    combineLatest,
+    Observable,
+    Observer,
+    of,
+    ReplaySubject,
+    Subject,
+    Subscription
+} from 'rxjs';
 import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -13,13 +21,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {LayerDict, UUID, WorkflowDict} from '../backend/backend.model';
+import {LayerDict, PlotDict, ToDict, UUID, WorkflowDict} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
 import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Session} from '../users/session.model';
+import {HasPlotId, Plot} from '../plots/plot.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -33,6 +42,11 @@ export class ProjectService {
     private layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
     private layerDataSubscriptions = new Map<number, Subscription>();
     private layers = new Map<number, ReplaySubject<Layer>>();
+
+    private plotData$ = new Map<number, ReplaySubject<any>>();
+    private plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
+    private plotDataSubscriptions = new Map<number, Subscription>();
+    private newPlot$ = new Subject<void>();
 
     constructor(protected config: Config,
                 protected notificationService: NotificationService,
@@ -134,6 +148,7 @@ export class ProjectService {
                 description: config.description,
                 spatialReference: config.spatialReference,
                 layers: [],
+                plots: [],
                 time: config.time,
                 timeStepDuration: config.timeStepDuration,
             })),
@@ -225,6 +240,11 @@ export class ProjectService {
         for (const layer of project.layers) {
             this.createLayerDataStreams(layer);
             this.createLayerChangesStream(layer);
+        }
+
+        // add plot streams
+        for (const plot of project.plots) {
+            this.createPlotDataStreams(plot);
         }
 
         // propagate new project
@@ -359,6 +379,33 @@ export class ProjectService {
     }
 
     /**
+     * Add a plot to the project.
+     */
+    addPlot(plot: Plot, notify = true): Observable<void> {
+        const subject: Subject<void> = new ReplaySubject<void>(1);
+
+        this.project$.pipe(first()).subscribe(
+            project => {
+                this.createPlotDataStreams(plot);
+
+                const currentPlots = project.plots;
+                this.changeProjectConfig({
+                    plots: [plot, ...currentPlots]
+                }).subscribe(() => {
+                    if (notify) {
+                        this.newPlot$.next();
+                    }
+
+                    subject.next();
+                    subject.complete();
+                });
+            },
+            error => subject.error(error));
+
+        return subject.asObservable();
+    }
+
+    /**
      * Reload the data of a layer.
      */
     reloadLayerData(layer: Layer) {
@@ -402,10 +449,122 @@ export class ProjectService {
     }
 
     /**
+     * Reload the data for the plot manually (e.g. on error).
+     */
+    reloadPlot(plot: Plot) {
+        this.plotData$.get(plot.id).next(undefined); // send empty data
+
+        this.plotDataSubscriptions.get(plot.id).unsubscribe();
+        this.plotDataSubscriptions.delete(plot.id);
+
+        const loadingState$ = this.plotDataState$.get(plot.id);
+
+        const subscription = this.createPlotSubscription(plot, this.plotData$.get(plot.id), loadingState$);
+
+        this.plotDataSubscriptions.set(plot.id, subscription);
+    }
+
+    /**
+     * Create a subscription for plot data with loading state checks and error handling
+     */
+    private createPlotSubscription(plot: Plot, data$: Observer<any>, loadingState$: Observer<LoadingState>): Subscription {
+        const observables: Array<Observable<any>> = [
+            this.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+        ];
+
+        return combineLatest(observables).pipe(
+            debounceTime(this.config.DELAYS.DEBOUNCE),
+            tap(() => loadingState$.next(LoadingState.LOADING)),
+            switchMap(([time, viewport, sessionToken]) => {
+                // TODO: add image size for png
+
+                return this.backend.getPlot(
+                    plot.workflowId,
+                    {
+                        time,
+                        bbox: extentToBboxDict(viewport.extent),
+                        spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
+                    },
+                    sessionToken);
+            }),
+            tap(
+                () => loadingState$.next(LoadingState.OK),
+                (reason: Response) => {
+                    this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
+                    loadingState$.next(LoadingState.ERROR);
+                }
+            ),
+        ).subscribe(
+            data => data$.next(data),
+            error => error // ignore error
+        );
+    }
+
+    private createPlotDataStreams(plot: Plot) {
+        const loadingState$ = new ReplaySubject<LoadingState>(1);
+        const data$ = new ReplaySubject<any>(1);
+
+        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
+        this.plotDataSubscriptions.set(plot.id, subscription);
+
+        this.plotDataState$.set(plot.id, loadingState$);
+        this.plotData$.set(plot.id, data$);
+    }
+
+    /**
+     * Remove a plot from the project.
+     */
+    removePlot(plot: HasPlotId): Observable<void> {
+        const result = this.getProjectOnce().pipe(
+            mergeMap(project => {
+                const plots = [...project.plots];
+                const plotIndex = plots.indexOf(plot);
+                if (plotIndex >= 0) {
+                    plots.splice(plotIndex, 1);
+                    return this.changeProjectConfig({
+                        plots
+                    });
+                } else {
+                    // avoid request if there is nothing to do
+                    return of<void>();
+                }
+            }),
+            tap(() => {
+                this.plotDataSubscriptions.get(plot.id).unsubscribe();
+                this.plotDataSubscriptions.delete(plot.id);
+
+                this.plotDataState$.get(plot.id).complete();
+                this.plotDataState$.delete(plot.id);
+
+                this.plotData$.get(plot.id).complete();
+                this.plotData$.delete(plot.id);
+            }),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
+    }
+
+    /**
      * Retrieve the layer models array as a stream.
      */
     getLayerStream(): Observable<Array<Layer>> {
         return this.project$.pipe(map(project => project.layers), distinctUntilChanged());
+    }
+
+    /**
+     * Retrieve the plot models array as a stream.
+     */
+    getPlotStream(): Observable<Array<Plot>> {
+        return this.project$.pipe(map(project => project.plots), distinctUntilChanged());
+    }
+
+    /**
+     * Notification stream of newly added plots
+     */
+    getNewPlotStream(): Observable<void> {
+        return this.newPlot$;
     }
 
     /**
@@ -416,10 +575,24 @@ export class ProjectService {
     }
 
     /**
+     * Retrieve the data of the plot as a stream.
+     */
+    getPlotDataStream(plot: HasPlotId): Observable<any> {
+        return this.plotData$.get(plot.id);
+    }
+
+    /**
      * Retrieve the layer data status as a stream.
      */
     getLayerDataStatusStream(layer: HasLayerId): Observable<LoadingState> {
         return this.layerDataState$.get(layer.id);
+    }
+
+    /**
+     * Retrieve the plot data status as a stream.
+     */
+    getPlotDataStatusStream(plot: HasPlotId): Observable<LoadingState> {
+        return this.plotDataState$.get(plot.id);
     }
 
     /**
@@ -564,7 +737,8 @@ export class ProjectService {
         return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
     }
 
-    protected static optimizeLayerUpdates(oldLayers: Array<Layer>, newLayers: Array<Layer>): Array<LayerDict | 'none' | 'delete'> {
+    protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & { equals(other: Content): boolean },
+        ContentDict>(oldLayers: Array<Content>, newLayers: Array<Content>): Array<ContentDict | 'none' | 'delete'> {
         if (newLayers.length === (oldLayers.length + 1)) {
             // layer addition optimization
 
@@ -609,7 +783,10 @@ export class ProjectService {
                 return this.backend.updateProject({
                     id: project.id,
                     name: changes.name,
-                    layers: changes.layers ? ProjectService.optimizeLayerUpdates(oldProject.layers, project.layers) : undefined,
+                    layers: changes.layers ?
+                        ProjectService.optimizeVecUpdates<Layer, LayerDict>(oldProject.layers, project.layers) : undefined,
+                    plots: changes.plots ?
+                        ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots) : undefined,
                     // TODO: add bbox
                     bounds: (changes.time || changes.spatialReference) ? project.toBoundsDict() : undefined,
                     // TODO: description: changes.description,
