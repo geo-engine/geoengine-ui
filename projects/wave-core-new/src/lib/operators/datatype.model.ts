@@ -1,3 +1,5 @@
+import {NoDataDict} from '../backend/backend.model';
+
 /**
  * A class about a data type.
  */
@@ -22,6 +24,8 @@ export abstract class DataType {
      * @return the smallest value.
      */
     abstract getMax(): number;
+
+    abstract no_data(value: number): NoDataDict;
 }
 
 class Byte extends DataType {
@@ -39,6 +43,12 @@ class Byte extends DataType {
 
     getMax(): number {
         return 255;
+    }
+
+    no_data(value: number): NoDataDict {
+        return {
+            U8: value,
+        };
     }
 }
 
@@ -58,6 +68,12 @@ class Int16 extends DataType {
     getMax(): number {
         return 32767;
     }
+
+    no_data(value: number): NoDataDict {
+        return {
+            I16: value,
+        };
+    }
 }
 
 class UInt16 extends DataType {
@@ -75,6 +91,12 @@ class UInt16 extends DataType {
 
     getMax(): number {
         return 65535;
+    }
+
+    no_data(value: number): NoDataDict {
+        return {
+            U16: value,
+        };
     }
 }
 
@@ -94,6 +116,12 @@ class Int32 extends DataType {
     getMax(): number {
         return 2147483647;
     }
+
+    no_data(value: number): NoDataDict {
+        return {
+            I32: value,
+        };
+    }
 }
 
 class UInt32 extends DataType {
@@ -111,6 +139,12 @@ class UInt32 extends DataType {
 
     getMax(): number {
         return 4294967295;
+    }
+
+    no_data(value: number): NoDataDict {
+        return {
+            U32: value,
+        };
     }
 }
 
@@ -130,6 +164,12 @@ class Float32 extends DataType {
     getMax(): number {
         return Number.NEGATIVE_INFINITY;
     }
+
+    no_data(value: number): NoDataDict {
+        return {
+            F32: value,
+        };
+    }
 }
 
 class Float64 extends DataType {
@@ -148,23 +188,11 @@ class Float64 extends DataType {
     getMax(): number {
         return Number.NEGATIVE_INFINITY;
     }
-}
 
-class Alphanumeric extends DataType {
-    toString(): string {
-        return 'String';
-    }
-
-    getCode(): string {
-        return 'Alphanumeric';
-    }
-
-    getMin(): number {
-        return undefined;
-    }
-
-    getMax(): number {
-        return undefined;
+    no_data(value: number): NoDataDict {
+        return {
+            F64: value,
+        };
     }
 }
 
@@ -179,18 +207,12 @@ export class DataTypeCollection {
     UInt32: DataType = new UInt32();
     Float32: DataType = new Float32();
     Float64: DataType = new Float64();
-    Alphanumeric: DataType = new Alphanumeric();
     // tslint:enable
 
     ALL_DATATYPES: Array<DataType>;
-    ALL_NUMERICS: Array<DataType>;
 
     protected constructor() {
         this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
-            this.Alphanumeric,
-        ];
-        this.ALL_NUMERICS = [
             this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
         ];
     }
@@ -211,8 +233,6 @@ export class DataTypeCollection {
                 return this.Float32;
             case this.Float64.getCode():
                 return this.Float64;
-            case this.Alphanumeric.getCode():
-                return this.Alphanumeric;
             default:
                 throw new Error(`Invalid Data Type: ${code}`);
         }

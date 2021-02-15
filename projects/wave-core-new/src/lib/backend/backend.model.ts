@@ -168,3 +168,7 @@ export type TimeStepGranularityDict = 'Millis' |
     'Days' |
     'Months' |
     'Years';
+
+export interface NoDataDict {
+    [key: string]: number;
+}
