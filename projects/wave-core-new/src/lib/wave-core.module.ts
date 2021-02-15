@@ -86,6 +86,9 @@ import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-la
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
+import {PlotListComponent} from './plots/plot-list/plot-list.component';
+import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
+import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -156,6 +159,8 @@ const WAVE_COMPONENTS = [
     OlVectorLayerComponent,
     OperatorListComponent,
     OperatorOutputNameComponent,
+    PlotDetailViewComponent,
+    PlotListComponent,
     PointIconComponent,
     PolygonIconComponent,
     RasterIconComponent,
@@ -167,6 +172,7 @@ const WAVE_COMPONENTS = [
     SidenavSearchComponent,
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
+    StatisticsPlotComponent,
     StrokeDashSelectComponent,
     SymbologyEditorComponent,
     SymbologyRasterComponent,
