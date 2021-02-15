@@ -6,6 +6,7 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
+    DataSetDict,
     LayerDict,
     ProjectDict,
     ProjectFilterDict,
@@ -22,7 +23,6 @@ import {
     UUID,
     WorkflowDict
 } from './backend.model';
-import {DataSet} from '../datasets/dataset.model';
 
 @Injectable({
     providedIn: 'root'
@@ -200,13 +200,13 @@ export class BackendService {
     }
 
     // TODO: turn into paginated data source
-    getDataSets(sessionId: UUID): Observable<Array<DataSet>> {
+    getDataSets(sessionId: UUID): Observable<Array<DataSetDict>> {
         const params = new NullDiscardingHttpParams();
         params.set('order', 'NameAsc');
         params.set('offset', '0');
         params.set('limit', '20');
 
-        return this.http.get<Array<DataSet>>(this.config.API_URL + '/datasets', {
+        return this.http.get<Array<DataSetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });

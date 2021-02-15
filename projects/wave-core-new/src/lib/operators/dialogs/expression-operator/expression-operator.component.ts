@@ -4,7 +4,7 @@ import {Observable, Subscription, zip} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
-import {DataType, DataTypes} from '../../datatype.model';
+import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 // import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {RasterLayer} from '../../../layers/layer.model';
@@ -29,7 +29,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
     form: FormGroup;
 
-    outputDataTypes$: Observable<Array<[DataType, string]>>;
+    outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
     // TODO: reincorporate unit
     // outputUnits$: Observable<Array<Unit>>;
     // outputUnitIsCustom$: Observable<boolean>;
@@ -103,7 +103,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer>) => {
-                const outputDataTypes = DataTypes.ALL_NUMERICS.map((dataType: DataType) => [dataType, '']) as Array<[DataType, string]>;
+                const outputDataTypes = RasterDataTypes.ALL_NUMERICS.map((dataType: RasterDataType) => [dataType, '']) as Array<[RasterDataType, string]>;
 
                 // const rasterDataTypes = rasterLayers.map(layer =>
                 //     layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined);
@@ -167,7 +167,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      */
     add() {
         const name: string = this.form.controls['name'].value;
-        const dataType: DataType = this.form.controls['dataType'].value;
+        const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers = this.form.controls['rasterLayers'].value;
         // TODO: incoroprate unit related info

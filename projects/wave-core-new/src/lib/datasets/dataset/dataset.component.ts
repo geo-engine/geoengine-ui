@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {DataSet, getDataSetType} from '../dataset.model';
+import {DataSet} from '../dataset.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {MappingRasterSymbology, PointSymbology} from '../../layers/symbology/symbology.model';
 import {Unit} from '../../operators/unit.model';
@@ -24,19 +24,11 @@ export class DataSetComponent implements OnInit {
     }
 
     add() {
-        const workflow = {
-            type: getDataSetType(this.dataset),
-            operator: {
-                type: this.dataset.source_operator,
-                params: {
-                    data_set: this.dataset.id,
-                },
-            }
-        };
+        const workflow = this.dataset.createSourceWorkflow();
 
         this.projectService.registerWorkflow(workflow).pipe(
             mergeMap(workflowId => {
-                if (getDataSetType(this.dataset) === 'Raster') {
+                if (this.dataset.result_descriptor.getTypeString() === 'Raster') {
                     return this.projectService.addLayer(new RasterLayer({
                         workflowId,
                         name: this.dataset.name,
