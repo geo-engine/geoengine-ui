@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {MappingRasterSymbology, ProjectService, RasterLayer, Unit, VectorLayer, PointSymbology} from 'wave-core';
+import {MappingRasterSymbology, ProjectService, RasterLayer, Unit, VectorLayer, PointSymbology, RandomColorService} from 'wave-core';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -10,7 +10,8 @@ import {MappingRasterSymbology, ProjectService, RasterLayer, Unit, VectorLayer, 
 })
 export class MockLayersComponent implements OnInit {
 
-    constructor(private projectService: ProjectService) {
+    constructor(private projectService: ProjectService,
+                private randomColorService: RandomColorService) {
     }
 
     ngOnInit(): void {
@@ -77,7 +78,7 @@ export class MockLayersComponent implements OnInit {
                     workflowId,
                     name: 'Two cities and (0, 0)',
                     symbology: PointSymbology.createSymbology({
-                        fillRGBA: [255, 0, 0], // red
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
                         radius: 10,
                         clustered: false,
                     }),

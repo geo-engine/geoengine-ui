@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {map, tap, first} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -27,17 +27,17 @@ import {
     NotificationService,
     Config,
     ProjectService,
-    SidenavConfig,
     NavigationButton,
     NavigationComponent,
     ResultTypes,
     MapService,
     MapContainerComponent,
-    RasterLayer,
     WorkspaceSettingsComponent,
     OperatorListComponent,
     OperatorListButtonGroups,
     TimeConfigComponent,
+    PlotListComponent,
+    SidenavConfig
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -74,7 +74,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     constructor(@Inject(Config) readonly config: AppConfig,
-                // readonly layerService: LayerService,
                 readonly layoutService: LayoutService,
                 readonly projectService: ProjectService,
                 readonly vcRef: ViewContainerRef, // reference used by color picker
@@ -132,8 +131,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.rightSidenav.close();
             }
         });
-        // this.projectService.getNewPlotStream()
-        //     .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
+        this.projectService.getNewPlotStream()
+            .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
         // this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {
@@ -165,11 +164,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 svgIcon: 'cogs',
                 tooltip: 'Operators',
             },
-            // {
-            //     sidenavConfig: {component: PlotListComponent},
-            //     icon: 'equalizer',
-            //     tooltip: 'Plots',
-            // },
+            {
+                sidenavConfig: {component: PlotListComponent},
+                icon: 'equalizer',
+                tooltip: 'Plots',
+            },
             {
                 sidenavConfig: {component: TimeConfigComponent},
                 icon: 'access_time',
