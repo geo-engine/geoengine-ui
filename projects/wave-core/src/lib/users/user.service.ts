@@ -436,7 +436,7 @@ export class UserService {
                                         globalDatasetMinVal = this.compareStartTime(channelElement.time_start, globalDatasetMinVal);
                                     }
                                     if (channelElement.time_end) {
-                                        globalDatasetMaxVal = this.compareStartTime(channelElement.time_end, globalDatasetMaxVal);
+                                        globalDatasetMaxVal = this.compareEndTime(channelElement.time_end, globalDatasetMaxVal);
                                     }
                                 });
                                 sourceVectorLayer.forEach((layerElement) => {
