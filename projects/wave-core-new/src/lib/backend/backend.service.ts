@@ -6,7 +6,9 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
-    LayerDict, PlotDict,
+    DataSetDict,
+    PlotDict,
+    LayerDict,
     ProjectDict,
     ProjectFilterDict,
     ProjectListingDict,
@@ -219,6 +221,19 @@ export class BackendService {
     private static authorizationHeader(sessionId: UUID): HttpHeaders {
         return new HttpHeaders()
             .set('Authorization', `Bearer ${sessionId}`);
+    }
+
+    // TODO: turn into paginated data source
+    getDataSets(sessionId: UUID): Observable<Array<DataSetDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', 'NameAsc');
+        params.set('offset', '0');
+        params.set('limit', '20');
+
+        return this.http.get<Array<DataSetDict>>(this.config.API_URL + '/datasets', {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
     }
 }
 

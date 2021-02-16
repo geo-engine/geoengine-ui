@@ -1,9 +1,9 @@
 import {NoDataDict} from '../backend/backend.model';
 
 /**
- * A class about a data type.
+ * A class about a raster data type.
  */
-export abstract class DataType {
+export abstract class RasterDataType {
     /**
      * Create a human readable output of the data type.
      * @returns The name.
@@ -11,7 +11,7 @@ export abstract class DataType {
     abstract toString(): string;
 
     /**
-     * @return The name of the projection.
+     * @return The name of the data type.
      */
     abstract getCode(): string;
 
@@ -28,7 +28,7 @@ export abstract class DataType {
     abstract noData(value: number): NoDataDict;
 }
 
-class Byte extends DataType {
+class Byte extends RasterDataType {
     toString(): string {
         return 'Byte';
     }
@@ -52,7 +52,7 @@ class Byte extends DataType {
     }
 }
 
-class Int16 extends DataType {
+class Int16 extends RasterDataType {
     toString(): string {
         return 'Int 16';
     }
@@ -76,7 +76,7 @@ class Int16 extends DataType {
     }
 }
 
-class UInt16 extends DataType {
+class UInt16 extends RasterDataType {
     toString(): string {
         return 'Unsigned Int 16';
     }
@@ -100,7 +100,7 @@ class UInt16 extends DataType {
     }
 }
 
-class Int32 extends DataType {
+class Int32 extends RasterDataType {
     toString(): string {
         return 'Int 32';
     }
@@ -124,7 +124,7 @@ class Int32 extends DataType {
     }
 }
 
-class UInt32 extends DataType {
+class UInt32 extends RasterDataType {
     toString(): string {
         return 'Unsigned Int 32';
     }
@@ -148,7 +148,7 @@ class UInt32 extends DataType {
     }
 }
 
-class Float32 extends DataType {
+class Float32 extends RasterDataType {
     toString(): string {
         return 'Float 32';
     }
@@ -172,7 +172,7 @@ class Float32 extends DataType {
     }
 }
 
-class Float64 extends DataType {
+class Float64 extends RasterDataType {
     toString(): string {
         return 'Float 64';
     }
@@ -196,20 +196,20 @@ class Float64 extends DataType {
     }
 }
 
-export class DataTypeCollection {
-    static readonly INSTANCE = new DataTypeCollection();
+export class RasterDataTypeCollection {
+    static readonly INSTANCE = new RasterDataTypeCollection();
 
     // tslint:disable:variable-name
-    Byte: DataType = new Byte();
-    Int16: DataType = new Int16();
-    UInt16: DataType = new UInt16();
-    Int32: DataType = new Int32();
-    UInt32: DataType = new UInt32();
-    Float32: DataType = new Float32();
-    Float64: DataType = new Float64();
+    Byte: RasterDataType = new Byte();
+    Int16: RasterDataType = new Int16();
+    UInt16: RasterDataType = new UInt16();
+    Int32: RasterDataType = new Int32();
+    UInt32: RasterDataType = new UInt32();
+    Float32: RasterDataType = new Float32();
+    Float64: RasterDataType = new Float64();
     // tslint:enable
 
-    ALL_DATATYPES: Array<DataType>;
+    ALL_DATATYPES: Array<RasterDataType>;
 
     protected constructor() {
         this.ALL_DATATYPES = [
@@ -239,4 +239,69 @@ export class DataTypeCollection {
     }
 }
 
-export const DataTypes = DataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+export const RasterDataTypes = RasterDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+
+export abstract class VectorDataType {
+    /**
+     * Create a human readable output of the data type.
+     * @returns The name.
+     */
+    toString(): string {
+        return this.getCode();
+    };
+
+    /**
+     * @return The name of the data type.
+     */
+    abstract getCode(): string;
+}
+
+class Data extends VectorDataType {
+    getCode(): string {
+        return 'Data';
+    }
+}
+
+class MultiPoint extends VectorDataType {
+    getCode(): string {
+        return 'MultiPoint';
+    }
+}
+
+class MultiLineString extends VectorDataType {
+    getCode(): string {
+        return 'MultiLineString';
+    }
+}
+
+class MultiPolygon extends VectorDataType {
+    getCode(): string {
+        return 'MultiPoint';
+    }
+}
+
+export class VectorDataTypeCollection {
+    static readonly INSTANCE = new VectorDataTypeCollection();
+
+    // tslint:disable:variable-name
+    Data: VectorDataType = new Data();
+    MultiPoint: VectorDataType = new MultiPoint();
+    MultiLineString: VectorDataType = new MultiLineString();
+    MultiPolygon: VectorDataType = new MultiPolygon();
+
+    fromCode(code: string) {
+        switch (code) {
+            case this.Data.getCode():
+                return this.Data;
+            case this.MultiPoint.getCode():
+                return this.MultiPoint;
+            case this.MultiLineString.getCode():
+                return this.MultiLineString;
+            case this.MultiPolygon.getCode():
+            default:
+                throw new Error(`Invalid Data Type: ${code}`);
+        }
+    }
+}
+
+export const VectorDataTypes = VectorDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name

@@ -86,6 +86,9 @@ import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-la
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
+import {AddDataComponent} from './datasets/add-data/add-data.component';
+import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
+import {DataSetComponent} from './datasets/dataset/dataset.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
@@ -135,10 +138,13 @@ const WAVE_PIPES = [
 ];
 
 const WAVE_COMPONENTS = [
+    AddDataComponent,
     ChangeSpatialReferenceComponent,
     ColorBreakpointInputComponent,
     ColorizerEditorComponent,
     ColormapColorizerComponent,
+    DatasetListComponent,
+    DataSetComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
