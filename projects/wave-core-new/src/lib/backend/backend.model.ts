@@ -142,7 +142,7 @@ export interface RegisterWorkflowResultDict {
 
 export interface WorkflowDict {
     type: 'Vector' | 'Raster' | 'Plot';
-    operator: OperatorDict;
+    operator: OperatorDict | SourceOperatorDict;
 }
 
 export interface OperatorDict {
@@ -154,6 +154,13 @@ type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTy
 
 interface Params {
     [key: string]: ParamTypes;
+}
+
+export interface SourceOperatorDict {
+    type: string;
+    params: {
+        data_set: InternalDataSetIdDict; // TODO: support all Id types
+    };
 }
 
 export interface TimeStepDict {
@@ -168,3 +175,27 @@ export type TimeStepGranularityDict = 'Millis' |
     'Days' |
     'Months' |
     'Years';
+
+export interface DataSetDict {
+    id: InternalDataSetIdDict; // TODO: support all Id types
+    name: string;
+    description: string;
+    result_descriptor: ResultDescriptorDict;
+    source_operator: string;
+}
+
+export interface InternalDataSetIdDict {
+    Internal: UUID;
+}
+
+export interface ResultDescriptorDict {
+    Vector?: {
+        data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+        spatial_reference: string;
+        columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
+    };
+    Raster?: {
+        data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+        spatial_reference: string;
+    };
+}

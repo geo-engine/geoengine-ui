@@ -48,14 +48,13 @@
 
         <div class="layer-list-box"
              *ngIf="(projectService.getLayerStream() | async)?.length === 0">
-            <!-- TODO: re-implement -->
-            <!--            <button mat-button class="no-layer"-->
-            <!--                    (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"-->
-            <!--                    matTooltip="Add New Data" matTooltipPosition="after"-->
-            <!--                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP">-->
-            <!--                <mat-icon>add</mat-icon>-->
-            <!--                add a first layer-->
-            <!--            </button>-->
+            <button mat-button class="no-layer"
+                    (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"
+                    matTooltip="Add New Data" matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP">
+                <mat-icon>add</mat-icon>
+                add a first layer
+            </button>
         </div>
 
         <div class="layer-list-box" cdkDrag *ngFor='let layer of layerList' cdkDragLockAxis="y">

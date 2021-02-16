@@ -17,6 +17,8 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
+    AddDataComponent,
+    AddDataListButton,
     Layer,
     SidenavContainerComponent,
     LayoutService,
@@ -34,7 +36,8 @@ import {
     OperatorListComponent,
     OperatorListButtonGroups,
     TimeConfigComponent,
-    PlotListComponent
+    PlotListComponent,
+    SidenavConfig
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -62,7 +65,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerDetailViewVisible$: Observable<boolean>;
 
     readonly navigationButtons = this.setupNavigation();
-    // readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
+    readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -151,15 +154,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
-                sidenavConfig: {component: MockLayersComponent},
+                sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
-                tooltip: 'Mock Data',
+                tooltip: 'Add Data',
             },
-            // {
-            //     sidenavConfig: AppComponent.setupAddDataConfig(),
-            //     icon: 'add',
-            //     tooltip: 'Add Data',
-            // },
             {
                 sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
                 icon: '',
@@ -189,24 +187,30 @@ export class AppComponent implements OnInit, AfterViewInit {
         ];
     }
 
-    // private static setupAddDataConfig(): SidenavConfig {
-    //     return {component: SourceOperatorListComponent, config: {buttons: AppComponent.createSourceOperatorListButtons()}};
-    // }
+    private static setupAddDataConfig(): SidenavConfig {
+        return {component: AddDataComponent, config: {buttons: AppComponent.createAddDataListButtons()}};
+    }
 
-    // private static createSourceOperatorListButtons(): Array<SourceOperatorListButton> {
-    //     return [
-    //         SourceOperatorListComponent.createDataRepositoryButton(),
-    //         SourceOperatorListComponent.createDrawFeaturesButton(),
-    //         ...SourceOperatorListComponent.createCustomFeaturesButtons(),
-    //         {
-    //             name: 'Species Occurrences',
-    //             description: 'Query data from GBIF',
-    //             iconSrc: GFBioSourceType.ICON_URL,
-    //             sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
-    //         },
-    //         SourceOperatorListComponent.createCountryPolygonsButton(),
-    //     ];
-    // }
+    private static createAddDataListButtons(): Array<AddDataListButton> {
+        return [
+            AddDataComponent.createDataSetListButton(),
+            {
+                name: 'Mock data',
+                description: 'Mock data sets',
+                iconSrc: AddDataComponent.createIconDataUrl('mock'),
+                sidenavConfig: {component: MockLayersComponent, keepParent: true},
+            }
+            // SourceOperatorListComponent.createDrawFeaturesButton(),
+            // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
+            // {
+            //     name: 'Species Occurrences',
+            //     description: 'Query data from GBIF',
+            //     iconSrc: GFBioSourceType.ICON_URL,
+            //     sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
+            // },
+            // SourceOperatorListComponent.createCountryPolygonsButton(),
+        ];
+    }
 
     private static createOperatorListButtons(): OperatorListButtonGroups {
         return [

@@ -1,7 +1,7 @@
 import {OperatorType, OperatorTypeDict} from '../operator-type.model';
 
 import {Unit, UnitDict} from '../unit.model';
-import {DataType, DataTypes} from '../datatype.model';
+import {RasterDataType, RasterDataTypes} from '../datatype.model';
 
 /**
  * The expression specifies calculations between the rasters.
@@ -9,7 +9,7 @@ import {DataType, DataTypes} from '../datatype.model';
  */
 interface ExpressionTypeConfig {
     expression: string;
-    datatype: DataType;
+    datatype: RasterDataType;
     unit: Unit;
 }
 
@@ -40,7 +40,7 @@ export class ExpressionType extends OperatorType {
     }
 
     private expression: string;
-    private datatype: DataType;
+    private datatype: RasterDataType;
     private unit: Unit;
 
     constructor(config: ExpressionTypeConfig) {
@@ -53,7 +53,7 @@ export class ExpressionType extends OperatorType {
     static fromDict(dict: ExpressionTypeDict): ExpressionType {
         return new ExpressionType({
             expression: dict.expression,
-            datatype: DataTypes.fromCode(dict.datatype),
+            datatype: RasterDataTypes.fromCode(dict.datatype),
             unit: Unit.fromDict(dict.unit),
         });
     }
