@@ -27,7 +27,6 @@ import {
 import {NotificationService} from '../notification.service';
 import {ColorizerData} from '../colors/colorizer-data.model';
 import {TimePoint} from '../time/time.model';
-import {element} from 'protractor';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
