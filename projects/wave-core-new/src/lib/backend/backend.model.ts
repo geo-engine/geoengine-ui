@@ -199,3 +199,7 @@ export interface ResultDescriptorDict {
         spatial_reference: string;
     };
 }
+
+export interface NoDataDict {
+    [key: string]: number;
+}

@@ -1,3 +1,5 @@
+import {NoDataDict} from '../backend/backend.model';
+
 /**
  * A class about a raster data type.
  */
@@ -22,6 +24,8 @@ export abstract class RasterDataType {
      * @return the smallest value.
      */
     abstract getMax(): number;
+
+    abstract noData(value: number): NoDataDict;
 }
 
 class Byte extends RasterDataType {
@@ -39,6 +43,12 @@ class Byte extends RasterDataType {
 
     getMax(): number {
         return 255;
+    }
+
+    noData(value: number): NoDataDict {
+        return {
+            U8: value,
+        };
     }
 }
 
@@ -58,6 +68,12 @@ class Int16 extends RasterDataType {
     getMax(): number {
         return 32767;
     }
+
+    noData(value: number): NoDataDict {
+        return {
+            I16: value,
+        };
+    }
 }
 
 class UInt16 extends RasterDataType {
@@ -75,6 +91,12 @@ class UInt16 extends RasterDataType {
 
     getMax(): number {
         return 65535;
+    }
+
+    noData(value: number): NoDataDict {
+        return {
+            U16: value,
+        };
     }
 }
 
@@ -94,6 +116,12 @@ class Int32 extends RasterDataType {
     getMax(): number {
         return 2147483647;
     }
+
+    noData(value: number): NoDataDict {
+        return {
+            I32: value,
+        };
+    }
 }
 
 class UInt32 extends RasterDataType {
@@ -111,6 +139,12 @@ class UInt32 extends RasterDataType {
 
     getMax(): number {
         return 4294967295;
+    }
+
+    noData(value: number): NoDataDict {
+        return {
+            U32: value,
+        };
     }
 }
 
@@ -130,6 +164,12 @@ class Float32 extends RasterDataType {
     getMax(): number {
         return Number.NEGATIVE_INFINITY;
     }
+
+    noData(value: number): NoDataDict {
+        return {
+            F32: value,
+        };
+    }
 }
 
 class Float64 extends RasterDataType {
@@ -148,23 +188,11 @@ class Float64 extends RasterDataType {
     getMax(): number {
         return Number.NEGATIVE_INFINITY;
     }
-}
 
-class Alphanumeric extends RasterDataType {
-    toString(): string {
-        return 'String';
-    }
-
-    getCode(): string {
-        return 'Alphanumeric';
-    }
-
-    getMin(): number {
-        return undefined;
-    }
-
-    getMax(): number {
-        return undefined;
+    noData(value: number): NoDataDict {
+        return {
+            F64: value,
+        };
     }
 }
 
@@ -179,18 +207,12 @@ export class RasterDataTypeCollection {
     UInt32: RasterDataType = new UInt32();
     Float32: RasterDataType = new Float32();
     Float64: RasterDataType = new Float64();
-    Alphanumeric: RasterDataType = new Alphanumeric();
     // tslint:enable
 
     ALL_DATATYPES: Array<RasterDataType>;
-    ALL_NUMERICS: Array<RasterDataType>;
 
     protected constructor() {
         this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
-            this.Alphanumeric,
-        ];
-        this.ALL_NUMERICS = [
             this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
         ];
     }
@@ -211,8 +233,6 @@ export class RasterDataTypeCollection {
                 return this.Float32;
             case this.Float64.getCode():
                 return this.Float64;
-            case this.Alphanumeric.getCode():
-                return this.Alphanumeric;
             default:
                 throw new Error(`Invalid Data Type: ${code}`);
         }

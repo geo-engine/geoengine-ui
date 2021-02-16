@@ -103,7 +103,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer>) => {
-                const outputDataTypes = RasterDataTypes.ALL_NUMERICS.map((dataType: RasterDataType) => [dataType, '']) as Array<[RasterDataType, string]>;
+                const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as
+                    Array<[RasterDataType, string]>;
 
                 // const rasterDataTypes = rasterLayers.map(layer =>
                 //     layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined);
@@ -211,9 +212,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     params: {
                         expression,
                         output_type: dataType.getCode(),
-                        output_no_data_value: {
-                            U8: 42 // TODO: make this configurable once units exist again
-                        }
+                        output_no_data_value: dataType.noData(dataType.getMax()),  // TODO: make this configurable once units exist again
                     },
                     raster_sources: [
                         a.operator,
