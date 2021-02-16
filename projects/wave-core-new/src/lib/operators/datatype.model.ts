@@ -25,7 +25,7 @@ export abstract class DataType {
      */
     abstract getMax(): number;
 
-    abstract no_data(value: number): NoDataDict;
+    abstract noData(value: number): NoDataDict;
 }
 
 class Byte extends DataType {
@@ -45,7 +45,7 @@ class Byte extends DataType {
         return 255;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             U8: value,
         };
@@ -69,7 +69,7 @@ class Int16 extends DataType {
         return 32767;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             I16: value,
         };
@@ -93,7 +93,7 @@ class UInt16 extends DataType {
         return 65535;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             U16: value,
         };
@@ -117,7 +117,7 @@ class Int32 extends DataType {
         return 2147483647;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             I32: value,
         };
@@ -141,7 +141,7 @@ class UInt32 extends DataType {
         return 4294967295;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             U32: value,
         };
@@ -165,7 +165,7 @@ class Float32 extends DataType {
         return Number.NEGATIVE_INFINITY;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             F32: value,
         };
@@ -189,7 +189,7 @@ class Float64 extends DataType {
         return Number.NEGATIVE_INFINITY;
     }
 
-    no_data(value: number): NoDataDict {
+    noData(value: number): NoDataDict {
         return {
             F64: value,
         };

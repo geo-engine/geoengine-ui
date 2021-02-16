@@ -211,7 +211,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     params: {
                         expression,
                         output_type: dataType.getCode(),
-                        output_no_data_value: dataType.no_data(42),  // TODO: make this configurable once units exist again
+                        output_no_data_value: dataType.noData(dataType.getMax()),  // TODO: make this configurable once units exist again
                     },
                     raster_sources: [
                         a.operator,
