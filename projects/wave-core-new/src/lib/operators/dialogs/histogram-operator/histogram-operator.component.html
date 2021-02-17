@@ -1,0 +1,82 @@
+<wave-sidenav-header>Histogram</wave-sidenav-header>
+
+<wave-dialog-help>
+    <p>
+        This operator generates a <i>Histogram</i> based on a raster or vector data set (<i>Input</i>).
+        Select the <i>Range Type</i>, which can be the pixel values of a raster layer or the attribute values of vector data.
+        The histogram shows the frequency of values (y-axis) in a certain range on the x-axis.
+        This range is defined by the number of buckets, i.e., if you choose a bucket number of 20, the
+        value range between min/max values is divided into 20 sections, each covering a value range of equal size.
+        This is done automatically if you tick the box <i>Choose number of buckets automatically</i>.
+        Edit the <i>Output Name</i> of the plot, if desired, and click on <i>Create</i> to generate the plot.
+    </p>
+    <p>
+        Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.
+    </p>
+</wave-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add()" fxLayout="column">
+    <div fxFlex>
+
+        <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
+        <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
+        <mat-form-field *ngIf="isVectorLayer$ | async">
+            <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-option *ngFor="let attribute of (attributes$ | async)" [value]="attribute">{{attribute}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-select placeholder="Range Type" formControlName="rangeType">
+                <mat-option [value]="'custom'">Custom</mat-option>
+                <mat-option [value]="'unit'">Unit</mat-option>
+                <mat-option [value]="'data'">Data</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
+            <mat-form-field fxFlex>
+                <input matInput type="number" placeholder="Min" formControlName="min">
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+                    Please specify the value.
+                </mat-hint>
+            </mat-form-field>
+            <div fxFlex="1rem"></div>
+            <mat-form-field fxFlex>
+                <input matInput type="number" placeholder="Max" formControlName="max">
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
+                    The maximum must be greater or equal to the minimum.
+                </mat-hint>
+                <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter">
+                    Please specify the value.
+                </mat-hint>
+            </mat-form-field>
+        </div>
+        <mat-checkbox type="checkbox" formControlName="autoBuckets">
+            Choose number of buckets automatically
+        </mat-checkbox>
+        <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
+            <mat-form-field fxFlex>
+                <input matInput
+                       type="number"
+                       placeholder="Number of Buckets"
+                       formControlName="numberOfBuckets"
+                >
+            </mat-form-field>
+        </div>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
+        >
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
+            Create
+        </button>
+    </div>
+</form>

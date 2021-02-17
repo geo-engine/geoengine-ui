@@ -1,6 +1,6 @@
 export type UUID = string;
 export type TimestampString = string;
-export type STRefString = string;
+export type SrsString = string;
 
 export interface RegistrationDict {
     id: UUID;
@@ -40,7 +40,7 @@ export interface TimeIntervalDict {
 }
 
 export interface STRectangleDict {
-    spatial_reference: STRefString;
+    spatial_reference: SrsString;
     bounding_box: BBoxDict;
     time_interval: TimeIntervalDict;
 }
@@ -147,12 +147,14 @@ export interface WorkflowDict {
 
 export interface OperatorDict {
     type: string;
-    params: Params;
+    params: OperatorParams;
+    vector_sources?: Array<OperatorDict | SourceOperatorDict>;
+    raster_sources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
-type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTypes };
+type ParamTypes = string | number | boolean | Array<ParamTypes> | { [key: string]: ParamTypes };
 
-interface Params {
+export interface OperatorParams {
     [key: string]: ParamTypes;
 }
 
@@ -191,12 +193,12 @@ export interface InternalDataSetIdDict {
 export interface ResultDescriptorDict {
     Vector?: {
         data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-        spatial_reference: string;
+        spatial_reference: SrsString;
         columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
     };
     Raster?: {
         data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
-        spatial_reference: string;
+        spatial_reference: SrsString;
     };
 }
 
@@ -208,4 +210,35 @@ export interface PlotDataDict {
     plot_name: string;
     plot_type: 'Json' | 'Chart' | 'Png';
     data: any;
+}
+
+export interface WorkflowMetadataDict {
+    spatial_reference?: SrsString;
+}
+
+export interface RasterMetadataDict extends WorkflowMetadataDict {
+    data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    measurement: 'unitless' | MeasurementDict;
+}
+
+export interface VectorMetadataDict extends WorkflowMetadataDict {
+    data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+    columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
+}
+
+export interface PlotMetadataDict extends WorkflowMetadataDict {
+    spatial_reference: undefined;
+}
+
+export interface MeasurementDict {
+    continuous?: {
+        measurement: string,
+        unit?: string,
+    };
+    classification?: {
+        measurement: string,
+        classes: {
+            [key: number]: string,
+        },
+    };
 }

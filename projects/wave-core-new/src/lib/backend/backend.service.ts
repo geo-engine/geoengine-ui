@@ -18,13 +18,16 @@ import {
     RegistrationDict,
     SessionDict,
     STRectangleDict,
-    STRefString,
+    SrsString,
     TimeIntervalDict,
     TimeStepDict,
     UUID,
-    WorkflowDict, PlotDataDict
+    WorkflowDict,
+    PlotDataDict,
+    RasterMetadataDict,
+    PlotMetadataDict,
+    VectorMetadataDict,
 } from './backend.model';
-import {Params} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -138,7 +141,7 @@ export class BackendService {
         });
     }
 
-    registerWorkflow(workflow: { [key: string]: any }, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
+    registerWorkflow(workflow: WorkflowDict, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
         return this.http.post<RegisterWorkflowResultDict>(this.config.API_URL + '/workflow', workflow, {
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -146,6 +149,12 @@ export class BackendService {
 
     getWorkflow(workflowId: UUID, sessionId: UUID): Observable<WorkflowDict> {
         return this.http.get<WorkflowDict>(this.config.API_URL + `/workflow/${workflowId}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<RasterMetadataDict | VectorMetadataDict | PlotMetadataDict> {
+        return this.http.get<RasterMetadataDict | VectorMetadataDict | PlotMetadataDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -162,7 +171,7 @@ export class BackendService {
                       typeNames: string,
                       bbox: BBoxDict,
                       time?: TimeIntervalDict,
-                      srsName?: STRefString,
+                      srsName?: SrsString,
                       namespaces?: string,
                       count?: number,
                       sortBy?: string

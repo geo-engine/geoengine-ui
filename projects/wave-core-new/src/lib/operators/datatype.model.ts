@@ -305,3 +305,69 @@ export class VectorDataTypeCollection {
 }
 
 export const VectorDataTypes = VectorDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+
+export abstract class VectorColumnDataType {
+    /**
+     * Create a human readable output of the data type.
+     * @returns The name.
+     */
+    toString(): string {
+        return this.getCode();
+    }
+
+    /**
+     * @return The name of the data type.
+     */
+    abstract getCode(): string;
+}
+
+class NumberColumn extends VectorColumnDataType {
+    getCode(): string {
+        return 'Number';
+    }
+}
+
+class DecimalColumn extends VectorColumnDataType {
+    getCode(): string {
+        return 'Decimal';
+    }
+}
+
+class TextColumn extends VectorColumnDataType {
+    getCode(): string {
+        return 'Text';
+    }
+}
+
+class CategoricalColumn extends VectorColumnDataType {
+    getCode(): string {
+        return 'Categorical';
+    }
+}
+
+export class VectorColumnDataTypeCollection {
+    static readonly INSTANCE = new VectorDataTypeCollection();
+
+    // tslint:disable:variable-name
+    readonly Number: VectorDataType = new NumberColumn();
+    readonly Decimal: VectorDataType = new DecimalColumn();
+    readonly Text: VectorDataType = new TextColumn();
+    readonly Categorical: VectorDataType = new CategoricalColumn();
+
+    fromCode(code: string) {
+        switch (code) {
+            case this.Number.getCode():
+                return this.Number;
+            case this.Decimal.getCode():
+                return this.Decimal;
+            case this.Text.getCode():
+                return this.Text;
+            case this.Categorical.getCode():
+                return this.Categorical;
+            default:
+                throw new Error(`Invalid Column Data Type: ${code}`);
+        }
+    }
+}
+
+export const VectorColumnDataTypes = VectorColumnDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name

@@ -37,6 +37,7 @@ import {ExpressionType} from '../../types/expression-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {OperatorType} from '../../operator-type.model';
 import {createIconDataUrl} from '../../../util/icons';
+import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -96,11 +97,14 @@ export class OperatorListComponent implements OnInit {
     ];
 
     static readonly DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
-        //     {
-        //         component: HistogramOperatorComponent,
-        //         type: HistogramType,
-        //         description: 'Create a histogram from vector or raster data',
-        //     },
+        {
+            component: HistogramOperatorComponent,
+            type: {
+                NAME: 'Histogram',
+                ICON_URL: createIconDataUrl('Histogram'),
+            },
+            description: 'Create a histogram from vector or raster data',
+        },
         //     {
         //         component: PieChartComponent,
         //         type: PieChartType,
