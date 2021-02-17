@@ -22,7 +22,7 @@ import {
     TimeIntervalDict,
     TimeStepDict,
     UUID,
-    WorkflowDict
+    WorkflowDict, PlotDataDict
 } from './backend.model';
 import {Params} from '@angular/router';
 
@@ -205,14 +205,14 @@ export class BackendService {
             spatial_resolution: [number, number],
         },
         sessionId: UUID,
-    ): Observable<Params | Uint8Array> {
+    ): Observable<PlotDataDict> {
         const params = new NullDiscardingHttpParams();
 
         params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.setMapped('spatial_resolution', request.spatial_resolution, resolution => resolution.join(','));
 
-        return this.http.get<Params | Uint8Array>(this.config.API_URL + `/plot/${workflowId}`, {
+        return this.http.get<PlotDataDict>(this.config.API_URL + `/plot/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });

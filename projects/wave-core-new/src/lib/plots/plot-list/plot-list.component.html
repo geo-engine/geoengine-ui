@@ -4,44 +4,8 @@
     <br>
     <button mat-button (click)="goToOperatorsTab()">⇢ go to operators tab to create a plot ⇢</button>
 </p>
-<mat-card *ngFor="let plot of (projectService.getPlotStream() | async); trackBy:idOfPlot">
-    <mat-card-header>
-        <!-- TODO: insert icon -->
-        <!--        <img mat-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()"> -->
-        <mat-card-title>{{plot.name}}</mat-card-title>
-        <!-- TODO: find subtitle -->
-        <!--        <mat-card-subtitle>{{plot.operator.operatorType.toString()}}</mat-card-subtitle> -->
-    </mat-card-header>
-    <mat-card-content *ngIf="isLoading(projectService.getPlotDataStatusStream(plot) | async)">
-        <mat-spinner></mat-spinner>
-    </mat-card-content>
-    <mat-card-content *ngIf="isOk(projectService.getPlotDataStatusStream(plot) | async)" [ngSwitch]="plot.plotType">
-        <ng-template ngSwitchCase="PNG">
-            <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)}}" alt="{{plot.name}}">
-        </ng-template>
-        <ng-template ngSwitchCase="JSON">
-            <pre>{{(projectService.getPlotDataStream(plot) | async) | json}}</pre>
-        </ng-template>
-        <ng-template ngSwitchDefault>
-            <pre>{{(projectService.getPlotDataStream(plot) | async)}}</pre>
-        </ng-template>
-    </mat-card-content>
-    <mat-card-actions *ngIf="isOk(projectService.getPlotDataStatusStream(plot) | async)" fxLayout="row">
-        <button mat-button (click)="showFullscreen(plot)">
-            <mat-icon>fullscreen</mat-icon>
-        </button>
-        <span fxFlex></span>
-        <button mat-button (click)="projectService.removePlot(plot)">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </mat-card-actions>
-    <mat-card-actions *ngIf="isError(projectService.getPlotDataStatusStream(plot) | async)" fxLayout="row">
-        <button mat-button (click)="projectService.reloadPlot(plot)" class="error">
-            <mat-icon>replay</mat-icon>
-        </button>
-        <span fxFlex></span>
-        <button mat-button (click)="projectService.removePlot(plot)">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </mat-card-actions>
-</mat-card>
+<wave-plot-list-entry *ngFor="let plot of (projectService.getPlotStream() | async); trackBy:idOfPlot"
+                      [plot]="plot"
+                      [plotData]="projectService.getPlotDataStream(plot) | async"
+                      [plotStatus]="projectService.getPlotDataStatusStream(plot) | async">
+</wave-plot-list-entry>

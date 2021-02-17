@@ -1,9 +1,9 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
+import {PlotDataDict} from '../../backend/backend.model';
 
 @Component({
     selector: 'wave-plot-detail-view',
@@ -22,16 +22,19 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
     // imagePlotData$ = new BehaviorSubject('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
     plotLoading$ = new BehaviorSubject(true);
-    plotData$ = new Observable<any>();
+    plotData: PlotDataDict;
+
+    private dataSubscription: Subscription;
 
     constructor(public projectService: ProjectService,
                 @Inject(MAT_DIALOG_DATA) public plot: Plot) {
     }
 
     ngOnInit() {
-        this.plotData$ = this.projectService.getPlotDataStream(this.plot).pipe(
-            tap(() => this.plotLoading$.next(false)),
-        );
+        this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe(plotData => {
+            this.plotLoading$.next(false);
+            this.plotData = plotData;
+        });
 
         // combineLatest([
         //     this.projectService.getPlotDataStream(this.plot),

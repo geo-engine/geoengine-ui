@@ -92,6 +92,7 @@ import {DataSetComponent} from './datasets/dataset/dataset.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
+import {PlotListEntryComponent} from './plots/plot-list-entry/plot-list-entry.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -167,6 +168,7 @@ const WAVE_COMPONENTS = [
     OperatorOutputNameComponent,
     PlotDetailViewComponent,
     PlotListComponent,
+    PlotListEntryComponent,
     PointIconComponent,
     PolygonIconComponent,
     RasterIconComponent,

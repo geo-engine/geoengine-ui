@@ -3,35 +3,6 @@
     padding: 1rem;
 }
 
-mat-card:not(:last-child) {
-    margin-bottom: 1rem;
-}
-
-img {
-    width: 100%;
-    height: auto;
-}
-
-img.mat-card-avatar {
-    height: 40px;
-    width: auto;
-    border-radius: 50%;
-}
-
-pre {
-    overflow: hidden;
-}
-
-mat-spinner {
-    width: 25%;
-    height: auto;
-    margin: 0 auto;
-}
-
-.error {
-    color: var(--wave-warn-color, red);
-}
-
 .no-plots {
     color: var(--wave-foreground-secondary-text-color, grey);
     margin-top: 50%;

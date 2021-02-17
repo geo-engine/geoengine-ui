@@ -203,3 +203,9 @@ export interface ResultDescriptorDict {
 export interface NoDataDict {
     [key: string]: number;
 }
+
+export interface PlotDataDict {
+    plot_name: string;
+    plot_type: 'Json' | 'Chart' | 'Png';
+    data: any;
+}

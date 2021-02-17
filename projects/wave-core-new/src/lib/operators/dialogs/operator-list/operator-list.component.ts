@@ -36,6 +36,7 @@ import {ExpressionType} from '../../types/expression-type.model';
 // import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {OperatorType} from '../../operator-type.model';
+import {createIconDataUrl} from '../../../util/icons';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -119,7 +120,7 @@ export class OperatorListComponent implements OnInit {
             component: StatisticsPlotComponent,
             type: {
                 NAME: 'Basic Statistics',
-                ICON_URL: OperatorType.createIconDataUrl('Basic Statistics'),
+                ICON_URL: createIconDataUrl('Basic Statistics'),
             },
             description: 'Get statistics for raster layer'
         },
