@@ -428,7 +428,24 @@ export class UserService {
                                         return UserService.parseVectorLayer(layer, source, sourceProvenance, index);
                                     }
                                 );
-
+                                let globalDatasetMinVal = new TimePoint (source.time_start);
+                                let globalDatasetMaxVal = new TimePoint (source.time_end);
+                                sourceChannels.forEach((channelElement) => {
+                                    if (channelElement.time_start) {
+                                        globalDatasetMinVal = this.compareStartTime(channelElement.time_start, globalDatasetMinVal);
+                                    }
+                                    if (channelElement.time_end) {
+                                        globalDatasetMaxVal = this.compareEndTime(channelElement.time_end, globalDatasetMaxVal);
+                                    }
+                                });
+                                sourceVectorLayer.forEach((layerElement) => {
+                                    if (layerElement.time_start) {
+                                        globalDatasetMinVal = this.compareStartTime(layerElement.time_start, globalDatasetMinVal);
+                                    }
+                                    if (layerElement.time_end) {
+                                        globalDatasetMaxVal = this.compareEndTime(layerElement.time_end, globalDatasetMaxVal);
+                                    }
+                                });
                                 sources.push({
                                     operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
                                     source: sourceId,
@@ -439,8 +456,8 @@ export class UserService {
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
-                                    time_start: !!source.time_start ? new TimePoint(source.time_start) : undefined ,
-                                    time_end: !!source.time_end ? new TimePoint(source.time_end) : undefined,
+                                    time_start: !!source.time_start ? globalDatasetMinVal : undefined ,
+                                    time_end: !!source.time_end ? globalDatasetMaxVal : undefined,
                                 });
                             }
                         }
@@ -454,7 +471,18 @@ export class UserService {
                 );
             }));
     }
+    protected compareStartTime(start: TimePoint, globalMin: TimePoint): TimePoint {
+        if (start.getStart() < globalMin.getStart()) {
+            return start;
+        } else { return globalMin; }
 
+    }
+    protected compareEndTime(end: TimePoint, globalMax: TimePoint): TimePoint {
+        if (end.getStart() > globalMax.getStart()) {
+            return end;
+        } else { return globalMax; }
+
+    }
     protected static parseSourceProvenance(source: MappingSourceDict) {
         return {
             uri: (source.provenance) ? source.provenance.uri : '',
@@ -480,8 +508,8 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
-            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : undefined ,
-            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : undefined ,
+            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : new TimePoint (source.time_start) ,
+            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : new TimePoint (source.time_end) ,
             coords,
             provenance,
         };
@@ -521,8 +549,8 @@ export class UserService {
             } as MappingTransform,
             coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
             provenance: channelProvenance,
-            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : undefined ,
-            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : undefined ,
+            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : new TimePoint (source.time_start) ,
+            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : new TimePoint (source.time_end),
         };
     }
 
