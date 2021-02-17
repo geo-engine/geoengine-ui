@@ -89,7 +89,10 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                 mergeMap((layer: Layer) => {
                     if (layer instanceof VectorLayer) {
                         return this.projectService.getLayerMetadata(layer).pipe(
-                            map((metadata: VectorLayerMetadata) => metadata.columns.keySeq().toList()),
+                            map((metadata: VectorLayerMetadata) => metadata.columns
+                                .filter(columnType => columnType.code === 'Number' || columnType.code === 'Decimal')
+                                .keySeq()
+                                .toList()),
                         );
                     } else {
                         return of([]);

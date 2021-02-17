@@ -7,9 +7,6 @@ export class Plot implements HasPlotId, ToDict<PlotDict> {
 
     readonly id: number;
 
-    // TODO: how to get this type?
-    readonly plotType: PlotType = 'JSON';
-
     readonly name: string;
     readonly workflowId: UUID;
 

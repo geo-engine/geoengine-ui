@@ -14,6 +14,9 @@
         <ng-template ngSwitchCase="Json">
             <pre>{{plotData?.data | json}}</pre>
         </ng-template>
+        <ng-template ngSwitchCase="Chart">
+            <wave-vega-viewer [chartData]="plotData?.data" [width]="width"></wave-vega-viewer>
+        </ng-template>
         <ng-template ngSwitchDefault>
             <pre>{{plotData?.data}}</pre>
         </ng-template>

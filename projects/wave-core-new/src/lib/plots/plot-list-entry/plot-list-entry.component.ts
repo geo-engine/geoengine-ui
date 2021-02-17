@@ -24,6 +24,9 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
     @Input()
     plotData: PlotDataDict;
 
+    @Input()
+    width: number;
+
     plotIcon: string;
 
     isLoading = true;

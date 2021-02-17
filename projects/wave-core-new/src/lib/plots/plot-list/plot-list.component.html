@@ -7,5 +7,6 @@
 <wave-plot-list-entry *ngFor="let plot of (projectService.getPlotStream() | async); trackBy:idOfPlot"
                       [plot]="plot"
                       [plotData]="projectService.getPlotDataStream(plot) | async"
-                      [plotStatus]="projectService.getPlotDataStatusStream(plot) | async">
+                      [plotStatus]="projectService.getPlotDataStatusStream(plot) | async"
+                      [width]="cardWidth$ | async">
 </wave-plot-list-entry>

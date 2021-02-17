@@ -8,3 +8,8 @@
     margin-top: 50%;
     text-align: center;
 }
+
+wave-plot-list-entry:not(:last-child) {
+    display: block;
+    margin-bottom: 1rem;
+}

@@ -1,9 +1,10 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
 import {PlotDataDict} from '../../backend/backend.model';
+import {LayoutService} from '../../layout.service';
 
 @Component({
     selector: 'wave-plot-detail-view',
@@ -11,12 +12,12 @@ import {PlotDataDict} from '../../backend/backend.model';
     styleUrls: ['./plot-detail-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlotDetailViewComponent implements OnInit, AfterViewInit {
+export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // TODO: implement strategy for PNGs
 
-    // maxWidth$ = new ReplaySubject<number>(1);
-    // maxHeight$ = new ReplaySubject<number>(1);
+    maxWidth$ = new ReplaySubject<number>(1);
+    maxHeight$ = new ReplaySubject<number>(1);
 
     // initially blank pixel
     // imagePlotData$ = new BehaviorSubject('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
@@ -69,10 +70,14 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        // setTimeout(() => {
-        //     this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
-        //     this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
-        // });
+        setTimeout(() => {
+            this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
+            this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
+        });
+    }
+
+    ngOnDestroy() {
+        this.dataSubscription.unsubscribe();
     }
 
 }
