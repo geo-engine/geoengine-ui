@@ -24,9 +24,9 @@ import {
     UUID,
     WorkflowDict,
     PlotDataDict,
-    RasterMetadataDict,
-    PlotMetadataDict,
-    VectorMetadataDict,
+    RasterResultDescriptorDict,
+    PlotResultDescriptorDict,
+    VectorResultDescriptorDict,
 } from './backend.model';
 
 @Injectable({
@@ -153,10 +153,14 @@ export class BackendService {
         });
     }
 
-    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<RasterMetadataDict | VectorMetadataDict | PlotMetadataDict> {
-        return this.http.get<RasterMetadataDict | VectorMetadataDict | PlotMetadataDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
+    getWorkflowMetadata(workflowId: UUID,
+                        sessionId: UUID): Observable<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict> {
+        return this.http.get<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict>(
+            this.config.API_URL + `/workflow/${workflowId}/metadata`,
+            {
+                headers: BackendService.authorizationHeader(sessionId),
+            },
+        );
     }
 
     setSessionProject(projectId: UUID, sessionId: UUID): Observable<void> {

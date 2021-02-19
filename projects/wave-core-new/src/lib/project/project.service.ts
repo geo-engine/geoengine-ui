@@ -24,12 +24,11 @@ import {BackendService} from '../backend/backend.service';
 import {
     LayerDict,
     PlotDict,
-    RasterMetadataDict,
+    RasterResultDescriptorDict,
     ToDict,
     UUID,
-    VectorMetadataDict,
+    VectorResultDescriptorDict,
     WorkflowDict,
-    WorkflowMetadataDict
 } from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
@@ -561,11 +560,11 @@ export class ProjectService {
     getLayerMetadata(layer: Layer): Observable<LayerMetadata> {
         return this.userService.getSessionTokenForRequest().pipe(
             mergeMap(sessionToken => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
-            map((metadata: RasterMetadataDict | VectorMetadataDict) => {
+            map((metadata: RasterResultDescriptorDict | VectorResultDescriptorDict) => {
                 if (layer instanceof VectorLayer) {
-                    return VectorLayerMetadata.fromDict(metadata as VectorMetadataDict);
+                    return VectorLayerMetadata.fromDict(metadata as VectorResultDescriptorDict);
                 } else {
-                    return RasterLayerMetadata.fromDict(metadata as RasterMetadataDict);
+                    return RasterLayerMetadata.fromDict(metadata as RasterResultDescriptorDict);
                 }
             }),
         );

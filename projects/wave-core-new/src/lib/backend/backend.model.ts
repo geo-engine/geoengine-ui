@@ -182,7 +182,7 @@ export interface DataSetDict {
     id: InternalDataSetIdDict; // TODO: support all Id types
     name: string;
     description: string;
-    result_descriptor: ResultDescriptorDict;
+    result_descriptor: DatasetResultDescriptorDict;
     source_operator: string;
 }
 
@@ -190,16 +190,9 @@ export interface InternalDataSetIdDict {
     Internal: UUID;
 }
 
-export interface ResultDescriptorDict {
-    Vector?: {
-        data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-        spatial_reference: SrsString;
-        columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
-    };
-    Raster?: {
-        data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
-        spatial_reference: SrsString;
-    };
+export interface DatasetResultDescriptorDict {
+    Vector?: VectorResultDescriptorDict;
+    Raster?: RasterResultDescriptorDict;
 }
 
 export interface NoDataDict {
@@ -207,26 +200,26 @@ export interface NoDataDict {
 }
 
 export interface PlotDataDict {
-    plot_name: string;
-    plot_type: 'Json' | 'Chart' | 'Png';
+    plot_type: string;
+    output_format: 'Json' | 'Chart' | 'Png';
     data: any;
 }
 
-export interface WorkflowMetadataDict {
+export interface ResultDescriptorDict {
     spatial_reference?: SrsString;
 }
 
-export interface RasterMetadataDict extends WorkflowMetadataDict {
+export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     measurement: 'unitless' | MeasurementDict;
 }
 
-export interface VectorMetadataDict extends WorkflowMetadataDict {
+export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
     columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
 }
 
-export interface PlotMetadataDict extends WorkflowMetadataDict {
+export interface PlotResultDescriptorDict extends ResultDescriptorDict {
     spatial_reference: undefined;
 }
 
