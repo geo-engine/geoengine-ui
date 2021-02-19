@@ -65,7 +65,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
                 renderer: 'svg',
                 config: {
                     autosize: {
-                        type: 'none',
+                        type: 'fit',
                         contains: 'padding',
                     }
                 },
