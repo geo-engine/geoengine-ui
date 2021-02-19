@@ -92,6 +92,7 @@ import {DataSetComponent} from './datasets/dataset/dataset.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
+import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -153,6 +154,7 @@ const WAVE_COMPONENTS = [
     ExpressionOperatorComponent,
     LayerListComponent,
     LegendComponent,
+    LineageGraphComponent,
     LineIconComponent,
     LoadProjectComponent,
     LoginComponent,

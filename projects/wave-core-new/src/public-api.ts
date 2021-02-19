@@ -21,8 +21,8 @@ export * from './lib/colors/color-breakpoint-component/color-breakpoint.componen
 export * from './lib/colors/colorizer-editor/colorizer-editor.component';
 export * from './lib/colors/colormap-colorizer/colormap-colorizer.component';
 export * from './lib/datasets/add-data/add-data.component';
-export * from './lib/datasets/dataset/dataset.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
+export * from './lib/datasets/dataset/dataset.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
@@ -57,6 +57,7 @@ export * from './lib/project/load-project/load-project.component';
 export * from './lib/project/new-project/new-project.component';
 export * from './lib/project/save-project-as/save-project-as.component';
 export * from './lib/project/workspace-settings/workspace-settings.component';
+export * from './lib/provenance/lineage-graph/lineage-graph.component';
 export * from './lib/sidenav/navigation/navigation.component';
 export * from './lib/sidenav/sidenav-container/sidenav-container.component';
 export * from './lib/sidenav/sidenav-header/sidenav-header.component';
