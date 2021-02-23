@@ -8,13 +8,13 @@
         <mat-spinner></mat-spinner>
     </mat-card-content>
     <mat-card-content *ngIf="isOk" [ngSwitch]="plotData?.output_format">
-        <ng-template ngSwitchCase="Png">
+        <ng-template ngSwitchCase="ImagePng">
             <img [src]="plotData?.data" [alt]="plot.name">
         </ng-template>
-        <ng-template ngSwitchCase="Json">
+        <ng-template ngSwitchCase="JsonPlain">
             <pre>{{plotData?.data | json}}</pre>
         </ng-template>
-        <ng-template ngSwitchCase="Chart">
+        <ng-template ngSwitchCase="JsonVega">
             <wave-vega-viewer [chartData]="plotData?.data" [width]="width"></wave-vega-viewer>
         </ng-template>
         <ng-template ngSwitchDefault>

@@ -201,7 +201,7 @@ export interface NoDataDict {
 
 export interface PlotDataDict {
     plot_type: string;
-    output_format: 'Json' | 'Chart' | 'Png';
+    output_format: 'JsonPlain' | 'JsonVega' | 'ImagePng';
     data: any;
 }
 

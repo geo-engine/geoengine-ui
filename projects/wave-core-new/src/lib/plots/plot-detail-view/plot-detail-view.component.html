@@ -1,13 +1,13 @@
 <wave-dialog-header>{{plot.name}}</wave-dialog-header>
 <mat-dialog-content [ngSwitch]="plotData?.output_format">
-    <ng-template ngSwitchCase="Png">
+    <ng-template ngSwitchCase="ImagePng">
         <img [src]="plotData?.data" [alt]="plot.name">
         <mat-progress-bar mode="indeterminate" *ngIf="plotLoading$ | async"></mat-progress-bar>
     </ng-template>
-    <ng-template ngSwitchCase="Json">
+    <ng-template ngSwitchCase="JsonPlain">
         <pre>{{plotData?.data | json}}</pre>
     </ng-template>
-    <ng-template ngSwitchCase="Chart">
+    <ng-template ngSwitchCase="JsonVega">
         <wave-vega-viewer [chartData]="plotData?.data" [width]="maxWidth$ | async" [height]="maxHeight$ | async"></wave-vega-viewer>
     </ng-template>
     <ng-template ngSwitchDefault>
