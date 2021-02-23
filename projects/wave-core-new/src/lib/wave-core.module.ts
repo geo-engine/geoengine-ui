@@ -96,6 +96,7 @@ import {PlotListEntryComponent} from './plots/plot-list-entry/plot-list-entry.co
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
+import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -159,6 +160,7 @@ const WAVE_COMPONENTS = [
     LayerListComponent,
     LayerSelectionComponent,
     LegendComponent,
+    LineageGraphComponent,
     LineIconComponent,
     LoadProjectComponent,
     LoginComponent,
