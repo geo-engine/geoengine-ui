@@ -63,13 +63,6 @@ $operator-border-height: 1px;
     overflow: hidden;
 }
 
-/* params area in node */
-:host .graph ::ng-deep .label .parameters code {
-    font-size: smaller;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 /* operator parameter content table */
 :host .graph ::ng-deep .label .parameters table {
     width: $general-width - (2 * $general-margin);

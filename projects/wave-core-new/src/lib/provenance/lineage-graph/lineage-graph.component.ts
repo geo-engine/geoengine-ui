@@ -149,15 +149,6 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         while (operatorQueue.length > 0) {
             const [operator_id, operator] = operatorQueue.pop();
 
-            const params: Array<string> = JSON.stringify(operator.params, null, '  ')
-                .split('\n')
-                .slice(1, -1);
-            for (let i = 0; i < params.length; ++i) {
-                // remove first two chars
-                params[i] = params[i].trim();
-            }
-            params.slice(1, -1);
-
             // add node to graph
             graph.setNode(`operator_${operator_id}`, {
                 operator,
@@ -165,13 +156,19 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                 class: `operator operator_${operator_id}`,
                 labelType: 'html',
                 label: `
-                <div class='header'>
+                <div class="header">
                     <img src='${createIconDataUrl(operator.type)}' class='icon' alt="${operator.type}">
                     </span>
                     ${operator.type}
                 </div>
-                <div class='parameters'>
-                    <code>${params.join('<br>')}</code>
+                <div class="parameters">
+                    <table>
+                        <tr>
+                        ${this.parametersDisplayList(operator)
+                    .map(kv => `<td class='key'>${kv.key}</td><td class='value'>${kv.value}</td>`)
+                    .join('</tr><tr>')}
+                        </tr>
+                    </table>
                 </div>
                 `,
                 padding: 0,
