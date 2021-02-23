@@ -89,11 +89,10 @@
                             <span>Hide Legend</span>
                         </button>
 
-                        <!-- TODO: re-implement -->
-                        <!--                                    <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: { layer: layer }})">-->
-                        <!--                                        <mat-icon>merge_type</mat-icon>-->
-                        <!--                                        <span>Lineage</span>-->
-                        <!--                                    </button>-->
+                        <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: { layer: layer }})">
+                            <mat-icon>merge_type</mat-icon>
+                            <span>Lineage</span>
+                        </button>
                         <button mat-menu-item (click)="projectService.removeLayer(layer)">
                             <mat-icon>delete</mat-icon>
                             <span>Remove</span>

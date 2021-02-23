@@ -13,6 +13,7 @@ import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
 import {filter, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
+import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -56,7 +57,7 @@ export class LayerListComponent implements OnDestroy {
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
-    // readonly LineageGraphComponent = LineageGraphComponent;
+    readonly LineageGraphComponent = LineageGraphComponent;
     // readonly LayerExportComponent = LayerExportComponent;
     // readonly LayerShareComponent = LayerShareComponent;
     // readonly SourceOperatorListComponent = SourceOperatorListComponent;

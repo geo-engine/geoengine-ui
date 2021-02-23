@@ -148,6 +148,8 @@ export interface WorkflowDict {
 export interface OperatorDict {
     type: string;
     params: Params;
+    raster_sources: Array<OperatorDict | SourceOperatorDict>;
+    vector_sources: Array<OperatorDict | SourceOperatorDict>;
 }
 
 type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTypes };
