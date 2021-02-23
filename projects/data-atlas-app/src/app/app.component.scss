@@ -1,0 +1,191 @@
+$nav-width: 6rem;
+
+mat-nav-list {
+    position: absolute;
+    left: 0;
+    width: $nav-width;
+    height: 100%;
+    top: 0;
+
+    padding-top: 0;
+
+    mat-toolbar {
+        padding: 1rem;
+        white-space: break-spaces;
+        text-align: center;
+
+        height: 5rem;
+    }
+
+    a {
+        height: 5rem;
+    }
+
+    a ::ng-deep .mat-list-item-content {
+        text-align: center;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+mat-sidenav-container {
+    left: $nav-width;
+    width: calc(100% - #{$nav-width});
+}
+
+#bottom-float-buttons {
+    position: fixed;
+    z-index: 3;
+    left: $nav-width;
+    right: 0;
+    bottom: 1rem;
+    text-align: center;
+}
+
+wave-zoom-handles, wave-small-time-interaction {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.87);
+    border-radius: 2px;
+}
+
+wave-zoom-handles {
+    position: absolute;
+    right: 1rem;
+}
+
+button#analysis {
+    z-index: 3;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+
+    mat-icon {
+        margin-right: 1rem;
+        height: 2.5rem;
+    }
+}
+
+// TODO: go over everything below
+
+wave-navigation {
+    z-index: 10;
+}
+
+wave-layer-list {
+    position: absolute;
+    z-index: 2;
+    width: 16vw;
+    min-width: 200px;
+    left: 0;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.87);
+    border-bottom-right-radius: 2px;
+}
+
+wave-layer-list .logo .mat-icon {
+    width: 100%;
+
+    ::ng-deep svg {
+        border: none;
+        border-radius: unset;
+    }
+}
+
+//.time-container {
+//    position: absolute;
+//    left: 16vw;
+//    right: 16vw;
+//
+//    wave-ticker-interaction, wave-small-time-interaction, wave-zoom-handles {
+//        background-color: rgba(255, 255, 255, 0.87);
+//        border-bottom-left-radius: 2px;
+//        border-bottom-right-radius: 2px;
+//        z-index: 3;
+//    }
+//}
+
+:host ::ng-deep .mat-sidenav-content {
+    overflow: hidden;
+}
+
+.top-container {
+    z-index: 1;
+}
+
+.mid-container {
+    z-index: 0;
+    position: relative;
+}
+
+.bottom-container {
+    position: relative;
+    z-index: 1;
+
+    min-height: 3rem;
+    @media (max-width: 600px) and (orientation: portrait) {
+        min-height: 2.5rem;
+    }
+    @media (max-width: 960px) and (orientation: landscape) {
+        min-height: 2rem;
+    }
+
+    .toggle {
+        position: absolute;
+        z-index: 1;
+        padding: 0;
+        min-width: 3rem;
+        width: 3rem;
+        height: 3rem;
+        @media (max-width: 600px) and (orientation: portrait) {
+            min-width: 2.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+        @media (max-width: 960px) and (orientation: landscape) {
+            min-width: 2rem;
+            width: 2rem;
+            height: 2rem;
+        }
+    }
+
+    ::ng-deep .mat-tab-label-container {
+        margin-left: 3rem;
+        @media (max-width: 600px) and (orientation: portrait) {
+            margin-left: 2.5rem;
+        }
+        @media (max-width: 960px) and (orientation: landscape) {
+            margin-left: 2rem;
+        }
+    }
+
+    @media (max-width: 960px) and (orientation: landscape) {
+        ::ng-deep mat-tab-header {
+            height: 2rem;
+        }
+        ::ng-deep .mat-tab-label {
+            line-height: 2rem;
+        }
+    }
+    @media (max-width: 600px) and (orientation: portrait) {
+        ::ng-deep mat-tab-header {
+            height: 2.5rem;
+        }
+        ::ng-deep .mat-tab-label {
+            line-height: 2.5rem;
+        }
+    }
+}
+
+.bottom-container.small {
+    max-height: 3rem !important;
+    @media (max-width: 600px) and (orientation: portrait) {
+        max-height: 2.5rem !important;
+    }
+    @media (max-width: 960px) and (orientation: landscape) {
+        max-height: 2rem !important;
+    }
+
+    ::ng-deep mat-tab-header {
+        border: 0;
+    }
+}
