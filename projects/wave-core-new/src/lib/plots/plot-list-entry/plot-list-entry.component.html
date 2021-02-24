@@ -1,0 +1,42 @@
+<mat-card>
+    <mat-card-header>
+        <img mat-card-avatar [src]="plotIcon" [alt]="plotData?.output_format">
+        <mat-card-title>{{plot.name}}</mat-card-title>
+        <mat-card-subtitle>{{plotData?.plot_type}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+    </mat-card-content>
+    <mat-card-content *ngIf="isOk" [ngSwitch]="plotData?.output_format">
+        <ng-template ngSwitchCase="ImagePng">
+            <img [src]="plotData?.data" [alt]="plot.name">
+        </ng-template>
+        <ng-template ngSwitchCase="JsonPlain">
+            <pre>{{plotData?.data | json}}</pre>
+        </ng-template>
+        <ng-template ngSwitchCase="JsonVega">
+            <wave-vega-viewer [chartData]="plotData?.data" [width]="width"></wave-vega-viewer>
+        </ng-template>
+        <ng-template ngSwitchDefault>
+            <pre>{{plotData?.data}}</pre>
+        </ng-template>
+    </mat-card-content>
+    <mat-card-actions *ngIf="isOk" fxLayout="row">
+        <button mat-button (click)="showFullscreen()">
+            <mat-icon>fullscreen</mat-icon>
+        </button>
+        <span fxFlex></span>
+        <button mat-button (click)="removePlot()">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-card-actions>
+    <mat-card-actions *ngIf="isError" fxLayout="row">
+        <button mat-button (click)="reloadPlot()" class="error">
+            <mat-icon>replay</mat-icon>
+        </button>
+        <span fxFlex></span>
+        <button mat-button (click)="removePlot()">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-card-actions>
+</mat-card>

@@ -24,7 +24,8 @@ class Raster extends ResultType {
 
 class Points extends ResultType {
     getCode(): string {
-        return 'points';
+        return 'vector';
+        // return 'points'; // TODO: use again when differentiation is possible
     }
 }
 

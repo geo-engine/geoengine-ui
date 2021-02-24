@@ -18,13 +18,16 @@ import {
     RegistrationDict,
     SessionDict,
     STRectangleDict,
-    STRefString,
+    SrsString,
     TimeIntervalDict,
     TimeStepDict,
     UUID,
-    WorkflowDict
+    WorkflowDict,
+    PlotDataDict,
+    RasterResultDescriptorDict,
+    PlotResultDescriptorDict,
+    VectorResultDescriptorDict,
 } from './backend.model';
-import {Params} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -138,7 +141,7 @@ export class BackendService {
         });
     }
 
-    registerWorkflow(workflow: { [key: string]: any }, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
+    registerWorkflow(workflow: WorkflowDict, sessionId: UUID): Observable<RegisterWorkflowResultDict> {
         return this.http.post<RegisterWorkflowResultDict>(this.config.API_URL + '/workflow', workflow, {
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -148,6 +151,16 @@ export class BackendService {
         return this.http.get<WorkflowDict>(this.config.API_URL + `/workflow/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
+    }
+
+    getWorkflowMetadata(workflowId: UUID,
+                        sessionId: UUID): Observable<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict> {
+        return this.http.get<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict>(
+            this.config.API_URL + `/workflow/${workflowId}/metadata`,
+            {
+                headers: BackendService.authorizationHeader(sessionId),
+            },
+        );
     }
 
     setSessionProject(projectId: UUID, sessionId: UUID): Observable<void> {
@@ -162,7 +175,7 @@ export class BackendService {
                       typeNames: string,
                       bbox: BBoxDict,
                       time?: TimeIntervalDict,
-                      srsName?: STRefString,
+                      srsName?: SrsString,
                       namespaces?: string,
                       count?: number,
                       sortBy?: string
@@ -205,14 +218,14 @@ export class BackendService {
             spatial_resolution: [number, number],
         },
         sessionId: UUID,
-    ): Observable<Params | Uint8Array> {
+    ): Observable<PlotDataDict> {
         const params = new NullDiscardingHttpParams();
 
         params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.setMapped('spatial_resolution', request.spatial_resolution, resolution => resolution.join(','));
 
-        return this.http.get<Params | Uint8Array>(this.config.API_URL + `/plot/${workflowId}`, {
+        return this.http.get<PlotDataDict>(this.config.API_URL + `/plot/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });

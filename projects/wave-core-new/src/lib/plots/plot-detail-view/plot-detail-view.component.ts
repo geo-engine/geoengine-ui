@@ -1,9 +1,10 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';
+import {PlotDataDict} from '../../backend/backend.model';
+import {LayoutService} from '../../layout.service';
 
 @Component({
     selector: 'wave-plot-detail-view',
@@ -11,27 +12,30 @@ import {Plot} from '../plot.model';
     styleUrls: ['./plot-detail-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlotDetailViewComponent implements OnInit, AfterViewInit {
+export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // TODO: implement strategy for PNGs
 
-    // maxWidth$ = new ReplaySubject<number>(1);
-    // maxHeight$ = new ReplaySubject<number>(1);
+    maxWidth$ = new ReplaySubject<number>(1);
+    maxHeight$ = new ReplaySubject<number>(1);
 
     // initially blank pixel
     // imagePlotData$ = new BehaviorSubject('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
     plotLoading$ = new BehaviorSubject(true);
-    plotData$ = new Observable<any>();
+    plotData: PlotDataDict;
+
+    private dataSubscription: Subscription;
 
     constructor(public projectService: ProjectService,
                 @Inject(MAT_DIALOG_DATA) public plot: Plot) {
     }
 
     ngOnInit() {
-        this.plotData$ = this.projectService.getPlotDataStream(this.plot).pipe(
-            tap(() => this.plotLoading$.next(false)),
-        );
+        this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe(plotData => {
+            this.plotLoading$.next(false);
+            this.plotData = plotData;
+        });
 
         // combineLatest([
         //     this.projectService.getPlotDataStream(this.plot),
@@ -66,10 +70,14 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        // setTimeout(() => {
-        //     this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
-        //     this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
-        // });
+        setTimeout(() => {
+            this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
+            this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
+        });
+    }
+
+    ngOnDestroy() {
+        this.dataSubscription.unsubscribe();
     }
 
 }

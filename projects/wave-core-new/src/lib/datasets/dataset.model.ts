@@ -1,4 +1,4 @@
-import {DataSetDict, InternalDataSetIdDict, ResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
+import {DataSetDict, InternalDataSetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
 import {RasterDataType, RasterDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
 
@@ -55,7 +55,7 @@ export class InternalDataSetId {
 export abstract class ResultDescriptor {
     readonly spatial_reference: SpatialReference;
 
-    static fromDict(dict: ResultDescriptorDict) {
+    static fromDict(dict: DatasetResultDescriptorDict) {
         if ('Vector' in dict) {
             return VectorResultDescriptor.fromDict(dict);
         } else {
@@ -73,11 +73,11 @@ export abstract class ResultDescriptor {
 export class RasterResultDescriptor extends ResultDescriptor {
     readonly data_type: RasterDataType;
 
-    static fromDict(dict: ResultDescriptorDict): ResultDescriptor {
+    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
         return new RasterResultDescriptor(dict);
     }
 
-    constructor(config: ResultDescriptorDict) {
+    constructor(config: DatasetResultDescriptorDict) {
         super(SpatialReferences.fromCode(config.Raster.spatial_reference));
         this.data_type = RasterDataTypes.fromCode(config.Raster.data_type);
     }
@@ -91,11 +91,11 @@ export class VectorResultDescriptor extends ResultDescriptor {
     readonly data_type: VectorDataType;
     readonly columns: Map<string, FeatureDataType>;
 
-    static fromDict(dict: ResultDescriptorDict): ResultDescriptor {
+    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
         return new VectorResultDescriptor(dict);
     }
 
-    constructor(config: ResultDescriptorDict) {
+    constructor(config: DatasetResultDescriptorDict) {
         super(SpatialReferences.fromCode(config.Vector.spatial_reference));
         this.data_type = VectorDataTypes.fromCode(config.Vector.data_type);
         this.columns = new Map(Object.entries(config.Vector.columns).map(([key, value]) => [key, FeatureDataType[value]]));

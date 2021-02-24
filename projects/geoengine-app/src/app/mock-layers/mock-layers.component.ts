@@ -1,6 +1,15 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {MappingRasterSymbology, ProjectService, RasterLayer, Unit, VectorLayer, PointSymbology, RandomColorService} from 'wave-core';
+import {
+    MappingRasterSymbology,
+    ProjectService,
+    RasterLayer,
+    Unit,
+    VectorLayer,
+    PointSymbology,
+    RandomColorService,
+    WorkflowDict
+} from 'wave-core';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -18,7 +27,7 @@ export class MockLayersComponent implements OnInit {
     }
 
     addRaster() {
-        const workflow = {
+        const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
                 type: 'GdalSource',
@@ -51,7 +60,7 @@ export class MockLayersComponent implements OnInit {
     }
 
     addPoints() {
-        const workflow = {
+        const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
                 type: 'MockPointSource',

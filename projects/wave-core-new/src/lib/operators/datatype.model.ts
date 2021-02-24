@@ -248,7 +248,7 @@ export abstract class VectorDataType {
      */
     toString(): string {
         return this.getCode();
-    };
+    }
 
     /**
      * @return The name of the data type.
@@ -305,3 +305,61 @@ export class VectorDataTypeCollection {
 }
 
 export const VectorDataTypes = VectorDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+
+export abstract class VectorColumnDataType {
+    /**
+     * Create a human readable output of the data type.
+     * @returns The name.
+     */
+    toString(): string {
+        return this.code;
+    }
+
+    /**
+     * @return The name of the data type.
+     */
+    abstract readonly code: string;
+}
+
+class NumberColumn extends VectorColumnDataType {
+    readonly code = 'Number';
+}
+
+class DecimalColumn extends VectorColumnDataType {
+    readonly code = 'Decimal';
+}
+
+class TextColumn extends VectorColumnDataType {
+    readonly code = 'Text';
+}
+
+class CategoricalColumn extends VectorColumnDataType {
+    readonly code = 'Categorical';
+}
+
+export class VectorColumnDataTypeCollection {
+    static readonly INSTANCE = new VectorColumnDataTypeCollection();
+
+    // tslint:disable:variable-name
+    readonly Number: VectorColumnDataType = new NumberColumn();
+    readonly Decimal: VectorColumnDataType = new DecimalColumn();
+    readonly Text: VectorColumnDataType = new TextColumn();
+    readonly Categorical: VectorColumnDataType = new CategoricalColumn();
+
+    fromCode(code: string) {
+        switch (code) {
+            case this.Number.code:
+                return this.Number;
+            case this.Decimal.code:
+                return this.Decimal;
+            case this.Text.code:
+                return this.Text;
+            case this.Categorical.code:
+                return this.Categorical;
+            default:
+                throw new Error(`Invalid Column Data Type: ${code}`);
+        }
+    }
+}
+
+export const VectorColumnDataTypes = VectorColumnDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
