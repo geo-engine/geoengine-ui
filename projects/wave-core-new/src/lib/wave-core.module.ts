@@ -97,7 +97,7 @@ import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
-import {TemporalRasterMeanPlotDialogComponent} from './operators/dialogs/temporal-raster-mean-plot-dialog/temporal-raster-mean-plot-dialog.component';
+import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -167,6 +167,7 @@ const WAVE_COMPONENTS = [
     LoginComponent,
     MapContainerComponent,
     MappingRasterLegendComponent,
+    MeanRasterPixelValuesOverTimeDialogComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
     NewProjectComponent,
@@ -194,7 +195,6 @@ const WAVE_COMPONENTS = [
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
     SymbologyVectorComponent,
-    TemporalRasterMeanPlotDialogComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,

@@ -10,8 +10,9 @@ import {NotificationService} from '../../../notification.service';
 import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 
-interface TemporalRasterMeanPlotParams extends OperatorParams {
+interface MeanRasterPixelValuesOverTimeParams extends OperatorParams {
     time_position: TimePosition;
+    area: boolean;
 }
 
 type TimePosition = 'start' | 'center' | 'end';
@@ -25,12 +26,12 @@ interface TimePositionOption {
  * This dialog allows creating a histogram plot of a layer's values.
  */
 @Component({
-    selector: 'wave-temporal-area-mean-plot-dialog',
-    templateUrl: './temporal-raster-mean-plot-dialog.component.html',
-    styleUrls: ['./temporal-raster-mean-plot-dialog.component.scss'],
+    selector: 'wave-mean-raster-pixel-values-over-time-dialog',
+    templateUrl: './mean-raster-pixel-values-over-time-dialog.component.html',
+    styleUrls: ['./mean-raster-pixel-values-over-time-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TemporalRasterMeanPlotDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timePositionOptions: Array<TimePositionOption> = [{
@@ -60,6 +61,7 @@ export class TemporalRasterMeanPlotDialogComponent implements OnInit, AfterViewI
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],
             timePosition: [this.timePositionOptions[0].value, Validators.required],
+            area: [true, Validators.required],
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
     }
@@ -80,17 +82,22 @@ export class TemporalRasterMeanPlotDialogComponent implements OnInit, AfterViewI
      */
     add() {
         const inputLayer: RasterLayer = this.form.controls['layer'].value;
-        const timePosition: TimePosition = this.form.controls['timePosition'].value;
         const outputName: string = this.form.controls['name'].value;
+
+        const timePosition: TimePosition = this.form.controls['timePosition'].value;
+        const area: boolean = this.form.controls['area'].value;
+
+        const params: MeanRasterPixelValuesOverTimeParams = {
+            time_position: timePosition,
+            area,
+        };
 
         this.projectService.getWorkflow(inputLayer.workflowId).pipe(
             mergeMap((inputWorkflow: WorkflowDict) => this.projectService.registerWorkflow({
                 type: 'Plot',
                 operator: {
-                    type: 'TemporalRasterMeanPlot',
-                    params: {
-                        time_position: timePosition,
-                    } as TemporalRasterMeanPlotParams,
+                    type: 'MeanRasterPixelValuesOverTime',
+                    params,
                     raster_sources: [inputWorkflow.operator],
                     vector_sources: [],
                 }

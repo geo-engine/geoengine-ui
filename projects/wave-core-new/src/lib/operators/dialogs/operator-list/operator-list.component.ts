@@ -37,7 +37,7 @@ import {ExpressionType} from '../../types/expression-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
-import {TemporalRasterMeanPlotDialogComponent} from '../temporal-raster-mean-plot-dialog/temporal-raster-mean-plot-dialog.component';
+import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -129,7 +129,7 @@ export class OperatorListComponent implements OnInit {
             description: 'Get statistics for raster layer'
         },
         {
-            component: TemporalRasterMeanPlotDialogComponent,
+            component: MeanRasterPixelValuesOverTimeDialogComponent,
             type: {
                 NAME: 'Temporal Raster Mean Plot',
                 ICON_URL: createIconDataUrl('Temporal Raster Mean Plot'),
