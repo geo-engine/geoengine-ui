@@ -1,15 +1,12 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, first} from 'rxjs/operators';
 
-import {MatDialog} from '@angular/material/dialog';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
 
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {Plot} from '../plot.model';
-import {LoadingState} from '../../project/loading-state.model';
-import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 
 
 /**
@@ -36,7 +33,6 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
      * DI for services
      */
     constructor(public readonly projectService: ProjectService,
-                public readonly dialog: MatDialog,
                 private readonly layoutService: LayoutService,
                 private readonly elementRef: ElementRef) {
     }
@@ -70,33 +66,8 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.layoutService.setSidenavContentComponent(this.operatorsListConfig);
     }
 
-    /**
-     * Show a plot as a fullscreen modal dialog
-     */
-    showFullscreen(plot: Plot) {
-        this.dialog.open(
-            PlotDetailViewComponent,
-            {
-                data: plot,
-                maxHeight: '100vh',
-                maxWidth: '100vw',
-            },
-        );
-    }
-
-    idOfPlot(plot: Plot): number {
+    idOfPlot(index: number, plot: Plot): number {
         return plot.id;
     }
 
-    isLoading(loadingState: LoadingState): boolean {
-        return (loadingState === LoadingState.LOADING);
-    }
-
-    isOk(loadingState: LoadingState): boolean {
-        return (loadingState === LoadingState.OK);
-    }
-
-    isError(loadingState: LoadingState): boolean {
-        return (loadingState === LoadingState.ERROR);
-    }
 }

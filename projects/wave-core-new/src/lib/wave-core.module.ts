@@ -92,6 +92,10 @@ import {DataSetComponent} from './datasets/dataset/dataset.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
 import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/statistics-plot.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
+import {PlotListEntryComponent} from './plots/plot-list-entry/plot-list-entry.component';
+import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
+import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
+import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 
 const MATERIAL_MODULES = [
@@ -144,15 +148,17 @@ const WAVE_COMPONENTS = [
     ColorBreakpointInputComponent,
     ColorizerEditorComponent,
     ColormapColorizerComponent,
-    DatasetListComponent,
     DataSetComponent,
+    DatasetListComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    ExpressionOperatorComponent,
+    HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
-    ExpressionOperatorComponent,
     LayerListComponent,
+    LayerSelectionComponent,
     LegendComponent,
     LineageGraphComponent,
     LineIconComponent,
@@ -169,6 +175,7 @@ const WAVE_COMPONENTS = [
     OperatorOutputNameComponent,
     PlotDetailViewComponent,
     PlotListComponent,
+    PlotListEntryComponent,
     PointIconComponent,
     PolygonIconComponent,
     RasterIconComponent,
@@ -190,6 +197,7 @@ const WAVE_COMPONENTS = [
     TimeInputComponent,
     VatLogoComponent,
     VectorLegendComponent,
+    VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
 ];

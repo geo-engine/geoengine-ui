@@ -1,6 +1,6 @@
 export type UUID = string;
 export type TimestampString = string;
-export type STRefString = string;
+export type SrsString = string;
 
 export interface RegistrationDict {
     id: UUID;
@@ -40,7 +40,7 @@ export interface TimeIntervalDict {
 }
 
 export interface STRectangleDict {
-    spatial_reference: STRefString;
+    spatial_reference: SrsString;
     bounding_box: BBoxDict;
     time_interval: TimeIntervalDict;
 }
@@ -147,14 +147,14 @@ export interface WorkflowDict {
 
 export interface OperatorDict {
     type: string;
-    params: Params;
-    raster_sources: Array<OperatorDict | SourceOperatorDict>;
-    vector_sources: Array<OperatorDict | SourceOperatorDict>;
+    params: OperatorParams;
+    vector_sources?: Array<OperatorDict | SourceOperatorDict>;
+    raster_sources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
-type ParamTypes = string | number | Array<ParamTypes> | { [key: string]: ParamTypes };
+type ParamTypes = string | number | boolean | Array<ParamTypes> | { [key: string]: ParamTypes };
 
-interface Params {
+export interface OperatorParams {
     [key: string]: ParamTypes;
 }
 
@@ -182,7 +182,7 @@ export interface DataSetDict {
     id: InternalDataSetIdDict; // TODO: support all Id types
     name: string;
     description: string;
-    result_descriptor: ResultDescriptorDict;
+    result_descriptor: DatasetResultDescriptorDict;
     source_operator: string;
 }
 
@@ -190,18 +190,48 @@ export interface InternalDataSetIdDict {
     Internal: UUID;
 }
 
-export interface ResultDescriptorDict {
-    Vector?: {
-        data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-        spatial_reference: string;
-        columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
-    };
-    Raster?: {
-        data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
-        spatial_reference: string;
-    };
+export interface DatasetResultDescriptorDict {
+    Vector?: VectorResultDescriptorDict;
+    Raster?: RasterResultDescriptorDict;
 }
 
 export interface NoDataDict {
     [key: string]: number;
+}
+
+export interface PlotDataDict {
+    plot_type: string;
+    output_format: 'JsonPlain' | 'JsonVega' | 'ImagePng';
+    data: any;
+}
+
+export interface ResultDescriptorDict {
+    spatial_reference?: SrsString;
+}
+
+export interface RasterResultDescriptorDict extends ResultDescriptorDict {
+    data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    measurement: 'unitless' | MeasurementDict;
+}
+
+export interface VectorResultDescriptorDict extends ResultDescriptorDict {
+    data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+    columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
+}
+
+export interface PlotResultDescriptorDict extends ResultDescriptorDict {
+    spatial_reference: undefined;
+}
+
+export interface MeasurementDict {
+    continuous?: {
+        measurement: string,
+        unit?: string,
+    };
+    classification?: {
+        measurement: string,
+        classes: {
+            [key: number]: string,
+        },
+    };
 }

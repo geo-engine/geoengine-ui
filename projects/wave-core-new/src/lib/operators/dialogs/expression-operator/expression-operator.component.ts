@@ -11,6 +11,7 @@ import {RasterLayer} from '../../../layers/layer.model';
 import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
+import {WorkflowDict} from '../../../backend/backend.model';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -220,7 +221,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     ],
                     vector_sources: []
                 }
-            };
+            } as WorkflowDict;
 
             this.projectService.registerWorkflow(workflow).pipe(
                 mergeMap(workflowId => {

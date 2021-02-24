@@ -21,7 +21,15 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {LayerDict, PlotDict, ToDict, UUID, WorkflowDict} from '../backend/backend.model';
+import {
+    LayerDict,
+    PlotDict,
+    RasterResultDescriptorDict,
+    ToDict,
+    UUID,
+    VectorResultDescriptorDict,
+    WorkflowDict,
+} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
@@ -29,6 +37,7 @@ import {MapService} from '../map/map.service';
 import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -325,7 +334,7 @@ export class ProjectService {
         return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged());
     }
 
-    registerWorkflow(workflow: { [key: string]: any }): Observable<UUID> {
+    registerWorkflow(workflow: WorkflowDict): Observable<UUID> {
         return this.userService.getSessionStream().pipe(
             mergeMap(session => this.backend.registerWorkflow(workflow, session.sessionToken)),
             map(response => response.id),
@@ -546,6 +555,19 @@ export class ProjectService {
      */
     getNewLayerStream(): Observable<void> {
         return this.newLayer$;
+    }
+
+    getLayerMetadata(layer: Layer): Observable<LayerMetadata> {
+        return this.userService.getSessionTokenForRequest().pipe(
+            mergeMap(sessionToken => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
+            map((metadata: RasterResultDescriptorDict | VectorResultDescriptorDict) => {
+                if (layer instanceof VectorLayer) {
+                    return VectorLayerMetadata.fromDict(metadata as VectorResultDescriptorDict);
+                } else {
+                    return RasterLayerMetadata.fromDict(metadata as RasterResultDescriptorDict);
+                }
+            }),
+        );
     }
 
     /**
