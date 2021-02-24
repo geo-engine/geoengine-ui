@@ -18,11 +18,14 @@ import {
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
 import {MockLayersComponent} from './mock-layers/mock-layers.component';
+import {PortalModule} from '@angular/cdk/portal';
+import {LegendComponent} from './legend/legend.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         MockLayersComponent,
+        LegendComponent,
     ],
     imports: [
         BrowserAnimationsModule,
@@ -30,6 +33,7 @@ import {MockLayersComponent} from './mock-layers/mock-layers.component';
         HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
+        PortalModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},
