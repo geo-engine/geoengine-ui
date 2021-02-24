@@ -134,7 +134,7 @@ export class OperatorListComponent implements OnInit {
                 NAME: 'Temporal Raster Mean Plot',
                 ICON_URL: createIconDataUrl('Temporal Raster Mean Plot'),
             },
-            description: 'Create an area chart over means of raster time series'
+            description: 'Create an area chart over the mean pixel values of the images of a raster time series'
         }
     ];
 
