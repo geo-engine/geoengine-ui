@@ -52,9 +52,10 @@ export * from './lib/operators/dialogs/helpers/operator-output-name/operator-out
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/operators/dialogs/temporal-raster-mean-plot-dialog/temporal-raster-mean-plot-dialog.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
-export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/plots/plot-list-entry/plot-list-entry.component';
+export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';

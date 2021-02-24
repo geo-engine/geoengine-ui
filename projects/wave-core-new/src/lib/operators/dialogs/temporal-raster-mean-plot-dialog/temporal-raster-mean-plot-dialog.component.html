@@ -1,0 +1,45 @@
+<wave-sidenav-header>Temporal Raster Mean Plot</wave-sidenav-header>
+
+<wave-dialog-help>
+    <p>
+        This operator generates a <i>Temporal Raster Mean Plot</i> based on a raster data set (<i>Input</i>).
+        Select the <i>Time Tick Position</i>, which specifies the position of the x-axis ticks,
+        e.g. at the the time start, end or center of the raster's validity.
+        The plot shows an area chart of the mean values (y-axis) of the rasters.
+        The x-axis displays the timestamps.
+        Edit the <i>Output Name</i> of the plot, if desired, and click on <i>Create</i> to generate the plot.
+    </p>
+    <p>
+        Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.
+    </p>
+</wave-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex>
+
+        <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
+        <wave-dialog-section-heading title="Config" subtitle="Specify the Histogram"></wave-dialog-section-heading>
+        <mat-form-field>
+            <mat-select placeholder="Time Tick Position" formControlName="timePosition">
+                <mat-option *ngFor="let timePosition of timePositionOptions"
+                            [value]="timePosition.value">{{timePosition.label}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <wave-operator-output-name
+            formControlName="name"
+            [suggestion]="'Temporal Raster Mean Plot of ' + (form.controls.layer.valueChanges | async)?.name"
+        >
+            <mat-hint
+                align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="disallowSubmit | async">
+            Create
+        </button>
+    </div>
+</form>

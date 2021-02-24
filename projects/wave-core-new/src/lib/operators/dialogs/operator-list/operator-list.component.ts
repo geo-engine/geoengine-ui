@@ -35,9 +35,9 @@ import {ExpressionType} from '../../types/expression-type.model';
 // import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 // import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
-import {OperatorType} from '../../operator-type.model';
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
+import {TemporalRasterMeanPlotDialogComponent} from '../temporal-raster-mean-plot-dialog/temporal-raster-mean-plot-dialog.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -128,11 +128,14 @@ export class OperatorListComponent implements OnInit {
             },
             description: 'Get statistics for raster layer'
         },
-        //     {
-        //         component: TimePlotComponent,
-        //         type: TimePlotType,
-        //         description: 'Plot time data'
-        //     }
+        {
+            component: TemporalRasterMeanPlotDialogComponent,
+            type: {
+                NAME: 'Temporal Raster Mean Plot',
+                ICON_URL: createIconDataUrl('Temporal Raster Mean Plot'),
+            },
+            description: 'Create an area chart over means of raster time series'
+        }
     ];
 
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
