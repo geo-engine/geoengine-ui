@@ -50,11 +50,12 @@ export * from './lib/operators/dialogs/helpers/layer-selection/layer-selection.c
 export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
+export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
-export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/plots/plot-list-entry/plot-list-entry.component';
+export * from './lib/plots/plot-list/plot-list.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';
