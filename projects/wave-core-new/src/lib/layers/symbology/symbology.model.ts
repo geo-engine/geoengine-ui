@@ -3,6 +3,7 @@ import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color
 import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
 import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
 import {Colormap} from '../../colors/colormaps/colormap.model';
+import {ColorizerDict, RgbaColor} from '../../backend/backend.model';
 
 /**
  * List of the symbology types used in WAVE
@@ -650,6 +651,33 @@ export class MappingRasterSymbology extends AbstractRasterSymbology
 
     toConfig(): IColorizerRasterSymbology {
         return this.clone() as IColorizerRasterSymbology;
+    }
+
+    toColorizerDict(): ColorizerDict {
+        switch (this.colorizer.type) {
+            case 'gradient':
+                return {
+                    LinearGradient: {
+                        breakpoints: this.colorizer.breakpoints.map(breakpoint => {
+                            return {
+                                value: typeof breakpoint.value === 'string' ? Number.parseFloat(breakpoint.value) : breakpoint.value,
+                                color: breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor,
+                            };
+                        }),
+                        default_color: this.overflowColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
+                        no_data_color: this.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
+                    },
+                };
+            case 'logarithmic':
+                // TODO: implement
+                return undefined;
+            case 'palette':
+                // TODO: implement
+                return undefined;
+            case 'rgba_composite':
+                // TODO: implement
+                return undefined;
+        }
     }
 
     clone(): MappingRasterSymbology {
