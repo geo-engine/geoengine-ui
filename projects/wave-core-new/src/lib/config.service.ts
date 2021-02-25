@@ -46,7 +46,7 @@ interface Defaults {
 }
 
 interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ';
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
@@ -89,7 +89,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         GUEST_LOGIN_HINT: 5000,
     },
     MAP: {
-        BACKGROUND_LAYER: 'OSM',
+        BACKGROUND_LAYER: 'eumetview',
         BACKGROUND_LAYER_URL: '',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',

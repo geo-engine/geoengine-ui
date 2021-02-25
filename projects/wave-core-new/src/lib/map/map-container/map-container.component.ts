@@ -48,7 +48,6 @@ import OlInteractionSelect from 'ol/interaction/Select';
 import {MapLayerComponent} from '../map-layer.component';
 
 import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
-import {AbstractSymbology} from '../../layers/symbology/symbology.model';
 import {Layer} from '../../layers/layer.model';
 // import {LayerService} from '../../layers/layer.service';
 import {ProjectService} from '../../project/project.service';
@@ -596,9 +595,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     },
                 });
             case 'hosted':
-                return new OlLayerTile({
-                    source: this.backgroundLayerSource,
-                });
+            case 'eumetview':
             case 'XYZ':
                 return new OlLayerTile({
                     source: this.backgroundLayerSource,
@@ -618,6 +615,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         imageExtent: [0, 0, 0, 0],
                     });
                 }
+            case 'eumetview':
+                return new OlTileWmsSource({
+                    url: 'https://eumetview.eumetsat.int/geoserver/ows',
+                    params: {
+                        layers: 'bkg-raster:bkg-raster',
+                        projection: projection.getCode(),
+                        version: '1.3.0',
+                    },
+                    wrapX: false,
+                    projection: projection.getCode(),
+                    crossOrigin: 'anonymous',
+                });
             case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
                 return new OlSourceVector({
                     url: 'assets/countries.geo.json',
