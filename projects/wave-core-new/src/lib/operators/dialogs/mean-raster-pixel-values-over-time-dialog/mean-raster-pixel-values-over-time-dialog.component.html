@@ -27,20 +27,13 @@
                             [value]="timePosition.value">{{timePosition.label}}</mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field>
-            <mat-select placeholder="Fill area under curve" formControlName="area">
-                <mat-option [value]="true">Yes</mat-option>
-                <mat-option [value]="false">No</mat-option>
-            </mat-select>
-        </mat-form-field>
+        <mat-checkbox formControlName="area">Fill area under curve</mat-checkbox>
         <wave-operator-output-name
             formControlName="name"
-            [suggestion]="'Temporal Raster Mean Plot of ' + (form.controls.layer.valueChanges | async)?.name"
-        >
+            [suggestion]="'Temporal Raster Mean Plot of ' + (form.controls.layer.valueChanges | async)?.name">
             <mat-hint
                 align="end" class="error"
-                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-            >
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>
