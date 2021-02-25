@@ -1,0 +1,61 @@
+<mat-nav-list fxLayout="column">
+    <mat-toolbar color="primary">Data Atlas</mat-toolbar>
+    <a mat-list-item (click)="openDataMenu()">
+        <mat-icon>terrain</mat-icon>
+        <span class="mat-caption">Category A</span>
+    </a>
+    <a mat-list-item (click)="openDataMenu()">
+        <mat-icon>public</mat-icon>
+        <span class="mat-caption">Category B</span>
+    </a>
+    <a mat-list-item (click)="openDataMenu()">
+        <mat-icon>pets</mat-icon>
+        <span class="mat-caption">Category C</span>
+    </a>
+    <a mat-list-item (click)="openDataMenu()">
+        <mat-icon>terrain</mat-icon>
+        <span class="mat-caption">Category D</span>
+    </a>
+    <span class="separator" fxFlex></span>
+    <a mat-list-item (click)="openDataMenu()">
+        <mat-icon>info</mat-icon>
+        <span class="mat-caption">About</span>
+    </a>
+</mat-nav-list>
+<mat-sidenav-container>
+    <mat-sidenav position="left" mode="side" (openedChange)="mapComponent.resize()">
+        <ng-template [cdkPortalOutlet]="datasetPortal"></ng-template>
+    </mat-sidenav>
+    <div id="bottom-float-buttons">
+        <wave-small-time-interaction class="mat-elevation-z4"></wave-small-time-interaction>
+        <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></wave-zoom-handles>
+    </div>
+    <button mat-flat-button id="analysisButton" class="mat-elevation-z4" *ngIf="!(analysisVisible$ | async)" (click)="showAnalysis()">
+        <mat-icon svgIcon="cogs"></mat-icon>
+        Analysis
+    </button>
+    <mat-card id="analysisCard" *ngIf="analysisVisible$ | async">
+        Analysis
+    </mat-card>
+    <wave-legend [layer]="selectedLayer$ | async"></wave-legend>
+    <div class="mid-container" [style.height.px]="windowHeight$ | async">
+        <wave-map-container #map [grid]="false">
+            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
+                <ng-template [ngIf]="layer.layerType === 'vector'">
+                    <wave-ol-vector-layer [layerId]="layer.id"
+                                          [workflow]="layer.workflowId"
+                                          [symbology]="layer.symbology"
+                                          [isVisible]="layer.isVisible"
+                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-vector-layer>
+                </ng-template>
+                <ng-template [ngIf]="layer.layerType === 'raster'">
+                    <wave-ol-raster-layer [layerId]="layer.id"
+                                          [workflow]="layer.workflowId"
+                                          [symbology]="layer.symbology"
+                                          [isVisible]="layer.isVisible"
+                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-raster-layer>
+                </ng-template>
+            </ng-template>
+        </wave-map-container>
+    </div>
+</mat-sidenav-container>

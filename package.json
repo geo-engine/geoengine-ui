@@ -8,6 +8,7 @@
         "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40",
         "serve:wave": "ng serve wave-app --proxy-config proxy.conf.json",
         "serve:geoengine": "ng serve geoengine-app --proxy-config proxy-geoengine.conf.json",
+        "serve:data-atlas": "ng serve data-atlas-app --proxy-config proxy-geoengine.conf.json",
         "serve:gfbio": "ng serve gfbio-app --proxy-config proxy.conf.json",
         "serve:nature40": "ng serve nature40-app --proxy-config proxy.conf.json",
         "build:core": "ng build wave-core",
