@@ -287,7 +287,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),
-                // colors: this.layer.symbology.mappingColorizerRequestString()
+                STYLES: 'custom:' + JSON.stringify(this.symbology.toColorizerDict()),
             },
             projection: this.projection.getCode(),
             wrapX: false,

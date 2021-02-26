@@ -82,7 +82,7 @@ export class Color implements IRgba, RgbaStruct {
             throw new Error('Invalid RGB(A) tuple size!');
         }
 
-        const alpha = (rgbaTuple.length < 4) ? 1.0 : rgbaTuple[3];
+        const alpha = (rgbaTuple.length < 4) ? 255.0 : rgbaTuple[3];
         return {r: rgbaTuple[0], g: rgbaTuple[1], b: rgbaTuple[2], a: alpha};
     }
 
@@ -121,7 +121,7 @@ export class Color implements IRgba, RgbaStruct {
                 r: rgb.r,
                 g: rgb.g,
                 b: rgb.b,
-                a: 1.0,
+                a: 255.0,
             });
         }
 

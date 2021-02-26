@@ -245,41 +245,12 @@ export class RasterLayer extends Layer {
     }
 
     toDict(): LayerDict {
-        let colorizerDict: ColorizerDict;
-        const colorizer = this.symbology.colorizer;
-
-        switch (colorizer.type) {
-            case 'gradient':
-                colorizerDict = {
-                    LinearGradient: {
-                        breakpoints: colorizer.breakpoints.map(breakpoint => {
-                            return {
-                                value: typeof breakpoint.value === 'string' ? Number.parseFloat(breakpoint.value) : breakpoint.value,
-                                color: breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                            };
-                        }),
-                        default_color: this.symbology.overflowColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                        no_data_color: this.symbology.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                    },
-                };
-                break;
-            case 'logarithmic':
-                // TODO: implement
-                break;
-            case 'palette':
-                // TODO: implement
-                break;
-            case 'rgba_composite':
-                // TODO: implement
-                break;
-        }
-
         return {
             name: this.name,
             workflow: this.workflowId,
             info: {
                 Raster: {
-                    colorizer: colorizerDict,
+                    colorizer: this.symbology.toColorizerDict(),
                 },
             },
             visibility: {
