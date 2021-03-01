@@ -1,4 +1,4 @@
-import {NoDataDict} from '../backend/backend.model';
+import { NoDataDict } from '../backend/backend.model';
 
 /**
  * A class about a raster data type.
@@ -276,7 +276,7 @@ class MultiLineString extends VectorDataType {
 
 class MultiPolygon extends VectorDataType {
     getCode(): string {
-        return 'MultiPoint';
+        return 'MultiPolygon';
     }
 }
 
@@ -298,6 +298,7 @@ export class VectorDataTypeCollection {
             case this.MultiLineString.getCode():
                 return this.MultiLineString;
             case this.MultiPolygon.getCode():
+                return this.MultiPolygon;
             default:
                 throw new Error(`Invalid Data Type: ${code}`);
         }
