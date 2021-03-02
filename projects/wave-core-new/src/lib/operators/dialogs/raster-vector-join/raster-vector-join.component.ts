@@ -201,7 +201,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
             mergeMap(workflowId => this.projectService.addLayer(new VectorLayer({
                 workflowId,
                 name: outputLayerName,
-                symbology: vectorLayer.symbology,
+                symbology: this.symbologyWithNewColor(vectorLayer.symbology),
                 isLegendVisible: false,
                 isVisible: true,
             }))),
@@ -211,6 +211,15 @@ export class RasterVectorJoinComponent implements OnDestroy {
             },
             error => this.notificationService.error(error),
         );
+    }
+
+    private symbologyWithNewColor(inputSymbology: VectorSymbology): VectorSymbology {
+        const symbology = inputSymbology.clone();
+
+        // TODO: more sophisticated update method that makes sense for non-points
+        symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
+
+        return symbology;
     }
 
     toLetters(number: number): string {
