@@ -98,6 +98,7 @@ import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selecti
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
+import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 
 const MATERIAL_MODULES = [
@@ -184,6 +185,7 @@ const WAVE_COMPONENTS = [
     PolygonIconComponent,
     RasterIconComponent,
     RasterLegendComponent,
+    RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
     SidenavContainerComponent,
