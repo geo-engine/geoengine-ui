@@ -83,7 +83,7 @@ export class OperatorListComponent implements OnInit {
                 NAME: 'Raster Vector Join',
                 ICON_URL: createIconDataUrl('Raster Vector Join'),
             },
-            description: 'Attach raster values to vector data',
+            description: 'Attach raster values to multi-point data',
         },
         // {
         //     component: RasterPolygonClipOperatorComponent,
