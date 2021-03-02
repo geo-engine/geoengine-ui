@@ -1,12 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
-import { DataSet, VectorResultDescriptor } from '../dataset.model';
-import { RasterLayer, VectorLayer } from '../../layers/layer.model';
-import { LineSymbology, MappingRasterSymbology, PointSymbology, VectorSymbology } from '../../layers/symbology/symbology.model';
-import { Unit } from '../../operators/unit.model';
-import { ProjectService } from '../../project/project.service';
-import { mergeMap } from 'rxjs/operators';
-import { RandomColorService } from '../../util/services/random-color.service';
-import { VectorDataTypes } from '../../operators/datatype.model';
+import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {DataSet, VectorResultDescriptor} from '../dataset.model';
+import {RasterLayer, VectorLayer} from '../../layers/layer.model';
+import {AbstractVectorSymbology, LineSymbology, MappingRasterSymbology, PointSymbology, VectorSymbology} from '../../layers/symbology/symbology.model';
+import {Unit} from '../../operators/unit.model';
+import {ProjectService} from '../../project/project.service';
+import {mergeMap} from 'rxjs/operators';
+import {RandomColorService} from '../../util/services/random-color.service';
+import {VectorDataTypes} from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-dataset',
@@ -19,10 +19,10 @@ export class DataSetComponent implements OnInit {
     @Input() dataset: DataSet;
 
     constructor(private projectService: ProjectService, private randomColorService: RandomColorService) {
-    }
+   }
 
     ngOnInit(): void {
-    }
+   }
 
     add() {
         const workflow = this.dataset.createSourceWorkflow();
@@ -45,60 +45,49 @@ export class DataSetComponent implements OnInit {
                                         min: 1,
                                         max: 255,
                                         interpolation: Unit.defaultUnit.interpolation,
-                                    }),
-                                }),
+                                   }),
+                               }),
                                 isLegendVisible: false,
                                 isVisible: true,
-                            })
+                           })
                         );
-                    } else {
+                   } else {
                         const result_descriptor = this.dataset.result_descriptor as VectorResultDescriptor;
+
+                        let symbology: VectorSymbology;
 
                         switch (result_descriptor.data_type) {
                             case VectorDataTypes.MultiPoint:
-                                return this.projectService.addLayer(
-                                    new VectorLayer({
-                                        workflowId,
-                                        name: this.dataset.name,
-                                        symbology: PointSymbology.createSymbology({
+                                symbology = PointSymbology.createSymbology({
                                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                                             radius: 10,
                                             clustered: false,
-                                        }),
-                                        isLegendVisible: false,
-                                        isVisible: true,
-                                    })
-                                );
-
+                                });
+                                break;
                             case VectorDataTypes.MultiLineString:
-                                return this.projectService.addLayer(
-                                    new VectorLayer({
-                                        workflowId,
-                                        name: this.dataset.name,
-                                        symbology: LineSymbology.createSymbology({
-                                            strokeRGBA: this.randomColorService.getRandomColorRgba(),
-                                        }),
-                                        isLegendVisible: false,
-                                        isVisible: true,
-                                    })
-                                );
-
+                                symbology = LineSymbology.createSymbology({
+                                            strokeRGBA: this.randomColorService.getRandomColorRgba(),            
+                                });
+                                break;
                             case VectorDataTypes.MultiPolygon:
-                                return this.projectService.addLayer(
-                                    new VectorLayer({
-                                        workflowId,
-                                        name: this.dataset.name,
-                                        symbology: VectorSymbology.createSymbology({
+                                symbology = VectorSymbology.createSymbology({
                                             fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                        }),
-                                        isLegendVisible: false,
-                                        isVisible: true,
-                                    })
-                                );
+                                });
+                                break;
                         }
-                    }
-                })
+
+                        return this.projectService.addLayer(
+                            new VectorLayer({
+                                workflowId,
+                                name: this.dataset.name,
+                                symbology: symbology,
+                                isLegendVisible: false,
+                                isVisible: true,
+                           })
+                        );
+                   }
+               })
             )
             .subscribe();
-    }
+   }
 }
