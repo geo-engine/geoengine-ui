@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Layer } from '../../../../layers/layer.model';
-import { BehaviorSubject, forkJoin, from, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
-import { ResultType, ResultTypes } from '../../../result-type.model';
-import { ProjectService } from '../../../../project/project.service';
-import { first, mergeMap } from 'rxjs/operators';
-import { LayerMetadata } from 'dist/wave-core/lib/layers/layer-metadata';
+import {ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Layer} from '../../../../layers/layer.model';
+import {BehaviorSubject, forkJoin, from, Observable, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {ResultType, ResultTypes} from '../../../result-type.model';
+import {ProjectService} from '../../../../project/project.service';
+import {first, mergeMap} from 'rxjs/operators';
 
 /**
  * This component allows selecting one layer.
