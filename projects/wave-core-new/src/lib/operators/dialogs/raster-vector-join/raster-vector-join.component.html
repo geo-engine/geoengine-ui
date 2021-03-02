@@ -1,0 +1,38 @@
+<wave-sidenav-header>Extract Raster Values and Add it to a Vector Layer</wave-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add()" fxLayout="column">
+    <div fxFlex class="container">
+        <wave-layer-selection [types]="allowedVectorTypes" formControlName="vectorLayer"></wave-layer-selection>
+        <wave-multi-layer-selection [types]="allowedRasterTypes" formControlName="rasterLayers"
+                                    [min]="minNumberOfRasterInputs" [max]="maxNumberOfRasterInputs"></wave-multi-layer-selection>
+        <wave-dialog-section-heading
+            title="Configuration" subtitle="Specify the operator"
+        ></wave-dialog-section-heading>
+        <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
+            <mat-form-field *ngFor="let control of form['controls']['valueNames']['controls']; let i = index">
+                <mat-label>Value Name for Raster {{toLetters(i + 1)}}</mat-label>
+                <input [formControl]="control" matInput type="text">
+                <mat-hint *ngIf="$any($any(form.controls.valueNames).controls[i].errors)?.duplicateName" class="error">
+                    Duplicate Value
+                </mat-hint>
+            </mat-form-field>
+        </div>
+        <section>
+            <label>Aggregation Method:</label>
+            <mat-radio-group formControlName="aggregation" fxLayout="column">
+                <mat-radio-button value="first">Use first value</mat-radio-button>
+                <mat-radio-button value="mean">Average value</mat-radio-button>
+            </mat-radio-group>
+        </section>
+        <wave-operator-output-name formControlName="name">
+            <mat-hint align="end" class="error"
+                      *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            Create
+        </button>
+    </div>
+</form>
