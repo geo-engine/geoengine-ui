@@ -1,10 +1,11 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Layer} from '../../../../layers/layer.model';
-import {BehaviorSubject, Observable, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {ResultType, ResultTypes} from '../../../result-type.model';
-import {ProjectService} from '../../../../project/project.service';
-import {first} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Layer } from '../../../../layers/layer.model';
+import { BehaviorSubject, forkJoin, from, Observable, of, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { ResultType, ResultTypes } from '../../../result-type.model';
+import { ProjectService } from '../../../../project/project.service';
+import { first, mergeMap } from 'rxjs/operators';
+import { LayerMetadata } from 'dist/wave-core/lib/layers/layer-metadata';
 
 /**
  * This component allows selecting one layer.
@@ -15,7 +16,7 @@ import {first} from 'rxjs/operators';
     styleUrls: ['./layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
+        { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true },
     ],
 })
 export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlValueAccessor {
@@ -85,18 +86,23 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         if (changes.layers || changes.types) {
             if (this.layers instanceof Observable) {
                 this.layers.pipe(first()).subscribe(layers => {
-                    this.filteredLayers.next(
-                        layers.filter((layer: Layer) => {
-                            return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
+                    let o = layers.map(l => this.projectService.getLayerMetadata(l));
+
+                    forkJoin(o).subscribe(meta => this.filteredLayers.next(
+                        layers.filter((layer: Layer, i) => {
+                            return this.types.map(t => meta[i].isOfResultType(t)).includes(true);
                         })
-                    );
+                    ));
                 });
             } else if (this.layers instanceof Array) {
-                this.filteredLayers.next(
-                    this.layers.filter((layer: Layer) => {
-                        return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
+                const layers = this.layers as Array<Layer>;
+                let o = layers.map(l => this.projectService.getLayerMetadata(l));
+
+                forkJoin(o).subscribe(meta => this.filteredLayers.next(
+                    layers.filter((layer: Layer, i) => {
+                        return this.types.map(t => meta[i].isOfResultType(t)).includes(true);
                     })
-                );
+                ));
             }
 
             if (this.title === undefined) {

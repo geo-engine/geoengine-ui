@@ -24,8 +24,7 @@ class Raster extends ResultType {
 
 class Points extends ResultType {
     getCode(): string {
-        return 'vector';
-        // return 'points'; // TODO: use again when differentiation is possible
+        return 'points';
     }
 }
 
@@ -38,6 +37,12 @@ class Lines extends ResultType {
 class Polygons extends ResultType {
     getCode(): string {
         return 'polygons';
+    }
+}
+
+class Data extends ResultType {
+    getCode(): string {
+        return 'data';
     }
 }
 
@@ -60,6 +65,7 @@ export class ResultTypeCollection {
     POINTS: ResultType = new Points();
     LINES: ResultType = new Lines();
     POLYGONS: ResultType = new Polygons();
+    DATA: ResultType = new Data();
     PLOT: ResultType = new Plot();
     TEXT: ResultType = new Text();
 
@@ -75,6 +81,7 @@ export class ResultTypeCollection {
             this.POINTS,
             this.LINES,
             this.POLYGONS,
+            this.DATA,
             this.PLOT,
             this.TEXT,
         ];
@@ -84,6 +91,7 @@ export class ResultTypeCollection {
             this.POINTS,
             this.LINES,
             this.POLYGONS,
+            this.DATA
         ];
 
         this.VECTOR_TYPES = [

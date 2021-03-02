@@ -1,11 +1,14 @@
-import {HasLayerType, LayerType} from './layer.model';
-import {RasterResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
-import {RasterDataTypes, VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
+import { HasLayerType, LayerType } from './layer.model';
+import { RasterResultDescriptorDict, VectorResultDescriptorDict } from '../backend/backend.model';
+import { RasterDataType, RasterDataTypes, VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes } from '../operators/datatype.model';
 import * as Immutable from 'immutable';
-import {Measurement} from './measurement';
+import { Measurement } from './measurement';
+import { ResultType, ResultTypes } from '../operators/result-type.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     readonly abstract layerType: LayerType;
+
+    public abstract isOfResultType(resultType: ResultType);
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -31,15 +34,19 @@ export class VectorLayerMetadata extends LayerMetadata {
 
         return new VectorLayerMetadata(dataType, columns);
     }
+
+    public isOfResultType(resultType: ResultType): boolean {
+        return this.dataType.toResultType() === resultType;
+    }
 }
 
 export class RasterLayerMetadata extends LayerMetadata {
     readonly layerType = 'raster';
 
-    readonly dataType: VectorDataType;
+    readonly dataType: RasterDataType;
     readonly measurement: Measurement;
 
-    constructor(dataType: VectorDataType, measurement: Measurement) {
+    constructor(dataType: RasterDataType, measurement: Measurement) {
         super();
 
         this.dataType = dataType;
@@ -51,5 +58,9 @@ export class RasterLayerMetadata extends LayerMetadata {
         const measurement = Measurement.fromDict(dict.measurement);
 
         return new RasterLayerMetadata(dataType, measurement);
+    }
+
+    public isOfResultType(resultType: ResultType) {
+        return resultType == ResultTypes.RASTER;
     }
 }
