@@ -36,7 +36,7 @@ export class VectorLayerMetadata extends LayerMetadata {
     }
 
     public isOfResultType(resultType: ResultType): boolean {
-        return this.dataType.toResultType() === resultType;
+        return this.dataType.resultType === resultType;
     }
 }
 

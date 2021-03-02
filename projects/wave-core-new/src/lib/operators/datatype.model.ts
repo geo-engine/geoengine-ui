@@ -1,5 +1,5 @@
-import { NoDataDict } from '../backend/backend.model';
-import { ResultType, ResultTypes } from './result-type.model';
+import {NoDataDict} from '../backend/backend.model';
+import {ResultType, ResultTypes} from './result-type.model';
 
 /**
  * A class about a raster data type.
@@ -243,6 +243,8 @@ export class RasterDataTypeCollection {
 export const RasterDataTypes = RasterDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
 
 export abstract class VectorDataType {
+    abstract readonly resultType: ResultType;
+
     /**
      * Create a human readable output of the data type.
      * @returns The name.
@@ -255,50 +257,37 @@ export abstract class VectorDataType {
      * @return The name of the data type.
      */
     abstract getCode(): string;
-
-    /**
-     * @return the corresponding result type
-     */
-    abstract toResultType(): ResultType;
 }
 
 class Data extends VectorDataType {
+    resultType = ResultTypes.DATA;
+
     getCode(): string {
         return 'Data';
-    }
-
-    toResultType(): ResultType {
-        return ResultTypes.DATA;
     }
 }
 
 class MultiPoint extends VectorDataType {
+    resultType = ResultTypes.POINTS;
+
     getCode(): string {
         return 'MultiPoint';
-    }
-
-    toResultType(): ResultType {
-        return ResultTypes.POINTS;
     }
 }
 
 class MultiLineString extends VectorDataType {
+    resultType = ResultTypes.LINES;
+
     getCode(): string {
         return 'MultiLineString';
-    }
-
-    toResultType(): ResultType {
-        return ResultTypes.LINES;
     }
 }
 
 class MultiPolygon extends VectorDataType {
+    resultType = ResultTypes.POLYGONS;
+
     getCode(): string {
         return 'MultiPolygon';
-    }
-
-    toResultType(): ResultType {
-        return ResultTypes.POLYGONS;
     }
 }
 
