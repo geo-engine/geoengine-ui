@@ -38,6 +38,7 @@ import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.compon
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
+import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -76,11 +77,14 @@ export type OperatorListButtonGroups = Array<{
 export class OperatorListComponent implements OnInit {
 
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
-        // {
-        //     component: RasterValueExtractionOperatorComponent,
-        //     type: RasterValueExtractionType,
-        //     description: 'Attach raster values to vector data',
-        // },
+        {
+            component: RasterVectorJoinComponent,
+            type: {
+                NAME: 'Raster Vector Join',
+                ICON_URL: createIconDataUrl('Raster Vector Join'),
+            },
+            description: 'Attach raster values to multi-point data',
+        },
         // {
         //     component: RasterPolygonClipOperatorComponent,
         //     type: {
