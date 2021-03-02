@@ -1,14 +1,14 @@
-import { HasLayerType, LayerType } from './layer.model';
-import { RasterResultDescriptorDict, VectorResultDescriptorDict } from '../backend/backend.model';
-import { RasterDataType, RasterDataTypes, VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes } from '../operators/datatype.model';
+import {HasLayerType, LayerType} from './layer.model';
+import {RasterResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
+import {RasterDataType, RasterDataTypes, VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
 import * as Immutable from 'immutable';
-import { Measurement } from './measurement';
-import { ResultType, ResultTypes } from '../operators/result-type.model';
+import {Measurement} from './measurement';
+import {ResultType, ResultTypes} from '../operators/result-type.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     readonly abstract layerType: LayerType;
 
-    public abstract isOfResultType(resultType: ResultType);
+    public abstract isOfResultType(resultType: ResultType): boolean;
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -60,7 +60,7 @@ export class RasterLayerMetadata extends LayerMetadata {
         return new RasterLayerMetadata(dataType, measurement);
     }
 
-    public isOfResultType(resultType: ResultType) {
+    public isOfResultType(resultType: ResultType): boolean {
         return resultType == ResultTypes.RASTER;
     }
 }
