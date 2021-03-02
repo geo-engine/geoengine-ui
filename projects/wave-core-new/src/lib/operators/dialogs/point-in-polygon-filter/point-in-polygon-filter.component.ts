@@ -52,7 +52,7 @@ export class PointInPolygonFilterOperatorComponent {
 
         const name: string = this.form.controls['name'].value;
 
-        // TODO: add projection operator
+        // TODO: add projection operator when the CRSs of points and polygons don't match
         zip(
             this.projectService.getWorkflow(points.workflowId),
             this.projectService.getWorkflow(polygons.workflowId)
