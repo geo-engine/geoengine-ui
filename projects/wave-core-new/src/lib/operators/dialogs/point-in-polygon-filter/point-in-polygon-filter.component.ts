@@ -41,12 +41,6 @@ export class PointInPolygonFilterOperatorComponent {
     }
 
     add(event: Event) {
-        event.preventDefault(); // prevent page reload on error
-
-        if (this.form.invalid) {
-            return;
-        }
-
         const points = this.form.controls['pointLayer'].value as Layer;
         const polygons = this.form.controls['polygonLayer'].value as Layer;
 
