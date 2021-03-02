@@ -1,7 +1,7 @@
-import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { ChangeDetectionStrategy, Component, Input, OnInit, Type } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, Type} from '@angular/core';
 // import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 //
 // import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
@@ -10,12 +10,12 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, Type } from '@angula
 // import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
 // import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 //
-import { ExpressionOperatorComponent } from '../expression-operator/expression-operator.component';
+import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
 //
 // import {HistogramType} from '../../types/histogram-type.model';
 // import {RasterValueExtractionOperatorComponent} from '../raster-value-extraction/raster-value-extraction.component';
 // import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
-import { LayoutService } from '../../../layout.service';
+import {LayoutService} from '../../../layout.service';
 // import {ROperatorComponent} from '../r/r-operator/r-operator.component';
 // import {RScriptType} from '../../types/r-script-type.model';
 // import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
@@ -28,17 +28,17 @@ import { LayoutService } from '../../../layout.service';
 // import {BoxPlotType} from '../../types/boxplot-type.model';
 // import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
 // import {OperatorType} from '../../operator-type.model';
-import { ExpressionType } from '../../types/expression-type.model';
+import {ExpressionType} from '../../types/expression-type.model';
 // import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 // import {HeatmapType} from '../../types/heatmap-type.model';
 // import {TimePlotType} from '../../types/timeplot-type.model';
 // import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
 // import {StatisticsType} from '../../types/statistics-type.model';
-import { StatisticsPlotComponent } from '../statistics-plot/statistics-plot.component';
-import { createIconDataUrl } from '../../../util/icons';
-import { HistogramOperatorComponent } from '../histogram-operator/histogram-operator.component';
-import { MeanRasterPixelValuesOverTimeDialogComponent } from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
-import { PointInPolygonFilterOperatorComponent } from '../point-in-polygon-filter/point-in-polygon-filter.component';
+import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
+import {createIconDataUrl} from '../../../util/icons';
+import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
+import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
+import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -190,10 +190,10 @@ export class OperatorListComponent implements OnInit {
      * Specify (optionally) a custom set of operator groups and list entries (buttons)
      */
     @Input() operators: OperatorListButtonGroups = [ // default operator set
-        { name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS },
-        { name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS },
-        { name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS },
-        { name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS },
+        {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
+        {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
+        {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
+        {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
     ];
 
     operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
@@ -211,35 +211,35 @@ export class OperatorListComponent implements OnInit {
             this.searchString$.pipe(map(s => s.toLowerCase())),
         ]).pipe(
             map(([operatorGroups, searchString]) => {
-                const nameComparator = (a: string, b: string): number => {
-                    const stripped = (s: string): string => s.replace(' ', '');
+                    const nameComparator = (a: string, b: string): number => {
+                        const stripped = (s: string): string => s.replace(' ', '');
 
-                    return stripped(a).localeCompare(stripped(b));
-                };
+                        return stripped(a).localeCompare(stripped(b));
+                    };
 
-                const filteredGroups = [];
-                for (const group of operatorGroups) {
-                    const operators = [];
-                    for (const operator of group.list) {
-                        const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
-                        const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
+                    const filteredGroups = [];
+                    for (const group of operatorGroups) {
+                        const operators = [];
+                        for (const operator of group.list) {
+                            const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
+                            const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
 
 
-                        if (searchMatchesTypeName() || searchMatchesDescription()) {
-                            operators.push(operator);
+                            if (searchMatchesTypeName() || searchMatchesDescription()) {
+                                operators.push(operator);
+                            }
+                        }
+
+                        if (operators.length > 0) {
+                            filteredGroups.push({
+                                name: group.name,
+                                list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
+                            });
                         }
                     }
 
-                    if (operators.length > 0) {
-                        filteredGroups.push({
-                            name: group.name,
-                            list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
-                        });
-                    }
+                    return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
                 }
-
-                return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
-            }
             ),
         );
     }
@@ -248,7 +248,7 @@ export class OperatorListComponent implements OnInit {
      * Load a selected dialog into the sidenav
      */
     load(component: Type<any>) {
-        this.layoutService.setSidenavContentComponent({ component, keepParent: true });
+        this.layoutService.setSidenavContentComponent({component, keepParent: true});
     }
 
 }
