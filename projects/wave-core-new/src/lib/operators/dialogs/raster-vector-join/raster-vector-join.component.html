@@ -1,23 +1,23 @@
 <wave-sidenav-header>Extract Raster Values and Add it to a Vector Layer</wave-sidenav-header>
 
-<wave-dialog-help>
-    <p>
-        The <em>Raster Vector Join</em> allows extracting raster information to vector datasets.
-    </p>
-    <p>
-        One can select one input vector dataset and up to {{maxNumberOfRasterInputs}} raster datasets.
-        Each raster dataset will lead to one additional column in the output.
-        You can specify the names of these output columns by changing the <em>Value Names</em>.
-    <p>
-        The operator uses the raster values in the temporal validity of the vector data.
-        Thus, it is necessary to select the kind of aggregation.
-        <em>Use first value</em> means applying the value of the raster that is valid at time start.
-        <em>Average value</em> leads to aggregating all values of the raster time series for each feature.
-    </p>
-</wave-dialog-help>
-
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add()" fxLayout="column">
     <div fxFlex class="container">
+        <wave-dialog-help>
+            <p>
+                The <em>Raster Vector Join</em> allows extracting raster information to vector datasets.
+            </p>
+            <p>
+                One can select one input vector dataset and up to {{maxNumberOfRasterInputs}} raster datasets.
+                Each raster dataset will lead to one additional column in the output.
+                You can specify the names of these output columns by changing the <em>Value Names</em>.
+            <p>
+                The operator uses the raster values in the temporal validity of the vector data.
+                Thus, it is necessary to select the kind of aggregation.
+                <em>Use first value</em> means applying the value of the raster that is valid at time start.
+                <em>Average value</em> leads to aggregating all values of the raster time series for each feature.
+            </p>
+        </wave-dialog-help>
+
         <wave-layer-selection [types]="allowedVectorTypes" formControlName="vectorLayer"></wave-layer-selection>
         <wave-multi-layer-selection [types]="allowedRasterTypes" formControlName="rasterLayers"
                                     [min]="minNumberOfRasterInputs" [max]="maxNumberOfRasterInputs"></wave-multi-layer-selection>
