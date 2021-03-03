@@ -1,13 +1,14 @@
 <wave-sidenav-header>Point in Polygon Filter</wave-sidenav-header>
 
-<wave-dialog-help>
-    <p>
-        This operator filters the given point layer using the given polygon layer. The resulting layer contains only
-        (multi) points that are contained by at least one polygon spatially and temporally.
-    </p>
-</wave-dialog-help>
-
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+
+    <wave-dialog-help>
+        <p>
+            This operator filters the given point layer using the given polygon layer. The resulting layer contains only
+            (multi) points that are contained by at least one polygon spatially and temporally.
+        </p>
+    </wave-dialog-help>
+
     <div fxFlex class="container">
         <wave-layer-selection [types]="[ResultTypes.POINTS]" formControlName="pointLayer"></wave-layer-selection>
         <wave-layer-selection [types]="[ResultTypes.POLYGONS]" formControlName="polygonLayer"></wave-layer-selection>
