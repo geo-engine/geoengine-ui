@@ -1,18 +1,16 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-import { RandomColorService } from '../../../util/services/random-color.service';
+import {RandomColorService} from '../../../util/services/random-color.service';
 
-import { Layer, VectorLayer } from '../../../layers/layer.model';
-import { ResultTypes } from '../../result-type.model';
-import {
-    AbstractVectorSymbology, PointSymbology,
-} from '../../../layers/symbology/symbology.model';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { WaveValidators } from '../../../util/form.validators';
-import { ProjectService } from '../../../project/project.service';
-import { zip } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
-import { WorkflowDict } from '../../../backend/backend.model';
+import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {ResultTypes} from '../../result-type.model';
+import {AbstractVectorSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
+import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {WaveValidators} from '../../../util/form.validators';
+import {ProjectService} from '../../../project/project.service';
+import {zip} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
+import {WorkflowDict} from '../../../backend/backend.model';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -24,20 +22,16 @@ import { WorkflowDict } from '../../../backend/backend.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointInPolygonFilterOperatorComponent {
-
     ResultTypes = ResultTypes;
 
     form: FormGroup;
 
-    constructor(private randomColorService: RandomColorService,
-        private projectService: ProjectService,
-        private formBuilder: FormBuilder) {
+    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
             polygonLayer: [undefined, Validators.required],
         });
-
     }
 
     add() {
@@ -47,38 +41,41 @@ export class PointInPolygonFilterOperatorComponent {
         const name: string = this.form.controls['name'].value;
 
         // TODO: add projection operator when the CRSs of points and polygons don't match
-        zip(
-            this.projectService.getWorkflow(points.workflowId),
-            this.projectService.getWorkflow(polygons.workflowId)
-        ).pipe(map(([a, b]) => {
-            const workflow = {
-                type: 'Vector',
-                operator: {
-                    type: 'PointInPolygonFilter',
-                    params: null,
-                    raster_sources: [],
-                    vector_sources: [a.operator, b.operator]
-                }
-            } as WorkflowDict;
+        zip(this.projectService.getWorkflow(points.workflowId), this.projectService.getWorkflow(polygons.workflowId))
+            .pipe(
+                map(([a, b]) => {
+                    const workflow = {
+                        type: 'Vector',
+                        operator: {
+                            type: 'PointInPolygonFilter',
+                            params: null,
+                            raster_sources: [],
+                            vector_sources: [a.operator, b.operator],
+                        },
+                    } as WorkflowDict;
 
-            this.projectService.registerWorkflow(workflow).pipe(
-                mergeMap(workflowId => {
-                    return this.projectService.addLayer(
-                        new VectorLayer({
-                            workflowId,
-                            name: name,
-                            symbology: PointSymbology.createSymbology({
-                                fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                radius: 10,
-                                clustered: false,
+                    this.projectService
+                        .registerWorkflow(workflow)
+                        .pipe(
+                            mergeMap((workflowId) => {
+                                return this.projectService.addLayer(
+                                    new VectorLayer({
+                                        workflowId,
+                                        name: name,
+                                        symbology: PointSymbology.createSymbology({
+                                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                            radius: 10,
+                                            clustered: false,
+                                        }),
+                                        isLegendVisible: false,
+                                        isVisible: true,
+                                    }),
+                                );
                             }),
-                            isLegendVisible: false,
-                            isVisible: true,
-                        })
-                    );
-                })
-            ).subscribe();
-        })).subscribe();
+                        )
+                        .subscribe();
+                }),
+            )
+            .subscribe();
     }
-
 }

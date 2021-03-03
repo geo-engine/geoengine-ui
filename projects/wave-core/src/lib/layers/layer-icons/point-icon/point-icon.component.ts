@@ -19,10 +19,9 @@ export interface PointIconStyle {
     selector: 'wave-point-icon',
     templateUrl: './point-icon.component.svg',
     styleUrls: ['./point-icon.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointIconComponent implements OnInit, OnChanges {
-
     // the style to use for the icon
     @Input()
     iconStyle: PointIconStyle;
@@ -31,8 +30,7 @@ export class PointIconComponent implements OnInit, OnChanges {
     strokeColor = BLACK.rgbaCssString();
     fillColor = WHITE.rgbaCssString();
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnInit(): void {
         if (this.iconStyle) {
@@ -52,5 +50,4 @@ export class PointIconComponent implements OnInit, OnChanges {
         this.strokeColor = this.iconStyle.strokeRGBA.rgbaCssString();
         this.fillColor = this.iconStyle.fillRGBA.rgbaCssString();
     }
-
 }

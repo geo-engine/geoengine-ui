@@ -7,11 +7,7 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpOverviewComponent implements OnInit {
+    constructor() {}
 
-    constructor() {
-    }
-
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 }

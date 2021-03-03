@@ -1,7 +1,13 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {DataSet, VectorResultDescriptor} from '../dataset.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {AbstractVectorSymbology, LineSymbology, MappingRasterSymbology, PointSymbology, VectorSymbology} from '../../layers/symbology/symbology.model';
+import {
+    AbstractVectorSymbology,
+    LineSymbology,
+    MappingRasterSymbology,
+    PointSymbology,
+    VectorSymbology,
+} from '../../layers/symbology/symbology.model';
 import {Unit} from '../../operators/unit.model';
 import {ProjectService} from '../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
@@ -12,17 +18,14 @@ import {VectorDataTypes} from '../../operators/datatype.model';
     selector: 'wave-dataset',
     templateUrl: './dataset.component.html',
     styleUrls: ['./dataset.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataSetComponent implements OnInit {
-
     @Input() dataset: DataSet;
 
-    constructor(private projectService: ProjectService, private randomColorService: RandomColorService) {
-   }
+    constructor(private projectService: ProjectService, private randomColorService: RandomColorService) {}
 
-    ngOnInit(): void {
-   }
+    ngOnInit(): void {}
 
     add() {
         const workflow = this.dataset.createSourceWorkflow();
@@ -31,7 +34,7 @@ export class DataSetComponent implements OnInit {
             .registerWorkflow(workflow)
             .pipe(
                 mergeMap((workflowId) => {
-                    if (this.dataset.result_descriptor.getTypeString() === "Raster") {
+                    if (this.dataset.result_descriptor.getTypeString() === 'Raster') {
                         return this.projectService.addLayer(
                             new RasterLayer({
                                 workflowId,
@@ -45,13 +48,13 @@ export class DataSetComponent implements OnInit {
                                         min: 1,
                                         max: 255,
                                         interpolation: Unit.defaultUnit.interpolation,
-                                   }),
-                               }),
+                                    }),
+                                }),
                                 isLegendVisible: false,
                                 isVisible: true,
-                           })
+                            }),
                         );
-                   } else {
+                    } else {
                         const result_descriptor = this.dataset.result_descriptor as VectorResultDescriptor;
 
                         let symbology: VectorSymbology;
@@ -59,19 +62,19 @@ export class DataSetComponent implements OnInit {
                         switch (result_descriptor.data_type) {
                             case VectorDataTypes.MultiPoint:
                                 symbology = PointSymbology.createSymbology({
-                                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                            radius: 10,
-                                            clustered: false,
+                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                    radius: 10,
+                                    clustered: false,
                                 });
                                 break;
                             case VectorDataTypes.MultiLineString:
                                 symbology = LineSymbology.createSymbology({
-                                            strokeRGBA: this.randomColorService.getRandomColorRgba(),            
+                                    strokeRGBA: this.randomColorService.getRandomColorRgba(),
                                 });
                                 break;
                             case VectorDataTypes.MultiPolygon:
                                 symbology = VectorSymbology.createSymbology({
-                                            fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
                                 });
                                 break;
                         }
@@ -83,11 +86,11 @@ export class DataSetComponent implements OnInit {
                                 symbology: symbology,
                                 isLegendVisible: false,
                                 isVisible: true,
-                           })
+                            }),
                         );
-                   }
-               })
+                    }
+                }),
             )
             .subscribe();
-   }
+    }
 }

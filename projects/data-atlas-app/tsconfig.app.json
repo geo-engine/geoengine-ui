@@ -4,15 +4,9 @@
         "outDir": "../../out-tsc/app",
         "types": []
     },
-    "files": [
-        "src/main.ts",
-        "src/polyfills.ts"
-    ],
-    "include": [
-    ],
+    "files": ["src/main.ts", "src/polyfills.ts"],
+    "include": [],
     "paths": {
-        "wave-core": [
-            "dist/wave-core-new"
-        ]
+        "wave-core": ["dist/wave-core-new"]
     }
 }

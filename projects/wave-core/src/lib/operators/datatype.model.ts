@@ -186,13 +186,8 @@ export class DataTypeCollection {
     ALL_NUMERICS: Array<DataType>;
 
     protected constructor() {
-        this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
-            this.Alphanumeric,
-        ];
-        this.ALL_NUMERICS = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
-        ];
+        this.ALL_DATATYPES = [this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64, this.Alphanumeric];
+        this.ALL_NUMERICS = [this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64];
     }
 
     fromCode(code: string) {

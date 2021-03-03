@@ -100,7 +100,6 @@ export class WGS84 extends SpatialReference {
 }
 
 export class UTM32N extends SpatialReference {
-
     getCode(): string {
         return 'EPSG:32632';
     }
@@ -110,7 +109,7 @@ export class UTM32N extends SpatialReference {
     }
 
     getExtent(): [number, number, number, number] {
-        return [166021.4431, 0.0000, 833978.5569, 9329005.1825];
+        return [166021.4431, 0.0, 833978.5569, 9329005.1825];
     }
 
     getCrsURI(): string {
@@ -123,7 +122,6 @@ export class UTM32N extends SpatialReference {
 }
 
 export class ETRS89UTM32N extends SpatialReference {
-
     getCode(): string {
         return 'EPSG:25832';
     }
@@ -182,22 +180,21 @@ export class GEOS extends SpatialReference {
     }
 
     private registerProjection() {
-
         if (!GEOS.isProjectionRegistered) {
-            olAddProjection(new OlProjection({
-                code: this.getCode(),
-                extent: this.getExtent(),
-                units: 'm'
-            }));
+            olAddProjection(
+                new OlProjection({
+                    code: this.getCode(),
+                    extent: this.getExtent(),
+                    units: 'm',
+                }),
+            );
 
             GEOS.isProjectionRegistered = true;
         }
-
     }
 }
 
 export class ETRS89LAEA extends SpatialReference {
-
     getCode(): string {
         return 'EPSG:3035';
     }
@@ -261,9 +258,10 @@ export class ProjectionCollection {
     }
 
     private registerProj4Projections() {
-        const proj4DefStrings: Array<[string, string]> = this.ALL_PROJECTIONS.filter(p => !!p.getProj4String()).map(
-            p => [p.getCode(), p.getProj4String()]
-        );
+        const proj4DefStrings: Array<[string, string]> = this.ALL_PROJECTIONS.filter((p) => !!p.getProj4String()).map((p) => [
+            p.getCode(),
+            p.getProj4String(),
+        ]);
         if (!!proj4DefStrings && proj4DefStrings.length > 0) {
             proj4.defs(proj4DefStrings);
             olProj4Register(proj4);

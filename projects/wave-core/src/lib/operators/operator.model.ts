@@ -36,7 +36,6 @@ interface OperatorCloneOptions {
     operatorTypeParameterOptions?: OperatorTypeParameterOptions;
 }
 
-
 /**
  * Serialization interface
  */
@@ -108,10 +107,7 @@ export class Operator {
      * @param operators a map from serialized ids to already deserialized operators
      * @returns an operator
      */
-    static fromDict(
-        operatorDict: OperatorDict,
-        operators = new Map<OperatorId, Operator>()
-    ): Operator {
+    static fromDict(operatorDict: OperatorDict, operators = new Map<OperatorId, Operator>()): Operator {
         // the operator was deserialized before, so just return it
         if (operators.has(operatorDict.id)) {
             return operators.get(operatorDict.id);
@@ -120,33 +116,22 @@ export class Operator {
         // create the operator from the dict (recursively)
         const operator = new Operator({
             operatorType: OperatorTypeFactory.fromDict(operatorDict.operatorType),
-            operatorTypeParameterOptions: operatorDict.operatorTypeParameterOptions ?
-                OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions) : undefined,
+            operatorTypeParameterOptions: operatorDict.operatorTypeParameterOptions
+                ? OperatorTypeParameterOptionsFactory.fromDict(operatorDict.operatorTypeParameterOptions)
+                : undefined,
             resultType: ResultTypes.fromCode(operatorDict.resultType),
             projection: Projections.fromCode(operatorDict.projection),
             attributes: ImmutableList(operatorDict.attributes),
             dataTypes: ImmutableMap<AttributeName, DataType>(
-                (operatorDict.dataTypes as Array<[string, string]>).map(
-                    ([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]
-                )
+                (operatorDict.dataTypes as Array<[string, string]>).map(([name, dataTypeCode]) => [name, DataTypes.fromCode(dataTypeCode)]),
             ),
             units: ImmutableMap<AttributeName, Unit>(
-                (operatorDict.units as Array<[string, UnitDict]>).map(
-                    ([name, unitDict]) => [name, Unit.fromDict(unitDict)]
-                )
+                (operatorDict.units as Array<[string, UnitDict]>).map(([name, unitDict]) => [name, Unit.fromDict(unitDict)]),
             ),
-            rasterSources: ImmutableList(
-                operatorDict.rasterSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            pointSources: ImmutableList(
-                operatorDict.pointSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            lineSources: ImmutableList(
-                operatorDict.lineSources.map(dict => Operator.fromDict(dict, operators))
-            ),
-            polygonSources: ImmutableList(
-                operatorDict.polygonSources.map(dict => Operator.fromDict(dict, operators))
-            ),
+            rasterSources: ImmutableList(operatorDict.rasterSources.map((dict) => Operator.fromDict(dict, operators))),
+            pointSources: ImmutableList(operatorDict.pointSources.map((dict) => Operator.fromDict(dict, operators))),
+            lineSources: ImmutableList(operatorDict.lineSources.map((dict) => Operator.fromDict(dict, operators))),
+            polygonSources: ImmutableList(operatorDict.polygonSources.map((dict) => Operator.fromDict(dict, operators))),
         });
 
         // store the operator s.th. the same operator is not deserialized into two instances
@@ -177,29 +162,28 @@ export class Operator {
         this._projection = config.projection;
 
         if (config.attributes) {
-            this._attributes = config.attributes instanceof ImmutableList ?
-                config.attributes as ImmutableList<AttributeName> :
-                ImmutableList(config.attributes as Array<AttributeName>);
+            this._attributes =
+                config.attributes instanceof ImmutableList
+                    ? (config.attributes as ImmutableList<AttributeName>)
+                    : ImmutableList(config.attributes as Array<AttributeName>);
         } else {
             this._attributes = ImmutableList<AttributeName>();
         }
 
         if (config.dataTypes) {
-            this._dataTypes = config.dataTypes instanceof ImmutableMap ?
-                config.dataTypes as ImmutableMap<AttributeName, DataType> :
-                ImmutableMap<AttributeName, DataType>(
-                    (config.dataTypes as Map<AttributeName, DataType>).entries()
-                );
+            this._dataTypes =
+                config.dataTypes instanceof ImmutableMap
+                    ? (config.dataTypes as ImmutableMap<AttributeName, DataType>)
+                    : ImmutableMap<AttributeName, DataType>((config.dataTypes as Map<AttributeName, DataType>).entries());
         } else {
             this._dataTypes = ImmutableMap<AttributeName, DataType>();
         }
 
         if (config.units) {
-            this._units = config.units instanceof ImmutableMap ?
-                config.units as ImmutableMap<AttributeName, Unit> :
-                ImmutableMap<AttributeName, Unit>(
-                    (config.units as Map<AttributeName, Unit>).entries()
-                );
+            this._units =
+                config.units instanceof ImmutableMap
+                    ? (config.units as ImmutableMap<AttributeName, Unit>)
+                    : ImmutableMap<AttributeName, Unit>((config.units as Map<AttributeName, Unit>).entries());
         } else {
             this._units = ImmutableMap<AttributeName, Unit>();
         }
@@ -210,13 +194,12 @@ export class Operator {
             this._operatorTypeParameterOptions = undefined; // TODO: handle operators without parameters?
         }
 
-        const returnChecked = (source: ImmutableList<Operator> | Array<Operator>,
-                               type: ResultType): ImmutableList<Operator> => {
+        const returnChecked = (source: ImmutableList<Operator> | Array<Operator>, type: ResultType): ImmutableList<Operator> => {
             if (source) {
-                const list = source instanceof ImmutableList ?
-                    source as ImmutableList<Operator> : ImmutableList(source as Array<Operator>);
+                const list =
+                    source instanceof ImmutableList ? (source as ImmutableList<Operator>) : ImmutableList(source as Array<Operator>);
 
-                if (list.filter(op => op.resultType !== type).size > 0) {
+                if (list.filter((op) => op.resultType !== type).size > 0) {
                     throw Error(`The Input Operator is not of type ${type.toString()}.`);
                 } else {
                     return list;
@@ -311,8 +294,7 @@ export class Operator {
      * The total amount of sources.
      */
     get sourceCount(): number {
-        return this.rasterSources.size + this.pointSources.size
-            + this.lineSources.size + this.polygonSources.size;
+        return this.rasterSources.size + this.pointSources.size + this.lineSources.size + this.polygonSources.size;
     }
 
     /**
@@ -323,8 +305,7 @@ export class Operator {
     getAnySource(id: number) {
         const predicate = (operator: Operator) => operator._id === id;
 
-        for (const source of [this.rasterSources, this.pointSources,
-            this.lineSources, this.polygonSources]) {
+        for (const source of [this.rasterSources, this.pointSources, this.lineSources, this.polygonSources]) {
             const result = source.find(predicate);
 
             if (result) {
@@ -339,8 +320,7 @@ export class Operator {
      * Does the operator has sources or it it a **source operator**?
      */
     hasSources(): boolean {
-        return this.rasterSources.size > 0 || this.pointSources.size > 0
-            || this.lineSources.size > 0 || this.polygonSources.size > 0;
+        return this.rasterSources.size > 0 || this.pointSources.size > 0 || this.lineSources.size > 0 || this.polygonSources.size > 0;
     }
 
     /**
@@ -384,14 +364,10 @@ export class Operator {
                 attributes: this._attributes,
                 dataTypes: this._dataTypes,
                 units: this._units,
-                rasterSources: this.resultType === ResultTypes.RASTER ?
-                    ImmutableList.of(this) : ImmutableList<Operator>(),
-                pointSources: this.resultType === ResultTypes.POINTS ?
-                    ImmutableList.of(this) : ImmutableList<Operator>(),
-                lineSources: this.resultType === ResultTypes.LINES ?
-                    ImmutableList.of(this) : ImmutableList<Operator>(),
-                polygonSources: this.resultType === ResultTypes.POLYGONS ?
-                    ImmutableList.of(this) : ImmutableList<Operator>(),
+                rasterSources: this.resultType === ResultTypes.RASTER ? ImmutableList.of(this) : ImmutableList<Operator>(),
+                pointSources: this.resultType === ResultTypes.POINTS ? ImmutableList.of(this) : ImmutableList<Operator>(),
+                lineSources: this.resultType === ResultTypes.LINES ? ImmutableList.of(this) : ImmutableList<Operator>(),
+                polygonSources: this.resultType === ResultTypes.POLYGONS ? ImmutableList.of(this) : ImmutableList<Operator>(),
             });
         }
     }
@@ -408,15 +384,15 @@ export class Operator {
             id: this._id,
             resultType: this._resultType.getCode(),
             operatorType: this._operatorType.toDict(),
-            operatorTypeParameterOptions: (this._operatorTypeParameterOptions) ? this._operatorTypeParameterOptions.toDict() : undefined,
+            operatorTypeParameterOptions: this._operatorTypeParameterOptions ? this._operatorTypeParameterOptions.toDict() : undefined,
             projection: this._projection.getCode(),
             attributes: this._attributes.toArray(),
-            dataTypes: this._dataTypes.map(datatype => datatype.getCode()).toArray(),
-            units: this._units.map(unit => unit.toDict()).toArray(),
-            rasterSources: this.rasterSources.map(operator => operator.toDict()).toArray(),
-            pointSources: this.pointSources.map(operator => operator.toDict()).toArray(),
-            lineSources: this.lineSources.map(operator => operator.toDict()).toArray(),
-            polygonSources: this.polygonSources.map(operator => operator.toDict()).toArray(),
+            dataTypes: this._dataTypes.map((datatype) => datatype.getCode()).toArray(),
+            units: this._units.map((unit) => unit.toDict()).toArray(),
+            rasterSources: this.rasterSources.map((operator) => operator.toDict()).toArray(),
+            pointSources: this.pointSources.map((operator) => operator.toDict()).toArray(),
+            lineSources: this.lineSources.map((operator) => operator.toDict()).toArray(),
+            polygonSources: this.polygonSources.map((operator) => operator.toDict()).toArray(),
         };
     }
 
@@ -434,7 +410,7 @@ export class Operator {
         };
 
         if (this.hasSources()) {
-            const sources: { [index: string]: Array<QueryDict> } = {};
+            const sources: {[index: string]: Array<QueryDict>} = {};
 
             const sourcesList: Array<[string, ImmutableList<Operator>]> = [
                 [ResultTypes.RASTER.getCode(), this.rasterSources],
@@ -444,9 +420,7 @@ export class Operator {
             ];
             for (const [sourceString, source] of sourcesList) {
                 if (source.size > 0) {
-                    sources[sourceString] = source.map(
-                        (operator: Operator) => operator.toQueryDict()
-                    ).toArray();
+                    sources[sourceString] = source.map((operator: Operator) => operator.toQueryDict()).toArray();
                 }
             }
 
@@ -464,8 +438,9 @@ export class Operator {
     public cloneWithModifications(options?: OperatorCloneOptions): Operator {
         return new Operator({
             operatorType: options.operatorType ? options.operatorType : this._operatorType,
-            operatorTypeParameterOptions:
-                options.operatorTypeParameterOptions ? options.operatorTypeParameterOptions : this._operatorTypeParameterOptions,
+            operatorTypeParameterOptions: options.operatorTypeParameterOptions
+                ? options.operatorTypeParameterOptions
+                : this._operatorTypeParameterOptions,
             resultType: this._resultType,
             projection: this._projection,
             attributes: this._attributes,
@@ -474,8 +449,7 @@ export class Operator {
             rasterSources: this.rasterSources,
             pointSources: this.pointSources,
             lineSources: this.lineSources,
-            polygonSources: this.polygonSources
+            polygonSources: this.polygonSources,
         });
     }
-
 }

@@ -17,7 +17,7 @@ export interface SidenavConfig {
     component: Type<any>;
     keepParent?: boolean;
     parent?: SidenavConfig;
-    config?: { [key: string]: any };
+    config?: {[key: string]: any};
 }
 
 /**
@@ -25,7 +25,6 @@ export interface SidenavConfig {
  */
 @Injectable()
 export class LayoutService {
-
     static readonly remInPx: number = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
     private static _scrollbarWidthPx: number;
@@ -125,19 +124,14 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     private static calculateLayerDetailViewHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
-        return Math.max(
-            Math.ceil(layerDetailViewHeightPercentage * totalAvailableHeight),
-            LayoutService.getLayerDetailViewBarHeightPx()
-        );
+        return Math.max(Math.ceil(layerDetailViewHeightPercentage * totalAvailableHeight), LayoutService.getLayerDetailViewBarHeightPx());
     }
 
     /**
      * Calculate the height of the map.
      */
     private static calculateMapHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
-        const layerDetailViewHeight = LayoutService.calculateLayerDetailViewHeight(
-            layerDetailViewHeightPercentage, totalAvailableHeight
-        );
+        const layerDetailViewHeight = LayoutService.calculateLayerDetailViewHeight(layerDetailViewHeightPercentage, totalAvailableHeight);
         return totalAvailableHeight - layerDetailViewHeight;
     }
 
@@ -205,7 +199,6 @@ export class LayoutService {
      * Sets the visibility of the layer detail view.
      */
     setLayerDetailViewVisibility(visible: boolean) {
-
         this.layerDetailViewVisible$.next(visible);
     }
 
@@ -250,7 +243,6 @@ export class LayoutService {
      * Sets the percentage of the vertical viewport that the data table covers.
      */
     setLayerDetailViewHeightPercentage(percentage: number) {
-
         if (percentage < 0 || percentage > 1) {
             throw Error('The data table percentage value must be between 0 and 1.');
         }
@@ -264,7 +256,7 @@ export class LayoutService {
     getLayerDetailViewHeight(totalAvailableHeight: number): number {
         return LayoutService.calculateLayerDetailViewHeight(
             this.layerDetailViewVisible$.value ? this.layerDetailViewHeightPercentage$.value : 0,
-            totalAvailableHeight
+            totalAvailableHeight,
         );
     }
 
@@ -272,11 +264,7 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getLayerDetailViewStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return combineLatest([
-            this.layerDetailViewHeightPercentage$,
-            totalAvailableHeight$,
-            this.layerDetailViewVisible$,
-        ]).pipe(
+        return combineLatest([this.layerDetailViewHeightPercentage$, totalAvailableHeight$, this.layerDetailViewVisible$]).pipe(
             map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
                 return LayoutService.calculateLayerDetailViewHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
@@ -292,7 +280,7 @@ export class LayoutService {
     getMapHeight(totalAvailableHeight: number): number {
         return LayoutService.calculateMapHeight(
             this.layerDetailViewVisible$.value ? this.layerDetailViewHeightPercentage$.value : 0,
-            totalAvailableHeight
+            totalAvailableHeight,
         );
     }
 
@@ -300,17 +288,10 @@ export class LayoutService {
      * Calculate the height of the data table.
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
-        return combineLatest([
-            this.layerDetailViewHeightPercentage$,
-            totalAvailableHeight$,
-            this.layerDetailViewVisible$,
-        ]).pipe(
+        return combineLatest([this.layerDetailViewHeightPercentage$, totalAvailableHeight$, this.layerDetailViewVisible$]).pipe(
             map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
-                return LayoutService.calculateMapHeight(
-                    layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
-                    totalAvailableHeight
-                );
-            })
+                return LayoutService.calculateMapHeight(layerDetailViewVisible ? layerDetailViewHeightPercentage : 0, totalAvailableHeight);
+            }),
         );
     }
 
@@ -337,7 +318,7 @@ export class LayoutService {
                     layerDetailViewTabIndex,
                     layerDetailViewHeightPercentage,
                 };
-            })
+            }),
         );
     }
 
@@ -365,7 +346,7 @@ export class LayoutService {
             const sidenavStyle = window.getComputedStyle(sidenavComponent);
             const widthString = sidenavStyle.width;
 
-            if (widthString.indexOf('px') === (widthString.length - 2)) {
+            if (widthString.indexOf('px') === widthString.length - 2) {
                 return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx;
             } else {
                 throw new Error('sidenav width must be a `px` value');
@@ -374,14 +355,13 @@ export class LayoutService {
 
         // this timeout prevents calling the `getWidth` function before the DOM is initialized
         setTimeout(() => {
-            fromEvent(window, 'resize').pipe(
-                debounceTime(this.config.DELAYS.DEBOUNCE),
-            ).subscribe(() => {
-                this.sidenavContentMaxWidth$.next(getWidth());
-            });
+            fromEvent(window, 'resize')
+                .pipe(debounceTime(this.config.DELAYS.DEBOUNCE))
+                .subscribe(() => {
+                    this.sidenavContentMaxWidth$.next(getWidth());
+                });
 
             this.sidenavContentMaxWidth$.next(getWidth());
         });
     }
-
 }

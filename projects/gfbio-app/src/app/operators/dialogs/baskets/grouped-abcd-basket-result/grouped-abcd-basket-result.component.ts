@@ -14,7 +14,7 @@ import {
     DataTypes,
     Unit,
     ResultTypes,
-    Operator
+    Operator,
 } from 'wave-core';
 
 import {BasicColumns, CsvColumn} from '../csv.model';
@@ -36,8 +36,7 @@ class UnitDataSource extends DataSource<IBasketGroupedAbcdUnits> {
         return observableOf(this.units);
     }
 
-    disconnect() {
-    }
+    disconnect() {}
 }
 
 @Component({
@@ -55,9 +54,11 @@ export class GroupedAbcdBasketResultComponent extends BasketResultComponent<IBas
 
     private abcdSchemaSubscription: Subscription;
 
-    static createOperatorFromGroupedABCDData(result: IBasketGroupedAbcdResult,
-                                             sourceSchema: Array<CsvColumn>,
-                                             filterUnits: boolean): Operator {
+    static createOperatorFromGroupedABCDData(
+        result: IBasketGroupedAbcdResult,
+        sourceSchema: Array<CsvColumn>,
+        filterUnits: boolean,
+    ): Operator {
         const basicColumns: BasicColumns = {
             numeric: [],
             textual: [],
@@ -68,7 +69,6 @@ export class GroupedAbcdBasketResultComponent extends BasketResultComponent<IBas
         const units = new Map<string, Unit>();
 
         for (const attribute of sourceSchema) {
-
             if (attribute.numeric) {
                 basicColumns.numeric.push(attribute.name);
                 attributes.push(attribute.name);
@@ -102,17 +102,19 @@ export class GroupedAbcdBasketResultComponent extends BasketResultComponent<IBas
         });
     }
 
-    constructor(@Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
-                protected readonly layerService: LayerService,
-                protected readonly randomColorService: RandomColorService,
-                @Inject(UserService) protected readonly userService: GFBioUserService,
-                protected readonly projectService: ProjectService) {
+    constructor(
+        @Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
+        protected readonly layerService: LayerService,
+        protected readonly randomColorService: RandomColorService,
+        @Inject(UserService) protected readonly userService: GFBioUserService,
+        protected readonly projectService: ProjectService,
+    ) {
         super(mappingQueryService, layerService, randomColorService, userService, projectService);
     }
 
     ngOnInit() {
         this.hasUnits = this.result.units.length > 0;
-        this.abcdSchemaSubscription = this.userService.getSourceSchemaAbcd().subscribe(schema => {
+        this.abcdSchemaSubscription = this.userService.getSourceSchemaAbcd().subscribe((schema) => {
             // TODO: subscribe when something might change...
             this.sourceSchema = schema;
         });
@@ -127,8 +129,7 @@ export class GroupedAbcdBasketResultComponent extends BasketResultComponent<IBas
     add(filterUnits: boolean) {
         this.createAndAddLayer(
             GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(this.result, this.sourceSchema, filterUnits),
-            this.result.title
+            this.result.title,
         );
     }
-
 }

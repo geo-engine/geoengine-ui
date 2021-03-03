@@ -41,7 +41,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * DI of services and setup of observables for the template
      */
     constructor(private projectService: ProjectService) {
-        this.form = new FormGroup({
+        this.form = new FormGroup(
+            {
                 rasterLayers: new FormControl(undefined, [Validators.required]),
                 expression: new FormControl('1 * A', Validators.compose([Validators.required, Validators.pattern('.*A.*')])),
                 dataType: new FormControl(undefined, [Validators.required]),
@@ -55,15 +56,16 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 projection: new FormControl(undefined, [Validators.required]),
                 name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
             },
-            [unitOrCustomUnit]);
+            [unitOrCustomUnit],
+        );
 
         this.outputUnits$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
                 return rasterLayers
-                    .map(layer => layer.operator.getUnit(ExpressionOperatorComponent.RASTER_VALUE))
-                    .filter(unit => unit !== this.UNITLESS_UNIT);
+                    .map((layer) => layer.operator.getUnit(ExpressionOperatorComponent.RASTER_VALUE))
+                    .filter((unit) => unit !== this.UNITLESS_UNIT);
             }),
-            tap(outputUnits => {
+            tap((outputUnits) => {
                 const unitControl = this.form.controls['unit'];
                 const currentUnit: Unit = unitControl.value;
                 if (outputUnits.length > 0 && outputUnits.indexOf(currentUnit) === -1) {
@@ -77,8 +79,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
 
         this.outputUnitIsCustom$ = this.form.controls.unit.valueChanges.pipe(
-            map(unit => unit === this.CUSTOM_UNIT_ID),
-            tap(isCustomUnit => {
+            map((unit) => unit === this.CUSTOM_UNIT_ID),
+            tap((isCustomUnit) => {
                 if (isCustomUnit) {
                     this.form.controls.customUnit.enable({onlySelf: true});
                 } else {
@@ -87,31 +89,32 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             }),
         );
 
-        this.unitSubscription = this.form.controls.unit.valueChanges.pipe(
-            filter(unit => unit instanceof Unit)
-        ).subscribe((unit: Unit) => {
-            if (unit.min) {
-                this.form.controls.minValue.setValue(unit.min);
-            }
-            if (unit.max) {
-                this.form.controls.maxValue.setValue(unit.max);
-            }
-        });
+        this.unitSubscription = this.form.controls.unit.valueChanges
+            .pipe(filter((unit) => unit instanceof Unit))
+            .subscribe((unit: Unit) => {
+                if (unit.min) {
+                    this.form.controls.minValue.setValue(unit.min);
+                }
+                if (unit.max) {
+                    this.form.controls.maxValue.setValue(unit.max);
+                }
+            });
 
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
                 const outputDataTypes = DataTypes.ALL_NUMERICS.map((dataType: DataType) => [dataType, '']) as Array<[DataType, string]>;
 
-                const rasterDataTypes = rasterLayers.map(layer =>
-                    layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined);
+                const rasterDataTypes = rasterLayers.map((layer) =>
+                    layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined,
+                );
 
                 for (let i = 0; i < outputDataTypes.length; i++) {
                     const outputDataType = outputDataTypes[i][0];
 
                     const indices = rasterDataTypes
-                        .map((dataType, index) => dataType === outputDataType ? index : -1)
-                        .filter(index => index >= 0)
-                        .map(index => LetterNumberConverter.toLetters(index + 1));
+                        .map((dataType, index) => (dataType === outputDataType ? index : -1))
+                        .filter((index) => index >= 0)
+                        .map((index) => LetterNumberConverter.toLetters(index + 1));
 
                     if (indices.length > 0) {
                         outputDataTypes[i][1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
@@ -120,15 +123,16 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
                 return outputDataTypes;
             }),
-            tap(outputDataTypes => {
+            tap((outputDataTypes) => {
                 const dataTypeControl = this.form.controls.dataType;
                 const currentDataType: DataType = dataTypeControl.value;
 
                 const rasterDataTypes = (this.form.controls.rasterLayers.value as Array<RasterLayer<MappingRasterSymbology>>)
-                    .map(layer => layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined)
-                    .filter(layer => !!layer);
+                    .map((layer) => (layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined))
+                    .filter((layer) => !!layer);
 
-                if (rasterDataTypes.includes(currentDataType)) { // is already set at a meaningful type
+                if (rasterDataTypes.includes(currentDataType)) {
+                    // is already set at a meaningful type
                     return;
                 }
 
@@ -142,14 +146,15 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 });
             }),
         );
-
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.form.controls['rasterLayers'].updateValueAndValidity({
-            onlySelf: false,
-            emitEvent: true,
-        }));
+        setTimeout(() =>
+            this.form.controls['rasterLayers'].updateValueAndValidity({
+                onlySelf: false,
+                emitEvent: true,
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -180,7 +185,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 min: minValue,
                 max: maxValue,
             });
-        } else { // custom unit from strings
+        } else {
+            // custom unit from strings
             unit = new Unit({
                 measurement: this.form.controls.customUnit.value.measurement,
                 unit: this.form.controls.customUnit.value.unit,
@@ -201,7 +207,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             attributes: ['value'],
             dataTypes: new Map<string, DataType>().set('value', dataType),
             units: new Map<string, Unit>().set('value', unit),
-            rasterSources: rasterLayers.map(l => l.operator.getProjectedOperator(projection)),
+            rasterSources: rasterLayers.map((l) => l.operator.getProjectedOperator(projection)),
         });
 
         const layer = new RasterLayer({
@@ -210,9 +216,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             symbology: MappingRasterSymbology.createSymbology({unit}),
         });
         this.projectService.addLayer(layer);
-
     }
-
 }
 
 /**
@@ -225,7 +229,7 @@ function unitOrCustomUnit(group: FormGroup): ValidationErrors | null {
         return null;
     }
 
-    const customUnit: { measurement: string, unit: string } = group.controls.customUnit.value;
+    const customUnit: {measurement: string; unit: string} = group.controls.customUnit.value;
 
     if (customUnit.measurement && customUnit.unit) {
         return null;

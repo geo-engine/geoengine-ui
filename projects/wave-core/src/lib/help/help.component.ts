@@ -7,6 +7,5 @@ import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent implements OnInit {
-    ngOnInit() {
-    }
+    ngOnInit() {}
 }

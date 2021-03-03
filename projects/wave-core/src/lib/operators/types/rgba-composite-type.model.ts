@@ -6,39 +6,39 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operat
  * allows for further emphasis on colors.
  */
 interface RgbaCompositeTypeConfig {
-    rasterRedMin: number,
-    rasterRedMax: number,
-    rasterRedScale: number,
-    rasterGreenMin: number,
-    rasterGreenMax: number,
-    rasterGreenScale: number,
-    rasterBlueMin: number,
-    rasterBlueMax: number,
-    rasterBlueScale: number,
+    rasterRedMin: number;
+    rasterRedMax: number;
+    rasterRedScale: number;
+    rasterGreenMin: number;
+    rasterGreenMax: number;
+    rasterGreenScale: number;
+    rasterBlueMin: number;
+    rasterBlueMax: number;
+    rasterBlueScale: number;
 }
 
 interface RgbaCompositeTypeMappingDict extends OperatorTypeMappingDict {
-    raster_r_min: number,
-    raster_r_max: number,
-    raster_r_scale: number,
-    raster_g_min: number,
-    raster_g_max: number,
-    raster_g_scale: number,
-    raster_b_min: number,
-    raster_b_max: number,
-    raster_b_scale: number,
+    raster_r_min: number;
+    raster_r_max: number;
+    raster_r_scale: number;
+    raster_g_min: number;
+    raster_g_max: number;
+    raster_g_scale: number;
+    raster_b_min: number;
+    raster_b_max: number;
+    raster_b_scale: number;
 }
 
 export interface RgbaCompositeTypeDict extends OperatorTypeDict {
-    rasterRedMin: number,
-    rasterRedMax: number,
-    rasterRedScale: number,
-    rasterGreenMin: number,
-    rasterGreenMax: number,
-    rasterGreenScale: number,
-    rasterBlueMin: number,
-    rasterBlueMax: number,
-    rasterBlueScale: number,
+    rasterRedMin: number;
+    rasterRedMax: number;
+    rasterRedScale: number;
+    rasterGreenMin: number;
+    rasterGreenMax: number;
+    rasterGreenScale: number;
+    rasterBlueMin: number;
+    rasterBlueMax: number;
+    rasterBlueScale: number;
 }
 
 /**
@@ -156,5 +156,4 @@ export class RgbaCompositeType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return RgbaCompositeType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

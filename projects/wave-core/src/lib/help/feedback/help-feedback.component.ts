@@ -5,14 +5,12 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 @Component({
     selector: 'wave-help-feedback',
     templateUrl: 'help-feedback.component.html',
-    styleUrls: ['help-feedback.component.scss']
+    styleUrls: ['help-feedback.component.scss'],
 })
 export class HelpFeedbackComponent implements OnInit {
-
     form: FormGroup;
 
-    constructor(private formBuilder: FormBuilder) {
-    }
+    constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({

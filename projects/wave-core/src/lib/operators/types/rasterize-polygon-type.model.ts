@@ -2,7 +2,7 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operat
 
 interface RasterizePolygonTypeMappingDict extends OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
 
-export interface RasterizePolygonTypeDict extends OperatorTypeDict  {} // tslint:disable-line:no-empty-interface
+export interface RasterizePolygonTypeDict extends OperatorTypeDict {} // tslint:disable-line:no-empty-interface
 
 interface RasterizePolygonTypeConfig {} // tslint:disable-line:no-empty-interface
 
@@ -14,9 +14,15 @@ export class RasterizePolygonType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(RasterizePolygonType._TYPE);
     private static _NAME = 'Rasterize Polygon';
 
-    static get TYPE(): string { return RasterizePolygonType._TYPE; }
-    static get ICON_URL(): string { return RasterizePolygonType._ICON_URL; }
-    static get NAME(): string { return RasterizePolygonType._NAME; }
+    static get TYPE(): string {
+        return RasterizePolygonType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return RasterizePolygonType._ICON_URL;
+    }
+    static get NAME(): string {
+        return RasterizePolygonType._NAME;
+    }
 
     static fromDict(dict: RasterizePolygonTypeDict): RasterizePolygonType {
         return new RasterizePolygonType(dict);

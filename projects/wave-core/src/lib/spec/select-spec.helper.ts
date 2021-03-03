@@ -7,7 +7,6 @@ import {ChangeDetectorRef, DebugElement} from '@angular/core';
  * Please take care that the functions are called in the proper environments (beforeEach, it, fakeAsync,...)
  */
 export class SelectSpecHelper {
-
     private overlayContainer: OverlayContainer;
     private overlayContainerElement: HTMLElement;
     private trigger: DebugElement;

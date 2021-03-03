@@ -62,9 +62,7 @@ import {IfGuestDirective} from './util/directives/if-guest.directive';
 import {IfLoggedInDirective} from './util/directives/if-logged-in.directive';
 import {LayerExportComponent} from './layers/dialogs/layer-export/layer-export.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
-import {
-    LayerListWorkflowParameterSliderComponent
-} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
+import {LayerListWorkflowParameterSliderComponent} from './operators/parameter-options/layer-list-workflow-parameter-slider/layer-list-workflow-parameter-slider.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {NewProjectComponent} from './project/new-project/new-project.component';
 import {LoadProjectComponent} from './project/load-project/load-project.component';
@@ -78,9 +76,7 @@ import {TimeInputComponent} from './time/time-input/time-input.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart-operator/pie-chart-operator.component';
 import {ScatterPlotComponent} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.component';
 import {TimePlotComponent} from './operators/dialogs/time-plot-operator/time-plot-operator.component';
-import {
-    WorkflowParameterChoiceDialogComponent
-} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
+import {WorkflowParameterChoiceDialogComponent} from './project/workflow-parameter-choice-dialog/workflow-parameter-choice-dialog.component';
 import {LayerShareComponent} from './layers/dialogs/layer-share/layer-share.component';
 import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
 import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
@@ -103,12 +99,7 @@ import {NbspPipe, ProvenanceListComponent} from './provenance/provenance-list/pr
 import {NumericAttributeFilterOperatorComponent} from './operators/dialogs/numeric-attribute-filter/numeric-attribute-filter.component';
 import {NumericPipe} from './operators/dialogs/scatter-plot-operator/scatter-plot-operator.pipe';
 import {OlDrawFeaturesComponent} from './operators/dialogs/draw-features/ol-draw-features.component';
-import {
-    OlLineLayerComponent,
-    OlPointLayerComponent,
-    OlPolygonLayerComponent,
-    OlRasterLayerComponent,
-} from './map/map-layer.component';
+import {OlLineLayerComponent, OlPointLayerComponent, OlPolygonLayerComponent, OlRasterLayerComponent} from './map/map-layer.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {PlotListComponent} from './plots/plot-list/plot-list.component';
@@ -140,12 +131,8 @@ import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace
 import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
 import {TestIdComponentDirective} from './spec/test-id-component.directive';
 import {LayerStatisticsViewComponent} from './plots/layer-statistics-view/layer-statistics-view.component';
-import {
-    LayerStatisticsNumericDetailsComponent
-} from './plots/layer-statistics-view/layer-statistics-numeric-details/layer-statistics-numeric-details.component';
-import {
-    LayerStatisticsTextualDetailsComponent
-} from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
+import {LayerStatisticsNumericDetailsComponent} from './plots/layer-statistics-view/layer-statistics-numeric-details/layer-statistics-numeric-details.component';
+import {LayerStatisticsTextualDetailsComponent} from './plots/layer-statistics-view/layer-statistics-textual-details/layer-statistics-textual-details.component';
 import {RgbCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
 import {RasterMaskComponent} from './operators/dialogs/raster-mask/raster-mask.component';
@@ -401,5 +388,4 @@ const WAVE_PIPES = [
         ZoomHandlesComponent,
     ],
 })
-export class WaveCoreModule {
-}
+export class WaveCoreModule {}

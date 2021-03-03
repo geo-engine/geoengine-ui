@@ -1,4 +1,3 @@
-
 import {Observable, ReplaySubject, Subject, EMPTY, of as observableOf} from 'rxjs';
 
 import {tap, map, first, mergeMap} from 'rxjs/operators';
@@ -28,11 +27,7 @@ const KEYS = {
 };
 
 class ArtifactServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {request: string; sessionToken: string; parameters?: ParametersType}) {
         super({
             service: 'artifact',
             request: config.request,
@@ -58,25 +53,24 @@ interface MappingResponse {
  * StorageProvider implementation that uses the mapping's artifact service.
  */
 export class MappingStorageProvider extends StorageProvider {
-
     private http: HttpClient;
     private session: Session;
     private createDefaultProject: () => Project;
 
     private projectName$: ReplaySubject<string> = new ReplaySubject<string>(1);
 
-    private static mappingHasResult(response: { result: boolean | string }): boolean {
+    private static mappingHasResult(response: {result: boolean | string}): boolean {
         return response.result && typeof response.result === 'boolean';
     }
 
     constructor(config: {
-        config: Config,
-        projectService: ProjectService,
-        notificationService: NotificationService,
-        http: HttpClient,
-        session: Session,
-        createDefaultProject: () => Project,
-        projectName?: string,
+        config: Config;
+        projectService: ProjectService;
+        notificationService: NotificationService;
+        http: HttpClient;
+        session: Session;
+        createDefaultProject: () => Project;
+        projectName?: string;
     }) {
         super(config.config, config.projectService, config.notificationService);
         this.http = config.http;
@@ -87,86 +81,86 @@ export class MappingStorageProvider extends StorageProvider {
         if (config.projectName) {
             this.setCurrentProjectName(config.projectName);
         } else {
-            this.getCurrentProjectName()
-                .subscribe(this.projectName$);
+            this.getCurrentProjectName().subscribe(this.projectName$);
         }
     }
 
     loadWorkspace(): Observable<Workspace> {
-        return this.projectName$.pipe(first(), mergeMap(projectName => {
-            if (!projectName) {
-                return observableOf({
-                    project: this.createDefaultProject(),
-                    layers: [],
-                });
-            } else {
-                const request = new ArtifactServiceRequestParameters({
-                    request: 'get',
-                    sessionToken: this.session.sessionToken,
-                    parameters: {
-                        username: this.session.user,
-                        type: TYPES.PROJECTS,
-                        name: projectName,
-                    },
-                });
-                return this.http
-                    .get<MappingResponse>(
-                        this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-                        {headers: request.getHeaders()}
-                    ).pipe(
-                    map(response => {
-                        if (MappingStorageProvider.mappingHasResult(response)) {
-                            const workspace: WorkspaceDict = JSON.parse(response.value);
+        return this.projectName$.pipe(
+            first(),
+            mergeMap((projectName) => {
+                if (!projectName) {
+                    return observableOf({
+                        project: this.createDefaultProject(),
+                        layers: [],
+                    });
+                } else {
+                    const request = new ArtifactServiceRequestParameters({
+                        request: 'get',
+                        sessionToken: this.session.sessionToken,
+                        parameters: {
+                            username: this.session.user,
+                            type: TYPES.PROJECTS,
+                            name: projectName,
+                        },
+                    });
+                    return this.http
+                        .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+                        .pipe(
+                            map((response) => {
+                                if (MappingStorageProvider.mappingHasResult(response)) {
+                                    const workspace: WorkspaceDict = JSON.parse(response.value);
 
-                            const operatorMap = new Map<number, Operator>();
+                                    const operatorMap = new Map<number, Operator>();
 
-                            return {
-                                project: Project.fromDict({
-                                    dict: workspace.project,
-                                    config: this.config,
-                                    notificationService: this.notificationService,
-                                    operatorMap: operatorMap,
-                                })
-                            }
-                        } else {
-                            // the workspace does not exist
-                            return {
-                                project: this.createDefaultProject(),
-                            };
-                        }
-                    }));
-            }
-        }), );
+                                    return {
+                                        project: Project.fromDict({
+                                            dict: workspace.project,
+                                            config: this.config,
+                                            notificationService: this.notificationService,
+                                            operatorMap: operatorMap,
+                                        }),
+                                    };
+                                } else {
+                                    // the workspace does not exist
+                                    return {
+                                        project: this.createDefaultProject(),
+                                    };
+                                }
+                            }),
+                        );
+                }
+            }),
+        );
     }
 
     saveWorkspace(workspace: Workspace): Observable<{}> {
         const subject = new Subject();
 
-        this.projectName$.pipe(
-            first(),
-            mergeMap(projectName => {
+        this.projectName$
+            .pipe(
+                first(),
+                mergeMap((projectName) => {
+                    let currentNameRequest: Observable<{}>;
+                    if (projectName === workspace.project.name) {
+                        currentNameRequest = observableOf({});
+                    } else {
+                        currentNameRequest = this.setCurrentProjectName(workspace.project.name);
+                    }
 
-                let currentNameRequest: Observable<{}>;
-                if (projectName === workspace.project.name) {
-                    currentNameRequest = observableOf({});
-                } else {
-                    currentNameRequest = this.setCurrentProjectName(workspace.project.name);
-                }
-
-                return currentNameRequest.pipe(
-                    mergeMap(() => this.saveWorkspaceHelper(workspace)));
-            }),
-            mergeMap(updateSuccessful => {
-                if (updateSuccessful) {
-                    return observableOf({});
-                } else {
-                    return this.saveWorkspaceHelper(workspace, 'create');
-                }
-            }), )
+                    return currentNameRequest.pipe(mergeMap(() => this.saveWorkspaceHelper(workspace)));
+                }),
+                mergeMap((updateSuccessful) => {
+                    if (updateSuccessful) {
+                        return observableOf({});
+                    } else {
+                        return this.saveWorkspaceHelper(workspace, 'create');
+                    }
+                }),
+            )
             .subscribe(
                 () => subject.next(),
-                () => {
-                },
+                () => {},
                 () => subject.complete(),
             );
 
@@ -176,17 +170,18 @@ export class MappingStorageProvider extends StorageProvider {
     // SAVE AND LOAD LAYOUT LOCALLY
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(KEYS.LAYOUT_SETTINGS);
-        if (layoutSettings === null) { // tslint:disable-line:no-null-keyword
+        if (layoutSettings === null) {
+            // tslint:disable-line:no-null-keyword
             return observableOf(undefined);
         } else {
             return observableOf(JSON.parse(layoutSettings));
         }
-    };
+    }
 
     saveLayoutSettings(dict: LayoutDict): Observable<{}> {
         localStorage.setItem(KEYS.LAYOUT_SETTINGS, JSON.stringify(dict));
         return observableOf({});
-    };
+    }
 
     projectExists(name: string): Observable<boolean> {
         const request = new ArtifactServiceRequestParameters({
@@ -199,11 +194,8 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get<MappingResponse>(
-                this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-                {headers: request.getHeaders()}
-            ).pipe(
-            map(MappingStorageProvider.mappingHasResult));
+            .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+            .pipe(map(MappingStorageProvider.mappingHasResult));
     }
 
     getProjects(): Observable<Array<string>> {
@@ -215,24 +207,23 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get<MappingResponse>(
-                this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-                {headers: request.getHeaders()}
-            ).pipe(
-            map(response => {
-                if (MappingStorageProvider.mappingHasResult(response)) {
-                    const artifacts: Array<ArtifactDefinition> = response.artifacts;
-                    return artifacts.filter(
-                        artifact => artifact.user === this.session.user // TODO: refactor for sharing
-                    ).map(
-                        artifact => artifact.name
-                    );
-                } else {
-                    // TODO: handle error
-                    return [];
-                }
-            }));
-    };
+            .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+            .pipe(
+                map((response) => {
+                    if (MappingStorageProvider.mappingHasResult(response)) {
+                        const artifacts: Array<ArtifactDefinition> = response.artifacts;
+                        return artifacts
+                            .filter(
+                                (artifact) => artifact.user === this.session.user, // TODO: refactor for sharing
+                            )
+                            .map((artifact) => artifact.name);
+                    } else {
+                        // TODO: handle error
+                        return [];
+                    }
+                }),
+            );
+    }
 
     saveRScript(name: string, script: RScript): Observable<void> {
         const scriptDict: RScriptDict = {
@@ -251,42 +242,40 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http
-            .post<MappingResponse>(
-                this.config.MAPPING_URL,
-                updateRequest.toMessageBody(true),
-                {headers: updateRequest.getHeaders()}
-            ).pipe(
-            mergeMap(response => {
-                if (MappingStorageProvider.mappingHasResult(response)) {
-                    return observableOf(undefined);
-                } else {
-                    // TODO: refactor inner request
-                    // `create` on error
-                    const createRequest = new ArtifactServiceRequestParameters({
-                        request: 'create',
-                        sessionToken: this.session.sessionToken,
-                        parameters: {
-                            type: TYPES.R_SCRIPTS,
-                            name: name,
-                            value: JSON.stringify(scriptDict),
-                        },
-                    });
+            .post<MappingResponse>(this.config.MAPPING_URL, updateRequest.toMessageBody(true), {headers: updateRequest.getHeaders()})
+            .pipe(
+                mergeMap((response) => {
+                    if (MappingStorageProvider.mappingHasResult(response)) {
+                        return observableOf(undefined);
+                    } else {
+                        // TODO: refactor inner request
+                        // `create` on error
+                        const createRequest = new ArtifactServiceRequestParameters({
+                            request: 'create',
+                            sessionToken: this.session.sessionToken,
+                            parameters: {
+                                type: TYPES.R_SCRIPTS,
+                                name: name,
+                                value: JSON.stringify(scriptDict),
+                            },
+                        });
 
-                    return this.http
-                        .post<MappingResponse>(
-                            this.config.MAPPING_URL,
-                            createRequest.toMessageBody(),
-                            {headers: createRequest.getHeaders()}
-                        ).pipe(
-                        map(response2 => {
-                            if (MappingStorageProvider.mappingHasResult(response2)) {
-                                return observableOf(undefined);
-                            } else {
-                                // TODO: error handling
-                            }
-                        }));
-                }
-            }));
+                        return this.http
+                            .post<MappingResponse>(this.config.MAPPING_URL, createRequest.toMessageBody(), {
+                                headers: createRequest.getHeaders(),
+                            })
+                            .pipe(
+                                map((response2) => {
+                                    if (MappingStorageProvider.mappingHasResult(response2)) {
+                                        return observableOf(undefined);
+                                    } else {
+                                        // TODO: error handling
+                                    }
+                                }),
+                            );
+                    }
+                }),
+            );
     }
 
     loadRScript(name: string): Observable<RScript> {
@@ -299,18 +288,19 @@ export class MappingStorageProvider extends StorageProvider {
                 name: name,
             },
         });
-        return this.http.get<MappingResponse>(
-            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-            {headers: request.getHeaders()}
-        ).pipe(map(response => {
-            const rScriptDict: RScriptDict = JSON.parse(response.value);
+        return this.http
+            .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+            .pipe(
+                map((response) => {
+                    const rScriptDict: RScriptDict = JSON.parse(response.value);
 
-            return {
-                resultType: ResultTypes.fromCode(rScriptDict.resultType),
-                code: rScriptDict.code,
-            };
-        }));
-    };
+                    return {
+                        resultType: ResultTypes.fromCode(rScriptDict.resultType),
+                        code: rScriptDict.code,
+                    };
+                }),
+            );
+    }
 
     getRScripts(): Observable<Array<string>> {
         const request = new ArtifactServiceRequestParameters({
@@ -320,25 +310,26 @@ export class MappingStorageProvider extends StorageProvider {
                 type: TYPES.R_SCRIPTS,
             },
         });
-        return this.http.get<MappingResponse>(
-            this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-            {headers: request.getHeaders()}
-        ).pipe(map(response => {
-            if (MappingStorageProvider.mappingHasResult(response)) {
-                const artifacts: Array<ArtifactDefinition> = response.artifacts;
-                return artifacts.filter(
-                    artifact => artifact.user === this.session.user // TODO: refactor for sharing
-                ).map(
-                    artifact => artifact.name
-                );
-            } else {
-                // TODO: handle error
-                return [];
-            }
-        }));
-    };
+        return this.http
+            .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+            .pipe(
+                map((response) => {
+                    if (MappingStorageProvider.mappingHasResult(response)) {
+                        const artifacts: Array<ArtifactDefinition> = response.artifacts;
+                        return artifacts
+                            .filter(
+                                (artifact) => artifact.user === this.session.user, // TODO: refactor for sharing
+                            )
+                            .map((artifact) => artifact.name);
+                    } else {
+                        // TODO: handle error
+                        return [];
+                    }
+                }),
+            );
+    }
 
-    private saveWorkspaceHelper(workspace: Workspace, request: ('update' | 'create') = 'update'): Observable<boolean> {
+    private saveWorkspaceHelper(workspace: Workspace, request: 'update' | 'create' = 'update'): Observable<boolean> {
         const projectName = workspace.project.name;
 
         const updateRequest = new ArtifactServiceRequestParameters({
@@ -354,15 +345,11 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         return this.http
-            .post<MappingResponse>(
-                this.config.MAPPING_URL,
-                updateRequest.toMessageBody(true),
-                {headers: updateRequest.getHeaders()}
-            ).pipe(
-            map(MappingStorageProvider.mappingHasResult));
+            .post<MappingResponse>(this.config.MAPPING_URL, updateRequest.toMessageBody(true), {headers: updateRequest.getHeaders()})
+            .pipe(map(MappingStorageProvider.mappingHasResult));
     }
 
-    private setCurrentProjectName(name: string, request: ('update' | 'create') = 'update'): Observable<{}> {
+    private setCurrentProjectName(name: string, request: 'update' | 'create' = 'update'): Observable<{}> {
         const subject = new Subject();
 
         const updateRequest = new ArtifactServiceRequestParameters({
@@ -376,29 +363,25 @@ export class MappingStorageProvider extends StorageProvider {
         });
 
         this.http
-            .post<MappingResponse>(
-                this.config.MAPPING_URL,
-                updateRequest.toMessageBody(),
-                {headers: updateRequest.getHeaders()}
-            ).pipe(
-            mergeMap(response => {
-                if (typeof response.result !== 'boolean') {
-                    // `create` on error
-                    if (request === 'update') {
-                        return this.setCurrentProjectName(name, 'create');
+            .post<MappingResponse>(this.config.MAPPING_URL, updateRequest.toMessageBody(), {headers: updateRequest.getHeaders()})
+            .pipe(
+                mergeMap((response) => {
+                    if (typeof response.result !== 'boolean') {
+                        // `create` on error
+                        if (request === 'update') {
+                            return this.setCurrentProjectName(name, 'create');
+                        } else {
+                            // TODO: handle error if mapping is erroneous or internet is down
+                            return EMPTY;
+                        }
                     } else {
-                        // TODO: handle error if mapping is erroneous or internet is down
-                        return EMPTY;
+                        return observableOf({}).pipe(tap(() => this.projectName$.next(name)));
                     }
-                } else {
-                    return observableOf({}).pipe(
-                        tap(() => this.projectName$.next(name)));
-                }
-            }))
+                }),
+            )
             .subscribe(
                 () => subject.next(),
-                () => {
-                },
+                () => {},
                 () => subject.complete(),
             );
 
@@ -416,17 +399,15 @@ export class MappingStorageProvider extends StorageProvider {
             },
         });
         return this.http
-            .get<MappingResponse>(
-                this.config.MAPPING_URL + '?' + request.toMessageBody(true),
-                {headers: request.getHeaders()}
-            ).pipe(
-            map(response => {
-                if (MappingStorageProvider.mappingHasResult(response)) {
-                    return response.value;
-                } else {
-                    return undefined;
-                }
-            }));
+            .get<MappingResponse>(this.config.MAPPING_URL + '?' + request.toMessageBody(true), {headers: request.getHeaders()})
+            .pipe(
+                map((response) => {
+                    if (MappingStorageProvider.mappingHasResult(response)) {
+                        return response.value;
+                    } else {
+                        return undefined;
+                    }
+                }),
+            );
     }
-
 }

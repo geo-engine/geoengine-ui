@@ -213,9 +213,7 @@ export class RasterDataTypeCollection {
     ALL_DATATYPES: Array<RasterDataType>;
 
     protected constructor() {
-        this.ALL_DATATYPES = [
-            this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64,
-        ];
+        this.ALL_DATATYPES = [this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64];
     }
 
     fromCode(code: string) {

@@ -1,6 +1,13 @@
 import {
-    Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChange, ViewChild, AfterViewInit,
-    ElementRef, OnDestroy,
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnChanges,
+    SimpleChange,
+    ViewChild,
+    AfterViewInit,
+    ElementRef,
+    OnDestroy,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
@@ -18,28 +25,29 @@ const LANGUAGES = ['r'];
  */
 @Component({
     selector: 'wave-code-editor',
-    template: `
-        <textarea #editor></textarea>
-    `,
-    styles: [`
-        :host {
-            display: block;
-        }
+    template: ` <textarea #editor></textarea> `,
+    styles: [
+        `
+            :host {
+                display: block;
+            }
 
-        div {
-            height: 100%;
-            width: 100%;
-        }
-    `],
-    providers: [{
-        provide: NG_VALUE_ACCESSOR,
-        useExisting: CodeEditorComponent,
-        multi: true,
-    }],
+            div {
+                height: 100%;
+                width: 100%;
+            }
+        `,
+    ],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: CodeEditorComponent,
+            multi: true,
+        },
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CodeEditorComponent
-    implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     @ViewChild('editor', {static: true}) editorRef: ElementRef;
 
     @Input() language: string;
@@ -51,7 +59,7 @@ export class CodeEditorComponent
     private onTouched: () => void;
     private changeSubscription: Subscription;
 
-    ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+    ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
         if (this.editor) {
             // tslint:disable-next-line:forin
             for (const attribute in changes) {

@@ -69,7 +69,7 @@ export interface UnitDict {
     min?: number;
     max?: number;
     interpolation: number;
-    classes: { [index: number]: string };
+    classes: {[index: number]: string};
 }
 
 /**
@@ -81,7 +81,7 @@ export interface UnitMappingDict {
     min?: number;
     max?: number;
     interpolation: string;
-    classes?: { [index: number]: string };
+    classes?: {[index: number]: string};
 }
 
 /**
@@ -155,8 +155,7 @@ export class Unit {
      * Deserialize a unit from unit information from the backend
      */
     static fromMappingDict(dict: UnitMappingDict): Unit {
-        let interpolation = (!!dict.interpolation) ?
-            nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
+        let interpolation = !!dict.interpolation ? nameToInterpolation(dict.interpolation) : Interpolation.Unknown;
         const classes = new Map<number, Class>();
         if (dict.classes !== undefined) {
             if (interpolation === Interpolation.Unknown) {
@@ -248,8 +247,8 @@ export class Unit {
      */
     toDict(): UnitDict {
         const classes: {
-            [index: number]: string
-        } = this._classes === undefined ? {} : this._classes.toJS() as { [index: number]: string };
+            [index: number]: string;
+        } = this._classes === undefined ? {} : (this._classes.toJS() as {[index: number]: string});
 
         return {
             measurement: this._measurement,
@@ -278,10 +277,9 @@ export class Unit {
             dict.max = this._max;
         }
         if (this._unit === 'classification') {
-            dict['classes'] = this._classes.toJS() as { [index: number]: string };
+            dict['classes'] = this._classes.toJS() as {[index: number]: string};
         }
 
         return dict;
     }
-
 }

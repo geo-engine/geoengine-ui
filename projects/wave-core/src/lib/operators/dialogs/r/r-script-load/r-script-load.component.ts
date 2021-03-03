@@ -14,31 +14,30 @@ export interface RScriptLoadResult {
     selector: 'wave-r-script-load',
     templateUrl: './r-script-load.component.html',
     styleUrls: ['./r-script-load.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RScriptLoadComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     scriptNames$ = new ReplaySubject<Array<string>>(1);
     loading$ = new BehaviorSubject<boolean>(true);
 
-    constructor(private storageService: StorageService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MatDialogRef<RScriptLoadComponent>,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private storageService: StorageService,
+        private formBuilder: FormBuilder,
+        private dialogRef: MatDialogRef<RScriptLoadComponent>,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
             scriptName: [undefined, Validators.required],
         });
 
-        this.storageService.getRScripts()
-            .subscribe(scripts => {
-                this.scriptNames$.next(scripts);
-                this.loading$.next(false);
-            });
+        this.storageService.getRScripts().subscribe((scripts) => {
+            this.scriptNames$.next(scripts);
+            this.loading$.next(false);
+        });
     }
 
     ngAfterViewInit() {
@@ -49,13 +48,10 @@ export class RScriptLoadComponent implements OnInit, AfterViewInit {
         this.loading$.next(true);
 
         const scriptName: string = this.form.controls['scriptName'].value;
-        this.storageService.loadRScriptByName(
-            scriptName
-        ).subscribe(script => {
+        this.storageService.loadRScriptByName(scriptName).subscribe((script) => {
             this.loading$.next(false);
             this.notificationService.info(`Loaded R script  »${scriptName}«`);
             this.dialogRef.close({script: script} as RScriptLoadResult);
         });
     }
-
 }

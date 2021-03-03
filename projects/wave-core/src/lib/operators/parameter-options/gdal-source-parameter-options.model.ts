@@ -4,7 +4,7 @@ import {
     OperatorTypeParameterOptions,
     OperatorTypeParameterOptionsConfig,
     ParameterName,
-    ParameterOptionType
+    ParameterOptionType,
 } from '../operator-type-parameter-options.model';
 
 import {GdalSourceType} from '../types/gdal-source-type.model';
@@ -31,7 +31,6 @@ export interface GdalSourceChannelOptions extends OptionsDict {
  * GDAL source operator parameter options.
  */
 export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
-
     private channelConfig: DictParameterArray<GdalSourceChannelOptions>;
 
     constructor(config: GdalSourceParameterOptionsConfig) {
@@ -44,9 +43,7 @@ export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
     }
 
     getParameterOptions(): Array<[ParameterName, DictParameterArray<OptionsDict>]> {
-        return [
-            ['channelConfig', this.channelConfig]
-        ];
+        return [['channelConfig', this.channelConfig]];
     }
 
     toDict(): GdalSourceParameterOptionsConfig {
@@ -57,9 +54,6 @@ export class GdalSourceParameterOptions extends OperatorTypeParameterOptions {
     }
 
     getParametersTypes(): Array<[ParameterName, ParameterOptionType]> {
-        return [
-            ['channelConfig', this.channelConfig.parameterType]
-        ];
+        return [['channelConfig', this.channelConfig.parameterType]];
     }
-
 }

@@ -32,7 +32,8 @@
     fill: #fff;
 }
 
-:host .histogram ::ng-deep .axis path, .axis line {
+:host .histogram ::ng-deep .axis path,
+.axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
@@ -57,7 +58,7 @@
     width: 100%;
     line-height: 1;
     color: rgba(0, 0, 0, 0.8);
-    content: "25BC";
+    content: '25BC';
     position: absolute;
     text-align: center;
 }

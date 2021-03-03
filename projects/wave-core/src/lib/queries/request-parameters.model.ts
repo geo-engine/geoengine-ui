@@ -33,12 +33,10 @@ export class RequestParameters {
         if (!this.immutable) {
             this.parameters = this.parameters.asImmutable();
         }
-        return this.parameters.map(
-            (value, key) => [
-                key,
-                encode ? encodeURIComponent(value.toString()) : value,
-            ].join('=')
-        ).valueSeq().join('&');
+        return this.parameters
+            .map((value, key) => [key, encode ? encodeURIComponent(value.toString()) : value].join('='))
+            .valueSeq()
+            .join('&');
     }
 
     asMap(): Map<string, ParameterType> {
@@ -65,12 +63,7 @@ export class RequestParameters {
 }
 
 export class MappingRequestParameters extends RequestParameters {
-    constructor(config: {
-        service: string;
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {service: string; request: string; sessionToken: string; parameters?: ParametersType}) {
         super(config.parameters);
         this.parameters.merge({
             service: config.service,
@@ -87,7 +80,7 @@ export class MappingRequestParameters extends RequestParameters {
     }
 
     setParameters(parameters: ParametersType) {
-        Object.keys(parameters).forEach(key => {
+        Object.keys(parameters).forEach((key) => {
             if (['service', 'request', 'sessionToken'].indexOf(key) > 0) {
                 throw Error('You must not reset "service", "request" or "sessionToken"');
             }

@@ -23,7 +23,6 @@ enum FormStatus {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -35,28 +34,30 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription: Subscription;
 
-    constructor(private readonly changeDetectorRef: ChangeDetectorRef,
-                private readonly config: Config,
-                private readonly userService: UserService,
-                private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly config: Config,
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.loginForm = new FormGroup({
-            email: new FormControl('', Validators.compose([
-                Validators.required,
-                WaveValidators.keyword([this.config.USER.GUEST.NAME]),
-            ])),
+            email: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
             password: new FormControl('', Validators.required),
         });
     }
 
     ngOnInit() {
-        this.userService.getSessionStream().pipe(first()).subscribe(session => {
-            if (session.user.isGuest) {
-                this.formStatus$.next(FormStatus.LoggedOut);
-            } else {
-                this.user = session.user;
-                this.formStatus$.next(FormStatus.LoggedIn);
-            }
-        });
+        this.userService
+            .getSessionStream()
+            .pipe(first())
+            .subscribe((session) => {
+                if (session.user.isGuest) {
+                    this.formStatus$.next(FormStatus.LoggedOut);
+                } else {
+                    this.user = session.user;
+                    this.formStatus$.next(FormStatus.LoggedIn);
+                }
+            });
 
         // this essentially allows checking for the sidenav-header component on status changes
         this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
@@ -76,31 +77,35 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     login() {
         this.formStatus$.next(FormStatus.Loading);
 
-        this.userService.login({
-            email: this.loginForm.controls['email'].value,
-            password: this.loginForm.controls['password'].value,
-        }).subscribe(
-            session => {
-                this.user = session.user;
-                this.invalidCredentials$.next(false);
-                this.formStatus$.next(FormStatus.LoggedIn);
-            },
-            () => { // on error
-                this.invalidCredentials$.next(true);
-                (this.loginForm.controls['password'] as FormControl).setValue('');
-                this.formStatus$.next(FormStatus.LoggedOut);
-            }
-        );
+        this.userService
+            .login({
+                email: this.loginForm.controls['email'].value,
+                password: this.loginForm.controls['password'].value,
+            })
+            .subscribe(
+                (session) => {
+                    this.user = session.user;
+                    this.invalidCredentials$.next(false);
+                    this.formStatus$.next(FormStatus.LoggedIn);
+                },
+                () => {
+                    // on error
+                    this.invalidCredentials$.next(true);
+                    (this.loginForm.controls['password'] as FormControl).setValue('');
+                    this.formStatus$.next(FormStatus.LoggedOut);
+                },
+            );
     }
 
     logout() {
         this.formStatus$.next(FormStatus.Loading);
 
         this.userService.guestLogin().subscribe(
-            _ => {
+            (_) => {
                 this.loginForm.controls['password'].setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             },
-            error => this.notificationService.error(`The backend is currently unavailable (${error})`));
+            (error) => this.notificationService.error(`The backend is currently unavailable (${error})`),
+        );
     }
 }

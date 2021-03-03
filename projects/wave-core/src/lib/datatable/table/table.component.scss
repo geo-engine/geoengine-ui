@@ -18,7 +18,8 @@
     background: fade-out(#ffffff, 0.1);
 }
 
-.mat-header-row, .mat-row {
+.mat-header-row,
+.mat-row {
     min-height: 40px;
     padding-left: 0;
 }
@@ -27,7 +28,8 @@
     z-index: 11;
 }
 
-.mat-header-cell, .mat-cell {
+.mat-header-cell,
+.mat-cell {
     height: 36px;
 
     &:not(.tableFixedVertical) {
@@ -66,7 +68,7 @@
     background: var(--wave-faded-accent-color, grey);
 
     .tableFixed::before {
-        content: " ";
+        content: ' ';
         position: absolute;
         top: 0;
         left: 0;
@@ -76,7 +78,8 @@
     }
 }
 
-.offsetterTop, .offsetterBottom {
+.offsetterTop,
+.offsetterBottom {
     padding: 0;
     border: 0;
     min-height: 0;
@@ -87,7 +90,6 @@
         padding: 0;
     }
 }
-
 
 .no-layer {
     display: table;

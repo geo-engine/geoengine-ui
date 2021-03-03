@@ -28,9 +28,15 @@ export class TimePlotType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(TimePlotType._TYPE);
     private static _NAME = 'Time Plot';
 
-    static get TYPE(): string { return TimePlotType._TYPE; }
-    static get ICON_URL(): string { return TimePlotType._ICON_URL; }
-    static get NAME(): string { return TimePlotType._NAME; }
+    static get TYPE(): string {
+        return TimePlotType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return TimePlotType._ICON_URL;
+    }
+    static get NAME(): string {
+        return TimePlotType._NAME;
+    }
 
     private code: string;
     private attribute: string;
@@ -60,11 +66,11 @@ export class TimePlotType extends OperatorType {
         this.resultType = ResultTypes.PLOT;
 
         const camelInputType = this.inputType.toString().charAt(0).toUpperCase() + this.inputType.toString().substr(1).toLowerCase();
-        const grouping = this.isGrouping ? 'grouping = data$\`' + config.grouping + '\`;' : '';
-        const df = this.isGrouping ? 'data.frame(start, attribute, grouping);' :
-            'data.frame(start, attribute);';
-        const ggplot = this.isGrouping ? 'ggplot(df, aes(x=start, y=attribute, group=grouping, color=grouping))' :
-            'ggplot(df, aes(x=start,y=attribute))';
+        const grouping = this.isGrouping ? 'grouping = data$`' + config.grouping + '`;' : '';
+        const df = this.isGrouping ? 'data.frame(start, attribute, grouping);' : 'data.frame(start, attribute);';
+        const ggplot = this.isGrouping
+            ? 'ggplot(df, aes(x=start, y=attribute, group=grouping, color=grouping))'
+            : 'ggplot(df, aes(x=start,y=attribute))';
         this.code = `
 library(ggplot2);
 
@@ -137,5 +143,4 @@ print(p)
     cloneWithModifications(options?: {}): OperatorType {
         return TimePlotType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

@@ -11,17 +11,14 @@ import {StatisticsType} from '../../types/statistics-type.model';
     selector: 'wave-statistics-plot',
     templateUrl: './statistics-plot.component.html',
     styleUrls: ['./statistics-plot.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy {
-
     form: FormGroup;
 
     ResultTypes = ResultTypes;
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService) {
-    }
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -35,7 +32,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         const operator: Operator = new Operator({
             operatorType: new StatisticsType({
                 raster_height: 256,
-                raster_width: 256
+                raster_width: 256,
             }),
             resultType: ResultTypes.PLOT,
             projection: sourceOperator.projection,
@@ -53,14 +50,13 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         this.projectService.addPlot(plot);
     }
 
-    ngOnDestroy() {
-    }
+    ngOnDestroy() {}
 
     ngAfterViewInit() {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,
-                emitEvent: true
+                emitEvent: true,
             });
             this.form.controls['layer'].updateValueAndValidity();
         });

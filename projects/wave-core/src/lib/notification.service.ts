@@ -3,7 +3,8 @@ import {Subject, Observable} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 export enum NotificationType {
-    Info, Error,
+    Info,
+    Error,
 }
 
 interface Notification {
@@ -15,9 +16,7 @@ interface Notification {
 export class NotificationService {
     private notification$ = new Subject<Notification>();
 
-    constructor(
-        private snackBar: MatSnackBar
-    ) {}
+    constructor(private snackBar: MatSnackBar) {}
 
     getNotificationStream(): Observable<Notification> {
         return this.notification$;

@@ -11,7 +11,11 @@ import {
     SourceRasterLayerDescription,
     MappingSourceDict,
     MappingSourceResponse,
-    MappingTransform, SourceVectorLayerDescription, ProvenanceInfo, MappingSourceRasterLayerDict, MappingSourceVectorLayerDict
+    MappingTransform,
+    SourceVectorLayerDescription,
+    ProvenanceInfo,
+    MappingSourceRasterLayerDict,
+    MappingSourceVectorLayerDict,
 } from '../operators/dialogs/data-repository/mapping-source.model';
 
 import {Unit} from '../operators/unit.model';
@@ -22,7 +26,7 @@ import {
     FeatureDBListEntry,
     featureDBListEntryToOperator,
     FeatureDBServiceListParameters,
-    FeatureDBServiceUploadParameters
+    FeatureDBServiceUploadParameters,
 } from '../queries/feature-db.model';
 import {NotificationService} from '../notification.service';
 import {ColorizerData} from '../colors/colorizer-data.model';
@@ -38,11 +42,7 @@ export interface Session {
 }
 
 class UserServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {request: string; sessionToken: string; parameters?: ParametersType}) {
         super({
             service: 'USER',
             request: config.request,
@@ -53,10 +53,7 @@ class UserServiceRequestParameters extends MappingRequestParameters {
 }
 
 class LoginRequestParameters extends UserServiceRequestParameters {
-    constructor(config: {
-        username: string;
-        password: string;
-    }) {
+    constructor(config: {username: string; password: string}) {
         super({
             request: 'login',
             sessionToken: undefined,
@@ -82,43 +79,41 @@ export class UserService {
     protected rasterSourceError$ = new BehaviorSubject<boolean>(false);
     protected reloadRasterSources$ = new BehaviorSubject<void>(undefined);
 
-    constructor(protected readonly config: Config,
-                protected readonly http: HttpClient,
-                protected readonly notificationService: NotificationService) {
-        this.session$ = new BehaviorSubject(
-            this.loadSessionData()
-        );
+    constructor(
+        protected readonly config: Config,
+        protected readonly http: HttpClient,
+        protected readonly notificationService: NotificationService,
+    ) {
+        this.session$ = new BehaviorSubject(this.loadSessionData());
 
         this.user$ = new BehaviorSubject(new Guest(config));
-        this.isGuestUser$ = this.session$.pipe(map(s => s.user === this.config.USER.GUEST.NAME));
+        this.isGuestUser$ = this.session$.pipe(map((s) => s.user === this.config.USER.GUEST.NAME));
 
         // storage of the session
-        this.session$.subscribe(newSession => {
-            this.isSessionValid(newSession).subscribe(isValid => {
+        this.session$.subscribe((newSession) => {
+            this.isSessionValid(newSession).subscribe((isValid) => {
                 if (isValid) {
                     this.saveSessionData(newSession);
 
-                    this.getUserDetails(newSession)
-                        .subscribe(user => {
-                            if (user) {
-                                this.user$.next(user);
-                            } else {
-                                this.user$.next(new Guest(config));
-                            }
-                        });
+                    this.getUserDetails(newSession).subscribe((user) => {
+                        if (user) {
+                            this.user$.next(user);
+                        } else {
+                            this.user$.next(new Guest(config));
+                        }
+                    });
                 } else {
                     this.guestLogin().subscribe();
                 }
             });
         });
 
-        this.createRasterSourcesStream(this.session$, this.reloadRasterSources$)
-            .subscribe(sources => {
-                this.rasterSources$.next(sources);
-                if (this.rasterSourceError$.getValue()) {
-                    this.rasterSourceError$.next(false);
-                }
-            });
+        this.createRasterSourcesStream(this.session$, this.reloadRasterSources$).subscribe((sources) => {
+            this.rasterSources$.next(sources);
+            if (this.rasterSourceError$.getValue()) {
+                this.rasterSourceError$.next(false);
+            }
+        });
     }
 
     /**
@@ -163,7 +158,7 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was succesful, `false` otherwise.
      */
-    login(credentials: { user: string, password: string, staySignedIn?: boolean }): Observable<boolean> {
+    login(credentials: {user: string; password: string; staySignedIn?: boolean}): Observable<boolean> {
         if (credentials.staySignedIn === undefined) {
             credentials.staySignedIn = true;
         }
@@ -172,12 +167,13 @@ export class UserService {
             username: credentials.user,
             password: credentials.password,
         });
-        return this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-            map(result => {
+        return this.request<{result: string | boolean; session: string}>(parameters).pipe(
+            map((result) => {
                 const success = typeof result.result === 'boolean' && result.result === true;
 
                 return [result.session, success];
-            }), tap(([session, success]: [string, boolean]) => {
+            }),
+            tap(([session, success]: [string, boolean]) => {
                 if (success) {
                     this.session$.next({
                         user: credentials.user,
@@ -187,7 +183,8 @@ export class UserService {
                     });
                 }
             }),
-            map(([_, success]) => success as boolean));
+            map(([_, success]) => success as boolean),
+        );
     }
 
     guestLogin(): Observable<boolean> {
@@ -200,14 +197,14 @@ export class UserService {
     protected loginRequestToUserDetails(parameters: MappingRequestParameters) {
         const subject = new Subject<boolean>();
 
-        this.request<{ result: string | boolean, session: string }>(parameters).pipe(
-            mergeMap(response => {
-                const success = (typeof response.result === 'boolean') && response.result;
+        this.request<{result: string | boolean; session: string}>(parameters)
+            .pipe(
+                mergeMap((response) => {
+                    const success = typeof response.result === 'boolean' && response.result;
 
-                if (success) {
-                    return this.getUserDetails({user: undefined, sessionToken: response.session})
-                        .pipe(
-                            tap(user => {
+                    if (success) {
+                        return this.getUserDetails({user: undefined, sessionToken: response.session}).pipe(
+                            tap((user) => {
                                 this.session$.next({
                                     user: user.name,
                                     sessionToken: response.session,
@@ -215,16 +212,17 @@ export class UserService {
                                     isExternallyConnected: true,
                                 });
                             }),
-                            map(_ => true)
+                            map((_) => true),
                         );
-                } else {
-                    return observableOf(false);
-                }
-            }))
+                    } else {
+                        return observableOf(false);
+                    }
+                }),
+            )
             .subscribe(
-                success => subject.next(success),
+                (success) => subject.next(success),
                 () => subject.next(false),
-                () => subject.complete()
+                () => subject.complete(),
             );
         return subject;
     }
@@ -241,10 +239,11 @@ export class UserService {
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request<{ result: string | boolean }>(parameters).pipe(
-            map(result => {
+        return this.request<{result: string | boolean}>(parameters).pipe(
+            map((result) => {
                 return typeof result.result === 'boolean' && result.result;
-            }));
+            }),
+        );
     }
 
     /**
@@ -262,16 +261,16 @@ export class UserService {
             request: 'info',
             sessionToken: session.sessionToken,
         });
-        return this.request<{ result: string | boolean }>(parameters).pipe(
-            map(result => {
+        return this.request<{result: string | boolean}>(parameters).pipe(
+            map((result) => {
                 const valid = typeof result.result === 'boolean' && result.result;
 
                 if (valid) {
                     const userResult = result as {
-                        result: string | boolean,
-                        username: string,
-                        realname: string,
-                        email: string,
+                        result: string | boolean;
+                        username: string;
+                        realname: string;
+                        email: string;
                         externalid?: string;
                     };
                     return new User({
@@ -283,7 +282,8 @@ export class UserService {
                 } else {
                     return undefined;
                 }
-            }));
+            }),
+        );
     }
 
     /**
@@ -292,7 +292,7 @@ export class UserService {
      * @param details.lastName  The last name
      * @param details.email     The E-Mail address
      */
-    changeDetails(details: { realName: string, email: string }) {
+    changeDetails(details: {realName: string; email: string}) {
         const user = this.getUser();
         user.realName = details.realName;
         user.email = details.email;
@@ -318,40 +318,40 @@ export class UserService {
         return this.rasterSourceError$;
     }
 
-    getFeatureDBList(): Observable<Array<{ name: string, operator: Operator }>> {
+    getFeatureDBList(): Observable<Array<{name: string; operator: Operator}>> {
         if (this.isGuestUser()) {
             return observableOf([]);
         }
 
         return this.request<FeatureDBList>(new FeatureDBServiceListParameters({sessionToken: this.session$.getValue().sessionToken})).pipe(
-            map(list => list.data_sets.map(featureDBListEntryToOperator)));
+            map((list) => list.data_sets.map(featureDBListEntryToOperator)),
+        );
     }
 
-    addFeatureToDB(name: string, operator: Operator): Observable<{ name: string, operator: Operator }> {
+    addFeatureToDB(name: string, operator: Operator): Observable<{name: string; operator: Operator}> {
         if (this.isGuestUser()) {
             return EMPTY;
         }
 
-        const subject = new Subject<{ name: string, operator: Operator }>();
+        const subject = new Subject<{name: string; operator: Operator}>();
 
-        this
-            .request<FeatureDBListEntry>(
-                new FeatureDBServiceUploadParameters({
-                    sessionToken: this.session$.getValue().sessionToken,
-                    name,
-                    crs: operator.projection,
-                    query: operator.toQueryJSON(),
-                    type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
-                }),
-                true,
-            ).pipe(
-            map(featureDBListEntryToOperator))
+        this.request<FeatureDBListEntry>(
+            new FeatureDBServiceUploadParameters({
+                sessionToken: this.session$.getValue().sessionToken,
+                name,
+                crs: operator.projection,
+                query: operator.toQueryJSON(),
+                type: operator.resultType.getCode() as 'points' | 'lines' | 'polygons',
+            }),
+            true,
+        )
+            .pipe(map(featureDBListEntryToOperator))
             .subscribe(
-                data => {
+                (data) => {
                     subject.next(data);
                     subject.complete();
                 },
-                error => subject.error(error)
+                (error) => subject.error(error),
             );
 
         return subject;
@@ -366,9 +366,11 @@ export class UserService {
         // return an empty guest session
 
         const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
-        if (sessionData === null) { // tslint:disable-line:no-null-keyword
+        if (sessionData === null) {
+            // tslint:disable-line:no-null-keyword
             const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
-            if (sessionData2 === null) { // tslint:disable-line:no-null-keyword
+            if (sessionData2 === null) {
+                // tslint:disable-line:no-null-keyword
                 return {
                     user: this.config.USER.GUEST.NAME,
                     sessionToken: '',
@@ -392,23 +394,21 @@ export class UserService {
     }
 
     protected request<ResponseType>(requestParameters: MappingRequestParameters, encode = false): Observable<ResponseType> {
-        return this.http.post<ResponseType>(
-            this.config.MAPPING_URL,
-            requestParameters.toMessageBody(encode),
-            {headers: requestParameters.getHeaders()}
-        );
+        return this.http.post<ResponseType>(this.config.MAPPING_URL, requestParameters.toMessageBody(encode), {
+            headers: requestParameters.getHeaders(),
+        });
     }
 
     protected createRasterSourcesStream(session$: Observable<Session>, reload$: Observable<void>): Observable<Array<MappingSource>> {
         return combineLatest(session$, reload$).pipe(
             map(([session, _]) => session),
-            switchMap(session => {
+            switchMap((session) => {
                 const parameters = new UserServiceRequestParameters({
                     request: 'sourcelist',
                     sessionToken: session.sessionToken,
                 });
                 return this.request<MappingSourceResponse>(parameters).pipe(
-                    map(json => {
+                    map((json) => {
                         const sources: Array<MappingSource> = [];
 
                         for (const sourceId in json.sourcelist) {
@@ -416,20 +416,20 @@ export class UserService {
                                 const source: MappingSourceDict = json.sourcelist[sourceId];
                                 const sourceProvenance: ProvenanceInfo = UserService.parseSourceProvenance(source);
 
-                                const sourceChannels = (!source.channels) ? [] : source.channels.map(
-                                    (channel, index) => {
-                                        return UserService.parseRasterChannel(channel, source, sourceProvenance, index);
-                                    }
-                                );
+                                const sourceChannels = !source.channels
+                                    ? []
+                                    : source.channels.map((channel, index) => {
+                                          return UserService.parseRasterChannel(channel, source, sourceProvenance, index);
+                                      });
 
                                 // vector data
-                                const sourceVectorLayer = (!source.layer) ? [] : source.layer.map(
-                                    (layer, index) => {
-                                        return UserService.parseVectorLayer(layer, source, sourceProvenance, index);
-                                    }
-                                );
-                                let globalDatasetMinVal = new TimePoint (source.time_start);
-                                let globalDatasetMaxVal = new TimePoint (source.time_end);
+                                const sourceVectorLayer = !source.layer
+                                    ? []
+                                    : source.layer.map((layer, index) => {
+                                          return UserService.parseVectorLayer(layer, source, sourceProvenance, index);
+                                      });
+                                let globalDatasetMinVal = new TimePoint(source.time_start);
+                                let globalDatasetMaxVal = new TimePoint(source.time_end);
                                 sourceChannels.forEach((channelElement) => {
                                     if (channelElement.time_start) {
                                         globalDatasetMinVal = this.compareStartTime(channelElement.time_start, globalDatasetMinVal);
@@ -447,59 +447,67 @@ export class UserService {
                                     }
                                 });
                                 sources.push({
-                                    operator: (source.operator) ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
+                                    operator: source.operator ? source.operator : 'rasterdb_source', // FIXME: remove rasterdb_source?
                                     source: sourceId,
-                                    name: source.dataset_name ? source.dataset_name : (source.name ? source.name : sourceId),
+                                    name: source.dataset_name ? source.dataset_name : source.name ? source.name : sourceId,
                                     rasterLayer: sourceChannels,
                                     vectorLayer: sourceVectorLayer,
                                     provenance: sourceProvenance,
                                     descriptionText: source.descriptionText,
                                     imgUrl: source.imgUrl,
                                     tags: source.tags,
-                                    time_start: !!source.time_start ? globalDatasetMinVal : undefined ,
+                                    time_start: !!source.time_start ? globalDatasetMinVal : undefined,
                                     time_end: !!source.time_end ? globalDatasetMaxVal : undefined,
                                 });
                             }
                         }
                         return sources;
                     }),
-                    catchError(error => {
+                    catchError((error) => {
                         this.notificationService.error(`Error loading raster sources: »${error}«`);
                         this.rasterSourceError$.next(true);
                         return [];
                     }),
                 );
-            }));
+            }),
+        );
     }
     protected compareStartTime(start: TimePoint, globalMin: TimePoint): TimePoint {
         if (start.getStart() < globalMin.getStart()) {
             return start;
-        } else { return globalMin; }
-
+        } else {
+            return globalMin;
+        }
     }
     protected compareEndTime(end: TimePoint, globalMax: TimePoint): TimePoint {
         if (end.getStart() > globalMax.getStart()) {
             return end;
-        } else { return globalMax; }
-
+        } else {
+            return globalMax;
+        }
     }
     protected static parseSourceProvenance(source: MappingSourceDict) {
         return {
-            uri: (source.provenance) ? source.provenance.uri : '',
+            uri: source.provenance ? source.provenance.uri : '',
             citation: source.provenance ? source.provenance.citation : '',
             license: source.provenance ? source.provenance.license : '',
         };
     }
 
     protected static parseVectorLayer(
-        layer: MappingSourceVectorLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+        layer: MappingSourceVectorLayerDict,
+        source: MappingSourceDict,
+        sourceProvenance: ProvenanceInfo,
+        index: number,
     ): SourceVectorLayerDescription {
         const coords = layer.coords || source.coords;
-        const provenance: ProvenanceInfo = (layer.provenance) ? {
-            uri: (source.provenance) ? source.provenance.uri : '',
-            citation: source.provenance ? source.provenance.citation : '',
-            license: source.provenance ? source.provenance.license : '',
-        } : sourceProvenance;
+        const provenance: ProvenanceInfo = layer.provenance
+            ? {
+                  uri: source.provenance ? source.provenance.uri : '',
+                  citation: source.provenance ? source.provenance.citation : '',
+                  license: source.provenance ? source.provenance.license : '',
+              }
+            : sourceProvenance;
 
         return {
             id: layer.id || layer.name,
@@ -508,28 +516,31 @@ export class UserService {
             geometryType: layer.geometry_type,
             textual: layer.textual || [],
             numeric: layer.numeric || [],
-            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : new TimePoint (source.time_start) ,
-            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : new TimePoint (source.time_end) ,
+            time_start: !!layer.time_start ? new TimePoint(layer.time_start) : new TimePoint(source.time_start),
+            time_end: !!layer.time_end ? new TimePoint(layer.time_end) : new TimePoint(source.time_end),
             coords,
             provenance,
         };
     }
 
     protected static parseRasterChannel(
-        channel: MappingSourceRasterLayerDict, source: MappingSourceDict, sourceProvenance: ProvenanceInfo, index: number
+        channel: MappingSourceRasterLayerDict,
+        source: MappingSourceDict,
+        sourceProvenance: ProvenanceInfo,
+        index: number,
     ): SourceRasterLayerDescription {
         const channelUnit = channel.unit ? Unit.fromMappingDict(channel.unit) : Unit.defaultUnit;
-        const sourceColorizer =
-            source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) : undefined;
-        const channelColorizer =
-            channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) : sourceColorizer;
+        const sourceColorizer = source.colorizer ? ColorizerData.fromMappingColorizerData(source.colorizer) : undefined;
+        const channelColorizer = channel.colorizer ? ColorizerData.fromMappingColorizerData(channel.colorizer) : sourceColorizer;
         const coords = channel.coords || source.coords; // fixme: throw?
 
-        const channelProvenance: ProvenanceInfo = (!channel.provenance) ? sourceProvenance : {
-            uri: (source.provenance) ? source.provenance.uri : '',
-            citation: source.provenance ? source.provenance.citation : '',
-            license: source.provenance ? source.provenance.license : '',
-        };
+        const channelProvenance: ProvenanceInfo = !channel.provenance
+            ? sourceProvenance
+            : {
+                  uri: source.provenance ? source.provenance.uri : '',
+                  citation: source.provenance ? source.provenance.citation : '',
+                  license: source.provenance ? source.provenance.license : '',
+              };
 
         return {
             id: index,
@@ -541,17 +552,18 @@ export class UserService {
             colorizer: channelColorizer,
             hasTransform: !!channel.transform,
             isSwitchable: !!channel.transform && !!channel.transform.unit && !!channel.unit,
-            transform: !channel.transform ? undefined : {
-                unit: channel.transform.unit ? Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
-                datatype: channel.transform.datatype,
-                offset: channel.transform.offset,
-                scale: channel.transform.scale,
-            } as MappingTransform,
-            coords: coords as { crs: string, origin: number[], scale: number[], size: number[] },
+            transform: !channel.transform
+                ? undefined
+                : ({
+                      unit: channel.transform.unit ? Unit.fromMappingDict(channel.transform.unit) : Unit.defaultUnit,
+                      datatype: channel.transform.datatype,
+                      offset: channel.transform.offset,
+                      scale: channel.transform.scale,
+                  } as MappingTransform),
+            coords: coords as {crs: string; origin: number[]; scale: number[]; size: number[]},
             provenance: channelProvenance,
-            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : new TimePoint (source.time_start) ,
-            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : new TimePoint (source.time_end),
+            time_start: !!channel.time_start ? new TimePoint(channel.time_start) : new TimePoint(source.time_start),
+            time_end: !!channel.time_end ? new TimePoint(channel.time_end) : new TimePoint(source.time_end),
         };
     }
-
 }

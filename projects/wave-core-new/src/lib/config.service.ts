@@ -21,14 +21,14 @@ interface Wcs {
 
 interface User {
     readonly GUEST: {
-        readonly NAME: string,
-        readonly PASSWORD: string,
+        readonly NAME: string;
+        readonly PASSWORD: string;
     };
 }
 
 interface Delays {
     readonly LOADING: {
-        readonly MIN: number,
+        readonly MIN: number;
     };
     readonly TOOLTIP: number;
     readonly DEBOUNCE: number;
@@ -38,10 +38,10 @@ interface Delays {
 
 interface Defaults {
     readonly PROJECT: {
-        readonly NAME: string,
-        readonly TIME: string,
-        readonly TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year',
-        readonly PROJECTION: 'EPSG:3857' | 'EPSG:4326',
+        readonly NAME: string;
+        readonly TIME: string;
+        readonly TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year';
+        readonly PROJECTION: 'EPSG:3857' | 'EPSG:4326';
     };
 }
 
@@ -166,8 +166,7 @@ export class Config {
         return this.config.TIME;
     }
 
-    constructor(protected http: HttpClient) {
-    }
+    constructor(protected http: HttpClient) {}
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
@@ -178,16 +177,19 @@ export class Config {
             defaults = WAVE_DEFAULT_CONFIG;
         }
         return this.http
-            .get<WaveConfigStructure>(Config.CONFIG_FILE).pipe(
+            .get<WaveConfigStructure>(Config.CONFIG_FILE)
+            .pipe(
                 tap(
-                    appConfig => {
+                    (appConfig) => {
                         this.config = mergeDeep(defaults, appConfig);
                     },
-                    () => { // error
+                    () => {
+                        // error
                         this.config = defaults;
-                    }),
-                catchError(() => of(undefined)))
+                    },
+                ),
+                catchError(() => of(undefined)),
+            )
             .toPromise();
     }
-
 }

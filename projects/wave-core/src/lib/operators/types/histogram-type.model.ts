@@ -8,7 +8,7 @@ interface HistogramTypeMappingDict extends OperatorTypeMappingDict {
 
 export interface HistogramTypeDict extends OperatorTypeDict {
     attribute: string;
-    range: { min: number, max: number } | string;
+    range: {min: number; max: number} | string;
     buckets?: number;
 }
 
@@ -19,7 +19,7 @@ export interface HistogramTypeDict extends OperatorTypeDict {
  */
 interface HistogramTypeConfig {
     attribute: string;
-    range: { min: number, max: number } | string;
+    range: {min: number; max: number} | string;
     buckets?: number;
 }
 
@@ -44,7 +44,7 @@ export class HistogramType extends OperatorType {
     }
 
     private attribute: string;
-    private range: { min: number, max: number } | string;
+    private range: {min: number; max: number} | string;
     private buckets: number;
 
     constructor(config: HistogramTypeConfig) {
@@ -75,7 +75,7 @@ export class HistogramType extends OperatorType {
         if (typeof this.range === 'string') {
             range = this.range as string;
         } else {
-            const rangeStruct = this.range as { min: number, max: number };
+            const rangeStruct = this.range as {min: number; max: number};
             range = `min: ${rangeStruct.min}, max: ${rangeStruct.max}`;
         }
 
@@ -91,7 +91,7 @@ export class HistogramType extends OperatorType {
         if (typeof this.range === 'string') {
             range = this.range as string;
         } else {
-            const rangeStruct = this.range as { min: number, max: number };
+            const rangeStruct = this.range as {min: number; max: number};
             range = [rangeStruct.min, rangeStruct.max];
         }
 
@@ -114,5 +114,4 @@ export class HistogramType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return HistogramType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

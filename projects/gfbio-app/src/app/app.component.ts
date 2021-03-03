@@ -6,9 +6,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    HostListener, Inject,
+    HostListener,
+    Inject,
     OnInit,
-    ViewChild, ViewContainerRef
+    ViewChild,
+    ViewContainerRef,
 } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -62,11 +64,9 @@ import {
     BasketAvailability,
     BasketResult,
     IBasketGroupedAbcdResult,
-    IBasketPangaeaResult
+    IBasketPangaeaResult,
 } from './operators/dialogs/baskets/gfbio-basket.model';
-import {
-    GroupedAbcdBasketResultComponent,
-} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
+import {GroupedAbcdBasketResultComponent} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {TerminologyLookupType} from './operators/types/terminology-lookup-type';
@@ -107,44 +107,40 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(@Inject(Config) readonly config: AppConfig,
-                readonly layerService: LayerService,
-                readonly layoutService: LayoutService,
-                readonly projectService: ProjectService,
-                readonly vcRef: ViewContainerRef, // reference used by color picker
-                @Inject(UserService) private readonly userService: GFBioUserService,
-                private readonly storageService: StorageService,
-                private readonly changeDetectorRef: ChangeDetectorRef,
-                private readonly dialog: MatDialog,
-                private readonly iconRegistry: MatIconRegistry,
-                private readonly randomColorService: RandomColorService,
-                @Inject(MappingQueryService) private readonly mappingQueryService: GFBioMappingQueryService,
-                private readonly activatedRoute: ActivatedRoute,
-                private readonly router: Router,
-                private readonly location: Location,
-                private readonly notificationService: NotificationService,
-                private readonly mapService: MapService,
-                private readonly sanitizer: DomSanitizer) {
+    constructor(
+        @Inject(Config) readonly config: AppConfig,
+        readonly layerService: LayerService,
+        readonly layoutService: LayoutService,
+        readonly projectService: ProjectService,
+        readonly vcRef: ViewContainerRef, // reference used by color picker
+        @Inject(UserService) private readonly userService: GFBioUserService,
+        private readonly storageService: StorageService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly dialog: MatDialog,
+        private readonly iconRegistry: MatIconRegistry,
+        private readonly randomColorService: RandomColorService,
+        @Inject(MappingQueryService) private readonly mappingQueryService: GFBioMappingQueryService,
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly router: Router,
+        private readonly location: Location,
+        private readonly notificationService: NotificationService,
+        private readonly mapService: MapService,
+        private readonly sanitizer: DomSanitizer,
+    ) {
         this.registerIcons();
 
         vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
 
         this.storageService.toString(); // just register
 
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(
-            map(layers => layers.slice(0).reverse())
-        );
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
     }
 
     private registerIcons() {
-        this.iconRegistry.addSvgIconInNamespace(
-            'vat',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
-        );
+        this.iconRegistry.addSvgIconInNamespace('vat', 'logo', this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'));
 
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
@@ -154,14 +150,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.mapService.registerMapComponent(this.mapComponent);
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
-            tap(() => this.mapComponent.resize()),
-        );
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+        this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.rightSidenavContainer.load(sidenavConfig);
             if (sidenavConfig) {
                 this.rightSidenav.open();
@@ -169,11 +163,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.rightSidenav.close();
             }
         });
-        this.projectService.getNewPlotStream()
+        this.projectService
+            .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
-        this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {
+        this.layoutService.getLayerDetailViewTabIndexStream().subscribe((tabIndex) => {
             if (this.bottomTabs.selectedIndex !== tabIndex) {
                 this.bottomTabs.selectedIndex = tabIndex;
                 setTimeout(() => this.changeDetectorRef.markForCheck());
@@ -189,15 +184,16 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         // notify window parent that this component is ready
         if (parent !== window) {
-            parent.postMessage({
-                type: 'STATUS',
-                status: 'READY',
-            }, '*');
+            parent.postMessage(
+                {
+                    type: 'STATUS',
+                    status: 'READY',
+                },
+                '*',
+            );
         } else {
-
             // handle query parameters directly if it is not embedded and using an auto login
             this.handleQueryParameters();
-
         }
     }
 
@@ -300,7 +296,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         type: TerminologyLookupType,
                         description: 'Augment attributes via the GFBio Terminology Service',
                     },
-                ]
+                ],
             },
         ];
     }
@@ -323,7 +319,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         // Since `initialNavigation=false` in the app module, we have to start it here.
         this.router.initialNavigation();
 
-        this.activatedRoute.queryParamMap.subscribe(params => {
+        this.activatedRoute.queryParamMap.subscribe((params) => {
             if (params.has('access_token') && params.get('token_type') === 'Bearer' && params.has('expires_in')) {
                 this.handleOpenIdConnectAccessToken(
                     params.get('access_token'),
@@ -334,43 +330,48 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.handleWorkflow(params.get('workflow'));
             } else if (params.has('gfbioBasketId')) {
                 this.handleGFBioBasketId(params.get('gfbioBasketId'));
-            } else if (params.keys.length) { // FALLBACK - must be last branch
+            } else if (params.keys.length) {
+                // FALLBACK - must be last branch
                 this.notificationService.error(`Unknown URL parameters »${params.keys.join(', ')}«`);
             }
         });
     }
 
     private handleOpenIdConnectAccessToken(accessToken: string, _expiresIn: number, state: string | null) {
-        this.userService.oidcLogin(accessToken).pipe(
-            filter(success => success),
-        ).subscribe(() => {
-            if (state) {
-                state = decodeURIComponent(state);
-                this.router.navigateByUrl('?' + state);
-            }
-        });
+        this.userService
+            .oidcLogin(accessToken)
+            .pipe(filter((success) => success))
+            .subscribe(() => {
+                if (state) {
+                    state = decodeURIComponent(state);
+                    this.router.navigateByUrl('?' + state);
+                }
+            });
     }
 
     private handleWorkflow(workflow: string) {
         try {
             const newLayer = Layer.fromDict(JSON.parse(workflow));
-            this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-                if (project.layers.length > 0) {
-                    // show popup
-                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-                        data: {
-                            dialogTitle: 'Workflow URL Parameter',
-                            sourceName: 'URL parameter',
-                            layers: [newLayer],
-                            nonAvailableNames: [],
-                            numberOfLayersInProject: project.layers.length,
-                        }
-                    });
-                } else {
-                    // just add the layer if the layer array is empty
-                    this.projectService.addLayer(newLayer);
-                }
-            });
+            this.projectService
+                .getProjectStream()
+                .pipe(first())
+                .subscribe((project) => {
+                    if (project.layers.length > 0) {
+                        // show popup
+                        this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                            data: {
+                                dialogTitle: 'Workflow URL Parameter',
+                                sourceName: 'URL parameter',
+                                layers: [newLayer],
+                                nonAvailableNames: [],
+                                numberOfLayersInProject: project.layers.length,
+                            },
+                        });
+                    } else {
+                        // just add the layer if the layer array is empty
+                        this.projectService.addLayer(newLayer);
+                    }
+                });
         } catch (error) {
             this.notificationService.error(`Invalid Workflow: »${error}«`);
         }
@@ -383,11 +384,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         try {
             const gfbioBasketId: number = JSON.parse(gfbioBasketIdString);
-            this.projectService.getProjectStream().pipe(
-                first()
-            ).subscribe(project => {
-                this.gfbioBasketIdToLayers(gfbioBasketId)
-                    .subscribe((importResult: BasketAvailability) => {
+            this.projectService
+                .getProjectStream()
+                .pipe(first())
+                .subscribe((project) => {
+                    this.gfbioBasketIdToLayers(gfbioBasketId).subscribe(
+                        (importResult: BasketAvailability) => {
                             // show popup
                             this.dialog.open(WorkflowParameterChoiceDialogComponent, {
                                 data: {
@@ -399,71 +401,62 @@ export class AppComponent implements OnInit, AfterViewInit {
                                 },
                             });
                         },
-                        error => {
+                        (error) => {
                             this.notificationService.error(`GFBio Basket Loading Error: »${error}«`);
                         },
                     );
-            });
+                });
         } catch (error) {
             this.notificationService.error(`Invalid GFBio Basket Id: »${error}«`);
         }
     }
 
     private gfbioBasketIdToLayers(basketId: number): Observable<BasketAvailability> {
-        const [availableEntries, nonAvailableEntries]: [Observable<BasketResult>, Observable<BasketResult>] =
-            partition(
-                this.mappingQueryService
-                    .getGFBioBasket(basketId)
-                    .pipe(
-                        mergeMap(basket => observableFrom(basket.results)),
-                    ),
-                (basketResult: BasketResult) => basketResult.available,
-            );
+        const [availableEntries, nonAvailableEntries]: [Observable<BasketResult>, Observable<BasketResult>] = partition(
+            this.mappingQueryService.getGFBioBasket(basketId).pipe(mergeMap((basket) => observableFrom(basket.results))),
+            (basketResult: BasketResult) => basketResult.available,
+        );
 
-        const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries
-            .pipe(
-                mergeMap(basketResult => this.gfbioBasketResultToLayer(basketResult)),
-                toArray(),
-            );
+        const availableLayers: Observable<Array<VectorLayer<AbstractVectorSymbology>>> = availableEntries.pipe(
+            mergeMap((basketResult) => this.gfbioBasketResultToLayer(basketResult)),
+            toArray(),
+        );
 
-        const nonAvailableNames: Observable<Array<string>> = nonAvailableEntries
-            .pipe(
-                map(basketResult => basketResult.title),
-                toArray(),
-            );
+        const nonAvailableNames: Observable<Array<string>> = nonAvailableEntries.pipe(
+            map((basketResult) => basketResult.title),
+            toArray(),
+        );
 
-        return combineLatest([availableLayers, nonAvailableNames])
-            .pipe(
-                map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
-                    return {
-                        availableLayers: layers,
-                        nonAvailableNames: names,
-                    } as BasketAvailability;
-                })
-            );
+        return combineLatest([availableLayers, nonAvailableNames]).pipe(
+            map(([layers, names]: [Array<VectorLayer<AbstractVectorSymbology>>, Array<string>]) => {
+                return {
+                    availableLayers: layers,
+                    nonAvailableNames: names,
+                } as BasketAvailability;
+            }),
+        );
     }
 
     private gfbioBasketResultToLayer(result: BasketResult): Observable<VectorLayer<AbstractVectorSymbology>> {
         let operator$: Observable<Operator>;
         if (result.type === 'abcd_grouped') {
             operator$ = this.userService
-                .getSourceSchemaAbcd().pipe(
-                    map(
-                        sourceSchema => GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
+                .getSourceSchemaAbcd()
+                .pipe(
+                    map((sourceSchema) =>
+                        GroupedAbcdBasketResultComponent.createOperatorFromGroupedABCDData(
                             result as IBasketGroupedAbcdResult,
                             sourceSchema,
-                            true
-                        )
-                    )
+                            true,
+                        ),
+                    ),
                 );
         } else if (result.type === 'pangaea') {
-            operator$ = observableOf(
-                PangaeaBasketResultComponent.createOperatorFromPangaeaData(result as IBasketPangaeaResult)
-            );
+            operator$ = observableOf(PangaeaBasketResultComponent.createOperatorFromPangaeaData(result as IBasketPangaeaResult));
         }
 
         return operator$.pipe(
-            map(operator => {
+            map((operator) => {
                 let clustered = false;
                 let symbology;
 
@@ -489,8 +482,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     symbology,
                     clustered,
                 });
-            })
+            }),
         );
     }
-
 }

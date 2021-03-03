@@ -9,10 +9,11 @@ import {AppConfig} from '../app-config.service';
 
 @Injectable()
 export class Nature40UserService extends UserService {
-
-    constructor(@Inject(Config) protected readonly config: AppConfig,
-                protected readonly http: HttpClient,
-                protected readonly notificationService: NotificationService) {
+    constructor(
+        @Inject(Config) protected readonly config: AppConfig,
+        protected readonly http: HttpClient,
+        protected readonly notificationService: NotificationService,
+    ) {
         super(config, http, notificationService);
     }
 
@@ -36,7 +37,7 @@ export class Nature40UserService extends UserService {
     /**
      * Retrieve the signed JWT client token.
      */
-    getNature40JwtClientToken(): Observable<{ clientToken: string }> {
+    getNature40JwtClientToken(): Observable<{clientToken: string}> {
         const parameters = new MappingRequestParameters({
             service: 'nature40',
             sessionToken: undefined,
@@ -44,7 +45,7 @@ export class Nature40UserService extends UserService {
             parameters: {},
         });
 
-        return this.request<{ result: string | boolean, clientToken: string }>(parameters);
+        return this.request<{result: string | boolean; clientToken: string}>(parameters);
     }
 
     getNature40Catalog(): Observable<Map<string, Array<Nature40CatalogEntry>>> {
@@ -57,9 +58,10 @@ export class Nature40UserService extends UserService {
 
         const subject = new ReplaySubject<Map<string, Array<Nature40CatalogEntry>>>(1);
 
-        this.request<{ result: boolean | string, sourcelist?: Array<Nature40CatalogEntry> }>(parameters).subscribe(
+        this.request<{result: boolean | string; sourcelist?: Array<Nature40CatalogEntry>}>(parameters).subscribe(
             ({result, sourcelist}) => {
-                if (typeof result === 'string') { // unsuccessful
+                if (typeof result === 'string') {
+                    // unsuccessful
                     subject.error(new Error(result));
                     return;
                 }
@@ -90,13 +92,13 @@ export interface Nature40CatalogEntry {
     description: string;
     user_url: string;
     provider: {
-        type: string,
-        id: string,
-        url: string,
+        type: string;
+        id: string;
+        url: string;
     };
     dataset: {
-        type: string,
-        id: string,
-        url: string,
+        type: string;
+        id: string;
+        url: string;
     };
 }

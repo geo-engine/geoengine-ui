@@ -13,9 +13,7 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
     styleUrls: ['mapping-raster-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MappingRasterLegendComponent<S extends MappingRasterSymbology>
-    extends RasterLegendComponent<S> implements OnChanges {
-
+export class MappingRasterLegendComponent<S extends MappingRasterSymbology> extends RasterLegendComponent<S> implements OnChanges {
     /**
      * Parameters to use with the number pipe in the template.
      */

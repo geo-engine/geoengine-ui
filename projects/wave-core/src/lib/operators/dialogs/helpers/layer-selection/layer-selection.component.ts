@@ -1,4 +1,3 @@
-
 import {first} from 'rxjs/operators';
 import {Observable, BehaviorSubject, ReplaySubject, Subject, Subscription} from 'rxjs';
 
@@ -18,12 +17,9 @@ import {LayerService} from '../../../../layers/layer.service';
     templateUrl: './layer-selection.component.html',
     styleUrls: ['./layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true}],
 })
 export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlValueAccessor {
-
     /**
      * An array of possible layers.
      */
@@ -47,14 +43,13 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private layerService: LayerService,
-                private projectService: ProjectService) {
+    constructor(private layerService: LayerService, private projectService: ProjectService) {
         this.subscriptions.push(
-            this.filteredLayers.subscribe(filteredLayers => {
+            this.filteredLayers.subscribe((filteredLayers) => {
                 if (filteredLayers.length > 0) {
-                    this.selectedLayer.pipe(first()).subscribe(selectedLayer => {
+                    this.selectedLayer.pipe(first()).subscribe((selectedLayer) => {
                         const selectedLayerIndex = filteredLayers.indexOf(
-                            selectedLayer ? selectedLayer : this.layerService.getSelectedLayer()
+                            selectedLayer ? selectedLayer : this.layerService.getSelectedLayer(),
                         );
                         if (selectedLayerIndex >= 0) {
                             this.selectedLayer.next(filteredLayers[selectedLayerIndex]);
@@ -65,15 +60,15 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                 } else {
                     this.selectedLayer.next(undefined);
                 }
-            })
+            }),
         );
 
         this.subscriptions.push(
-            this.selectedLayer.subscribe(selectedLayer => {
+            this.selectedLayer.subscribe((selectedLayer) => {
                 if (this.onChange) {
                     this.onChange(selectedLayer);
                 }
-            })
+            }),
         );
     }
 
@@ -83,33 +78,34 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         }
     }
 
-    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        for (let propName in changes) { // tslint:disable-line:forin
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+        for (let propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 /* falls through */
                 case 'layers':
                 case 'types':
                     if (this.layers instanceof Observable) {
-                        this.layers.pipe(first()).subscribe(layers => {
+                        this.layers.pipe(first()).subscribe((layers) => {
                             this.filteredLayers.next(
                                 layers.filter((layer: Layer<AbstractSymbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;
-                                })
+                                }),
                             );
                         });
                     } else if (this.layers instanceof Array) {
                         this.filteredLayers.next(
                             this.layers.filter((layer: Layer<AbstractSymbology>) => {
                                 return this.types.indexOf(layer.operator.resultType) >= 0;
-                            })
+                            }),
                         );
                     }
 
                     if (this.title === undefined) {
                         // set title out of types
                         this.title = this.types
-                            .map(type => type.toString())
-                            .map(name => name.endsWith('s') ? name.substr(0, name.length - 1) : name)
+                            .map((type) => type.toString())
+                            .map((name) => (name.endsWith('s') ? name.substr(0, name.length - 1) : name))
                             .join(', ');
                     }
 

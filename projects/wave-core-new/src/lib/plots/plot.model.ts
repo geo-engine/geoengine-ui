@@ -17,22 +17,14 @@ export class Plot implements HasPlotId, ToDict<PlotDict> {
         });
     }
 
-    constructor(config: {
-        id?: number,
-        name: string,
-        workflowId: string,
-    }) {
+    constructor(config: {id?: number; name: string; workflowId: string}) {
         this.id = config.id ?? Plot.nextPlotId++;
 
         this.name = config.name;
         this.workflowId = config.workflowId;
     }
 
-    updateFields(changes: {
-        id?: number,
-        name?: string,
-        workflowId?: string,
-    }): Plot {
+    updateFields(changes: {id?: number; name?: string; workflowId?: string}): Plot {
         return new Plot({
             id: changes.id ?? this.id,
             name: changes.name ?? this.name,
@@ -45,9 +37,7 @@ export class Plot implements HasPlotId, ToDict<PlotDict> {
             return false;
         }
 
-        return this.id === other.id
-            && this.name === other.name
-            && this.workflowId === other.workflowId;
+        return this.id === other.id && this.name === other.name && this.workflowId === other.workflowId;
     }
 
     toDict(): PlotDict {

@@ -1,20 +1,16 @@
 <wave-sidenav-header>Save As</wave-sidenav-header>
 <ng-template [ngIf]="!(created$ | async)">
-    <p>
-        Save the current project under a different name.
-    </p>
-    <form [formGroup]="form" (ngSubmit)="$event.preventDefault();create()">
+    <p>Save the current project under a different name.</p>
+    <form [formGroup]="form" (ngSubmit)="$event.preventDefault(); create()">
         <div fxLayout="row">
             <mat-form-field fxFlex>
-                <input matInput type="text" placeholder="Project Name" formControlName="name">
-                <mat-hint
-                    align="end" class="error"
-                    *ngIf="form.controls.name.errors?.nameInUsage"
-                >
+                <input matInput type="text" placeholder="Project Name" formControlName="name" />
+                <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.nameInUsage">
                     The name is already in usage.
                 </mat-hint>
                 <mat-hint
-                    align="end" class="error"
+                    align="end"
+                    class="error"
                     *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
                 >
                     The name must be non-empty.
@@ -26,8 +22,7 @@
 </ng-template>
 <ng-template [ngIf]="created$ | async">
     <p class="finished">
-        Saved project under <em>{{form.controls['name'].value}}</em> and switched to it.
-        <br><br>
+        Saved project under <em>{{ form.controls['name'].value }}</em> and switched to it. <br /><br />
         You are ready to go!
     </p>
 </ng-template>

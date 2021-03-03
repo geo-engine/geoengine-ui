@@ -1,7 +1,6 @@
 $mat-dialog-padding: 24px !default; // TODO: import when this is possible again
 $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
-
 /*.previous{
     position: absolute;
     top: calc(50% - #{$mat-fab-size/2});
@@ -53,7 +52,6 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         }
 
         .closeLink {
-
         }
     }
 
@@ -74,7 +72,7 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
 
     .buttons {
         position: fixed;
-        bottom: 2*$mat-dialog-padding;
+        bottom: 2 * $mat-dialog-padding;
         left: 0;
         width: 100%;
         text-align: center;
@@ -92,5 +90,3 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         }
     }
 }
-
-

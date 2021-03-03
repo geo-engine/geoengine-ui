@@ -5,12 +5,7 @@ import {Vector as OlVectorSource} from 'ol/source';
 import OlGeometryType from 'ol/geom/GeometryType';
 import {Projections, Projection} from '../../projection.model';
 import {Operator} from '../../operator.model';
-import {
-    AbstractVectorSymbology,
-    LineSymbology,
-    PointSymbology,
-    VectorSymbology
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, LineSymbology, PointSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {UnexpectedResultType} from '../../../util/errors';
 import {VectorLayer} from '../../../layers/layer.model';
 import {ResultType, ResultTypes} from '../../result-type.model';
@@ -32,9 +27,7 @@ import {Unit} from '../../unit.model';
     styleUrls: ['./ol-draw-features.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class OlDrawFeaturesComponent implements OnDestroy {
-
     // the list of supported feature types
     featureTypes = [ResultTypes.POLYGONS, ResultTypes.POINTS, ResultTypes.LINES];
     // the current feature type
@@ -57,9 +50,9 @@ export class OlDrawFeaturesComponent implements OnDestroy {
         private mapService: MapService,
         private projectService: ProjectService,
         private randomColorService: RandomColorService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
     ) {
-        this.mapProjectionSubscription = projectService.getProjectionStream().subscribe(p => this.mapProjection = p);
+        this.mapProjectionSubscription = projectService.getProjectionStream().subscribe((p) => (this.mapProjection = p));
     }
 
     ngOnDestroy(): void {
@@ -136,7 +129,7 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
         const geoJson = this.olFeatureWriter.writeFeaturesObject(olSource.getFeatures(), {
             featureProjection: this.mapProjection.getCode(),
-            dataProjection: Projections.WGS_84.getCode()
+            dataProjection: Projections.WGS_84.getCode(),
         });
 
         // add `id` attribute to each feature
@@ -174,5 +167,4 @@ export class OlDrawFeaturesComponent implements OnDestroy {
 
         this.projectService.addLayer(layer);
     }
-
 }

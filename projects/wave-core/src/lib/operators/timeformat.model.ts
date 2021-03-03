@@ -1,5 +1,5 @@
 class TimeFormatCollection {
-    ALL_FORMATS: Array<{display: string, value: string}>;
+    ALL_FORMATS: Array<{display: string; value: string}>;
 
     constructor() {
         this.ALL_FORMATS = [

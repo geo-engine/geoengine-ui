@@ -10,12 +10,7 @@ import {ResultType, ResultTypes} from '../../result-type.model';
 import {BasicColumns, GFBioSourceType} from '../../types/gfbio-source-type.model';
 import {Operator} from '../../operator.model';
 import {Projections} from '../../projection.model';
-import {
-    AbstractVectorSymbology,
-    PointSymbology,
-    VectorSymbology,
-    MappingRasterSymbology
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, PointSymbology, VectorSymbology, MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {Interpolation, Unit} from '../../unit.model';
 import {DataType, DataTypes} from '../../datatype.model';
@@ -27,9 +22,9 @@ import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 import {ProjectService} from '../../../project/project.service';
 import {HeatmapType} from '../../types/heatmap-type.model';
 
-function oneIsTrue(group: FormGroup): { [key: string]: boolean } {
+function oneIsTrue(group: FormGroup): {[key: string]: boolean} {
     const errors: {
-        noneIsTrue?: boolean,
+        noneIsTrue?: boolean;
     } = {};
 
     let noneIsTrue = true;
@@ -55,10 +50,9 @@ enum Mode {
     selector: 'wave-gbif-operator',
     templateUrl: './gbif-operator.component.html',
     styleUrls: ['./gbif-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
-
     Mode = Mode;
 
     form: FormGroup;
@@ -88,30 +82,34 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private config: Config,
-                private mappingQueryService: MappingQueryService,
-                private formBuilder: FormBuilder,
-                private randomColorService: RandomColorService,
-                private http: HttpClient,
-                private layerService: LayerService,
-                private projectService: ProjectService) {
-    }
+    constructor(
+        private config: Config,
+        private mappingQueryService: MappingQueryService,
+        private formBuilder: FormBuilder,
+        private randomColorService: RandomColorService,
+        private http: HttpClient,
+        private layerService: LayerService,
+        private projectService: ProjectService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
             name: [undefined, Validators.required],
             searchTerm: [undefined, Validators.required],
             searchLevel: [this.taxonLevels[0], Validators.required],
-            select: this.formBuilder.group({
-                gbif: [false],
-                iucn: [false],
-            }, {
-                validator: oneIsTrue
-            }),
+            select: this.formBuilder.group(
+                {
+                    gbif: [false],
+                    iucn: [false],
+                },
+                {
+                    validator: oneIsTrue,
+                },
+            ),
         });
 
         this.subscriptions.push(
-            this.mode$.subscribe(mode => {
+            this.mode$.subscribe((mode) => {
                 if (mode === Mode.SEARCH) {
                     this.form.controls['searchTerm'].enable();
                     this.form.controls['searchLevel'].enable();
@@ -119,32 +117,27 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.form.controls['searchTerm'].disable();
                     this.form.controls['searchLevel'].disable();
                 }
-            })
+            }),
         );
 
         this.autoCompleteResults$ = this.form.controls['searchTerm'].valueChanges.pipe(
             startWith(null),
             throttleTime(this.config.DELAYS.DEBOUNCE),
             distinctUntilChanged(),
-            mergeMap(
-                (autocompleteString: string) => {
-                    if (autocompleteString && autocompleteString.length >= this.minSearchLength) {
-                        return this.mappingQueryService.getGBIFAutoCompleteResults(
-                            this.form.controls['searchLevel'].value,
-                            autocompleteString
-                        );
-                    } else {
-                        return observableOf([]);
-                    }
+            mergeMap((autocompleteString: string) => {
+                if (autocompleteString && autocompleteString.length >= this.minSearchLength) {
+                    return this.mappingQueryService.getGBIFAutoCompleteResults(this.form.controls['searchLevel'].value, autocompleteString);
+                } else {
+                    return observableOf([]);
                 }
-            ),
+            }),
         );
 
         // TODO: think about very unlikely race condition
         this.http
-            .get<Array<{ name: string, datatype: string }>>('assets/gbif-default-fields.json')
+            .get<Array<{name: string; datatype: string}>>('assets/gbif-default-fields.json')
             .toPromise()
-            .then(fieldList => {
+            .then((fieldList) => {
                 for (const field of fieldList) {
                     this.gbifAttributes.push(field.name);
 
@@ -166,7 +159,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     lookup() {
@@ -176,7 +169,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         const searchLevel = this.form.controls['searchLevel'].value as string;
         const searchTerm = this.form.controls['searchTerm'].value as string;
 
-        this.mappingQueryService.getGBIFDataSourceCounts(searchLevel, searchTerm).then(results => {
+        this.mappingQueryService.getGBIFDataSourceCounts(searchLevel, searchTerm).then((results) => {
             this.loading$.next(false);
 
             let totalCount = 0;
@@ -220,16 +213,19 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         const searchTerm = this.form.controls['searchTerm'].value as string;
 
         if (this.form.controls['select'].value.iucn) {
-            this.addVectorLayer({
-                name: 'IUCN',
-                operatorType: new GFBioSourceType({
-                    dataSource: 'IUCN',
-                    level: searchLevel,
-                    term: searchTerm,
-                    columns: this.iucnColumns,
-                }),
-                resultType: ResultTypes.POLYGONS,
-            }, layerName);
+            this.addVectorLayer(
+                {
+                    name: 'IUCN',
+                    operatorType: new GFBioSourceType({
+                        dataSource: 'IUCN',
+                        level: searchLevel,
+                        term: searchTerm,
+                        columns: this.iucnColumns,
+                    }),
+                    resultType: ResultTypes.POLYGONS,
+                },
+                layerName,
+            );
         }
 
         if (this.form.controls['select'].value.gbif) {
@@ -241,14 +237,14 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
                     term: searchTerm,
                     columns: this.gbifColumns,
                 }),
-                resultType: ResultTypes.POINTS
+                resultType: ResultTypes.POINTS,
             };
 
             this.addVectorLayer(source, layerName);
         }
     }
 
-    addVectorLayer(source: { name: string, operatorType: OperatorType, resultType: ResultType }, layerName: string) {
+    addVectorLayer(source: {name: string; operatorType: OperatorType; resultType: ResultType}, layerName: string) {
         const operator = new Operator({
             operatorType: source.operatorType,
             resultType: source.resultType,
@@ -285,7 +281,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projectService.addLayer(layer);
     }
 
-    addRasterLayer(source: { name: string, operatorType: OperatorType, resultType: ResultType }, layerName: string, max: number) {
+    addRasterLayer(source: {name: string; operatorType: OperatorType; resultType: ResultType}, layerName: string, max: number) {
         const sourceOperator = new Operator({
             operatorType: source.operatorType,
             resultType: source.resultType,
@@ -297,7 +293,7 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             unit: '',
             interpolation: Interpolation.Continuous,
             min: 0,
-            max
+            max,
         });
 
         const heatmapOperator = new Operator({
@@ -313,15 +309,14 @@ export class GbifOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
             pointSources: [sourceOperator],
         });
 
-        this.projectService.addLayer(new RasterLayer({
-            name: `${layerName} (${source.name})`,
-            operator: heatmapOperator,
-            symbology: MappingRasterSymbology.createSymbology({
-                unit: countUnit,
+        this.projectService.addLayer(
+            new RasterLayer({
+                name: `${layerName} (${source.name})`,
+                operator: heatmapOperator,
+                symbology: MappingRasterSymbology.createSymbology({
+                    unit: countUnit,
+                }),
             }),
-        }));
-
-
+        );
     }
-
 }

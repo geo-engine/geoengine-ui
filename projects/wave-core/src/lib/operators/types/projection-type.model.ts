@@ -12,7 +12,7 @@ interface ProjectionTypeMappingDict extends OperatorTypeMappingDict {
     dest_projection: string;
 }
 
-export interface ProjectionTypeDict extends OperatorTypeDict  {
+export interface ProjectionTypeDict extends OperatorTypeDict {
     srcProjection: string;
     destProjection: string;
 }
@@ -25,9 +25,15 @@ export class ProjectionType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(ProjectionType._TYPE);
     private static _NAME = 'Projection';
 
-    static get TYPE(): string { return ProjectionType._TYPE; }
-    static get ICON_URL(): string { return ProjectionType._ICON_URL; }
-    static get NAME(): string { return ProjectionType._NAME; }
+    static get TYPE(): string {
+        return ProjectionType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return ProjectionType._ICON_URL;
+    }
+    static get NAME(): string {
+        return ProjectionType._NAME;
+    }
 
     private srcProjection: Projection;
     private destProjection: Projection;

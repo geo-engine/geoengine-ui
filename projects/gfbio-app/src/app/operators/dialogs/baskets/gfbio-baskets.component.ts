@@ -1,6 +1,4 @@
-import {
-    of as observableOf, combineLatest as observableCombineLatest, ReplaySubject, BehaviorSubject, Subscription,
-} from 'rxjs';
+import {of as observableOf, combineLatest as observableCombineLatest, ReplaySubject, BehaviorSubject, Subscription} from 'rxjs';
 import {tap, mergeMap, catchError} from 'rxjs/operators';
 
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy} from '@angular/core';
@@ -18,7 +16,6 @@ import {GFBioMappingQueryService} from '../../../queries/mapping-query.service';
     styleUrls: ['./gfbio-baskets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class GfbioBasketsComponent implements OnDestroy {
     // for template
     BasketTypeAbcdGrouped: BasketTypeAbcdGrouped = 'abcd_grouped';
@@ -39,59 +36,66 @@ export class GfbioBasketsComponent implements OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(@Inject(MappingQueryService) private mappingQueryService: GFBioMappingQueryService,
-                private notificationService: NotificationService) {
+    constructor(
+        @Inject(MappingQueryService) private mappingQueryService: GFBioMappingQueryService,
+        private notificationService: NotificationService,
+    ) {
         let initialBasketLoaded = false;
 
         this.subscriptions.push(
-            observableCombineLatest(this.page$, this.limit$, this.reload$).pipe(
-                tap(() => this.isOverviewLoading$.next(true)),
-                mergeMap(([page, limit]) => this.mappingQueryService
-                    .getGFBioBaskets({offset: page * limit, limit}).pipe(
-                        tap(() => this.isError$.next(false)),
-                        catchError(error => {
-                            this.isError$.next(true);
-                            this.notificationService.error(error);
-                            return observableOf({
-                                baskets: [],
-                                totalNumberOfBaskets: NaN,
-                            } as BasketsOverview);
-                        }),
-                    )),
-                tap(() => this.isOverviewLoading$.next(false)),
-                tap(basketsOverviews => {
-                    if (!initialBasketLoaded && basketsOverviews.baskets.length > 0) {
-                        this.loadBasket(basketsOverviews.baskets[0].basketId);
-                        initialBasketLoaded = true;
-                    }
-                }),
-            )
-                .subscribe(basketsOverview => this.basketsOverview$.next(basketsOverview))
+            observableCombineLatest(this.page$, this.limit$, this.reload$)
+                .pipe(
+                    tap(() => this.isOverviewLoading$.next(true)),
+                    mergeMap(([page, limit]) =>
+                        this.mappingQueryService.getGFBioBaskets({offset: page * limit, limit}).pipe(
+                            tap(() => this.isError$.next(false)),
+                            catchError((error) => {
+                                this.isError$.next(true);
+                                this.notificationService.error(error);
+                                return observableOf({
+                                    baskets: [],
+                                    totalNumberOfBaskets: NaN,
+                                } as BasketsOverview);
+                            }),
+                        ),
+                    ),
+                    tap(() => this.isOverviewLoading$.next(false)),
+                    tap((basketsOverviews) => {
+                        if (!initialBasketLoaded && basketsOverviews.baskets.length > 0) {
+                            this.loadBasket(basketsOverviews.baskets[0].basketId);
+                            initialBasketLoaded = true;
+                        }
+                    }),
+                )
+                .subscribe((basketsOverview) => this.basketsOverview$.next(basketsOverview)),
         );
 
         this.subscriptions.push(
-            observableCombineLatest(this.selectedBasketId$, this.reload$).pipe(
-                tap(() => this.isDetailsLoading$.next(true)),
-                mergeMap(([id]) => this.mappingQueryService
-                    .getGFBioBasket(id).pipe(
-                        tap(() => this.isError$.next(false)),
-                        catchError(error => {
-                            this.isError$.next(true);
-                            this.notificationService.error(error);
-                            return observableOf({
-                                query: '',
-                                results: [],
-                                timestamp: moment.invalid(),
-                            } as Basket);
-                        }),
-                    )),
-                tap(() => this.isDetailsLoading$.next(false)),
-            ).subscribe(basket => this.selectedBasket$.next(basket))
+            observableCombineLatest(this.selectedBasketId$, this.reload$)
+                .pipe(
+                    tap(() => this.isDetailsLoading$.next(true)),
+                    mergeMap(([id]) =>
+                        this.mappingQueryService.getGFBioBasket(id).pipe(
+                            tap(() => this.isError$.next(false)),
+                            catchError((error) => {
+                                this.isError$.next(true);
+                                this.notificationService.error(error);
+                                return observableOf({
+                                    query: '',
+                                    results: [],
+                                    timestamp: moment.invalid(),
+                                } as Basket);
+                            }),
+                        ),
+                    ),
+                    tap(() => this.isDetailsLoading$.next(false)),
+                )
+                .subscribe((basket) => this.selectedBasket$.next(basket)),
         );
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => {
+        this.subscriptions.forEach((subscription) => {
             subscription.unsubscribe();
         });
     }

@@ -8,7 +8,7 @@ import {LayoutService} from '../../layout.service';
     selector: 'wave-datatable-mediaview',
     templateUrl: './mediaview.component.html',
     styleUrls: ['./mediaview.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 /**
@@ -17,7 +17,6 @@ import {LayoutService} from '../../layout.service';
  * The dialogs will show the images or play the audios or videos
  */
 export class MediaviewComponent implements OnChanges {
-
     private urls: string[];
     public mediaType: string[];
 
@@ -25,7 +24,6 @@ export class MediaviewComponent implements OnChanges {
     public audioUrls: string[];
     public videoUrls: string[];
     public textNoUrls: string[];
-
 
     /**
      * Input: A List of comma-separated urls to images, audio-files and videos
@@ -38,7 +36,6 @@ export class MediaviewComponent implements OnChanges {
      */
     @Input()
     private type: string;
-
 
     /**
      * Extracts the type (image, audio, video) of a given file-url
@@ -94,14 +91,11 @@ export class MediaviewComponent implements OnChanges {
         return ret;
     }
 
-
     /**
      * Sets up all variables
      * @param layoutService reference to LayoutService
      */
-    constructor(
-        public layoutService: LayoutService,
-    ) { }
+    constructor(public layoutService: LayoutService) {}
 
     /**
      * OnChange
@@ -155,7 +149,7 @@ export class MediaviewComponent implements OnChanges {
     public openImageMediaview(imageID: number) {
         this.layoutService.setSidenavContentComponent({
             component: MediaviewImageComponent,
-            config: {imageURLs: this.imageUrls, currentImage: imageID}
+            config: {imageURLs: this.imageUrls, currentImage: imageID},
         });
     }
 
@@ -166,7 +160,7 @@ export class MediaviewComponent implements OnChanges {
     public openAudioMediaview(audioID: number) {
         this.layoutService.setSidenavContentComponent({
             component: MediaviewAudioComponent,
-            config: {audioURLs: this.audioUrls, currentAudio: audioID}
+            config: {audioURLs: this.audioUrls, currentAudio: audioID},
         });
     }
 
@@ -177,7 +171,7 @@ export class MediaviewComponent implements OnChanges {
     public openVideoMediaview(videoID: number) {
         this.layoutService.setSidenavContentComponent({
             component: MediaviewVideoComponent,
-            config: {videoURLs: this.videoUrls, currentVideo: videoID}
+            config: {videoURLs: this.videoUrls, currentVideo: videoID},
         });
     }
 }

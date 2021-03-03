@@ -59,7 +59,7 @@ export interface ProjectListingDict {
 
 export type ProjectPermissionDict = 'Read' | 'Write' | 'Owner';
 
-export type ProjectFilterDict = 'None' | { name: { term: string } } | { description: { term: string } };
+export type ProjectFilterDict = 'None' | {name: {term: string}} | {description: {term: string}};
 
 export type ProjectOrderByDict = 'DateAsc' | 'DateDesc' | 'NameAsc' | 'NameDesc';
 
@@ -79,8 +79,8 @@ export interface LayerDict {
     name: string;
     info: LayerInfoDict;
     visibility: {
-        data: boolean,
-        legend: boolean,
+        data: boolean;
+        legend: boolean;
     };
 }
 
@@ -97,18 +97,18 @@ export interface ProjectVersion {
 
 export interface ColorizerDict {
     LinearGradient?: {
-        breakpoints: Array<BreakpointDict>,
-        no_data_color: RgbaColor,
-        default_color: RgbaColor,
+        breakpoints: Array<BreakpointDict>;
+        no_data_color: RgbaColor;
+        default_color: RgbaColor;
     };
     LogarithmicGradient?: {
-        breakpoints: Array<BreakpointDict>,
-        no_data_color: RgbaColor,
-        default_color: RgbaColor,
+        breakpoints: Array<BreakpointDict>;
+        no_data_color: RgbaColor;
+        default_color: RgbaColor;
     };
     Palette?: {
-        colors: { [index: number]: RgbaColor },
-        no_data_color: string,
+        colors: {[index: number]: RgbaColor};
+        no_data_color: string;
     };
     Rgba?: {};
 }
@@ -117,7 +117,7 @@ export type RgbaColor = [number, number, number, number];
 
 export interface LayerInfoDict {
     Raster?: {
-        colorizer: ColorizerDict,
+        colorizer: ColorizerDict;
     };
     Vector?: {};
 }
@@ -152,7 +152,7 @@ export interface OperatorDict {
     raster_sources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
-type ParamTypes = string | number | boolean | Array<ParamTypes> | { [key: string]: ParamTypes };
+type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes};
 
 export interface OperatorParams {
     [key: string]: ParamTypes;
@@ -170,13 +170,7 @@ export interface TimeStepDict {
     granularity: TimeStepGranularityDict;
 }
 
-export type TimeStepGranularityDict = 'Millis' |
-    'Seconds' |
-    'Minutes' |
-    'Hours' |
-    'Days' |
-    'Months' |
-    'Years';
+export type TimeStepGranularityDict = 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
 
 export interface DataSetDict {
     id: InternalDataSetIdDict; // TODO: support all Id types
@@ -216,7 +210,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-    columns: { [key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text' };
+    columns: {[key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text'};
 }
 
 export interface PlotResultDescriptorDict extends ResultDescriptorDict {
@@ -225,13 +219,13 @@ export interface PlotResultDescriptorDict extends ResultDescriptorDict {
 
 export interface MeasurementDict {
     continuous?: {
-        measurement: string,
-        unit?: string,
+        measurement: string;
+        unit?: string;
     };
     classification?: {
-        measurement: string,
+        measurement: string;
         classes: {
-            [key: number]: string,
-        },
+            [key: number]: string;
+        };
     };
 }

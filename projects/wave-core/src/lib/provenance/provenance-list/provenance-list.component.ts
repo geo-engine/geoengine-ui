@@ -24,25 +24,23 @@ export class NbspPipe implements PipeTransform {
     selector: 'wave-provenance-list',
     templateUrl: './provenance-list.component.html',
     styleUrls: ['./provenance-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProvenanceListComponent {
-
     @Input() height: number;
 
     provenance$: Observable<Iterable<Provenance>>;
 
-    constructor(
-        public layerService: LayerService,
-        public projectService: ProjectService,
-    ) {
-        this.provenance$ = layerService.getSelectedLayerStream().pipe(map(l => {
-            if (l) {
-                return projectService.getLayerProvenanceDataStream(l);
-            } else {
-                return observableOf([]);
-            }
-        }), switchAll(),);
+    constructor(public layerService: LayerService, public projectService: ProjectService) {
+        this.provenance$ = layerService.getSelectedLayerStream().pipe(
+            map((l) => {
+                if (l) {
+                    return projectService.getLayerProvenanceDataStream(l);
+                } else {
+                    return observableOf([]);
+                }
+            }),
+            switchAll(),
+        );
     }
-
 }

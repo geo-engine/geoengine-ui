@@ -3,7 +3,8 @@ import {first, map as rxMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
-    ChangeDetectionStrategy, ChangeDetectorRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ContentChildren,
     ElementRef,
@@ -77,19 +78,18 @@ const MAX_ZOOM_LEVEL = 28;
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
-
     /**
      * display a grid of maps or all layers on a single map
      */
     @Input() grid = true; // TODO: false;
 
-    @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement !: ElementRef;
-    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers !: QueryList<ElementRef>;
+    @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement!: ElementRef;
+    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers!: QueryList<ElementRef>;
 
     /**
      * These are the layers from the layer list (as dom elements in the template)
      */
-    @ContentChildren(MapLayerComponent) mapLayersRaw !: QueryList<MapLayer>;
+    @ContentChildren(MapLayerComponent) mapLayersRaw!: QueryList<MapLayer>;
     mapLayers: Array<MapLayer> = []; // filtered
 
     numberOfRows = 1;
@@ -116,53 +116,54 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Create the component and inject several dependencies via DI.
      */
-    constructor(private config: Config,
-                private changeDetectorRef: ChangeDetectorRef,
-                private mapService: MapService,
-                // private layerService: LayerService,
-                private layoutService: LayoutService,
-                private projectService: ProjectService) {
+    constructor(
+        private config: Config,
+        private changeDetectorRef: ChangeDetectorRef,
+        private mapService: MapService,
+        // private layerService: LayerService,
+        private layoutService: LayoutService,
+        private projectService: ProjectService,
+    ) {
         // set dummy maps so that they are not uninitialized
         this.view = new OlView({
             zoom: DEFAULT_ZOOM_LEVEL,
         });
-        this.maps = [new OlMap({
-            view: this.view,
-        })];
+        this.maps = [
+            new OlMap({
+                view: this.view,
+            }),
+        ];
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     ngAfterViewInit() {
-        this.projection$.pipe(first()).subscribe(projection => {
-            this.maps.forEach(map => map.setTarget(undefined)); // initially reset all DOM bindings
+        this.projection$.pipe(first()).subscribe((projection) => {
+            this.maps.forEach((map) => map.setTarget(undefined)); // initially reset all DOM bindings
 
             this.initOpenlayersMap(projection);
 
             // since all viewports are linked and there will always be the first map, we link the event only to map 0
-            this.maps[0].on('moveend', _event => this.emitViewportSize());
+            this.maps[0].on('moveend', (_event) => this.emitViewportSize());
 
             this.initUserSelect();
 
             this.subscriptions.push(
-                combineLatest([
-                    this.mapLayersRaw.changes as Observable<MapLayer>,
-                    this.projection$,
-                ]).pipe(
-                    rxMap(([_changes, newProjection]) => newProjection)
-                ).subscribe((newProjection: SpatialReference) => {
-                    this.redrawLayers(newProjection);
-                })
+                combineLatest([this.mapLayersRaw.changes as Observable<MapLayer>, this.projection$])
+                    .pipe(rxMap(([_changes, newProjection]) => newProjection))
+                    .subscribe((newProjection: SpatialReference) => {
+                        this.redrawLayers(newProjection);
+                    }),
             );
         });
     }
 
-    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (const propName in changes) {
             if (propName === 'grid') {
-                this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
+                this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
             }
         }
     }
@@ -171,7 +172,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Notify the map that the container has resized.
      */
     resize() {
-        setTimeout(() => this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection)));
+        setTimeout(() => this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection)));
     }
 
     /**
@@ -275,11 +276,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         // reattach
         if (this.isDrawInteractionAttached()) {
-            this.maps.forEach(map => {
+            this.maps.forEach((map) => {
                 const drawInteractionLayer = this.createDrawInteractionLayer();
                 this.drawInteractionLayers.push(drawInteractionLayer);
                 map.addLayer(drawInteractionLayer);
-
 
                 const drawInteraction = this.createDrawInteraction();
                 this.drawInteractions.push(drawInteraction);
@@ -292,7 +292,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Force a redraw for each map layer
      */
     public layerForcesRedraw() {
-        this.projection$.pipe(first()).subscribe(projection => this.redrawLayers(projection));
+        this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
     }
 
     private calculateGrid() {
@@ -314,7 +314,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             }
         }
 
-        while ((columns - 1) * rows >= numberOfLayers) { // reduce unnecessary columns
+        while ((columns - 1) * rows >= numberOfLayers) {
+            // reduce unnecessary columns
             columns -= 1;
         }
 
@@ -323,12 +324,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private initOpenlayersMap(projection: SpatialReference) {
-        this.maps = [new OlMap({
-            controls: [],
-            logo: false,
-            loadTilesWhileAnimating: true,  // TODO: check if moved to layer
-            loadTilesWhileInteracting: true, // TODO: check if moved to layer
-        })];
+        this.maps = [
+            new OlMap({
+                controls: [],
+                logo: false,
+                loadTilesWhileAnimating: true, // TODO: check if moved to layer
+                loadTilesWhileInteracting: true, // TODO: check if moved to layer
+            }),
+        ];
         this.createAndSetView(projection);
     }
 
@@ -407,17 +410,19 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private attachUserSelectToMap() {
-        if (!this.userSelect) { // called too early
+        if (!this.userSelect) {
+            // called too early
             return;
         }
 
         let map: OlMap;
         if (!this.selectedOlLayer) {
             map = undefined;
-        } else if (this.maps.length === 1) { // mono map, no choice
+        } else if (this.maps.length === 1) {
+            // mono map, no choice
             map = this.maps[0];
         } else {
-            const selectedLayerIndex = this.mapLayers.map(layer => layer.mapLayer).indexOf(this.selectedOlLayer);
+            const selectedLayerIndex = this.mapLayers.map((layer) => layer.mapLayer).indexOf(this.selectedOlLayer);
             if (selectedLayerIndex >= 0) {
                 const inverseIndex = this.maps.length - selectedLayerIndex - 1;
                 map = this.maps[inverseIndex];
@@ -439,7 +444,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private redrawLayers(projection: SpatialReference) {
-        this.mapLayers = this.mapLayersRaw.filter(mapLayer => mapLayer.isVisible);
+        this.mapLayers = this.mapLayersRaw.filter((mapLayer) => mapLayer.isVisible);
 
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();
@@ -452,14 +457,17 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             const removedMap = this.maps.pop();
             removedMap.setTarget(undefined); // remove DOM reference to map
         }
-        while (this.maps.length < this.desiredNumberOfMaps()) { // enlarge maps if necessary
-            this.maps.push(new OlMap({
-                controls: [],
-                logo: false,
-                view: this.view,
-                loadTilesWhileAnimating: true,  // TODO: check if moved to layer
-                loadTilesWhileInteracting: true, // TODO: check if moved to layer
-            }));
+        while (this.maps.length < this.desiredNumberOfMaps()) {
+            // enlarge maps if necessary
+            this.maps.push(
+                new OlMap({
+                    controls: [],
+                    logo: false,
+                    view: this.view,
+                    loadTilesWhileAnimating: true, // TODO: check if moved to layer
+                    loadTilesWhileInteracting: true, // TODO: check if moved to layer
+                }),
+            );
         }
 
         this.mapContainers.forEach((mapContainer, i) => {
@@ -481,10 +489,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.backgroundLayers.length = 0;
         }
 
-        if (this.backgroundLayers.length > this.desiredNumberOfMaps()) { // reduce background layers if necessary
+        if (this.backgroundLayers.length > this.desiredNumberOfMaps()) {
+            // reduce background layers if necessary
             this.backgroundLayers.length = this.desiredNumberOfMaps();
         }
-        while (this.backgroundLayers.length < this.desiredNumberOfMaps()) { // create background layers if necessary
+        while (this.backgroundLayers.length < this.desiredNumberOfMaps()) {
+            // create background layers if necessary
             this.backgroundLayers.push(this.createBackgroundLayer(projection));
         }
 
@@ -498,7 +508,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     map.getLayers().push(this.mapLayers[inverseIndex].mapLayer);
                 }
             } else {
-                this.mapLayers.forEach(layerComponent => map.addLayer(layerComponent.mapLayer));
+                this.mapLayers.forEach((layerComponent) => map.addLayer(layerComponent.mapLayer));
             }
         });
 
@@ -517,10 +527,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         let newCenterPoint: OlGeomPoint;
         if (this.view && this.view.getCenter()) {
             const oldCenterPoint = new OlGeomPoint(this.view.getCenter());
-            newCenterPoint = oldCenterPoint.transform(
-                this.view.getProjection(),
-                projection.getOpenlayersProjection(),
-            ) as OlGeomPoint;
+            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), projection.getOpenlayersProjection()) as OlGeomPoint;
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
@@ -535,7 +542,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             constrainResolution: true, // no intermediate zoom levels
             multiWorld: true,
         });
-        this.maps.forEach(map => map.setView(this.view));
+        this.maps.forEach((map) => map.setView(this.view));
 
         this.emitViewportSize();
 
@@ -567,7 +574,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         wrapX: false,
                     });
                 } else {
-                    return new OlLayerImage({ // placeholder image
+                    return new OlLayerImage({
+                        // placeholder image
                         source: this.backgroundLayerSource,
                     });
                 }

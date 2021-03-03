@@ -16,10 +16,5 @@
             <button mat-menu-item (click)="countdownSeconds = 60; run$.next(run$.getValue())">60s</button>
         </mat-menu>
     </div>
-    <mat-progress-bar
-        class="example-margin"
-        color="color"
-        mode="determinate"
-        [value]="countdown_percent$ | async">
-    </mat-progress-bar>
+    <mat-progress-bar class="example-margin" color="color" mode="determinate" [value]="countdown_percent$ | async"> </mat-progress-bar>
 </div>

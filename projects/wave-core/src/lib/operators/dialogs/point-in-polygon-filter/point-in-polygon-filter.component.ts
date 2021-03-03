@@ -6,9 +6,7 @@ import {VectorLayer} from '../../../layers/layer.model';
 import {Operator} from '../../operator.model';
 import {ResultTypes} from '../../result-type.model';
 import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
-import {
-    AbstractVectorSymbology, PointSymbology,
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -23,20 +21,16 @@ import {ProjectService} from '../../../project/project.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointInPolygonFilterOperatorComponent {
-
     ResultTypes = ResultTypes;
 
     form: FormGroup;
 
-    constructor(private randomColorService: RandomColorService,
-                private projectService: ProjectService,
-                private formBuilder: FormBuilder) {
+    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
             polygonLayer: [undefined, Validators.required],
         });
-
     }
 
     add(event: Event) {
@@ -68,13 +62,13 @@ export class PointInPolygonFilterOperatorComponent {
         const layer = new VectorLayer({
             name,
             operator,
-            symbology: clustered ?
-                PointSymbology.createClusterSymbology({
-                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                }) :
-                PointSymbology.createSymbology({
-                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                }),
+            symbology: clustered
+                ? PointSymbology.createClusterSymbology({
+                      fillRGBA: this.randomColorService.getRandomColorRgba(),
+                  })
+                : PointSymbology.createSymbology({
+                      fillRGBA: this.randomColorService.getRandomColorRgba(),
+                  }),
             // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
             //     operator, clustered,
             // }),
@@ -83,7 +77,5 @@ export class PointInPolygonFilterOperatorComponent {
         });
         // this.layerService.addLayer(layer);
         this.projectService.addLayer(layer);
-
     }
-
 }

@@ -29,7 +29,7 @@ export class DataSet {
                 params: {
                     data_set: this.id.toDict(),
                 },
-            }
+            },
         };
     }
 }
@@ -47,7 +47,7 @@ export class InternalDataSetId {
 
     toDict(): InternalDataSetIdDict {
         return {
-            Internal: this.Internal
+            Internal: this.Internal,
         };
     }
 }

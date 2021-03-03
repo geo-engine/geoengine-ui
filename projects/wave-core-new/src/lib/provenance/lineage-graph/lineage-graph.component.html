@@ -1,7 +1,12 @@
-<wave-dialog-header>{{title}}</wave-dialog-header>
+<wave-dialog-header>{{ title }}</wave-dialog-header>
 <div fxLayout="row">
-    <mat-spinner *ngIf="loading$ | async" class="loading" [diameter]="loaderDiameter$ | async"
-                 [style.left]="loaderLeft$ | async" [style.top]="loaderLeft$ | async"></mat-spinner>
+    <mat-spinner
+        *ngIf="loading$ | async"
+        class="loading"
+        [diameter]="loaderDiameter$ | async"
+        [style.left]="loaderLeft$ | async"
+        [style.top]="loaderLeft$ | async"
+    ></mat-spinner>
     <svg #svg class="graph" [style.width.px]="svgWidth$ | async" [style.height.px]="svgHeight$ | async">
         <g #g></g>
     </svg>
@@ -9,17 +14,17 @@
         <wave-dialog-section-heading>Operator Type</wave-dialog-section-heading>
         <mat-list fxLayout="row" *ngIf="selectedOperator$ | async">
             <mat-list-item fxFlex="grow">
-                <img mat-list-avatar [src]="selectedOperatorIcon$ | async" [alt]="(selectedOperator$ | async)?.type">
-                <h4 mat-line>{{(selectedOperator$ | async)?.type}}</h4>
-                <p mat-line>{{layer.layerType}}</p>
+                <img mat-list-avatar [src]="selectedOperatorIcon$ | async" [alt]="(selectedOperator$ | async)?.type" />
+                <h4 mat-line>{{ (selectedOperator$ | async)?.type }}</h4>
+                <p mat-line>{{ layer.layerType }}</p>
             </mat-list-item>
         </mat-list>
         <wave-dialog-section-heading>Parameters</wave-dialog-section-heading>
         <mat-list>
             <ng-template ngFor let-parameter [ngForOf]="parameters$ | async">
-                <h3 mat-subheader>{{parameter.key}}</h3>
+                <h3 mat-subheader>{{ parameter.key }}</h3>
                 <mat-list-item>
-                    <code mat-line [matTooltip]='parameter.value'>{{parameter.value}}</code>
+                    <code mat-line [matTooltip]="parameter.value">{{ parameter.value }}</code>
                 </mat-list-item>
                 <mat-divider></mat-divider>
             </ng-template>

@@ -1,45 +1,46 @@
 <div class="component_container">
-
     <form [formGroup]="form" (ngSubmit)="applyNewColorTable($event)" fxLayout="column">
-
         <div
             formGroupName="bounds"
             class="flex-container"
-            fxLayout="row" fxLayoutAlign="space-between center"
-            fxLayout.xs="column" fxLayoutAlign.xs="start"
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            fxLayout.xs="column"
+            fxLayoutAlign.xs="start"
         >
             <mat-form-field class="flex-item" fxFlex>
                 <mat-label>Min</mat-label>
-                <input matInput type="number" step="any" placeholder="Min" formControlName="min">
+                <input matInput type="number" step="any" placeholder="Min" formControlName="min" />
                 <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.controls.bounds.errors?.noFilter">
                     Specify a minimum and a maximum.
                 </mat-hint>
-                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}"
-                          *ngIf="form.errors?.valueBelowOrEqual">
-                    Min value must be greater then {{form.controls.colormapStepScales?.value.requiresValueAbove}}
+                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.errors?.valueBelowOrEqual">
+                    Min value must be greater then {{ form.controls.colormapStepScales?.value.requiresValueAbove }}
                 </mat-hint>
             </mat-form-field>
             <mat-form-field class="flex-item" fxFlex>
                 <mat-label>Max</mat-label>
-                <input matInput type="number" step="any" placeholder="Max" formControlName="max">
+                <input matInput type="number" step="any" placeholder="Max" formControlName="max" />
                 <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.controls.bounds.errors?.minOverMax">
                     The maximum must be greater or equal to the minimum.
                 </mat-hint>
-                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}"
-                          *ngIf="form.errors?.valueAboveOrEqual">
-                    Max value must be lower then {{form.controls.colormapStepScales?.value.requiresValueBelow}}
+                <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}" *ngIf="form.errors?.valueAboveOrEqual">
+                    Max value must be lower then {{ form.controls.colormapStepScales?.value.requiresValueBelow }}
                 </mat-hint>
             </mat-form-field>
         </div>
-
 
         <mat-form-field>
             <mat-label>Colormap name</mat-label>
             <mat-select formControlName="colormapName">
                 <mat-option *ngFor="let colormapName of colormapNames" [value]="colormapName">
-                    <span class="colorizer_option_preview"
-                          [style.background]='colormapName | waveColormapNameToColorizerData | waveWappingColorizerToGradient:90 | waveSafeStyle'></span>
-                    {{colormapName}}
+                    <span
+                        class="colorizer_option_preview"
+                        [style.background]="
+                            colormapName | waveColormapNameToColorizerData | waveWappingColorizerToGradient: 90 | waveSafeStyle
+                        "
+                    ></span>
+                    {{ colormapName }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -50,7 +51,7 @@
             <mat-label>Step distribution</mat-label>
             <mat-select formControlName="colormapStepScales">
                 <mat-option *ngFor="let colormapStepScale of boundedColormapStepScales" [value]="colormapStepScale">
-                    {{colormapStepScale.stepScaleName}}
+                    {{ colormapStepScale.stepScaleName }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -60,29 +61,33 @@
                 <tr>
                     <td><span>Color steps</span></td>
                     <td class="fill_width">
-                        <mat-slider formControlName="colormapSteps" [min]="2" [max]="maxColormapSteps" [tickInterval]="1"
-                                    [thumbLabel]="true">
+                        <mat-slider
+                            formControlName="colormapSteps"
+                            [min]="2"
+                            [max]="maxColormapSteps"
+                            [tickInterval]="1"
+                            [thumbLabel]="true"
+                        >
                         </mat-slider>
                     </td>
-                    <td>{{form.controls.colormapSteps.value}}</td>
+                    <td>{{ form.controls.colormapSteps.value }}</td>
                 </tr>
                 <tr>
                     <td><span>Preview</span></td>
                     <td class="fill_width">
                         <span *ngIf="!colorizerData"> invalid configuration </span>
-                        <div *ngIf="!!colorizerData" class="colorizer_preview fill_width"
-                             [style.background]='colorizerData | waveWappingColorizerToGradient:90 | waveSafeStyle'></div>
+                        <div
+                            *ngIf="!!colorizerData"
+                            class="colorizer_preview fill_width"
+                            [style.background]="colorizerData | waveWappingColorizerToGradient: 90 | waveSafeStyle"
+                        ></div>
                     </td>
                 </tr>
             </table>
         </div>
 
-
         <mat-action-row>
-            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">
-                Create color table
-            </button>
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create color table</button>
         </mat-action-row>
     </form>
-
 </div>

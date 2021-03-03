@@ -13,10 +13,11 @@ import {CsvColumn} from '../operators/dialogs/baskets/csv.model';
 
 @Injectable()
 export class GFBioUserService extends UserService {
-
-    constructor(@Inject(Config) protected readonly config: AppConfig,
-                protected readonly http: HttpClient,
-                protected readonly notificationService: NotificationService) {
+    constructor(
+        @Inject(Config) protected readonly config: AppConfig,
+        protected readonly http: HttpClient,
+        protected readonly notificationService: NotificationService,
+    ) {
         super(config, http, notificationService);
     }
 
@@ -38,13 +39,15 @@ export class GFBioUserService extends UserService {
             result: boolean;
         }
 
-        return super.getSessionStream().pipe(switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'abcd',
-                sessionToken: session.sessionToken,
-            });
-            return super.request<AbcdResponse>(parameters).pipe(map(abcdResponse => abcdResponse.archives));
-        }));
+        return super.getSessionStream().pipe(
+            switchMap((session) => {
+                const parameters = new GfbioServiceRequestParameters({
+                    request: 'abcd',
+                    sessionToken: session.sessionToken,
+                });
+                return super.request<AbcdResponse>(parameters).pipe(map((abcdResponse) => abcdResponse.archives));
+            }),
+        );
     }
 
     /**
@@ -56,13 +59,15 @@ export class GFBioUserService extends UserService {
             result: boolean;
         }
 
-        return super.getSessionStream().pipe(switchMap(session => {
-            const parameters = new GfbioServiceRequestParameters({
-                request: 'baskets',
-                sessionToken: session.sessionToken,
-            });
-            return super.request<GfbioBasketResponse>(parameters).pipe(map(gfbioBasketResponse => gfbioBasketResponse.baskets));
-        }));
+        return super.getSessionStream().pipe(
+            switchMap((session) => {
+                const parameters = new GfbioServiceRequestParameters({
+                    request: 'baskets',
+                    sessionToken: session.sessionToken,
+                });
+                return super.request<GfbioBasketResponse>(parameters).pipe(map((gfbioBasketResponse) => gfbioBasketResponse.baskets));
+            }),
+        );
     }
 
     /**
@@ -99,15 +104,10 @@ export class GFBioUserService extends UserService {
         const show = localStorage.getItem('showIntroductoryPopup');
         return show === null || JSON.parse(show);
     }
-
 }
 
 class GfbioServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {request: string; sessionToken: string; parameters?: ParametersType}) {
         super({
             service: 'gfbio',
             request: config.request,
@@ -118,11 +118,7 @@ class GfbioServiceRequestParameters extends MappingRequestParameters {
 }
 
 class OidcServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {request: string; sessionToken: string; parameters?: ParametersType}) {
         super({
             service: 'oidc',
             request: config.request,

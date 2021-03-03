@@ -2,7 +2,7 @@
     <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
         <wave-sidenav-header>Login</wave-sidenav-header>
         <button mat-raised-button type="button" class="sso-button" (click)="login()">
-            <img src="assets/logo_gfbio.png" alt="GFBio">
+            <img src="assets/logo_gfbio.png" alt="GFBio" />
             Continue with GFBio Single Sign On
         </button>
     </ng-template>
@@ -18,13 +18,13 @@
                 <p>E-Mail</p>
             </div>
             <div>
-                <p>{{(user | async).name}}</p>
-                <p>{{(user | async).realName}}</p>
-                <p>{{(user | async).email}}</p>
+                <p>{{ (user | async).name }}</p>
+                <p>{{ (user | async).realName }}</p>
+                <p>{{ (user | async).email }}</p>
             </div>
         </div>
         <div fxLayout="row" class="container">
-            <button mat-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
+            <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
         </div>
     </ng-template>
 </ng-container>

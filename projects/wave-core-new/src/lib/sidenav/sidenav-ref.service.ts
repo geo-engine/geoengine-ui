@@ -8,7 +8,6 @@ import {SidenavConfig} from '../layout.service';
  */
 @Injectable()
 export class SidenavRef {
-
     private title$ = new BehaviorSubject<string>(undefined);
     private backButtonComponent$ = new BehaviorSubject<SidenavConfig>(undefined);
 
@@ -18,8 +17,7 @@ export class SidenavRef {
 
     private close$ = new Subject<void>();
 
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Set the toolbar title
@@ -66,7 +64,7 @@ export class SidenavRef {
         this.removeSearch();
 
         this.searchElements$.next(contentChildren.toArray());
-        this.searchElementsSubscription = contentChildren.changes.subscribe(elements => this.searchElements$.next(elements));
+        this.searchElementsSubscription = contentChildren.changes.subscribe((elements) => this.searchElements$.next(elements));
         this.searchString$ = searchString$;
     }
 
@@ -95,7 +93,7 @@ export class SidenavRef {
      * Retrieve the existence of a `SidenavSearchComponent` as a stream of indicators
      */
     hasSearchComponentStream(): Observable<boolean> {
-        return this.searchElements$.pipe(map(elements => elements !== undefined));
+        return this.searchElements$.pipe(map((elements) => elements !== undefined));
     }
 
     /**
@@ -120,5 +118,4 @@ export class SidenavRef {
     getCloseStream() {
         return this.close$;
     }
-
 }

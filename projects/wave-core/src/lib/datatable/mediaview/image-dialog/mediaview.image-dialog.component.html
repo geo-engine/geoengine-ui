@@ -1,6 +1,9 @@
 <div class="imageContainer">
     <mat-toolbar mat-dialog-title color="primary">
-        <wave-dialog-section-heading title="Image {{currentImage + 1}} of {{imageURLs.length}}" subtitle="{{imageURLs[currentImage] | fileName}}"></wave-dialog-section-heading>
+        <wave-dialog-section-heading
+            title="Image {{ currentImage + 1 }} of {{ imageURLs.length }}"
+            subtitle="{{ imageURLs[currentImage] | fileName }}"
+        ></wave-dialog-section-heading>
 
         <span class="separator"></span>
 
@@ -14,7 +17,7 @@
     </mat-toolbar>
 
     <mat-dialog-content>
-        <img [src] = "imageURLs[currentImage]" (load)="imageLoaded()">
+        <img [src]="imageURLs[currentImage]" (load)="imageLoaded()" />
 
         <div *ngIf="loading" class="loading">
             <div class="spinner">

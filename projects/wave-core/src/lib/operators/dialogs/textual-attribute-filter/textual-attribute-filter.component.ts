@@ -1,4 +1,3 @@
-
 import {Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
@@ -11,10 +10,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Operator} from '../../operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
-import {
-    TextualAttributeFilterEngineType,
-    TextualAttributeFilterType,
-} from '../../types/textual-attribute-filter-type.model';
+import {TextualAttributeFilterEngineType, TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 
 /**
@@ -34,9 +30,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
     form: FormGroup;
     attributes$: Observable<Array<string>>;
 
-    constructor(private projectService: ProjectService,
-                private formBuilder: FormBuilder,
-                private randomColorService: RandomColorService) {
+    constructor(private projectService: ProjectService, private formBuilder: FormBuilder, private randomColorService: RandomColorService) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             vectorLayer: [undefined, Validators.required],
@@ -46,7 +40,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
         });
 
         this.attributes$ = this.form.controls['vectorLayer'].valueChanges.pipe(
-            tap(layer => {
+            tap((layer) => {
                 // side effects!!!
                 this.form.controls['attribute'].setValue(undefined);
                 if (layer) {
@@ -55,15 +49,19 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
                     this.form.controls['attribute'].disable({onlySelf: true});
                 }
             }),
-            map(layer => {
+            map((layer) => {
                 if (layer) {
-                    return layer.operator.attributes.filter((attribute: string) => {
-                        return DataTypes.Alphanumeric === layer.operator.dataTypes.get(attribute);
-                    }).toArray().sort();
+                    return layer.operator.attributes
+                        .filter((attribute: string) => {
+                            return DataTypes.Alphanumeric === layer.operator.dataTypes.get(attribute);
+                        })
+                        .toArray()
+                        .sort();
                 } else {
                     return [];
                 }
-            }), );
+            }),
+        );
     }
 
     ngAfterViewInit() {
@@ -113,7 +111,7 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
 
         const operator = new Operator(dict);
 
-        const symbology = vectorLayer.symbology.clone() as any as AbstractVectorSymbology;
+        const symbology = (vectorLayer.symbology.clone() as any) as AbstractVectorSymbology;
         symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
         const layer = new VectorLayer({
             name: name,
@@ -124,5 +122,4 @@ export class TextualAttributeFilterOperatorComponent implements AfterViewInit {
 
         this.projectService.addLayer(layer);
     }
-
 }

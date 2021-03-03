@@ -9,7 +9,7 @@ export interface GeoJsonFeature {
     id?: FeatureID;
     type: string;
     geometry: GeoJsonGeometry;
-    properties?: { [key: string]: string | number } ;
+    properties?: {[key: string]: string | number};
 }
 
 export interface GeoJsonGeometry {

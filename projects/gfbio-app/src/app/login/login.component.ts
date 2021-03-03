@@ -21,7 +21,6 @@ enum FormStatus {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -30,27 +29,26 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription: Subscription;
 
-    constructor(@Inject(Config) private readonly config: AppConfig,
-                @Inject(UserService) private readonly userService: GFBioUserService,
-                private readonly changeDetectorRef: ChangeDetectorRef,
-                private readonly location: Location,
-                private readonly notificationService: NotificationService) {
-    }
+    constructor(
+        @Inject(Config) private readonly config: AppConfig,
+        @Inject(UserService) private readonly userService: GFBioUserService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly location: Location,
+        private readonly notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
-        this.userService.isSessionValid(this.userService.getSession())
-            .subscribe(valid => {
-                const isNoGuest = !this.userService.isGuestUser();
-                this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
-            });
+        this.userService.isSessionValid(this.userService.getSession()).subscribe((valid) => {
+            const isNoGuest = !this.userService.isGuestUser();
+            this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
+        });
 
         this.user = this.userService.getUserStream();
 
         this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
     }
 
-    ngAfterViewInit() {
-    }
+    ngAfterViewInit() {}
 
     ngOnDestroy() {
         if (this.formStatusSubscription) {
@@ -68,7 +66,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formStatus$.next(FormStatus.Loading);
         this.userService.guestLogin().subscribe(
             () => this.formStatus$.next(FormStatus.LoggedOut),
-            error => this.notificationService.error(`The backend is currently unavailable (${error})`),
+            (error) => this.notificationService.error(`The backend is currently unavailable (${error})`),
         );
     }
 }

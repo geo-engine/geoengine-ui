@@ -7,19 +7,16 @@ import {SpatialReference, SpatialReferences} from '../../operators/spatial-refer
     selector: 'wave-change-projection',
     templateUrl: './change-spatial-reference.component.html',
     styleUrls: ['./change-spatial-reference.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeSpatialReferenceComponent implements OnInit {
-
     readonly SpatialReferences = SpatialReferences;
 
     spatialReference$: Observable<SpatialReference>;
 
-    constructor(public projectService: ProjectService) {
-    }
+    constructor(public projectService: ProjectService) {}
 
     ngOnInit() {
         this.spatialReference$ = this.projectService.getSpatialReferenceStream();
     }
-
 }

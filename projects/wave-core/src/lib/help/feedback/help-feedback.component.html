@@ -1,7 +1,6 @@
 <mat-expansion-panel>
     <mat-expansion-panel-header>Contact Us / Feedback</mat-expansion-panel-header>
     <form class="feedback-container" [formGroup]="form" (ngSubmit)="send()">
-
         <mat-select placeholder="Request type" formControlName="requestType">
             <mat-option value="Feedback">Feedback</mat-option>
             <mat-option value="Help">Help</mat-option>
@@ -9,15 +8,15 @@
         </mat-select>
 
         <mat-form-field>
-            <input placeholder="Your name" matInput formControlName="name">
+            <input placeholder="Your name" matInput formControlName="name" />
         </mat-form-field>
 
         <mat-form-field>
-            <input placeholder="Email" matInput formControlName="email">
+            <input placeholder="Email" matInput formControlName="email" />
         </mat-form-field>
 
         <mat-form-field>
-            <input placeholder="Topic" matInput formControlName="topic">
+            <input placeholder="Topic" matInput formControlName="topic" />
         </mat-form-field>
 
         <mat-form-field>
@@ -25,6 +24,5 @@
         </mat-form-field>
 
         <button mat-button type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">send</button>
-
     </form>
 </mat-expansion-panel>

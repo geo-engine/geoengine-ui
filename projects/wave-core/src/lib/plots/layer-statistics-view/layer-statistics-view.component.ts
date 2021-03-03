@@ -20,14 +20,10 @@ interface FeatureData {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerStatisticsViewComponent implements OnInit {
-
     @Input()
     public data: LayerStatisticsData;
 
-    constructor() {
-    }
+    constructor() {}
 
-    ngOnInit() {
-    }
-
+    ngOnInit() {}
 }

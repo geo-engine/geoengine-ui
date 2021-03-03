@@ -17,7 +17,6 @@ import {Config} from '../../../config.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SymbologyEditorComponent implements OnDestroy {
-
     // make visible in template
     // tslint:disable:variable-name
     readonly ST = SymbologyType;
@@ -38,20 +37,17 @@ export class SymbologyEditorComponent implements OnDestroy {
     private subscriptions: Array<Subscription> = [];
     private layerChanges = new Subject<[Layer, AbstractSymbology]>();
 
-    constructor(
-        private config: Config,
-        public projectService: ProjectService
-    ) {
+    constructor(private config: Config, public projectService: ProjectService) {
         // This subscription updates the valid layer list.
-        const layerStreamSubscription = this.projectService.getLayerStream().subscribe(projectLayers => this.validLayers = projectLayers);
+        const layerStreamSubscription = this.projectService
+            .getLayerStream()
+            .subscribe((projectLayers) => (this.validLayers = projectLayers));
         this.subscriptions.push(layerStreamSubscription);
         // This subscription sends layer / symbology changes to the project service.
-        const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(
-            ([layer, symbology]) => {
-                // TODO: call change layer
-                // this.projectService.changeLayer(layer, {symbology})
-            }
-        );
+        const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(([layer, symbology]) => {
+            // TODO: call change layer
+            // this.projectService.changeLayer(layer, {symbology})
+        });
         this.subscriptions.push(layerChangesSubscription);
     }
 
@@ -59,7 +55,7 @@ export class SymbologyEditorComponent implements OnDestroy {
      * Indicates if the current layer is a valid layer
      */
     get isValidLayer(): boolean {
-        return !!this.layer && !!this.layer.symbology && !!this.validLayers.find(x => x === this.layer);
+        return !!this.layer && !!this.layer.symbology && !!this.validLayers.find((x) => x === this.layer);
     }
 
     /**
@@ -70,7 +66,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(x => x.unsubscribe());
+        this.subscriptions.forEach((x) => x.unsubscribe());
     }
 
     asVectorLayer(layer: Layer): VectorLayer {

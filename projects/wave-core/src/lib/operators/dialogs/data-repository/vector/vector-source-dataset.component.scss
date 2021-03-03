@@ -1,8 +1,6 @@
 @import '~@angular/material/theming';
 
-$mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function,
-background-color 200ms $swift-ease-in-out-timing-function !default;
-
+$mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function, background-color 200ms $swift-ease-in-out-timing-function !default;
 
 .dataset-name {
     color: var(--wave-primary-color, black) !important;

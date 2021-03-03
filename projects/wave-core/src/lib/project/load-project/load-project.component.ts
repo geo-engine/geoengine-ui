@@ -1,4 +1,3 @@
-
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
@@ -10,7 +9,7 @@ import {NotificationService} from '../../notification.service';
 function notCurrentProject(currentProjectName: () => string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: boolean} => {
         const errors: {
-            currentProject?: boolean,
+            currentProject?: boolean;
         } = {};
 
         if (currentProjectName() === control.value) {
@@ -25,10 +24,9 @@ function notCurrentProject(currentProjectName: () => string): ValidatorFn {
     selector: 'wave-load-project',
     templateUrl: './load-project.component.html',
     styleUrls: ['./load-project.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadProjectComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     projects$ = new ReplaySubject<Array<string>>(1);
@@ -36,29 +34,30 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     currentProjectName: string;
 
-    constructor(private projectService: ProjectService,
-                private storageService: StorageService,
-                private notificationService: NotificationService,
-                private formBuilder: FormBuilder) {
-    }
+    constructor(
+        private projectService: ProjectService,
+        private storageService: StorageService,
+        private notificationService: NotificationService,
+        private formBuilder: FormBuilder,
+    ) {}
 
     ngOnInit() {
         this.currentProjectName = '';
-        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-            this.currentProjectName = project.name;
-        });
+        this.projectService
+            .getProjectStream()
+            .pipe(first())
+            .subscribe((project) => {
+                this.currentProjectName = project.name;
+            });
 
         this.form = this.formBuilder.group({
             projectName: [
                 this.currentProjectName,
-                Validators.compose([
-                    Validators.required,
-                    notCurrentProject(() => this.currentProjectName),
-                ])
+                Validators.compose([Validators.required, notCurrentProject(() => this.currentProjectName)]),
             ],
         });
 
-        this.storageService.getProjects().subscribe(projects => {
+        this.storageService.getProjects().subscribe((projects) => {
             this.projects$.next(projects);
             this.loading$.next(false);
         });
@@ -76,5 +75,4 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
         this.notificationService.info(`Switched to project »${newProject}«`);
     }
-
 }

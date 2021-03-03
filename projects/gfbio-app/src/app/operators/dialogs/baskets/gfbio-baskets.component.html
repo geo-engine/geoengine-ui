@@ -1,6 +1,6 @@
 <wave-sidenav-header>GFBio Search Baskets</wave-sidenav-header>
 
-<button mat-mini-fab color="warn" *ngIf="(isError$ | async)" (click)="reload()" class="error-button">
+<button mat-mini-fab color="warn" *ngIf="isError$ | async" (click)="reload()" class="error-button">
     <mat-icon>sync</mat-icon>
 </button>
 
@@ -10,7 +10,7 @@
         <mat-panel-description>Select other search results</mat-panel-description>
     </mat-expansion-panel-header>
 
-    <div *ngIf="(isOverviewLoading$ | async); else basketOverviews" class="loading">
+    <div *ngIf="isOverviewLoading$ | async; else basketOverviews" class="loading">
         <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     </div>
 
@@ -21,21 +21,23 @@
                 (click)="loadBasket(basketOverview.basketId)"
                 class="clickable"
             >
-                <h4 mat-line *ngIf="basketOverview.query.length">{{basketOverview.query}}</h4>
+                <h4 mat-line *ngIf="basketOverview.query.length">{{ basketOverview.query }}</h4>
                 <h4 mat-line *ngIf="!basketOverview.query.length" class="no-search-term">no search term</h4>
-                <p mat-line class="small">{{basketOverview.timestamp | date}}</p>
+                <p mat-line class="small">{{ basketOverview.timestamp | date }}</p>
             </mat-list-item>
         </mat-list>
-        <mat-paginator [length]="(basketsOverview$ | async)?.totalNumberOfBaskets"
-                       [pageSize]="(limit$ | async)"
-                       [pageSizeOptions]="[5, 10, 25, 50]"
-                       [pageIndex]="page$ | async"
-                       (page)="page$.next($event.pageIndex);limit$.next($event.pageSize)">
+        <mat-paginator
+            [length]="(basketsOverview$ | async)?.totalNumberOfBaskets"
+            [pageSize]="limit$ | async"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            [pageIndex]="page$ | async"
+            (page)="page$.next($event.pageIndex); limit$.next($event.pageSize)"
+        >
         </mat-paginator>
     </ng-template>
 </mat-expansion-panel>
 
-<div *ngIf="(isDetailsLoading$ | async); else basketResults" class="loading">
+<div *ngIf="isDetailsLoading$ | async; else basketResults" class="loading">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>
 

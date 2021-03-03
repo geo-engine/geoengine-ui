@@ -35,7 +35,6 @@ export interface SourceOperatorListButton {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SourceOperatorListComponent implements OnInit, OnDestroy {
-
     /**
      * A list of data source dialogs to display
      */
@@ -48,13 +47,10 @@ export class SourceOperatorListComponent implements OnInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-                private layoutService: LayoutService,
-                private userService: UserService) {
-    }
+    constructor(private changeDetectorRef: ChangeDetectorRef, private layoutService: LayoutService, private userService: UserService) {}
 
     ngOnInit() {
-        this.guestUserStreamSubscription = this.userService.isGuestUserStream().subscribe(isGuest => {
+        this.guestUserStreamSubscription = this.userService.isGuestUserStream().subscribe((isGuest) => {
             this.isUserLoggedIn = !isGuest;
             this.changeDetectorRef.markForCheck();
         });

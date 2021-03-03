@@ -25,9 +25,15 @@ export class TemporalAggregationType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(TemporalAggregationType._TYPE);
     private static _NAME = 'Temporal Aggregation';
 
-    static get TYPE(): string { return TemporalAggregationType._TYPE; }
-    static get ICON_URL(): string { return TemporalAggregationType._ICON_URL; }
-    static get NAME(): string { return TemporalAggregationType._NAME; }
+    static get TYPE(): string {
+        return TemporalAggregationType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return TemporalAggregationType._ICON_URL;
+    }
+    static get NAME(): string {
+        return TemporalAggregationType._NAME;
+    }
 
     private duration: number;
     private aggregation: AggregationType;

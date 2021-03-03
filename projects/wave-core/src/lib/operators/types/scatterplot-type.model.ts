@@ -26,9 +26,15 @@ export class ScatterPlotType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(ScatterPlotType._TYPE);
     private static _NAME = 'Scatter Plot';
 
-    static get TYPE(): string { return ScatterPlotType._TYPE; }
-    static get ICON_URL(): string { return ScatterPlotType._ICON_URL; }
-    static get NAME(): string { return ScatterPlotType._NAME; }
+    static get TYPE(): string {
+        return ScatterPlotType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return ScatterPlotType._ICON_URL;
+    }
+    static get NAME(): string {
+        return ScatterPlotType._NAME;
+    }
 
     private code: string;
     private attribute1: string;

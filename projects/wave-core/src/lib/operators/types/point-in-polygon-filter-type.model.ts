@@ -14,9 +14,15 @@ export class PointInPolygonFilterType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(PointInPolygonFilterType._TYPE);
     private static _NAME = 'Point in Polygon Filter';
 
-    static get TYPE(): string { return PointInPolygonFilterType._TYPE; }
-    static get ICON_URL(): string { return PointInPolygonFilterType._ICON_URL; }
-    static get NAME(): string { return PointInPolygonFilterType._NAME; }
+    static get TYPE(): string {
+        return PointInPolygonFilterType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return PointInPolygonFilterType._ICON_URL;
+    }
+    static get NAME(): string {
+        return PointInPolygonFilterType._NAME;
+    }
 
     constructor(config: PointInPolygonFilterTypeConfig) {
         super();
@@ -55,5 +61,4 @@ export class PointInPolygonFilterType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return PointInPolygonFilterType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

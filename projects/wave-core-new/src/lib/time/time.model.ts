@@ -3,13 +3,21 @@ import {TimeIntervalDict, TimeStepDict, TimeStepGranularityDict, ToDict} from '.
 
 export type TimeType = 'TimePoint' | 'TimeInterval';
 
-type TimeStepDurationType = 'millisecond' | 'milliseconds' |
-    'second' | 'seconds' |
-    'minute' | 'minutes' |
-    'hour' | 'hours' |
-    'day' | 'days' |
-    'month' | 'months' |
-    'year' | 'years';
+type TimeStepDurationType =
+    | 'millisecond'
+    | 'milliseconds'
+    | 'second'
+    | 'seconds'
+    | 'minute'
+    | 'minutes'
+    | 'hour'
+    | 'hours'
+    | 'day'
+    | 'days'
+    | 'month'
+    | 'months'
+    | 'year'
+    | 'years';
 
 export interface TimeStepDuration {
     durationAmount: number;
@@ -108,17 +116,11 @@ export class Time implements ToDict<TimeIntervalDict> {
     }
 
     add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {
-        return new Time(
-            this.start.clone().add(durationAmount, durationUnit),
-            this.end.clone().add(durationAmount, durationUnit),
-        );
+        return new Time(this.start.clone().add(durationAmount, durationUnit), this.end.clone().add(durationAmount, durationUnit));
     }
 
     subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {
-        return new Time(
-            this.start.clone().subtract(durationAmount, durationUnit),
-            this.end.clone().subtract(durationAmount, durationUnit),
-        );
+        return new Time(this.start.clone().subtract(durationAmount, durationUnit), this.end.clone().subtract(durationAmount, durationUnit));
     }
 
     clone(): Time {
@@ -126,12 +128,7 @@ export class Time implements ToDict<TimeIntervalDict> {
     }
 
     isSame(other: Time): boolean {
-        return (
-            !!other
-            && this.type === other.type
-            && this.start.isSame(other.start)
-            && this.end.isSame(other.end)
-        );
+        return !!other && this.type === other.type && this.start.isSame(other.start) && this.end.isSame(other.end);
     }
 
     isValid(): boolean {

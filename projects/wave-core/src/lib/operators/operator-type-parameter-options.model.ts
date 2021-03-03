@@ -37,7 +37,7 @@ export interface DictParameterArrayConfig<T extends OptionsDict> {
 }
 
 export type ParameterContainerType =
-    EmptyParameterContainer
+    | EmptyParameterContainer
     | NumberParameterArray
     | NumberParameterRange
     | StringParameterArray
@@ -45,7 +45,7 @@ export type ParameterContainerType =
 
 export enum TickType {
     DISCRETE,
-    CONTINUOUS
+    CONTINUOUS,
 }
 
 /**
@@ -53,7 +53,6 @@ export enum TickType {
  * This is abstracted by ticks which are either in a numberic space or an enumeration of predefined values.
  */
 export abstract class AbstractParameterContainer<T> {
-
     /**
      * Get the parameter type.
      */
@@ -73,7 +72,7 @@ export abstract class AbstractParameterContainer<T> {
      * Check if a value is in this option container.
      */
     containsValue(value: T): boolean {
-        return !!(this.getTickForValue(value));
+        return !!this.getTickForValue(value);
     }
 
     /**
@@ -90,7 +89,6 @@ export abstract class AbstractParameterContainer<T> {
      * Check if a tick is valid.
      */
     isValidTick(tick: number): boolean {
-
         if (tick < this.firstTick || tick > this.lastTick) {
             return false;
         }
@@ -136,7 +134,6 @@ export abstract class AbstractParameterContainer<T> {
  * An empty parameter option container.
  */
 export class EmptyParameterContainer extends AbstractParameterContainer<number | string> {
-
     constructor() {
         super();
     }
@@ -168,7 +165,6 @@ export class EmptyParameterContainer extends AbstractParameterContainer<number |
     get tickType(): TickType {
         return TickType.DISCRETE;
     }
-
 }
 
 /**
@@ -180,7 +176,6 @@ const EMPTY_OPTION = new EmptyParameterContainer();
  * A parameter option container for numerical parameters.
  */
 export class NumberParameterArray extends AbstractParameterContainer<number> {
-
     /**
      * The list of all valid options.
      */
@@ -202,7 +197,7 @@ export class NumberParameterArray extends AbstractParameterContainer<number> {
     toDict(): NumberParameterArrayConfig {
         return {
             options: this.options,
-            kind: ParameterOptionType.NUMBER_ARRAY
+            kind: ParameterOptionType.NUMBER_ARRAY,
         };
     }
 
@@ -215,7 +210,7 @@ export class NumberParameterArray extends AbstractParameterContainer<number> {
     }
 
     getTickForValue(value: number): number | undefined {
-        const findIndex = this.options.findIndex(x => x === value);
+        const findIndex = this.options.findIndex((x) => x === value);
         if (findIndex < 0) {
             return undefined;
         }
@@ -236,7 +231,6 @@ export class NumberParameterArray extends AbstractParameterContainer<number> {
     get tickType(): TickType {
         return TickType.DISCRETE;
     }
-
 }
 
 /**
@@ -270,7 +264,7 @@ export class StringParameterArray extends AbstractParameterContainer<string> {
     }
 
     getTickForValue(value: string): number | undefined {
-        const findIndex = this.options.findIndex(x => x === value);
+        const findIndex = this.options.findIndex((x) => x === value);
         if (findIndex < 0) {
             return undefined;
         }
@@ -330,7 +324,7 @@ export class NumberParameterRange extends AbstractParameterContainer<number> {
             start: this.start,
             stop: this.stop,
             step: this.step,
-            kind: ParameterOptionType.NUMBER_RANGE
+            kind: ParameterOptionType.NUMBER_RANGE,
         };
     }
 
@@ -405,7 +399,7 @@ export class DictParameterArray<T extends OptionsDict> extends AbstractParameter
     }
 
     getTickForValue(value: T): number | undefined {
-        const findIndex = this.options.findIndex(x => x.displayValue === value.displayValue); // TODO: review if displayValue is distinct
+        const findIndex = this.options.findIndex((x) => x.displayValue === value.displayValue); // TODO: review if displayValue is distinct
         if (findIndex < 0) {
             return undefined;
         }
@@ -427,7 +421,6 @@ export class DictParameterArray<T extends OptionsDict> extends AbstractParameter
         return TickType.DISCRETE;
     }
 }
-
 
 /**
  * Dictionary for serializing the operator type.
@@ -455,9 +448,7 @@ export abstract class OperatorTypeParameterOptions {
      * Get the parameter option type for a parameter name.
      */
     public getParameterOption(parameterName: ParameterName): ParameterContainerType {
-        const res: [ParameterName, ParameterContainerType] = this.getParameterOptions().find(
-            ([pN, _]) => pN === parameterName
-        );
+        const res: [ParameterName, ParameterContainerType] = this.getParameterOptions().find(([pN, _]) => pN === parameterName);
         if (!res) {
             return AbstractParameterContainer.getEmptyOption();
         }

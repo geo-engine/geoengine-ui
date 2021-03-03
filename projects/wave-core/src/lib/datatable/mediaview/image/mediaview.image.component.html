@@ -1,9 +1,8 @@
-<wave-sidenav-header>Image {{currentImage + 1}} of {{imageURLs.length}}</wave-sidenav-header>
+<wave-sidenav-header>Image {{ currentImage + 1 }} of {{ imageURLs.length }}</wave-sidenav-header>
 
 <div class="imageContainer">
-
     <mat-card>
-        <img [src]="imageURLs[currentImage]" (load)="imageLoaded()" [alt]="imageURLs[currentImage]">
+        <img [src]="imageURLs[currentImage]" (load)="imageLoaded()" [alt]="imageURLs[currentImage]" />
     </mat-card>
 
     <div *ngIf="loading" class="loading">
@@ -13,7 +12,7 @@
     </div>
 
     <div class="info">
-        <h3 matTooltip="{{imageURLs[currentImage] | fileName}}"> {{imageURLs[currentImage] | fileName}} </h3>
+        <h3 matTooltip="{{ imageURLs[currentImage] | fileName }}">{{ imageURLs[currentImage] | fileName }}</h3>
 
         <a mat-mini-fab color="primary" [href]="imageURLs[currentImage]" target="_blank" class="externalLink" [title]="'open in new tab'">
             <mat-icon class="mat-24">open_in_new</mat-icon>
@@ -33,7 +32,4 @@
             <mat-icon class="mat-24">chevron_right</mat-icon>
         </button>
     </div>
-
 </div>
-
-

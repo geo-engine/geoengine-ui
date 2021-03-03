@@ -42,17 +42,19 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
     /**
      * DI for several dependent services
      */
-    constructor(private projectService: ProjectService,
-                private notificationService: NotificationService,
-                private mappingQueryService: MappingQueryService) {
-    }
+    constructor(
+        private projectService: ProjectService,
+        private notificationService: NotificationService,
+        private mappingQueryService: MappingQueryService,
+    ) {}
 
     ngOnInit() {
         this.form = new FormGroup({
-            inputLayers: new FormControl(
-                undefined,
-                [Validators.required, Validators.minLength(this.numberOfRasters), Validators.maxLength(this.numberOfRasters)],
-            ),
+            inputLayers: new FormControl(undefined, [
+                Validators.required,
+                Validators.minLength(this.numberOfRasters),
+                Validators.maxLength(this.numberOfRasters),
+            ]),
             redMin: new FormControl(undefined, [WaveValidators.isNumber]),
             redMax: new FormControl(undefined, [WaveValidators.isNumber]),
             redScale: new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
@@ -64,16 +66,21 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
             blueScale: new FormControl(1, [WaveValidators.isNumber, Validators.min(0), Validators.max(1)]),
         });
 
-        this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
-        this.notAllLayersSet$ = this.form.controls['inputLayers'].valueChanges.pipe(map((value: Array<Layer<AbstractSymbology>>) => {
-            return value === undefined
-                || value === null
-                || value.length !== 3
-                || value.some(layer => layer === undefined || layer === null);
-        }));
+        this.formIsInvalid$ = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
+        this.notAllLayersSet$ = this.form.controls['inputLayers'].valueChanges.pipe(
+            map((value: Array<Layer<AbstractSymbology>>) => {
+                return (
+                    value === undefined ||
+                    value === null ||
+                    value.length !== 3 ||
+                    value.some((layer) => layer === undefined || layer === null)
+                );
+            }),
+        );
 
-        this.inputLayersubscriptions = this.form.controls['inputLayers'].valueChanges
-            .subscribe((inputLayers: Array<RasterLayer<AbstractRasterSymbology>>) => { // set meaningful default values if possible
+        this.inputLayersubscriptions = this.form.controls['inputLayers'].valueChanges.subscribe(
+            (inputLayers: Array<RasterLayer<AbstractRasterSymbology>>) => {
+                // set meaningful default values if possible
                 const colors = ['red', 'green', 'blue'];
                 inputLayers.forEach((inputRaster, i) => {
                     if (inputRaster && !this.form.controls[`${colors[i]}Min`].value) {
@@ -83,9 +90,11 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
                         this.form.controls[`${colors[i]}Max`].setValue(inputLayers[i].operator.getDataType('value').getMax());
                     }
                 });
-            });
+            },
+        );
 
-        setTimeout(() => { // calculate validity to enforce invalid state upfront
+        setTimeout(() => {
+            // calculate validity to enforce invalid state upfront
             this.form.updateValueAndValidity();
             this.form.controls['inputLayers'].updateValueAndValidity();
         });
@@ -102,7 +111,7 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
      */
     add() {
         const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
-        const operators = inputs.map(layer => layer.operator);
+        const operators = inputs.map((layer) => layer.operator);
 
         if (inputs.length !== 3) {
             this.notificationService.error('RGBA calculation requires 3 inputs.');
@@ -123,38 +132,40 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
             max: 0xffffffff,
         });
 
-        this.projectService.addLayer(new RasterLayer({
-            name: `RGB of (${inputs.map(layer => layer.name).join(', ')})`,
-            operator: new Operator({
-                operatorType: new RgbaCompositeType({
-                    rasterRedMin: this.form.controls['redMin'].value,
-                    rasterRedMax: this.form.controls['redMax'].value,
-                    rasterRedScale: this.form.controls['redScale'].value,
-                    rasterGreenMin: this.form.controls['greenMin'].value,
-                    rasterGreenMax: this.form.controls['greenMax'].value,
-                    rasterGreenScale: this.form.controls['greenScale'].value,
-                    rasterBlueMin: this.form.controls['blueMin'].value,
-                    rasterBlueMax: this.form.controls['blueMax'].value,
-                    rasterBlueScale: this.form.controls['blueScale'].value,
+        this.projectService.addLayer(
+            new RasterLayer({
+                name: `RGB of (${inputs.map((layer) => layer.name).join(', ')})`,
+                operator: new Operator({
+                    operatorType: new RgbaCompositeType({
+                        rasterRedMin: this.form.controls['redMin'].value,
+                        rasterRedMax: this.form.controls['redMax'].value,
+                        rasterRedScale: this.form.controls['redScale'].value,
+                        rasterGreenMin: this.form.controls['greenMin'].value,
+                        rasterGreenMax: this.form.controls['greenMax'].value,
+                        rasterGreenScale: this.form.controls['greenScale'].value,
+                        rasterBlueMin: this.form.controls['blueMin'].value,
+                        rasterBlueMax: this.form.controls['blueMax'].value,
+                        rasterBlueScale: this.form.controls['blueScale'].value,
+                    }),
+                    projection,
+                    rasterSources: operators,
+                    resultType: ResultTypes.RASTER,
+                    attributes: ['value'],
+                    dataTypes: new Map<string, DataType>().set('value', DataTypes.UInt32),
+                    units: new Map<string, Unit>().set('value', unit),
                 }),
-                projection,
-                rasterSources: operators,
-                resultType: ResultTypes.RASTER,
-                attributes: ['value'],
-                dataTypes: new Map<string, DataType>().set('value', DataTypes.UInt32),
-                units: new Map<string, Unit>().set('value', unit),
-            }),
-            symbology: MappingRasterSymbology.createSymbology({
-                unit,
-                colorizer: new ColorizerData({
-                    breakpoints: [
-                        new ColorBreakpoint({rgba: {r: 0, g: 0, b: 0, a: 0}, value: 0}),
-                        new ColorBreakpoint({rgba: {r: 255, g: 255, b: 255, a: 255}, value: 0xffffffff}),
-                    ],
-                    type: 'rgba_composite',
+                symbology: MappingRasterSymbology.createSymbology({
+                    unit,
+                    colorizer: new ColorizerData({
+                        breakpoints: [
+                            new ColorBreakpoint({rgba: {r: 0, g: 0, b: 0, a: 0}, value: 0}),
+                            new ColorBreakpoint({rgba: {r: 255, g: 255, b: 255, a: 255}, value: 0xffffffff}),
+                        ],
+                        type: 'rgba_composite',
+                    }),
                 }),
             }),
-        }));
+        );
     }
 
     /**
@@ -164,41 +175,46 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
     calculateRasterStats() {
         this.isRasterStatsLoading$.next(true);
 
-        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
-            const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
-            const operators = inputs.map(layer => layer.operator);
+        this.projectService
+            .getTimeStream()
+            .pipe(first())
+            .subscribe((time) => {
+                const inputs: Array<RasterLayer<AbstractRasterSymbology>> = this.form.controls['inputLayers'].value;
+                const operators = inputs.map((layer) => layer.operator);
 
-            const operatorA = operators[0];
-            const projection = operatorA.projection;
-            const operatorB = operators[1].getProjectedOperator(projection);
-            const operatorC = operators[2].getProjectedOperator(projection);
+                const operatorA = operators[0];
+                const projection = operatorA.projection;
+                const operatorB = operators[1].getProjectedOperator(projection);
+                const operatorC = operators[2].getProjectedOperator(projection);
 
-            const operator = new Operator({
-                operatorType: new StatisticsType({
-                    raster_width: 1024,
-                    raster_height: 1024,
-                }),
-                projection,
-                rasterSources: [operatorA, operatorB, operatorC],
-                resultType: ResultTypes.PLOT,
-            });
-
-            this.mappingQueryService.getPlotData({
-                extent: projection.getExtent(),
-                operator,
-                projection,
-                time,
-            }).subscribe(result => {
-                const rasterStatistics = ((result as any) as RasterStatisticsType).data.rasters;
-
-                ['red', 'green', 'blue'].forEach((color, i) => {
-                    this.form.controls[`${color}Min`].setValue(rasterStatistics[i].min);
-                    this.form.controls[`${color}Max`].setValue(rasterStatistics[i].max);
+                const operator = new Operator({
+                    operatorType: new StatisticsType({
+                        raster_width: 1024,
+                        raster_height: 1024,
+                    }),
+                    projection,
+                    rasterSources: [operatorA, operatorB, operatorC],
+                    resultType: ResultTypes.PLOT,
                 });
 
-                this.isRasterStatsLoading$.next(false);
+                this.mappingQueryService
+                    .getPlotData({
+                        extent: projection.getExtent(),
+                        operator,
+                        projection,
+                        time,
+                    })
+                    .subscribe((result) => {
+                        const rasterStatistics = ((result as any) as RasterStatisticsType).data.rasters;
+
+                        ['red', 'green', 'blue'].forEach((color, i) => {
+                            this.form.controls[`${color}Min`].setValue(rasterStatistics[i].min);
+                            this.form.controls[`${color}Max`].setValue(rasterStatistics[i].max);
+                        });
+
+                        this.isRasterStatsLoading$.next(false);
+                    });
             });
-        });
     }
 
     /**
@@ -206,7 +222,7 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
      * pastes the result to the min/max input fields of the dialog
      */
     retrieveRasterStatsFromUnit() {
-        const operators: Array<Operator> = this.form.controls['inputLayers'].value.map(layer => layer.operator);
+        const operators: Array<Operator> = this.form.controls['inputLayers'].value.map((layer) => layer.operator);
 
         ['red', 'green', 'blue'].forEach((color, i) => {
             const unit = operators[i].units.get('value', Unit.defaultUnit);
@@ -224,11 +240,11 @@ export class RgbCompositeComponent implements OnInit, OnDestroy {
 interface RasterStatisticsType {
     data: {
         rasters: Array<{
-            count: number,
-            max: number,
-            mean: number,
-            min: number,
-            nan_count: number,
-        }>,
+            count: number;
+            max: number;
+            mean: number;
+            min: number;
+            nan_count: number;
+        }>;
     };
 }

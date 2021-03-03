@@ -209,10 +209,7 @@ const WAVE_COMPONENTS = [
 ];
 
 @NgModule({
-    declarations: [
-        ...WAVE_PIPES,
-        ...WAVE_COMPONENTS,
-    ],
+    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
@@ -233,5 +230,4 @@ const WAVE_COMPONENTS = [
         ...WAVE_COMPONENTS,
     ],
 })
-export class WaveCoreModule {
-}
+export class WaveCoreModule {}

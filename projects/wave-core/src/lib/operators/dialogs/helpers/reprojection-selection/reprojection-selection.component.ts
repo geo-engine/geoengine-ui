@@ -1,6 +1,12 @@
 import {
-    Component, ChangeDetectionStrategy, forwardRef, AfterViewInit, OnChanges,
-    SimpleChange, ChangeDetectorRef, Input
+    Component,
+    ChangeDetectionStrategy,
+    forwardRef,
+    AfterViewInit,
+    OnChanges,
+    SimpleChange,
+    ChangeDetectorRef,
+    Input,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Projection} from '../../../projection.model';
@@ -12,12 +18,9 @@ import {AbstractSymbology} from '../../../../layers/symbology/symbology.model';
     templateUrl: './reprojection-selection.component.html',
     styleUrls: ['./reprojection-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ReprojectionSelectionComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ReprojectionSelectionComponent), multi: true}],
 })
 export class ReprojectionSelectionComponent implements OnChanges, ControlValueAccessor {
-
     /**
      * An array of layers that is traversed to get all projections.
      */
@@ -31,13 +34,11 @@ export class ReprojectionSelectionComponent implements OnChanges, ControlValueAc
 
     private firstUndefined = true;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef
-    ) {
-    }
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
-    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
-        for (let propName in changes) { // tslint:disable-line:forin
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+        for (let propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'layers':
                     this.projections = [];
@@ -111,5 +112,4 @@ export class ReprojectionSelectionComponent implements OnChanges, ControlValueAc
             this.onChange(projection);
         }
     }
-
 }

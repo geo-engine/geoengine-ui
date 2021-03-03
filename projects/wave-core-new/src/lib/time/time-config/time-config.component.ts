@@ -18,7 +18,6 @@ const startBeforeEndValidator = () => (control: FormGroup) => {
     }
 };
 
-
 @Component({
     selector: 'wave-time-config',
     templateUrl: './time-config.component.html',
@@ -26,7 +25,6 @@ const startBeforeEndValidator = () => (control: FormGroup) => {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
-
     private timeAsPoint: boolean;
     private time: Time;
     private subscriptions: Array<Subscription> = [];
@@ -42,14 +40,15 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {durationAmount: 1, durationUnit: 'day'},
         {durationAmount: 1, durationUnit: 'month'},
         {durationAmount: 6, durationUnit: 'months'},
-        {durationAmount: 1, durationUnit: 'year'}
+        {durationAmount: 1, durationUnit: 'year'},
     ];
 
-    constructor(private projectService: ProjectService,
-                private changeDetectorRef: ChangeDetectorRef,
-                private formBuilder: FormBuilder,
-                public config: Config) {
-
+    constructor(
+        private projectService: ProjectService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private formBuilder: FormBuilder,
+        public config: Config,
+    ) {
         if (!this.config.TIME.ALLOW_RANGES) {
             this.timeAsPoint = false;
         }
@@ -72,7 +71,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit() {
-        const sub = this.projectService.getTimeStream().subscribe(time => {
+        const sub = this.projectService.getTimeStream().subscribe((time) => {
             this.time = time.clone();
             this.reset();
         });
@@ -85,7 +84,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     applyTime() {
@@ -95,7 +94,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.push(new Time(start));
             } else {
                 const end = this.timeForm.controls['end'].value;
-                this.push(this.time = new Time(start, end));
+                this.push((this.time = new Time(start, end)));
             }
         }
     }

@@ -52,7 +52,7 @@ import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-joi
  */
 export interface OperatorListType {
     component: Type<any>;
-    type: { NAME: string, ICON_URL: string };
+    type: {NAME: string; ICON_URL: string};
     description: string;
 }
 
@@ -73,10 +73,9 @@ export type OperatorListButtonGroups = Array<{
     selector: 'wave-operator-list',
     templateUrl: './operator-list.component.html',
     styleUrls: ['./operator-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorListComponent implements OnInit {
-
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
         {
             component: RasterVectorJoinComponent,
@@ -131,7 +130,7 @@ export class OperatorListComponent implements OnInit {
                 NAME: 'Basic Statistics',
                 ICON_URL: createIconDataUrl('Basic Statistics'),
             },
-            description: 'Get statistics for raster layer'
+            description: 'Get statistics for raster layer',
         },
         {
             component: MeanRasterPixelValuesOverTimeDialogComponent,
@@ -139,8 +138,8 @@ export class OperatorListComponent implements OnInit {
                 NAME: 'Temporal Raster Mean Plot',
                 ICON_URL: createIconDataUrl('Temporal Raster Mean Plot'),
             },
-            description: 'Create an area chart over the mean pixel values of the images of a raster time series'
-        }
+            description: 'Create an area chart over the mean pixel values of the images of a raster time series',
+        },
     ];
 
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
@@ -193,58 +192,53 @@ export class OperatorListComponent implements OnInit {
     /**
      * Specify (optionally) a custom set of operator groups and list entries (buttons)
      */
-    @Input() operators: OperatorListButtonGroups = [ // default operator set
+    @Input() operators: OperatorListButtonGroups = [
+        // default operator set
         {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
         {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
         {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
         {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
     ];
 
-    operatorGroups$: Observable<Array<{ name: string, list: Array<OperatorListType> }>>;
+    operatorGroups$: Observable<Array<{name: string; list: Array<OperatorListType>}>>;
     searchString$ = new BehaviorSubject<string>('');
 
     /**
      * DI of services
      */
-    constructor(private layoutService: LayoutService) {
-    }
+    constructor(private layoutService: LayoutService) {}
 
     ngOnInit() {
-        this.operatorGroups$ = combineLatest([
-            of(this.operators),
-            this.searchString$.pipe(map(s => s.toLowerCase())),
-        ]).pipe(
+        this.operatorGroups$ = combineLatest([of(this.operators), this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
-                    const nameComparator = (a: string, b: string): number => {
-                        const stripped = (s: string): string => s.replace(' ', '');
+                const nameComparator = (a: string, b: string): number => {
+                    const stripped = (s: string): string => s.replace(' ', '');
 
-                        return stripped(a).localeCompare(stripped(b));
-                    };
+                    return stripped(a).localeCompare(stripped(b));
+                };
 
-                    const filteredGroups = [];
-                    for (const group of operatorGroups) {
-                        const operators = [];
-                        for (const operator of group.list) {
-                            const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
-                            const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
+                const filteredGroups = [];
+                for (const group of operatorGroups) {
+                    const operators = [];
+                    for (const operator of group.list) {
+                        const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
+                        const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
 
-
-                            if (searchMatchesTypeName() || searchMatchesDescription()) {
-                                operators.push(operator);
-                            }
-                        }
-
-                        if (operators.length > 0) {
-                            filteredGroups.push({
-                                name: group.name,
-                                list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
-                            });
+                        if (searchMatchesTypeName() || searchMatchesDescription()) {
+                            operators.push(operator);
                         }
                     }
 
-                    return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
+                    if (operators.length > 0) {
+                        filteredGroups.push({
+                            name: group.name,
+                            list: operators.sort((a, b) => nameComparator(a.type.NAME, b.type.NAME)),
+                        });
+                    }
                 }
-            ),
+
+                return filteredGroups.sort((a, b) => nameComparator(a.name, b.name));
+            }),
         );
     }
 
@@ -254,5 +248,4 @@ export class OperatorListComponent implements OnInit {
     load(component: Type<any>) {
         this.layoutService.setSidenavContentComponent({component, keepParent: true});
     }
-
 }

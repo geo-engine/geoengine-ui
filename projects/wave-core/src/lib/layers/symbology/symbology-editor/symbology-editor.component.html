@@ -1,110 +1,86 @@
 <wave-sidenav-header>Symbology Editor</wave-sidenav-header>
 
 <wave-dialog-help>
-    <p>
-        The Symbology Editor enables customization of the style for vector or raster layers.
-        Use the first field to select a layer.
-    </p>
+    <p>The Symbology Editor enables customization of the style for vector or raster layers. Use the first field to select a layer.</p>
     <p>
         <strong>Raster data:</strong>
     </p>
     <p>
-        The <i>Global Layer Properties</i> define the default visualization parameters.
-        The layer <i>Opacity</i> is adjustable in a range from 0 to 100 %.
-        You can choose a <i>NoData</i> color for pixels with the nodata value.
-        Use the picker tool to select the desired
+        The <i>Global Layer Properties</i> define the default visualization parameters. The layer <i>Opacity</i> is adjustable in a range
+        from 0 to 100 %. You can choose a <i>NoData</i> color for pixels with the nodata value. Use the picker tool to select the desired
         RGB color and opacity. This also applies to the <i>Overflow</i> color, which indicates the pixels with values without coloring
         rules.
     </p>
     <p>
         The <i>Color Map</i> section provides an overview of the pixel values with a frequency plot, which also allows to adapt the color
-        with respect to the raster values. The plot refers to the field of view shown in the map.
-        If <i>Sync map and histogram </i> is turned on, the histogram updates if the map view changes.
-        To specify the value range of interest, you can set a minimum and maximum pixel value.
-        You can choose a color ramp from a variety of color schemes (<i>Colormap name</i>) and reverse it, if desired.
-        Additionally, different functions for the step distribution can be selected (linear, logarithmic, square root function,
-        square function).
-        Consider that the logarithmic function requires positive values (>0).
-        The number of Color steps is also kept flexible and can be set to a number between 2 and 16. Click <i>Create color table</i> to
-        apply your adjustments.
+        with respect to the raster values. The plot refers to the field of view shown in the map. If <i>Sync map and histogram </i> is
+        turned on, the histogram updates if the map view changes. To specify the value range of interest, you can set a minimum and maximum
+        pixel value. You can choose a color ramp from a variety of color schemes (<i>Colormap name</i>) and reverse it, if desired.
+        Additionally, different functions for the step distribution can be selected (linear, logarithmic, square root function, square
+        function). Consider that the logarithmic function requires positive values (>0). The number of Color steps is also kept flexible and
+        can be set to a number between 2 and 16. Click <i>Create color table</i> to apply your adjustments.
     </p>
     <p>
-        The <i> Color Table section </i> allows fine grained changes to colors.
-        The gradient defines the interpolation between values.
-        You can dynamically add and remove color steps by clicking the minus and plus symbols or select distinct RGBA values for a specific
+        The <i> Color Table section </i> allows fine grained changes to colors. The gradient defines the interpolation between values. You
+        can dynamically add and remove color steps by clicking the minus and plus symbols or select distinct RGBA values for a specific
         color step value.
     </p>
     <p>
         <strong>Vector data:</strong>
     </p>
     <p>
-        Vector features are shown in the map as points, lines or polygons.
-        The <i>Global Layer Properties</i> define the default visualization parameters.
-        Points have a global <i>Radius</i>, which is used if no other rules exist.
-        All vector features have a stroke.
-        You can adapt the stroke width and color.
-        Points and Polygons have a fill color.
-        As all other global settings, this is overwritten by other style rules.
+        Vector features are shown in the map as points, lines or polygons. The <i>Global Layer Properties</i> define the default
+        visualization parameters. Points have a global <i>Radius</i>, which is used if no other rules exist. All vector features have a
+        stroke. You can adapt the stroke width and color. Points and Polygons have a fill color. As all other global settings, this is
+        overwritten by other style rules.
     </p>
     <p>
-        If the layer is a clustered point layer, the radius refers to the minimum point radius.
-        You need to zoom in and out (or pan) to see the effect.
+        If the layer is a clustered point layer, the radius refers to the minimum point radius. You need to zoom in and out (or pan) to see
+        the effect.
     </p>
 </wave-dialog-help>
 
 <mat-form-field>
     <mat-select [(value)]="layer" placeholder="layer">
-        <mat-option *ngFor="let l of projectService.getLayerStream() | async" [value]="l">{{l.name}}</mat-option>
+        <mat-option *ngFor="let l of projectService.getLayerStream() | async" [value]="l">{{ l.name }}</mat-option>
     </mat-select>
 </mat-form-field>
 
 <mat-divider></mat-divider>
 
-<div *ngIf="isValidLayer" [ngSwitch]="layer?.symbology?.getSymbologyType()"
-     fxLayoutAlign="space-between stretch"
-     fxLayout="row"
-     class="symbology no-drag">
-
+<div
+    *ngIf="isValidLayer"
+    [ngSwitch]="layer?.symbology?.getSymbologyType()"
+    fxLayoutAlign="space-between stretch"
+    fxLayout="row"
+    class="symbology no-drag"
+>
     <ng-template [ngSwitchCase]="ST.CLUSTERED_POINT">
-        <wave-symbology-vector fxFlex="grow"
-                               class="no-drag" [layer]="layer"
-                               (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-vector fxFlex="grow" class="no-drag" [layer]="layer" (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.COMPLEX_POINT">
-        <wave-symbology-vector fxFlex="grow"
-                               class="no-drag"
-                               [layer]="layer"
-                               (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-vector fxFlex="grow" class="no-drag" [layer]="layer" (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
 
-
     <ng-template [ngSwitchCase]="ST.COMPLEX_LINE">
-        <wave-symbology-vector fxFlex="grow"
-                               class="no-drag" [layer]="layer"
-                               (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-vector fxFlex="grow" class="no-drag" [layer]="layer" (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.COMPLEX_VECTOR">
-        <wave-symbology-vector fxFlex="grow"
-                               [layer]="layer"
-                               class="no-drag"
-                               (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-vector fxFlex="grow" [layer]="layer" class="no-drag" (symbologyChanged)="update_symbology(layer, $event)">
         </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.RASTER">
-        <wave-symbology-raster fxFlex="grow" [layer]="layer"
-                               (symbologyChanged)="update_symbology(layer, $event)">
-        </wave-symbology-raster>
+        <wave-symbology-raster fxFlex="grow" [layer]="layer" (symbologyChanged)="update_symbology(layer, $event)"> </wave-symbology-raster>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.MAPPING_COLORIZER_RASTER">
-        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [layer]="layer"
-                                                 (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-raster-mapping-colorizer fxFlex="grow" [layer]="layer" (symbologyChanged)="update_symbology(layer, $event)">
             >
         </wave-symbology-raster-mapping-colorizer>
     </ng-template>

@@ -6,7 +6,7 @@ interface RasterValueExtractionTypeMappingDict extends OperatorTypeMappingDict {
     names: Array<string>;
 }
 
-export interface RasterValueExtractionTypeDict extends OperatorTypeDict  {
+export interface RasterValueExtractionTypeDict extends OperatorTypeDict {
     xResolution: number;
     yResolution: number;
     attributeNames: Array<string>;
@@ -26,9 +26,15 @@ export class RasterValueExtractionType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(RasterValueExtractionType._TYPE);
     private static _NAME = 'Raster Value Extraction';
 
-    static get TYPE(): string { return RasterValueExtractionType._TYPE; }
-    static get ICON_URL(): string { return RasterValueExtractionType._ICON_URL; }
-    static get NAME(): string { return RasterValueExtractionType._NAME; }
+    static get TYPE(): string {
+        return RasterValueExtractionType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return RasterValueExtractionType._ICON_URL;
+    }
+    static get NAME(): string {
+        return RasterValueExtractionType._NAME;
+    }
 
     private xResolution: number;
     private yResolution: number;

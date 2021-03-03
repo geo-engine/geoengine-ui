@@ -12,7 +12,7 @@ import {
     OnDestroy,
     OnInit,
     SimpleChanges,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
@@ -27,7 +27,6 @@ import {ProjectService} from '../../project/project.service';
 import {Unit} from '../../operators/unit.model';
 import {Feature as OlFeature} from 'ol/Feature';
 import {Point as OlPoint} from 'ol/geom/Point';
-
 
 /**
  * Data-Table-Component
@@ -44,14 +43,13 @@ import {Point as OlPoint} from 'ol/geom/Point';
  * Displays a Data-Table
  */
 export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-
     public LoadingState = LoadingState;
 
     @Input()
     public height: number;
 
     // Data and Data-Subsets
-    public data: Array<{ id: string | number, properties: { [key: string]: any } }>;
+    public data: Array<{id: string | number; properties: {[key: string]: any}}>;
     public tableData: TableDataSource;
     public dataHead: Array<string>;
     public tableDataHead: Array<string>;
@@ -106,18 +104,14 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     private columnMaxWidth = 400;
     private canvas;
 
-
     /**
      * Returns all the keys of an object as array
      * @param object the object containing the keys
      * @returns {string[]} a string-array containing all the keys
      */
-    private static getArrayOfKeys(object: { [key: string]: any }): Array<string> {
-        return Object
-            .keys(object)
-            .filter(x => !(x.startsWith('___') || x === 'geometry'));
+    private static getArrayOfKeys(object: {[key: string]: any}): Array<string> {
+        return Object.keys(object).filter((x) => !(x.startsWith('___') || x === 'geometry'));
     }
-
 
     /**
      * Checks if the given unit is the default unit. If so returns an empty string, if not returns the unit formated for the header
@@ -140,11 +134,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @param mapService MapService Reference
      * @param projectService ProjectService Reference
      */
-    constructor(private cdr: ChangeDetectorRef,
-                public layerService: LayerService,
-                private mapService: MapService,
-                private projectService: ProjectService) {
-
+    constructor(
+        private cdr: ChangeDetectorRef,
+        public layerService: LayerService,
+        private mapService: MapService,
+        private projectService: ProjectService,
+    ) {
         this.canvas = document.createElement('canvas');
 
         this.displayItemCount = this.minDisplayItemCount;
@@ -158,7 +153,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             this.dataHeadUnits = [];
             this.tableDataHead = [];
 
-            this.data = features.map(x => {
+            this.data = features.map((x) => {
                 return {
                     id: x.getId(),
                     properties: x.getProperties(),
@@ -166,7 +161,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             });
 
             if (this.height / this.elementHeight > this.minDisplayItemCount) {
-                this.displayItemCount = Math.ceil(1.5 * this.height / this.elementHeight);
+                this.displayItemCount = Math.ceil((1.5 * this.height) / this.elementHeight);
             }
 
             // console.log(this.data);
@@ -182,12 +177,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * Get the height of the container and save it to variable
      */
     ngAfterViewInit() {
-        this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe(x => {
-
+        this.featureSubscription = this.layerService.getSelectedFeaturesStream().subscribe((x) => {
             for (let i = 0; i < this.data.length; i++) {
                 const selectedContainsId = x.selected.contains(this.data[i].id);
                 if (!this.selected[i] && selectedContainsId) {
-
                     this.container.nativeElement.scrollTop = i * this.elementHeight;
                 }
 
@@ -202,9 +195,8 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
     }
 
     ngOnChanges(changes: SimpleChanges) {
-
         if (this.height / this.elementHeight > this.minDisplayItemCount) {
-            this.displayItemCount = Math.ceil(1.5 * this.height / this.elementHeight);
+            this.displayItemCount = Math.ceil((1.5 * this.height) / this.elementHeight);
         }
     }
 
@@ -215,64 +207,57 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
     private initDataStream(): void {
         const dataStream: Observable<{
-            data$: Observable<OlFeature[]>, state$: Observable<LoadingState>, selectable: boolean
+            data$: Observable<OlFeature[]>;
+            state$: Observable<LoadingState>;
+            selectable: boolean;
         }> = this.layerService.getSelectedLayerStream().pipe(
-            map(layer => {
-                    if (layer instanceof Layer) {
+            map((layer) => {
+                if (layer instanceof Layer) {
+                    switch (layer.operator.resultType) {
+                        case ResultTypes.POINTS:
+                        case ResultTypes.LINES:
+                        case ResultTypes.POLYGONS:
+                            let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
+                            let vectorLayerData = this.projectService.getLayerDataStream(vectorLayer) as Observable<VectorData>;
 
-                        switch (layer.operator.resultType) {
-                            case ResultTypes.POINTS:
-                            case ResultTypes.LINES:
-                            case ResultTypes.POLYGONS:
-                                let vectorLayer = layer as VectorLayer<AbstractVectorSymbology>;
-                                let vectorLayerData = this.projectService.getLayerDataStream(vectorLayer) as Observable<VectorData>;
-
-                                const data = observableCombineLatest(
-                                    vectorLayerData, this.mapService.getViewportSizeStream()).pipe(map(([d, v]) => {
-                                    return d.data.filter(x => {
+                            const data = observableCombineLatest(vectorLayerData, this.mapService.getViewportSizeStream()).pipe(
+                                map(([d, v]) => {
+                                    return d.data.filter((x) => {
                                         const ve = v.extent;
 
                                         // console.log(ve, x.getGeometry(), int);
                                         return (x.getGeometry() as OlPoint).intersectsExtent(ve); // TODO: not only point
                                     });
-                                }));
-                                return {
-                                    data$: data,
-                                    dataExtent$: vectorLayerData.pipe(map(x => x.extent)),
-                                    state$: this.projectService.getLayerDataStatusStream(vectorLayer),
-                                    selectable: true,
-                                };
-                            default:
-                                return {
-                                    data$: observableOf([]),
-                                    state$: observableOf(LoadingState.OK),
-                                    selectable: false,
-                                };
-                        }
-                    } else {
-                        return {
-                            data$: observableOf([]),
-                            state$: observableOf(LoadingState.OK),
-                            selectable: false,
-                        };
-
+                                }),
+                            );
+                            return {
+                                data$: data,
+                                dataExtent$: vectorLayerData.pipe(map((x) => x.extent)),
+                                state$: this.projectService.getLayerDataStatusStream(vectorLayer),
+                                selectable: true,
+                            };
+                        default:
+                            return {
+                                data$: observableOf([]),
+                                state$: observableOf(LoadingState.OK),
+                                selectable: false,
+                            };
                     }
+                } else {
+                    return {
+                        data$: observableOf([]),
+                        state$: observableOf(LoadingState.OK),
+                        selectable: false,
+                    };
                 }
-            )
+            }),
         );
 
         // FIXME: use the correct datatype?
-        this.data$ = dataStream.pipe(
-            switchMap(stream => stream.data$)
-        );
-        this.state$ = dataStream.pipe(
-            switchMap(stream => stream.state$)
-        );
-        this.selectable$ = dataStream.pipe(
-            map(stream => stream.selectable)
-        );
+        this.data$ = dataStream.pipe(switchMap((stream) => stream.data$));
+        this.state$ = dataStream.pipe(switchMap((stream) => stream.state$));
+        this.selectable$ = dataStream.pipe(map((stream) => stream.selectable));
     }
-
 
     /**
      * Called when the input-variable data has changed
@@ -391,7 +376,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
      * @returns ({Array},{Array}) an array of average-widths and an array with the predicted content types
      */
     private calculateColumnProperties(testData, dataHead, dataHeadUnits): [number[], string[]] {
-
         let headCount = dataHead.length;
 
         let widths = [];
@@ -436,7 +420,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
                                     columnType = 'media';
                                 }
-
                             }
                         }
                     }
@@ -471,7 +454,7 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             types[column] = columnType;
         }
 
-        return ([widths, types]);
+        return [widths, types];
     }
 
     /**
@@ -493,9 +476,10 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 
             // Scrolling down
             if (this.scrollTop > this.scrollTopBefore) {
-                if (this.scrollTop + this.height >
-                    this.headerHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight) {
-
+                if (
+                    this.scrollTop + this.height >
+                    this.headerHeight + (this.firstDisplay + this.displayItemCount - this.displayOffsetMin) * this.elementHeight
+                ) {
                     numberOfTopRows = Math.floor((this.scrollTop - this.headerHeight) / this.elementHeight) - this.displayOffsetMin;
                 }
             }
@@ -503,14 +487,12 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
             // Scrolling up
             if (this.scrollTop < this.scrollTopBefore) {
                 if (this.scrollTop < this.headerHeight + (this.firstDisplay + this.displayOffsetMin) * this.elementHeight) {
-
-                    numberOfTopRows = Math.floor((this.scrollTop + this.height) /
-                        this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
+                    numberOfTopRows =
+                        Math.floor((this.scrollTop + this.height) / this.elementHeight) + this.displayOffsetMin - this.displayItemCount;
                 }
             }
 
             if (typeof numberOfTopRows !== 'undefined') {
-
                 if (numberOfTopRows + this.displayItemCount > this.data.length) {
                     numberOfTopRows = this.data.length - this.displayItemCount;
                 }
@@ -519,7 +501,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
                 }
 
                 if (this.firstDisplay !== numberOfTopRows) {
-
                     this.firstDisplay = numberOfTopRows;
                     this.tableData.update(this.data, this.firstDisplay, this.displayItemCount);
 
@@ -600,7 +581,6 @@ export class TableComponent implements OnInit, OnChanges, OnDestroy, AfterViewIn
 }
 
 export class TableDataSource extends DataSource<any> {
-
     private dataObs$: BehaviorSubject<Element[]>;
 
     constructor(data: Array<any>, start: number, length: number) {
@@ -622,6 +602,5 @@ export class TableDataSource extends DataSource<any> {
         return this.dataObs$.asObservable();
     }
 
-    disconnect() {
-    }
+    disconnect() {}
 }

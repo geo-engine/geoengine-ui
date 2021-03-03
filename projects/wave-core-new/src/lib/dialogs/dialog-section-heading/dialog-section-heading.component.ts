@@ -7,8 +7,6 @@ import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogSectionHeadingComponent {
-
     @Input() title: string;
     @Input() subtitle: string;
-
 }

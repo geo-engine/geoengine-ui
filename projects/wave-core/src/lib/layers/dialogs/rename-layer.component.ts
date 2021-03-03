@@ -9,30 +9,31 @@ import {ProjectService} from '../../project/project.service';
 @Component({
     selector: 'wave-rename-layer-dialog',
     template: `
-    <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
-    <form [formGroup]="form" (ngSubmit)="$event.preventDefault();save($event)">
-        <mat-dialog-content>
-            <mat-form-field>
-                <input matInput type="text" placeholder="Name" formControlName="layerName">
-            </mat-form-field>
-        </mat-dialog-content>
-        <mat-dialog-actions align="end">
-            <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
-        </mat-dialog-actions>
-    </form>
+        <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
+        <form [formGroup]="form" (ngSubmit)="$event.preventDefault(); save($event)">
+            <mat-dialog-content>
+                <mat-form-field>
+                    <input matInput type="text" placeholder="Name" formControlName="layerName" />
+                </mat-form-field>
+            </mat-dialog-content>
+            <mat-dialog-actions align="end">
+                <button mat-raised-button type="submit" color="primary" [disabled]="form.invalid">Save</button>
+            </mat-dialog-actions>
+        </form>
     `,
-    styles: [`
-    form {
-        padding-top: 16px;
-    }
-    mat-form-field {
-        width: 100%;
-    }
-    `],
+    styles: [
+        `
+            form {
+                padding-top: 16px;
+            }
+            mat-form-field {
+                width: 100%;
+            }
+        `,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameLayerComponent implements OnInit {
-
     form: FormGroup;
 
     private layer: Layer<AbstractSymbology>;
@@ -41,14 +42,14 @@ export class RenameLayerComponent implements OnInit {
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<RenameLayerComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<AbstractSymbology>}
+        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<AbstractSymbology>},
     ) {}
 
     ngOnInit(): void {
         // this.layer = (this.dialogRef.config as {layer?: Layer<AbstractSymbology>}).layer;
         this.layer = this.config.layer;
         this.form = this.formBuilder.group({
-            layerName: [this.layer.name, Validators.required]
+            layerName: [this.layer.name, Validators.required],
         });
     }
 
@@ -62,5 +63,4 @@ export class RenameLayerComponent implements OnInit {
         }
         this.dialogRef.close();
     }
-
 }

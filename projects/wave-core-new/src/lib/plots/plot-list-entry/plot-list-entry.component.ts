@@ -14,7 +14,6 @@ import {MatDialog} from '@angular/material/dialog';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListEntryComponent implements OnInit, OnChanges {
-
     @Input()
     plot: Plot;
 
@@ -33,12 +32,9 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
     isOk = false;
     isError = false;
 
-    constructor(private readonly projectService: ProjectService,
-                private readonly dialog: MatDialog) {
-    }
+    constructor(private readonly projectService: ProjectService, private readonly dialog: MatDialog) {}
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.plotData && this.plotData) {
@@ -56,14 +52,11 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
      * Show a plot as a fullscreen modal dialog
      */
     showFullscreen() {
-        this.dialog.open(
-            PlotDetailViewComponent,
-            {
-                data: this.plot,
-                maxHeight: '100vh',
-                maxWidth: '100vw',
-            },
-        );
+        this.dialog.open(PlotDetailViewComponent, {
+            data: this.plot,
+            maxHeight: '100vh',
+            maxWidth: '100vw',
+        });
     }
 
     removePlot() {

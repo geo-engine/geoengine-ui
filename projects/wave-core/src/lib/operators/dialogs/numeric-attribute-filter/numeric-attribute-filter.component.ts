@@ -41,99 +41,113 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
-                private projectService: ProjectService,
-                private mapService: MapService,
-                private formBuilder: FormBuilder,
-                private elementRef: ElementRef) {
+    constructor(
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        private mapService: MapService,
+        private formBuilder: FormBuilder,
+        private elementRef: ElementRef,
+    ) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             inputLayer: [undefined, Validators.required],
             attribute: [undefined, Validators.required],
-            bounds: formBuilder.group({
-                min: [undefined],
-                max: [undefined],
-            }, {
-                validator: WaveValidators.minAndMax('min', 'max'),
-            }),
-            noData: [false, Validators.required]
+            bounds: formBuilder.group(
+                {
+                    min: [undefined],
+                    max: [undefined],
+                },
+                {
+                    validator: WaveValidators.minAndMax('min', 'max'),
+                },
+            ),
+            noData: [false, Validators.required],
         });
 
-        this.subscriptions.push(this.form.controls['attribute'].valueChanges.subscribe((attribute: string) => {
-            if (!attribute) {
-                this.data$.next(undefined);
-                return;
-            }
+        this.subscriptions.push(
+            this.form.controls['attribute'].valueChanges.subscribe((attribute: string) => {
+                if (!attribute) {
+                    this.data$.next(undefined);
+                    return;
+                }
 
-            const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['inputLayer'].value;
+                const vectorLayer: VectorLayer<AbstractVectorSymbology> = this.form.controls['inputLayer'].value;
 
-            const operator = new Operator({
-                operatorType: new HistogramType({
-                    attribute: attribute,
-                    range: 'data',
-                }),
-                resultType: ResultTypes.PLOT,
-                projection: vectorLayer.operator.projection,
-                attributes: [],
-                dataTypes: new Map<string, DataType>(),
-                units: new Map<string, Unit>(),
-                pointSources: vectorLayer.operator.resultType === ResultTypes.POINTS ? [vectorLayer.operator] : [],
-                lineSources: vectorLayer.operator.resultType === ResultTypes.LINES ? [vectorLayer.operator] : [],
-                polygonSources: vectorLayer.operator.resultType === ResultTypes.POLYGONS ? [vectorLayer.operator] : [],
-            });
-
-            this.dataLoading$.next(true);
-
-            combineLatest([
-                this.projectService.getTimeStream().pipe(first()),
-                this.projectService.getProjectionStream().pipe(first()),
-            ]).subscribe(([projectTime, projection]) => {
-                this.mappingQueryService.getPlotData({
-                    operator: operator,
-                    time: projectTime,
-                    extent: this.mapService.getViewportSize().extent,
-                    projection: projection,
-                }).subscribe(data => {
-                    this.data$.next(data as HistogramData);
-                    this.dataLoading$.next(false);
+                const operator = new Operator({
+                    operatorType: new HistogramType({
+                        attribute: attribute,
+                        range: 'data',
+                    }),
+                    resultType: ResultTypes.PLOT,
+                    projection: vectorLayer.operator.projection,
+                    attributes: [],
+                    dataTypes: new Map<string, DataType>(),
+                    units: new Map<string, Unit>(),
+                    pointSources: vectorLayer.operator.resultType === ResultTypes.POINTS ? [vectorLayer.operator] : [],
+                    lineSources: vectorLayer.operator.resultType === ResultTypes.LINES ? [vectorLayer.operator] : [],
+                    polygonSources: vectorLayer.operator.resultType === ResultTypes.POLYGONS ? [vectorLayer.operator] : [],
                 });
-            });
-        }));
 
-        this.attributes$ = this.form.controls['inputLayer'].valueChanges.pipe(map(layer => {
-            // side effect!!!
-            this.form.controls['attribute'].setValue(undefined);
+                this.dataLoading$.next(true);
 
-            if (layer) {
-                this.form.controls['attribute'].enable({onlySelf: true});
-                return layer.operator.attributes.filter((attribute: string) => {
-                    return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
-                }).toArray();
-            } else {
-                this.form.controls['attribute'].disable({onlySelf: true});
-                return [];
-            }
-        }));
+                combineLatest([
+                    this.projectService.getTimeStream().pipe(first()),
+                    this.projectService.getProjectionStream().pipe(first()),
+                ]).subscribe(([projectTime, projection]) => {
+                    this.mappingQueryService
+                        .getPlotData({
+                            operator: operator,
+                            time: projectTime,
+                            extent: this.mapService.getViewportSize().extent,
+                            projection: projection,
+                        })
+                        .subscribe((data) => {
+                            this.data$.next(data as HistogramData);
+                            this.dataLoading$.next(false);
+                        });
+                });
+            }),
+        );
+
+        this.attributes$ = this.form.controls['inputLayer'].valueChanges.pipe(
+            map((layer) => {
+                // side effect!!!
+                this.form.controls['attribute'].setValue(undefined);
+
+                if (layer) {
+                    this.form.controls['attribute'].enable({onlySelf: true});
+                    return layer.operator.attributes
+                        .filter((attribute: string) => {
+                            return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
+                        })
+                        .toArray();
+                } else {
+                    this.form.controls['attribute'].disable({onlySelf: true});
+                    return [];
+                }
+            }),
+        );
 
         this.subscriptions.push(
-            this.form.controls['attribute']
-                .valueChanges.pipe(
-                map((attribute: string) => {
-                    if (!attribute) {
-                        return '';
-                    }
+            this.form.controls['attribute'].valueChanges
+                .pipe(
+                    map((attribute: string) => {
+                        if (!attribute) {
+                            return '';
+                        }
 
-                    const operator = this.form.controls['inputLayer'].value.operator as Operator;
-                    const unit = operator.getUnit(attribute);
+                        const operator = this.form.controls['inputLayer'].value.operator as Operator;
+                        const unit = operator.getUnit(attribute);
 
-                    if (!unit || unit.unit === Unit.defaultUnit.unit || unit.measurement === Unit.defaultUnit.measurement) {
-                        return '';
-                    } else {
-                        return unit.unit;
-                    }
-                }))
-                .subscribe(unit => this.attributeUnit$.next(unit))
+                        if (!unit || unit.unit === Unit.defaultUnit.unit || unit.measurement === Unit.defaultUnit.measurement) {
+                            return '';
+                        } else {
+                            return unit.unit;
+                        }
+                    }),
+                )
+                .subscribe((unit) => this.attributeUnit$.next(unit)),
         );
     }
 
@@ -151,7 +165,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     add(_event: any) {
@@ -202,7 +216,7 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
         const operator = new Operator(dict);
 
-        const symbology = vectorLayer.symbology.clone() as any as AbstractVectorSymbology;
+        const symbology = (vectorLayer.symbology.clone() as any) as AbstractVectorSymbology;
         symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
 
         const clustered = vectorLayer.clustered;
@@ -216,5 +230,4 @@ export class NumericAttributeFilterOperatorComponent implements AfterViewInit, O
 
         this.projectService.addLayer(layer);
     }
-
 }

@@ -1,12 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
-    ChangeDetectorRef, DebugElement, SchemaMetadata, Type, Component, ViewChild,
-    ViewContainerRef, ComponentFactoryResolver, Optional, NgModule, Predicate
+    ChangeDetectorRef,
+    DebugElement,
+    SchemaMetadata,
+    Type,
+    Component,
+    ViewChild,
+    ViewContainerRef,
+    ComponentFactoryResolver,
+    Optional,
+    NgModule,
+    Predicate,
 } from '@angular/core';
 import {SelectSpecHelper} from './select-spec.helper';
 import {By} from '@angular/platform-browser';
 import {TestIdComponentDirective} from './test-id-component.directive';
-
 
 /**
  * This Component is used to pass Inputs to the tested component.
@@ -14,7 +22,7 @@ import {TestIdComponentDirective} from './test-id-component.directive';
  */
 @Component({
     selector: 'wave-test-host',
-    template: `<ng-template #component></ng-template>`
+    template: `<ng-template #component></ng-template>`,
 })
 class TestHostComponent {
     @ViewChild('component', {read: ViewContainerRef, static: true}) component: ViewContainerRef;
@@ -79,40 +87,35 @@ class TestHostComponent {
  *  and now we can test if the function did what it was designed for with the common jasmine expect functionalities.
  */
 export class ComponentFixtureSpecHelper<T> {
-
     component: T;
     fixture: ComponentFixture<TestHostComponent>;
     changeDetectorRef: ChangeDetectorRef;
     nativeElement: any;
     debugElement: DebugElement;
 
-    constructor(_app_module: {
-        providers?: any[];
-        declarations?: any[];
-        imports?: any[];
-        schemas?: Array<SchemaMetadata | any[]>;
-        aotSummaries?: () => any[];
-    }, type: Type<T>, @Optional() inputs?: {[key: string]: any }) {
-
+    constructor(
+        _app_module: {
+            providers?: any[];
+            declarations?: any[];
+            imports?: any[];
+            schemas?: Array<SchemaMetadata | any[]>;
+            aotSummaries?: () => any[];
+        },
+        type: Type<T>,
+        @Optional() inputs?: {[key: string]: any},
+    ) {
         @NgModule({
-            declarations: [
-                TestHostComponent
-            ],
-            entryComponents: [
-                type
-            ]
+            declarations: [TestHostComponent],
+            entryComponents: [type],
         })
-        class EntryModule {
-        }
+        class EntryModule {}
 
-        _app_module.imports.push(
-            EntryModule
-        );
+        _app_module.imports.push(EntryModule);
         TestBed.configureTestingModule(_app_module)
             .overrideComponent(TestHostComponent, {
                 add: {
-                    providers: _app_module.providers
-                }
+                    providers: _app_module.providers,
+                },
             })
             .compileComponents();
         this.fixture = TestBed.createComponent(TestHostComponent);
@@ -169,9 +172,7 @@ export class ComponentFixtureSpecHelper<T> {
 
     public getElementByTestId(id: string): DebugElement {
         let nodes = this.debugElement.queryAll(By.directive(TestIdComponentDirective));
-        nodes = nodes.filter(node =>
-            node.nativeElement.getAttribute('ng-reflect-test_id') === id
-        );
+        nodes = nodes.filter((node) => node.nativeElement.getAttribute('ng-reflect-test_id') === id);
         if (nodes.length === 0) {
             return null;
         }
@@ -182,4 +183,3 @@ export class ComponentFixtureSpecHelper<T> {
         return this.fixture.whenStable();
     }
 }
-

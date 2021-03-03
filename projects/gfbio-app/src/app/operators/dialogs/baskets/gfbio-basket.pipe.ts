@@ -5,7 +5,6 @@ import {IBasketResult, IBasketAbcdResult, IBasketGroupedAbcdResult} from './gfbi
 export class BasketResultGroupByDatasetPipe implements PipeTransform {
     static regex = /(.*),\s*a\s*(.*)?record\s*of\s*the\s*"(.*)"\s*dataset\s*\[ID:\s*(.*)\]\s*/;
 
-
     transform(results: Array<IBasketResult>): Array<IBasketResult> {
         const array: Array<IBasketResult> = [];
         results.forEach((result) => {
@@ -15,13 +14,16 @@ export class BasketResultGroupByDatasetPipe implements PipeTransform {
                 const abcd = result as IBasketAbcdResult;
 
                 const unit_type_title_id = BasketResultGroupByDatasetPipe.regex.exec(abcd.title);
-                const title = (unit_type_title_id && unit_type_title_id[3]) ? unit_type_title_id[3] : abcd.title;
-                const unit = (unit_type_title_id && unit_type_title_id[4]) ? {
-                    unitId: unit_type_title_id[4],
-                    prefix: unit_type_title_id[1],
-                    type: unit_type_title_id[2],
-                    metadataLink: abcd.metadataLink
-                } : undefined;
+                const title = unit_type_title_id && unit_type_title_id[3] ? unit_type_title_id[3] : abcd.title;
+                const unit =
+                    unit_type_title_id && unit_type_title_id[4]
+                        ? {
+                              unitId: unit_type_title_id[4],
+                              prefix: unit_type_title_id[1],
+                              type: unit_type_title_id[2],
+                              metadataLink: abcd.metadataLink,
+                          }
+                        : undefined;
 
                 if (!entry) {
                     const metadataLink = abcd.metadataLink;
@@ -32,7 +34,7 @@ export class BasketResultGroupByDatasetPipe implements PipeTransform {
                         available: abcd.available,
                         dataCenter: abcd.dataCenter,
                         metadataLink,
-                        units: (unit) ? [unit] : [],
+                        units: unit ? [unit] : [],
                         type: 'abcd_grouped',
                         resultType: 'points',
                     };

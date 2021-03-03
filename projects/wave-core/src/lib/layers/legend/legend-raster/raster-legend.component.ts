@@ -4,13 +4,10 @@ import {AbstractRasterSymbology} from '../../symbology/symbology.model';
 
 @Component({
     selector: 'wave-legend-raster',
-    template: `
-        <span>This is a generic raster layer</span>
-    `,
+    template: ` <span>This is a generic raster layer</span> `,
     styleUrls: [],
     // tslint:disable-next-line:no-inputs-metadata-property
     inputs: ['symbology'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterLegendComponent<S extends AbstractRasterSymbology> extends LegendComponent<S> {
-}
+export class RasterLegendComponent<S extends AbstractRasterSymbology> extends LegendComponent<S> {}

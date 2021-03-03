@@ -1,28 +1,70 @@
 <div fxLayout="row" fxLayoutGap="1rem">
     <mat-form-field fxFlex>
-        <input matInput placeholder="Year" type="number" maxLength="4" [ngModel]="time?.year()"
-               (ngModelChange)="update('year', $event)" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Year"
+            type="number"
+            maxLength="4"
+            [ngModel]="time?.year()"
+            (ngModelChange)="update('year', $event)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
     <mat-form-field fxFlex>
-        <input matInput placeholder="Month" type="number" maxLength="2" [ngModel]="time?.month()+1"
-               (ngModelChange)="update('month', ($event-1))" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Month"
+            type="number"
+            maxLength="2"
+            [ngModel]="time?.month() + 1"
+            (ngModelChange)="update('month', $event - 1)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
     <mat-form-field fxFlex>
-        <input matInput placeholder="Day" type="number" maxLength="2" [ngModel]="time?.date()"
-               (ngModelChange)="updateDate($event)" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Day"
+            type="number"
+            maxLength="2"
+            [ngModel]="time?.date()"
+            (ngModelChange)="updateDate($event)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
 </div>
 <div fxLayout="row" fxLayoutGap="1rem">
     <mat-form-field fxFlex>
-        <input matInput placeholder="Hour" type="number" maxLength="2" [ngModel]="time?.hour()"
-               (ngModelChange)="update('hour', $event)" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Hour"
+            type="number"
+            maxLength="2"
+            [ngModel]="time?.hour()"
+            (ngModelChange)="update('hour', $event)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
     <mat-form-field fxFlex>
-        <input matInput placeholder="Minute" type="number" maxLength="2" [ngModel]="time?.minute()"
-               (ngModelChange)="update('minute', $event)" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Minute"
+            type="number"
+            maxLength="2"
+            [ngModel]="time?.minute()"
+            (ngModelChange)="update('minute', $event)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
     <mat-form-field fxFlex>
-        <input matInput placeholder="Second" type="number" maxLength="2" [ngModel]="time?.second()"
-               (ngModelChange)="update('second', $event)" [disabled]="disabled">
+        <input
+            matInput
+            placeholder="Second"
+            type="number"
+            maxLength="2"
+            [ngModel]="time?.second()"
+            (ngModelChange)="update('second', $event)"
+            [disabled]="disabled"
+        />
     </mat-form-field>
 </div>

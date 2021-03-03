@@ -27,7 +27,6 @@ import {TimePlotType} from '../../operators/types/timeplot-type.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
-
     /**
      * If the list is empty, show the following button.
      */
@@ -49,32 +48,35 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(public readonly projectService: ProjectService,
-                public readonly dialog: MatDialog,
-                private readonly layoutService: LayoutService,
-                private readonly elementRef: ElementRef) {
-    }
+    constructor(
+        public readonly projectService: ProjectService,
+        public readonly dialog: MatDialog,
+        private readonly layoutService: LayoutService,
+        private readonly elementRef: ElementRef,
+    ) {}
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     ngAfterViewInit() {
         this.subscriptions.push(
-            this.projectService.getPlotStream().pipe(
-                filter(plots => plots.length > 0),
-                first(),
-            ).subscribe(() => {
-                setTimeout(() => {
-                    const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
-                    const width = parseInt(getComputedStyle(cardContent).width, 10);
-                    this.cardWidth$.next(width);
-                });
-            })
+            this.projectService
+                .getPlotStream()
+                .pipe(
+                    filter((plots) => plots.length > 0),
+                    first(),
+                )
+                .subscribe(() => {
+                    setTimeout(() => {
+                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
+                        const width = parseInt(getComputedStyle(cardContent).width, 10);
+                        this.cardWidth$.next(width);
+                    });
+                }),
         );
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     /**
@@ -86,7 +88,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
             keepParent: true,
             config: {
                 editable: plot,
-            }
+            },
         });
     }
 
@@ -101,13 +103,10 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
      * Show a plot as a fullscreen modal dialog
      */
     showFullscreen(plot: Plot) {
-        this.dialog.open(
-            PlotDetailViewComponent,
-            {
-                data: plot,
-                maxHeight: '100vh',
-                maxWidth: '100vw',
-            },
-        );
+        this.dialog.open(PlotDetailViewComponent, {
+            data: plot,
+            maxHeight: '100vh',
+            maxWidth: '100vw',
+        });
     }
 }

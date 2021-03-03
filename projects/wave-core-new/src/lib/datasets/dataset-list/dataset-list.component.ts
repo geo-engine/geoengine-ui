@@ -7,20 +7,16 @@ import {DataSetService} from '../dataset.service';
     selector: 'wave-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatasetListComponent implements OnInit {
-
     searchTerm: string = '';
     // TODO: paginated data source
     datasets: Observable<Array<DataSet>>;
 
-    constructor(public dataSetService: DataSetService
-    ) {
+    constructor(public dataSetService: DataSetService) {
         this.datasets = this.dataSetService.getDataSets();
     }
 
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 }

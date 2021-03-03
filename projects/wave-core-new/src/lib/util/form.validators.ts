@@ -5,30 +5,34 @@ import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
 /**
  * A validator that validates a form group that contains min/max number fields.
  */
-function minAndMax(controlMinName: string,
-                   controlMaxName: string,
-                   options?: {
-                       checkBothExist?: boolean,
-                       checkOneExists?: boolean
-                   }) {
+function minAndMax(
+    controlMinName: string,
+    controlMaxName: string,
+    options?: {
+        checkBothExist?: boolean;
+        checkOneExists?: boolean;
+    },
+) {
     if (!options) {
         options = {};
     }
-    if (typeof options.checkBothExist !== 'boolean') { // default
+    if (typeof options.checkBothExist !== 'boolean') {
+        // default
         options.checkBothExist = false;
     }
-    if (typeof options.checkOneExists !== 'boolean') { // default
+    if (typeof options.checkOneExists !== 'boolean') {
+        // default
         options.checkOneExists = true;
     }
 
-    return (control: AbstractControl): { [key: string]: boolean } => {
+    return (control: AbstractControl): {[key: string]: boolean} => {
         const min = control.get(controlMinName).value;
         const max = control.get(controlMaxName).value;
 
         const errors: {
-            minOverMax?: boolean,
-            noFilter?: boolean,
-            noFiniteNumber?: boolean,
+            minOverMax?: boolean;
+            noFilter?: boolean;
+            noFiniteNumber?: boolean;
         } = {};
 
         const validMin = isFiniteNumber(min);
@@ -38,7 +42,7 @@ function minAndMax(controlMinName: string,
             errors.minOverMax = true;
         }
 
-        if (options.checkOneExists && (!validMin && !validMax)) {
+        if (options.checkOneExists && !validMin && !validMax) {
             errors.noFilter = true;
         }
 
@@ -57,9 +61,8 @@ function minAndMax(controlMinName: string,
 /**
  * A validator that invokes the underlying one only if the condition holds.
  */
-function conditionalValidator(validator: (control: AbstractControl) => { [key: string]: boolean },
-                              condition: () => boolean) {
-    return (control: AbstractControl): { [key: string]: boolean } => {
+function conditionalValidator(validator: (control: AbstractControl) => {[key: string]: boolean}, condition: () => boolean) {
+    return (control: AbstractControl): {[key: string]: boolean} => {
         if (condition()) {
             return validator(control);
         } else {
@@ -80,30 +83,34 @@ function keywordValidator(keywords: Array<string>) {
 /**
  * Checks if the project name is unique.
  */
-function uniqueProjectNameValidator(storageService: { projectExists(string): Observable<boolean> }): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{ [key: string]: boolean }> => {
+function uniqueProjectNameValidator(storageService: {projectExists(string): Observable<boolean>}): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
+        return new Observable((observer: Observer<{[key: string]: boolean}>) => {
+            storageService
+                .projectExists(control.value as string)
+                .pipe(
+                    map((projectExists) => {
+                        const errors: {
+                            nameInUsage?: boolean;
+                        } = {};
 
-        return new Observable((observer: Observer<{ [key: string]: boolean }>) => {
-            storageService.projectExists(control.value as string).pipe(
-                map(projectExists => {
-                    const errors: {
-                        nameInUsage?: boolean,
-                    } = {};
+                        if (projectExists) {
+                            errors.nameInUsage = true;
+                        }
 
-                    if (projectExists) {
-                        errors.nameInUsage = true;
-                    }
-
-                    return Object.keys(errors).length > 0 ? errors : null;
-                }))
-                .subscribe(errors => {
-                    observer.next(errors);
-                    observer.complete();
-                }, error => {
-                    observer.error(error);
-                });
+                        return Object.keys(errors).length > 0 ? errors : null;
+                    }),
+                )
+                .subscribe(
+                    (errors) => {
+                        observer.next(errors);
+                        observer.complete();
+                    },
+                    (error) => {
+                        observer.error(error);
+                    },
+                );
         });
-
     };
 }
 
@@ -150,10 +157,11 @@ export function valueRelation(
     controlValueProvider: (control: AbstractControl) => number,
     compareValueProvider: (control: AbstractControl) => number,
     options?: {
-        checkEqual?: boolean,
-        checkAbove?: boolean,
-        checkBelow?: boolean,
-    }) {
+        checkEqual?: boolean;
+        checkAbove?: boolean;
+        checkBelow?: boolean;
+    },
+) {
     if (!options) {
         options = {
             checkEqual: true,
@@ -162,17 +170,17 @@ export function valueRelation(
         };
     }
 
-    return (control: AbstractControl): { [key: string]: boolean } => {
+    return (control: AbstractControl): {[key: string]: boolean} => {
         const value = controlValueProvider(control);
         const compareValue = compareValueProvider(control);
 
         const errors: {
-            valueAbove?: boolean,
-            valueAboveOrEqual?: boolean,
-            valueBelow?: boolean,
-            valueBelowOrEqual?: boolean,
-            valueEquals?: boolean,
-            noFilter?: boolean,
+            valueAbove?: boolean;
+            valueAboveOrEqual?: boolean;
+            valueBelow?: boolean;
+            valueBelowOrEqual?: boolean;
+            valueEquals?: boolean;
+            noFilter?: boolean;
         } = {};
 
         if (options.checkEqual && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value === compareValue) {
@@ -192,7 +200,6 @@ export function valueRelation(
         if (options.checkAbove && !nullOrUndefined(value) && !nullOrUndefined(compareValue) && value > compareValue) {
             errors.valueAbove = true;
             errors.valueAboveOrEqual = true;
-
         }
         if (nullOrUndefined(value)) {
             errors.noFilter = true;

@@ -1,4 +1,3 @@
-
 import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
 import {ResultTypes, ResultType} from '../../../result-type.model';
@@ -17,7 +16,8 @@ import {
     AbstractRasterSymbology,
     AbstractVectorSymbology,
     AbstractSymbology,
-    PointSymbology, MappingRasterSymbology
+    PointSymbology,
+    MappingRasterSymbology,
 } from '../../../../layers/symbology/symbology.model';
 import {MatDialog} from '@angular/material/dialog';
 import {RScriptSaveComponent, RScriptSaveComponentConfig} from '../r-script-save/r-script-save.component';
@@ -25,20 +25,18 @@ import {RScriptLoadComponent, RScriptLoadResult} from '../r-script-load/r-script
 import {Config} from '../../../../config.service';
 import {WaveValidators} from '../../../../util/form.validators';
 
-
 @Component({
     selector: 'wave-r-operator',
     templateUrl: './r-operator.component.html',
     styleUrls: ['./r-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ROperatorComponent implements OnInit, AfterViewInit {
-
     // make available
     ResultTypes = ResultTypes;
     //
 
-    @ViewChild(CodeEditorComponent, { static: true }) codeEditor: CodeEditorComponent;
+    @ViewChild(CodeEditorComponent, {static: true}) codeEditor: CodeEditorComponent;
 
     form: FormGroup;
 
@@ -50,12 +48,13 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
 
     outputTypes: Array<ResultType>;
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService,
-                private randomColorService: RandomColorService,
-                private dialog: MatDialog,
-                private config: Config) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private projectService: ProjectService,
+        private randomColorService: RandomColorService,
+        private dialog: MatDialog,
+        private config: Config,
+    ) {}
 
     ngOnInit() {
         if (this.config.DEBUG_MODE.WAVE) {
@@ -137,9 +136,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     }
 
     load() {
-        this.dialog.open(RScriptLoadComponent)
-            .afterClosed().pipe(
-            first())
+        this.dialog
+            .open(RScriptLoadComponent)
+            .afterClosed()
+            .pipe(first())
             .subscribe((result: RScriptLoadResult) => {
                 if (result) {
                     this.form.controls['code'].setValue(result.script.code);
@@ -149,17 +149,14 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
     }
 
     save() {
-        this.dialog.open(
-            RScriptSaveComponent,
-            {
-                data: {
-                    script: {
-                        code: this.form.controls['code'].value,
-                        resultType: this.form.controls['resultType'].value,
-                    }
-                }  as RScriptSaveComponentConfig
-            }
-        );
+        this.dialog.open(RScriptSaveComponent, {
+            data: {
+                script: {
+                    code: this.form.controls['code'].value,
+                    resultType: this.form.controls['resultType'].value,
+                },
+            } as RScriptSaveComponentConfig,
+        });
     }
 
     add(event: any) {
@@ -178,8 +175,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         const code = this.form.controls['code'].value;
 
         // TODO: user input?
-        const projection = getAnySource(0) === undefined ?
-            Projections.WGS_84 : getAnySource(0).operator.projection;
+        const projection = getAnySource(0) === undefined ? Projections.WGS_84 : getAnySource(0).operator.projection;
 
         let rasterSources: Array<Operator>;
         let pointSources: Array<Operator>;
@@ -187,23 +183,15 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
         let polygonSources: Array<Operator>;
 
         if (this.editable) {
-            rasterSources = this.editableSourceRasters.map(o => o.getProjectedOperator(projection));
-            pointSources = this.editableSourcePoints.map(o => o.getProjectedOperator(projection));
-            lineSources = this.editableSourceLines.map(o => o.getProjectedOperator(projection));
-            polygonSources = this.editableSourcePolygons.map(o => o.getProjectedOperator(projection));
+            rasterSources = this.editableSourceRasters.map((o) => o.getProjectedOperator(projection));
+            pointSources = this.editableSourcePoints.map((o) => o.getProjectedOperator(projection));
+            lineSources = this.editableSourceLines.map((o) => o.getProjectedOperator(projection));
+            polygonSources = this.editableSourcePolygons.map((o) => o.getProjectedOperator(projection));
         } else {
-            rasterSources = rasterLayers.map(
-                layer => layer.operator.getProjectedOperator(projection)
-            );
-            pointSources = pointLayers.map(
-                layer => layer.operator.getProjectedOperator(projection)
-            );
-            lineSources = lineLayers.map(
-                layer => layer.operator.getProjectedOperator(projection)
-            );
-            polygonSources = polygonLayers.map(
-                layer => layer.operator.getProjectedOperator(projection)
-            );
+            rasterSources = rasterLayers.map((layer) => layer.operator.getProjectedOperator(projection));
+            pointSources = pointLayers.map((layer) => layer.operator.getProjectedOperator(projection));
+            lineSources = lineLayers.map((layer) => layer.operator.getProjectedOperator(projection));
+            polygonSources = polygonLayers.map((layer) => layer.operator.getProjectedOperator(projection));
         }
 
         const operator = new Operator({
@@ -219,11 +207,10 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             rasterSources,
             pointSources,
             lineSources,
-            polygonSources
+            polygonSources,
         });
 
         if (ResultTypes.LAYER_TYPES.indexOf(resultType) >= 0) {
-
             // LAYER
             let layer: Layer<AbstractSymbology>;
             switch (resultType) {
@@ -259,9 +246,7 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             } else {
                 this.projectService.addLayer(layer);
             }
-
         } else {
-
             // PLOT
             const plot = new Plot({
                 name: outputName,
@@ -273,9 +258,6 @@ export class ROperatorComponent implements OnInit, AfterViewInit {
             } else {
                 this.projectService.addPlot(plot);
             }
-
         }
-
     }
-
 }

@@ -26,7 +26,7 @@ export class User {
         this.name = config.name;
         this.realName = config.realName;
         this.email = config.email;
-        this.externalid = (config.externalid) ? config.externalid : '';
+        this.externalid = config.externalid ? config.externalid : '';
     }
 
     public hasExternalIdPrefix(prefix: string): boolean {

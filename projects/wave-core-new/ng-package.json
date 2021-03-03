@@ -41,7 +41,5 @@
             "vega-embed": "vegaEmbed"
         }
     },
-    "assets": [
-        "assets"
-    ]
+    "assets": ["assets"]
 }

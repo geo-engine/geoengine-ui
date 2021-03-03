@@ -13,10 +13,9 @@ import {MapService} from '../../map/map.service';
     selector: 'wave-plot-detail-view',
     templateUrl: './plot-detail-view.component.html',
     styleUrls: ['./plot-detail-view.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit {
-
     maxWidth$ = new ReplaySubject<number>(1);
     maxHeight$ = new ReplaySubject<number>(1);
 
@@ -24,11 +23,12 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
     imagePlotData$ = new BehaviorSubject('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
     imagePlotLoading$ = new BehaviorSubject(true);
 
-    constructor(public projectService: ProjectService,
-                private mapService: MapService,
-                private mappingQueryService: MappingQueryService,
-                @Inject(MAT_DIALOG_DATA) public plot: Plot) {
-    }
+    constructor(
+        public projectService: ProjectService,
+        private mapService: MapService,
+        private mappingQueryService: MappingQueryService,
+        @Inject(MAT_DIALOG_DATA) public plot: Plot,
+    ) {}
 
     ngOnInit() {
         observableCombineLatest(
@@ -36,9 +36,10 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
             this.projectService.getTimeStream(),
             this.projectService.getProjectionStream(),
             this.mapService.getViewportSizeStream(),
-            this.maxWidth$, this.maxHeight$
-        ).pipe(
-            first())
+            this.maxWidth$,
+            this.maxHeight$,
+        )
+            .pipe(first())
             .subscribe(([plotData, time, projection, viewport, width, height]) => {
                 // set data uri for png type and load full screen image
                 if (plotData.type === 'png') {
@@ -52,9 +53,9 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
                             projection: projection,
                             plotWidth: width - LayoutService.remInPx,
                             plotHeight: height,
-                        }).pipe(
-                        first())
-                        .subscribe(newPlotData => {
+                        })
+                        .pipe(first())
+                        .subscribe((newPlotData) => {
                             this.imagePlotData$.next(`data:image/png;base64,${newPlotData.data}`);
 
                             this.imagePlotLoading$.next(false);
@@ -69,5 +70,4 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit {
             this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
         });
     }
-
 }

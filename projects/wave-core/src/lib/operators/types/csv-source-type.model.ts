@@ -8,7 +8,7 @@ interface CSVTimeFormat {
 export interface CSVParameters {
     fieldSeparator: string;
     geometry: 'xy' | 'wkt';
-    time: 'none' | {use: 'start', duration: number} | 'start+inf' | 'start+end' | 'start+duration';
+    time: 'none' | {use: 'start'; duration: number} | 'start+inf' | 'start+end' | 'start+duration';
     timeFormat?: {
         time1?: CSVTimeFormat;
         time2?: CSVTimeFormat;
@@ -121,7 +121,7 @@ export class CsvSourceType extends OperatorType {
             ['dataURI', this.dataURI],
             ['geometry', this.parameters.geometry],
             ['fieldSeparator', this.parameters.fieldSeparator],
-            ['time', (this.parameters.time) ? JSON.stringify(this.parameters.time) : ''],
+            ['time', this.parameters.time ? JSON.stringify(this.parameters.time) : ''],
         ];
     }
 
@@ -133,12 +133,10 @@ export class CsvSourceType extends OperatorType {
                 const uriPart = data.substring(0, commaPosition + 1);
                 const dataPart = data.substring(commaPosition + 1, data.length);
 
-                const headerPart = (this.parameters.header as Array<string>)
-                    .join(this.parameters.fieldSeparator) + '\n';
+                const headerPart = (this.parameters.header as Array<string>).join(this.parameters.fieldSeparator) + '\n';
 
                 data = uriPart + headerPart + dataPart;
             }
-
         }
 
         let dict: CsvSourceTypeMappingDict = {
@@ -158,7 +156,7 @@ export class CsvSourceType extends OperatorType {
             dict.time = 'start';
             dict.duration = 'inf';
         } else if (typeof this.parameters.time !== 'string') {
-            const startPlusDuration = this.parameters.time as {use: string, duration: number};
+            const startPlusDuration = this.parameters.time as {use: string; duration: number};
             dict.time = 'start';
             dict.duration = startPlusDuration.duration;
         } else {
@@ -209,5 +207,4 @@ export class CsvSourceType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return CsvSourceType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }
