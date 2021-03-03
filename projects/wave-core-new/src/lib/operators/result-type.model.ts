@@ -2,60 +2,42 @@
  * Represents the result of an operator.
  */
 export abstract class ResultType {
-    /**
-     * Get the mapping representtion.
-     */
-    abstract getCode(): string;
+    abstract readonly code: string;
 
     /**
      * Human-readable form of the result type.
      */
     toString(): string {
-        const code = this.getCode();
-        return code.charAt(0).toUpperCase() + code.substring(1);
+        return this.code.charAt(0).toUpperCase() + this.code.substring(1);
     }
 }
 
 class Raster extends ResultType {
-    getCode(): string {
-        return 'raster';
-    }
+    code = 'raster';
 }
 
 class Points extends ResultType {
-    getCode(): string {
-        return 'points';
-    }
+    code = 'points';
 }
 
 class Lines extends ResultType {
-    getCode(): string {
-        return 'lines';
-    }
+    code = 'lines';
 }
 
 class Polygons extends ResultType {
-    getCode(): string {
-        return 'polygons';
-    }
+    code = 'polygons';
 }
 
 class Data extends ResultType {
-    getCode(): string {
-        return 'data';
-    }
+    code = 'data';
 }
 
 class Plot extends ResultType {
-    getCode(): string {
-        return 'plot';
-    }
+    code = 'plot';
 }
 
 class Text extends ResultType {
-    getCode(): string {
-        return 'text';
-    }
+    code = 'text';
 }
 
 export class ResultTypeCollection {
@@ -89,22 +71,22 @@ export class ResultTypeCollection {
 
     fromCode(type: string) {
         switch (type.toLowerCase()) {
-            case this.RASTER.getCode():
+            case this.RASTER.code:
                 return this.RASTER;
-            case this.POINTS.getCode():
+            case this.POINTS.code:
             case 'point':
                 return this.POINTS;
             case 'line string':
             case 'multi line string':
-            case this.LINES.getCode():
+            case this.LINES.code:
                 return this.LINES;
-            case this.POLYGONS.getCode():
+            case this.POLYGONS.code:
             case 'multi surface':
             case 'multi polygon':
                 return this.POLYGONS;
-            case this.PLOT.getCode():
+            case this.PLOT.code:
                 return this.PLOT;
-            case this.TEXT.getCode():
+            case this.TEXT.code:
                 return this.TEXT;
             default:
                 throw new Error('Invalid Result Type: ' + type);
