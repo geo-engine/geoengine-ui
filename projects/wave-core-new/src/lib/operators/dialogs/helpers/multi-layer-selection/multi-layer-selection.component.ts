@@ -1,9 +1,9 @@
-import {combineLatest as observableCombineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription} from 'rxjs';
-
-import {first} from 'rxjs/operators';
+import {combineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription, of, zip, forkJoin} from 'rxjs';
+import {first, map, mergeMap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
+import {LayerMetadata} from '../../../../layers/layer-metadata';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 
@@ -85,6 +85,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
     private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
+    layerChangesSubscription: Subscription;
 
     constructor(private projectService: ProjectService) {
         this.layerSubscription = this.filteredLayers.subscribe((filteredLayers) => {
@@ -114,21 +115,28 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     break;
                 case 'layers':
                 case 'types':
-                    if (this.layers instanceof Observable) {
-                        this.layers.pipe(first()).subscribe((layers) => {
-                            this.filteredLayers.next(
-                                layers.filter((layer: Layer) => {
-                                    return this.types.map((t) => t.code).indexOf(layer.layerType) >= 0;
-                                }),
-                            );
-                        });
-                    } else if (this.layers instanceof Array) {
-                        this.filteredLayers.next(
-                            this.layers.filter((layer: Layer) => {
-                                return this.types.map((t) => t.code).indexOf(layer.layerType) >= 0;
-                            }),
-                        );
+                    let layers: Observable<Array<Layer>>;
+                    if (this.layers instanceof Array) {
+                        layers = of(this.layers);
+                    } else {
+                        layers = this.layers;
                     }
+
+                    if (this.layerChangesSubscription) {
+                        this.layerChangesSubscription.unsubscribe();
+                    }
+
+                    this.layerChangesSubscription = layers
+                        .pipe(
+                            mergeMap((layers) => {
+                                let layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
+                                return forkJoin(layersAndMetadata);
+                            }),
+                            map((layers: Array<[Layer, LayerMetadata]>) =>
+                                layers.filter(([_layer, meta]) => this.types.indexOf(meta.resultType) >= 0).map(([layer, _]) => layer),
+                            ),
+                        )
+                        .subscribe((l) => this.filteredLayers.next(l));
 
                     if (this.title === undefined) {
                         this.title = this.types.map((type) => type.toString()).join(', ');
@@ -141,7 +149,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
 
         if (minMaxInitialChanged) {
-            observableCombineLatest(this.filteredLayers, this.selectedLayers)
+            combineLatest([this.filteredLayers, this.selectedLayers])
                 .pipe(first())
                 .subscribe(([filteredLayers, selectedLayers]) => {
                     const amountOfLayers = selectedLayers.length;
@@ -167,6 +175,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     ngOnDestroy() {
         this.layerSubscription.unsubscribe();
         this.selectionSubscription.unsubscribe();
+
+        if (this.layerChangesSubscription) {
+            this.layerChangesSubscription.unsubscribe();
+        }
     }
 
     updateLayer(index: number, layer: Layer) {
@@ -178,7 +190,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     add() {
-        observableCombineLatest(this.filteredLayers, this.selectedLayers)
+        combineLatest([this.filteredLayers, this.selectedLayers])
             .pipe(first())
             .subscribe(([filteredLayers, selectedLayers]) => {
                 this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, selectedLayers, 1)));
