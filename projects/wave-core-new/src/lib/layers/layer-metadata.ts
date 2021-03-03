@@ -8,7 +8,7 @@ import {ResultType, ResultTypes} from '../operators/result-type.model';
 export abstract class LayerMetadata implements HasLayerType {
     readonly abstract layerType: LayerType;
 
-    public abstract isOfResultType(resultType: ResultType): boolean;
+    public abstract get resultType(): ResultType;
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -35,8 +35,8 @@ export class VectorLayerMetadata extends LayerMetadata {
         return new VectorLayerMetadata(dataType, columns);
     }
 
-    public isOfResultType(resultType: ResultType): boolean {
-        return this.dataType.resultType === resultType;
+    public get resultType(): ResultType {
+        return this.dataType.resultType;
     }
 }
 
@@ -60,7 +60,7 @@ export class RasterLayerMetadata extends LayerMetadata {
         return new RasterLayerMetadata(dataType, measurement);
     }
 
-    public isOfResultType(resultType: ResultType): boolean {
-        return resultType == ResultTypes.RASTER;
+    public get resultType(): ResultType {
+        return ResultTypes.RASTER;
     }
 }

@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {BehaviorSubject, forkJoin, from, Observable, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {LayerMetadata} from '../../../../layers/layer-metadata';
+import {BehaviorSubject, forkJoin, from, Observable, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
-import {first, mergeMap} from 'rxjs/operators';
+import {first, map, mergeMap} from 'rxjs/operators';
 
 /**
  * This component allows selecting one layer.
@@ -83,27 +84,26 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.layers || changes.types) {
-            if (this.layers instanceof Observable) {
-                this.layers.pipe(first()).subscribe(layers => {
-                    let o = layers.map(l => this.projectService.getLayerMetadata(l));
-
-                    forkJoin(o).subscribe(meta => this.filteredLayers.next(
-                        layers.filter((layer: Layer, i) => {
-                            return this.types.map(t => meta[i].isOfResultType(t)).includes(true);
-                        })
-                    ));
-                });
-            } else if (this.layers instanceof Array) {
-                const layers = this.layers as Array<Layer>;
-                let o = layers.map(l => this.projectService.getLayerMetadata(l));
-
-                forkJoin(o).subscribe(meta => this.filteredLayers.next(
-                    layers.filter((layer: Layer, i) => {
-                        return this.types.map(t => meta[i].isOfResultType(t)).includes(true);
-                    })
-                ));
+            let layers: Observable<Array<Layer>>;
+            if (this.layers instanceof Array) {
+                layers = of(this.layers);               
+            } else {
+                layers = this.layers;
             }
 
+            const sub = layers.pipe(
+                mergeMap(layers => {
+                    let layersAndMetadata = layers.map(l => zip(of(l), this.projectService.getLayerMetadata(l)));                    
+                    return forkJoin(layersAndMetadata);
+                }), 
+                map((layers: Array<[Layer, LayerMetadata]>) => 
+                    layers
+                        .filter(([_layer, meta]) => this.types.indexOf(meta.resultType) >= 0)
+                        .map(([layer, _]) => layer)
+                ),         
+            ).subscribe(l => this.filteredLayers.next(l));
+            this.subscriptions.push(sub);
+            
             if (this.title === undefined) {
                 // set title out of types
                 this.title = this.types
