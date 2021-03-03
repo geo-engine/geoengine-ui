@@ -1,0 +1,9 @@
+# Ignore artifacts:
+custom_typings
+dist
+docker-files
+node-modules
+.github
+scripts
+.idea
+*.geojson
