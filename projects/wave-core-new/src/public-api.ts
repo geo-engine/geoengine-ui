@@ -88,6 +88,7 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/layers/layer.model';
+export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/symbology/symbology.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/spatial-reference.model';

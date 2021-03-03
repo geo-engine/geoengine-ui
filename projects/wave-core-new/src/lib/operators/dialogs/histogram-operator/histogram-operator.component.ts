@@ -8,7 +8,7 @@ import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata';
+import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
 
 /**

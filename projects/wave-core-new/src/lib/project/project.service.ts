@@ -29,7 +29,7 @@ import {MapService} from '../map/map.service';
 import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.

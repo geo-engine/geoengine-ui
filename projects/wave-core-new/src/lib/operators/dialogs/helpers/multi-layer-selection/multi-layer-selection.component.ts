@@ -3,7 +3,7 @@ import {first, map, mergeMap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {LayerMetadata} from '../../../../layers/layer-metadata';
+import {LayerMetadata} from '../../../../layers/layer-metadata.model';
 import {ResultType} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 
