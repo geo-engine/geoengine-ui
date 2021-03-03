@@ -2,13 +2,13 @@ import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from 'wave-core
 
 export enum TerminologyLookupOnNotResolvable {
     EMPTY = 'EMPTY',
-    KEEP = 'KEEP'
+    KEEP = 'KEEP',
 }
 
 export enum TerminologyLookupMatchType {
     EXACT = 'exact',
     INCLUDED = 'included',
-    REGEX = 'regex'
+    REGEX = 'regex',
 }
 
 interface TerminologyLookupTypeMappingDict extends OperatorTypeMappingDict {
@@ -81,9 +81,9 @@ export class TerminologyLookupType extends OperatorType {
         this.resolved_attribute_name = config.resolved_attribute;
         this.terminology = config.terminology;
         this.key = config.key;
-        this.match_type = (config.match_type) ? config.match_type : TerminologyLookupMatchType.EXACT;
-        this.first_hit = (!!config.first_hit);
-        this.on_not_resolvable = (config.on_not_resolvable) ? config.on_not_resolvable : TerminologyLookupOnNotResolvable.EMPTY;
+        this.match_type = config.match_type ? config.match_type : TerminologyLookupMatchType.EXACT;
+        this.first_hit = !!config.first_hit;
+        this.on_not_resolvable = config.on_not_resolvable ? config.on_not_resolvable : TerminologyLookupOnNotResolvable.EMPTY;
     }
 
     getMappingName(): string {
@@ -106,7 +106,7 @@ export class TerminologyLookupType extends OperatorType {
             ['key', this.key.toString()],
             ['match_type', this.match_type.toString()],
             ['first_hit', this.first_hit.toString()],
-            ['on_not_resolvable', this.on_not_resolvable.toString()]
+            ['on_not_resolvable', this.on_not_resolvable.toString()],
         ];
     }
 
@@ -116,7 +116,7 @@ export class TerminologyLookupType extends OperatorType {
             resolved_attribute: this.resolved_attribute_name,
             terminology: this.terminology,
             on_not_resolvable: this.on_not_resolvable.toString(),
-            first_hit: this.first_hit
+            first_hit: this.first_hit,
         };
 
         if (this.key) {
@@ -142,11 +142,9 @@ export class TerminologyLookupType extends OperatorType {
             // define_new_column_appendix: this.define_new_column_appendix,
             // new_column_appendix: this.new_column_appendix
         };
-
     }
 
     cloneWithModifications(options?: {}): OperatorType {
         return TerminologyLookupType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

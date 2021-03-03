@@ -1,11 +1,9 @@
-
 import {map} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {Injectable} from '@angular/core';
 
 import {Set as ImmutableSet} from 'immutable';
-
 
 import {Layer} from './layer.model';
 import {FeatureID} from '../queries/geojson.model';
@@ -30,9 +28,8 @@ export class LayerService {
     private isAnyLayerSelected$: Observable<boolean>;
 
     constructor() {
-        this.isAnyLayerSelected$ = this.getSelectedLayerStream().pipe(map(layer => layer !== undefined));
+        this.isAnyLayerSelected$ = this.getSelectedLayerStream().pipe(map((layer) => layer !== undefined));
     }
-
 
     /**
      * Set a new selected layer.
@@ -68,7 +65,6 @@ export class LayerService {
     getIsAnyLayerSelectedStream(): Observable<boolean> {
         return this.isAnyLayerSelected$;
     }
-
 
     /**
      * Create the suitable layer type and initialize the callbacks.
@@ -151,5 +147,4 @@ export class LayerService {
             this.selectedFeatures$.next(next);
         }
     }
-
 }

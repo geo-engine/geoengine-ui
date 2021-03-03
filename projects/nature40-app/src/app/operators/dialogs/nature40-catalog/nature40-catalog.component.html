@@ -5,17 +5,17 @@
     </div>
     <div *ngSwitchCase="0" class="info mat-typography"><p>The catalog is currently empty.</p></div>
     <mat-list *ngSwitchDefault>
-        <ng-template ngFor let-group [ngForOf]="(catalog$ | async) | keyvalue">
+        <ng-template ngFor let-group [ngForOf]="catalog$ | async | keyvalue">
             <h3 mat-subheader fxLayout="row">
-                <span fxFlex>{{group.key}}</span>
-                <a href="{{group.value[0].provider.url}}" title="Open externally" target="_blank">
+                <span fxFlex>{{ group.key }}</span>
+                <a href="{{ group.value[0].provider.url }}" title="Open externally" target="_blank">
                     <mat-icon mat-list-icon>open_in_new</mat-icon>
                 </a>
             </h3>
             <mat-list-item *ngFor="let entry of group.value" (click)="add(entry)">
                 <ng-container [ngSwitch]="entry.dataset.type" *ngIf="isNotResolving$(entry) | async; else metadataLoading">
-                    <img mat-list-icon *ngSwitchCase="'raster'" [src]="RASTER_ICON_URL" alt="Raster">
-                    <img mat-list-icon *ngSwitchCase="'vector'" [src]="VECTOR_ICON_URL" alt="Vector">
+                    <img mat-list-icon *ngSwitchCase="'raster'" [src]="RASTER_ICON_URL" alt="Raster" />
+                    <img mat-list-icon *ngSwitchCase="'vector'" [src]="VECTOR_ICON_URL" alt="Vector" />
                     <mat-icon mat-list-icon *ngSwitchDefault>data_usage</mat-icon>
                 </ng-container>
                 <ng-template #metadataLoading>
@@ -25,12 +25,12 @@
                 </ng-template>
                 <div class="mat-list-text">
                     <h4 mat-line fxLayout="row">
-                        <span fxFlex>{{entry.title}}</span>
-                        <a href="{{entry.user_url}}" title="Open externally" target="_blank">
+                        <span fxFlex>{{ entry.title }}</span>
+                        <a href="{{ entry.user_url }}" title="Open externally" target="_blank">
                             <mat-icon mat-list-icon>open_in_new</mat-icon>
                         </a>
                     </h4>
-                    <p mat-line>{{entry.description}}</p>
+                    <p mat-line>{{ entry.description }}</p>
                 </div>
             </mat-list-item>
             <mat-divider></mat-divider>

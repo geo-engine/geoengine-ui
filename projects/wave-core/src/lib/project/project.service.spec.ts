@@ -18,24 +18,23 @@ import {RasterSourceType} from '../operators/types/raster-source-type.model';
 import {RasterSymbologyDict} from '../layers/symbology/symbology.model';
 
 class MockConfig {
-
     static MOCK_URL = 'localhost:8089/mapping-mock';
     static MOCK_USER = {
         GUEST: {
             NAME: 'guest',
             PASSWORD: 'guest',
-        }
+        },
     };
 
     get MAPPING_URL(): string {
         return MockConfig.MOCK_URL;
     }
 
-    get USER(): { GUEST: { NAME: string, PASSWORD: string} } {
+    get USER(): {GUEST: {NAME: string; PASSWORD: string}} {
         return MockConfig.MOCK_USER;
     }
 
-    get DELAYS(): { LOADING: { MIN: number, }, TOOLTIP: number, DEBOUNCE: number, STORAGE_DEBOUNCE: number, GUEST_LOGIN_HINT: number } {
+    get DELAYS(): {LOADING: {MIN: number}; TOOLTIP: number; DEBOUNCE: number; STORAGE_DEBOUNCE: number; GUEST_LOGIN_HINT: number} {
         return {
             LOADING: {
                 MIN: 0,
@@ -47,15 +46,21 @@ class MockConfig {
         };
     }
 
-    get DEFAULTS(): {PROJECT: { NAME: string, TIME: string, TIMESTEP:
-                '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year', PROJECTION: 'EPSG:3857' | 'EPSG:4326', } } {
+    get DEFAULTS(): {
+        PROJECT: {
+            NAME: string;
+            TIME: string;
+            TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year';
+            PROJECTION: 'EPSG:3857' | 'EPSG:4326';
+        };
+    } {
         return {
             PROJECT: {
                 NAME: 'DEFAULT',
                 TIME: '2000-01-01T00:00:00',
                 TIMESTEP: '1 hour',
-                PROJECTION: 'EPSG:3857'
-            }
+                PROJECTION: 'EPSG:3857',
+            },
         };
     }
 }
@@ -88,31 +93,29 @@ const module = {
         MappingQueryService,
         ProjectService,
     ],
-    imports: [
-        HttpClientTestingModule
-    ]
+    imports: [HttpClientTestingModule],
 } as TestModuleMetadata;
 
 function login(http: HttpTestingController, backend: MockBackend) {
     clear_user_service_requests(http);
 
-    expect(http.match(req => true).length).toBe(0);
+    expect(http.match((req) => true).length).toBe(0);
 
     let user = TestBed.inject(UserService);
 
     let completed = null;
-    user.login({user: 'test', password: 'test_pw'})
-        .subscribe((login_response) => {
-                expect(login_response).toBe(true);
+    user.login({user: 'test', password: 'test_pw'}).subscribe(
+        (login_response) => {
+            expect(login_response).toBe(true);
 
-                expect(user.getSession().user).toBe('test');
-                expect(user.getSession().sessionToken).toBe('mockSessionToken');
-            },
-            (error) => {},
-            () => {
-                completed = true;
-            }
-        );
+            expect(user.getSession().user).toBe('test');
+            expect(user.getSession().sessionToken).toBe('mockSessionToken');
+        },
+        (error) => {},
+        () => {
+            completed = true;
+        },
+    );
 
     backend.testLogin();
     http.verify();
@@ -120,64 +123,68 @@ function login(http: HttpTestingController, backend: MockBackend) {
         user: 'test',
         sessionToken: 'mockSessionToken',
         staySignedIn: true,
-        isExternallyConnected: false
+        isExternallyConnected: false,
     });
     expect(completed).toBeTruthy();
 }
 
 describe('Service: Project Service', () => {
     describe('Plot tests', () => {
-        configureWaveTesting(fakeAsync(() => {
-            TestBed.configureTestingModule(module);
-            this.service = TestBed.inject(ProjectService);
-            this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
-            this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
-            this.service.setProject(this.service.createDefaultProject());
+        configureWaveTesting(
+            fakeAsync(() => {
+                TestBed.configureTestingModule(module);
+                this.service = TestBed.inject(ProjectService);
+                this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
+                this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
+                this.service.setProject(this.service.createDefaultProject());
 
-            login(this.http, this.backend);
+                login(this.http, this.backend);
 
-            // add a plot to the service.
+                // add a plot to the service.
 
-            this.plot = Plot.fromDict({
-                name: 'test_plot',
-                operator: {
-                    id: 0,
-                    operatorType: {
-                        operatorType: 'r_script',
+                this.plot = Plot.fromDict({
+                    name: 'test_plot',
+                    operator: {
+                        id: 0,
+                        operatorType: {
+                            operatorType: 'r_script',
+                            resultType: 'plot',
+                            code: 'test_code',
+                        } as RScriptTypeDict,
                         resultType: 'plot',
-                        code: 'test_code'
-                    } as RScriptTypeDict,
-                    resultType: 'plot',
-                    projection: 'EPSG:3857',
-                    attributes: [],
-                    dataTypes: [],
-                    units: [],
-                    rasterSources: [],
-                    pointSources: [],
-                    lineSources: [],
-                    polygonSources: [],
-                    operatorTypeParameterOptions: undefined,
-                }
-            });
-            this.plotUrl = MockConfig.MOCK_URL +
-                '?time=2000-01-01T00:00:00.000Z&service=plot&request=&sessiontoken=mockSessionToken&crs=EPSG:3857&bbox=0,0,0,' +
-                '0&query=%7B%22type%22%3A%22r_script%22%2C%22params%22%3A%7B%22source%22%3A%22test_code%22%2C%22result%22%3A%' +
-                '22plot%22%2C%22plot_width%22%3A168%2C%22plot_height%22%3A168%7D%7D';
-            this.completed = false;
-
-            this.service.addPlot(this.plot).subscribe(
-                () => {},
-                (error) => {},
-                () => {
-                    this.completed = true;
+                        projection: 'EPSG:3857',
+                        attributes: [],
+                        dataTypes: [],
+                        units: [],
+                        rasterSources: [],
+                        pointSources: [],
+                        lineSources: [],
+                        polygonSources: [],
+                        operatorTypeParameterOptions: undefined,
+                    },
                 });
+                this.plotUrl =
+                    MockConfig.MOCK_URL +
+                    '?time=2000-01-01T00:00:00.000Z&service=plot&request=&sessiontoken=mockSessionToken&crs=EPSG:3857&bbox=0,0,0,' +
+                    '0&query=%7B%22type%22%3A%22r_script%22%2C%22params%22%3A%7B%22source%22%3A%22test_code%22%2C%22result%22%3A%' +
+                    '22plot%22%2C%22plot_width%22%3A168%2C%22plot_height%22%3A168%7D%7D';
+                this.completed = false;
 
-            // Wait until all promises are resolved (chain of multiple function calls in addPlot)
-            tick();
+                this.service.addPlot(this.plot).subscribe(
+                    () => {},
+                    (error) => {},
+                    () => {
+                        this.completed = true;
+                    },
+                );
 
-            const request = this.http.expectOne(this.plotUrl);
-            request.flush({type: 'png', data: 'dummy_data'});
-        }));
+                // Wait until all promises are resolved (chain of multiple function calls in addPlot)
+                tick();
+
+                const request = this.http.expectOne(this.plotUrl);
+                request.flush({type: 'png', data: 'dummy_data'});
+            }),
+        );
 
         it('uses the expected http calls', () => {
             this.http.verify();
@@ -189,11 +196,13 @@ describe('Service: Project Service', () => {
 
         it('finalizes removePlot-Observable', async () => {
             let completed = false;
-            await this.service.removePlot(this.plot).subscribe(() => {},
+            await this.service.removePlot(this.plot).subscribe(
+                () => {},
                 (error) => {},
                 () => {
                     completed = true;
-                });
+                },
+            );
             expect(completed).toBeTruthy();
         });
 
@@ -222,66 +231,68 @@ describe('Service: Project Service', () => {
     });
 
     describe('Layer tests', () => {
-        configureWaveTesting(fakeAsync(() => {
-            TestBed.configureTestingModule(module);
-            this.service = TestBed.inject(ProjectService);
-            this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
-            this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
-            this.service.setProject(this.service.createDefaultProject());
+        configureWaveTesting(
+            fakeAsync(() => {
+                TestBed.configureTestingModule(module);
+                this.service = TestBed.inject(ProjectService);
+                this.http = TestBed.inject(HttpTestingController); // Mapping Query Service requires http for plot subscriptions
+                this.backend = new MockBackend(this.http, MockConfig.MOCK_URL);
+                this.service.setProject(this.service.createDefaultProject());
 
-            login(this.http, this.backend);
+                login(this.http, this.backend);
 
-            this.layer = Layer.fromDict({
-                name: 'test_layer',
-                operator: {
-                    id: 0,
-                    operatorType: new RasterSourceType({
-                        channel: 0,
-                        sourcename: 'source',
-                        transform: false
-                    }).toDict(),
-                    resultType: 'raster',
-                    projection: 'EPSG:3857',
-                    attributes: [],
-                    dataTypes: [],
-                    units: [],
-                    rasterSources: [],
-                    pointSources: [],
-                    lineSources: [],
-                    polygonSources: [],
-                    operatorTypeParameterOptions: undefined,
-                },
-                symbology: {
-                    symbologyType: 'RASTER',
-                    opacity: 0.5,
-                    unit: {
-                        measurement: 'row',
-                        unit: 'unknown'
-                    }
-                } as RasterSymbologyDict,
-                expanded: true,
-                visible: true,
-                editSymbology: false,
-                type: 'raster'
-            });
+                this.layer = Layer.fromDict({
+                    name: 'test_layer',
+                    operator: {
+                        id: 0,
+                        operatorType: new RasterSourceType({
+                            channel: 0,
+                            sourcename: 'source',
+                            transform: false,
+                        }).toDict(),
+                        resultType: 'raster',
+                        projection: 'EPSG:3857',
+                        attributes: [],
+                        dataTypes: [],
+                        units: [],
+                        rasterSources: [],
+                        pointSources: [],
+                        lineSources: [],
+                        polygonSources: [],
+                        operatorTypeParameterOptions: undefined,
+                    },
+                    symbology: {
+                        symbologyType: 'RASTER',
+                        opacity: 0.5,
+                        unit: {
+                            measurement: 'row',
+                            unit: 'unknown',
+                        },
+                    } as RasterSymbologyDict,
+                    expanded: true,
+                    visible: true,
+                    editSymbology: false,
+                    type: 'raster',
+                });
 
-            this.completed = false;
+                this.completed = false;
 
-            this.service.addLayer(this.layer).subscribe(
-                () => {},
-                (error) => {},
-                () => {
-                    this.completed = true;
-                }
-            );
-        }));
+                this.service.addLayer(this.layer).subscribe(
+                    () => {},
+                    (error) => {},
+                    () => {
+                        this.completed = true;
+                    },
+                );
+            }),
+        );
 
         it('finalizes addLayer-Observable', () => {
             expect(this.completed).toBeTruthy();
         });
 
         it('adds layer', async () => {
-            await this.service.getLayerStream().subscribe(arr => expect(arr.length).toBe(1));
+            await this.service.getLayerStream().subscribe((arr) => expect(arr.length).toBe(1));
         });
 
         it('removes layer and finalizes Observable', async () => {
@@ -291,7 +302,7 @@ describe('Service: Project Service', () => {
                 (error) => {},
                 () => {
                     completed = true;
-                }
+                },
             );
             expect(completed).toBeTruthy();
             await this.service.getProjectStream().subscribe((project) => {

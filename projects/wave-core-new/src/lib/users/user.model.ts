@@ -11,11 +11,7 @@ export class User {
 
     isGuest: boolean;
 
-    constructor(config: {
-        id: string;
-        realName?: string;
-        email?: string;
-    }) {
+    constructor(config: {id: string; realName?: string; email?: string}) {
         this.id = config.id;
         this.realName = config.realName;
         this.email = config.email;
@@ -23,4 +19,3 @@ export class User {
         this.isGuest = !config.email || !config.realName;
     }
 }
-

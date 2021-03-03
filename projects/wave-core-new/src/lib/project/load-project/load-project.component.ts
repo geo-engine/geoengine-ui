@@ -9,9 +9,9 @@ import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
 
 function notCurrentProject(currentProjectId: () => string): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: boolean } => {
+    return (control: AbstractControl): {[key: string]: boolean} => {
         const errors: {
-            currentProject?: boolean,
+            currentProject?: boolean;
         } = {};
 
         if (currentProjectId() === control.value) {
@@ -32,10 +32,9 @@ interface ProjectListing {
     selector: 'wave-load-project',
     templateUrl: './load-project.component.html',
     styleUrls: ['./load-project.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadProjectComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     projects$ = new ReplaySubject<Array<ProjectListing>>(1);
@@ -43,47 +42,52 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     currentProjectId: UUID = '';
 
-    constructor(protected projectService: ProjectService,
-                protected backend: BackendService,
-                protected userService: UserService,
-                protected notificationService: NotificationService,
-                protected formBuilder: FormBuilder) {
-    }
+    constructor(
+        protected projectService: ProjectService,
+        protected backend: BackendService,
+        protected userService: UserService,
+        protected notificationService: NotificationService,
+        protected formBuilder: FormBuilder,
+    ) {}
 
     ngOnInit() {
-        this.projectService.getProjectOnce().subscribe(project => {
+        this.projectService.getProjectOnce().subscribe((project) => {
             this.currentProjectId = project.id;
         });
 
         this.form = this.formBuilder.group({
-            projectId: [
-                this.currentProjectId,
-                Validators.compose([
-                    Validators.required,
-                    notCurrentProject(() => this.currentProjectId),
-                ])
-            ],
+            projectId: [this.currentProjectId, Validators.compose([Validators.required, notCurrentProject(() => this.currentProjectId)])],
         });
 
-        this.userService.getSessionTokenForRequest().pipe(
-            mergeMap(sessionToken => this.backend.listProjects({
-                permissions: ['Owner'], // TODO: allow others to be selected
-                filter: 'None', // TODO: add filter search
-                order: 'DateAsc', // TODO: provide options
-                offset: 0,
-                limit: 20, // TODO: paginate
-            }, sessionToken)),
-            map(projectListingDicts => projectListingDicts.map(projectListingDict => {
-                return {
-                    id: projectListingDict.id,
-                    name: projectListingDict.name,
-                    description: projectListingDict.description,
-                };
-            })),
-        ).subscribe(projectListings => {
-            this.projects$.next(projectListings);
-            this.loading$.next(false);
-        });
+        this.userService
+            .getSessionTokenForRequest()
+            .pipe(
+                mergeMap((sessionToken) =>
+                    this.backend.listProjects(
+                        {
+                            permissions: ['Owner'], // TODO: allow others to be selected
+                            filter: 'None', // TODO: add filter search
+                            order: 'DateAsc', // TODO: provide options
+                            offset: 0,
+                            limit: 20, // TODO: paginate
+                        },
+                        sessionToken,
+                    ),
+                ),
+                map((projectListingDicts) =>
+                    projectListingDicts.map((projectListingDict) => {
+                        return {
+                            id: projectListingDict.id,
+                            name: projectListingDict.name,
+                            description: projectListingDict.description,
+                        };
+                    }),
+                ),
+            )
+            .subscribe((projectListings) => {
+                this.projects$.next(projectListings);
+                this.loading$.next(false);
+            });
     }
 
     ngAfterViewInit() {
@@ -92,12 +96,11 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
 
     load() {
         const newProjectId: string = this.form.controls['projectId'].value;
-        this.projectService.loadAndSetProject(newProjectId).subscribe(project => {
+        this.projectService.loadAndSetProject(newProjectId).subscribe((project) => {
             this.currentProjectId = newProjectId;
             setTimeout(() => this.form.controls['projectId'].updateValueAndValidity({emitEvent: true}));
 
             this.notificationService.info(`Switched to project »${project.name}«`);
         });
     }
-
 }

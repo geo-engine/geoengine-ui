@@ -7,14 +7,14 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
-    Output, SimpleChange,
-    SimpleChanges
+    Output,
+    SimpleChange,
+    SimpleChanges,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
-
 
 import {StyleCreator} from './style-creator';
 import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
@@ -36,7 +36,6 @@ type VectorData = any; // TODO: use correct type
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
 export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource, L extends Layer> {
-
     @Input() layerId: number;
     @Input() isVisible: boolean;
     @Input() workflow: UUID;
@@ -54,8 +53,7 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource,
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService) {
-    }
+    protected constructor(protected projectService: ProjectService) {}
 
     /**
      * Return the open layers layer element that displays our layer type
@@ -91,9 +89,9 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource,
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlVectorSource, VectorLayer>
+export class OlVectorLayerComponent
+    extends MapLayerComponent<OlLayerVector, OlVectorSource, VectorLayer>
     implements OnInit, OnDestroy, OnChanges {
-
     symbology: VectorSymbology;
 
     protected dataSubscription: Subscription;
@@ -128,11 +126,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
         return this.source.getExtent();
     }
 
-    private updateOlLayer(changes: {
-        isVisible?: boolean,
-        symbology?: VectorSymbology,
-        workflow?: UUID,
-    }) {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}) {
         if (changes.isVisible !== undefined) {
             this.mapLayer.setVisible(this.isVisible);
             this.mapRedraw.emit();
@@ -153,7 +147,6 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
             });
         }
     }
-
 }
 
 /**
@@ -165,9 +158,9 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource, RasterLayer>
+export class OlRasterLayerComponent
+    extends MapLayerComponent<OlLayerTile, OlTileSource, RasterLayer>
     implements OnInit, OnDestroy, OnChanges {
-
     symbology: MappingRasterSymbology;
 
     protected dataSubscription: Subscription;
@@ -177,9 +170,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     protected projection: SpatialReference;
     protected time: Time;
 
-    constructor(protected projectService: ProjectService,
-                protected backend: BackendService,
-                protected config: Config) {
+    constructor(protected projectService: ProjectService, protected backend: BackendService, protected config: Config) {
         super(projectService);
     }
 
@@ -199,7 +190,6 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
                 this.source.refresh();
             }
-
         });
     }
 
@@ -225,11 +215,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    private updateOlLayer(changes: {
-        isVisible?: boolean,
-        symbology?: MappingRasterSymbology,
-        workflow?: UUID,
-    }) {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: MappingRasterSymbology; workflow?: UUID}) {
         if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }
@@ -241,7 +227,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (changes.symbology !== undefined) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
-                colors: this.symbology.mappingColorizerRequestString()
+                colors: this.symbology.mappingColorizerRequestString(),
             });
         }
         if (changes.workflow !== undefined) {
@@ -269,7 +255,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (this.source) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                colors: this.symbology.mappingColorizerRequestString()
+                colors: this.symbology.mappingColorizerRequestString(),
             });
         }
     }

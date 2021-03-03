@@ -11,20 +11,14 @@ import {StrokeDashStyle} from '../symbology.model';
     templateUrl: 'stroke-dash-select.component.html',
     styleUrls: ['stroke-dash-select.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => StrokeDashSelectComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => StrokeDashSelectComponent), multi: true}],
 })
 export class StrokeDashSelectComponent implements ControlValueAccessor, OnChanges {
-
-
     static svgPrefix = '<svg height="20" width="20" ><line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2;';
     static svgDashPrefix = 'stroke-dasharray:';
     static svgPostfix = '"/></svg>';
 
-    @Input() lines: StrokeDashStyle[] = [
-        [], [5, 5], [9, 3, 3]
-    ];
+    @Input() lines: StrokeDashStyle[] = [[], [5, 5], [9, 3, 3]];
 
     _strokeDashStyle: StrokeDashStyle = [];
     onTouched: () => void;
@@ -41,25 +35,23 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
             this.changeDetectorRef.markForCheck();
         }
 
-        if (!!strokeDashStyle
-            && strokeDashStyle !== this._strokeDashStyle
-        ) {
+        if (!!strokeDashStyle && strokeDashStyle !== this._strokeDashStyle) {
             this._strokeDashStyle = strokeDashStyle;
             this.notify();
             this.changeDetectorRef.markForCheck();
         }
     }
 
-    constructor(
-        public domSanitizer: DomSanitizer,
-        private changeDetectorRef: ChangeDetectorRef
-    ) {
-    }
+    constructor(public domSanitizer: DomSanitizer, private changeDetectorRef: ChangeDetectorRef) {}
 
     protected generateViewSvgString(dashArray: Array<number>): string {
         if (!!dashArray && dashArray.length > 0) {
-            return StrokeDashSelectComponent.svgPrefix + StrokeDashSelectComponent.svgDashPrefix
-                + dashArray.join(',') + StrokeDashSelectComponent.svgPostfix;
+            return (
+                StrokeDashSelectComponent.svgPrefix +
+                StrokeDashSelectComponent.svgDashPrefix +
+                dashArray.join(',') +
+                StrokeDashSelectComponent.svgPostfix
+            );
         }
         return StrokeDashSelectComponent.svgPrefix + StrokeDashSelectComponent.svgPostfix;
     }
@@ -90,13 +82,15 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'lines': {
                     this.changeDetectorRef.markForCheck();
                     break;
                 }
-                default: { /* DO NOTHING*/
+                default: {
+                    /* DO NOTHING*/
                 }
             }
         }
@@ -111,5 +105,4 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
     writeValue(strokeDashStyle: StrokeDashStyle): void {
         this.strokeDashStyle = strokeDashStyle;
     }
-
 }

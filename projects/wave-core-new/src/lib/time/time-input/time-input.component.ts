@@ -1,32 +1,32 @@
 import {
-    Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit,
-    Input, forwardRef, OnChanges, SimpleChange,
+    Component,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    AfterViewInit,
+    Input,
+    forwardRef,
+    OnChanges,
+    SimpleChange,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Moment, unitOfTime} from 'moment';
-
 
 @Component({
     selector: 'wave-time-input',
     templateUrl: './time-input.component.html',
     styleUrls: ['./time-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
-
-
     @Input() disabled: false;
 
     private _time: Moment;
     onTouched: () => void;
     onChange: (_: Moment) => void = undefined;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
-    }
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     get time(): Moment {
         return this._time;
@@ -46,8 +46,7 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
-    ngOnChanges(changes: { [propName: string]: SimpleChange }) {
-
+    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
         this.changeDetectorRef.markForCheck();
     }
 
@@ -85,10 +84,8 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
     }
 
     private propagateChange() {
-
         if (this.onChange) {
             this.onChange(this.time);
         }
     }
-
 }

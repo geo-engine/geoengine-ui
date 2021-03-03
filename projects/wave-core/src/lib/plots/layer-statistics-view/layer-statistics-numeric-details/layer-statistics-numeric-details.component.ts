@@ -16,14 +16,10 @@ export interface NumericStatisticsData {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerStatisticsNumericDetailsComponent implements OnInit {
-
     @Input()
     data: NumericStatisticsData;
 
-    constructor() {
-    }
+    constructor() {}
 
-    ngOnInit() {
-    }
-
+    ngOnInit() {}
 }

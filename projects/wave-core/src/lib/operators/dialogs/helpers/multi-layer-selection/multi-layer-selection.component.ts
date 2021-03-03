@@ -12,14 +12,15 @@ import {LayerService} from '../../../../layers/layer.service';
 /**
  * Singleton for a letter to number converter for ids.
  */
-export const LetterNumberConverter = { // tslint:disable-line:variable-name
+export const LetterNumberConverter = {
+    // tslint:disable-line:variable-name
     /**
      * Convert a numeric id to a alphanumeric one.
      * Starting with `1`.
      */
     toLetters: (num: number) => {
         const mod = num % 26;
-        let pow = num / 26 | 0; // tslint:disable-line:no-bitwise
+        let pow = (num / 26) | 0; // tslint:disable-line:no-bitwise
         // noinspection CommaExpressionJS
         const out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
         return pow ? LetterNumberConverter.toLetters(pow) + out : out;
@@ -45,12 +46,9 @@ export const LetterNumberConverter = { // tslint:disable-line:variable-name
     templateUrl: './multi-layer-selection.component.html',
     styleUrls: ['./multi-layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true}],
 })
 export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy {
-
     /**
      * An array of possible layers.
      */
@@ -90,26 +88,24 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
 
-    constructor(private projectService: ProjectService,
-                private layerService: LayerService) {
-        this.layerSubscription = this.filteredLayers.subscribe(filteredLayers => {
-            this.selectedLayers.next(
-                this.layersForInitialSelection(filteredLayers, [], this.initialAmount)
-            );
+    constructor(private projectService: ProjectService, private layerService: LayerService) {
+        this.layerSubscription = this.filteredLayers.subscribe((filteredLayers) => {
+            this.selectedLayers.next(this.layersForInitialSelection(filteredLayers, [], this.initialAmount));
         });
 
-        this.selectionSubscription = this.selectedLayers.subscribe(selectedLayers => {
+        this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
             if (this.onChange) {
                 this.onChange(selectedLayers);
             }
         });
     }
 
-    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         let minMaxInitialChanged = false;
         let initialChange = false;
 
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'initialAmount':
                     initialChange = changes[propName].isFirstChange();
@@ -121,23 +117,23 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 case 'layers':
                 case 'types':
                     if (this.layers instanceof Observable) {
-                        this.layers.pipe(first()).subscribe(layers => {
+                        this.layers.pipe(first()).subscribe((layers) => {
                             this.filteredLayers.next(
                                 layers.filter((layer: Layer<AbstractSymbology>) => {
                                     return this.types.indexOf(layer.operator.resultType) >= 0;
-                                })
+                                }),
                             );
                         });
                     } else if (this.layers instanceof Array) {
                         this.filteredLayers.next(
                             this.layers.filter((layer: Layer<AbstractSymbology>) => {
                                 return this.types.indexOf(layer.operator.resultType) >= 0;
-                            })
+                            }),
                         );
                     }
 
                     if (this.title === undefined) {
-                        this.title = this.types.map(type => type.toString()).join(', ');
+                        this.title = this.types.map((type) => type.toString()).join(', ');
                     }
                     break;
 
@@ -147,8 +143,8 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
 
         if (minMaxInitialChanged) {
-            observableCombineLatest(this.filteredLayers, this.selectedLayers).pipe(
-                first())
+            observableCombineLatest(this.filteredLayers, this.selectedLayers)
+                .pipe(first())
                 .subscribe(([filteredLayers, selectedLayers]) => {
                     const amountOfLayers = selectedLayers.length;
 
@@ -159,16 +155,12 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     } else if (this.min > amountOfLayers) {
                         // add selected layers
                         const difference = this.min - amountOfLayers;
-                        this.selectedLayers.next(selectedLayers.concat(
-                            this.layersForInitialSelection(filteredLayers, [], difference)
-                        ));
+                        this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
                     }
 
                     if (initialChange) {
                         // set initial layers
-                        this.selectedLayers.next(
-                            this.layersForInitialSelection(filteredLayers, [], this.initialAmount)
-                        );
+                        this.selectedLayers.next(this.layersForInitialSelection(filteredLayers, [], this.initialAmount));
                     }
                 });
         }
@@ -180,7 +172,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     updateLayer(index: number, layer: Layer<AbstractSymbology>) {
-        this.selectedLayers.pipe(first()).subscribe(selectedLayers => {
+        this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
             const newSelectedLayers = [...selectedLayers];
             newSelectedLayers[index] = layer;
             this.selectedLayers.next(newSelectedLayers);
@@ -188,22 +180,17 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     add() {
-        observableCombineLatest(
-            this.filteredLayers,
-            this.selectedLayers,
-        ).pipe(
-            first())
+        observableCombineLatest(this.filteredLayers, this.selectedLayers)
+            .pipe(first())
             .subscribe(([filteredLayers, selectedLayers]) => {
-                this.selectedLayers.next(selectedLayers.concat(
-                    this.layersForInitialSelection(filteredLayers, selectedLayers, 1)
-                ));
+                this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, selectedLayers, 1)));
 
                 this.onBlur();
             });
     }
 
     remove() {
-        this.selectedLayers.pipe(first()).subscribe(selectedLayers => {
+        this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
             this.selectedLayers.next(selectedLayers.slice(0, selectedLayers.length - 1));
 
             this.onBlur();
@@ -239,14 +226,16 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         return LetterNumberConverter.toLetters(i + 1);
     }
 
-    private layersForInitialSelection(layers: Array<Layer<AbstractSymbology>>,
-                                      blacklist: Array<Layer<AbstractSymbology>>,
-                                      amount: number): Array<Layer<AbstractSymbology>> {
+    private layersForInitialSelection(
+        layers: Array<Layer<AbstractSymbology>>,
+        blacklist: Array<Layer<AbstractSymbology>>,
+        amount: number,
+    ): Array<Layer<AbstractSymbology>> {
         if (layers.length === 0) {
             return [];
         }
 
-        const layersForSelection = [...layers].filter(layer => blacklist.indexOf(layer) < 0);
+        const layersForSelection = [...layers].filter((layer) => blacklist.indexOf(layer) < 0);
 
         const selectedLayerIndex = layersForSelection.indexOf(this.layerService.getSelectedLayer());
         if (selectedLayerIndex >= 0) {
@@ -260,5 +249,4 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
         return layersForSelection.slice(0, amount);
     }
-
 }

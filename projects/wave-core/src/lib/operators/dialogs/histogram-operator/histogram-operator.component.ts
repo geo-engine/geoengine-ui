@@ -27,7 +27,7 @@ function isVectorLayer(layer: Layer<AbstractSymbology>): boolean {
     selector: 'wave-histogram-operator',
     templateUrl: './histogram-operator.component.html',
     styleUrls: ['./histogram-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     // make public to template
@@ -45,9 +45,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     /**
      * DI for services
      */
-    constructor(private projectService: ProjectService,
-                private formBuilder: FormBuilder) {
-    }
+    constructor(private projectService: ProjectService, private formBuilder: FormBuilder) {}
 
     ngOnInit() {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
@@ -55,45 +53,48 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
-            attribute: [undefined, WaveValidators.conditionalValidator(
-                Validators.required, () => isVectorLayer(layerControl.value)
-            )],
+            attribute: [undefined, WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value))],
             rangeType: rangeTypeControl,
-            range: this.formBuilder.group({
-                min: [undefined],
-                max: [undefined],
-            }, {
-                validator: WaveValidators.conditionalValidator(
-                    WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
-                    () => rangeTypeControl.value === 'custom'
-                )
-            }),
+            range: this.formBuilder.group(
+                {
+                    min: [undefined],
+                    max: [undefined],
+                },
+                {
+                    validator: WaveValidators.conditionalValidator(
+                        WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
+                        () => rangeTypeControl.value === 'custom',
+                    ),
+                },
+            ),
             autoBuckets: [true, Validators.required],
             numberOfBuckets: [20, Validators.required],
-        })
-        ;
+        });
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges.pipe(
-                tap(() => this.form.controls['attribute'].setValue(undefined)),
-                map(layer => {
-                    if (layer) {
-                        return layer.operator.attributes.filter((attribute: string) => {
-                            return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
-                        }).toArray();
-                    } else {
-                        return [];
-                    }
-                }),)
-                .subscribe(this.attributes$)
+            this.form.controls['layer'].valueChanges
+                .pipe(
+                    tap(() => this.form.controls['attribute'].setValue(undefined)),
+                    map((layer) => {
+                        if (layer) {
+                            return layer.operator.attributes
+                                .filter((attribute: string) => {
+                                    return DataTypes.ALL_NUMERICS.indexOf(layer.operator.dataTypes.get(attribute)) >= 0;
+                                })
+                                .toArray();
+                        } else {
+                            return [];
+                        }
+                    }),
+                )
+                .subscribe(this.attributes$),
         );
 
         this.subscriptions.push(
-            this.form.controls['rangeType'].valueChanges
-                .subscribe(() => this.form.controls['range'].updateValueAndValidity())
+            this.form.controls['rangeType'].valueChanges.subscribe(() => this.form.controls['range'].updateValueAndValidity()),
         );
 
-        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map(layer => isVectorLayer(layer)));
+        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
 
     ngAfterViewInit() {
@@ -104,7 +105,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     /**
@@ -116,9 +117,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         const attributeName = this.form.controls['attribute'].value as string;
 
-        let range: { min: number, max: number } | string = this.form.controls['rangeType'].value as string;
+        let range: {min: number; max: number} | string = this.form.controls['rangeType'].value as string;
         if (range === 'custom') {
-            range = this.form.controls['range'].value as { min: number, max: number };
+            range = this.form.controls['range'].value as {min: number; max: number};
         }
 
         let buckets: number = undefined;
@@ -145,10 +146,11 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             polygonSources: inputOperator.resultType === ResultTypes.POLYGONS ? [inputOperator] : [],
         });
 
-        this.projectService.addPlot(new Plot({
-            name: outputName,
-            operator: operator,
-        }));
+        this.projectService.addPlot(
+            new Plot({
+                name: outputName,
+                operator: operator,
+            }),
+        );
     }
-
 }

@@ -6,15 +6,15 @@ import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class DataSetService {
-
-    constructor(private backend: BackendService, private userService: UserService) {
-    }
+    constructor(private backend: BackendService, private userService: UserService) {}
 
     getDataSets(): Observable<Array<DataSet>> {
-        return this.userService.getSessionStream().pipe(mergeMap(session => this.backend.getDataSets(session.sessionToken)),
-            map(dataSetDicts => dataSetDicts.map(dict => DataSet.fromDict(dict))));
+        return this.userService.getSessionStream().pipe(
+            mergeMap((session) => this.backend.getDataSets(session.sessionToken)),
+            map((dataSetDicts) => dataSetDicts.map((dict) => DataSet.fromDict(dict))),
+        );
     }
 }

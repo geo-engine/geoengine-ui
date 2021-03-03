@@ -41,11 +41,7 @@ export interface RScriptDict {
  * Storage Provider that allows saving and retrieval of WAVE settings and items.
  */
 export abstract class StorageProvider {
-    constructor(
-        protected config: Config,
-        protected projectService: ProjectService,
-        protected notificationService: NotificationService
-    ) {}
+    constructor(protected config: Config, protected projectService: ProjectService, protected notificationService: NotificationService) {}
 
     /**
      * Load the current Workspace
@@ -98,5 +94,4 @@ export abstract class StorageProvider {
      * Retrieve all R scripts.
      */
     abstract getRScripts(): Observable<Array<string>>;
-
 }

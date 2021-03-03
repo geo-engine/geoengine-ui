@@ -1,25 +1,26 @@
 import {
-    Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit,
-    Input, forwardRef, OnChanges, SimpleChanges
+    Component,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    AfterViewInit,
+    Input,
+    forwardRef,
+    OnChanges,
+    SimpleChanges,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct} from '../color';
 
-
-
 @Component({
     selector: 'wave-color-breakpoint',
     templateUrl: './color-breakpoint.component.html',
     styleUrls: ['./color-breakpoint.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
 })
-export class ColorBreakpointInputComponent implements  ControlValueAccessor, AfterViewInit, OnChanges {
-
+export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     @Input() disabledAttribute: false;
     @Input() disabledColor: false;
     @Input() inputType: 'number' | 'string' = 'number';
@@ -38,12 +39,13 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
 
     // set accessor including call the onchange callback
     set colorBreakpoint(brk: ColorBreakpoint) {
-        if (brk && (!brk.equals(this._colorBreakpoint))) {
+        if (brk && !brk.equals(this._colorBreakpoint)) {
             this._colorBreakpoint = brk;
         }
     }
 
-    updateValue(value: number | string) { // TODO: should this really clone?
+    updateValue(value: number | string) {
+        // TODO: should this really clone?
         if (value && value !== this.colorBreakpoint.value) {
             if (this.inputType === 'number' && typeof value === 'string') {
                 this.colorBreakpoint.setValue(parseFloat(value as string));
@@ -54,7 +56,8 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
         }
     }
 
-    updateColor(color: string) { // TODO: should this really clone?
+    updateColor(color: string) {
+        // TODO: should this really clone?
         if (color) {
             const clr = Color.fromRgbaLike(stringToRgbaStruct(color));
             if (!clr.equals(this._colorBreakpoint.rgba)) {
@@ -69,7 +72,8 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
@@ -80,7 +84,6 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
 
                 default: {
                 } // DO NOTHING
-
             }
         }
     }
@@ -108,5 +111,4 @@ export class ColorBreakpointInputComponent implements  ControlValueAccessor, Aft
             this.onChange(this.colorBreakpoint.clone());
         }
     }
-
 }

@@ -69,39 +69,15 @@ export class ResultTypeCollection {
     PLOT_TYPES: Array<ResultType>;
 
     protected constructor() {
-        this.ALL_TYPES = [
-            this.RASTER,
-            this.POINTS,
-            this.LINES,
-            this.POLYGONS,
-            this.PLOT,
-            this.TEXT,
-        ];
+        this.ALL_TYPES = [this.RASTER, this.POINTS, this.LINES, this.POLYGONS, this.PLOT, this.TEXT];
 
-        this.INPUT_TYPES = [
-            this.RASTER,
-            this.POINTS,
-            this.LINES,
-            this.POLYGONS,
-        ];
+        this.INPUT_TYPES = [this.RASTER, this.POINTS, this.LINES, this.POLYGONS];
 
-        this.VECTOR_TYPES = [
-            this.POINTS,
-            this.LINES,
-            this.POLYGONS,
-        ];
+        this.VECTOR_TYPES = [this.POINTS, this.LINES, this.POLYGONS];
 
-        this.LAYER_TYPES = [
-            this.RASTER,
-            this.POINTS,
-            this.LINES,
-            this.POLYGONS,
-        ];
+        this.LAYER_TYPES = [this.RASTER, this.POINTS, this.LINES, this.POLYGONS];
 
-        this.PLOT_TYPES = [
-            this.PLOT,
-            this.TEXT,
-        ];
+        this.PLOT_TYPES = [this.PLOT, this.TEXT];
     }
 
     fromCode(type: string) {

@@ -49,7 +49,6 @@ type Deserializer = (dict: OperatorTypeDict) => OperatorType;
  * A simple factory for de-serializing operator types.
  */
 export class OperatorTypeFactory {
-
     protected static readonly typeDeserializers: Map<Type, Deserializer> = OperatorTypeFactory.defaultDeserializers();
 
     protected static defaultDeserializers(): Map<Type, Deserializer> {
@@ -67,10 +66,7 @@ export class OperatorTypeFactory {
         //     RasterValueExtractionType.TYPE,
         //     dict => RasterValueExtractionType.fromDict(dict as RasterValueExtractionTypeDict),
         // );
-        typeDeserializers.set(
-            ExpressionType.TYPE,
-            dict => ExpressionType.fromDict(dict as ExpressionTypeDict),
-        );
+        typeDeserializers.set(ExpressionType.TYPE, (dict) => ExpressionType.fromDict(dict as ExpressionTypeDict));
         // typeDeserializers.set(
         //     ProjectionType.TYPE,
         //     dict => ProjectionType.fromDict(dict as ProjectionTypeDict),

@@ -6,7 +6,9 @@ import {
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChanges,
-    OnDestroy, AfterViewInit, OnInit
+    OnDestroy,
+    AfterViewInit,
+    OnInit,
 } from '@angular/core';
 
 import {MappingRasterSymbology} from '../symbology.model';
@@ -35,10 +37,9 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
     selector: 'wave-symbology-raster-mapping-colorizer',
     templateUrl: 'symbology-raster-mapping-colorizer.component.html',
     styleUrls: ['symbology-raster-mapping-colorizer.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
-
     @Input() layer: RasterLayer<MappingRasterSymbology>;
     @Output() symbologyChanged: EventEmitter<MappingRasterSymbology> = new EventEmitter<MappingRasterSymbology>();
 
@@ -60,9 +61,8 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         public projectService: ProjectService,
         public mappingQueryService: MappingQueryService,
         public mapService: MapService,
-        public config: Config
-    ) {
-    }
+        public config: Config,
+    ) {}
 
     /**
      * Set the max value to use for color table generation
@@ -86,7 +86,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
      * Set the opacity value from a slider change event
      */
     updateOpacity(event: MatSliderChange) {
-        this.symbology.opacity = (event.value === undefined || event.value === 0) ? 0 : event.value / 100;
+        this.symbology.opacity = event.value === undefined || event.value === 0 ? 0 : event.value / 100;
         this.update();
     }
 
@@ -165,7 +165,8 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'layer': {
                     if (changes['layer'].firstChange) {
@@ -173,7 +174,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                     }
                     this.updateSymbologyFromLayer();
                     this.updateLayerMinMaxFromColorizer();
-//                    this.updateLayerHistogramOperator();
+                    //                    this.updateLayerHistogramOperator();
                     this.reinitializeLayerHistogramDataSubscription();
 
                     break;
@@ -209,29 +210,31 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
             observableCombineLatest(
                 this.projectService.getTimeStream(),
                 this.projectService.getProjectionStream(),
-                this.mapService.getViewportSizeStream()
+                this.mapService.getViewportSizeStream(),
             ).pipe(
-                filter(_ => this.layerHistogramAutoReloadEnabled),
-                debounceTime(this.config.DELAYS.DEBOUNCE)
+                filter((_) => this.layerHistogramAutoReloadEnabled),
+                debounceTime(this.config.DELAYS.DEBOUNCE),
             ),
             this.projectService.getLayerChangesStream(this.layer).pipe(
                 startWith({operator: true}),
-                filter(c => c.operator !== undefined),
-                map(_ => this.buildHistogramOperator())
-            )
+                filter((c) => c.operator !== undefined),
+                map((_) => this.buildHistogramOperator()),
+            ),
         ).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
             this.layerHistogramData$.next(undefined);
             this.layerHistogramDataLoading$.next(true);
 
-            this.mappingQueryService.getPlotData({
-                operator: histogramOperator,
-                time: projectTime,
-                extent: viewport.extent,
-                projection,
-            }).subscribe(data => {
-                this.layerHistogramData$.next(data as HistogramData);
-                this.layerHistogramDataLoading$.next(false);
-            });
+            this.mappingQueryService
+                .getPlotData({
+                    operator: histogramOperator,
+                    time: projectTime,
+                    extent: viewport.extent,
+                    projection,
+                })
+                .subscribe((data) => {
+                    this.layerHistogramData$.next(data as HistogramData);
+                    this.layerHistogramDataLoading$.next(false);
+                });
         });
         this.layerHistogramDataSubscription = sub;
     }

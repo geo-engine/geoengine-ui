@@ -26,9 +26,7 @@ export class RasterPolygonClipOperatorComponent implements OnInit {
 
     form: FormGroup;
 
-    constructor(private randomColorService: RandomColorService,
-                private projectService: ProjectService,
-                private formBuilder: FormBuilder) {
+    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Clipped Raster', [Validators.required, WaveValidators.notOnlyWhitespace]],
             rasterLayer: [undefined, Validators.required],
@@ -83,5 +81,4 @@ export class RasterPolygonClipOperatorComponent implements OnInit {
 
         this.projectService.addLayer(layer);
     }
-
 }

@@ -1,8 +1,8 @@
 <wave-dialog-header>Rename the Current Layer</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();save()">
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); save()">
     <mat-dialog-content>
         <mat-form-field>
-            <input matInput type="text" placeholder="Name" formControlName="layerName">
+            <input matInput type="text" placeholder="Name" formControlName="layerName" />
         </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions align="end">

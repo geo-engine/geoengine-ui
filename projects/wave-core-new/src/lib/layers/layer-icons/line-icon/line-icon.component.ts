@@ -18,10 +18,9 @@ export interface LineIconStyle {
     selector: 'wave-line-icon',
     templateUrl: './line-icon.component.svg',
     styleUrls: ['./line-icon.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineIconComponent implements OnInit, OnChanges {
-
     // the style to use for the icon
     @Input()
     iconStyle: LineIconStyle;
@@ -29,8 +28,7 @@ export class LineIconComponent implements OnInit, OnChanges {
     strokeDashArray: Array<number> = [];
     strokeColor = BLACK.rgbaCssString();
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnInit(): void {
         if (this.iconStyle) {

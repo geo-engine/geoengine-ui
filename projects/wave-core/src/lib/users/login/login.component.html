@@ -3,10 +3,10 @@
         <wave-sidenav-header>Login</wave-sidenav-header>
         <form [formGroup]="loginForm" (ngSubmit)="login()">
             <mat-form-field>
-                <input matInput type="text" placeholder="Username" formControlName="username">
+                <input matInput type="text" placeholder="Username" formControlName="username" />
             </mat-form-field>
             <mat-form-field>
-                <input matInput type="password" placeholder="Password" formControlName="password">
+                <input matInput type="password" placeholder="Password" formControlName="password" />
             </mat-form-field>
             <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
             <mat-checkbox formControlName="staySignedIn">Stay signed in</mat-checkbox>
@@ -27,13 +27,13 @@
                 <p>E-Mail</p>
             </div>
             <div>
-                <p>{{(user | async).name}}</p>
-                <p>{{(user | async).realName}}</p>
-                <p>{{(user | async).email}}</p>
+                <p>{{ (user | async).name }}</p>
+                <p>{{ (user | async).realName }}</p>
+                <p>{{ (user | async).email }}</p>
             </div>
         </div>
         <div fxLayout="row" class="container">
-            <button mat-raised-button (click)="$event.preventDefault();logout()" fxFlex color="primary">Logout</button>
+            <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
         </div>
     </ng-template>
 </ng-container>

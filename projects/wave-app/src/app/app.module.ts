@@ -22,9 +22,7 @@ import {
 import {AppConfig} from './app-config.service';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-    ],
+    declarations: [AppComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -53,5 +51,4 @@ import {AppConfig} from './app-config.service';
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

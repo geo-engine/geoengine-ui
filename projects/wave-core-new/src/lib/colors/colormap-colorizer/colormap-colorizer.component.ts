@@ -7,7 +7,8 @@ import {
     OnChanges,
     OnDestroy,
     OnInit,
-    Output, SimpleChanges
+    Output,
+    SimpleChanges,
 } from '@angular/core';
 import {ColorizerData} from '../colorizer-data.model';
 import {
@@ -15,7 +16,7 @@ import {
     COLORMAP_STEP_SCALES_WITH_BOUNDS,
     COLORMAP_NAMES,
     Colormap,
-    ColormapNames
+    ColormapNames,
 } from '../colormaps/colormap.model';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {valueRelation, WaveValidators} from '../../util/form.validators';
@@ -31,7 +32,6 @@ import {Subscription} from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges {
-
     /**
      * Emmits new ColorizerData instances generated from user input.
      */
@@ -83,33 +83,37 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: FormBuilder,
-    ) {
-        this.form = formBuilder.group({
-                bounds: formBuilder.group({
-                    min: [0],
-                    max: [1]
-                }, {
-                    validators: [WaveValidators.minAndMax('min', 'max', {checkBothExist: true})]
-                }),
+    constructor(private changeDetectorRef: ChangeDetectorRef, private formBuilder: FormBuilder) {
+        this.form = formBuilder.group(
+            {
+                bounds: formBuilder.group(
+                    {
+                        min: [0],
+                        max: [1],
+                    },
+                    {
+                        validators: [WaveValidators.minAndMax('min', 'max', {checkBothExist: true})],
+                    },
+                ),
                 colormapName: [this.colormapNames[0], [Validators.required]],
                 colormapSteps: [this.defaultNumberOfSteps, [Validators.required, Validators.min(2)]],
                 colormapStepScales: [this.boundedColormapStepScales[0]],
                 colormapReverseColors: [false],
-            }, {
+            },
+            {
                 validators: [
                     valueRelation(
-                        c => c.get('bounds').get('min').value, c => c.get('colormapStepScales').value['requiresValueAbove'],
-                        {checkEqual: true, checkBelow: true}
+                        (c) => c.get('bounds').get('min').value,
+                        (c) => c.get('colormapStepScales').value['requiresValueAbove'],
+                        {checkEqual: true, checkBelow: true},
                     ),
                     valueRelation(
-                        c => c.get('bounds').get('max').value, c => c.get('colormapStepScales').value['requiresValueBelow'],
-                        {checkEqual: true, checkAbove: true}
-                    )
-                ]
-            }
+                        (c) => c.get('bounds').get('max').value,
+                        (c) => c.get('colormapStepScales').value['requiresValueBelow'],
+                        {checkEqual: true, checkAbove: true},
+                    ),
+                ],
+            },
         );
     }
 
@@ -117,8 +121,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
      * Replace the min and max values.
      */
     patchMinMaxValues(min: number, max: number) {
-
-        const patchConfig: { min?: number, max?: number } = {};
+        const patchConfig: {min?: number; max?: number} = {};
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
 
@@ -140,7 +143,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
 
-        if (!COLORMAP_NAMES.find(x => x === colormapName)) {
+        if (!COLORMAP_NAMES.find((x) => x === colormapName)) {
             return false;
         }
         if (colormapSteps > this.maxColormapSteps) {
@@ -165,7 +168,6 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         this.colorizerData = undefined;
     }
 
-
     private updateColorizerData() {
         if (!this.checkValidConfig()) {
             this.colorizerData = undefined;
@@ -179,7 +181,12 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         const reverseColormap: boolean = this.form.controls['colormapReverseColors'].value;
 
         const colorizerData = Colormap.createColorizerDataWithName(
-            colormapName, boundsMin, boundsMax, colormapSteps, boundedColormapStepScales.stepScaleName, reverseColormap
+            colormapName,
+            boundsMin,
+            boundsMax,
+            colormapSteps,
+            boundedColormapStepScales.stepScaleName,
+            reverseColormap,
         );
 
         this.colorizerData = colorizerData;
@@ -195,12 +202,11 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnInit(): void {
-        const sub = this.form.valueChanges.subscribe(_ => {
+        const sub = this.form.valueChanges.subscribe((_) => {
             if (this.form.invalid) {
                 this.removeColorizerData();
             }
             this.updateColorizerData();
-
         });
         this.subscriptions.push(sub);
 
@@ -208,7 +214,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
             this.patchMinMaxValues(this.minValue, this.maxValue);
         }
 
-        const subMinMax = this.form.controls['bounds'].valueChanges.subscribe(x => {
+        const subMinMax = this.form.controls['bounds'].valueChanges.subscribe((x) => {
             if (Number.isFinite(x.min)) {
                 this.minValueChange.emit(x.min.value);
             }
@@ -220,11 +226,12 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'minValue':
                 case 'maxValue': {
@@ -232,9 +239,9 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
                     break;
                 }
 
-                default: {// DO NOTHING
+                default: {
+                    // DO NOTHING
                 }
-
             }
         }
     }

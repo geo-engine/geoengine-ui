@@ -10,14 +10,11 @@ import {RasterLayer} from 'wave-core';
 export class LegendComponent implements OnInit, OnChanges {
     @Input() layer: RasterLayer = undefined;
 
-    constructor(readonly changeDetectorRef: ChangeDetectorRef) {
-    }
+    constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         this.changeDetectorRef.markForCheck();
     }
 
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 }

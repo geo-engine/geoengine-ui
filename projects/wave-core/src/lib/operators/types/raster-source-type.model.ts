@@ -12,7 +12,7 @@ interface RasterSourceTypeMappingDict extends OperatorTypeMappingDict {
     transform: boolean;
 }
 
-export interface RasterSourceTypeDict extends OperatorTypeDict  {
+export interface RasterSourceTypeDict extends OperatorTypeDict {
     channel: number;
     sourcename: string;
     transform: boolean;
@@ -26,9 +26,15 @@ export class RasterSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(RasterSourceType._TYPE);
     private static _NAME = 'Raster Source';
 
-    static get TYPE(): string { return RasterSourceType._TYPE; }
-    static get ICON_URL(): string { return RasterSourceType._ICON_URL; }
-    static get NAME(): string { return RasterSourceType._NAME; }
+    static get TYPE(): string {
+        return RasterSourceType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return RasterSourceType._ICON_URL;
+    }
+    static get NAME(): string {
+        return RasterSourceType._NAME;
+    }
 
     private channel: number;
     private sourcename: string;

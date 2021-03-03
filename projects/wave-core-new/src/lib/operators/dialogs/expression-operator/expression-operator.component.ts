@@ -41,7 +41,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * DI of services and setup of observables for the template
      */
     constructor(private projectService: ProjectService) {
-        this.form = new FormGroup({
+        this.form = new FormGroup(
+            {
                 rasterLayers: new FormControl(undefined, [Validators.required]),
                 expression: new FormControl('1 * A', Validators.compose([Validators.required, Validators.pattern('.*A.*')])),
                 dataType: new FormControl(undefined, [Validators.required]),
@@ -104,8 +105,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             map((rasterLayers: Array<RasterLayer>) => {
-                const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as
-                    Array<[RasterDataType, string]>;
+                const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as Array<
+                    [RasterDataType, string]
+                >;
 
                 // const rasterDataTypes = rasterLayers.map(layer =>
                 //     layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined);
@@ -124,7 +126,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 // }
 
                 return outputDataTypes;
-            })
+            }),
             // ,
             // tap(outputDataTypes => {
             //     const dataTypeControl = this.form.controls.dataType;
@@ -148,14 +150,15 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             //     });
             // }),
         );
-
     }
 
     ngAfterViewInit() {
-        setTimeout(() => this.form.controls['rasterLayers'].updateValueAndValidity({
-            onlySelf: false,
-            emitEvent: true,
-        }));
+        setTimeout(() =>
+            this.form.controls['rasterLayers'].updateValueAndValidity({
+                onlySelf: false,
+                emitEvent: true,
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -202,51 +205,53 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const unit = Unit.defaultUnit;
 
         // TODO: add projection operator
-        zip(
-            this.projectService.getWorkflow(rasterLayers[0].workflowId),
-            this.projectService.getWorkflow(rasterLayers[1].workflowId)
-        ).pipe(map(([a, b]) => {
-            const workflow = {
-                type: 'Raster',
-                operator: {
-                    type: 'Expression',
-                    params: {
-                        expression,
-                        output_type: dataType.getCode(),
-                        output_no_data_value: dataType.noData(dataType.getMax()),  // TODO: make this configurable once units exist again
-                    },
-                    raster_sources: [
-                        a.operator,
-                        b.operator
-                    ],
-                    vector_sources: []
-                }
-            } as WorkflowDict;
+        zip(this.projectService.getWorkflow(rasterLayers[0].workflowId), this.projectService.getWorkflow(rasterLayers[1].workflowId))
+            .pipe(
+                map(([a, b]) => {
+                    const workflow = {
+                        type: 'Raster',
+                        operator: {
+                            type: 'Expression',
+                            params: {
+                                expression,
+                                output_type: dataType.getCode(),
+                                output_no_data_value: dataType.noData(dataType.getMax()), // TODO: make this configurable once units exist again
+                            },
+                            raster_sources: [a.operator, b.operator],
+                            vector_sources: [],
+                        },
+                    } as WorkflowDict;
 
-            this.projectService.registerWorkflow(workflow).pipe(
-                mergeMap(workflowId => {
-                    return this.projectService.addLayer(new RasterLayer({
-                        workflowId,
-                        name,
-                        symbology: new MappingRasterSymbology({
-                            opacity: 1,
-                            // TODO: insert proper unit
-                            unit: new Unit({
-                                measurement: Unit.defaultUnit.measurement,
-                                unit: Unit.defaultUnit.unit,
-                                min: 1,
-                                max: 255,
-                                interpolation: Unit.defaultUnit.interpolation,
-                            })
-                        }),
-                        isLegendVisible: false,
-                        isVisible: true,
-                    }));
-                })
-            ).subscribe(() => console.log('added raster'));
-        })).subscribe(console.log);
+                    this.projectService
+                        .registerWorkflow(workflow)
+                        .pipe(
+                            mergeMap((workflowId) => {
+                                return this.projectService.addLayer(
+                                    new RasterLayer({
+                                        workflowId,
+                                        name,
+                                        symbology: new MappingRasterSymbology({
+                                            opacity: 1,
+                                            // TODO: insert proper unit
+                                            unit: new Unit({
+                                                measurement: Unit.defaultUnit.measurement,
+                                                unit: Unit.defaultUnit.unit,
+                                                min: 1,
+                                                max: 255,
+                                                interpolation: Unit.defaultUnit.interpolation,
+                                            }),
+                                        }),
+                                        isLegendVisible: false,
+                                        isVisible: true,
+                                    }),
+                                );
+                            }),
+                        )
+                        .subscribe(() => console.log('added raster'));
+                }),
+            )
+            .subscribe(console.log);
     }
-
 }
 
 // TODO: validate units once its integrated again

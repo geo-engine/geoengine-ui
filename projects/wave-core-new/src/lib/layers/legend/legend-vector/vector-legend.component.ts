@@ -15,10 +15,9 @@ interface IconValue {
     selector: 'wave-vector-legend',
     templateUrl: 'vector-legend-component.html',
     styleUrls: ['vector-legend.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VectorLegendComponent<S extends VectorSymbology> implements OnChanges {
-
     readonly ST = SymbologyType;
 
     @Input()
@@ -40,28 +39,26 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
     }
 
     private updateStyles() {
-        this.fillColorAttribute = (this.symbology && this.symbology.fillColorAttribute) ? this.symbology.fillColorAttribute : undefined;
+        this.fillColorAttribute = this.symbology && this.symbology.fillColorAttribute ? this.symbology.fillColorAttribute : undefined;
         this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
-        this.strokeColorAttribute =
-            (this.symbology && this.symbology.strokeColorAttribute) ? this.symbology.strokeColorAttribute : undefined;
+        this.strokeColorAttribute = this.symbology && this.symbology.strokeColorAttribute ? this.symbology.strokeColorAttribute : undefined;
         this.strokeStyles = VectorLegendComponent.strokeColorIconValue(this.symbology);
     }
-
 
     static fillColorIconValue(vectorSymbology: VectorSymbology): Array<IconValue> {
         if (!vectorSymbology || !vectorSymbology.fillColorizer || !vectorSymbology.fillColorizer.breakpoints) {
             return [];
         }
 
-        return vectorSymbology.fillColorizer.breakpoints.map(b => {
+        return vectorSymbology.fillColorizer.breakpoints.map((b) => {
             return {
                 icon: {
                     strokeWidth: vectorSymbology.strokeWidth,
-                    strokeDashStyle: (vectorSymbology.strokeDashStyle) ? vectorSymbology.strokeDashStyle : [],
+                    strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
                     strokeRGBA: TRANSPARENT,
                     fillRGBA: b.rgba,
                 },
-                value: b.value
+                value: b.value,
             };
         });
     }
@@ -71,17 +68,16 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
             return [];
         }
 
-        return vectorSymbology.strokeColorizer.breakpoints.map(b => {
+        return vectorSymbology.strokeColorizer.breakpoints.map((b) => {
             return {
                 icon: {
                     strokeWidth: vectorSymbology.strokeWidth,
-                    strokeDashStyle: (vectorSymbology.strokeDashStyle) ? vectorSymbology.strokeDashStyle : [],
+                    strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
                     strokeRGBA: b.rgba,
                     fillRGBA: TRANSPARENT,
                 },
-                value: b.value
+                value: b.value,
             };
         });
     }
-
 }

@@ -17,7 +17,6 @@ mat-list-item {
     color: var(--wave-foreground-secondary-text-color, grey);
 }
 
-
 .disabled {
     ::ng-deep .mat-list-item-content {
         cursor: auto;

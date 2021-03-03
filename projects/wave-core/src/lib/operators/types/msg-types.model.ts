@@ -88,9 +88,15 @@ export class MsgReflectanceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgReflectanceType._TYPE);
     private static _NAME = 'MSG Reflectance Operator';
 
-    static get TYPE(): string { return MsgReflectanceType._TYPE; }
-    static get ICON_URL(): string { return MsgReflectanceType._ICON_URL; }
-    static get NAME(): string { return MsgReflectanceType._NAME; }
+    static get TYPE(): string {
+        return MsgReflectanceType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return MsgReflectanceType._ICON_URL;
+    }
+    static get NAME(): string {
+        return MsgReflectanceType._NAME;
+    }
 
     private isHrv: boolean = false;
     private solarCorrection: boolean = true;
@@ -111,13 +117,21 @@ export class MsgReflectanceType extends OperatorType {
         return new MsgReflectanceType(dict);
     }
 
-    getMappingName(): string { return MsgReflectanceType.TYPE; }
+    getMappingName(): string {
+        return MsgReflectanceType.TYPE;
+    }
 
-    getIconUrl(): string { return MsgReflectanceType.ICON_URL; }
+    getIconUrl(): string {
+        return MsgReflectanceType.ICON_URL;
+    }
 
-    toString(): string { return MsgReflectanceType.NAME; }
+    toString(): string {
+        return MsgReflectanceType.NAME;
+    }
 
-    getParametersAsStrings(): Array<[string, string]> { return []; }
+    getParametersAsStrings(): Array<[string, string]> {
+        return [];
+    }
 
     toMappingDict(): MsgReflectanceTypeMappingDict {
         const config: MsgReflectanceTypeMappingDict = {
@@ -145,7 +159,6 @@ export class MsgReflectanceType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return MsgRadianceType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }
 
 /* The MSG solarangle type */
@@ -171,9 +184,15 @@ export class MsgSolarangleType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(MsgSolarangleType._TYPE);
     private static _NAME = 'MSG Solarangle Operator';
 
-    static get TYPE(): string { return MsgSolarangleType._TYPE; }
-    static get ICON_URL(): string { return MsgSolarangleType._ICON_URL; }
-    static get NAME(): string { return MsgSolarangleType._NAME; }
+    static get TYPE(): string {
+        return MsgSolarangleType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return MsgSolarangleType._ICON_URL;
+    }
+    static get NAME(): string {
+        return MsgSolarangleType._NAME;
+    }
 
     private solarangle: SolarangleName;
 
@@ -218,7 +237,6 @@ export class MsgSolarangleType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return MsgSolarangleType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }
 
 /**
@@ -278,7 +296,6 @@ export class MsgTemperatureType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return MsgTemperatureType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }
 
 /* The MSG pansharpen type */
@@ -345,7 +362,6 @@ export class MsgPansharpenType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return MsgPansharpenType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }
 
 /**
@@ -409,9 +425,7 @@ export class MsgCo2CorrectionType extends OperatorType {
 
 export class MsgSofosGccThermalThresholdType extends OperatorType {
     private static _TYPE = 'meteosat_gccthermthresholddetection';
-    private static _ICON_URL = OperatorType.createIconDataUrl(
-        MsgSofosGccThermalThresholdType._TYPE
-    );
+    private static _ICON_URL = OperatorType.createIconDataUrl(MsgSofosGccThermalThresholdType._TYPE);
     private static _NAME = 'MSG SOFOS thermal threshold detection operator';
 
     static get TYPE(): string {

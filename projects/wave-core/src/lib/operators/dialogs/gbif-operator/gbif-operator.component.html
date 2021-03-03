@@ -1,16 +1,13 @@
 <wave-sidenav-header>GBIF Occurences Loader</wave-sidenav-header>
 <form [formGroup]="form" (ngSubmit)="add()">
     <div>
-        <wave-dialog-section-heading
-            title="1. Search Species"
-            subtitle="Lookup a Scientific Name"
-        ></wave-dialog-section-heading>
+        <wave-dialog-section-heading title="1. Search Species" subtitle="Lookup a Scientific Name"></wave-dialog-section-heading>
         <div fxLayout="row">
             <mat-form-field fxFlex>
                 <mat-label>Search Level</mat-label>
                 <mat-select formControlName="searchLevel">
                     <mat-option *ngFor="let level of taxonLevels" [value]="level">
-                        {{level}}
+                        {{ level }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -18,51 +15,34 @@
 
         <div fxLayout="row">
             <mat-form-field fxFlex>
-                <input matInput
-                       placeholder="Scientific Name"
-                       [matAutocomplete]="auto"
-                       formControlName="searchTerm"
-                >
+                <input matInput placeholder="Scientific Name" [matAutocomplete]="auto" formControlName="searchTerm" />
             </mat-form-field>
             <mat-autocomplete #auto="matAutocomplete">
                 <mat-option *ngFor="let result of autoCompleteResults$ | async" [value]="result">
-                    {{result}}
+                    {{ result }}
                 </mat-option>
             </mat-autocomplete>
         </div>
         <div fxLayout="row">
-            <button mat-raised-button
-                    fxFlex
-                    *ngIf="(mode$ | async) === Mode.SEARCH"
-                    color="accent"
-                    (click)="lookup()"
-                    [disabled]="(form.controls.searchTerm.valueChanges | async)?.length < minSearchLength"
+            <button
+                mat-raised-button
+                fxFlex
+                *ngIf="(mode$ | async) === Mode.SEARCH"
+                color="accent"
+                (click)="lookup()"
+                [disabled]="(form.controls.searchTerm.valueChanges | async)?.length < minSearchLength"
             >
                 Lookup
             </button>
-            <button mat-raised-button
-                    fxFlex
-                    *ngIf="(mode$ | async) === Mode.SELECT"
-                    color="accent"
-                    (click)="reset()"
-            >
-                Reset
-            </button>
+            <button mat-raised-button fxFlex *ngIf="(mode$ | async) === Mode.SELECT" color="accent" (click)="reset()">Reset</button>
         </div>
     </div>
     <div *ngIf="(mode$ | async) === Mode.SELECT">
-        <wave-dialog-section-heading
-            title="2. Select Resources"
-            subtitle="Select different source results"
-        ></wave-dialog-section-heading>
+        <wave-dialog-section-heading title="2. Select Resources" subtitle="Select different source results"></wave-dialog-section-heading>
         <mat-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></mat-progress-spinner>
         <div fxLayout="column" *ngIf="!(loading$ | async)" formGroupName="select">
-            <mat-checkbox *ngIf="gbifCount > 0" formControlName="gbif" fxFlex>
-                GBIF ({{gbifCount}})
-            </mat-checkbox>
-            <mat-checkbox *ngIf="iucnCount > 0" formControlName="iucn" fxFlex>
-                IUCN ({{iucnCount}})
-            </mat-checkbox>
+            <mat-checkbox *ngIf="gbifCount > 0" formControlName="gbif" fxFlex> GBIF ({{ gbifCount }}) </mat-checkbox>
+            <mat-checkbox *ngIf="iucnCount > 0" formControlName="iucn" fxFlex> IUCN ({{ iucnCount }}) </mat-checkbox>
             <p *ngIf="gbifCount <= 0 && iucnCount <= 0" fxFlex>No Lookup Results</p>
         </div>
     </div>
@@ -71,14 +51,6 @@
         [suggestion]="form.controls.searchTerm.valueChanges | async"
     ></wave-operator-output-name>
     <div fxLayout="row">
-        <button
-            type="submit"
-            mat-raised-button
-            fxFlex
-            color="primary"
-            [disabled]="(form.statusChanges | async) !== 'VALID'"
-        >
-            Add
-        </button>
+        <button type="submit" mat-raised-button fxFlex color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Add</button>
     </div>
 </form>

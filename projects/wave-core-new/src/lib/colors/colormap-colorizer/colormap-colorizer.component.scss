@@ -7,7 +7,8 @@ mat-divider {
     padding-bottom: 1rem;
 }
 
-td:first-child, td:last-child {
+td:first-child,
+td:last-child {
     width: 1%;
     white-space: nowrap;
 }
@@ -35,7 +36,6 @@ mat-slider {
     margin: auto;
     vertical-align: middle;
 }
-
 
 .fill_width {
     width: 100%;

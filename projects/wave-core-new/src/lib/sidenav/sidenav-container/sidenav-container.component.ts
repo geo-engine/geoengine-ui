@@ -12,7 +12,7 @@ import {
     ViewChildren,
     QueryList,
     AfterViewInit,
-    Renderer2
+    Renderer2,
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -29,10 +29,9 @@ import {map} from 'rxjs/operators';
     selector: 'wave-sidenav-container',
     templateUrl: './sidenav-container.component.html',
     styleUrls: ['./sidenav-container.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
-
     @ViewChild('target', {read: ViewContainerRef, static: true})
     target: ViewContainerRef;
 
@@ -50,43 +49,39 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     /**
      * DI for services
      */
-    constructor(private componentFactoryResolver: ComponentFactoryResolver,
-                public sidenavRef: SidenavRef,
-                public layoutService: LayoutService,
-                private renderer: Renderer2) {
-    }
+    constructor(
+        private componentFactoryResolver: ComponentFactoryResolver,
+        public sidenavRef: SidenavRef,
+        public layoutService: LayoutService,
+        private renderer: Renderer2,
+    ) {}
 
     ngOnInit() {
-        this.subscriptions.push(
-            this.sidenavRef.getCloseStream().subscribe(() => this.close())
-        );
+        this.subscriptions.push(this.sidenavRef.getCloseStream().subscribe(() => this.close()));
     }
 
     ngAfterViewInit() {
         this.subscriptions.push(
-            combineLatest([
-                this.sidenavRef.getSearchComponentStream(),
-                this.searchElements.changes,
-            ]).pipe(
-                map(([elements, searchElementsQuery]) => [elements, searchElementsQuery.first]),
-            ).subscribe(([elements, searchElements]: [Array<ElementRef>, ViewContainerRef]) => {
-                if (searchElements) {
-                    searchElements.clear();
-                }
-                if (elements && searchElements) {
-                    const parent = searchElements.element.nativeElement;
-                    const nodes = elements.map(e => e.nativeElement);
-
-                    for (const node of nodes) {
-                        this.renderer.appendChild(parent, node);
+            combineLatest([this.sidenavRef.getSearchComponentStream(), this.searchElements.changes])
+                .pipe(map(([elements, searchElementsQuery]) => [elements, searchElementsQuery.first]))
+                .subscribe(([elements, searchElements]: [Array<ElementRef>, ViewContainerRef]) => {
+                    if (searchElements) {
+                        searchElements.clear();
                     }
-                }
-            })
+                    if (elements && searchElements) {
+                        const parent = searchElements.element.nativeElement;
+                        const nodes = elements.map((e) => e.nativeElement);
+
+                        for (const node of nodes) {
+                            this.renderer.appendChild(parent, node);
+                        }
+                    }
+                }),
         );
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     /**
@@ -150,5 +145,4 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     back() {
         this.layoutService.setSidenavContentComponent(this.sidenavRef.getBackButtonComponent());
     }
-
 }

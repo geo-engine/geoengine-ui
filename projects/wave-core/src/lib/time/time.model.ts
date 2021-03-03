@@ -93,10 +93,10 @@ export class TimePoint implements Time {
 
     isSame(other: Time): boolean {
         return (
-            !!other
-            && this.getType() === other.getType()
-            && this.getStart().isSame(other.getStart())
-            && this.getEnd().isSame(other.getEnd())
+            !!other &&
+            this.getType() === other.getType() &&
+            this.getStart().isSame(other.getStart()) &&
+            this.getEnd().isSame(other.getEnd())
         );
     }
 
@@ -170,17 +170,11 @@ export class TimeInterval implements Time {
     }
 
     add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): TimeInterval {
-        return new TimeInterval(
-            this.start.add(durationAmount, durationUnit),
-            this.end.add(durationAmount, durationUnit)
-        );
+        return new TimeInterval(this.start.add(durationAmount, durationUnit), this.end.add(durationAmount, durationUnit));
     }
 
     subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2) {
-        return new TimeInterval(
-            this.start.subtract(durationAmount, durationUnit),
-            this.end.subtract(durationAmount, durationUnit)
-        );
+        return new TimeInterval(this.start.subtract(durationAmount, durationUnit), this.end.subtract(durationAmount, durationUnit));
     }
 
     clone(): TimeInterval {
@@ -193,10 +187,10 @@ export class TimeInterval implements Time {
 
     isSame(other: Time): boolean {
         return (
-            !!other
-            && this.getType() === other.getType()
-            && this.getStart().isSame(other.getStart())
-            && this.getEnd().isSame(other.getEnd())
+            !!other &&
+            this.getType() === other.getType() &&
+            this.getStart().isSame(other.getStart()) &&
+            this.getEnd().isSame(other.getEnd())
         );
     }
 
@@ -205,9 +199,11 @@ export class TimeInterval implements Time {
     }
 
     asRequestString(): string {
-        return this.getStart().toISOString() + '/'
-            + ((this.getStart().isSame(this.getEnd()))
-                ? this.getEnd().add(1, 'millisecond').toISOString() : this.getEnd().toISOString());
+        return (
+            this.getStart().toISOString() +
+            '/' +
+            (this.getStart().isSame(this.getEnd()) ? this.getEnd().add(1, 'millisecond').toISOString() : this.getEnd().toISOString())
+        );
     }
 
     toString(): string {

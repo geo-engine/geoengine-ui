@@ -1,39 +1,27 @@
-<wave-dialog-header>Export: {{layer.name}}</wave-dialog-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();download()">
+<wave-dialog-header>Export: {{ layer.name }}</wave-dialog-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); download()">
     <div fxLayout="row">
         <mat-form-field fxFlex>
-            <input matInput
-                   type="text"
-                   placeholder="Export Name"
-                   formControlName="outputName"
-            >
+            <input matInput type="text" placeholder="Export Name" formControlName="outputName" />
         </mat-form-field>
     </div>
     <div *ngIf="isRaster" formGroupName="rasterResolution" fxLayout="row">
         <mat-form-field fxFlex>
-            <input matInput
-                   type="number"
-                   placeholder="Resolution Width"
-                   formControlName="width"
-            >
+            <input matInput type="number" placeholder="Resolution Width" formControlName="width" />
         </mat-form-field>
         <mat-form-field fxFlex>
-            <input matInput
-                   type="number"
-                   placeholder="Resolution Height"
-                   formControlName="height"
-            >
+            <input matInput type="number" placeholder="Resolution Height" formControlName="height" />
         </mat-form-field>
     </div>
     <div fxLayout="row">
         <mat-form-field *ngIf="isVector">
             <mat-select formControlName="dataOutputFormat" placeholder="Data Output Type" fxFlex>
-                <mat-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
+                <mat-option *ngFor="let type of WFSOutputFormats.EXPORT_TYPES" [value]="type">{{ type }}</mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="isRaster">
             <mat-select formControlName="dataOutputFormat" placeholder="Data Output Type" fxFlex>
-                <mat-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{type}}</mat-option>
+                <mat-option *ngFor="let type of WCSOutputFormats.EXPORT_TYPES" [value]="type">{{ type }}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>
@@ -44,7 +32,5 @@
             </mat-select>
         </mat-form-field>
     </div>
-    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">
-        Export
-    </button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Export</button>
 </form>

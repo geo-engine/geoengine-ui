@@ -5,7 +5,8 @@ import {
     OnChanges,
     SimpleChanges,
     forwardRef,
-    ChangeDetectorRef, AfterViewInit,
+    ChangeDetectorRef,
+    AfterViewInit,
 } from '@angular/core';
 
 import {ColorizerData, ColorizerType} from '../colorizer-data.model';
@@ -20,12 +21,9 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
     templateUrl: 'colorizer-editor.component.html',
     styleUrls: ['colorizer-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorizerEditorComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorizerEditorComponent), multi: true}],
 })
 export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges {
-
     private _colorizer: ColorizerData = undefined;
     onTouched: () => void;
     onChange: (_: ColorizerData) => void = undefined;
@@ -35,7 +33,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     set colorizer(clr: ColorizerData) {
-        if (clr && (!clr.equals(this._colorizer))) {
+        if (clr && !clr.equals(this._colorizer)) {
             this._colorizer = clr.clone();
             this.notify();
         }
@@ -79,11 +77,11 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * The constructor.
      */
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
-    }
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnChanges(changes: SimpleChanges) {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
@@ -92,9 +90,9 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
                     break;
                 }
 
-                default: {// DO NOTHING
+                default: {
+                    // DO NOTHING
                 }
-
             }
         }
     }
@@ -116,7 +114,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
      */
     updateBreakpointAt(i: number, brk: ColorBreakpoint) {
         // TODO: check if this is valid
-        if (this._colorizer && this._colorizer.breakpoints.length > i ) {
+        if (this._colorizer && this._colorizer.breakpoints.length > i) {
             const diff = this._colorizer.updateBreakpointAt(i, brk);
             this.notify();
         }
@@ -126,10 +124,8 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
      * Add a new breakpoint at position i. Clones the next breakpoint if possible.
      */
     addBreakpointAt(i: number) {
-        if (this._colorizer && this._colorizer.breakpoints.length > i ) {
-            this._colorizer.addBreakpointAt(i,
-                this._colorizer.getBreakpointAt(i).clone()
-            );
+        if (this._colorizer && this._colorizer.breakpoints.length > i) {
+            this._colorizer.addBreakpointAt(i, this._colorizer.getBreakpointAt(i).clone());
         } else {
             this._colorizer.addBreakpoint(this._colorizer.getBreakpointAt(i));
         }
@@ -140,7 +136,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
      * Removes the breakpoint at position i.
      */
     removeBreakpointAt(i: number) {
-        if (this._colorizer && this._colorizer.breakpoints.length > i ) {
+        if (this._colorizer && this._colorizer.breakpoints.length > i) {
             this._colorizer.removeBreakpointAt(i);
             this.notify();
         }
@@ -156,21 +152,19 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     }
 
     registerOnChange(fn: (_: ColorizerData) => void): void {
-        if ( fn ) {
+        if (fn) {
             this.onChange = fn;
             this.notify();
         }
     }
 
     registerOnTouched(fn: () => void): void {
-        if ( fn ) {
+        if (fn) {
             this.onTouched = fn;
-
         }
     }
 
     writeValue(colorizerData: ColorizerData): void {
         this.colorizer = colorizerData;
     }
-
 }

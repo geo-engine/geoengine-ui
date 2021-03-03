@@ -13,7 +13,6 @@ import {LayoutService} from '../../layout.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
-
     // TODO: implement strategy for PNGs
 
     maxWidth$ = new ReplaySubject<number>(1);
@@ -27,12 +26,10 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
 
     private dataSubscription: Subscription;
 
-    constructor(public projectService: ProjectService,
-                @Inject(MAT_DIALOG_DATA) public plot: Plot) {
-    }
+    constructor(public projectService: ProjectService, @Inject(MAT_DIALOG_DATA) public plot: Plot) {}
 
     ngOnInit() {
-        this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe(plotData => {
+        this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe((plotData) => {
             this.plotLoading$.next(false);
             this.plotData = plotData;
         });
@@ -79,5 +76,4 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnDestroy() {
         this.dataSubscription.unsubscribe();
     }
-
 }

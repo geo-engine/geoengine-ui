@@ -34,10 +34,9 @@ export class ColorizerData implements IColorizerData {
     /**
      * Generate a new gray scale colorizer for values between min and max.
      */
-    static grayScaleColorizer(minMax: { min: number, max: number }): ColorizerData {
-
-        const saveMin = (minMax.min) ? minMax.min : -1000;
-        const saveMax = (minMax.max) ? minMax.max : 1000;
+    static grayScaleColorizer(minMax: {min: number; max: number}): ColorizerData {
+        const saveMin = minMax.min ? minMax.min : -1000;
+        const saveMax = minMax.max ? minMax.max : 1000;
         const saveCenter = (saveMin + saveMax) / 2.0;
 
         const min_br: ColorBreakpointDict = {
@@ -46,7 +45,7 @@ export class ColorizerData implements IColorizerData {
                 r: 0,
                 g: 0,
                 b: 0,
-                a: 1
+                a: 1,
             }),
         };
 
@@ -57,7 +56,7 @@ export class ColorizerData implements IColorizerData {
                 g: 128,
                 b: 128,
                 a: 1,
-            })
+            }),
         };
 
         const max_br: ColorBreakpointDict = {
@@ -67,12 +66,12 @@ export class ColorizerData implements IColorizerData {
                 g: 255,
                 b: 255,
                 a: 1,
-            })
+            }),
         };
 
         return new ColorizerData({
             breakpoints: [min_br, mid_br, max_br],
-            type: 'gradient'
+            type: 'gradient',
         });
     }
 
@@ -80,7 +79,8 @@ export class ColorizerData implements IColorizerData {
      * Deserialization for IColorizerData into ColorizerData.
      */
     static fromDict(dict: IColorizerData): ColorizerData {
-        if (!dict) { // return some default value in case of empty deserialization
+        if (!dict) {
+            // return some default value in case of empty deserialization
             return ColorizerData.grayScaleColorizer({
                 min: 0,
                 max: 100,
@@ -96,7 +96,7 @@ export class ColorizerData implements IColorizerData {
     static empty(): ColorizerData {
         return new ColorizerData({
             breakpoints: [],
-            type: 'gradient'
+            type: 'gradient',
         });
     }
 
@@ -111,8 +111,8 @@ export class ColorizerData implements IColorizerData {
      * The constructor for ColorizerData.
      */
     constructor(config: IColorizerData) {
-        this.breakpoints = (config.breakpoints) ? config.breakpoints.map(br => new ColorBreakpoint(br)) : [];
-        this.type = (config.type) ? config.type : 'gradient';
+        this.breakpoints = config.breakpoints ? config.breakpoints.map((br) => new ColorBreakpoint(br)) : [];
+        this.type = config.type ? config.type : 'gradient';
     }
 
     /**
@@ -166,7 +166,6 @@ export class ColorizerData implements IColorizerData {
      * Get a (new) breakpoint for a value.
      */
     getBreakpointForValue(value: BreakPointValue, interpolate: boolean = false): ColorBreakpoint | undefined {
-
         if (!value || !this.breakpoints || this.breakpoints.length <= 0) {
             return undefined;
         }
@@ -174,7 +173,7 @@ export class ColorizerData implements IColorizerData {
         const isGradient = this.type === 'gradient';
         const isNumber = typeof value === 'number';
         const firstBrkIsNumber = this.getBreakpointAt(0).valueIsNumber(); // TODO: this is prob. not always the correct type.
-        const lookUpValue = (firstBrkIsNumber && !isNumber) ? parseFloat(value as string) : value;
+        const lookUpValue = firstBrkIsNumber && !isNumber ? parseFloat(value as string) : value;
         const isLookupNumber = typeof lookUpValue === 'number';
 
         let brk_index = -1;
@@ -207,7 +206,7 @@ export class ColorizerData implements IColorizerData {
 
             return new ColorBreakpoint({
                 rgba: color,
-                value: brk.value + diff
+                value: brk.value + diff,
             });
         }
 
@@ -215,11 +214,11 @@ export class ColorizerData implements IColorizerData {
     }
 
     get firstBreakpoint(): ColorBreakpoint | undefined {
-        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[0];
+        return !this.breakpoints || this.isEmpty() ? undefined : this.breakpoints[0];
     }
 
     get lastBreakpoint(): ColorBreakpoint | undefined {
-        return (!this.breakpoints || this.isEmpty()) ? undefined : this.breakpoints[this.breakpoints.length - 1];
+        return !this.breakpoints || this.isEmpty() ? undefined : this.breakpoints[this.breakpoints.length - 1];
     }
 
     /**
@@ -269,8 +268,8 @@ export class ColorizerData implements IColorizerData {
      */
     toDict(): IColorizerData {
         return {
-            breakpoints: this.breakpoints.map(br => br.toDict()),
-            type: this.type
+            breakpoints: this.breakpoints.map((br) => br.toDict()),
+            type: this.type,
         };
     }
 
@@ -278,20 +277,22 @@ export class ColorizerData implements IColorizerData {
      * Generates a ColorizerData instance from a MappingColorizer.
      */
     static fromMappingColorizerData(mcd: MappingRasterColorizerDict): ColorizerData {
-
         return new ColorizerData({
-            type: (!mcd || !mcd.type) ? 'gradient' : mcd.type,
-            breakpoints: (!mcd || !mcd.breakpoints) ? [] : mcd.breakpoints.map(br => {
-                return new ColorBreakpoint({
-                    rgba: {
-                        r: br.r,
-                        g: br.g,
-                        b: br.b,
-                        a: (br.a) ? br.a : 1.0,
-                    },
-                    value: br.value,
-                });
-            })
+            type: !mcd || !mcd.type ? 'gradient' : mcd.type,
+            breakpoints:
+                !mcd || !mcd.breakpoints
+                    ? []
+                    : mcd.breakpoints.map((br) => {
+                          return new ColorBreakpoint({
+                              rgba: {
+                                  r: br.r,
+                                  g: br.g,
+                                  b: br.b,
+                                  a: br.a ? br.a : 1.0,
+                              },
+                              value: br.value,
+                          });
+                      }),
         });
     }
 }

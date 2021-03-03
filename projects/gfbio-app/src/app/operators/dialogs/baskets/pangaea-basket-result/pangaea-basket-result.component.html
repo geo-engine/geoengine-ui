@@ -1,37 +1,37 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>{{result.title | waveTrimPipe}}</mat-card-title>
+        <mat-card-title>{{ result.title | waveTrimPipe }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
-        <table class='main'>
+        <table class="main">
             <tr>
                 <td>Authors</td>
-                <td><span *ngFor="let author of result.authors" class='author'>{{author | waveTrimPipe}}</span></td>
+                <td>
+                    <span *ngFor="let author of result.authors" class="author">{{ author | waveTrimPipe }}</span>
+                </td>
             </tr>
             <tr>
                 <td>Data center</td>
-                <td>{{result.dataCenter | waveTrimPipe}}</td>
+                <td>{{ result.dataCenter | waveTrimPipe }}</td>
             </tr>
             <tr>
                 <td>Metadata</td>
-                <td><a href='{{result.metadataLink | waveTrimPipe}}'>Dataset landing page</a></td>
+                <td><a href="{{ result.metadataLink | waveTrimPipe }}">Dataset landing page</a></td>
             </tr>
         </table>
     </mat-card-content>
 
     <mat-card-actions>
         <div *ngIf="result.available; else noResult">
-            <button mat-button color='primary' (click)='addDataset()'>
-                <span>Add</span> <u>dataset</u> <span>as layer</span>
-            </button>
+            <button mat-button color="primary" (click)="addDataset()"><span>Add</span> <u>dataset</u> <span>as layer</span></button>
         </div>
 
         <ng-template #noResult>
             <em>This dataset is currently not available in the VAT system</em>
             <ul>
-                <li *ngIf='!result.isTabSeparated'> the data is not tab-separated</li>
-                <li *ngIf='!result.isGeoReferenced'> no georeference detected</li>
+                <li *ngIf="!result.isTabSeparated">the data is not tab-separated</li>
+                <li *ngIf="!result.isGeoReferenced">no georeference detected</li>
             </ul>
         </ng-template>
     </mat-card-actions>

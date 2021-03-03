@@ -10,7 +10,7 @@ export function extentToBboxDict([minx, miny, maxx, maxy]: [number, number, numb
         upper_right_coordinate: {
             x: maxx,
             y: maxy,
-        }
+        },
     };
 }
 

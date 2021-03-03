@@ -1,5 +1,4 @@
 <div fxLayout="column" class="colorizerEntries">
-
     <div *ngIf="colorizer && showTypeSelect">
         <mat-form-field fxFlex>
             <mat-select [ngModel]="colorizer?.type" (ngModelChange)="updateType($event)" required placeholder="colorizer type">
@@ -11,18 +10,16 @@
     </div>
 
     <div class="colorizerEntries" *ngIf="colorizer">
-
         <ng-template ngFor let-i="index" let-breakpoint [ngForOf]="colorizer?.breakpoints">
-
             <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
-
-                <wave-color-breakpoint [ngModel]="breakpoint"
-                                       [inputType]="inputType"
-                                       [disabledAttribute]="disabledAttribute"
-                                       [disabledColor]="disabledColor"
-                                       [attributePlaceholder]="attributePlaceholder"
-                                       [colorPlaceholder]="colorPlaceholder"
-                                       (ngModelChange)="updateBreakpointAt(i, $event)"
+                <wave-color-breakpoint
+                    [ngModel]="breakpoint"
+                    [inputType]="inputType"
+                    [disabledAttribute]="disabledAttribute"
+                    [disabledColor]="disabledColor"
+                    [attributePlaceholder]="attributePlaceholder"
+                    [colorPlaceholder]="colorPlaceholder"
+                    (ngModelChange)="updateBreakpointAt(i, $event)"
                 ></wave-color-breakpoint>
 
                 <div fxLayout="row" fxFlex="nogrow">
@@ -33,9 +30,7 @@
                         <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
                     </button>
                 </div>
-
             </div>
         </ng-template>
     </div>
-
 </div>

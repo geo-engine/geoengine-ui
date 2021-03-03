@@ -1,4 +1,3 @@
-
 import {BehaviorSubject} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
@@ -14,10 +13,9 @@ import {WaveValidators} from '../../util/form.validators';
     selector: 'wave-new-project',
     templateUrl: './new-project.component.html',
     styleUrls: ['./new-project.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewProjectComponent implements OnInit, AfterViewInit {
-
     // make available
     Projections = Projections;
     //
@@ -26,20 +24,24 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
 
     created$ = new BehaviorSubject(false);
 
-    constructor(private formBuilder: FormBuilder,
-                private storageService: StorageService,
-                private projectService: ProjectService,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private storageService: StorageService,
+        private projectService: ProjectService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
             name: ['', Validators.required, WaveValidators.uniqueProjectName(this.storageService)],
             projection: [Projections.WEB_MERCATOR, Validators.required],
         });
-        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
-            this.form.controls['projection'].setValue(projection);
-        });
+        this.projectService
+            .getProjectionStream()
+            .pipe(first())
+            .subscribe((projection) => {
+                this.form.controls['projection'].setValue(projection);
+            });
     }
 
     ngAfterViewInit() {
@@ -50,21 +52,23 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
      * Create a new project and switch to it.
      */
     create() {
-        this.projectService.getTimeStream().pipe(first()).subscribe(time => {
-            const projectName: string = this.form.controls['name'].value;
-            this.projectService.setProject(
-                new Project({
-                    name: projectName,
-                    projection: this.form.controls['projection'].value,
-                    time: time,
-                    layers: [],
-                    timeStepDuration: {durationAmount: 1, durationUnit: 'months'}
-                })
-            );
+        this.projectService
+            .getTimeStream()
+            .pipe(first())
+            .subscribe((time) => {
+                const projectName: string = this.form.controls['name'].value;
+                this.projectService.setProject(
+                    new Project({
+                        name: projectName,
+                        projection: this.form.controls['projection'].value,
+                        time: time,
+                        layers: [],
+                        timeStepDuration: {durationAmount: 1, durationUnit: 'months'},
+                    }),
+                );
 
-            this.created$.next(true);
-            this.notificationService.info(`Created and switched to new project »${projectName}«`);
-        });
+                this.created$.next(true);
+                this.notificationService.info(`Created and switched to new project »${projectName}«`);
+            });
     }
-
 }

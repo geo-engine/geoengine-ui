@@ -9,15 +9,12 @@ import {SaveProjectAsComponent} from '../save-project-as/save-project-as.compone
     selector: 'wave-workspace-settings',
     templateUrl: './workspace-settings.component.html',
     styleUrls: ['./workspace-settings.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceSettingsComponent implements OnInit {
+    constructor(protected layoutService: LayoutService) {}
 
-    constructor(protected layoutService: LayoutService) {
-    }
-
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     loadSpatialReferenceDialog() {
         this.layoutService.setSidenavContentComponent({component: ChangeSpatialReferenceComponent, keepParent: true});

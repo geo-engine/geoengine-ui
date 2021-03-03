@@ -1,13 +1,16 @@
 <div fxFlex>
-    <ng-container
-        *ngIf="hasParameterOptions; then parameterSlider">
-    </ng-container>
-
+    <ng-container *ngIf="hasParameterOptions; then parameterSlider"> </ng-container>
 
     <ng-template #parameterSlider>
-        <div>{{parameterDisplayString}}: {{parameterDisplayValue}}</div>
-        <mat-slider [min]="sliderRangeStart" [max]="sliderRangeStop" [step]="sliderRangeStep" [(value)]="sliderValue" [tickInterval]="1"
-                    (change)="update($event)">
+        <div>{{ parameterDisplayString }}: {{ parameterDisplayValue }}</div>
+        <mat-slider
+            [min]="sliderRangeStart"
+            [max]="sliderRangeStop"
+            [step]="sliderRangeStep"
+            [(value)]="sliderValue"
+            [tickInterval]="1"
+            (change)="update($event)"
+        >
         </mat-slider>
     </ng-template>
 </div>

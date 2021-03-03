@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
-import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 
 @Component({
     selector: 'wave-mediaview-video',
     templateUrl: './mediaview.video.component.html',
-    styleUrls: ['./mediaview.video.component.scss']
+    styleUrls: ['./mediaview.video.component.scss'],
 })
 
 /**
@@ -14,7 +14,6 @@ import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-
  * The component receives an array of urls to video-files (videoURLS) and the id of the video to play first (currentVideo) as inputs.
  */
 export class MediaviewVideoComponent {
-
     /**
      * Input: An array of video-urls to display in the dialog
      */
@@ -46,5 +45,4 @@ export class MediaviewVideoComponent {
     public playNext() {
         this.goToVideo((this.currentVideo + 1) % this.videoURLs.length);
     }
-
 }

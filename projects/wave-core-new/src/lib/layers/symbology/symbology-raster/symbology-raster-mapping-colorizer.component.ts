@@ -6,7 +6,9 @@ import {
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChanges,
-    OnDestroy, AfterViewInit, OnInit
+    OnDestroy,
+    AfterViewInit,
+    OnInit,
 } from '@angular/core';
 
 import {MappingRasterSymbology} from '../symbology.model';
@@ -25,12 +27,10 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 // TODO: use correct types
 // tslint:disable-next-line:no-empty-interface
-interface HistogramData {
-}
+interface HistogramData {}
 
 // tslint:disable-next-line:no-empty-interface
-interface Operator {
-}
+interface Operator {}
 
 /**
  * The symbology editor component for raster data, which is colorized by the mapping backend
@@ -39,10 +39,9 @@ interface Operator {
     selector: 'wave-symbology-raster-mapping-colorizer',
     templateUrl: 'symbology-raster-mapping-colorizer.component.html',
     styleUrls: ['symbology-raster-mapping-colorizer.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
-
     @Input() layer: RasterLayer;
     @Output() symbologyChanged: EventEmitter<MappingRasterSymbology> = new EventEmitter<MappingRasterSymbology>();
 
@@ -64,9 +63,8 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         public projectService: ProjectService,
         // public mappingQueryService: MappingQueryService,
         public mapService: MapService,
-        public config: Config
-    ) {
-    }
+        public config: Config,
+    ) {}
 
     /**
      * Set the max value to use for color table generation
@@ -90,7 +88,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
      * Set the opacity value from a slider change event
      */
     updateOpacity(event: MatSliderChange) {
-        this.symbology.opacity = (event.value === undefined || event.value === 0) ? 0 : event.value / 100;
+        this.symbology.opacity = event.value === undefined || event.value === 0 ? 0 : event.value / 100;
         this.update();
     }
 
@@ -169,7 +167,8 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'layer': {
                     if (changes['layer'].firstChange) {
@@ -177,7 +176,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                     }
                     this.updateSymbologyFromLayer();
                     this.updateLayerMinMaxFromColorizer();
-//                    this.updateLayerHistogramOperator();
+                    //                    this.updateLayerHistogramOperator();
                     this.reinitializeLayerHistogramDataSubscription();
 
                     break;
@@ -213,15 +212,15 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
             combineLatest([
                 this.projectService.getTimeStream(),
                 this.projectService.getSpatialReferenceStream(),
-                this.mapService.getViewportSizeStream()
+                this.mapService.getViewportSizeStream(),
             ]).pipe(
-                filter(_ => this.layerHistogramAutoReloadEnabled),
-                debounceTime(this.config.DELAYS.DEBOUNCE)
+                filter((_) => this.layerHistogramAutoReloadEnabled),
+                debounceTime(this.config.DELAYS.DEBOUNCE),
             ),
             this.projectService.getLayerChangesStream(this.layer).pipe(
                 startWith({operator: true}),
                 // filter(c => c.operator !== undefined), // TODO: refactor
-                map(_ => this.buildHistogramOperator())
+                map((_) => this.buildHistogramOperator()),
             ),
         ]).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
             this.layerHistogramData$.next(undefined);

@@ -7,9 +7,12 @@ import {Colormap, ColormapNames, ColormapStepScale} from '../colormaps/colormap.
  */
 @Pipe({name: 'waveColormapNameToColorizerData'})
 export class ColormapNameToColorizerDataPipe implements PipeTransform {
-
     transform(
-        colormapName: ColormapNames, min: number = 0, max: number = 0, steps: number = 10, stepScale: ColormapStepScale = 'linear'
+        colormapName: ColormapNames,
+        min: number = 0,
+        max: number = 0,
+        steps: number = 10,
+        stepScale: ColormapStepScale = 'linear',
     ): IColorizerData {
         return Colormap.createColorizerDataWithName(colormapName, min, max, steps, stepScale);
     }

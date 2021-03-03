@@ -2,7 +2,6 @@ import {MeasurementDict, ToDict} from '../backend/backend.model';
 import * as Immutable from 'immutable';
 
 export abstract class Measurement implements ToDict<'unitless' | MeasurementDict> {
-
     static fromDict(dict: 'unitless' | MeasurementDict): Measurement {
         if (dict === 'unitless') {
             return new UnitlessMeasurement();
@@ -48,7 +47,7 @@ export class ContinuousMeasurement extends Measurement {
             continuous: {
                 measurement: this.measurement,
                 unit: this.unit,
-            }
+            },
         };
     }
 }
@@ -57,7 +56,7 @@ export class ClassificationMeasurement extends Measurement {
     readonly measurement: string;
     readonly classes: Immutable.Map<number, string>;
 
-    constructor(measurement: string, classes: { [key: number]: string }) {
+    constructor(measurement: string, classes: {[key: number]: string}) {
         super();
 
         this.measurement = measurement;
@@ -75,7 +74,7 @@ export class ClassificationMeasurement extends Measurement {
             classification: {
                 measurement: this.measurement,
                 classes: this.classes.toObject(),
-            }
+            },
         };
     }
 }

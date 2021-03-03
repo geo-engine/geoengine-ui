@@ -36,7 +36,6 @@ interface Group<T> {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AbcdRepositoryComponent {
-
     searchString$ = new BehaviorSubject<string>('');
     groups: Observable<Grouped<AbcdArchive>>;
 
@@ -45,33 +44,34 @@ export class AbcdRepositoryComponent {
         private randomColorService: RandomColorService,
         private projectService: ProjectService,
     ) {
-        this.groups = this.userService.getAbcdArchivesStream().pipe(map(archives => {
-            const groups: { [groupname: string]: Group<AbcdArchive> } = {};
+        this.groups = this.userService.getAbcdArchivesStream().pipe(
+            map((archives) => {
+                const groups: {[groupname: string]: Group<AbcdArchive>} = {};
 
-            for (const a of archives) {
-                if (!groups[a.provider]) {
-                    groups[a.provider] = {
-                        group: [],
-                        name: a.provider,
-                    };
+                for (const a of archives) {
+                    if (!groups[a.provider]) {
+                        groups[a.provider] = {
+                            group: [],
+                            name: a.provider,
+                        };
+                    }
+                    groups[a.provider].group.push(a);
                 }
-                groups[a.provider].group.push(a);
-            }
 
-            const iterableGroups: Array<Group<AbcdArchive>> = [];
-            const keys = Object.keys(groups).sort();
-            for (const key of keys) {
-                const value = groups[key];
-                value.group = value.group.sort((x, y) => (x.dataset < y.dataset) ? 0 : 1);
-                iterableGroups.push(value);
-            }
+                const iterableGroups: Array<Group<AbcdArchive>> = [];
+                const keys = Object.keys(groups).sort();
+                for (const key of keys) {
+                    const value = groups[key];
+                    value.group = value.group.sort((x, y) => (x.dataset < y.dataset ? 0 : 1));
+                    iterableGroups.push(value);
+                }
 
-            return iterableGroups;
-        }));
+                return iterableGroups;
+            }),
+        );
     }
 
     add(archive: AbcdArchive) {
-
         const basicColumns: BasicColumns = {
             numeric: [],
             textual: [],
@@ -81,55 +81,55 @@ export class AbcdRepositoryComponent {
         const dataTypes = new Map<string, DataType>();
         const units = new Map<string, Unit>();
 
-        this.userService.getSourceSchemaAbcd().pipe(first()).subscribe(sourceSchema => {
-
-            for (const attribute of sourceSchema) {
-
-                if (attribute.numeric) {
-                    basicColumns.numeric.push(attribute.name);
-                    attributes.push(attribute.name);
-                    dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
-                    units.set(attribute.name, Unit.defaultUnit);
-                } else {
-                    basicColumns.textual.push(attribute.name);
-                    attributes.push(attribute.name);
-                    dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
-                    units.set(attribute.name, Unit.defaultUnit);
+        this.userService
+            .getSourceSchemaAbcd()
+            .pipe(first())
+            .subscribe((sourceSchema) => {
+                for (const attribute of sourceSchema) {
+                    if (attribute.numeric) {
+                        basicColumns.numeric.push(attribute.name);
+                        attributes.push(attribute.name);
+                        dataTypes.set(attribute.name, DataTypes.Float64); // TODO: get more accurate type
+                        units.set(attribute.name, Unit.defaultUnit);
+                    } else {
+                        basicColumns.textual.push(attribute.name);
+                        attributes.push(attribute.name);
+                        dataTypes.set(attribute.name, DataTypes.Alphanumeric); // TODO: get more accurate type
+                        units.set(attribute.name, Unit.defaultUnit);
+                    }
                 }
-            }
 
-            const sourceTypeConfig: ABCDSourceTypeConfig = {
-                provider: archive.provider,
-                id: archive.file,
-                columns: basicColumns,
-            };
+                const sourceTypeConfig: ABCDSourceTypeConfig = {
+                    provider: archive.provider,
+                    id: archive.file,
+                    columns: basicColumns,
+                };
 
-            const operator = new Operator({
-                operatorType: new ABCDSourceType(sourceTypeConfig),
-                resultType: ResultTypes.POINTS,
-                projection: Projections.WGS_84,
-                attributes,
-                dataTypes,
-                units,
+                const operator = new Operator({
+                    operatorType: new ABCDSourceType(sourceTypeConfig),
+                    resultType: ResultTypes.POINTS,
+                    projection: Projections.WGS_84,
+                    attributes,
+                    dataTypes,
+                    units,
+                });
+
+                const clustered = true;
+                const layer = new VectorLayer<PointSymbology>({
+                    name: archive.dataset,
+                    operator,
+                    symbology: PointSymbology.createClusterSymbology({
+                        fillRGBA: this.randomColorService.getRandomColorRgba(),
+                    }),
+                    // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
+                    //    operator,
+                    //    clustered,
+                    // }),
+                    // provenance: this.mappingQueryService.getProvenanceStream(operator),
+                    clustered,
+                });
+                // this.layerService.addLayer(layer);
+                this.projectService.addLayer(layer);
             });
-
-            const clustered = true;
-            const layer = new VectorLayer<PointSymbology>({
-                name: archive.dataset,
-                operator,
-                symbology: PointSymbology.createClusterSymbology({
-                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                }),
-                // data: this.mappingQueryService.getWFSDataStreamAsGeoJsonFeatureCollection({
-                //    operator,
-                //    clustered,
-                // }),
-                // provenance: this.mappingQueryService.getProvenanceStream(operator),
-                clustered,
-            });
-            // this.layerService.addLayer(layer);
-            this.projectService.addLayer(layer);
-        });
-
     }
 }

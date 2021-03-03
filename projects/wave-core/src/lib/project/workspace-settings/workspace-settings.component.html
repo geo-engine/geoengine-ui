@@ -8,8 +8,10 @@
         <p mat-line><em>autosave</em></p>
     </mat-list-item>
     <!-- SAVE AS -->
-    <mat-list-item *waveIfLoggedIn
-                   (click)="layoutService.setSidenavContentComponent({component: SaveProjectAsComponent, keepParent: true})">
+    <mat-list-item
+        *waveIfLoggedIn
+        (click)="layoutService.setSidenavContentComponent({component: SaveProjectAsComponent, keepParent: true})"
+    >
         <mat-icon mat-list-icon color="default">folder</mat-icon>
         <h4 mat-line>Save As</h4>
         <p mat-line>Save project under a different name</p>
@@ -20,8 +22,7 @@
         <p mat-line>Please log in to use the full functionality</p>
     </mat-list-item>
     <!-- LOAD -->
-    <mat-list-item *waveIfLoggedIn
-                   (click)="layoutService.setSidenavContentComponent({component: LoadProjectComponent, keepParent: true})">
+    <mat-list-item *waveIfLoggedIn (click)="layoutService.setSidenavContentComponent({component: LoadProjectComponent, keepParent: true})">
         <mat-icon mat-list-icon color="default">folder_open</mat-icon>
         <h4 mat-line>Load</h4>
         <p mat-line>Load another project</p>
@@ -34,8 +35,7 @@
     <!-- -->
     <h3 mat-subheader>Project</h3>
     <!-- NEW PROJECT -->
-    <mat-list-item *waveIfLoggedIn
-                   (click)="layoutService.setSidenavContentComponent({component: NewProjectComponent, keepParent: true})">
+    <mat-list-item *waveIfLoggedIn (click)="layoutService.setSidenavContentComponent({component: NewProjectComponent, keepParent: true})">
         <mat-icon mat-list-icon color="default">create_new_folder</mat-icon>
         <h4 mat-line>New</h4>
         <p mat-line>Create a new project</p>

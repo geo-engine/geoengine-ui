@@ -21,26 +21,28 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session>(1);
 
-    constructor(protected readonly config: Config,
-                protected readonly backend: BackendService,
-                protected readonly notificationService: NotificationService) {
+    constructor(
+        protected readonly config: Config,
+        protected readonly backend: BackendService,
+        protected readonly notificationService: NotificationService,
+    ) {
         // storage of the session
-        this.session$.subscribe(session => this.saveSessionInBrowser(session));
+        this.session$.subscribe((session) => this.saveSessionInBrowser(session));
 
         // restore old session if possible
-        this.restoreSessionFromBrowser()
-            .subscribe(
-                session => this.session$.next(session),
-                _error => this.createGuestUser().subscribe(
-                    session => this.session$.next(session),
+        this.restoreSessionFromBrowser().subscribe(
+            (session) => this.session$.next(session),
+            (_error) =>
+                this.createGuestUser().subscribe(
+                    (session) => this.session$.next(session),
                     // TODO: use error translation
-                    (error: ErrorDict) => this.notificationService.error(error.message)));
+                    (error: ErrorDict) => this.notificationService.error(error.message),
+                ),
+        );
     }
 
     createGuestUser(): Observable<Session> {
-        return this.backend.createAnonymousUserSession().pipe(
-            mergeMap(response => this.createSession(response))
-        );
+        return this.backend.createAnonymousUserSession().pipe(mergeMap((response) => this.createSession(response)));
     }
 
     /**
@@ -53,12 +55,12 @@ export class UserService {
     getSessionTokenForRequest(): Observable<UUID> {
         return this.session$.pipe(
             first(),
-            map(session => session.sessionToken),
+            map((session) => session.sessionToken),
         );
     }
 
     isGuestUserStream(): Observable<boolean> {
-        return this.session$.pipe(map(s => s.user.isGuest));
+        return this.session$.pipe(map((s) => s.user.isGuest));
     }
 
     /**
@@ -67,31 +69,32 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
      */
-    login(credentials: { email: string, password: string }): Observable<Session> {
+    login(credentials: {email: string; password: string}): Observable<Session> {
         const result = new Subject<Session>();
-        this.backend.loginUser(credentials).pipe(
-            mergeMap(response => this.createSession(response))
-        ).subscribe(
-            session => {
-                this.session$.next(session);
-                result.next(session);
-            },
-            error => result.error(error),
-            () => result.complete(),
-        );
+        this.backend
+            .loginUser(credentials)
+            .pipe(mergeMap((response) => this.createSession(response)))
+            .subscribe(
+                (session) => {
+                    this.session$.next(session);
+                    result.next(session);
+                },
+                (error) => result.error(error),
+                () => result.complete(),
+            );
         return result.asObservable();
     }
 
     guestLogin(): Observable<Session> {
         const result = new Subject<Session>();
-        this.session$.pipe(first()).subscribe(oldSession => {
+        this.session$.pipe(first()).subscribe((oldSession) => {
             this.backend.logoutUser(oldSession.sessionToken).subscribe();
             this.createGuestUser().subscribe(
-                session => {
+                (session) => {
                     this.session$.next(session);
                     result.next(session);
                 },
-                error => result.error(error),
+                (error) => result.error(error),
                 () => result.complete(),
             );
         });
@@ -110,8 +113,8 @@ export class UserService {
      */
     isSessionValid(session: Session): Observable<boolean> {
         return this.backend.getSession(session.sessionToken).pipe(
-            map(_ => true),
-            catchError(_ => of(false))
+            map((_) => true),
+            catchError((_) => of(false)),
         );
     }
 
@@ -122,7 +125,7 @@ export class UserService {
     protected restoreSessionFromBrowser(): Observable<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session');
 
-        return this.backend.getSession(sessionToken).pipe(mergeMap(response => this.createSession(response)));
+        return this.backend.getSession(sessionToken).pipe(mergeMap((response) => this.createSession(response)));
     }
 
     protected createSession(sessionDict: SessionDict): Observable<Session> {
@@ -140,5 +143,4 @@ export class UserService {
 
         return of(session);
     }
-
 }

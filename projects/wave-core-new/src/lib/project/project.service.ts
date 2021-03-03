@@ -1,12 +1,4 @@
-import {
-    combineLatest,
-    Observable,
-    Observer,
-    of,
-    ReplaySubject,
-    Subject,
-    Subscription
-} from 'rxjs';
+import {combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -58,18 +50,19 @@ export class ProjectService {
     private plotDataSubscriptions = new Map<number, Subscription>();
     private newPlot$ = new Subject<void>();
 
-    constructor(protected config: Config,
-                protected notificationService: NotificationService,
-                protected mapService: MapService,
-                protected backend: BackendService,
-                protected userService: UserService,
-                protected layoutService: LayoutService) {
+    constructor(
+        protected config: Config,
+        protected notificationService: NotificationService,
+        protected mapService: MapService,
+        protected backend: BackendService,
+        protected userService: UserService,
+        protected layoutService: LayoutService,
+    ) {
         // set the starting project upon login
-        this.userService.getSessionStream().pipe(
-            mergeMap(session => this.loadMostRecentProject(session)),
-        ).subscribe(
-            project => this.setProject(project),
-        );
+        this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.loadMostRecentProject(session)))
+            .subscribe((project) => this.setProject(project));
     }
 
     protected loadMostRecentProject(session: Session): Observable<Project> {
@@ -80,28 +73,30 @@ export class ProjectService {
             projectIdLookup = of(session.lastProjectId);
         } else {
             // try to find the least recently used project id
-            projectIdLookup = this.backend.listProjects(
-                {
-                    permissions: ['Owner'],
-                    filter: 'None',
-                    order: 'DateDesc',
-                    offset: 0,
-                    limit: 1,
-                },
-                session.sessionToken,
-            ).pipe(
-                map(listings => {
-                    if (listings.length > 0) {
-                        return listings[0].id;
-                    } else {
-                        return undefined;
-                    }
-                }),
-            );
+            projectIdLookup = this.backend
+                .listProjects(
+                    {
+                        permissions: ['Owner'],
+                        filter: 'None',
+                        order: 'DateDesc',
+                        offset: 0,
+                        limit: 1,
+                    },
+                    session.sessionToken,
+                )
+                .pipe(
+                    map((listings) => {
+                        if (listings.length > 0) {
+                            return listings[0].id;
+                        } else {
+                            return undefined;
+                        }
+                    }),
+                );
         }
 
         return projectIdLookup.pipe(
-            mergeMap(projectId => {
+            mergeMap((projectId) => {
                 if (projectId) {
                     return this.backend.loadProject(projectId, session.sessionToken).pipe(map(Project.fromDict));
                 } else {
@@ -135,33 +130,41 @@ export class ProjectService {
      * Generate a default Project with values from the config file.
      */
     createProject(config: {
-        name: string,
-        description: string,
-        spatialReference: SpatialReference,
-        time: Time,
-        timeStepDuration: TimeStepDuration,
+        name: string;
+        description: string;
+        spatialReference: SpatialReference;
+        time: Time;
+        timeStepDuration: TimeStepDuration;
     }): Observable<Project> {
         return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap(sessionToken => this.backend.createProject({
-                name: config.name,
-                description: config.description,
-                bounds: {
-                    bounding_box: extentToBboxDict(config.spatialReference.getExtent()),
-                    spatial_reference: config.spatialReference.getCode(),
-                    time_interval: config.time.toDict(),
-                },
-                time_step: timeStepDurationToTimeStepDict(config.timeStepDuration),
-            }, sessionToken)),
-            map(({id}) => new Project({
-                id,
-                name: config.name,
-                description: config.description,
-                spatialReference: config.spatialReference,
-                layers: [],
-                plots: [],
-                time: config.time,
-                timeStepDuration: config.timeStepDuration,
-            })),
+            mergeMap((sessionToken) =>
+                this.backend.createProject(
+                    {
+                        name: config.name,
+                        description: config.description,
+                        bounds: {
+                            bounding_box: extentToBboxDict(config.spatialReference.getExtent()),
+                            spatial_reference: config.spatialReference.getCode(),
+                            time_interval: config.time.toDict(),
+                        },
+                        time_step: timeStepDurationToTimeStepDict(config.timeStepDuration),
+                    },
+                    sessionToken,
+                ),
+            ),
+            map(
+                ({id}) =>
+                    new Project({
+                        id,
+                        name: config.name,
+                        description: config.description,
+                        spatialReference: config.spatialReference,
+                        layers: [],
+                        plots: [],
+                        time: config.time,
+                        timeStepDuration: config.timeStepDuration,
+                    }),
+            ),
         );
     }
 
@@ -169,7 +172,7 @@ export class ProjectService {
         switch (this.config.DEFAULTS.PROJECT.TIMESTEP) {
             case '15 minutes':
                 return {durationAmount: 15, durationUnit: 'minutes'};
-            case '1 hour' :
+            case '1 hour':
                 return {durationAmount: 1, durationUnit: 'hour'};
             case '1 day':
                 return {durationAmount: 1, durationUnit: 'day'};
@@ -186,31 +189,42 @@ export class ProjectService {
 
     cloneProject(newName: string): Observable<Project> {
         return this.getProjectOnce().pipe(
-            mergeMap(project => combineLatest([
-                of(project),
-                this.createProject({
-                    name: newName,
-                    description: project.description,
-                    spatialReference: project.spatialReference,
-                    time: project.time,
-                    timeStepDuration: project.timeStepDuration,
-                }),
-            ])),
-            mergeMap(([oldProject, newPartialProject]) => combineLatest([
-                of(newPartialProject.updateFields({
-                    layers: oldProject.layers,
-                    plots: oldProject.plots,
-                })),
-                this.userService.getSessionTokenForRequest(),
-            ])),
-            mergeMap(([project, sessionToken]) => combineLatest([
-                of(project),
-                this.backend.updateProject({
-                    id: project.id,
-                    layers: project.layers.map(layer => layer.toDict()),
-                    // TODO: plots
-                }, sessionToken)
-            ])),
+            mergeMap((project) =>
+                combineLatest([
+                    of(project),
+                    this.createProject({
+                        name: newName,
+                        description: project.description,
+                        spatialReference: project.spatialReference,
+                        time: project.time,
+                        timeStepDuration: project.timeStepDuration,
+                    }),
+                ]),
+            ),
+            mergeMap(([oldProject, newPartialProject]) =>
+                combineLatest([
+                    of(
+                        newPartialProject.updateFields({
+                            layers: oldProject.layers,
+                            plots: oldProject.plots,
+                        }),
+                    ),
+                    this.userService.getSessionTokenForRequest(),
+                ]),
+            ),
+            mergeMap(([project, sessionToken]) =>
+                combineLatest([
+                    of(project),
+                    this.backend.updateProject(
+                        {
+                            id: project.id,
+                            layers: project.layers.map((layer) => layer.toDict()),
+                            // TODO: plots
+                        },
+                        sessionToken,
+                    ),
+                ]),
+            ),
             map(([project, _]) => project),
         );
     }
@@ -236,13 +250,13 @@ export class ProjectService {
     setProject(project: Project) {
         // clear all subjects
         for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
-            subjectMap.forEach(subject => subject.complete());
+            subjectMap.forEach((subject) => subject.complete());
             subjectMap.clear();
         }
 
         // clear all subscriptions
         for (const subscriptionMap of [this.layerDataSubscriptions]) {
-            subscriptionMap.forEach(subscription => subscription.unsubscribe());
+            subscriptionMap.forEach((subscription) => subscription.unsubscribe());
             subscriptionMap.clear();
         }
 
@@ -261,9 +275,7 @@ export class ProjectService {
         this.project$.next(project);
 
         // store current project in session
-        this.userService.getSessionTokenForRequest().subscribe(
-            sessionToken => this.backend.setSessionProject(project.id, sessionToken)
-        );
+        this.userService.getSessionTokenForRequest().subscribe((sessionToken) => this.backend.setSessionProject(project.id, sessionToken));
     }
 
     /**
@@ -271,20 +283,22 @@ export class ProjectService {
      */
     setTime(time: Time): Observable<void> {
         const subject = new Subject<void>();
-        this.getProjectOnce().pipe(
-            map(project => project.time),
-            mergeMap(oldTime => {
-                if (time && time.isValid() && !time.isSame(oldTime)) {
-                    return this.changeProjectConfig({time});
-                } else {
-                    return of<void>();
-                }
-            }),
-        ).subscribe(
-            () => subject.next(),
-            error => subject.error(error),
-            () => subject.complete(),
-        );
+        this.getProjectOnce()
+            .pipe(
+                map((project) => project.time),
+                mergeMap((oldTime) => {
+                    if (time && time.isValid() && !time.isSame(oldTime)) {
+                        return this.changeProjectConfig({time});
+                    } else {
+                        return of<void>();
+                    }
+                }),
+            )
+            .subscribe(
+                () => subject.next(),
+                (error) => subject.error(error),
+                () => subject.complete(),
+            );
         return subject.asObservable();
     }
 
@@ -313,38 +327,48 @@ export class ProjectService {
      * Get a stream of the projects projection.
      */
     getSpatialReferenceStream(): Observable<SpatialReference> {
-        return this.project$.pipe(map(project => project.spatialReference), distinctUntilChanged());
+        return this.project$.pipe(
+            map((project) => project.spatialReference),
+            distinctUntilChanged(),
+        );
     }
 
     /**
      * Get a stream of the projects time.
      */
     getTimeStream(): Observable<Time> {
-        return this.project$.pipe(map(project => project.time), distinctUntilChanged());
+        return this.project$.pipe(
+            map((project) => project.time),
+            distinctUntilChanged(),
+        );
     }
 
     getTimeOnce(): Observable<Time> {
-        return this.project$.pipe(first(), map(project => project.time));
+        return this.project$.pipe(
+            first(),
+            map((project) => project.time),
+        );
     }
 
     /**
      * Get a stream of the projects time step size.
      */
     getTimeStepDurationStream(): Observable<TimeStepDuration> {
-        return this.project$.pipe(map(project => project.timeStepDuration), distinctUntilChanged());
+        return this.project$.pipe(
+            map((project) => project.timeStepDuration),
+            distinctUntilChanged(),
+        );
     }
 
     registerWorkflow(workflow: WorkflowDict): Observable<UUID> {
         return this.userService.getSessionStream().pipe(
-            mergeMap(session => this.backend.registerWorkflow(workflow, session.sessionToken)),
-            map(response => response.id),
+            mergeMap((session) => this.backend.registerWorkflow(workflow, session.sessionToken)),
+            map((response) => response.id),
         );
     }
 
     getWorkflow(workflowId: UUID): Observable<WorkflowDict> {
-        return this.userService.getSessionStream().pipe(
-            mergeMap(session => this.backend.getWorkflow(workflowId, session.sessionToken),
-            ));
+        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getWorkflow(workflowId, session.sessionToken)));
     }
 
     /**
@@ -355,9 +379,11 @@ export class ProjectService {
         this.createLayerChangesStream(layer);
 
         const result = this.getProjectOnce().pipe(
-            mergeMap((project) => this.changeProjectConfig({
-                layers: [layer, ...project.layers]
-            })),
+            mergeMap((project) =>
+                this.changeProjectConfig({
+                    layers: [layer, ...project.layers],
+                }),
+            ),
             tap(() => {
                 if (notify) {
                     this.newLayer$.next();
@@ -375,9 +401,11 @@ export class ProjectService {
         this.createPlotDataStreams(plot);
 
         const result = this.getProjectOnce().pipe(
-            mergeMap((project) => this.changeProjectConfig({
-                plots: [plot, ...project.plots]
-            })),
+            mergeMap((project) =>
+                this.changeProjectConfig({
+                    plots: [plot, ...project.plots],
+                }),
+            ),
             tap(() => {
                 if (notify) {
                     this.newPlot$.next();
@@ -401,26 +429,27 @@ export class ProjectService {
 
         switch (layer.layerType) {
             case 'raster': {
-                this.layerDataSubscriptions.set(layer.id,
+                this.layerDataSubscriptions.set(
+                    layer.id,
                     this.createRasterLayerDataSubscription(
                         layer as RasterLayer,
-                        (this.layerData$.get(layer.id) as Observer<RasterData>),
-                        this.layerDataState$.get(layer.id)
-                    )
+                        this.layerData$.get(layer.id) as Observer<RasterData>,
+                        this.layerDataState$.get(layer.id),
+                    ),
                 );
                 break;
             }
             case 'vector': {
-                this.layerDataSubscriptions.set(layer.id,
+                this.layerDataSubscriptions.set(
+                    layer.id,
                     this.createVectorLayerDataSubscription(
                         layer as VectorLayer,
-                        (this.layerData$.get(layer.id) as Observer<VectorData>),
-                        this.layerDataState$.get(layer.id)
-                    )
+                        this.layerData$.get(layer.id) as Observer<VectorData>,
+                        this.layerDataState$.get(layer.id),
+                    ),
                 );
                 break;
             }
-
         }
     }
 
@@ -457,32 +486,35 @@ export class ProjectService {
             this.userService.getSessionTokenForRequest(),
         ];
 
-        return combineLatest(observables).pipe(
-            debounceTime(this.config.DELAYS.DEBOUNCE),
-            tap(() => loadingState$.next(LoadingState.LOADING)),
-            switchMap(([time, viewport, sessionToken]) => {
-                // TODO: add image size for png
+        return combineLatest(observables)
+            .pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE),
+                tap(() => loadingState$.next(LoadingState.LOADING)),
+                switchMap(([time, viewport, sessionToken]) => {
+                    // TODO: add image size for png
 
-                return this.backend.getPlot(
-                    plot.workflowId,
-                    {
-                        time,
-                        bbox: extentToBboxDict(viewport.extent),
-                        spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
+                    return this.backend.getPlot(
+                        plot.workflowId,
+                        {
+                            time,
+                            bbox: extentToBboxDict(viewport.extent),
+                            spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
+                        },
+                        sessionToken,
+                    );
+                }),
+                tap(
+                    () => loadingState$.next(LoadingState.OK),
+                    (reason: Response) => {
+                        this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
+                        loadingState$.next(LoadingState.ERROR);
                     },
-                    sessionToken);
-            }),
-            tap(
-                () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
-                    this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
-                    loadingState$.next(LoadingState.ERROR);
-                }
-            ),
-        ).subscribe(
-            data => data$.next(data),
-            error => error // ignore error
-        );
+                ),
+            )
+            .subscribe(
+                (data) => data$.next(data),
+                (error) => error, // ignore error
+            );
     }
 
     private createPlotDataStreams(plot: Plot) {
@@ -501,13 +533,13 @@ export class ProjectService {
      */
     removePlot(plot: HasPlotId): Observable<void> {
         const result = this.getProjectOnce().pipe(
-            mergeMap(project => {
+            mergeMap((project) => {
                 const plots = [...project.plots];
                 const plotIndex = plots.indexOf(plot);
                 if (plotIndex >= 0) {
                     plots.splice(plotIndex, 1);
                     return this.changeProjectConfig({
-                        plots
+                        plots,
                     });
                 } else {
                     // avoid request if there is nothing to do
@@ -533,14 +565,20 @@ export class ProjectService {
      * Retrieve the layer models array as a stream.
      */
     getLayerStream(): Observable<Array<Layer>> {
-        return this.project$.pipe(map(project => project.layers), distinctUntilChanged());
+        return this.project$.pipe(
+            map((project) => project.layers),
+            distinctUntilChanged(),
+        );
     }
 
     /**
      * Retrieve the plot models array as a stream.
      */
     getPlotStream(): Observable<Array<Plot>> {
-        return this.project$.pipe(map(project => project.plots), distinctUntilChanged());
+        return this.project$.pipe(
+            map((project) => project.plots),
+            distinctUntilChanged(),
+        );
     }
 
     /**
@@ -559,7 +597,7 @@ export class ProjectService {
 
     getLayerMetadata(layer: Layer): Observable<LayerMetadata> {
         return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap(sessionToken => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
+            mergeMap((sessionToken) => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
             map((metadata: RasterResultDescriptorDict | VectorResultDescriptorDict) => {
                 if (layer instanceof VectorLayer) {
                     return VectorLayerMetadata.fromDict(metadata as VectorResultDescriptorDict);
@@ -619,8 +657,8 @@ export class ProjectService {
 
         this.getProjectOnce()
             .pipe(
-                mergeMap(project => {
-                    const layers = project.layers.filter(l => l.id !== layer.id);
+                mergeMap((project) => {
+                    const layers = project.layers.filter((l) => l.id !== layer.id);
 
                     if (project.layers.length === layers.length) {
                         // nothing filtered, so no request
@@ -635,7 +673,7 @@ export class ProjectService {
                     this.removeLayerSubscriptions(layer);
                     subject.next();
                 },
-                error => subject.error(error),
+                (error) => subject.error(error),
                 () => subject.complete(),
             );
 
@@ -652,7 +690,7 @@ export class ProjectService {
 
         this.getProjectOnce()
             .pipe(
-                mergeMap(project => {
+                mergeMap((project) => {
                     removedLayers = project.layers;
 
                     return this.changeProjectConfig({
@@ -662,10 +700,10 @@ export class ProjectService {
             )
             .subscribe(
                 () => {
-                    removedLayers.forEach(layer => this.removeLayerSubscriptions(layer));
+                    removedLayers.forEach((layer) => this.removeLayerSubscriptions(layer));
                     subject.next();
                 },
-                error => subject.error(error),
+                (error) => subject.error(error),
                 () => subject.complete(),
             );
 
@@ -690,20 +728,23 @@ export class ProjectService {
      * Sets the layers
      */
     setLayers(layers: Array<Layer>) {
-        this.project$.pipe(first()).subscribe(project => {
+        this.project$.pipe(first()).subscribe((project) => {
             if (project.layers !== layers) {
                 this.changeProjectConfig({layers});
             }
         });
     }
 
-    changeLayer(layer: Layer, changes: {
-        name?: string,
-        workflowId?: UUID,
-        symbology?: AbstractSymbology,
-        isVisible?: boolean,
-        isLegendVisible?: boolean,
-    }): Observable<void> {
+    changeLayer(
+        layer: Layer,
+        changes: {
+            name?: string;
+            workflowId?: UUID;
+            symbology?: AbstractSymbology;
+            isVisible?: boolean;
+            isLegendVisible?: boolean;
+        },
+    ): Observable<void> {
         const subject = new Subject<void>();
 
         if (Object.keys(changes).length === 0) {
@@ -714,14 +755,16 @@ export class ProjectService {
 
         layer = layer.updateFields(changes);
 
-        this.getProjectOnce().pipe(
-            map(project => project.layers.map(l => (l.id === layer.id) ? layer : l)),
-            mergeMap(layers => this.changeProjectConfig({layers})),
-        ).subscribe(
-            () => subject.next(),
-            error => subject.error(error),
-            () => subject.complete(),
-        );
+        this.getProjectOnce()
+            .pipe(
+                map((project) => project.layers.map((l) => (l.id === layer.id ? layer : l))),
+                mergeMap((layers) => this.changeProjectConfig({layers})),
+            )
+            .subscribe(
+                () => subject.next(),
+                (error) => subject.error(error),
+                () => subject.complete(),
+            );
 
         return subject;
     }
@@ -740,21 +783,23 @@ export class ProjectService {
         return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
     }
 
-    protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & { equals(other: Content): boolean },
-        ContentDict>(oldLayers: Array<Content>, newLayers: Array<Content>): Array<ContentDict | 'none' | 'delete'> {
-        return newLayers.map((layer, i) => layer.equals(oldLayers[i]) ? 'none' : layer.toDict());
+    protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & {equals(other: Content): boolean}, ContentDict>(
+        oldLayers: Array<Content>,
+        newLayers: Array<Content>,
+    ): Array<ContentDict | 'none' | 'delete'> {
+        return newLayers.map((layer, i) => (layer.equals(oldLayers[i]) ? 'none' : layer.toDict()));
 
         // TODO: optimize deletions, etc.
     }
 
     protected changeProjectConfig(changes: {
-        id?: UUID,
-        name?: string,
-        spatialReference?: SpatialReference,
-        time?: Time,
-        plots?: Array<any>,
-        layers?: Array<Layer>,
-        timeStepDuration?: TimeStepDuration,
+        id?: UUID;
+        name?: string;
+        spatialReference?: SpatialReference;
+        time?: Time;
+        plots?: Array<any>;
+        layers?: Array<Layer>;
+        timeStepDuration?: TimeStepDuration;
     }): Observable<void> {
         const subject = new Subject<void>();
 
@@ -767,34 +812,38 @@ export class ProjectService {
 
         let project: Project;
 
-        combineLatest([
-            this.getProjectOnce(),
-            this.userService.getSessionTokenForRequest(),
-        ]).pipe(
-            mergeMap(([oldProject, sessionToken]) => {
-                project = oldProject.updateFields(changes);
+        combineLatest([this.getProjectOnce(), this.userService.getSessionTokenForRequest()])
+            .pipe(
+                mergeMap(([oldProject, sessionToken]) => {
+                    project = oldProject.updateFields(changes);
 
-                return this.backend.updateProject({
-                    id: project.id,
-                    name: changes.name,
-                    layers: changes.layers ?
-                        ProjectService.optimizeVecUpdates<Layer, LayerDict>(oldProject.layers, project.layers) : undefined,
-                    plots: changes.plots ?
-                        ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots) : undefined,
-                    // TODO: add bbox
-                    bounds: (changes.time || changes.spatialReference) ? project.toBoundsDict() : undefined,
-                    // TODO: description: changes.description,
-                    time_step: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
-                }, sessionToken);
-            }),
-        ).subscribe(
-            () => {
-                this.project$.next(project);
-                subject.next();
-            },
-            error => subject.error(error),
-            () => subject.complete(),
-        );
+                    return this.backend.updateProject(
+                        {
+                            id: project.id,
+                            name: changes.name,
+                            layers: changes.layers
+                                ? ProjectService.optimizeVecUpdates<Layer, LayerDict>(oldProject.layers, project.layers)
+                                : undefined,
+                            plots: changes.plots
+                                ? ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots)
+                                : undefined,
+                            // TODO: add bbox
+                            bounds: changes.time || changes.spatialReference ? project.toBoundsDict() : undefined,
+                            // TODO: description: changes.description,
+                            time_step: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
+                        },
+                        sessionToken,
+                    );
+                }),
+            )
+            .subscribe(
+                () => {
+                    this.project$.next(project);
+                    subject.next();
+                },
+                (error) => subject.error(error),
+                () => subject.complete(),
+            );
 
         return subject.asObservable();
     }
@@ -806,14 +855,10 @@ export class ProjectService {
         let layerDataSub: Subscription;
         switch (layer.layerType) {
             case 'raster':
-                layerDataSub = this.createRasterLayerDataSubscription(
-                    layer as RasterLayer, layerData$, layerDataLoadingState$
-                );
+                layerDataSub = this.createRasterLayerDataSubscription(layer as RasterLayer, layerData$, layerDataLoadingState$);
                 break;
             case 'vector':
-                layerDataSub = this.createVectorLayerDataSubscription(
-                    layer as VectorLayer, layerData$, layerDataLoadingState$
-                );
+                layerDataSub = this.createVectorLayerDataSubscription(layer as VectorLayer, layerData$, layerDataLoadingState$);
                 break;
         }
         this.layerDataSubscriptions.set(layer.id, layerDataSub);
@@ -824,90 +869,99 @@ export class ProjectService {
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
      */
-    private createRasterLayerDataSubscription(layer: RasterLayer, data$: Observer<RasterData>,
-                                              loadingState$: Observer<LoadingState>): Subscription {
-        return combineLatest([
-            this.getTimeStream(),
-            this.getSpatialReferenceStream(),
-        ]).pipe(
-            tap(() => loadingState$.next(LoadingState.LOADING)),
-            map(([time, projection]) => new RasterData(
-                time,
-                projection,
-                // this.mappingQueryService.getWMSQueryUrl({
-                //     operator: layer.operator,
-                //     time,
-                //     projection,
-                // })
-                this.backend.wmsUrl,
-            )),
-            tap(
-                () => loadingState$.next(LoadingState.OK),
-                (reason: HttpErrorResponse) => {
-                    // if (ProjectService.isNoRasterForGivenTimeException(reason)) {
-                    //     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
-                    //     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
-                    // } else {
-                    this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
-                    loadingState$.next(LoadingState.ERROR);
-                    // }
-                }
-            ),
-        ).subscribe(
-            data => data$.next(data),
-            error => error // ignore error
-        );
+    private createRasterLayerDataSubscription(
+        layer: RasterLayer,
+        data$: Observer<RasterData>,
+        loadingState$: Observer<LoadingState>,
+    ): Subscription {
+        return combineLatest([this.getTimeStream(), this.getSpatialReferenceStream()])
+            .pipe(
+                tap(() => loadingState$.next(LoadingState.LOADING)),
+                map(
+                    ([time, projection]) =>
+                        new RasterData(
+                            time,
+                            projection,
+                            // this.mappingQueryService.getWMSQueryUrl({
+                            //     operator: layer.operator,
+                            //     time,
+                            //     projection,
+                            // })
+                            this.backend.wmsUrl,
+                        ),
+                ),
+                tap(
+                    () => loadingState$.next(LoadingState.OK),
+                    (reason: HttpErrorResponse) => {
+                        // if (ProjectService.isNoRasterForGivenTimeException(reason)) {
+                        //     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
+                        //     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
+                        // } else {
+                        this.notificationService.error(`${layer.name}: ${reason.status} ${reason.statusText}`);
+                        loadingState$.next(LoadingState.ERROR);
+                        // }
+                    },
+                ),
+            )
+            .subscribe(
+                (data) => data$.next(data),
+                (error) => error, // ignore error
+            );
     }
 
     /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
      */
-    private createVectorLayerDataSubscription(layer: VectorLayer,
-                                              data$: Observer<VectorData>,
-                                              loadingState$: Observer<LoadingState>): Subscription {
+    private createVectorLayerDataSubscription(
+        layer: VectorLayer,
+        data$: Observer<VectorData>,
+        loadingState$: Observer<LoadingState>,
+    ): Subscription {
         return combineLatest([
             this.getTimeStream(),
-            combineLatest([
-                this.getSpatialReferenceStream(),
-                this.mapService.getViewportSizeStream()
-            ]).pipe(
-                debounceTime(this.config.DELAYS.DEBOUNCE)
+            combineLatest([this.getSpatialReferenceStream(), this.mapService.getViewportSizeStream()]).pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE),
             ),
             this.userService.getSessionTokenForRequest(),
-        ]).pipe(
-            tap(() => loadingState$.next(LoadingState.LOADING)),
-            switchMap(([time, [projection, viewportSize], sessionToken]) => {
-                const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
+        ])
+            .pipe(
+                tap(() => loadingState$.next(LoadingState.LOADING)),
+                switchMap(([time, [projection, viewportSize], sessionToken]) => {
+                    const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
-                // let clusteredOption;
-                // TODO: is clustering a property of a layer or the symbology?
-                // if (layer.clustered && layer.symbology instanceof PointSymbology) {
-                //     clusteredOption = {
-                //         minRadius: layer.symbology.radius,
-                //     };
-                // }
+                    // let clusteredOption;
+                    // TODO: is clustering a property of a layer or the symbology?
+                    // if (layer.clustered && layer.symbology instanceof PointSymbology) {
+                    //     clusteredOption = {
+                    //         minRadius: layer.symbology.radius,
+                    //     };
+                    // }
 
-                // TODO: add resolution
-                return this.backend.wfsGetFeature({
-                    typeNames: `registry:${layer.workflowId}`,
-                    bbox: extentToBboxDict(viewportSize.extent),
-                    time: time.toDict(),
-                    srsName: projection.getCode(),
-                }, sessionToken).pipe(
-                    map(x => VectorData.olParse(time, projection, requestExtent, x))
-                );
-            }),
-            tap(
-                () => loadingState$.next(LoadingState.OK),
-                (reason: Response) => {
-                    this.notificationService.error(`${layer.name}: ${reason}`);
-                    loadingState$.next(LoadingState.ERROR);
-                }
-            ),
-        ).subscribe(
-            data => data$.next(data),
-            error => error // ignore error
-        );
+                    // TODO: add resolution
+                    return this.backend
+                        .wfsGetFeature(
+                            {
+                                typeNames: `registry:${layer.workflowId}`,
+                                bbox: extentToBboxDict(viewportSize.extent),
+                                time: time.toDict(),
+                                srsName: projection.getCode(),
+                            },
+                            sessionToken,
+                        )
+                        .pipe(map((x) => VectorData.olParse(time, projection, requestExtent, x)));
+                }),
+                tap(
+                    () => loadingState$.next(LoadingState.OK),
+                    (reason: Response) => {
+                        this.notificationService.error(`${layer.name}: ${reason}`);
+                        loadingState$.next(LoadingState.ERROR);
+                    },
+                ),
+            )
+            .subscribe(
+                (data) => data$.next(data),
+                (error) => error, // ignore error
+            );
     }
 
     private createLayerChangesStream(layer: Layer) {
@@ -927,9 +981,9 @@ export class ProjectService {
 
     loadAndSetProject(projectId: UUID): Observable<Project> {
         const result = this.userService.getSessionTokenForRequest().pipe(
-            mergeMap(sessionToken => this.backend.loadProject(projectId, sessionToken)),
+            mergeMap((sessionToken) => this.backend.loadProject(projectId, sessionToken)),
             map(Project.fromDict),
-            tap(project => this.setProject(project)),
+            tap((project) => this.setProject(project)),
         );
 
         return ProjectService.subscribeAndProvide(result);
@@ -942,8 +996,8 @@ export class ProjectService {
     protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
         const subject = new Subject<T>();
         observable.subscribe(
-            value => subject.next(value),
-            error => subject.error(error),
+            (value) => subject.next(value),
+            (error) => subject.error(error),
             () => subject.complete(),
         );
         return subject.asObservable();

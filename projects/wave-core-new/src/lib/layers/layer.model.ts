@@ -35,12 +35,12 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
     }
 
     protected constructor(config: {
-        id?: number,
-        name: string,
-        workflowId: string,
-        isVisible: boolean,
-        isLegendVisible: boolean,
-        symbology: AbstractSymbology,
+        id?: number;
+        name: string;
+        workflowId: string;
+        isVisible: boolean;
+        isLegendVisible: boolean;
+        symbology: AbstractSymbology;
     }) {
         this.id = config.id ?? Layer.nextLayerId++;
 
@@ -53,12 +53,12 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
 
     // TODO: remove method, here?
     abstract updateFields(changes: {
-        id?: number,
-        name?: string,
-        workflowId?: string,
-        isVisible?: boolean,
-        isLegendVisible?: boolean,
-        symbology?: AbstractSymbology,
+        id?: number;
+        name?: string;
+        workflowId?: string;
+        isVisible?: boolean;
+        isLegendVisible?: boolean;
+        symbology?: AbstractSymbology;
     }): Layer;
 
     abstract equals(other: Layer): boolean;
@@ -77,21 +77,21 @@ export class VectorLayer extends Layer {
             workflowId: dict.workflow,
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
-            symbology: PointSymbology.createSymbology({
+            symbology: (PointSymbology.createSymbology({
                 fillRGBA: [255, 0, 0], // red
                 radius: 10,
                 clustered: false,
-            }) as any as VectorSymbology // TODO: get symbology from meta data
+            }) as any) as VectorSymbology, // TODO: get symbology from meta data
         });
     }
 
     constructor(config: {
-        id?: number,
-        name: string,
-        workflowId: string,
-        isVisible: boolean,
-        isLegendVisible: boolean,
-        symbology: VectorSymbology,
+        id?: number;
+        name: string;
+        workflowId: string;
+        isVisible: boolean;
+        isLegendVisible: boolean;
+        symbology: VectorSymbology;
     }) {
         super(config);
     }
@@ -106,17 +106,17 @@ export class VectorLayer extends Layer {
             visibility: {
                 data: this.isVisible,
                 legend: this.isLegendVisible,
-            }
+            },
         };
     }
 
     updateFields(changes: {
-        id?: number,
-        name?: string,
-        workflowId?: string,
-        isVisible?: boolean,
-        isLegendVisible?: boolean,
-        symbology?: VectorSymbology,
+        id?: number;
+        name?: string;
+        workflowId?: string;
+        isVisible?: boolean;
+        isLegendVisible?: boolean;
+        symbology?: VectorSymbology;
     }): VectorLayer {
         return new VectorLayer({
             id: changes.id ?? this.id,
@@ -133,14 +133,15 @@ export class VectorLayer extends Layer {
             return false;
         }
 
-        return this.id === other.id
-            && this.name === other.name
-            && this.workflowId === other.workflowId
-            && this.isVisible === other.isVisible
-            && this.isLegendVisible === other.isLegendVisible
-            && this.symbology === other.symbology;
+        return (
+            this.id === other.id &&
+            this.name === other.name &&
+            this.workflowId === other.workflowId &&
+            this.isVisible === other.isVisible &&
+            this.isLegendVisible === other.isLegendVisible &&
+            this.symbology === other.symbology
+        );
     }
-
 }
 
 export class RasterLayer extends Layer {
@@ -156,7 +157,7 @@ export class RasterLayer extends Layer {
             const linearGradient = colorizerDict.LinearGradient;
             symbology = new MappingRasterSymbology({
                 colorizer: {
-                    breakpoints: linearGradient.breakpoints.map(breakpoint => {
+                    breakpoints: linearGradient.breakpoints.map((breakpoint) => {
                         return {
                             value: breakpoint.value,
                             rgba: breakpoint.color,
@@ -198,28 +199,28 @@ export class RasterLayer extends Layer {
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
             workflowId: dict.workflow,
-            symbology
+            symbology,
         });
     }
 
     constructor(config: {
-        id?: number,
-        name: string,
-        workflowId: string,
-        isVisible: boolean,
-        isLegendVisible: boolean,
-        symbology: MappingRasterSymbology,
+        id?: number;
+        name: string;
+        workflowId: string;
+        isVisible: boolean;
+        isLegendVisible: boolean;
+        symbology: MappingRasterSymbology;
     }) {
         super(config);
     }
 
     updateFields(changes: {
-        id?: number,
-        name?: string,
-        workflowId?: string,
-        isVisible?: boolean,
-        isLegendVisible?: boolean,
-        symbology?: MappingRasterSymbology,
+        id?: number;
+        name?: string;
+        workflowId?: string;
+        isVisible?: boolean;
+        isLegendVisible?: boolean;
+        symbology?: MappingRasterSymbology;
     }): RasterLayer {
         return new RasterLayer({
             id: changes.id ?? this.id,
@@ -236,12 +237,14 @@ export class RasterLayer extends Layer {
             return false;
         }
 
-        return this.id === other.id
-            && this.name === other.name
-            && this.workflowId === other.workflowId
-            && this.isVisible === other.isVisible
-            && this.isLegendVisible === other.isLegendVisible
-            && this.symbology === other.symbology;
+        return (
+            this.id === other.id &&
+            this.name === other.name &&
+            this.workflowId === other.workflowId &&
+            this.isVisible === other.isVisible &&
+            this.isLegendVisible === other.isLegendVisible &&
+            this.symbology === other.symbology
+        );
     }
 
     toDict(): LayerDict {
@@ -256,10 +259,9 @@ export class RasterLayer extends Layer {
             visibility: {
                 data: this.isVisible,
                 legend: this.isLegendVisible,
-            }
+            },
         };
     }
-
 }
 
 export interface HasLayerId {

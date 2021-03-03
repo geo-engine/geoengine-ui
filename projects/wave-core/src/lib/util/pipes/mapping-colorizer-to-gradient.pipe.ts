@@ -7,12 +7,11 @@ import {Color} from '../../colors/color';
  */
 @Pipe({name: 'waveWappingColorizerToGradient'})
 export class MappingColorizerToGradientPipe implements PipeTransform {
-
     /**
      * Transform red, green, blue, and alpha values into a css string.
      */
     static rgbaString(r: number, g: number, b: number, a?: number): string {
-        const alpha = (!!a) ? (a / 255.0) : 1.0;
+        const alpha = !!a ? a / 255.0 : 1.0;
         return 'rgba(' + r.toString() + ',' + g.toString() + ',' + b.toString() + ',' + alpha.toString() + ')';
     }
 

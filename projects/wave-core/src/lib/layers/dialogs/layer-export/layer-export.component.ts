@@ -1,4 +1,3 @@
-
 import {first} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 
@@ -21,10 +20,9 @@ interface LayerExportComponentConfig {
     selector: 'wave-layer-export',
     templateUrl: './layer-export.component.html',
     styleUrls: ['./layer-export.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
-
     // make available
     WFSOutputFormats = WFSOutputFormats;
     WCSOutputFormats = WCSOutputFormats;
@@ -39,11 +37,12 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private formBuilder: FormBuilder,
-                private mappingQueryService: MappingQueryService,
-                private projectService: ProjectService,
-                @Inject(MAT_DIALOG_DATA) private config: LayerExportComponentConfig) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private mappingQueryService: MappingQueryService,
+        private projectService: ProjectService,
+        @Inject(MAT_DIALOG_DATA) private config: LayerExportComponentConfig,
+    ) {}
 
     ngOnInit() {
         // const config = this.dialogRef.config as LayerExportComponentConfig;
@@ -67,9 +66,9 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.subscriptions.push(
-            (this.form.controls['rasterResolution'] as FormGroup).controls['width'].valueChanges.subscribe(width => {
+            (this.form.controls['rasterResolution'] as FormGroup).controls['width'].valueChanges.subscribe((width) => {
                 (this.form.controls['rasterResolution'] as FormGroup).controls['height'].setValue(width);
-            })
+            }),
         );
     }
 
@@ -78,35 +77,37 @@ export class LayerExportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     download() {
-        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-            if (this.isVector) {
-                location.href = this.mappingQueryService.getWFSQueryUrl({
-                    operator: this.layer.operator,
-                    outputFormat: this.form.controls['dataOutputFormat'].value,
-                    time: project.time,
-                    projection: project.projection,
-                });
-            }
+        this.projectService
+            .getProjectStream()
+            .pipe(first())
+            .subscribe((project) => {
+                if (this.isVector) {
+                    location.href = this.mappingQueryService.getWFSQueryUrl({
+                        operator: this.layer.operator,
+                        outputFormat: this.form.controls['dataOutputFormat'].value,
+                        time: project.time,
+                        projection: project.projection,
+                    });
+                }
 
-            if (this.isRaster) {
-                const rasterResolution = this.form.controls['rasterResolution'] as FormGroup;
+                if (this.isRaster) {
+                    const rasterResolution = this.form.controls['rasterResolution'] as FormGroup;
 
-                location.href = this.mappingQueryService.getWCSQueryUrl({
-                    operator: this.layer.operator,
-                    outputFormat: this.form.controls['dataOutputFormat'].value,
-                    size: {
-                        x: rasterResolution.controls['width'].value,
-                        y: rasterResolution.controls['height'].value,
-                    },
-                    time: project.time,
-                    projection: project.projection,
-                });
-            }
-        });
+                    location.href = this.mappingQueryService.getWCSQueryUrl({
+                        operator: this.layer.operator,
+                        outputFormat: this.form.controls['dataOutputFormat'].value,
+                        size: {
+                            x: rasterResolution.controls['width'].value,
+                            y: rasterResolution.controls['height'].value,
+                        },
+                        time: project.time,
+                        projection: project.projection,
+                    });
+                }
+            });
     }
-
 }

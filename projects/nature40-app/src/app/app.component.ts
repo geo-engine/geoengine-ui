@@ -11,7 +11,8 @@ import {
     HostListener,
     Inject,
     OnInit,
-    ViewChild, ViewContainerRef
+    ViewChild,
+    ViewContainerRef,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
@@ -85,31 +86,31 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(@Inject(Config) readonly config: AppConfig,
-                readonly layerService: LayerService,
-                readonly layoutService: LayoutService,
-                readonly projectService: ProjectService,
-                readonly vcRef: ViewContainerRef, // reference used by color picker
-                @Inject(UserService) private readonly userService: Nature40UserService,
-                private storageService: StorageService,
-                private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MatDialog,
-                private iconRegistry: MatIconRegistry,
-                private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
-                private activatedRoute: ActivatedRoute,
-                private notificationService: NotificationService,
-                private mapService: MapService,
-                private sanitizer: DomSanitizer) {
+    constructor(
+        @Inject(Config) readonly config: AppConfig,
+        readonly layerService: LayerService,
+        readonly layoutService: LayoutService,
+        readonly projectService: ProjectService,
+        readonly vcRef: ViewContainerRef, // reference used by color picker
+        @Inject(UserService) private readonly userService: Nature40UserService,
+        private storageService: StorageService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private dialog: MatDialog,
+        private iconRegistry: MatIconRegistry,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        private activatedRoute: ActivatedRoute,
+        private notificationService: NotificationService,
+        private mapService: MapService,
+        private sanitizer: DomSanitizer,
+    ) {
         this.registerIcons();
 
         vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
 
         this.storageService.toString(); // just register
 
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(
-            map(layers => layers.slice(0).reverse())
-        );
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
@@ -118,11 +119,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private registerIcons() {
-        this.iconRegistry.addSvgIconInNamespace(
-            'vat',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'),
-        );
+        this.iconRegistry.addSvgIconInNamespace('vat', 'logo', this.sanitizer.bypassSecurityTrustResourceUrl('assets/vat_logo.svg'));
 
         // used for navigation
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
@@ -138,14 +135,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.mapService.registerMapComponent(this.mapComponent);
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
-            tap(() => this.mapComponent.resize()),
-        );
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+        this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.rightSidenavContainer.load(sidenavConfig);
             if (sidenavConfig) {
                 this.rightSidenav.open();
@@ -153,11 +148,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.rightSidenav.close();
             }
         });
-        this.projectService.getNewPlotStream()
+        this.projectService
+            .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
-        this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {
+        this.layoutService.getLayerDetailViewTabIndexStream().subscribe((tabIndex) => {
             if (this.bottomTabs.selectedIndex !== tabIndex) {
                 this.bottomTabs.selectedIndex = tabIndex;
                 setTimeout(() => this.changeDetectorRef.markForCheck());
@@ -261,30 +257,33 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private handleQueryParameters() {
-        this.activatedRoute.queryParams.subscribe(p => {
+        this.activatedRoute.queryParams.subscribe((p) => {
             for (const parameter of Object.keys(p)) {
                 const value = p[parameter];
                 switch (parameter) {
                     case 'workflow':
                         try {
                             const newLayer = Layer.fromDict(JSON.parse(value));
-                            this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-                                if (project.layers.length > 0) {
-                                    // show popup
-                                    this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-                                        data: {
-                                            dialogTitle: 'Workflow URL Parameter',
-                                            sourceName: 'URL parameter',
-                                            layers: [newLayer],
-                                            nonAvailableNames: [],
-                                            numberOfLayersInProject: project.layers.length,
-                                        }
-                                    });
-                                } else {
-                                    // just add the layer if the layer array is empty
-                                    this.projectService.addLayer(newLayer);
-                                }
-                            });
+                            this.projectService
+                                .getProjectStream()
+                                .pipe(first())
+                                .subscribe((project) => {
+                                    if (project.layers.length > 0) {
+                                        // show popup
+                                        this.dialog.open(WorkflowParameterChoiceDialogComponent, {
+                                            data: {
+                                                dialogTitle: 'Workflow URL Parameter',
+                                                sourceName: 'URL parameter',
+                                                layers: [newLayer],
+                                                nonAvailableNames: [],
+                                                numberOfLayersInProject: project.layers.length,
+                                            },
+                                        });
+                                    } else {
+                                        // just add the layer if the layer array is empty
+                                        this.projectService.addLayer(newLayer);
+                                    }
+                                });
                         } catch (error) {
                             this.notificationService.error(`Invalid Workflow: »${error}«`);
                         }
@@ -301,20 +300,23 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private nature40JwtLogin(parameter: string, token: string) {
-        this.userService.nature40JwtTokenLogin(token).pipe(first()).subscribe(
-            success => {
-                if (success) {
-                    this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
-                } else {
-                    this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
-                    // log out, because mapping session exists, but JWT token has become invalid
-                    this.userService.guestLogin().pipe(first()).subscribe();
-                }
-            },
-            error => {
-                this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
-            },
-        );
+        this.userService
+            .nature40JwtTokenLogin(token)
+            .pipe(first())
+            .subscribe(
+                (success) => {
+                    if (success) {
+                        this.notificationService.info(`Logged in using ${parameter.toUpperCase()}`);
+                    } else {
+                        this.notificationService.error(`Login with ${parameter.toUpperCase()} unsuccessful`);
+                        // log out, because mapping session exists, but JWT token has become invalid
+                        this.userService.guestLogin().pipe(first()).subscribe();
+                    }
+                },
+                (error) => {
+                    this.notificationService.error(`Cant handle provided ${parameter.toUpperCase()} parameters: »${error}«`);
+                },
+            );
     }
 
     /**
@@ -332,25 +334,31 @@ export class AppComponent implements OnInit, AfterViewInit {
             stored_extent = this.config.NATURE40.DEFAULT_VIEW_BBOX;
         }
 
-        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
-            const projectedExtent = transformExtent(
-                stored_extent,
-                Projections.WGS_84.getOpenlayersProjection(),
-                projection.getOpenlayersProjection(),
-            );
-            this.mapService.zoomTo(projectedExtent);
-        });
-
-        fromEvent(window, 'beforeunload').subscribe(() => { // store extent when leaving the site
-            this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
-                const wgs84_extent: [number, number, number, number] = transformExtent(
-                    this.mapService.getViewportSize().extent,
-                    projection.getOpenlayersProjection(),
+        this.projectService
+            .getProjectionStream()
+            .pipe(first())
+            .subscribe((projection) => {
+                const projectedExtent = transformExtent(
+                    stored_extent,
                     Projections.WGS_84.getOpenlayersProjection(),
+                    projection.getOpenlayersProjection(),
                 );
-                localStorage.setItem(storage_key, JSON.stringify(wgs84_extent));
+                this.mapService.zoomTo(projectedExtent);
             });
+
+        fromEvent(window, 'beforeunload').subscribe(() => {
+            // store extent when leaving the site
+            this.projectService
+                .getProjectionStream()
+                .pipe(first())
+                .subscribe((projection) => {
+                    const wgs84_extent: [number, number, number, number] = transformExtent(
+                        this.mapService.getViewportSize().extent,
+                        projection.getOpenlayersProjection(),
+                        Projections.WGS_84.getOpenlayersProjection(),
+                    );
+                    localStorage.setItem(storage_key, JSON.stringify(wgs84_extent));
+                });
         });
     }
-
 }

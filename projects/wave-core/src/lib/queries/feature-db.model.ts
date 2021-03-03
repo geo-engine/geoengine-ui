@@ -22,11 +22,7 @@ export interface FeatureDBListEntry {
 }
 
 export class FeatureDBServiceRequestParameters extends MappingRequestParameters {
-    constructor(config: {
-        request: string,
-        sessionToken: string,
-        parameters?: ParametersType
-    }) {
+    constructor(config: {request: string; sessionToken: string; parameters?: ParametersType}) {
         super({
             service: 'featurecollectiondb',
             request: config.request,
@@ -46,13 +42,7 @@ export class FeatureDBServiceListParameters extends FeatureDBServiceRequestParam
 }
 
 export class FeatureDBServiceUploadParameters extends FeatureDBServiceRequestParameters {
-    constructor(config: {
-        sessionToken: string,
-        name: string,
-        crs: Projection,
-        query: string,
-        type: 'points' | 'lines' | 'polygons'
-    }) {
+    constructor(config: {sessionToken: string; name: string; crs: Projection; query: string; type: 'points' | 'lines' | 'polygons'}) {
         super({
             request: 'save',
             sessionToken: config.sessionToken,
@@ -61,12 +51,16 @@ export class FeatureDBServiceUploadParameters extends FeatureDBServiceRequestPar
                 crs: config.crs.getCode(),
                 query: config.query,
                 type: config.type,
-                bbox: config.crs.getCode() === 'EPSG:4326' ?
-                    config.crs.getExtent()[1]
-                        + ',' + config.crs.getExtent()[0] + ','
-                        + config.crs.getExtent()[3] + ','
-                        + config.crs.getExtent()[2]
-                    : config.crs.getExtent().join(','),
+                bbox:
+                    config.crs.getCode() === 'EPSG:4326'
+                        ? config.crs.getExtent()[1] +
+                          ',' +
+                          config.crs.getExtent()[0] +
+                          ',' +
+                          config.crs.getExtent()[3] +
+                          ',' +
+                          config.crs.getExtent()[2]
+                        : config.crs.getExtent().join(','),
                 time: TimeInterval.maximal().asRequestString(),
             },
         });
@@ -102,6 +96,6 @@ export function featureDBListEntryToOperator(entry: FeatureDBListEntry) {
             attributes: attributes,
             dataTypes: dataTypes,
             units: units,
-        })
+        }),
     };
 }

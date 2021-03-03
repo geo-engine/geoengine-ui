@@ -8,10 +8,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     selector: 'wave-rename-layer',
     templateUrl: './rename-layer.component.html',
     styleUrls: ['./rename-layer.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameLayerComponent implements OnInit {
-
     form: FormGroup;
 
     private layer: Layer;
@@ -20,14 +19,13 @@ export class RenameLayerComponent implements OnInit {
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<RenameLayerComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer }
-    ) {
-    }
+        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer},
+    ) {}
 
     ngOnInit(): void {
         this.layer = this.config.layer;
         this.form = this.formBuilder.group({
-            layerName: [this.layer.name, Validators.required]
+            layerName: [this.layer.name, Validators.required],
         });
     }
 
@@ -42,10 +40,9 @@ export class RenameLayerComponent implements OnInit {
 
         this.projectService.changeLayer(this.layer, {name: layerName}).subscribe(
             () => this.dialogRef.close(),
-            error => {
+            (error) => {
                 // TODO: handle error
             },
         );
     }
-
 }

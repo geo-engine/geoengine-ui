@@ -3,14 +3,12 @@
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {
-} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for querying the server.
  */
-export interface OperatorTypeMappingDict {
-} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.
@@ -36,7 +34,6 @@ export type ParameterValue = number | string | OptionsDict;
  * The operator basic type.
  */
 export abstract class OperatorType {
-
     /**
      * Each operator type must have a method that returns
      * an icon as a data uri image. This provides a default
@@ -46,7 +43,8 @@ export abstract class OperatorType {
         // TODO: replace with proper icons
         // from `http://stackoverflow.com/questions/3426404/
         // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
-        const hashCode = (str: string) => { // java String#hashCode
+        const hashCode = (str: string) => {
+            // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
@@ -54,7 +52,7 @@ export abstract class OperatorType {
             return hash;
         };
         const intToRGB = (i: number) => {
-            const c = (i & 0x00FFFFFF).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
+            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
 
             return '00000'.substring(0, 6 - c.length) + c;
         };

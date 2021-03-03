@@ -10,14 +10,14 @@ import {Layer} from '../../layer.model';
 @Component({
     selector: 'wave-symbology-raster',
     templateUrl: 'symbology-raster.component.html',
-    styleUrls: ['symbology-raster.component.scss']
+    styleUrls: ['symbology-raster.component.scss'],
 })
 export class SymbologyRasterComponent {
     @Input() layer: Layer<AbstractRasterSymbology>;
     @Output() symbologyChanged: EventEmitter<AbstractRasterSymbology> = new EventEmitter<AbstractRasterSymbology>();
 
     updateOpacity(event: MatSliderChange) {
-        this.layer.symbology.opacity = (event.value === undefined || event.value === 0) ? 0 : event.value / 100;
+        this.layer.symbology.opacity = event.value === undefined || event.value === 0 ? 0 : event.value / 100;
         this.update();
     }
 

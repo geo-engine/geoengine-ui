@@ -25,9 +25,15 @@ export class PieChartType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(PieChartType._TYPE);
     private static _NAME = 'Pie Chart';
 
-    static get TYPE(): string { return PieChartType._TYPE; }
-    static get ICON_URL(): string { return PieChartType._ICON_URL; }
-    static get NAME(): string { return PieChartType._NAME; }
+    static get TYPE(): string {
+        return PieChartType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return PieChartType._ICON_URL;
+    }
+    static get NAME(): string {
+        return PieChartType._NAME;
+    }
 
     private code: string;
     private attribute: string;
@@ -69,7 +75,6 @@ export class PieChartType extends OperatorType {
             }
 
         `;
-
     }
 
     getMappingName(): string {

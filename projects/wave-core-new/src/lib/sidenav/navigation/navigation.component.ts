@@ -35,7 +35,6 @@ export interface NavigationButton {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationComponent implements OnInit, OnDestroy {
-
     /**
      * The navigation shows this array of buttons.
      */
@@ -47,13 +46,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(private layoutService: LayoutService,
-                private sidenavRef: SidenavRef,
-                private changeDetectorRef: ChangeDetectorRef) {
-    }
+    constructor(private layoutService: LayoutService, private sidenavRef: SidenavRef, private changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnInit() {
-        this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+        this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.sidenavConfig = sidenavConfig;
             this.changeDetectorRef.markForCheck();
         });
@@ -92,46 +88,43 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * Default constructor for a login button in the navigation.
      */
-    static createLoginButton(userService: UserService,
-                             layoutService: LayoutService,
-                             config: Config,
-                             loginSidenavConfig?: SidenavConfig): NavigationButton {
+    static createLoginButton(
+        userService: UserService,
+        layoutService: LayoutService,
+        config: Config,
+        loginSidenavConfig?: SidenavConfig,
+    ): NavigationButton {
         loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: LoginComponent};
         return {
             sidenavConfig: loginSidenavConfig,
             icon: '',
-            iconObservable: userService.isGuestUserStream().pipe(map(isGuest => isGuest ? 'person_outline' : 'person')),
+            iconObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'person_outline' : 'person'))),
             tooltip: '',
-            tooltipObservable: userService.isGuestUserStream().pipe(map(isGuest => isGuest ? 'Login' : 'User Account')),
-            colorObservable: combineLatest([
-                userService.isGuestUserStream(),
-                layoutService.getSidenavContentComponentStream(),
-            ]).pipe(
+            tooltipObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'Login' : 'User Account'))),
+            colorObservable: combineLatest([userService.isGuestUserStream(), layoutService.getSidenavContentComponentStream()]).pipe(
                 distinctUntilChanged(),
-                mergeScan( // abort inner observable when new source event arises
+                mergeScan(
+                    // abort inner observable when new source event arises
                     ([wasGuest, state], [isGuest, sidenavConfig], _index) => {
                         if (sidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {
                             return observableOf([isGuest, 'primary']);
-                        } else if (!wasGuest && isGuest) { // show 'accent' color for some time
-                            return new Observable(observer => {
+                        } else if (!wasGuest && isGuest) {
+                            // show 'accent' color for some time
+                            return new Observable((observer) => {
                                 observer.next([isGuest, 'accent']);
-                                setTimeout(
-                                    () => {
-                                        observer.next([isGuest, undefined]);
-                                        observer.complete();
-                                    },
-                                    config.DELAYS.GUEST_LOGIN_HINT,
-                                );
+                                setTimeout(() => {
+                                    observer.next([isGuest, undefined]);
+                                    observer.complete();
+                                }, config.DELAYS.GUEST_LOGIN_HINT);
                             });
                         } else {
                             return observableOf([isGuest, undefined]);
                         }
                     },
-                    [true, 'accent' as ThemePalette]
+                    [true, 'accent' as ThemePalette],
                 ),
                 map(([_wasGuest, state]) => state as ThemePalette),
             ),
         };
     }
-
 }

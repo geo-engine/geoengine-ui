@@ -1,4 +1,3 @@
-
 import {map, mapTo, filter} from 'rxjs/operators';
 import {Observable, BehaviorSubject, Subscription} from 'rxjs';
 
@@ -8,7 +7,7 @@ enum FormStatus {
     Selection,
     Error,
     Loading,
-    Finished
+    Finished,
 }
 
 export interface UploadData {
@@ -21,10 +20,9 @@ export interface UploadData {
 @Component({
     selector: 'wave-csv-upload',
     templateUrl: './csv-upload-template.component.html',
-    styleUrls: ['./csv-upload-style.component.css']
+    styleUrls: ['./csv-upload-style.component.css'],
 })
 export class CsvUploadComponent implements OnInit, OnDestroy {
-
     status$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(FormStatus.Selection);
     isSelecting$: Observable<boolean>;
     isLoading$: Observable<boolean>;
@@ -46,18 +44,19 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
     constructor() {
         this.isSelecting$ = this.status$.pipe(map((status) => status === FormStatus.Selection));
         this.isLoading$ = this.status$.pipe(map((status) => status === FormStatus.Loading));
-        this.isFinished$ = this.status$.pipe(filter((status) => status === FormStatus.Finished), mapTo(true), );
+        this.isFinished$ = this.status$.pipe(
+            filter((status) => status === FormStatus.Finished),
+            mapTo(true),
+        );
         this.isError$ = this.status$.pipe(map((status) => status === FormStatus.Error));
     }
 
     ngOnInit() {
-        this.subscriptions.push(
-            this.isFinished$.subscribe(() => this.onData.emit(this.data))
-        );
+        this.subscriptions.push(this.isFinished$.subscribe(() => this.onData.emit(this.data)));
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     changeListener($event): void {
@@ -88,11 +87,11 @@ export class CsvUploadComponent implements OnInit, OnDestroy {
     upload() {
         let reader: FileReader = new FileReader();
 
-        reader.onload = ((e) => {
+        reader.onload = (e) => {
             this.data.content = reader.result as string; // FIXME: update to angular 7 -> added "as string"
             this.data.progress = 100;
             this.status$.next(FormStatus.Finished);
-        });
+        };
 
         reader.readAsText(this.data.file);
     }

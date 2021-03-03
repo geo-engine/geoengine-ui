@@ -22,7 +22,6 @@ enum FormStatus {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -34,32 +33,28 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription: Subscription;
 
-    constructor(private readonly changeDetectorRef: ChangeDetectorRef,
-                private readonly config: Config,
-                private readonly userService: UserService,
-                private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly config: Config,
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.loginForm = new FormGroup({
-            username: new FormControl('', Validators.compose([
-                Validators.required,
-                WaveValidators.keyword([this.config.USER.GUEST.NAME]),
-            ])),
+            username: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
             password: new FormControl('', Validators.required),
             staySignedIn: new FormControl(true, Validators.required),
         });
     }
 
     ngOnInit() {
-        this.userService.isSessionValid(this.userService.getSession())
-            .subscribe(valid => {
-                const isNoGuest = !this.userService.isGuestUser();
-                this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
+        this.userService.isSessionValid(this.userService.getSession()).subscribe((valid) => {
+            const isNoGuest = !this.userService.isGuestUser();
+            this.formStatus$.next(valid && isNoGuest ? FormStatus.LoggedIn : FormStatus.LoggedOut);
 
-                if (isNoGuest) {
-                    this.loginForm.controls['username'].setValue(
-                        this.userService.getSession().user
-                    );
-                }
-            });
+            if (isNoGuest) {
+                this.loginForm.controls['username'].setValue(this.userService.getSession().user);
+            }
+        });
 
         this.user = this.userService.getUserStream();
 
@@ -81,27 +76,30 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     login() {
         this.formStatus$.next(FormStatus.Loading);
 
-        this.userService.login({
-            user: this.loginForm.controls['username'].value,
-            password: this.loginForm.controls['password'].value,
-            staySignedIn: this.loginForm.controls['staySignedIn'].value,
-        }).subscribe(
-            valid => {
-                if (valid) {
-                    this.invalidCredentials$.next(false);
-                    this.formStatus$.next(FormStatus.LoggedIn);
-                } else {
+        this.userService
+            .login({
+                user: this.loginForm.controls['username'].value,
+                password: this.loginForm.controls['password'].value,
+                staySignedIn: this.loginForm.controls['staySignedIn'].value,
+            })
+            .subscribe(
+                (valid) => {
+                    if (valid) {
+                        this.invalidCredentials$.next(false);
+                        this.formStatus$.next(FormStatus.LoggedIn);
+                    } else {
+                        this.invalidCredentials$.next(true);
+                        (this.loginForm.controls['password'] as FormControl).setValue('');
+                        this.formStatus$.next(FormStatus.LoggedOut);
+                    }
+                },
+                () => {
+                    // on error
                     this.invalidCredentials$.next(true);
                     (this.loginForm.controls['password'] as FormControl).setValue('');
                     this.formStatus$.next(FormStatus.LoggedOut);
-                }
-            },
-            () => { // on error
-                this.invalidCredentials$.next(true);
-                (this.loginForm.controls['password'] as FormControl).setValue('');
-                this.formStatus$.next(FormStatus.LoggedOut);
-            }
-        );
+                },
+            );
     }
 
     logout() {
@@ -111,6 +109,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.loginForm.controls['password'].setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             },
-            error => this.notificationService.error(`The backend is currently unavailable (${error})`));
+            (error) => this.notificationService.error(`The backend is currently unavailable (${error})`),
+        );
     }
 }

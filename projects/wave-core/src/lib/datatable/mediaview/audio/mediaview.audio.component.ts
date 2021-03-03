@@ -1,10 +1,10 @@
 import {Component, Input} from '@angular/core';
-import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 
 @Component({
     selector: 'wave-mediaview-audio',
     templateUrl: './mediaview.audio.component.html',
-    styleUrls: ['./mediaview.audio.component.scss']
+    styleUrls: ['./mediaview.audio.component.scss'],
 })
 
 /**
@@ -13,8 +13,7 @@ import { SidenavHeaderComponent } from '../../../sidenav/sidenav-header/sidenav-
  * Displays an audio-player with a playlist.
  * The component receives an array of urls to audio-files (audioURLS) and the id of the audio to play first (currentAudio) as inputs.
  */
-export class MediaviewAudioComponent{
-
+export class MediaviewAudioComponent {
     /**
      * Input: An array of audio-urls to display in the dialog
      */

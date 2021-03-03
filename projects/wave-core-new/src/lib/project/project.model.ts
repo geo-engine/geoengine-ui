@@ -99,8 +99,8 @@ export class Project implements ToDict<ProjectDict> {
             description: this.description,
             version: undefined, // TODO: get rid of version?
             bounds: this.toBoundsDict(),
-            layers: this._layers.map(layer => layer.toDict()),
-            plots: this._plots.map(plot => plot.toDict()),
+            layers: this._layers.map((layer) => layer.toDict()),
+            plots: this._plots.map((plot) => plot.toDict()),
             time_step: timeStepDurationToTimeStepDict(this.timeStepDuration),
         };
     }
@@ -127,5 +127,4 @@ export class Project implements ToDict<ProjectDict> {
     toJSON(): string {
         return JSON.stringify(this.toDict());
     }
-
 }

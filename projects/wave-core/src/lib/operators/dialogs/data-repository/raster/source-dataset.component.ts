@@ -25,9 +25,7 @@ import {Colormap} from '../../../../colors/colormaps/colormap.model';
     styleUrls: ['./source-dataset.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class SourceDatasetComponent implements OnInit, OnChanges {
-
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
     _useRawData = false;
@@ -45,10 +43,10 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
                 type: colorizerConfig.type,
                 breakpoints: colorizerConfig.breakpoints.map((bp: ColorBreakpointDict) => {
                     return {
-                        value: (bp.value as number - transform.offset) * transform.scale,
-                        rgba: bp.rgba
+                        value: ((bp.value as number) - transform.offset) * transform.scale,
+                        rgba: bp.rgba,
                     };
-                })
+                }),
             };
             return transformedColorizerConfig;
         } else {
@@ -56,11 +54,7 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
         }
     }
 
-    constructor(
-        private projectService: ProjectService,
-    ) {
-
-    }
+    constructor(private projectService: ProjectService) {}
 
     ngOnInit(): void {
         this._channelSource = new ChannelDataSource(this.dataset.rasterLayer);
@@ -72,12 +66,12 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
                     // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
                     case 'dataset': {
                         this.dataset.rasterLayer.forEach((element) => {
-                            if (element.time_start && this.dataset.time_start && !(this.dataset.time_start.isSame(element.time_start))) {
+                            if (element.time_start && this.dataset.time_start && !this.dataset.time_start.isSame(element.time_start)) {
                                 if (!this._displayedColumns.includes('start')) {
                                     this._displayedColumns.push('start');
                                 }
                             }
-                            if (element.time_end && this.dataset.time_end && !(this.dataset.time_end.isSame(element.time_end))) {
+                            if (element.time_end && this.dataset.time_end && !this.dataset.time_end.isSame(element.time_end)) {
                                 if (!this._displayedColumns.includes('end')) {
                                     this._displayedColumns.push('end');
                                 }
@@ -125,10 +119,10 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
         }
 
         // if there is no colorizer data defined for the channel, create a 'viridis' coloring with min, max bounds
-        let colorizerConfig = (channel.colorizer && ColorizerData.is_valid(channel.colorizer)) ? channel.colorizer
-            : Colormap.createColorizerDataWithName(
-                'VIRIDIS', unit.min, unit.max
-            );
+        let colorizerConfig =
+            channel.colorizer && ColorizerData.is_valid(channel.colorizer)
+                ? channel.colorizer
+                : Colormap.createColorizerDataWithName('VIRIDIS', unit.min, unit.max);
 
         // if the dataset / channel has a transform specification, the colorizer defined for the raw data also requires transformation
         if (doTransform) {
@@ -139,7 +133,7 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
             name: channel.name,
             operator,
             symbology: MappingRasterSymbology.createSymbology({
-                unit: (doTransform) ? channel.transform.unit : unit,
+                unit: doTransform ? channel.transform.unit : unit,
                 colorizer: colorizerConfig,
             }),
         });
@@ -217,7 +211,7 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
                         methodology: c.methodology,
                     };
                 }),
-            }
+            },
         });
 
         const sourceOperator = new Operator({
@@ -288,7 +282,6 @@ export class SourceDatasetComponent implements OnInit, OnChanges {
 
         return operator;
     }
-
 }
 
 class ChannelDataSource extends DataSource<SourceRasterLayerDescription> {
@@ -303,6 +296,5 @@ class ChannelDataSource extends DataSource<SourceRasterLayerDescription> {
         return observableOf(this.channels);
     }
 
-    disconnect() {
-    }
+    disconnect() {}
 }

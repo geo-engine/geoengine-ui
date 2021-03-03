@@ -1,13 +1,12 @@
-<wave-sidenav-header>Audio {{currentAudio + 1}} of {{audioURLs.length}}</wave-sidenav-header>
+<wave-sidenav-header>Audio {{ currentAudio + 1 }} of {{ audioURLs.length }}</wave-sidenav-header>
 
 <div class="audioContainer">
-
     <mat-card>
         <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></audio>
     </mat-card>
 
     <div class="info">
-        <h3 matTooltip="{{audioURLs[currentAudio] | fileName}}"> {{audioURLs[currentAudio] | fileName}} </h3>
+        <h3 matTooltip="{{ audioURLs[currentAudio] | fileName }}">{{ audioURLs[currentAudio] | fileName }}</h3>
 
         <a mat-mini-fab color="primary" [href]="audioURLs[currentAudio]" target="_blank" class="externalLink" [title]="'open in new tab'">
             <mat-icon class="mat-24">open_in_new</mat-icon>
@@ -16,5 +15,3 @@
 
     <wave-mediaview-playlist [tracks]="audioURLs" [currentTrack]="currentAudio" (gotoTrack)="goToAudio($event)"></wave-mediaview-playlist>
 </div>
-
-

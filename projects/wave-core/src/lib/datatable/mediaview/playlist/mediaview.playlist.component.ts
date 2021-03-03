@@ -1,11 +1,9 @@
-import {
-    Component, Input, Output, EventEmitter
-} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
     selector: 'wave-mediaview-playlist',
     templateUrl: './mediaview.playlist.component.html',
-    styleUrls: ['./mediaview.playlist.component.scss']
+    styleUrls: ['./mediaview.playlist.component.scss'],
 })
 
 /**
@@ -16,7 +14,6 @@ import {
  * It has an Event-Emitter as Output that is fired when a playlist-item is clicked to be played
  */
 export class MediaviewPlaylistComponent {
-
     /**
      * Input: An array of urls to show in the playlist
      */
@@ -35,7 +32,6 @@ export class MediaviewPlaylistComponent {
      */
     @Output()
     public gotoTrack: EventEmitter<number> = new EventEmitter();
-
 
     /**
      * Emits an event, telling the parent component that the track with the given id should be played

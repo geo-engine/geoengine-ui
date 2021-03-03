@@ -34,26 +34,28 @@
         <mat-icon svgIcon="cogs"></mat-icon>
         Analysis
     </button>
-    <mat-card id="analysisCard" *ngIf="analysisVisible$ | async">
-        Analysis
-    </mat-card>
+    <mat-card id="analysisCard" *ngIf="analysisVisible$ | async"> Analysis </mat-card>
     <wave-legend [layer]="selectedLayer$ | async"></wave-legend>
     <div class="mid-container" [style.height.px]="windowHeight$ | async">
         <wave-map-container #map [grid]="false">
             <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
                 <ng-template [ngIf]="layer.layerType === 'vector'">
-                    <wave-ol-vector-layer [layerId]="layer.id"
-                                          [workflow]="layer.workflowId"
-                                          [symbology]="layer.symbology"
-                                          [isVisible]="layer.isVisible"
-                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-vector-layer>
+                    <wave-ol-vector-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="layer.symbology"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></wave-ol-vector-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.layerType === 'raster'">
-                    <wave-ol-raster-layer [layerId]="layer.id"
-                                          [workflow]="layer.workflowId"
-                                          [symbology]="layer.symbology"
-                                          [isVisible]="layer.isVisible"
-                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-raster-layer>
+                    <wave-ol-raster-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="layer.symbology"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></wave-ol-raster-layer>
                 </ng-template>
             </ng-template>
         </wave-map-container>

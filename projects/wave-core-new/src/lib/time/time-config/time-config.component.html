@@ -6,7 +6,7 @@
         <mat-card-subtitle>Use this to specify a time selection for the current data.</mat-card-subtitle>
     </mat-card-header>
 
-    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault();applyTime()">
+    <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault(); applyTime()">
         <h4 *ngIf="config.TIME.ALLOW_RANGES">Start</h4>
 
         <wave-time-input formControlName="start"></wave-time-input>
@@ -20,15 +20,10 @@
             <wave-time-input formControlName="end" [disabled]="timeAsPoint.checked"></wave-time-input>
         </ng-template>
 
-
         <div class="actions" fxLayout="row" fxLayoutAlign="end">
             <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
-            <button mat-raised-button (click)="reset()">
-                Reset
-            </button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">
-                Apply
-            </button>
+            <button mat-raised-button (click)="reset()">Reset</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">Apply</button>
         </div>
     </form>
 </mat-card>
@@ -40,14 +35,15 @@
     </mat-card-header>
 
     <mat-form-field>
-        <mat-select placeholder="Time step"
-                    [ngModel]="timeStepDuration$ | async" (ngModelChange)="updateTimeStepDuration($event)"
-                    [compareWith]="timeStepComparator"
+        <mat-select
+            placeholder="Time step"
+            [ngModel]="timeStepDuration$ | async"
+            (ngModelChange)="updateTimeStepDuration($event)"
+            [compareWith]="timeStepComparator"
         >
             <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
-                {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit}}
+                {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit }}
             </mat-option>
         </mat-select>
     </mat-form-field>
-
 </mat-card>

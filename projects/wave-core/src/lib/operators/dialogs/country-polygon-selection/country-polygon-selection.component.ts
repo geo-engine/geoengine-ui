@@ -14,10 +14,7 @@ import {Projection, Projections} from '../../projection.model';
 import {CSVParameters, CsvSourceType} from '../../types/csv-source-type.model';
 import {MappingQueryService} from '../../../queries/mapping-query.service';
 import {WFSOutputFormats} from '../../../queries/output-formats/wfs-output-format.model';
-import {
-    TextualAttributeFilterEngineType,
-    TextualAttributeFilterType
-} from '../../types/textual-attribute-filter-type.model';
+import {TextualAttributeFilterEngineType, TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
 import {DataSource} from '@angular/cdk/table';
 import {DataType, DataTypes} from '../../datatype.model';
 
@@ -33,7 +30,6 @@ function nameComparator(a: string, b: string): number {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryPolygonSelectionComponent implements OnInit, OnDestroy {
-
     searchString$ = new BehaviorSubject<string>('');
     filteredEntries$ = new ReplaySubject<Array<CountryMapType>>(1);
 
@@ -92,33 +88,34 @@ Sean Gilles did some clean up and made some enhancements.`,
     private sourceOperator: Operator;
     private subscription: Subscription;
 
-
-    constructor(private userService: UserService,
-                private projectService: ProjectService,
-                private randomColorService: RandomColorService,
-                private mappingQueryService: MappingQueryService,
-                public dialog: MatDialog) {
-    }
+    constructor(
+        private userService: UserService,
+        private projectService: ProjectService,
+        private randomColorService: RandomColorService,
+        private mappingQueryService: MappingQueryService,
+        public dialog: MatDialog,
+    ) {}
 
     ngOnInit() {
         this.sourceOperator = this.createCsvSourceOperator();
 
         this.subscription = observableCombineLatest(
-            this.getOperatorDataStream().pipe(map(
-                vectorData => {
+            this.getOperatorDataStream().pipe(
+                map((vectorData) => {
                     // console.log('vectorData', vectorData);
-                    const data = vectorData.data.map(olFeature => olFeature.getProperties() as { [k: string]: any });
+                    const data = vectorData.data.map((olFeature) => olFeature.getProperties() as {[k: string]: any});
                     // console.log('mapped', data);
                     return data;
-                }
-            )),
-            this.searchString$.pipe(map(searchString => searchString.toLowerCase())),
-            (entries, searchString) => entries
-                .filter(entry => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
-                .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString()))
-        ).pipe(
-            tap(() => this.isLoading$.next(false)))
-            .subscribe(entries => this.filteredEntries$.next(entries));
+                }),
+            ),
+            this.searchString$.pipe(map((searchString) => searchString.toLowerCase())),
+            (entries, searchString) =>
+                entries
+                    .filter((entry) => entry[this.sourceIdColumn].toString().toLowerCase().indexOf(searchString) >= 0)
+                    .sort((a, b) => nameComparator(a[this.sourceIdColumn].toString(), b[this.sourceIdColumn].toString())),
+        )
+            .pipe(tap(() => this.isLoading$.next(false)))
+            .subscribe((entries) => this.filteredEntries$.next(entries));
 
         this.tableEntries = new CountryDataSource(this.filteredEntries$);
     }
@@ -151,26 +148,30 @@ Sean Gilles did some clean up and made some enhancements.`,
             resultType: ResultTypes.POLYGONS,
             projection: this.sourceProjection,
             attributes,
-            dataTypes
+            dataTypes,
         });
 
         return op;
     }
 
     getOperatorDataStream(): Observable<VectorData> {
-        return this.projectService.getTimeStream().pipe(mergeMap(t => {
-            return this.mappingQueryService.getWFSData({
-                operator: this.sourceOperator,
-                projection: this.sourceProjection,
-                clusteredOption: undefined,
-                outputFormat: WFSOutputFormats.JSON,
-                viewportSize: {
-                    extent: this.sourceProjection.getExtent(),
-                    resolution: 1,
-                },
-                time: t
-            }).pipe(map(d => VectorData.olParse(t, this.sourceProjection, this.sourceProjection.getExtent(), d)));
-        }));
+        return this.projectService.getTimeStream().pipe(
+            mergeMap((t) => {
+                return this.mappingQueryService
+                    .getWFSData({
+                        operator: this.sourceOperator,
+                        projection: this.sourceProjection,
+                        clusteredOption: undefined,
+                        outputFormat: WFSOutputFormats.JSON,
+                        viewportSize: {
+                            extent: this.sourceProjection.getExtent(),
+                            resolution: 1,
+                        },
+                        time: t,
+                    })
+                    .pipe(map((d) => VectorData.olParse(t, this.sourceProjection, this.sourceProjection.getExtent(), d)));
+            }),
+        );
     }
 
     createFilterOperator(key: string): Operator {
@@ -188,7 +189,7 @@ Sean Gilles did some clean up and made some enhancements.`,
             projection: this.sourceOperator.projection,
             polygonSources: [sourceOp],
             attributes: sourceOp.attributes,
-            dataTypes: sourceOp.dataTypes
+            dataTypes: sourceOp.dataTypes,
         });
     }
 
@@ -223,6 +224,5 @@ class CountryDataSource extends DataSource<CountryMapType> {
         return this.countries;
     }
 
-    disconnect() {
-    }
+    disconnect() {}
 }

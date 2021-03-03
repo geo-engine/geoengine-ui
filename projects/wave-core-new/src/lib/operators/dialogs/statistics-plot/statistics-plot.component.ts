@@ -19,7 +19,6 @@ import {NotificationService} from '../../../notification.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy {
-
     readonly allowedLayerTypes = [ResultTypes.RASTER];
 
     readonly subscriptions: Array<Subscription> = [];
@@ -27,11 +26,12 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
     form: FormGroup;
     outputNameSuggestion: Observable<string>;
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService,
-                private layoutService: LayoutService,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private projectService: ProjectService,
+        private layoutService: LayoutService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -44,39 +44,46 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
     add() {
         const workflowObservables: Array<Observable<WorkflowDict>> = this.form.controls['layers'].value.map((layer: Layer) =>
-            this.projectService.getWorkflow(layer.workflowId)
+            this.projectService.getWorkflow(layer.workflowId),
         );
 
-        combineLatest(workflowObservables).pipe(
-            mergeMap(workflows => this.projectService.registerWorkflow({
-                type: 'Plot',
-                operator: {
-                    type: 'Statistics',
-                    params: {},
-                    raster_sources: workflows.map(workflow => workflow.operator),
-                    vector_sources: []
-                }
-            })),
-            mergeMap(workflowId => this.projectService.addPlot(new Plot({
-                workflowId,
-                name: this.form.controls['name'].value.toString(),
-            }))),
-        ).subscribe(
-            () => {
-            },
-            error => this.notificationService.error(error),
-        );
+        combineLatest(workflowObservables)
+            .pipe(
+                mergeMap((workflows) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: {
+                            type: 'Statistics',
+                            params: {},
+                            raster_sources: workflows.map((workflow) => workflow.operator),
+                            vector_sources: [],
+                        },
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addPlot(
+                        new Plot({
+                            workflowId,
+                            name: this.form.controls['name'].value.toString(),
+                        }),
+                    ),
+                ),
+            )
+            .subscribe(
+                () => {},
+                (error) => this.notificationService.error(error),
+            );
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     ngAfterViewInit() {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,
-                emitEvent: true
+                emitEvent: true,
             });
             this.form.controls['layers'].updateValueAndValidity();
         });
@@ -84,12 +91,12 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
     private static createOutputNameSuggestionStream(layersChanges: Observable<Array<Layer>>): Observable<string> {
         return layersChanges.pipe(
-            map(layers => {
+            map((layers) => {
                 if (!layers) {
                     return 'Statistics';
                 }
 
-                return `Statistics of ${layers.map(layer => layer.name).join(', ')}`;
+                return `Statistics of ${layers.map((layer) => layer.name).join(', ')}`;
             }),
         );
     }

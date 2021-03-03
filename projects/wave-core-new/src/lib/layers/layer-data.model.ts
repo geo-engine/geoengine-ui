@@ -21,9 +21,7 @@ export abstract class LayerData {
 export class RasterData extends LayerData {
     readonly workflowId: UUID;
 
-    constructor(time: Time,
-                spatialReference: SpatialReference,
-                workflowId: UUID) {
+    constructor(time: Time, spatialReference: SpatialReference, workflowId: UUID) {
         if (time.end.isAfter(time.start)) {
             time = new Time(time.start);
         }
@@ -36,11 +34,13 @@ export class VectorData extends LayerData {
     readonly data: Array<OlFeature>;
     readonly extent: [number, number, number, number];
 
-    static olParse(time: Time,
-                   projection: SpatialReference,
-                   extent: [number, number, number, number],
-                   source: (Document | Node | any | string),
-                   opt_options?: { dataProjection: OlProjectionLike, featureProjection: OlProjectionLike }): VectorData {
+    static olParse(
+        time: Time,
+        projection: SpatialReference,
+        extent: [number, number, number, number],
+        source: Document | Node | any | string,
+        opt_options?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
+    ): VectorData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 

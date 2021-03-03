@@ -1,13 +1,12 @@
-<wave-sidenav-header>Video {{currentVideo + 1}} of {{videoURLs.length}}</wave-sidenav-header>
+<wave-sidenav-header>Video {{ currentVideo + 1 }} of {{ videoURLs.length }}</wave-sidenav-header>
 
 <div fxFlex class="videoContainer">
-
     <mat-card>
-        <video #video [src] = "videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
+        <video #video [src]="videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="playNext()"></video>
     </mat-card>
 
     <div class="info">
-        <h3 matTooltip="{{videoURLs[currentVideo] | fileName}}"> {{videoURLs[currentVideo] | fileName}} </h3>
+        <h3 matTooltip="{{ videoURLs[currentVideo] | fileName }}">{{ videoURLs[currentVideo] | fileName }}</h3>
 
         <a mat-mini-fab color="primary" [href]="videoURLs[currentVideo]" target="_blank" class="externalLink" [title]="'open in new tab'">
             <mat-icon class="mat-24">open_in_new</mat-icon>
@@ -16,5 +15,3 @@
 
     <wave-mediaview-playlist [tracks]="videoURLs" [currentTrack]="currentVideo" (gotoTrack)="goToVideo($event)"></wave-mediaview-playlist>
 </div>
-
-

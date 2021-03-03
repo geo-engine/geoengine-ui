@@ -3,8 +3,7 @@
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {
-} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.
@@ -30,7 +29,6 @@ export type ParameterValue = number | string | OptionsDict;
  * The operator basic type.
  */
 export abstract class OperatorType {
-
     /**
      * Human-readable type name.
      */

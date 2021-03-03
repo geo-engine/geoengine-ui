@@ -14,17 +14,14 @@ import {WaveValidators} from '../../../util/form.validators';
     selector: 'wave-pie-chart-operator',
     templateUrl: './pie-chart-operator.component.html',
     styleUrls: ['./pie-chart-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
-
     form: FormGroup;
 
     ResultTypes = ResultTypes;
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService) {
-    }
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -57,14 +54,13 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projectService.addPlot(plot);
     }
 
-    ngOnDestroy() {
-    }
+    ngOnDestroy() {}
 
     ngAfterViewInit() {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,
-                emitEvent: true
+                emitEvent: true,
             });
             this.form.controls['layer'].updateValueAndValidity();
         });

@@ -26,11 +26,7 @@ import {Nature40UserService} from './users/nature40-user.service';
 import {LoginComponent} from './users/login/login.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        LoginComponent,
-        Nature40CatalogComponent,
-    ],
+    declarations: [AppComponent, LoginComponent, Nature40CatalogComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -59,5 +55,4 @@ import {LoginComponent} from './users/login/login.component';
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

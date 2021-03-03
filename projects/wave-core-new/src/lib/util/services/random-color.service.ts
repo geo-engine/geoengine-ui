@@ -20,8 +20,7 @@ export class RandomColorService {
 
     protected colorIndex = Math.trunc(Math.random() * RandomColorService.colorWheel.length);
 
-    constructor() {
-    }
+    constructor() {}
 
     getRandomColorRgba(alpha: number = 0.8): Color {
         const color = RandomColorService.colorWheel[this.colorIndex];

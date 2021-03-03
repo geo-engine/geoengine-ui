@@ -42,11 +42,13 @@ export class VectorData extends LayerData<Array<OlFeature>> {
     _data: Array<OlFeature>;
     _extent: [number, number, number, number];
 
-    static olParse(time: Time,
-                   projection: Projection,
-                   extent: [number, number, number, number],
-                   source: (Document | Node | any | string),
-                   opt_options?: { dataProjection: OlProjectionLike, featureProjection: OlProjectionLike }): VectorData {
+    static olParse(
+        time: Time,
+        projection: Projection,
+        extent: [number, number, number, number],
+        source: Document | Node | any | string,
+        opt_options?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
+    ): VectorData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
     }
 
@@ -78,9 +80,7 @@ export class VectorData extends LayerData<Array<OlFeature>> {
 export class RasterData extends LayerData<string> {
     _data: string;
 
-    constructor(time: Time,
-                projection: Projection,
-                data: string) {
+    constructor(time: Time, projection: Projection, data: string) {
         if (time.getEnd().isAfter(time.getStart())) {
             time = new TimePoint(time.getStart());
         }
@@ -88,11 +88,9 @@ export class RasterData extends LayerData<string> {
         this._data = data;
     }
 
-
     get data(): string {
         return this._data;
     }
-
 }
 
 export interface LayerChanges<S extends AbstractSymbology> {
@@ -130,12 +128,14 @@ interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConf
     clustered?: boolean;
 }
 
-interface RasterLayerConfig<S extends AbstractRasterSymbology> extends LayerConfig<S> { // tslint:disable-line:no-empty-interface
+interface RasterLayerConfig<S extends AbstractRasterSymbology> extends LayerConfig<S> {
+    // tslint:disable-line:no-empty-interface
 }
 
 type LayerType = 'raster' | 'vector';
 
-interface LayerTypeOptionsDict { // tslint:disable-line:no-empty-interface
+interface LayerTypeOptionsDict {
+    // tslint:disable-line:no-empty-interface
 }
 
 interface VectorLayerTypeOptionsDict extends LayerTypeOptionsDict {
@@ -167,19 +167,12 @@ export abstract class Layer<S extends AbstractSymbology> {
     /**
      * Create the suitable layer type and initialize the callbacks.
      */
-    static fromDict(dict: LayerDict,
-                    operatorMap = new Map<number, Operator>()): Layer<AbstractSymbology> {
+    static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<AbstractSymbology> {
         switch (dict.type) {
             case 'raster':
-                return RasterLayer.fromDict(
-                    dict,
-                    operatorMap
-                );
+                return RasterLayer.fromDict(dict, operatorMap);
             case 'vector':
-                return VectorLayer.fromDict(
-                    dict,
-                    operatorMap
-                );
+                return VectorLayer.fromDict(dict, operatorMap);
             default:
                 throw new Error('LayerService.createLayerFromDict: Unknown LayerType ->' + dict);
         }
@@ -205,7 +198,6 @@ export abstract class Layer<S extends AbstractSymbology> {
      * Do not use this method publically!!!
      */
     _changeUnderlyingData(data: LayerChanges<S>): LayerChanges<S> {
-
         const validChanges: LayerChanges<S> = {};
 
         if (data.name && data.name !== this._name) {
@@ -288,14 +280,11 @@ export abstract class Layer<S extends AbstractSymbology> {
 export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
     clustered = false;
 
-    static fromDict(dict: LayerDict,
-                    operatorMap = new Map<number, Operator>()): Layer<AbstractVectorSymbology> {
+    static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<AbstractVectorSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         const typeOptions = dict.typeOptions as VectorLayerTypeOptionsDict;
 
-        const clustered = (typeOptions && typeOptions.clustered)
-            && typeOptions.clustered
-            || false;
+        const clustered = (typeOptions && typeOptions.clustered && typeOptions.clustered) || false;
 
         return new VectorLayer({
             name: dict.name,
@@ -322,11 +311,9 @@ export class VectorLayer<S extends AbstractVectorSymbology> extends Layer<S> {
             clustered: this.clustered,
         };
     }
-
 }
 
 export class RasterLayer<S extends AbstractRasterSymbology> extends Layer<S> {
-
     static fromDict(dict: LayerDict, operatorMap = new Map<number, Operator>()): Layer<AbstractRasterSymbology> {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         const symbology = AbstractSymbology.fromDict(dict.symbology) as AbstractRasterSymbology | MappingRasterSymbology;

@@ -7,7 +7,7 @@ interface NumericAttributeFilterTypeMappingDict extends OperatorTypeMappingDict 
     rangeMax?: number;
 }
 
-export interface NumericAttributeFilterTypeDict extends OperatorTypeDict  {
+export interface NumericAttributeFilterTypeDict extends OperatorTypeDict {
     attributeName: string;
     includeNoData: boolean;
     rangeMin?: number;
@@ -29,9 +29,15 @@ export class NumericAttributeFilterType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(NumericAttributeFilterType._TYPE);
     private static _NAME = 'Numeric Attribute Filter';
 
-    static get TYPE(): string { return NumericAttributeFilterType._TYPE; }
-    static get ICON_URL(): string { return NumericAttributeFilterType._ICON_URL; }
-    static get NAME(): string { return NumericAttributeFilterType._NAME; }
+    static get TYPE(): string {
+        return NumericAttributeFilterType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return NumericAttributeFilterType._ICON_URL;
+    }
+    static get NAME(): string {
+        return NumericAttributeFilterType._NAME;
+    }
 
     private name: string;
     private includeNoData: boolean;
@@ -63,9 +69,7 @@ export class NumericAttributeFilterType extends OperatorType {
     }
 
     getParametersAsStrings(): Array<[string, string]> {
-        const parameters: Array<[string, string]> = [
-            ['includeNoData', this.includeNoData.toString()],
-        ];
+        const parameters: Array<[string, string]> = [['includeNoData', this.includeNoData.toString()]];
         if (this.rangeMin) {
             parameters.push(['rangeMin', this.rangeMin.toString()]);
         }
@@ -97,5 +101,4 @@ export class NumericAttributeFilterType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return NumericAttributeFilterType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

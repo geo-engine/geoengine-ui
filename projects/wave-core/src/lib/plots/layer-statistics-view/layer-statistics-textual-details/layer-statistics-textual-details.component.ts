@@ -10,17 +10,13 @@ export interface TextualStatisticsData {
     selector: 'wave-layer-statistics-textual-details',
     templateUrl: './layer-statistics-textual-details.component.html',
     styleUrls: ['./layer-statistics-textual-details.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerStatisticsTextualDetailsComponent implements OnInit {
-
     @Input()
     data: TextualStatisticsData;
 
-    constructor() {
-    }
+    constructor() {}
 
-    ngOnInit() {
-    }
-
+    ngOnInit() {}
 }

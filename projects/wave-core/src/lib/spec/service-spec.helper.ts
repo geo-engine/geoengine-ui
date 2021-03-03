@@ -3,41 +3,37 @@ import {TestBed} from '@angular/core/testing';
 import {HttpResponse, HttpXhrBackend} from '@angular/common/http';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 
-
 @NgModule({
-    providers: [
-        {provide: HttpXhrBackend, useClass: HttpClientTestingModule}
-    ]
+    providers: [{provide: HttpXhrBackend, useClass: HttpClientTestingModule}],
 })
-class HttpMockModule {
-}
+class HttpMockModule {}
 
 export interface Mock {
     module: any;
 }
 
-const mockModules: { [key: string]: Mock } = {
-    'http': {module: HttpMockModule}
+const mockModules: {[key: string]: Mock} = {
+    http: {module: HttpMockModule},
 };
 
-
 export class ServiceSpecHelper<T> {
-
     type: Type<T>;
 
-    constructor(_app_module: {
-        providers?: any[];
-        declarations?: any[];
-        imports?: any[];
-        schemas?: Array<SchemaMetadata | any[]>;
-        aotSummaries?: () => any[];
-    }, type: Type<T>, mocks: string[]) {
+    constructor(
+        _app_module: {
+            providers?: any[];
+            declarations?: any[];
+            imports?: any[];
+            schemas?: Array<SchemaMetadata | any[]>;
+            aotSummaries?: () => any[];
+        },
+        type: Type<T>,
+        mocks: string[],
+    ) {
         this.type = type;
 
         @NgModule({
-            providers: [
-                type
-            ]
+            providers: [type],
         })
         class EntryModule {}
         _app_module.imports.push(EntryModule);
@@ -58,9 +54,7 @@ export class ServiceSpecHelper<T> {
      */
     httpResponseMock(mockedResponse: any) {
         TestBed.inject(HttpXhrBackend).connections.subscribe((connection) => {
-            connection.mockRespond(new Response(
-                JSON.stringify(mockedResponse)
-            ));
+            connection.mockRespond(new Response(JSON.stringify(mockedResponse)));
         });
     }
 
