@@ -41,6 +41,6 @@ jobs:
                 uses: creyD/prettier_action@v3.1
                 with:
                     dry: true
-                    prettier_options: --config wave/.prettierrc.json --ignore-path wave/.prettierignore --check wave/.
+                    prettier_options: --config $GITHUB_WORKSPACE/wave/.prettierrc.json --ignore-path $GITHUB_WORKSPACE/wave/.prettierignore --check $GITHUB_WORKSPACE/wave/.
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
